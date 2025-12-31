@@ -1,289 +1,325 @@
-# 📝 Week 4.5 — Summary & Key Concepts: Tier 1 Critical Patterns (COMPLETE)
+# 🗂️ WEEK 4.5 — SUMMARY & KEY CONCEPTS
 
-**🗓️ Week:** 4.5  
-**📌 Theme:** Critical Problem-Solving Patterns (Foundational + High-ROI)  
-**🎯 Goal:** Master 5 patterns solving 70-80% of interview problems  
-**🌟 Key Insight:** These patterns are TIER 1 — every candidate must know them cold
+**Quick Reference for Week 4.5 Critical Patterns**
 
 ---
 
-## 🧠 THE 5 TIER 1 PATTERNS (QUICK REFERENCE)
+## 📋 DAY-BY-DAY CONCEPT BREAKDOWN
 
-### 1️⃣ **Hash Map / Hash Set** (Day 1)
-**When:** Need O(1) lookup by value (not index)  
-**Core Operations:**
-- Hash Map: key → value storage
-- Hash Set: membership testing, duplicates
+### 📌 DAY 1: HASH MAP / HASH SET PATTERNS
 
-**Complexity:** O(1) average lookup/insertion, O(n) space  
-**Red Flags:** "Two Sum", "Anagram", "Duplicate", "Frequency", "Group by", "First unique"
-
-**Key Problems:**
-- Two Sum (LeetCode #1) — THE classic
-- Valid Anagram (#242)
-- Group Anagrams (#49)
-
----
-
-### 2️⃣ **Monotonic Stack** (Day 2)
-**When:** Need next greater/smaller element OR maintain order invariant  
-**Pattern:** Stack maintains increasing or decreasing order
-
-**Complexity:** O(n) time (each element push/pop once), O(n) space  
-**Red Flags:** "Next greater", "Next smaller", "Trapping water", "Largest rectangle", "Daily temperatures"
-
-**Key Problems:**
-- Next Greater Element (#496)
-- Trapping Rain Water (#42) — HARD classic
-- Largest Rectangle in Histogram (#84)
-
----
-
-### 3️⃣ **Merge Operations & Intervals** (Day 3)
-**When:** Combine sorted collections OR handle overlapping intervals  
-**Variants:**
-- Merge 2 sorted arrays: O(n+m)
-- Merge K sorted lists: O(N log K) with min-heap
-- Merge Intervals: O(n log n)
-
-**Complexity:** Varies (see variants)  
-**Red Flags:** "Merge sorted", "Combine", "Overlapping intervals", "Schedule", "Insert interval"
-
-**Key Problems:**
-- Merge K Sorted Lists (#23)
-- Merge Intervals (#56)
-- Insert Interval (#57)
-
----
-
-### 4️⃣ **Partition & Cyclic Sort / Kadane's** (Day 4)
-**Part A: Partition & Cyclic Sort**
-- **When:** In-place rearrangement OR find missing/duplicate in [1..n]
-- **Patterns:** Dutch National Flag, Cyclic Sort
-- **Complexity:** O(n) time, O(1) space
-- **Red Flags:** "Move zeros", "Sort colors", "Find missing", "Find duplicate"
-
-**Part B: Kadane's Algorithm**
-- **When:** Maximum subarray sum (consecutive elements)
-- **Pattern:** DP — max ending at i = max(arr[i], max_ending_at_i-1 + arr[i])
-- **Complexity:** O(n) time, O(1) space
-- **Red Flags:** "Maximum subarray", "Maximum product subarray"
-
-**Key Problems:**
-- Sort Colors (#75) — Dutch National Flag
-- Find All Missing Numbers (#448) — Cyclic Sort
-- Maximum Subarray (#53) — Kadane's
-
----
-
-### 5️⃣ **Fast & Slow Pointers** (Day 5)
-**When:** Linked list problems (cycle, middle, palindrome)  
-**Pattern:** Slow moves 1 step, fast moves 2 steps
-
-**Complexity:** O(n) time, O(1) space  
-**Red Flags:** "Cycle detection", "Find middle", "Palindrome (linked list)", "Happy number", "Nth from end"
-
-**Key Problems:**
-- Linked List Cycle (#141)
-- Linked List Cycle II (#142) — Find cycle start
-- Happy Number (#202)
-
----
-
-## 📊 PATTERN SELECTION MATRIX
-
+**Core Concept:**
 ```
-┌─────────────────────────────────────────────────────────────┐
-│ PROBLEM TYPE                    → PATTERN TO USE            │
-├─────────────────────────────────────────────────────────────┤
-│ "Two Sum", "Frequency count"    → Hash Map                  │
-│ "Anagram", "Duplicate"          → Hash Map / Hash Set       │
-│                                                              │
-│ "Next greater/smaller"          → Monotonic Stack           │
-│ "Trapping water", "Rectangle"   → Monotonic Stack           │
-│                                                              │
-│ "Merge sorted arrays/lists"     → Merge Operations          │
-│ "Overlapping intervals"         → Interval Merge            │
-│                                                              │
-│ "Move zeros", "Sort colors"     → Partition (Dutch Flag)    │
-│ "Find missing in [1..n]"        → Cyclic Sort               │
-│ "Maximum subarray sum"          → Kadane's Algorithm        │
-│                                                              │
-│ "Linked list cycle"             → Fast & Slow Pointers      │
-│ "Find middle of list"           → Fast & Slow Pointers      │
-└─────────────────────────────────────────────────────────────┘
+HashMap/HashSet = O(1) average lookup/insertion (O(n) worst case)
+Trade-off: Space O(n) for Speed O(1)
 ```
 
----
+**Key Operations:**
+- Insert: `map[key] = value` → O(1)
+- Lookup: `key in map` → O(1)
+- Delete: `del map[key]` → O(1)
 
-## 🎯 COMPLEXITY QUICK REFERENCE
+**Problem Types:**
+- Two Sum, Valid Anagram, Group Anagrams
+- Frequency counting, Duplicate detection
+- LRU Cache foundation
 
-| Pattern | Time | Space | Key Optimization |
-|---|---|---|---|
-| **Hash Map** | O(1) avg | O(n) | Trade space for time |
-| **Monotonic Stack** | O(n) | O(n) | Each element push/pop once |
-| **Merge 2 Arrays** | O(n+m) | O(n+m) | Two pointers |
-| **Merge K Lists (Heap)** | O(N log K) | O(K) | Min-heap for K-way merge |
-| **Dutch National Flag** | O(n) | O(1) | Three pointers (low, mid, high) |
-| **Cyclic Sort** | O(n) | O(1) | Index = value - 1 |
-| **Kadane's** | O(n) | O(1) | DP, track max ending here |
-| **Fast & Slow** | O(n) | O(1) | Relative speed = 1 |
+**Interview Frequency:** 65% (Very High)
 
 ---
 
-## ⚠️ CRITICAL DISTINCTIONS
+### 📌 DAY 2: MONOTONIC STACK
 
-### **Hash Map vs Two Pointers (Two Sum)**
-- **Unsorted array:** Hash Map (O(n) time, O(n) space).
-- **Sorted array:** Two Pointers (O(n) time, O(1) space).
-- **Trade-off:** Hash Map flexible (any array), Two Pointers space-efficient (sorted only).
+**Core Concept:**
+```
+Stack = LIFO + Ordering constraint
+Monotonic = Maintain either increasing or decreasing order
+```
 
-### **Monotonic Stack vs Regular Stack**
-- **Regular Stack:** LIFO, general purpose.
-- **Monotonic Stack:** Maintains increasing/decreasing order (pops elements violating order).
-- **Use Case:** Next greater element, histogram problems.
+**Key Operations:**
+- While stack not empty AND top < current:
+  - Pop, update answer
+  - Push current
 
-### **Merge vs Partition**
-- **Merge:** Combine sorted collections (creates new collection or modifies existing).
-- **Partition:** Rearrange in-place around pivot (no new memory).
+**Problem Types:**
+- Next Greater Element, Previous Smaller Element
+- Trapping Rain Water, Largest Rectangle in Histogram
+- Daily Temperatures, Stock Span
 
-### **Kadane's vs Brute Force Subarray**
-- **Brute Force:** Check all O(n²) subarrays. Each sum O(n) → O(n³) or O(n²) with prefix.
-- **Kadane's:** DP tracks max ending at each position. O(n) single pass.
-
-### **Fast & Slow vs Two Pointers**
-- **Fast & Slow:** Same direction, different speeds (linked list focus).
-- **Two Pointers:** Opposite directions or same direction (array focus).
+**Interview Frequency:** 55% (High)
 
 ---
 
-## 🧠 MENTAL MODELS FOR RETENTION
+### 📌 DAY 3: MERGE OPERATIONS & INTERVALS
 
-### **Hash Map = Library Catalog**
-Array: Walk every shelf (O(n)).  
-Hash Map: Look up title in catalog, go directly to shelf (O(1)).
+**Core Concept:**
+```
+Merge = Combine overlapping intervals
+Sort first → iterate → merge overlaps
+```
 
-### **Monotonic Stack = Conveyor Belt Filter**
-Items on belt. Remove items that don't fit order (increasing/decreasing).  
-What remains: monotonic sequence.
+**Key Operations:**
+- Sort by start time: O(n log n)
+- Iterate and merge overlaps: O(n)
+- Total: O(n log n)
 
-### **Merge = Zipper**
-Two sorted lists = two zipper tracks.  
-Merge = interleave teeth in sorted order.
+**Problem Types:**
+- Merge Intervals, Insert Interval
+- Meeting Rooms, Calendar scheduling
+- Interval scheduling optimization
 
-### **Partition = Sorting Hat (Harry Potter)**
-Dutch Flag: Sort students into 3 houses (0s, 1s, 2s).  
-Three pointers move students to correct sections.
-
-### **Kadane's = Stock Trader**
-Track max profit so far.  
-At each day: continue holding OR sell and start fresh (max of both).
-
-### **Fast & Slow = Tortoise & Hare**
-Tortoise walks. Hare runs.  
-In a cycle, hare eventually laps tortoise (they meet).
+**Interview Frequency:** 50% (Medium-High)
 
 ---
 
-## 📈 INTERVIEW FREQUENCY RANKING (Week 4.5)
+### 📌 DAY 4A: PARTITION & CYCLIC SORT
 
-1. 🔴 **80%+:** Hash Map / Hash Set (foundational, appears everywhere)
-2. 🟡 **60%:** Fast & Slow Pointers (linked lists very common)
-3. 🟡 **50-60%:** Merge Operations (K-way merge, intervals)
-4. 🟡 **50%:** Kadane's Algorithm (subarray problems)
-5. 🟡 **40-50%:** Monotonic Stack (niche but powerful when applicable)
-6. 🟡 **30-40%:** Partition / Cyclic Sort (less common but O(1) space advantage)
+**Core Concept:**
+```
+Partition = Segregate elements based on predicate (O(n), O(1) space)
+Cyclic Sort = Place elements in their "home" index (O(n), O(1) space)
+```
 
----
+**Key Operations:**
+- DNF (3-way): `if val==0: swap(low), if val==2: swap(high), else: move mid`
+- Cyclic: `if nums[i] != nums[nums[i]-1]: swap(nums[i], nums[nums[i]-1])`
 
-## 🔗 PATTERN COMBINATIONS
+**Problem Types:**
+- Sort Colors (0, 1, 2), Move Zeroes
+- First Missing Positive, Find Duplicates
+- In-place segregation
 
-Many interview problems combine multiple patterns:
-
-**Example 1: Longest Substring Without Repeating (#3)**
-- **Patterns:** Hash Set (track seen chars) + Sliding Window (variable)
-- **Complexity:** O(n) time, O(k) space
-
-**Example 2: Subarray Sum Equals K (#560)**
-- **Patterns:** Hash Map (prefix sum → count) + Prefix Sum
-- **Complexity:** O(n) time, O(n) space
-
-**Example 3: Trapping Rain Water (#42)**
-- **Patterns:** Monotonic Stack OR Two Pointers (track max heights)
-- **Complexity:** O(n) time, O(1) space (two pointers) or O(n) stack
-
-**Example 4: Merge Intervals (#56)**
-- **Patterns:** Sort + Merge
-- **Complexity:** O(n log n) time (dominated by sort)
+**Interview Frequency:** 60% (High)
 
 ---
 
-## 🎁 BONUS: PATTERN RECOGNITION FLOWCHART
+### 📌 DAY 4B: KADANE'S ALGORITHM
+
+**Core Concept:**
+```
+Running Sum = max(current, running_sum + current)
+If negative, reset. Track global max.
+```
+
+**Key Operations:**
+- `current_sum = max(nums[i], current_sum + nums[i])`
+- `global_max = max(global_max, current_sum)`
+
+**Problem Types:**
+- Maximum Subarray, Maximum Product Subarray
+- Circular Subarray Maximum, Max Subarray K
+- Financial analysis, signal processing
+
+**Interview Frequency:** 60% (High)
+
+---
+
+### 📌 DAY 5: FAST & SLOW POINTERS
+
+**Core Concept:**
+```
+Floyd's Cycle Detection = Two pointers at different speeds
+Slow 1x, Fast 2x → Will meet in cycles
+```
+
+**Key Operations:**
+- Cycle detection: while fast != slow → move
+- Cycle start: reset slow to head, move both 1x → meet at start
+- Midpoint: fast at end → slow at middle
+
+**Problem Types:**
+- Linked List Cycle, Cycle Start Detection
+- Find Duplicate in Array, Middle of List
+- Happy Number, Reorder List
+
+**Interview Frequency:** 60% (High)
+
+---
+
+## 🗺️ CONCEPT MAP — HOW TOPICS CONNECT
 
 ```
-START: Read Problem
-    ↓
-Q: Need O(1) lookup by value?
-    YES → Q: Frequency counting / Duplicate?
-        YES → Hash Map / Hash Set ✓
-    NO → Continue
-    ↓
-Q: Linked list problem?
-    YES → Q: Cycle or middle?
-        YES → Fast & Slow Pointers ✓
-    NO → Continue
-    ↓
-Q: Maintain order OR next greater?
-    YES → Monotonic Stack ✓
-    NO → Continue
-    ↓
-Q: Merge sorted collections?
-    YES → Merge Operations ✓
-    NO → Continue
-    ↓
-Q: Overlapping intervals?
-    YES → Interval Merge ✓
-    NO → Continue
-    ↓
-Q: In-place partition / missing number?
-    YES → Partition / Cyclic Sort ✓
-    NO → Continue
-    ↓
-Q: Maximum consecutive sum?
-    YES → Kadane's Algorithm ✓
-    NO → Explore other patterns
+         HashMap
+           |
+           ├──→ Frequency Counting
+           |       |
+           |       └──→ Monotonic Stack + HashMap
+           |           (Next Greater Frequency)
+           |
+           └──→ Caching (LRU)
+                   |
+                   └──→ Linked List Ordering
+
+      Sorting (Merging)
+           |
+           ├──→ Merge Intervals
+           |       |
+           |       └──→ Overlap Detection
+           |
+           └──→ Merge K Sorted Lists
+
+    In-Place Modification
+           |
+           ├──→ Partition (DNF)
+           ├──→ Cyclic Sort
+           └──→ Kadane's (Running State)
+                   |
+                   └──→ DP Foundation
+
+       Linked Lists
+           |
+           ├──→ Fast/Slow Pointers
+           |       |
+           |       └──→ Cycle Detection
+           |       └──→ Midpoint Finding
+           |       └──→ Reordering
+           |
+           └──→ Merging Lists
 ```
 
 ---
 
-## 🛠️ PRACTICE STRATEGY (Week 4.5)
+## 🎯 QUICK REFERENCE TABLE — ALL PATTERNS
 
-### **Study Plan:**
-- **Day 1:** Hash Map/Set (3-4 hours practice)
-- **Day 2:** Monotonic Stack (2-3 hours)
-- **Day 3:** Merge Operations & Intervals (3 hours)
-- **Day 4:** Partition/Cyclic Sort + Kadane's (3-4 hours)
-- **Day 5:** Fast & Slow Pointers (2-3 hours)
-- **Day 6-7:** Mixed review + Hard problems
-
-### **LeetCode Progression:**
-1. **Easy problems (5-6 per pattern):** Build muscle memory.
-2. **Medium problems (3-4 per pattern):** Test understanding.
-3. **Hard problems (1-2 per pattern):** See advanced applications.
+| Pattern | Time | Space | Best For | Constraint |
+|---------|------|-------|----------|-----------|
+| **HashMap** | O(n) avg | O(n) | Frequency, Lookup | None |
+| **Monotonic Stack** | O(n) | O(n) | Next/Prev Element | Linear scan |
+| **Merge Intervals** | O(n log n) | O(n) or O(1) | Overlaps | Sorted input |
+| **Partition (DNF)** | O(n) | O(1) | Segregation | In-place |
+| **Cyclic Sort** | O(n) | O(1) | Missing/Duplicates | Dense range [1,n] |
+| **Kadane** | O(n) | O(1) | Max Subarray | Contiguous |
+| **Fast/Slow** | O(n) | O(1) | Cycles, Midpoint | Linked Lists |
 
 ---
 
-## 📚 KEY TAKEAWAYS
+## 💡 COMMON PROBLEM VARIATIONS
 
-1. ✅ **Hash Map is foundational:** 80%+ of problems use it directly or indirectly.
-2. ✅ **Space-time trade-offs:** Hash Map trades O(n) space for O(1) lookup.
-3. ✅ **Monotonic Stack:** Powerful for "next greater/smaller" family.
-4. ✅ **Merge operations:** K-way merge uses heap (O(N log K)).
-5. ✅ **Kadane's is DP:** Recognize maximum subarray as DP pattern.
-6. ✅ **Fast & Slow:** Cycle detection without extra space (elegant!).
+### HashMap
+- Two Sum, Two Sum II (sorted array)
+- Valid Anagram, Group Anagrams
+- Isomorphic Strings, Majority Element
+- LRU Cache, Frequency-based problems
+
+### Monotonic Stack
+- Next Greater Element, Previous Smaller
+- Daily Temperatures, Stock Span
+- Trapping Rain Water, Largest Rectangle
+
+### Merge Intervals
+- Merge Intervals, Insert Interval
+- Meeting Rooms I/II, Overlapping Events
+
+### Partition/Cyclic
+- Sort Colors, Move Zeroes
+- First Missing Positive, Find All Duplicates
+- Segregate 0s, 1s, 2s
+
+### Kadane
+- Maximum Subarray, Maximum Product
+- Circular Max, Max Profit (Stock)
+- Best Time to Buy/Sell Stock variants
+
+### Fast/Slow
+- Linked List Cycle, Cycle Start
+- Find Duplicate Number, Happy Number
+- Middle of List, Palindrome List
 
 ---
 
-**Generated:** December 30, 2025  
-**Version:** 9.0 (Week 4.5 NEW)  
-**Status:** ✅ COMPLETE
+## 🔍 DECISION TREE — WHICH PATTERN TO USE?
+
+```
+Is the problem about FINDING something in a collection?
+├─ YES: Use HashMap/HashSet (frequency, existence)
+└─ NO: Continue
+
+Does it require NEXT/PREVIOUS relationships in order?
+├─ YES: Use Monotonic Stack
+└─ NO: Continue
+
+Are there OVERLAPPING INTERVALS?
+├─ YES: Use Merge Intervals
+└─ NO: Continue
+
+Is it asking for IN-PLACE segregation or sorting?
+├─ YES: Use Partition (DNF) or Cyclic Sort
+└─ NO: Continue
+
+Is it asking for MAXIMUM/MINIMUM SUBARRAY?
+├─ YES: Use Kadane's Algorithm
+└─ NO: Continue
+
+Is it about LINKED LISTS or CYCLES?
+├─ YES: Use Fast/Slow Pointers
+└─ NO: Might need multiple patterns or advanced techniques
+```
+
+---
+
+## ⚡ QUICK IMPLEMENTATION TEMPLATES
+
+### HashMap Counting
+```python
+count_map = {}
+for item in items:
+    count_map[item] = count_map.get(item, 0) + 1
+```
+
+### Monotonic Stack
+```python
+stack = []
+for i, val in enumerate(nums):
+    while stack and nums[stack[-1]] < val:
+        pop_idx = stack.pop()
+        # process
+    stack.append(i)
+```
+
+### Merge Intervals
+```python
+intervals.sort()
+merged = [intervals[0]]
+for i in range(1, len(intervals)):
+    if intervals[i][0] <= merged[-1][1]:
+        merged[-1][1] = max(merged[-1][1], intervals[i][1])
+    else:
+        merged.append(intervals[i])
+```
+
+### Kadane's Algorithm
+```python
+curr_sum = nums[0]
+max_sum = nums[0]
+for i in range(1, len(nums)):
+    curr_sum = max(nums[i], curr_sum + nums[i])
+    max_sum = max(max_sum, curr_sum)
+```
+
+### Fast/Slow Cycle Detection
+```python
+slow = fast = head
+while fast and fast.next:
+    slow = slow.next
+    fast = fast.next.next
+    if slow == fast:
+        return True  # Cycle detected
+return False
+```
+
+---
+
+## 📊 COMPLEXITY SUMMARY
+
+| Pattern | Best | Avg | Worst | Space | Notes |
+|---------|------|-----|-------|-------|-------|
+| HashMap | O(1) | O(n) | O(n) | O(n) | Hash collisions worst case |
+| Stack | O(n) | O(n) | O(n) | O(n) | Single pass through |
+| Merge | O(n log n) | O(n log n) | O(n log n) | O(n) | Dominated by sort |
+| Partition | O(n) | O(n) | O(n) | O(1) | One pass, in-place |
+| Kadane | O(n) | O(n) | O(n) | O(1) | Linear scan only |
+| Fast/Slow | O(n) | O(n) | O(n) | O(1) | Linked list traversal |
+
+---
+
+**End of Summary. Use this as a quick reference during problem-solving!**

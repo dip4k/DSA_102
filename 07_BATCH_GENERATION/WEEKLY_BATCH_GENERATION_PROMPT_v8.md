@@ -66,9 +66,9 @@ Word Count Target: 5,500-10,500 words
 
 ---
 
-### **PART 2: SUPPORT FILES (6+ files per week)**
+### **PART 2: SUPPORT FILES (5+ files per week)**
 
-Generate the following 6+ support files for Week [X]:
+Generate the following 5+ support files for Week [X]:
 
 **Support File 1:** Week_[X]_Guidelines.md
 - 🎯 Learning objectives for the week

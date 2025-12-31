@@ -1,316 +1,179 @@
-# 🎙️ Week 4.5 — Interview Q&A Reference (Tier 1 Patterns) (COMPLETE)
+# 🎙️ WEEK 4.5 — INTERVIEW Q&A REFERENCE
 
-**🗓️ Week:** 4.5  
-**📌 Topics:** Hash Map, Monotonic Stack, Merge, Partition, Kadane's, Fast & Slow  
-**🎯 Usage:** Review before interviews. Focus on pattern recognition and trade-offs.
+**Interview Questions from All 5 Days — Questions Only (NO SOLUTIONS PROVIDED)**
 
 ---
 
-## 🧠 HASH MAP / HASH SET
+## 📌 DAY 1: HASH MAP / HASH SET PATTERNS
 
-### **Q1: Two Sum — Hash Map vs Nested Loops?**
+**Q1:** Explain the two-pointer approach vs HashMap approach for the Two Sum problem. What are the trade-offs?
 
-**Q:** "Why use Hash Map for Two Sum instead of nested loops?"
+**Q2:** How would you implement a frequency counter for a list of words? What structure would you use and why?
 
-**A:**
-- **Nested Loops:** Check all pairs. O(n²) time.
-  - For n=1000: 1,000,000 comparisons.
-- **Hash Map:** Single pass, check complement. O(n) time, O(n) space.
-  - For n=1000: 1,000 operations.
-- **Speedup:** 1000x for n=1000.
-- **Trade-off:** Space (O(n)) for time (O(n²) → O(n)).
+**Q3:** In the "Group Anagrams" problem, why is sorting each word's characters a good hashing strategy?
 
-**Interview Insight:** If candidate uses nested loops, interviewer knows they don't understand Hash Maps (red flag).
+**Q4:** What's the difference between using a HashMap with counts vs a HashSet for the "Valid Anagram" problem?
+
+**Q5:** How would you design an LRU (Least Recently Used) Cache? What data structures would you combine?
+
+**Q6:** In the "Majority Element" problem, when can you guarantee a majority element exists? Can you solve it without HashMap?
 
 ---
 
-### **Q2: Hash Map vs Two Pointers for Two Sum II (Sorted)?**
+## 📌 DAY 2: MONOTONIC STACK
 
-**Q:** "If array is sorted, which is better?"
+**Q1:** Explain monotonic stack using the "Next Greater Element" problem. Why does this pattern work?
 
-**A:**
-- **Hash Map:** O(n) time, O(n) space. Works but wastes space.
-- **Two Pointers:** O(n) time, O(1) space. Better choice.
-- **Decision:** Always prefer Two Pointers for sorted arrays (space advantage).
+**Q2:** In "Trapping Rain Water," why must we track both left and right boundaries?
 
-**Interview Signal:** Recognizing this trade-off shows senior-level thinking.
+**Q3:** What's the difference between finding the "Next Greater" vs "Previous Greater" element?
 
----
+**Q4:** In the "Largest Rectangle in Histogram," why is a monotonic stack better than brute force?
 
-### **Q3: Valid Anagram — Sort vs Hash Map?**
+**Q5:** In "Daily Temperatures," what does popping from the stack represent?
 
-**Q:** "How do you check if two strings are anagrams?"
-
-**A:**
-**Approach 1: Sort**
-- Sort both strings, compare. O(n log n).
-
-**Approach 2: Hash Map (Better)**
-- Count character frequencies for each string. O(n).
-- Compare frequency maps. O(1) (alphabet size bounded).
-
-**Why Hash Map Wins:** O(n) vs O(n log n). For n=10,000: ~10K ops vs ~130K ops.
+**Q6:** How would you modify the monotonic stack pattern for decreasing order vs increasing order?
 
 ---
 
-### **Q4: When Does Hash Map Degrade to O(n)?**
+## 📌 DAY 3: MERGE OPERATIONS & INTERVALS
 
-**Q:** "Hash Map is O(1) average. When does it become O(n)?"
+**Q1:** Why is sorting intervals by start time the first step in the "Merge Intervals" algorithm?
 
-**A:**
-**Worst Case:** All keys hash to same bucket (pathological).
-- **Cause:** Bad hash function OR adversarial input.
-- **Result:** Lookup becomes O(chain_length) = O(n).
+**Q2:** In "Insert Interval," why can you skip intervals that don't overlap with the insertion?
 
-**Mitigation:**
-- Good hash functions (MurmurHash, SipHash).
-- Randomized hashing (Python 3.3+).
+**Q3:** What's the difference between "Merge Intervals" and "Meeting Rooms II"? (Hint: involves counting)
 
----
+**Q4:** In overlapping intervals, what condition determines if two intervals overlap?
 
-## 🧠 MONOTONIC STACK
+**Q5:** How would you handle inserting an interval that spans multiple existing intervals?
 
-### **Q5: Next Greater Element — Why Monotonic Stack?**
-
-**Q:** "How does Monotonic Stack solve Next Greater in O(n)?"
-
-**A:**
-**Naive:** For each element, scan right until find greater. O(n²).
-
-**Monotonic Stack (Decreasing):**
-- Iterate right-to-left.
-- Stack maintains decreasing order.
-- For each element:
-  - Pop stack while stack.top ≤ current (they're not "next greater" for anyone).
-  - If stack not empty: stack.top is next greater.
-  - Push current.
-- **Time:** Each element pushed/popped once. O(n).
-
-**Key Insight:** Stack "remembers" potential next greater candidates in decreasing order.
+**Q6:** Can you merge intervals without sorting first? What would the complexity be?
 
 ---
 
-### **Q6: Trapping Rain Water — Monotonic Stack vs Two Pointers?**
+## 📌 DAY 4A: PARTITION & CYCLIC SORT
 
-**Q:** "Which approach for Trapping Rain Water?"
+**Q1:** Explain the Dutch National Flag algorithm. Why do we use three pointers (low, mid, high)?
 
-**A:**
-**Approach 1: Monotonic Stack**
-- Track left wall (stack).
-- When find taller wall, calculate water trapped between.
-- O(n) time, O(n) space.
+**Q2:** In the "Sort Colors" problem, why do we NOT increment `mid` after swapping with `high`?
 
-**Approach 2: Two Pointers (Better)**
-- Track max height from left and right.
-- Move pointers inward, calculate water at each position.
-- O(n) time, O(1) space.
+**Q3:** What's the core insight of Cyclic Sort? Why does it only work for range [1, n]?
 
-**Winner:** Two Pointers (better space). But Monotonic Stack is more intuitive for some.
+**Q4:** In "Find the Duplicate Number," how does interpreting an array as a linked list create a cycle?
+
+**Q5:** In "First Missing Positive," why must we handle values outside the range [1, n]?
+
+**Q6:** Compare the space complexity: Partition (O(1)) vs Sorting (O(log n) or O(1) with heapsort). When is each preferable?
 
 ---
 
-## 🧠 MERGE OPERATIONS & INTERVALS
+## 📌 DAY 4B: KADANE'S ALGORITHM
 
-### **Q7: Merge K Sorted Lists — Why Heap?**
+**Q1:** Explain Kadane's Algorithm from first principles. Why is the "reset" mechanism crucial?
 
-**Q:** "Why use heap for merging K lists instead of sequential?"
+**Q2:** What happens if all numbers in the array are negative? Does Kadane's still work?
 
-**A:**
-**Sequential (Merge 1-by-1):**
-- Merge L1 + L2 → result (size N/K each).
-- Merge result + L3 → result (size 2N/K + N/K).
-- ...
-- **Total:** O(N*K) where N = total elements.
+**Q3:** In "Maximum Product Subarray," why must we track BOTH the max AND min product?
 
-**Heap (K-way Merge):**
-- Min-heap of size K (one node from each list).
-- Extract min, add its next node.
-- **Total:** O(N log K) (N elements, each log K heap operation).
+**Q4:** In "Maximum Sum Circular Subarray," why is the formula `Total - MinSubarray` used?
 
-**For K=1000, N=1M:** Sequential = 10⁹ ops. Heap = 10⁷ ops. **100x faster!**
+**Q5:** Can you apply Kadane's to 2D arrays? How would you extend the logic?
+
+**Q6:** How does Kadane's relate to Dynamic Programming? What is the state, and what is the recurrence?
 
 ---
 
-### **Q8: Merge Intervals — Why Sort First?**
+## 📌 DAY 5: FAST & SLOW POINTERS
 
-**Q:** "Merge overlapping intervals. Why sort?"
+**Q1:** Explain Floyd's Cycle Detection algorithm. Why does moving fast at 2x and slow at 1x guarantee a meeting in cycles?
 
-**A:**
-**Without Sorting:** Compare all pairs to check overlap. O(n²).
+**Q2:** After detecting a cycle with Floyd's, why does resetting slow to head (and moving both at 1x) find the cycle start?
 
-**With Sorting:**
-- Sort intervals by start time. O(n log n).
-- Iterate, merge consecutive overlapping intervals. O(n).
-- **Total:** O(n log n) (dominated by sort).
+**Q3:** Can you use fast/slow to find the middle of a linked list? Is it always exact?
 
-**Key Insight:** After sorting, only consecutive intervals can overlap (greedy merge works).
+**Q4:** In "Find the Duplicate Number," how does the array-as-linked-list interpretation create a cycle?
 
----
+**Q5:** Can fast/slow work with faster speeds (3x, 4x) instead of 2x? What changes?
 
-## 🧠 PARTITION & CYCLIC SORT
-
-### **Q9: Dutch National Flag — Three Pointers?**
-
-**Q:** "Sort colors [2,0,2,1,1,0] in-place. How?"
-
-**A:**
-**Dutch National Flag Pattern:**
-- Three pointers: `low` (boundary of 0s), `mid` (current), `high` (boundary of 2s).
-- Invariant:
-  - [0, low) = all 0s
-  - [low, mid) = all 1s
-  - [mid, high] = unprocessed
-  - (high, end] = all 2s
-- **Logic:**
-  - If arr[mid] == 0: swap with low, move both.
-  - If arr[mid] == 1: move mid.
-  - If arr[mid] == 2: swap with high, move high left (don't move mid yet, need to process swapped element).
-- **Time:** O(n) single pass. **Space:** O(1).
-
-**Interview Trick:** Don't move `mid` after swapping with `high` (common mistake).
+**Q6:** In "Happy Number," how is cycle detection applied to a problem that's not about linked lists?
 
 ---
 
-### **Q10: Cyclic Sort — Find Missing Number?**
+## 🔄 CROSS-PATTERN INTERVIEW QUESTIONS
 
-**Q:** "Array [3,0,1] contains 0 to n. Find missing (2 in this case)."
+**Q1:** A problem asks to "find elements that appear more than n/3 times." Which pattern(s) would you use?
 
-**A:**
-**Cyclic Sort Pattern:**
-- Numbers in [0, n] → Place each number at its index (arr[i] = i).
-- **Logic:**
-  - For each i, if arr[i] != i AND arr[i] != n: swap arr[i] with arr[arr[i]].
-  - After sorting: arr[i] != i is the missing number.
-- **Time:** O(n). Each element swapped at most once.
+**Q2:** Given a stream of integers, find the median *online* (without storing all values). Which patterns apply?
 
-**Key:** Works only when numbers are in range [0, n] or [1, n].
+**Q3:** A problem combines "frequencies" and "next greater element" — which two patterns interact?
 
----
+**Q4:** How would you optimize "Merge K Sorted Lists"? Which pattern from this week helps?
 
-## 🧠 KADANE'S ALGORITHM
+**Q5:** A problem asks to "rearrange array such that arr[i] == i." Which pattern applies? Why?
 
-### **Q11: Maximum Subarray — Why Kadane's?**
-
-**Q:** "Find maximum sum of contiguous subarray. Why Kadane's?"
-
-**A:**
-**Brute Force:** Check all O(n²) subarrays. Each sum O(1) with prefix. Total O(n²).
-
-**Kadane's Algorithm (DP):**
-- **State:** max_ending_here = maximum sum of subarray ending at index i.
-- **Recurrence:** `max_ending_here = max(arr[i], max_ending_here + arr[i])`
-  - Either start fresh at i OR extend previous subarray.
-- **Track:** global max across all positions.
-- **Time:** O(n) single pass.
-
-**Example:** `[-2,1,-3,4,-1,2,1,-5,4]`
-- max_ending = [-2, 1, -2, 4, 3, 5, 6, 1, 5]
-- global_max = 6 (subarray [4,-1,2,1])
+**Q6:** You need to solve "two sum" with a **sorted** array instead of unsorted. Does HashMap still apply?
 
 ---
 
-### **Q12: Kadane's — Handle All Negatives?**
+## 🎯 ADVANCED INTERVIEW SCENARIOS
 
-**Q:** "What if all numbers are negative?"
+**Scenario 1: Follow-Up on Two Sum**
+- Original: "Find two numbers that sum to target."
+- Follow-up: "Now find all unique pairs." How does the solution change?
+- Follow-up 2: "Now find all triplets (3Sum)." Is this just a loop of Two Sum?
 
-**A:**
-**Edge Case:** All negative. Standard Kadane's might return 0 (empty subarray).
+**Scenario 2: Follow-Up on Merge Intervals**
+- Original: "Merge overlapping intervals."
+- Follow-up: "Count how many rooms are needed at peak time." (Meeting Rooms II logic)
+- Follow-up 2: "Find the longest interval." Does the merge approach help?
 
-**Fix:**
-- Initialize `global_max = arr[0]` (not 0).
-- OR: If all negative, return max element (single element subarray).
+**Scenario 3: Follow-Up on Kadane's**
+- Original: "Find maximum subarray sum."
+- Follow-up: "Find the start and end indices." How do you track them without extra space?
+- Follow-up 2: "Find at most K elements to remove to maximize subarray sum." Is it still Kadane's?
 
-**Interview Tip:** Clarify with interviewer: "Can subarray be empty? If all negative, return 0 or max element?"
-
----
-
-## 🧠 FAST & SLOW POINTERS
-
-### **Q13: Linked List Cycle — Why Fast & Slow?**
-
-**Q:** "Detect cycle in linked list. Why not Hash Set?"
-
-**A:**
-**Hash Set:** Store visited nodes. O(n) time, O(n) space.
-
-**Fast & Slow Pointers (Floyd's):**
-- Slow moves 1 step, fast moves 2.
-- If cycle exists, they meet inside cycle.
-- **Time:** O(n). **Space:** O(1).
-
-**Why It Works:** In a cycle, relative speed = 1. Fast catches slow within cycle length iterations.
-
-**Advantage:** O(1) space (huge win for memory-constrained systems).
+**Scenario 4: Follow-Up on Fast/Slow**
+- Original: "Detect if a linked list has a cycle."
+- Follow-up: "Find where the cycle starts." (You already know this!)
+- Follow-up 2: "Find the length of the cycle." Can fast/slow help?
 
 ---
 
-### **Q14: Find Cycle Start — Floyd's Extended?**
+## 💡 BEHAVIORAL QUESTIONS (PATTERN-AGNOSTIC)
 
-**Q:** "After detecting cycle, how to find where cycle starts?"
+**Q1:** "Walk me through how you'd approach a new problem you've never seen before."
 
-**A:**
-**Floyd's Extended Algorithm:**
-1. **Detect cycle:** Fast & slow meet at some node M inside cycle.
-2. **Find start:** Reset one pointer to head. Move both at same speed (1 step). They meet at cycle start.
+**Q2:** "Tell me about a time you optimized a solution. What was your process?"
 
-**Why It Works (Math):**
-- Let L = distance from head to cycle start.
-- Let C = cycle length.
-- When they first meet: slow traveled L + k*C + x, fast traveled 2*(L + k*C + x).
-- Distance from head to start = distance from meeting point to start (modulo cycle).
+**Q3:** "How do you decide between time optimization and space optimization?"
 
-**Interview Tip:** This is advanced. If asked, explain concept (don't need rigorous proof unless interviewer insists).
+**Q4:** "Describe a problem where multiple patterns could apply. How did you choose?"
 
 ---
 
-### **Q15: Fast & Slow Beyond Linked Lists?**
+## 🏆 MOCK INTERVIEW SCENARIOS
 
-**Q:** "Can Fast & Slow be used for arrays or other structures?"
+### Scenario 1: "Two Numbers That Sum to Target"
+- **Expectation:** Identify HashMap pattern immediately, solve in 5 minutes.
+- **Why it's asked:** Tests hash table knowledge and quick pattern recognition.
 
-**A:**
-**Yes, but less common:**
-- **Happy Number:** Treat sequence as "linked list" (each number points to its digit square sum). Detect cycle.
-- **Find Duplicate (Cyclic Array):** If array elements are indices, treat as linked list.
+### Scenario 2: "Trapping Rain Water"
+- **Expectation:** Identify that it's a monotonic stack problem after thinking ~2 minutes.
+- **Why it's asked:** Tests ability to map geometric intuition to algorithmic patterns.
 
-**General Rule:** Fast & Slow works when structure has "next" pointer or can be modeled as directed graph.
+### Scenario 3: "Merge Intervals"
+- **Expectation:** Sort + iterate logic, handle edge cases (nested intervals, touching intervals).
+- **Why it's asked:** Tests sorting, merging, and interval boundary logic.
 
----
+### Scenario 4: "First Missing Positive"
+- **Expectation:** Recognize Cyclic Sort pattern, implement O(n) time and O(1) space.
+- **Why it's asked:** Tests advanced in-place manipulation and pattern recognition.
 
-## 🎯 ADVANCED / SYSTEM-LEVEL QUESTIONS
-
-### **Q16: LRU Cache — Hash Map + Doubly Linked List?**
-
-**Q:** "How does LRU Cache achieve O(1) get and put?"
-
-**A:**
-**Data Structures:**
-- **Hash Map:** key → node (O(1) lookup).
-- **Doubly Linked List:** Tracks LRU order (head = most recent, tail = least recent).
-
-**Operations:**
-- **get(key):** Hash Map lookup (O(1)). Move node to head (O(1) with doubly linked).
-- **put(key, value):** Hash Map insert (O(1)). Add node at head. If capacity exceeded, remove tail (O(1)).
-
-**Real Use:** Redis, Memcached, browser caches.
+### Scenario 5: "Linked List Cycle II"
+- **Expectation:** Identify Fast/Slow, find cycle start using the mathematical insight.
+- **Why it's asked:** Tests understanding of pointer mechanics and mathematical proof.
 
 ---
 
-### **Q17: Consistent Hashing for Distributed Caching?**
-
-**Q:** "How to distribute cache across K servers?"
-
-**A:**
-**Naive Hash:** `server = hash(key) % K`. Problem: Adding/removing server rehashes all keys.
-
-**Consistent Hashing:**
-- Hash keys and servers onto a ring [0, 2^32).
-- Key → assigned to next server clockwise on ring.
-- **Advantage:** Adding/removing server affects only ~1/K keys (minimal rehashing).
-
-**Real Use:** Amazon DynamoDB, Cassandra, Memcached.
-
----
-
-**Generated:** December 30, 2025  
-**Version:** 9.0 (Week 4.5)  
-**Status:** ✅ COMPLETE
+**No solutions provided intentionally. Work through these questions deeply!**
