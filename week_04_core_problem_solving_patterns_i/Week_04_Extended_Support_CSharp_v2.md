@@ -50,7 +50,9 @@
 
 ### 📊 Complexity “Graph Chart” (Illustrative)
 
-## Relative operation counts (illustrative for n=100k, R=1e9):
+**Relative operation counts (illustrative for n=100k, R=1e9):**
+
+![alt text](../assets/Relative_operation_counts_for_Week_4_patterns_(illustrative).png)
 
 ## 💻 C# PATTERN IMPLEMENTATIONS (Week 04)
 
