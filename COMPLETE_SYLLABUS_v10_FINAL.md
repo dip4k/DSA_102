@@ -282,16 +282,25 @@ This builds directly on Week 4 patterns, adding powerful new tools for arrays, l
 
 ### Day 1: Hash Map / Hash Set Patterns
 
-- Hash-based two-sum/k-sum patterns.  
+- HashMap: O(1) average lookup/insertion
+- Two sum problem
 - Frequency counting for:
   - Anagrams  
-  - Most/least frequent elements.  
+  - Most/least frequent elements.
+- Anagram detection
+- Frequency counting
+- Real-world: LRU cache foundation  
 - Maps for complement tracking, pair matching, and membership tests.  
 
 ---
 
 ### Day 2: Monotonic Stack
 
+- Maintaining monotonic order
+- Next greater element
+- Trapping rain water
+- Largest rectangle in histogram
+- Daily temperatures problem
 - Increasing/decreasing stacks for:
   - Next greater/smaller element  
   - Stock span problems.  
@@ -302,6 +311,11 @@ This builds directly on Week 4 patterns, adding powerful new tools for arrays, l
 
 ### Day 3: Merge Operations & Interval Patterns
 
+- Merging sorted arrays/lists (O(n) / O(m+n))
+- Merge K sorted lists (Heap approach)
+- **Merge Intervals:** Scheduling, overlapping intervals
+- Insert Interval
+- Real systems (calendar scheduling)
 - Merging sorted arrays/lists using two pointers.  
 - Interval merging:
   - Sorting intervals first  
@@ -310,18 +324,29 @@ This builds directly on Week 4 patterns, adding powerful new tools for arrays, l
 
 ---
 
-### Day 4: Partition & Cyclic Sort + Kadane’s Algorithm
+### Day 4 (Part A): Partition & Cyclic Sort
+- Dutch National Flag problem (0, 1, 2 sort)
+- Move zeroes to end
+- **Cyclic Sort pattern:** Finding missing numbers, duplicates
+- In-place segregation O(1) space
 
-- Dutch National Flag: partition into three categories (0/1/2, negative/0/positive).  
-- Cyclic sort:
-  - Arrays containing numbers 1…n; placing each at correct index.  
-- Kadane’s algorithm:
-  - Interpreting maximum subarray problem as best running sum.  
+---
+
+### Day 4 (Part B): Kadane's Algorithm
+- Maximum subarray problem
+- Maximum product subarray
+- DP formulation
+- Constraint variations (circular)
+- Real-world: financial analysis
 
 ---
 
 ### Day 5: Fast & Slow Pointers
 
+- Fast & Slow mechanics
+- Linked list cycle detection
+- Finding cycle start
+- Midpoint finding / Happy Number
 - Floyd’s cycle-finding algorithm:
   - Detect cycle existence  
   - Find cycle start.  
@@ -343,6 +368,10 @@ Strings are just arrays of characters; now you adapt your earlier patterns to te
 - Palindrome check via mirrored pointers.  
 - Expand-around-center for longest palindromic substring.  
 - Palindrome partitioning concept; connection to DP.  
+- Two-pointer expansion (Expand Around Center)
+- Longest Palindromic Substring
+- Valid Palindrome variants
+- Palindrome partitioning
 
 ---
 
@@ -352,6 +381,10 @@ Strings are just arrays of characters; now you adapt your earlier patterns to te
 - Longest repeating character replacement within K changes.  
 - Finding permutations and anagrams as substrings.  
 - Minimum window substring (classic pattern).  
+- Longest Substring Without Repeating Characters
+- Character Replacement (Longest Repeating Character Replacement)
+- Permutation in String (Anagrams)
+- Minimum Window Substring (String focus)
 
 ---
 
@@ -362,6 +395,10 @@ Strings are just arrays of characters; now you adapt your earlier patterns to te
 - Longest valid parentheses:
   - Using stack  
   - Alternative DP-based interpretation.  
+- Valid Parentheses (Stack pattern)
+- Generate Parentheses (Backtracking)
+- Longest Valid Parentheses (DP/Stack)
+- Minimum Remove to Make Valid
 
 ---
 
@@ -371,6 +408,11 @@ Strings are just arrays of characters; now you adapt your earlier patterns to te
 - Integer-to-Roman and Roman-to-integer mappings.  
 - Zigzag conversion: coordinate mapping of characters to rows.  
 - Run-length encoding and simple compression schemes.  
+- String to Integer (atoi)
+- Integer to Roman / Roman to Integer
+- Zigzag Conversion
+- String compression / RLE
+- StringBuilder usage & performance
 
 ---
 
