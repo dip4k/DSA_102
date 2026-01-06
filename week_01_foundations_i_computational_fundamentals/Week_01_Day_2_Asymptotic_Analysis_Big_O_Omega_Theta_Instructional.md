@@ -99,23 +99,7 @@ By the end of this topic, you will be able to:
 
 **Growth Rate Curves (The "Shape" of Complexity):**
 
-```text
-Time (Operations)
-  ^
-  |                                          /  O(n!) - Factorial (Horrible)
-  |                                        /
-  |                                      /   O(2^n) - Exponential (Very Bad)
-  |                                    /
-  |                                  /     O(n^2) - Quadratic (Slow)
-  |                                /
-  |                              /
-  |                            /       O(n log n) - Linearithmic (Decent)
-  |                          /
-  |________________________/_______________   O(n) - Linear (Good)
-  |__________________________________________   O(log n) - Logarithmic (Great)
-  |__________________________________________   O(1) - Constant (Perfect)
-  +--------------------------------------------------> Input Size (n)
-```
+![big_o_growth_rate](../assets/week_01_day_02_big_o_growth_rate.png)
 
 **Key Takeaway from Visual:**
 - For small `n`, the lines are close together.
