@@ -1,713 +1,386 @@
-# 📚 DSA Master Curriculum v10.0 — Mental-Model-First Interview Mastery
+# 📚 DSA Master Curriculum — Data Structures & Algorithms (v12)
 
-**A Comprehensive 19-Week Data Structures & Algorithms Mastery Program**
+**Version:** 12.0 FINAL (Narrative-First Architecture)  
+**Last Updated:** January 7, 2026  
+**Status:** ✅ Complete, Production-Ready  
+**License:** MIT
 
-![Version](https://img.shields.io/badge/Version-10.0-blue)  ![Weeks](https://img.shields.io/badge/Weeks-19-green)  ![Coverage](https://img.shields.io/badge/Interview%20Coverage-98%25-brightgreen)  ![Topics](https://img.shields.io/badge/Topics-95%2B-orange)
+---
 
-## 🎯 What Is This Project?
+## 🎯 WHAT THIS IS
 
-The **DSA Master Curriculum v10.0** is a production-ready, institutional-grade learning system designed to master Data Structures & Algorithms through **mental models and pattern recognition** rather than rote memorization. This curriculum achieves **98%+ interview coverage** by systematically teaching 95+ topics across a 19-week structured journey with **7 distinct learning phases**.
+This is a **comprehensive, MIT-level data structures and algorithms curriculum** designed to take you from fundamentals (arrays, pointers, recursion) to mastery (advanced patterns, systems design, interview readiness).
 
-### 🎓 Learning Philosophy (v10 Mental-Model-First)
+**Key Philosophy:**
+- 📖 Learn like you're in an MIT lecture hall—narrative-driven, intuitive, rigorous
+- 🧠 Build engineering intuition, not just code patterns
+- ⚖️ Understand trade-offs behind every design decision
+- 🏭 See how algorithms work in real production systems
+- 🎯 Master problems through pattern recognition, not memorization
 
-- 🧠 **Mental Models Over Code Memorization** — Understand *how* and *why* structures behave before writing code
-- 🏗️ **Real Systems Integration** — Every topic connected to production systems (OS, Databases, Networks, Cloud)
-- 🎨 **Multi-Perspective Learning** — 5 cognitive lenses per topic:
-  - 🖥️ Computational (hardware reality)
-  - 🧠 Psychological (human intuition)
-  - 🔄 Design Trade-offs (engineering decisions)
-  - 🤖 AI/ML Analogies (modern connections)
-  - 📚 Historical Context (evolution & origin)
-- 🔧 **C#-Centric Implementation** — Optional Extended C# roadmaps for problem-solving fluency
-- ⚔️ **Interview-Battle-Tested** — 8+ practice problems and 6+ interview Q&A pairs per topic
+---
 
-***
+## 📖 HOW TO USE THIS REPO
 
-## 👥 Who Should Use This?
+### **For Complete Learning (16-20 Weeks)**
 
-### ✅ **Perfect For:**
-
-**🎓 Students & Recent Graduates**
-- CS students preparing for campus placements
-- Bootcamp graduates building DSA foundations from first principles
-- Self-taught developers targeting FAANG/MAANG interviews
-
-**💼 Working Professionals**
-- Software engineers with 2-5 years experience targeting senior roles
-- Senior engineers refreshing algorithmic fundamentals
-- Tech leads preparing for staff/principal positions
-- AWS/cloud professionals strengthening algorithmic foundations
-
-**🏢 Organizations & Educators**
-- Companies building internal training programs
-- Coding bootcamps seeking comprehensive curriculum frameworks
-- Technical content creators and instructors
-- Universities designing modern DSA courses
-
-### 📋 **Prerequisites:**
-
-- Basic programming in any language (C#, Java, Python, C++)
-- Understanding of arrays, loops, and functions
-- 12-15 hours/week commitment for 19 weeks
-- No advanced mathematics required (taught incrementally as needed)
-
-***
-
-## 📦 What's Covered in v10?
-
-### 🗺️ **Phase Overview (19 Weeks)**
-
-| Phase | Weeks | Focus | Coverage Goal |
-|-------|-------|-------|---------------|
-| **🟦 Phase A** | 1-3 | Foundations (RAM, Complexity, Linear DS, Sorting, Hashing) | Essential 100% |
-| **🟩 Phase B** | 4-6 | Core Patterns & Strings I (Two-Pointer, Sliding Window, Hash, Monotonic) | 70-80% |
-| **🟨 Phase C** | 7-11 | Trees, Graphs & Advanced DS (BST, Heaps, BFS, DFS, Tries, Segment Trees) | 80-88% |
-| **🟧 Phase D** | 12-13 | Algorithm Paradigms (Strings, Math, Greedy, Backtracking) | 85-90% |
-| **🟦 Phase E** | 14-15 | Pattern Integration & DP Mastery (1D, 2D, Advanced DP) | 90-95% |
-| **🟪 Phase F** | 16-18 | Advanced Deep Dives (Optional Elite Track) | 95%+ |
-| **🔴 Phase G** | 19 | Mock Interviews & Final Mastery | 98%+ |
-
-### 📊 **By The Numbers**
-
-- ✅ **95+ Core Topics** — Comprehensive coverage across 19 weeks
-- ✅ **70+ Problem-Solving Patterns** — Pattern mastery system
-- ✅ **650+ Practice Problems** — Curated from real FAANG interviews
-- ✅ **500+ Interview Q&A Pairs** — With variations and follow-ups
-- ✅ **400+ Real System Examples** — OS, DB, Networks, Compilers, Cloud
-- ✅ **98%+ Interview Coverage** — For top-tier tech companies
-- ✅ **190+ Support Files** — Guidelines, summaries, roadmaps, checklists, Extended C# roadmaps
-
-### 🆕 **v10 New Features**
-
-- **Mental-Model-First Philosophy** — Understanding before implementation
-- **Extended C# Problem-Solving Roadmaps** — Week-specific C# implementation patterns and skeletons
-- **Flat Folder Structure** — Organized by `week_XX_topic_name` for better navigation
-- **Expanded to 19 Weeks** — More granular learning progression
-- **7-Phase System** — Clear milestone-based progression
-- **Enhanced Support Files** — 6 types per week including Extended C# roadmaps
-
-***
-
-## 🗂️ Repository Structure
+Follow the curriculum week-by-week, in order:
 
 ```
-DSA-Master-Curriculum-v10/
+Week 01: Foundations I       (Computational thinking, RAM model, Big-O, recursion)
+Week 02: Foundations II      (Arrays, dynamic arrays, linked lists, stacks, queues)
+Week 03: Foundations III     (Sorting, heaps, hashing, rolling hash)
+Week 04: Problem Patterns I  (Two pointers, sliding window, divide & conquer)
+Week 05: Tier 1 Critical     (Hash maps, monotonic stacks, intervals, Kadane's, fast/slow pointers)
+Week 06: Tier 1.5 Strings    (Palindromes, substring matching, sliding window)
+...
+Week 19: Final Mastery       (Mock interviews, integration, advanced patterns)
+```
+
+### **For Interview Prep (4-8 Weeks)**
+
+1. **Start:** Read `Week_04_Guidelines.md` (two-pointer and sliding window overview)
+2. **Practice:** Solve 30-50 problems from `Week_04_Problem_Solving_Roadmap.md`
+3. **Review:** Use interview Q&A files for each week
+4. **Mock:** Practice with `Week_15_Interview_Pattern_Integration.md`
+
+### **For Quick Reference**
+
+Jump to any week folder and read:
+- `Week_X_Summary_Key_Concepts.md` — Quick concept reference
+- `Week_X_Interview_QA_Reference.md` — Common interview questions
+
+---
+
+## 🏗 FOLDER STRUCTURE
+
+```
+dsa-master-curriculum/
 │
-├── 📄 README.md (this file)
-├── 📄 COMPLETE_SYLLABUS_v10_FINAL.md
-├── 📄 SYSTEM_CONFIG_v10_FINAL.md
-├── 📄 MASTER_PROMPT_v10_FINAL.md
-├── 📄 SYSTEM_PROMPT_v10_FOR_AI_CHAT.md
-├── 📄 SYSTEM_PROMPT_v11_EXTENDED_SUPPORT_CSHARP.md
-├── 📄 WEEKLY_BATCH_GENERATION_PROMPT_v10.md
-├── 📄 Template_v10.md
-├── 📄 EMOJI_ICON_GUIDE_v8.md
-├── 📄 .gitignore
-├── 📜 setup-dsa-folders.ps1
+├── README.md                              (This file)
+├── START_HERE.md                          (Quick orientation)
+├── .gitignore
 │
-├── 📁 week_01_foundations_i_computational_fundamentals/
-│   ├── Week_01_Day_1_RAM_Model_And_Pointers_Instructional.md
-│   ├── Week_01_Day_2_Asymptotic_Analysis_Big_O_Omega_Theta_Instructional.md
-│   ├── Week_01_Day_3_Space_Complexity_Memory_Usage_Instructional.md
-│   ├── Week_01_Day_4_Recursion_I_Call_Stack_Basic_Patterns_Instructional.md
-│   ├── Week_01_Day_5_Recursion_II_Advanced_Patterns_Memoization_Instructional.md
-│   ├── Week_1_Guidelines.md
-│   ├── Week_1_Summary_Key_Concepts.md
-│   ├── Week_1_Interview_QA_Reference.md
-│   ├── Week_1_Problem_Solving_Roadmap.md
-│   └── Week_1_Daily_Progress_Checklist.md
+├── assets/                                (Diagrams, flowcharts)
+│   ├── week_01_day_02_big_o_growth_rate.png
+│   ├── Kadane's_Algorithm_Decision_Logic_Flowchart.png
+│   └── ... (more visual assets)
 │
-├── 📁 week_02_foundations_ii_linear_data_structures/
-│   ├── Week_02_Day_1_Arrays_Instructional.md
-│   ├── Week_02_Day_2_Dynamic_Arrays_Instructional.md
-│   ├── Week_02_Day_3_Linked_Lists_Instructional.md
-│   ├── Week_02_Day_4_Stacks_and_Queues_Instructional.md
-│   ├── Week_02_Day_5_Binary_Search_Instructional.md
+├── v12_prompts/                           (System configuration - v12)
+│   ├── MASTER_PROMPT_v12_FINAL.md
+│   ├── SYSTEM_CONFIG_v12_FINAL.md
+│   ├── EMOJI_ICON_GUIDE_v12.md
+│   ├── COMPLETE_SYLLABUS_v12_FINAL.md
+│   └── ... (other system files)
+│
+├── week_01_foundations_i_computational_fundamentals/
+│   ├── Week_01_Day_01_RAM_Model_Pointers_Instructional.md
+│   ├── Week_01_Day_02_Asymptotic_Analysis_Instructional.md
+│   ├── Week_01_Day_03_Space_Complexity_Memory_Usage_Instructional.md
+│   ├── Week_01_Day_04_Recursion_I_Call_Stack_Instructional.md
+│   ├── Week_01_Day_05_Recursion_II_Memoization_Instructional.md
+│   ├── Week_01_Day_06_Peak_Finding_Algorithmic_Thinking_Instructional.md
+│   ├── Week_01_Guidelines.md
+│   ├── Week_01_Summary_Key_Concepts.md
+│   ├── Week_01_Interview_QA_Reference.md
+│   ├── Week_01_Problem_Solving_Roadmap.md
+│   └── Week_01_Daily_Progress_Checklist.md
+│
+├── week_02_foundations_ii_linear_data_structures/
+│   ├── Week_02_Day_01_Arrays_Memory_Layout_Instructional.md
+│   ├── Week_02_Day_02_Dynamic_Arrays_Amortized_Growth_Instructional.md
+│   ├── Week_02_Day_03_Linked_Lists_Instructional.md
+│   ├── Week_02_Day_04_Stacks_Queues_Deques_Instructional.md
+│   ├── Week_02_Day_05_Binary_Search_Invariants_Instructional.md
 │   ├── Week_02_Guidelines.md
 │   ├── Week_02_Summary_Key_Concepts.md
 │   ├── Week_02_Interview_QA_Reference.md
 │   ├── Week_02_Problem_Solving_Roadmap.md
-│   ├── Week_02_Problem_Solving_Roadmap_Extended_CSharp.md  🆕
 │   └── Week_02_Daily_Progress_Checklist.md
 │
-├── 📁 week_03_foundations_iii_sorting_and_hashing/
-├── 📁 week_04_core_problem_solving_patterns_i/
-├── 📁 week_05_tier_1_critical_patterns/
-├── 📁 week_06_tier_1_5_string_manipulation_patterns/
-├── 📁 week_07_trees_and_heaps/
-├── 📁 week_08_tier_2_strategic_patterns_and_transformations/
-├── 📁 week_09_graphs_i_foundations/
-├── 📁 week_10_graphs_ii_advanced/
-├── 📁 week_11_specialized_data_structures/
-├── 📁 week_12_strings_and_math_mastery/
-├── 📁 week_13_greedy_and_backtracking/
-├── 📁 week_14_dynamic_programming_mastery/
-├── 📁 week_15_interview_pattern_integration/
-├── 📁 week_16_tier_3_advanced_extensions/
-├── 📁 week_17_advanced_mastery_deep_dives_part_1/
-├── 📁 week_18_advanced_mastery_deep_dives_part_2/
-└── 📁 week_19_mock_interviews_and_final_mastery/
+├── week_03_foundations_iii_sorting_and_hashing/
+│   ├── Week_03_Day_01_Sorting_Fundamentals_Instructional.md
+│   ├── Week_03_Day_02_Merge_Quick_Sort_Instructional.md
+│   ├── Week_03_Day_03_Heaps_Heapify_Heap_Sort_Instructional.md
+│   ├── Week_03_Day_04_Hash_Tables_Separate_Chaining_Instructional.md
+│   ├── Week_03_Day_05_Hash_Tables_Open_Addressing_Rolling_Hash_Instructional.md
+│   ├── Week_03_Guidelines.md
+│   ├── Week_03_Summary_Key_Concepts.md
+│   ├── Week_03_Interview_QA_Reference.md
+│   ├── Week_03_Problem_Solving_Roadmap.md
+│   ├── Week_03_Daily_Progress_Checklist.md
+│   └── Week_03_Extended_CSharp_Implementations.md
+│
+├── week_04_core_problem_solving_patterns_i/
+│   └── ... (similar structure)
+│
+├── week_05_tier_1_critical_patterns/
+│   └── ... (similar structure)
+│
+├── week_06_tier_1_5_string_manipulation_patterns/
+│   └── ... (similar structure)
+│
+├── week_07_trees_and_heaps/
+├── week_08_tier_2_strategic_patterns_and_transformations/
+├── week_09_graphs_i_foundations/
+├── week_10_graphs_ii_advanced/
+├── week_11_specialized_data_structures/
+├── week_12_strings_and_math_mastery/
+├── week_13_greedy_and_backtracking/
+├── week_14_dynamic_programming_mastery/
+├── week_15_interview_pattern_integration/
+├── week_16_tier_3_advanced_extensions/
+├── week_17_advanced_mastery_deep_dives_part_1/
+├── week_18_advanced_mastery_deep_dives_part_2/
+└── week_19_mock_interviews_and_final_mastery/
 ```
 
-### 📂 **Folder Naming Convention**
+---
 
-- **Flat structure**: All week folders at root level
-- **Format**: `week_XX_descriptive_topic_name/`
-- **Example**: `week_02_foundations_ii_linear_data_structures/`
+## 📚 EACH WEEK CONTAINS
 
-### 📄 **File Types Per Week**
+### **5-6 Instructional Files** (Daily Lessons)
+- Typically 12,000-18,000 words per file
+- 5-chapter narrative arc: Context → Mental Model → Mechanics → Performance → Mastery
+- Inline visuals (diagrams, traces, tables)
+- 3-5 real systems case studies
+- MIT-level rigor with accessible teaching
 
-Each week contains:
+### **5 Support Files** (Reference & Practice)
+1. **Guidelines** (3,000-4,000 words) — Weekly learning strategy
+2. **Summary** (3,500-5,000 words) — Key concepts reference
+3. **Interview QA** (3,000-4,000 words) — 30-50 questions + follow-ups
+4. **Problem Roadmap** (3,000-4,000 words) — Structured practice progression
+5. **Daily Checklist** (2,000-3,000 words) — Action-oriented daily plan
 
-1. **5 Instructional Files** (Daily topics) — `Week_XX_Day_Y_Topic_Name_Instructional.md`
-2. **Week_X_Guidelines.md** — Learning objectives, methodology, time strategy
-3. **Week_X_Summary_Key_Concepts.md** — Per-day summaries, concept maps, relationships
-4. **Week_X_Interview_QA_Reference.md** — 30-50 interview questions with follow-ups
-5. **Week_X_Problem_Solving_Roadmap.md** — Practice progression, patterns, pitfalls
-6. **Week_X_Problem_Solving_Roadmap_Extended_CSharp.md** 🆕 — C# skeletons, patterns, gotchas (where applicable)
-7. **Week_X_Daily_Progress_Checklist.md** — Day-by-day practical checklists
+---
 
-***
+## 🎯 LEARNING OUTCOMES BY TIER
 
-## 🗺️ Complete 19-Week Curriculum
+### **Tier 1: Foundations (Weeks 1-3)**
+✅ RAM model, pointers, Big-O analysis, recursion  
+✅ Arrays, linked lists, stacks, queues, binary search  
+✅ Sorting (merge/quick/heap), hashing, rolling hash  
 
-### 📅 **Learning Roadmap (7 Phases)**
+### **Tier 2: Core Patterns (Weeks 4-6)**
+✅ Two pointers, sliding window, divide & conquer  
+✅ Hash maps, monotonic stacks, interval merging  
+✅ Kadane's algorithm, fast/slow pointers, string patterns  
+
+### **Tier 3: Strategic Patterns (Weeks 7-12)**
+✅ Trees, graphs, dynamic programming, greedy algorithms  
+✅ BFS/DFS, shortest paths, minimum spanning trees  
+✅ String manipulation, math patterns, bitwise operations  
+
+### **Tier 4: Advanced & Integration (Weeks 13-19)**
+✅ Backtracking, advanced DP, system design thinking  
+✅ Mock interviews, pattern integration, optimization techniques  
+✅ Production engineering considerations  
+
+---
+
+## 💡 KEY FEATURES
+
+### 📖 **Narrative-First Teaching**
+- Read like MIT lecture notes, not a reference manual
+- Master teacher explaining why things work, not just what works
+- Smooth narrative flow connecting ideas naturally
+
+### 🧠 **Mental Models Before Code**
+- Build intuition with analogies and visuals
+- Understand the "why" before the "how"
+- See trace examples of every algorithm
+
+### ⚖️ **Trade-offs & Context**
+- Compare algorithms (time vs space vs cache locality)
+- Real systems that use these concepts
+- When and why you'd choose one approach over another
+
+### 🏭 **Production Reality**
+- Case studies: Linux kernel, PostgreSQL, Redis, etc.
+- Performance benchmarks with real data
+- Interview questions that appear in real companies
+
+### 🎯 **Progressive Difficulty**
+- Start foundational, build systematically
+- Each week builds on prior knowledge
+- Three learning paths: mastery, interview prep, quick reference
+
+---
+
+## 🚀 GETTING STARTED
+
+### **Option 1: Start from Week 1 (Recommended for Mastery)**
+```bash
+1. Read: START_HERE.md (this repo)
+2. Then: week_01_foundations_i_computational_fundamentals/
+3. Read: Week_01_Guidelines.md (learning strategy)
+4. Study: Week_01_Day_01_RAM_Model_Pointers_Instructional.md
+5. Follow: Week_01_Daily_Progress_Checklist.md (daily action items)
+```
+
+### **Option 2: Jump to Interview Prep (4-8 weeks)**
+```bash
+1. Read: START_HERE.md → Choose Interview Path
+2. Start: week_04_core_problem_solving_patterns_i/
+3. Use: Week_04_Problem_Solving_Roadmap.md
+4. Practice: Solve 5-10 problems daily
+5. Review: Week_X_Interview_QA_Reference.md weekly
+```
+
+### **Option 3: Quick Reference (Anytime)**
+```bash
+- Need sorting complexity? → week_03/Week_03_Summary_Key_Concepts.md
+- Stuck on problem? → Week_X_Interview_QA_Reference.md
+- Forgotten a concept? → Week_X_Daily_Progress_Checklist.md
+```
+
+---
+
+## 🎓 SYSTEM v12 PHILOSOPHY
+
+### **The 5-Chapter Arc** (Every Instructional File)
+1. 📖 **Context & Motivation** — Real problem, engineering constraints
+2. 🧠 **Mental Model** — Analogy, visualization, invariants
+3. ⚙️ **Mechanics** — Operations, traces, step-by-step walkthrough
+4. ⚖️ **Performance & Trade-offs** — Real systems, case studies
+5. 🔗 **Integration & Mastery** — Connection to broader knowledge, retention
+
+### **Plus Mandatory Elements**
+- 💡 5 Cognitive Lenses (hardware, trade-offs, learning, AI/ML, history)
+- ⚔️ Supplementary Outcomes (problems, Q&A, misconceptions, advanced topics)
+
+### **Quality Standards**
+- ✅ Reads like a great technical book (narrative flow, not checklist)
+- ✅ 5-8 inline visuals (ASCII diagrams, traces, comparison tables)
+- ✅ 3-5 detailed real systems case studies
+- ✅ Conversational yet authoritative tone throughout
+
+---
+
+## 🔗 HOW WEEKS CONNECT
 
 ```
-🟦 PHASE A — FOUNDATIONS (Weeks 1-3: 15 days)
-         RAM Model → Complexity → Recursion → Linear DS → Sorting → Hashing
-         ↓
-🟩 PHASE B — CORE PATTERNS & STRINGS I (Weeks 4-6: 15 days)
-         Two-Pointer → Sliding Window → Hash → Monotonic → Intervals
-         ↓ [70-80% coverage achieved]
-🟨 PHASE C — TREES, GRAPHS & ADVANCED DS (Weeks 7-11: 25 days)
-         Trees → BST → Heaps → BFS → DFS → Shortest Paths → Tries → Segment Trees
-         ↓ [80-88% coverage]
-🟧 PHASE D — ALGORITHM PARADIGMS (Weeks 12-13: 10 days)
-         KMP → Rabin-Karp → Number Theory → Greedy → Backtracking
-         ↓ [85-90% coverage]
-🟦 PHASE E — PATTERN INTEGRATION & DP (Weeks 14-15: 10 days)
-         DP Fundamentals → 1D → 2D → Advanced → Optimizations → Pattern Integration
-         ↓ [90-95% coverage]
-🟪 PHASE F — ADVANCED DEEP DIVES (Weeks 16-18: 15 days) [Optional Elite Track]
-         Tier 3 Extensions → Segment Trees Advanced → HLD → Advanced DP → Probabilistic DS
-         ↓ [95%+ coverage]
-🔴 PHASE G — MOCK INTERVIEWS & FINAL MASTERY (Week 19: 5 days)
-         Mock Sessions → Weak Points → Integration → Final Prep
-         ↓ [98%+ coverage]
+WEEK 01 (Computational Foundations)
+  ↓ Provides RAM/Big-O intuition for all subsequent weeks
+WEEK 02 (Data Structures)
+  ↓ Provides building blocks
+WEEK 03 (Sorting & Hashing)
+  ↓ Foundational techniques used in complex algorithms
+WEEKS 04-06 (Core Patterns)
+  ↓ Most interview questions come from here
+WEEKS 07-12 (Strategic Patterns)
+  ↓ Build on core patterns with different contexts
+WEEKS 13-19 (Advanced & Mastery)
+  ↓ Integrate all prior knowledge
+INTERVIEW / REAL SYSTEMS
 ```
 
-***
+---
 
-## 📚 Detailed Week-by-Week Breakdown
+## 📊 TYPICAL STUDY TIMELINE
 
-<details>
-<summary><strong>🟦 PHASE A — FOUNDATIONS (Weeks 1-3)</strong></summary>
-
-### **Week 1: Foundations I — Computational Fundamentals**
-
-**Primary Goal:** Understand the RAM model, memory layout, time/space complexity, recursion mechanics
-
-| Day | Topic | Key Concepts |
-|-----|-------|--------------|
-| 1 | RAM Model & Pointers | Memory hierarchy, pointer arithmetic, cache behavior, virtual memory |
-| 2 | Asymptotic Analysis | Big-O, Big-Ω, Big-Θ, common complexity classes, recurrence reasoning |
-| 3 | Space Complexity | Auxiliary vs total space, stack vs heap, trade-offs |
-| 4 | Recursion I | Call stack, base cases, recursion trees |
-| 5 | Recursion II | Tail recursion, memoization, when to use iteration |
+| Goal | Duration | Weeks | Path |
+|------|----------|-------|------|
+| **Complete Mastery** | 16-20 weeks | Week 1-19 | Sequential |
+| **Interview Ready** | 4-8 weeks | Week 4-15 | Patterns → Practice |
+| **Quick Refresh** | 2-4 weeks | Specific weeks | Reference files |
+| **Competitive Programming** | 8-12 weeks | Weeks 1-14 | Emphasis on patterns |
 
 ---
 
-### **Week 2: Foundations II — Linear Data Structures**
+## 🎯 BEFORE YOU START
 
-**Primary Goal:** Develop solid mental models for arrays, lists, stacks, queues
-
-| Day | Topic | Key Concepts |
-|-----|-------|--------------|
-| 1 | Arrays | Static allocation, contiguous memory, index→address, locality |
-| 2 | Dynamic Arrays | Amortized O(1) append, capacity vs size, doubling strategy |
-| 3 | Linked Lists | Singly/doubly, pointer chains, O(1) insert/delete at known position |
-| 4 | Stacks & Queues | LIFO/FIFO, applications (parsing, BFS, DFS), circular buffers |
-| 5 | Binary Search | O(log n) invariant, iterative vs recursive, variants |
-
-🆕 **Extended C# Roadmap Available** — C# skeletons for linked lists, stacks, queues, binary search
+- **Time Commitment:** 10-15 hours/week for mastery; 20-30 hours/week for faster completion
+- **Prerequisites:** Familiar with at least one programming language (C#, Python, Java, C++)
+- **Environment:** Text editor + compiler/IDE for the language of your choice
+- **Mindset:** Focus on understanding *why*, not just solving problems quickly
 
 ---
 
-### **Week 3: Foundations III — Sorting & Hashing**
+## 💬 SYSTEM DESIGN NOTES
 
-**Primary Goal:** Understand sorting mechanics and hash table internals
+This curriculum is built on the **v12 Narrative-First Architecture**:
+- Every file is written as if by an MIT professor teaching their favorite course
+- Narrative flow matters as much as content
+- Real systems grounding is essential
+- Emoji signposts (💡, ⚠️, 🏭, etc.) guide reading flow
 
-| Day | Topic | Key Concepts |
-|-----|-------|--------------|
-| 1 | Elementary Sorts | Bubble, selection, insertion — O(n²) analysis, stability |
-| 2 | Merge Sort & Quick Sort | Divide-and-conquer, O(n log n), partitioning |
-| 3 | Heap Sort & Priority Queues | Heapify, in-place sorting, applications |
-| 4 | Hash Tables I | Hash functions, separate chaining, load factors |
-| 5 | Hash Tables II | Open addressing, cuckoo hashing, universal hashing |
-
-</details>
-
-<details>
-<summary><strong>🟩 PHASE B — CORE PATTERNS & STRINGS I (Weeks 4-6)</strong></summary>
-
-### **Week 4: Core Problem-Solving Patterns I**
-
-**Primary Goal:** Master foundational array/sequence patterns
-
-| Day | Topic | Interview Coverage |
-|-----|-------|--------------------|
-| 1 | Two Pointers | 25%+ |
-| 2 | Sliding Window (Fixed) | 30%+ |
-| 3 | Sliding Window (Variable) | 35%+ |
-| 4 | Divide & Conquer | 25-30% |
-| 5 | Binary Search as Pattern | 40%+ |
+See `v12_prompts/MASTER_PROMPT_v12_FINAL.md` for the complete philosophy.
 
 ---
 
-### **Week 5: Tier 1 Critical Patterns** 🔥 **HIGHEST ROI**
+## 🤝 CONTRIBUTING
 
-**Primary Goal:** Master high-frequency patterns
-
-| Day | Topic | Interview Coverage |
-|-----|-------|--------------------|
-| 1 | Hash Map / Hash Set Patterns | **60%+** 🔥 |
-| 2 | Monotonic Stack | **40%+** ⚡ |
-| 3 | Merge Operations & Intervals | **35%+** ⚡ |
-| 4 | Partition & Cyclic Sort + Kadane's | **30%+** ⚡ |
-| 5 | Fast & Slow Pointers | **30%+** ⚡ |
-
-**🥇 Milestone:** **70-80% interview coverage achieved**
+This curriculum is a living project. Found an error? Have a suggestion?
+- File issues with specific page references
+- PRs should maintain v12 narrative-first philosophy
+- See `v12_prompts/SYSTEM_CONFIG_v12_FINAL.md` for quality standards
 
 ---
 
-### **Week 6: Tier 1.5 String Manipulation Patterns**
+## 📞 COMMON QUESTIONS
 
-**Primary Goal:** Adapt patterns to string problems
+### **Q: Which week should I start with?**
+**A:** Start with Week 1 for mastery. Start with Week 4 for interview prep (4-8 weeks). Use quick reference for targeted learning.
 
-| Day | Topic |
-|-----|-------|
-| 1 | Palindrome Patterns |
-| 2 | Substring & Sliding Window on Strings |
-| 3 | Parentheses & Bracket Matching |
-| 4 | String Transformations & Building |
+### **Q: Can I skip weeks?**
+**A:** Foundations (1-3) are mandatory. Weeks 4+ build on them but can be taken in different orders. See `START_HERE.md` for guidance.
 
-</details>
+### **Q: Are there solutions to practice problems?**
+**A:** The instructional files contain detailed problem walkthroughs. Interview QA files deliberately omit answers to force active thinking. Use these for mock interview practice.
 
-<details>
-<summary><strong>🟨 PHASE C — TREES, GRAPHS & ADVANCED DS (Weeks 7-11)</strong></summary>
+### **Q: What if I'm stuck on a concept?**
+**A:** 
+1. Reread the mental model section (Chapter 2)
+2. Study the trace examples (Chapter 3)
+3. Look at real systems using the concept (Chapter 4)
+4. Ask the reflection questions (Chapter 5)
 
-### **Week 7: Trees & Heaps**
-
-| Day | Topic |
-|-----|-------|
-| 1 | Binary Tree Anatomy |
-| 2 | Tree Traversals (In/Pre/Post/Level-order) |
-| 3 | Binary Search Trees |
-| 4 | Heaps & Top-K Elements |
-| 5 | Balanced Trees (Conceptual) |
+### **Q: Is this for competitive programming or interviews?**
+**A:** Both. The first 6 weeks emphasize algorithms and data structures. Weeks 4-15 emphasize interview patterns. Weeks 13-19 integrate both with advanced topics.
 
 ---
 
-### **Week 8: Tier 2 Strategic Patterns**
+## 📖 RECOMMENDED READING ORDER
 
-**Primary Goal:** Bridge to advanced structures
+**For Mastery Path:**  
+Start → Week 01 → Week 02 → Week 03 → Week 04 → Week 05 → ... → Week 19
 
-| Day | Topic | Coverage |
-|-----|-------|----------|
-| 1 | Difference Array & Range Tricks | 20%+ |
-| 2 | In-Place Array & Matrix Transformations | 25%+ |
-| 3 | Advanced String Patterns | 20%+ |
+**For Interview Path:**  
+Start → Week 04 Guidelines → Week 04 Problems → Week 05 → Week 06 → Week 15 Integration → Weeks 1-3 (as needed for deep understanding)
 
-**🥈 Milestone:** **80-88% cumulative coverage**
-
----
-
-### **Week 9: Graphs I — Foundations**
-
-| Day | Topic |
-|-----|-------|
-| 1 | Graph Representations & Modeling |
-| 2 | Breadth-First Search (BFS) |
-| 3 | Depth-First Search (DFS) |
-| 4 | Graph Cycles & Connectivity |
-| 5 | Shortest Path I (Dijkstra) |
+**For Quick Refresh:**  
+Use specific week's Summary file for concept review, Interview QA file for practice questions.
 
 ---
 
-### **Week 10: Graphs II — Advanced**
+## ✅ QUALITY GUARANTEE
 
-| Day | Topic |
-|-----|-------|
-| 1 | Shortest Path II (Bellman-Ford, Floyd-Warshall) |
-| 2 | Minimum Spanning Trees |
-| 3 | Topological Sort |
-| 4 | Network Flow I |
-| 5 | Network Flow II |
-
----
-
-### **Week 11: Specialized Data Structures**
-
-| Day | Topic |
-|-----|-------|
-| 1 | Tries (Prefix Trees) |
-| 2 | Segment Trees |
-| 3 | Fenwick Tree / BIT |
-| 4 | Union-Find / DSU |
-| 5 | Suffix Structures |
-
-</details>
-
-<details>
-<summary><strong>🟧 PHASE D — ALGORITHM PARADIGMS (Weeks 12-13)</strong></summary>
-
-### **Week 12: Strings & Math Mastery**
-
-| Day | Topic |
-|-----|-------|
-| 1 | KMP String Matching |
-| 2 | Rabin-Karp & String Hashing |
-| 3 | Number Theory & Bit Manipulation |
-| 4 | Modular Arithmetic & Probability |
-| 5 | Computational Geometry Basics |
+Every instructional file in this curriculum:
+- ✅ Follows the 5-chapter narrative arc
+- ✅ Contains 5-8 inline visuals
+- ✅ Includes 3-5 real systems case studies
+- ✅ Passes the "reads like a lecture" test
+- ✅ Provides 12,000-18,000 words of deep learning
+- ✅ MIT-level depth with accessible teaching
 
 ---
 
-### **Week 13: Greedy & Backtracking**
+## 📝 LICENSE
 
-| Day | Topic |
-|-----|-------|
-| 1 | Greedy Algorithms |
-| 2 | Backtracking I (Permutations & Combinations) |
-| 3 | Meet-in-the-Middle |
-| 4 | Backtracking II (Constraint Satisfaction) |
-| 5 | Backtracking III (Word & Path Problems) |
-
-**Milestone:** **85-90% coverage**
-
-</details>
-
-<details>
-<summary><strong>🟦 PHASE E — PATTERN INTEGRATION & DP (Weeks 14-15)</strong></summary>
-
-### **Week 14: Dynamic Programming Mastery**
-
-| Day | Topic |
-|-----|-------|
-| 1 | DP Fundamentals |
-| 2 | 1D DP & Classic Problems |
-| 3 | 2D / Sequence DP |
-| 4 | Advanced DP Techniques |
-| 5 | DP Optimizations |
+MIT License — Use freely for learning and teaching. See LICENSE file for details.
 
 ---
 
-### **Week 15: Interview Pattern Integration**
+## 🚀 LATEST UPDATES
 
-| Day | Topic |
-|-----|-------|
-| 1 | Merge Intervals — Advanced |
-| 2 | Monotonic Stack — Advanced |
-| 3 | Cyclic Sort Pattern |
-| 4 | Matrix Problems — Advanced |
-| 5 | System Integration & Strategy |
-
-**Milestone:** **90-95% coverage**
-
-</details>
-
-<details>
-<summary><strong>🟪 PHASE F — ADVANCED DEEP DIVES (Weeks 16-18) [Optional Elite Track]</strong></summary>
-
-### **Week 16: Tier 3 — Advanced Extensions**
-
-7 days of advanced pattern extensions
-
-**🥉 Milestone:** **85-95% cumulative coverage** — Elite tier
+**v12.0 (January 2026):** 
+- Complete narrative-first architecture implementation
+- All 19 weeks content-complete
+- Production-ready for deployment
 
 ---
 
-### **Week 17: Advanced Mastery — Deep Dives Part 1**
+**Ready to start?** → See **`START_HERE.md`** next
 
-| Day | Topic |
-|-----|-------|
-| 1 | Segment Trees Advanced |
-| 2 | Heavy-Light Decomposition |
-| 3 | Advanced Graph Algorithms (Tarjan's, 2-SAT) |
-| 4 | Advanced DP Optimizations |
-| 5 | Advanced String Algorithms |
-
----
-
-### **Week 18: Advanced Mastery — Deep Dives Part 2**
-
-| Day | Topic |
-|-----|-------|
-| 1 | Advanced Hash Structures (Bloom, Count-Min, HyperLogLog) |
-| 2 | Advanced Graph Coloring |
-| 3 | Advanced Network Flow |
-| 4 | Advanced Geometry |
-| 5 | System Design Patterns with Algorithms |
-
-**Milestone:** **95%+ coverage**
-
-</details>
-
-<details>
-<summary><strong>🔴 PHASE G — MOCK INTERVIEWS & FINAL MASTERY (Week 19)</strong></summary>
-
-### **Week 19: Mock Interviews & Final Mastery**
-
-| Day | Activity |
-|-----|----------|
-| 1 | Mock Interview Session 1 |
-| 2 | Mock Interview Session 2 |
-| 3 | Weak Points Diagnosis & Targeted Practice |
-| 4 | System Integration Problems |
-| 5 | Final Preparation & Strategy |
-
-**🏆 Final Milestone:** **98%+ interview coverage** — Interview ready
-
-</details>
-
-***
-
-## 📊 Progress Tracking Summary
-
-| Phase | Weeks | Coverage Milestone | Readiness Level |
-|-------|-------|-------------------|-----------------|
-| A — Foundations | 1-3 | 15-25% | Foundation Set ✅ |
-| B — Core Patterns | 4-6 | **70-80%** | Strong Base 🔥 |
-| C — Trees & Graphs | 7-11 | **80-88%** | Competent 💪 |
-| D — Paradigms | 12-13 | **85-90%** | Proficient ⚡ |
-| E — DP & Integration | 14-15 | **90-95%** | Advanced 🚀 |
-| F — Deep Dives | 16-18 | **95%+** | Elite 🏅 |
-| G — Mock Interviews | 19 | **98%+** | Interview Ready 🎯 |
-
-***
-
-## 🎓 Learning Outcomes
-
-### 🧠 **Technical Mastery**
-
-✅ **Pattern Recognition Expert**
-- Identify problem patterns in 98%+ of interview questions
-- Know which algorithm/DS to apply within 30 seconds
-- Recognize 70+ distinct problem-solving patterns
-
-✅ **Mental Model Fluency**
-- Visualize how data structures behave in memory
-- Predict performance without running code
-- Explain trade-offs at system and algorithmic levels
-
-✅ **Implementation Proficiency**
-- Implement any data structure from scratch
-- Write bug-free code in 15-20 minutes for medium problems
-- Handle edge cases systematically
-
-✅ **Complexity Analysis Master**
-- Analyze time and space complexity instantly
-- Identify optimization opportunities
-- Make informed trade-off decisions
-
-### 💼 **Interview Readiness**
-
-✅ **FAANG-Level Performance**
-- Solve 85%+ of LeetCode Medium problems
-- Solve 50%+ of LeetCode Hard problems
-- Pass technical screens at Google, Amazon, Meta, Microsoft, Apple, Netflix
-
-✅ **Communication Skills**
-- Articulate thought process during coding
-- Explain mental models and design decisions
-- Handle follow-up questions confidently
-- Communicate complexity analysis clearly
-
-### 🚀 **Career Impact**
-
-- Qualify for senior engineer roles ($150K-$300K+ compensation)
-- Stand out in competitive candidate pools
-- Build foundation for staff/principal engineer roles
-- Prepare for system design and architecture interviews
-
-***
-
-## 🌐 Top 20 External Resources
-
-### 📚 **Practice Platforms**
-1. **[LeetCode](https://leetcode.com/)** — 2,800+ problems with company-specific sets
-2. **[NeetCode.io](https://neetcode.io/)** — 150 curated problems with video explanations
-3. **[AlgoExpert](https://www.algoexpert.io/)** — 200+ hand-picked problems
-4. **[Educative - Grokking](https://www.educative.io/)** — Pattern-first approach courses
-
-### 🎥 **Video Content**
-5. **[Abdul Bari](https://www.youtube.com/c/AbdulBari)** — Algorithm visualizations (400+ videos)
-6. **[William Fiset](https://www.youtube.com/c/WilliamFiset-videos)** — Graph theory & DS specialization
-7. **[Tushar Roy](https://www.youtube.com/user/tusharroy2525)** — DP mastery
-8. **[Tech Dose](https://www.youtube.com/c/TECHDOSE4u)** — Daily DSA problems
-
-### 📖 **Essential Books**
-9. **Introduction to Algorithms (CLRS)** — MIT textbook, comprehensive
-10. **Cracking the Coding Interview** — Gayle McDowell's 189 problems
-11. **Elements of Programming Interviews** — Language-specific editions
-12. **Algorithm Design Manual** — Steven Skiena's practical guide
-
-### 🏆 **Competitive Programming**
-13. **[Codeforces](https://codeforces.com/)** — Contests & rating system
-14. **[HackerRank](https://www.hackerrank.com/)** — Company preparation kits
-15. **[AtCoder](https://atcoder.jp/)** — Beginner-friendly contests
-16. **[CodeChef](https://www.codechef.com/)** — Monthly long/short contests
-
-### 🎓 **Free University Courses**
-17. **[MIT 6.006](https://ocw.mit.edu/)** — Introduction to Algorithms (OCW)
-18. **[Princeton Algorithms](https://www.coursera.org/)** — Sedgewick & Wayne (Coursera)
-19. **[GeeksforGeeks](https://www.geeksforgeeks.org/)** — Comprehensive articles & tutorials
-20. **[AlgoMaster.io](https://algomaster.io/)** — DSA pattern practice & resources
-
-***
-
-## 📈 Success Metrics & Timeline
-
-| Milestone | Metric | Expected Timeline |
-|-----------|--------|-------------------|
-| Foundation Complete | Solve 75+ easy problems | Week 3 |
-| Core Patterns Mastered | Identify 70%+ patterns instantly | Week 6 |
-| Medium Proficiency | Solve 150+ medium problems | Week 11 |
-| DP Fluency | Solve 40+ DP problems | Week 14 |
-| Interview Ready | Pass 5+ mock interviews | Week 19 |
-
-### 📊 **Expected Problem-Solving Progression**
-
-| Week Range | Easy | Medium | Hard | Total |
-|------------|------|--------|------|-------|
-| 1-3 | 50+ | 10+ | 0 | 60+ |
-| 4-6 | 30+ | 40+ | 5+ | 75+ |
-| 7-11 | 40+ | 80+ | 20+ | 140+ |
-| 12-15 | 30+ | 100+ | 40+ | 170+ |
-| 16-19 | 20+ | 80+ | 50+ | 150+ |
-| **Total** | **170+** | **310+** | **115+** | **595+** |
-
-***
-
-## 🚀 Getting Started
-
-### **Step-by-Step Quick Start**
-
-1. **📥 Clone/Download** this repository
-   ```bash
-   git clone https://github.com/your-org/dsa-master-curriculum-v10.git
-   cd dsa-master-curriculum-v10
-   ```
-
-2. **📖 Read Core Documents** (in order)
-   - `README.md` (this file)
-   - `COMPLETE_SYLLABUS_v10_FINAL.md`
-   - `SYSTEM_CONFIG_v10_FINAL.md`
-
-3. **🎯 Start Week 1, Day 1**
-   - Navigate to `week_01_foundations_i_computational_fundamentals/`
-   - Open `Week_01_Day_1_RAM_Model_And_Pointers_Instructional.md`
-   - Read `Week_1_Guidelines.md` first for weekly strategy
-
-4. **⏰ Commit to Schedule** (12-15 hours/week)
-   - 🌅 Morning (1-1.5 hours): Theory + concepts
-   - 🌆 Evening (1.5-2 hours): Practice problems
-   - 📅 Weekend: Review + extended practice + mock interviews
-
-5. **📊 Track Progress** using weekly checklists
-   - Complete `Week_X_Daily_Progress_Checklist.md` daily
-   - Review `Week_X_Summary_Key_Concepts.md` at week end
-
-### **📅 Recommended Daily Routine**
-
-| Time Block | Activity | Duration |
-|------------|----------|----------|
-| Morning | Read instructional file + take notes | 60-90 min |
-| Afternoon | Review Week_X_Guidelines + Summaries | 30 min |
-| Evening | Solve 2-3 practice problems | 90-120 min |
-| Before Bed | Review Interview Q&A Reference | 20 min |
-
-### **Weekend Routine**
-
-- Saturday: Review entire week, solve integration problems (3-4 hours)
-- Sunday: Practice from Problem Solving Roadmap, attempt 1 mock interview (3-4 hours)
-
-***
-
-## 🆕 v10 Highlights & Changes from v8
-
-### **Major Updates**
-
-1. **19 Weeks** (vs 16 weeks in v8) — More granular learning pace
-2. **7-Phase System** — Clear milestone-based progression
-3. **Mental-Model-First** — Fundamental philosophy shift
-4. **Extended C# Roadmaps** 🆕 — Week-specific C# skeletons and patterns
-5. **Flat Folder Structure** — Simpler navigation (`week_XX_topic/`)
-6. **Enhanced Support Files** — 6 types per week vs 5 in v8
-
-### **Content Changes**
-
-- Expanded Weeks 1-3 foundations with deeper coverage
-- Split Week 4.5 into Week 5 (Tier 1 Critical Patterns)
-- Split Week 5.5 into Week 8 (Tier 2 Strategic Patterns)
-- Expanded graphs to 2 full weeks (Weeks 9-10)
-- Dedicated Week 11 for Specialized Data Structures
-- Dedicated Week 12 for Strings & Math
-- Dedicated Week 13 for Greedy & Backtracking
-- Split DP and Integration into Weeks 14-15
-- Advanced deep dives expanded to 3 weeks (16-18)
-- Dedicated Week 19 for mock interviews
-
-***
-
-## 📄 License
-
-MIT License — Free for educational and personal use. For commercial/institutional use, please attribute appropriately.
-
-***
-
-## 🎯 Final Words
-
-**DSA mastery is a marathon, not a sprint.** This v10 curriculum provides the complete roadmap with **98%+ interview coverage** across **19 weeks** and **7 distinct phases**, but your **consistent daily effort** determines success.
-
-### **Remember the v10 Core Principles:**
-
-- 🧠 **Mental Models > Memorization** — Understand *why* before *how*
-- 🎯 **Quality > Quantity** — 70 patterns > 1,000 random problems
-- 🏗️ **Real Systems > Theory** — Production context beats abstract theory
-- ⏱️ **Consistency > Intensity** — Daily practice beats weekend cramming
-- 🔧 **Understanding > Implementation** — Know the trade-offs first
-
-### **Your Journey Starts Now**
-
-**Week 1, Day 1, Section 1: The RAM Model.**
-
-**Your future self will thank you.** 🚀
-
-***
-
-## 💬 Community & Support
-
-- ⭐ **Star this repository** if you find it helpful
-- 🍴 **Fork it** to customize for your learning journey
-- 📢 **Share** with aspiring engineers and study groups
-- 💬 Open issues for questions, suggestions, or curriculum improvements
-
-***
-
-## 🏆 Success Stories
-
-*This section will be populated with success stories from learners who complete the v10 curriculum and land roles at top tech companies.*
-
-***
-
-**Ready to begin your transformation?**
-
-**Navigate to `week_01_foundations_i_computational_fundamentals/` and start with `Week_1_Guidelines.md`.**
-
-***
-
-*Version 10.0 Final | January 2026 | 19 Weeks | 7 Phases | 95+ Topics | 98%+ Coverage*
-
-*Mental-Model-First · Systems-Aware · Pattern-Centric · Interview-Ready*
