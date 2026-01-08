@@ -511,8 +511,7 @@ Builds directly on Week 4 patterns and prepares for tree/graph/DP complexity.
 - 🧷 Real Systems
   - Calendar scheduling; resource allocation.  
 
-#### 📅 Day 4 (Core) – Partition, Cyclic Sort & Kadane
-
+#### 📅 Day 4 (Part A) – Partition, Cyclic Sort
 **Topics & Subtopics:**
 - 🎨 Partitioning Arrays
   - Dutch National Flag (0/1/2 sorting).  
@@ -520,9 +519,22 @@ Builds directly on Week 4 patterns and prepares for tree/graph/DP complexity.
 - 🔄 Cyclic Sort
   - Position-based rearrangement for 1..n arrays.  
   - Finding missing numbers/duplicates.  
+  - In-place segregation O(1) space
 - 📈 Kadane’s Algorithm
   - Max subarray sum.  
   - Variants (circular arrays, max product).  
+
+#### 📅 Day 4 (Part B) – Kadane's Algorithm
+
+**Topics & Subtopics:**
+- 📈 Kadane’s Algorithm
+  - Maximum subarray problem
+  - Maximum product subarray
+  - Max subarray sum.  
+  - Variants (circular arrays, max product).  
+  - DP formulation
+  - Constraint variations (circular)
+  - Real-world: financial analysis
 
 #### 📅 Day 5 (Core) – Fast/Slow Pointers
 
