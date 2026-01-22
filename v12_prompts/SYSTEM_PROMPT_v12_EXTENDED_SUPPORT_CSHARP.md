@@ -108,7 +108,7 @@ using the **EXTENDED_CSHARP_TEMPLATE** structure below.
 - `MASTER_PROMPT_v12_FINAL.md` -> master prompt
 - `Template_v12_Narrative_FINAL.md` ← Original structure reference
 - `EMOJI_ICON_GUIDE_v12.md` (emoji icon guide)
-- `COMPLETE_SYLLABUS_v12_FINAL.md` ← Week content & patterns
+- `COMPLETE_SYLLABUS_v12_FINAL_Updated.md` ← Week content & patterns
 - `SYSTEM_PROMPT_v12_FOR_AI_CHAT_FINAL.md`  -> other prompt
 - `V12_prompt_usage.md`
 - `SYSTEM_PROMPT_v12_EXTENDED_SUPPORT_CSHARP.md` -> (this file)

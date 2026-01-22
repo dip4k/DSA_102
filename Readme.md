@@ -1048,7 +1048,7 @@ Quick Refresh?     → Topic-based, specific weeks, 2-4 weeks
 ```
 1. README.md (this file) — 5 min overview
 2. STARTHERE.md — Choose your path (5 min)
-3. COMPLETE_SYLLABUS_v12_FINAL.md — See full curriculum (5 min)
+3. COMPLETE_SYLLABUS_v12_FINAL_Updated.md — See full curriculum (5 min)
 ```
 
 ### **Step 3: 📚 Start Your Week** (varies)
@@ -1074,7 +1074,7 @@ dsa-master-curriculum-v12/
 📄 LICENSE
 
 📁 v12-prompts/
-   ├── COMPLETE_SYLLABUS_v12_FINAL.md
+   ├── COMPLETE_SYLLABUS_v12_FINAL_Updated.md
    ├── MASTER_PROMPT_v12_FINAL.md
    ├── SYSTEM_CONFIG_v12_FINAL.md
    ├── SYSTEM_PROMPT_v12_FOR_AI_CHAT_FINAL.md

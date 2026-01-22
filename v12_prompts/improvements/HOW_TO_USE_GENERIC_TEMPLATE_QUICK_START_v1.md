@@ -32,7 +32,7 @@ Replace every `[PLACEHOLDER]` with week-specific data:
 - `[LIMITATION_1]` → Specific limitation (e.g., "O(n²) complexity")
 
 **Use reference files:**
-- COMPLETE_SYLLABUS_v12_FINAL.md → Topics for each day
+- COMPLETE_SYLLABUS_v12_FINAL_Updated.md → Topics for each day
 - FAILURE_MODES_REPOSITORY_v1.md → Actual mistakes
 - ANALOGY_BANK_v1.md → Proven analogies
 - CROSS_WEEK_DEPENDENCY_MAP_v1.md → Prerequisites
@@ -131,7 +131,7 @@ VISUAL CONNECTIONS:
 
 | Need | Check File | Find |
 |------|-----------|------|
-| Topics for days | COMPLETE_SYLLABUS_v12_FINAL.md | Week X day structure |
+| Topics for days | COMPLETE_SYLLABUS_v12_FINAL_Updated.md | Week X day structure |
 | Real failures | FAILURE_MODES_REPOSITORY_v1.md | Week X student mistakes |
 | Proven analogies | ANALOGY_BANK_v1.md | Week X tested analogies |
 | Prerequisites | CROSS_WEEK_DEPENDENCY_MAP_v1.md | Week X dependencies |

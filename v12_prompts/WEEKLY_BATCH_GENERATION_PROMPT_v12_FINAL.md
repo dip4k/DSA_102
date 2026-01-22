@@ -13,7 +13,7 @@ Use this inside an AI chat session that has:
 - `MASTER_PROMPT_v12_FINAL.md`
 - `Template_v12_Narrative_FINAL.md`
 - `EMOJI_ICON_GUIDE_v12.md` (emoji icon guide)
-- `COMPLETE_SYLLABUS_v12_FINAL.md`
+- `COMPLETE_SYLLABUS_v12_FINAL_Updated.md`
 - `SYSTEM_PROMPT_v12_FOR_AI_CHAT_FINAL.md`
 - `V12_prompt_usage.md`
 - `SYSTEM_PROMPT_v12_EXTENDED_SUPPORT_CSHARP.md`
@@ -23,7 +23,7 @@ Use this inside an AI chat session that has:
 
 ## course syllabus or curriculum file
 **use this file for syllabus** :
-- `COMPLETE_SYLLABUS_v12_FINAL.md`
+- `COMPLETE_SYLLABUS_v12_FINAL_Updated.md`
 
 ## ⚠️ BATCHING RULES (CRITICAL)
 

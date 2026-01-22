@@ -193,7 +193,7 @@ For "when to use which pattern":
 Required:
 - Week number (e.g., 4)
 - Week title (e.g., "Core Array Patterns I")
-- Syllabus file (COMPLETE_SYLLABUS_v12_FINAL.md)
+- Syllabus file (COMPLETE_SYLLABUS_v12_FINAL_Updated.md)
 - Day-wise topics and subtopics
 
 Optional:
@@ -307,7 +307,7 @@ Adjust symbols per domain:
 Week: 4
 Title: Core Problem-Solving Patterns I
 Topics: Two-Pointer, Sliding Window (Fixed & Variable), D&C, Binary Search
-Syllabus: COMPLETE_SYLLABUS_v12_FINAL.md
+Syllabus: COMPLETE_SYLLABUS_v12_FINAL_Updated.md
 ```
 
 **Output File:**
@@ -380,7 +380,7 @@ Before finalizing any playbook:
 
 **Inputs:**
 1. Week number and title
-2. Day-wise syllabus topics/subtopics (from COMPLETE_SYLLABUS_v12_FINAL.md)
+2. Day-wise syllabus topics/subtopics (from COMPLETE_SYLLABUS_v12_FINAL_Updated.md)
 3. Language: English
 4. Code examples: C# (optional, for context only—focus on visuals)
 

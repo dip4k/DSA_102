@@ -406,7 +406,7 @@ Click Generate
 
 ### **Method 2: Fill-in-the-Blanks Workflow**
 
-1. **Get Week [X] Syllabus** (from COMPLETE_SYLLABUS_v12_FINAL.md)
+1. **Get Week [X] Syllabus** (from COMPLETE_SYLLABUS_v12_FINAL_Updated.md)
 2. **Extract Information:**
    - Primary goal → Paste into template
    - Day 1-5 topics → Paste into template
@@ -590,7 +590,7 @@ Generate the complete Week 3 file with all 7 sections.
 
 ### **For Weeks 2-16:**
 
-1. **Extract syllabus info** from COMPLETE_SYLLABUS_v12_FINAL.md
+1. **Extract syllabus info** from COMPLETE_SYLLABUS_v12_FINAL_Updated.md
 2. **Use consolidated prompt** (this file)
 3. **Run AI generation** with template + syllabus
 4. **Validate** against checklist

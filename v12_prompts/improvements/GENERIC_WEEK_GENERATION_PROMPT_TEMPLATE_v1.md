@@ -250,7 +250,7 @@ SPECIFY FORMAT: [PLAYBOOK / INSTRUCTIONAL]
 USE THESE FILES AS REFERENCE (from your existing system):
 
 For structure:
-  - COMPLETE_SYLLABUS_v12_FINAL.md (Week [X] topics, phase, day structure)
+  - COMPLETE_SYLLABUS_v12_FINAL_Updated.md (Week [X] topics, phase, day structure)
   - SYSTEM_CONFIG_v12_FINAL.md (quality gates, standards)
 
 For templates:
@@ -388,7 +388,7 @@ END TEMPLATE - COPY ABOVE TO USE
 
 **1. Get Topics (5 min)**
 ```
-Open: COMPLETE_SYLLABUS_v12_FINAL.md
+Open: COMPLETE_SYLLABUS_v12_FINAL_Updated.md
 Find: Phase X – Week Y: [WEEK_TITLE]
 Copy: Week number, phase, Day 1-5 topics
 ```

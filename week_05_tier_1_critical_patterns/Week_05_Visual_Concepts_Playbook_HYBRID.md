@@ -1,7 +1,7 @@
 # 📊 Week 05 Visual Concepts Playbook (HYBRID)
 
 **Version:** 1.0 Production Ready  
-**Syllabus Reference:** COMPLETE_SYLLABUS_v12_FINAL.md  
+**Syllabus Reference:** COMPLETE_SYLLABUS_v12_FINAL_Updated.md  
 **Week:** 05 | Phase B – Tier 1 Critical Patterns  
 **Total Concepts Covered:** 30 core patterns across 5 days  
 **Format:** Markdown Hybrid (30+ ASCII diagrams + 6 web resources)  
@@ -1521,7 +1521,7 @@ TIER 5: Specialized Topics (Weeks 14-19)
 
 # 🔍 Quality Assurance Checklist
 
-- ✅ All 5 core topics from COMPLETE_SYLLABUS_v12_FINAL.md included
+- ✅ All 5 core topics from COMPLETE_SYLLABUS_v12_FINAL_Updated.md included
 - ✅ 30+ ASCII diagrams embedded inline, not grouped
 - ✅ 15 quiz questions total (3 per day)
 - ✅ 8-10 failure modes documented with WRONG/CORRECT examples

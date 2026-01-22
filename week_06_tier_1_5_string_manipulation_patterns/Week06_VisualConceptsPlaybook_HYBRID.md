@@ -5,7 +5,7 @@
 - **Phase:** B (Patterns III)
 - **Title:** String Patterns Mastery (Tier 1.5)
 - **Format:** Hybrid (30+ ASCII diagrams, 6 web resources, 15 quiz questions)
-- **Syllabus Source:** COMPLETE_SYLLABUS_v12_FINAL.md
+- **Syllabus Source:** COMPLETE_SYLLABUS_v12_FINAL_Updated.md
 - **Deployment:** Production-ready, offline-first with web enhancement
 - **Total Word Count:** ~18,000 words
 
@@ -1348,7 +1348,7 @@ Turnitin plagiarism detection searches 100 million documents for plagiarized sub
 
 ### Educational Completeness
 - ✅ 5 days covered (skip Day 6 Optional Advanced)
-- ✅ 30+ topics from COMPLETE_SYLLABUS_v12_FINAL.md
+- ✅ 30+ topics from COMPLETE_SYLLABUS_v12_FINAL_Updated.md
 - ✅ 15 quiz questions (3 per day)
 - ✅ 8-10 failure modes (2-3 per day)
 - ✅ Pattern family trees show relationships
@@ -1381,7 +1381,7 @@ Turnitin plagiarism detection searches 100 million documents for plagiarized sub
 **Size:** ~18,000 words, 30+ ASCII diagrams  
 **Status:** ✅ 100% Production-Ready  
 **Deployment:** Immediate use, no modifications needed  
-**Syllabus Version:** COMPLETE_SYLLABUS_v12_FINAL.md (Week 06 topics only)  
+**Syllabus Version:** COMPLETE_SYLLABUS_v12_FINAL_Updated.md (Week 06 topics only)  
 
 ---
 

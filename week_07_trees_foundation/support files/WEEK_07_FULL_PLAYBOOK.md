@@ -2,7 +2,7 @@
 
 **Version:** v3.0 (Complete Curriculum Edition + Enhancements)  
 **Status:** ✅ PRODUCTION-READY  
-**Syllabus Alignment:** COMPLETE_SYLLABUS_v12_FINAL.md  
+**Syllabus Alignment:** COMPLETE_SYLLABUS_v12_FINAL_Updated.md  
 **Course Philosophy:** Narrative-First, MIT 6.006/6.046 Aligned, Pattern-Centric  
 **Generated:** January 23, 2026  
 
