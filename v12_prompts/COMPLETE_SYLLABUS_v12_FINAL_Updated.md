@@ -722,6 +722,10 @@ Graphs add a powerful modeling lens; BFS/DFS are core paradigms used everywhere.
 #### 📅 Day 1 (Core) – Graph Models & Representations
 
 **Topics & Subtopics:**
+- Adjacency matrix vs adjacency list vs edge list.  
+- Memory usage and performance trade-offs.  
+- Implicit graphs: grids, puzzles, state spaces.  
+- Translating real problems into graphs (nodes and edges).  
 - 🌐 Graph Types
   - Directed vs undirected.  
   - Weighted vs unweighted.  
@@ -739,7 +743,11 @@ Graphs add a powerful modeling lens; BFS/DFS are core paradigms used everywhere.
 - 🧭 Shortest Path (Unweighted)
   - Distance layers from source.  
 - 🧩 Applications
-  - Shortest route in unweighted networks, level order in trees.  
+  - Shortest route in unweighted networks, level order in trees.
+- BFS algorithm and queue-based frontier tracking.  
+- Shortest paths in unweighted graphs.  
+- Connected components and bipartite checks (conceptual).  
+- Applications: social networks, shortest route when edges all equal.    
 
 #### 📅 Day 3 (Core) – Depth-First Search (DFS) & Topological Sort
 
@@ -755,6 +763,10 @@ Graphs add a powerful modeling lens; BFS/DFS are core paradigms used everywhere.
   - Kahn’s algorithm (in-degree + BFS).  
 - 🧩 Use-Cases
   - Task scheduling & dependency resolution.  
+- DFS algorithm via recursion or explicit stack.  
+- Use in exploring connected components, path existence, simple cycle detection.  
+- Differences vs BFS in typical tasks.  
+- Basis for many advanced algorithms (topo sort, SCC, etc.).  
 
 #### 📅 Day 4 (Core) – Connectivity & Bipartite Graphs
 
@@ -763,6 +775,10 @@ Graphs add a powerful modeling lens; BFS/DFS are core paradigms used everywhere.
   - BFS/DFS for components.  
 - ⚖️ Bipartite Testing
   - Two-coloring via BFS/DFS.  
+- Detecting cycles in undirected vs directed graphs.  
+- Connected components and articulation points (high-level).  
+- Union-Find/Disjoint Set for offline connectivity queries.  
+- Network connectivity examples: reliability of network, connectivity in grids. 
 - 🧩 Applications
   - Grouping problems; simple 2-colorable constraints.  
 
