@@ -199,7 +199,7 @@ follow this standard alaso mentioned in system prompt for AI
 5. **Visual & Structural Requirements.**  
    - ≥1 concept summary/comparison table [relevant Sections].  
    - ≥1 complexity table (Section 5).  
-   - ≥2–3 visuals (ASCII diagrams, trace tables, or simple Mermaid flows).  
+   - ≥2-3 visuals (ASCII diagrams, trace tables, or simple Mermaid flows).  
    - Integrate diagrams and tables naturally (not as afterthoughts).  
 
 6. **Mandatory Blocks.**  
@@ -209,15 +209,15 @@ follow this standard alaso mentioned in system prompt for AI
 
 7. **Coverage Requirements.**  
    - Section 2 must list ALL core concepts/variations/operations for that topic day.  
-   - Section 6 must name 5–10 specific real systems (OS, DB, network, applications, cloud).  
-   - Practice problems: 8–10 (real sources, no solutions).  
+   - Section 6 must name 5-10 specific real systems (OS, DB, network, applications, cloud).  
+   - Practice problems: 8-10 (real sources, no solutions).  
    - Interview questions: 6+ with follow-ups (no solutions).  
-   - Misconceptions: 3–5 (with stated misconceptions, why plausible, correction, memory aid, impact).  
-   - Advanced concepts: 3–5.  
-   - External resources: 3–5.  
+   - Misconceptions: 3-5 (with stated misconceptions, why plausible, correction, memory aid, impact).  
+   - Advanced concepts: 3-5.  
+   - External resources: 3-5.  
 
 8. **Word Count Target.**  
-   - 7,500–15,000 words per instructional file.  
+   - 7,500-15,000 words per instructional file.  
    - No per-section quotas; use as much space as needed for clarity and depth.
 """
 
@@ -336,16 +336,26 @@ WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md
 ---------- weekly playbook prompt
 
 **Prompt context**:
-- use **GENERIC WEEK GENERATION PROMPT TEMPLATE v1.0.md** file to create FULL WEEK 07 PLAYBOOK as a downloadable markdown file.
+- use **GENERIC WEEK GENERATION PROMPT TEMPLATE v1.0.md** file to create FULL WEEK 09 PLAYBOOK as a downloadable markdown file.
 - Follow correct curriculum mentioned here **COMPLETE_SYLLABUS_v12_FINAL_Updated.md.**
-- use MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config
- and file naming convention.
+- use MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config and file naming convention.
+- use **Generic_AI_Self_Check_Correction_Step.md** file for error check in generated content and self error correction context
  
 **Rule and Action**:
+- generate WEEK_[x]_FULL_PLAYBOOK.md file for week 09
 - provide full file not just quick summary without skipping any topic/subtopic, section/subsection for each day of the week.
 - use proper structure and formatting, use appropriate emojis and icons.
-
+- include visual diagram to explain concepts more clearly
 - dont use any programming language first, and use only Csharp (c#) .net language only when required to explain concept or topic or coding example.
+- Apply GENERIC AI SELF-CHECK & CORRECTION STEP before output (use **Generic_AI_Self_Check_Correction_Step.md** file):
+  1. Verify all references (items, values, indices) exist in problem
+  2. Verify logic flow (each step follows logically from previous)
+  3. Verify numbers (totals cumulative, counts match actual items)
+  4. Verify state consistency (changes tracked, transitions explained)
+  5. Verify termination (algorithm stops at correct condition)
+  6. Check 7 red flags (input mismatch, logic jump, math error, etc.)
+  7. If any issue found → Fix using templates before output
+  8. When all checks pass → Generate markdown file
 - file should be in markdown format
 - file naming format is like this
 """
@@ -378,41 +388,46 @@ VISUAL_PLAYBOOK_GENERATION_PROMPT_v12_UPDATED.md
 WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md
 ```
 
-week 07 syllabus as :
+week 08 syllabus as :
 
 """
  
 """
 
 ---------- instructional file prompt
-
 **Prompt context**:
 - use **SYSTEM_PROMPT_v12_FOR_AI_CHAT_FINAL.md** and **WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md** files as starting point, 
 - follow **Template_v12_Narrative_FINAL.md file** for structure,
 - use **COMPLETE_SYLLABUS_v12_FINAL_Updated.md** file for syllabus,
-- use MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config
- and file naming convention.
+- use MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config and file naming convention.
+- use **Generic_AI_Self_Check_Correction_Step.md** file for error check in generated content and self error correction context
+
 
 **Action** :
-- generate week 07 Day 01 instructional file, have detailed and structured content for generated file, dont skip any subsection or sub topic. cover topics in detailed.
+- generate week 09 Day 04 instructional file as downloadable markdown md file, have detailed and structured content for generated file, dont skip any subsection or sub topic. cover topics in detailed.
 - strictly follow template structure and file naming convention as per context
+- dont use any programming language first, and use only Csharp (c#) / .net language only when required to explain concept or topic or coding example.
+- Apply GENERIC AI SELF-CHECK & CORRECTION STEP before output (use **Generic_AI_Self_Check_Correction_Step.md** file):
+  1. Verify all references (items, values, indices) exist in problem
+  2. Verify logic flow (each step follows logically from previous)
+  3. Verify numbers (totals cumulative, counts match actual items)
+  4. Verify state consistency (changes tracked, transitions explained)
+  5. Verify termination (algorithm stops at correct condition)
+  6. Check 7 red flags (input mismatch, logic jump, math error, etc.)
+  7. If any issue found → Fix using templates before output
+  8. When all checks pass → Generate markdown file
 - file naming format is like this
 """
 📂 FILE STRUCTURE & NAMING
 **Instructional Files:**
 - `Week_X_Day_Y_[Topic_Name]_Instructional.md`
-- Example: `Week_07_Day_3_Binary_Search_Trees_Instructional.md`
-
-**Support Files:**
-- `Week_X_Guidelines.md`
-- `Week_X_Summary_Key_Concepts.md`
-- `Week_X_Interview_QA_Reference.md`
-- `Week_X_Problem_Solving_Roadmap.md`
-- `Week_X_Daily_Progress_Checklist.md`
+- Example: `Week_07_Day_03_Binary_Search_Trees_Instructional.md` (week and day are 2 digit numbers as 01 09, 12, etc)
 """
 
-**Enhancement**: should follow this to enhance content generation 
+**important rule**
+If content is exceeding 12,000-18,000 word limit for all required topic and section explanation then dont follow word limit and allo till 30,000 words to be generated.
 
+**Enhancement Rule**: should follow this to enhance content generation 
 1. Cover all topics/subtopics for week/day mentioned in syllabus file
 2. Make sure generated content is following moto of our dsa mastery course
 3. Add and enhance topics/subtopics or contents, which are not part of syllabus subsections but related to [topic] and essential/required for learning following course moto.
@@ -437,7 +452,7 @@ VISUAL_PLAYBOOK_GENERATION_PROMPT_v12_UPDATED.md
 WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md
 ```
 
-week 07 syllabus as :
+week 09 syllabus as :
 
 """
  
@@ -448,25 +463,25 @@ week 07 syllabus as :
 **Prompt context**:
 - use **VISUAL_PLAYBOOK_GENERATION_PROMPT_v12_UPDATED.md** file as starting point, 
 - use **COMPLETE_SYLLABUS_v12_FINAL_Updated.md** file for syllabus,
-- use MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config
- and file naming convention.
+- use MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config  and file naming convention.
+- use **Generic_AI_Self_Check_Correction_Step.md** file for error check in generated content and self error correction context
 
 **Action** :
-- generate week 07 visual hybrid support md file, have detailed and structured content for generated file, dont skip any subsection or sub topic. cover topics in detailed.
+- generate week 09 visual hybrid support md file, have detailed and structured content for generated file, dont skip any subsection or sub topic. cover topics in detailed.
 - strictly follow template structure and file naming convention as per context
+- use visual diagrams, charts and external visual images and resources that will help explain concept clearly
+- Apply GENERIC AI SELF-CHECK & CORRECTION STEP before output (use **Generic_AI_Self_Check_Correction_Step.md** file):
+  1. Verify all references (items, values, indices) exist in problem
+  2. Verify logic flow (each step follows logically from previous)
+  3. Verify numbers (totals cumulative, counts match actual items)
+  4. Verify state consistency (changes tracked, transitions explained)
+  5. Verify termination (algorithm stops at correct condition)
+  6. Check 7 red flags (input mismatch, logic jump, math error, etc.)
+  7. If any issue found → Fix using templates before output
+  8. When all checks pass → Generate markdown file
 - file naming format is like this
 """
-📂 FILE STRUCTURE & NAMING
-**Instructional Files:**
-- `Week_X_Day_Y_[Topic_Name]_Instructional.md` (where x and y will be 2 digit number, if single digit then use 01, 02 like this)
-- Example: `Week_07_Day_03_Binary_Search_Trees_Instructional.md`
-
-**Support Files:**
-- `Week_X_Guidelines.md`
-- `Week_X_Summary_Key_Concepts.md`
-- `Week_X_Interview_QA_Reference.md`
-- `Week_X_Problem_Solving_Roadmap.md`
-- `Week_X_Daily_Progress_Checklist.md`
+FILENAME: Week_[WEEK_NUMBER]_Visual_Concepts_Playbook_HYBRID.md (2 digit week number like 01, 09, 12)
 """
 
 **Enhancement**: should follow this to enhance content generation 
@@ -495,7 +510,7 @@ VISUAL_PLAYBOOK_GENERATION_PROMPT_v12_UPDATED.md
 WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md
 ```
 
-week 07 syllabus as :
+week 09 syllabus as :
 
 """
 
@@ -505,15 +520,23 @@ week 07 syllabus as :
 
 **Prompt context**:
 - use **CONSOLIDATED_CSHARP_EXTENDED_SUPPORT_MASTER_PROMPT_v13.md** file as starting point, 
-
 - use **SYSTEM_PROMPT_v13_EXTENDED_SUPPORT_CSHARP.md** and **SYSTEM_PROMPT_v12_EXTENDED_SUPPORT_CSHARP.md** files as reference
 - use **COMPLETE_SYLLABUS_v12_FINAL_Updated.md** file for syllabus,
-- use MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config
- and file naming convention.
+- use MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config and file naming convention.
+- use **Generic_AI_Self_Check_Correction_Step.md** file for error check in generated content and self error correction context
 
 **Action** :
 - generate week 07 Csharp extended support md file, have detailed and structured content for generated file, dont skip any subsection or sub topic. cover topics in detailed.
 - strictly follow template structure and file naming convention as per context
+- Apply GENERIC AI SELF-CHECK & CORRECTION STEP before output (use **Generic_AI_Self_Check_Correction_Step.md** file):
+  1. Verify all references (items, values, indices) exist in problem
+  2. Verify logic flow (each step follows logically from previous)
+  3. Verify numbers (totals cumulative, counts match actual items)
+  4. Verify state consistency (changes tracked, transitions explained)
+  5. Verify termination (algorithm stops at correct condition)
+  6. Check 7 red flags (input mismatch, logic jump, math error, etc.)
+  7. If any issue found → Fix using templates before output
+  8. When all checks pass → Generate markdown file
 - file naming format is like this
 """
 📂 FILE STRUCTURE & NAMING
@@ -545,10 +568,84 @@ VISUAL_PLAYBOOK_GENERATION_PROMPT_v12_UPDATED.md
 WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md
 ```
 
-week 07 syllabus as :
+week 09 syllabus as :
 
 """
- 
+### 🛣️ Week 9 - Graph Algorithms I: Shortest Paths, MST & Union-Find
+
+**Primary Goal:**  
+Learn foundational shortest path and MST algorithms, plus disjoint set union for connectivity.
+
+**Why This Week Comes Here:**  
+These algorithms solve fundamental optimization and connectivity problems.
+
+**MIT Alignment:**  
+- Dijkstra, Bellman-Ford, Floyd-Warshall, MST, and DSU from 6.006/6.046.
+
+#### 📅 Day 1 (Core) - Single-Source Shortest Paths: Dijkstra
+
+**Topics & Subtopics:**
+- 🎯 Problem Definition
+  - Non-negative edge weights.  
+- 🚍 Dijkstra Algorithm
+  - Priority queue frontier.  
+  - Relaxation steps.  
+- ⏱️ Complexity
+  - O((V+E) log V) with heap.  
+- 🧵 Practical Notes
+  - When Dijkstra is appropriate vs BFS vs others.  
+
+#### 📅 Day 2 (Core) - Bellman-Ford & Negative Weights
+
+**Topics & Subtopics:**
+- 📉 Relaxation Over Edges
+  - Dynamic programming over path lengths.  
+- 🔁 Algorithm Mechanics
+  - V-1 passes over edges.  
+- ⚠️ Negative Cycle Detection
+  - Extra pass to detect changes.  
+- 🧩 Use-Cases
+  - Graphs with negative weights but no negative cycles.  
+
+#### 📅 Day 3 (Core, Enhanced) - All-Pairs Shortest Paths: Floyd-Warshall
+
+**Topics & Subtopics:**
+- 🌐 APSP Problem
+  - Distances between all pairs of vertices.  
+- 🧮 DP Formulation
+  - Intermediate vertices up to k.  
+  - Triple-nested loops and state transitions.  
+- ⏱️ Complexity
+  - O(V³) time, O(V²) space.  
+- 🧩 Use-Cases
+  - Dense graphs; small V.  
+
+#### 📅 Day 4 (Core) - Minimum Spanning Trees: Kruskal & Prim
+
+**Topics & Subtopics:**
+- 🌳 MST Definition
+  - Spanning tree of minimum total weight.  
+- 🧮 Cut Property
+  - Greedy choice correctness intuition.  
+- ✂️ Kruskal Algorithm
+  - Sort edges; DSU for merging components.  
+- ⚙️ Prim Algorithm
+  - Grow tree from a start node via priority queue.  
+- 🧵 Applications
+  - Network design; base for clustering.  
+
+#### 📅 Day 5 (Optional Advanced) - DSU / Union-Find in Depth
+
+**Topics & Subtopics:**
+- 🔗 Disjoint Set Structure
+  - Parent pointers, rank/size.  
+- ⚙️ Operations
+  - find with path compression.  
+  - union by rank/size.  
+- ⏱️ Complexity
+  - Inverse Ackermann α(n) intuition.  
+- 🧩 Use-Cases
+  - Connectivity queries; Kruskal MST; offline queries.  
 """
 
 ---------- support file prompt
@@ -559,22 +656,29 @@ week 07 syllabus as :
 - use **COMPLETE_SYLLABUS_v12_FINAL_Updated.md** file for syllabus,
 - use MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config
  and file naming convention.
+- use **Generic_AI_Self_Check_Correction_Step.md** file for error check in generated content and self error correction context
 
 **Action** :
-- generate week 07 Support files, 
+- generate week 09 Support files, 
 """
 - `Week_X_Guidelines.md`
 - `Week_X_Summary_Key_Concepts.md`
+- `Week_X_Daily_Progress_Checklist.md`
 """
 - have detailed and structured content for generated file, dont skip any subsection or sub topic. cover topics in detailed.
 - strictly follow template structure and file naming convention as per context
+- Apply GENERIC AI SELF-CHECK & CORRECTION STEP before output (use **Generic_AI_Self_Check_Correction_Step.md** file):
+1. Verify all references (items, values, indices) exist in problem
+2. Verify logic flow (each step follows logically from previous)
+3. Verify numbers (totals cumulative, counts match actual items)
+4. Verify state consistency (changes tracked, transitions explained)
+5. Verify termination (algorithm stops at correct condition)
+6. Check 7 red flags (input mismatch, logic jump, math error, etc.)
+7. If any issue found → Fix using templates before output
+8. When all checks pass → Generate markdown file
 - file naming format is like this
 """
 📂 FILE STRUCTURE & NAMING
-**Instructional Files:**
-- `Week_X_Day_Y_[Topic_Name]_Instructional.md`
-- Example: `Week_07_Day_3_Binary_Search_Trees_Instructional.md`
-
 **Support Files:**
 - `Week_X_Guidelines.md`
 - `Week_X_Summary_Key_Concepts.md`
@@ -609,8 +713,82 @@ VISUAL_PLAYBOOK_GENERATION_PROMPT_v12_UPDATED.md
 WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md
 ```
 
-week 07 syllabus as :
+week 09 syllabus as :
 
 """
+### 🛣️ Week 9 - Graph Algorithms I: Shortest Paths, MST & Union-Find
 
+**Primary Goal:**  
+Learn foundational shortest path and MST algorithms, plus disjoint set union for connectivity.
+
+**Why This Week Comes Here:**  
+These algorithms solve fundamental optimization and connectivity problems.
+
+**MIT Alignment:**  
+- Dijkstra, Bellman-Ford, Floyd-Warshall, MST, and DSU from 6.006/6.046.
+
+#### 📅 Day 1 (Core) - Single-Source Shortest Paths: Dijkstra
+
+**Topics & Subtopics:**
+- 🎯 Problem Definition
+  - Non-negative edge weights.  
+- 🚍 Dijkstra Algorithm
+  - Priority queue frontier.  
+  - Relaxation steps.  
+- ⏱️ Complexity
+  - O((V+E) log V) with heap.  
+- 🧵 Practical Notes
+  - When Dijkstra is appropriate vs BFS vs others.  
+
+#### 📅 Day 2 (Core) - Bellman-Ford & Negative Weights
+
+**Topics & Subtopics:**
+- 📉 Relaxation Over Edges
+  - Dynamic programming over path lengths.  
+- 🔁 Algorithm Mechanics
+  - V-1 passes over edges.  
+- ⚠️ Negative Cycle Detection
+  - Extra pass to detect changes.  
+- 🧩 Use-Cases
+  - Graphs with negative weights but no negative cycles.  
+
+#### 📅 Day 3 (Core, Enhanced) - All-Pairs Shortest Paths: Floyd-Warshall
+
+**Topics & Subtopics:**
+- 🌐 APSP Problem
+  - Distances between all pairs of vertices.  
+- 🧮 DP Formulation
+  - Intermediate vertices up to k.  
+  - Triple-nested loops and state transitions.  
+- ⏱️ Complexity
+  - O(V³) time, O(V²) space.  
+- 🧩 Use-Cases
+  - Dense graphs; small V.  
+
+#### 📅 Day 4 (Core) - Minimum Spanning Trees: Kruskal & Prim
+
+**Topics & Subtopics:**
+- 🌳 MST Definition
+  - Spanning tree of minimum total weight.  
+- 🧮 Cut Property
+  - Greedy choice correctness intuition.  
+- ✂️ Kruskal Algorithm
+  - Sort edges; DSU for merging components.  
+- ⚙️ Prim Algorithm
+  - Grow tree from a start node via priority queue.  
+- 🧵 Applications
+  - Network design; base for clustering.  
+
+#### 📅 Day 5 (Optional Advanced) - DSU / Union-Find in Depth
+
+**Topics & Subtopics:**
+- 🔗 Disjoint Set Structure
+  - Parent pointers, rank/size.  
+- ⚙️ Operations
+  - find with path compression.  
+  - union by rank/size.  
+- ⏱️ Complexity
+  - Inverse Ackermann (n) intuition.  
+- 🧩 Use-Cases
+  - Connectivity queries; Kruskal MST; offline queries.  
 """
