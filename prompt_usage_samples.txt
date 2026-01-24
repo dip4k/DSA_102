@@ -336,13 +336,13 @@ WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md
 ---------- weekly playbook prompt
 
 **Prompt context**:
-- use **GENERIC WEEK GENERATION PROMPT TEMPLATE v1.0.md** file to create FULL WEEK 09 PLAYBOOK as a downloadable markdown file.
+- use **GENERIC WEEK GENERATION PROMPT TEMPLATE v1.0.md** file to create FULL week 10 PLAYBOOK as a downloadable markdown file.
 - Follow correct curriculum mentioned here **COMPLETE_SYLLABUS_v12_FINAL_Updated.md.**
 - use MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config and file naming convention.
 - use **Generic_AI_Self_Check_Correction_Step.md** file for error check in generated content and self error correction context
  
 **Rule and Action**:
-- generate WEEK_[x]_FULL_PLAYBOOK.md file for week 09
+- generate WEEK_[x]_FULL_PLAYBOOK.md file for week 10
 - provide full file not just quick summary without skipping any topic/subtopic, section/subsection for each day of the week.
 - use proper structure and formatting, use appropriate emojis and icons.
 - include visual diagram to explain concepts more clearly
@@ -388,13 +388,72 @@ VISUAL_PLAYBOOK_GENERATION_PROMPT_v12_UPDATED.md
 WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md
 ```
 
-week 08 syllabus as :
+week 10 syllabus as :
 
 """
- 
+### 🧮 Week 10 - Dynamic Programming I: Fundamentals
+
+**Primary Goal:**  
+Build DP intuition from recursion + memoization to table-based solutions.
+
+**Why This Week Comes Here:**  
+DP is fundamental to optimizing recursive solutions; this is your first deep dive.
+
+**MIT Alignment:**  
+- DP basics and examples from 6.006.
+
+#### 📅 Day 1 (Core) - DP as Recursion + Memoization
+
+**Topics & Subtopics:**
+- 🧠 Overlapping Subproblems
+  - Fibonacci, climbing stairs.  
+- 🔁 Top-Down Approach
+  - Recursion + memoization.  
+- ↕ Bottom-Up Approach
+  - Tabulation; filling tables iteratively.  
+
+#### 📅 Day 2 (Core) - 1D DP & Knapsack Family
+
+**Topics & Subtopics:**
+- 🪜 Climbing Stairs Variants
+  - Min cost, constraints.  
+- 🏠 House Robber / Non-Adjacent Sum
+  - Choose non-adjacent elements for max sum.  
+- 💰 Coin Change
+  - Min coins, number of ways.  
+- 🎒 0/1 Knapsack
+  - Classic state (i, weight).  
+
+#### 📅 Day 3 (Core) - 2D DP: Grids & Edit Distance
+
+**Topics & Subtopics:**
+- 🧩 Grid DP
+  - Unique paths; obstacles.  
+- 🔤 Edit Distance
+  - Insert/delete/replace operations.  
+  - Matrix interpretation.  
+
+#### 📅 Day 4 (Core) - DP on Sequences
+
+**Topics & Subtopics:**
+- 🔗 Longest Common Subsequence (LCS)
+  - DP state and transitions.  
+- 📈 Longest Increasing Subsequence (LIS)
+  - O(n²) DP and O(n log n) idea (high-level).  
+
+#### 📅 Day 5 (Optional Advanced) - Story-Driven DP (MIT 6.006 Style)
+
+**Topics & Subtopics:**
+- 📄 Text Justification
+  - Spaces, badness function, DP on word positions.  
+- ♠️ Blackjack-Style DP
+  - States as (hand, dealer’s shown card).  
+- 🤹 Interpreting DP States
+  - How to choose meaningful states.  
 """
 
 ---------- instructional file prompt
+
 **Prompt context**:
 - use **SYSTEM_PROMPT_v12_FOR_AI_CHAT_FINAL.md** and **WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md** files as starting point, 
 - follow **Template_v12_Narrative_FINAL.md file** for structure,
@@ -404,7 +463,7 @@ week 08 syllabus as :
 
 
 **Action** :
-- generate week 09 Day 04 instructional file as downloadable markdown md file, have detailed and structured content for generated file, dont skip any subsection or sub topic. cover topics in detailed.
+- generate week 10 Day 01 instructional file as downloadable markdown md file, have detailed and structured content for generated file, dont skip any subsection or sub topic. cover topics in detailed.
 - strictly follow template structure and file naming convention as per context
 - dont use any programming language first, and use only Csharp (c#) / .net language only when required to explain concept or topic or coding example.
 - Apply GENERIC AI SELF-CHECK & CORRECTION STEP before output (use **Generic_AI_Self_Check_Correction_Step.md** file):
@@ -452,10 +511,68 @@ VISUAL_PLAYBOOK_GENERATION_PROMPT_v12_UPDATED.md
 WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md
 ```
 
-week 09 syllabus as :
+week 10 syllabus as :
 
 """
- 
+### 🧮 Week 10 - Dynamic Programming I: Fundamentals
+
+**Primary Goal:**  
+Build DP intuition from recursion + memoization to table-based solutions.
+
+**Why This Week Comes Here:**  
+DP is fundamental to optimizing recursive solutions; this is your first deep dive.
+
+**MIT Alignment:**  
+- DP basics and examples from 6.006.
+
+#### 📅 Day 1 (Core) - DP as Recursion + Memoization
+
+**Topics & Subtopics:**
+- 🧠 Overlapping Subproblems
+  - Fibonacci, climbing stairs.  
+- 🔁 Top-Down Approach
+  - Recursion + memoization.  
+- ↕ Bottom-Up Approach
+  - Tabulation; filling tables iteratively.  
+
+#### 📅 Day 2 (Core) - 1D DP & Knapsack Family
+
+**Topics & Subtopics:**
+- 🪜 Climbing Stairs Variants
+  - Min cost, constraints.  
+- 🏠 House Robber / Non-Adjacent Sum
+  - Choose non-adjacent elements for max sum.  
+- 💰 Coin Change
+  - Min coins, number of ways.  
+- 🎒 0/1 Knapsack
+  - Classic state (i, weight).  
+
+#### 📅 Day 3 (Core) - 2D DP: Grids & Edit Distance
+
+**Topics & Subtopics:**
+- 🧩 Grid DP
+  - Unique paths; obstacles.  
+- 🔤 Edit Distance
+  - Insert/delete/replace operations.  
+  - Matrix interpretation.  
+
+#### 📅 Day 4 (Core) - DP on Sequences
+
+**Topics & Subtopics:**
+- 🔗 Longest Common Subsequence (LCS)
+  - DP state and transitions.  
+- 📈 Longest Increasing Subsequence (LIS)
+  - O(n²) DP and O(n log n) idea (high-level).  
+
+#### 📅 Day 5 (Optional Advanced) - Story-Driven DP (MIT 6.006 Style)
+
+**Topics & Subtopics:**
+- 📄 Text Justification
+  - Spaces, badness function, DP on word positions.  
+- ♠️ Blackjack-Style DP
+  - States as (hand, dealer’s shown card).  
+- 🤹 Interpreting DP States
+  - How to choose meaningful states.  
 """
 
 ----------- visual playbook file prompt
@@ -467,7 +584,7 @@ week 09 syllabus as :
 - use **Generic_AI_Self_Check_Correction_Step.md** file for error check in generated content and self error correction context
 
 **Action** :
-- generate week 09 visual hybrid support md file, have detailed and structured content for generated file, dont skip any subsection or sub topic. cover topics in detailed.
+- generate week 10 visual hybrid support md file, have detailed and structured content for generated file, dont skip any subsection or sub topic. cover topics in detailed.
 - strictly follow template structure and file naming convention as per context
 - use visual diagrams, charts and external visual images and resources that will help explain concept clearly
 - Apply GENERIC AI SELF-CHECK & CORRECTION STEP before output (use **Generic_AI_Self_Check_Correction_Step.md** file):
@@ -510,10 +627,68 @@ VISUAL_PLAYBOOK_GENERATION_PROMPT_v12_UPDATED.md
 WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md
 ```
 
-week 09 syllabus as :
+week 10 syllabus as :
 
 """
+### 🧮 Week 10 - Dynamic Programming I: Fundamentals
 
+**Primary Goal:**  
+Build DP intuition from recursion + memoization to table-based solutions.
+
+**Why This Week Comes Here:**  
+DP is fundamental to optimizing recursive solutions; this is your first deep dive.
+
+**MIT Alignment:**  
+- DP basics and examples from 6.006.
+
+#### 📅 Day 1 (Core) - DP as Recursion + Memoization
+
+**Topics & Subtopics:**
+- 🧠 Overlapping Subproblems
+  - Fibonacci, climbing stairs.  
+- 🔁 Top-Down Approach
+  - Recursion + memoization.  
+- ↕ Bottom-Up Approach
+  - Tabulation; filling tables iteratively.  
+
+#### 📅 Day 2 (Core) - 1D DP & Knapsack Family
+
+**Topics & Subtopics:**
+- 🪜 Climbing Stairs Variants
+  - Min cost, constraints.  
+- 🏠 House Robber / Non-Adjacent Sum
+  - Choose non-adjacent elements for max sum.  
+- 💰 Coin Change
+  - Min coins, number of ways.  
+- 🎒 0/1 Knapsack
+  - Classic state (i, weight).  
+
+#### 📅 Day 3 (Core) - 2D DP: Grids & Edit Distance
+
+**Topics & Subtopics:**
+- 🧩 Grid DP
+  - Unique paths; obstacles.  
+- 🔤 Edit Distance
+  - Insert/delete/replace operations.  
+  - Matrix interpretation.  
+
+#### 📅 Day 4 (Core) - DP on Sequences
+
+**Topics & Subtopics:**
+- 🔗 Longest Common Subsequence (LCS)
+  - DP state and transitions.  
+- 📈 Longest Increasing Subsequence (LIS)
+  - O(n²) DP and O(n log n) idea (high-level).  
+
+#### 📅 Day 5 (Optional Advanced) - Story-Driven DP (MIT 6.006 Style)
+
+**Topics & Subtopics:**
+- 📄 Text Justification
+  - Spaces, badness function, DP on word positions.  
+- ♠️ Blackjack-Style DP
+  - States as (hand, dealer’s shown card).  
+- 🤹 Interpreting DP States
+  - How to choose meaningful states.  
 """
 
 ------- csharp support file prompt
@@ -568,84 +743,68 @@ VISUAL_PLAYBOOK_GENERATION_PROMPT_v12_UPDATED.md
 WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md
 ```
 
-week 09 syllabus as :
+week 10 syllabus as :
 
 """
-### 🛣️ Week 9 - Graph Algorithms I: Shortest Paths, MST & Union-Find
+### 🧮 Week 10 - Dynamic Programming I: Fundamentals
 
 **Primary Goal:**  
-Learn foundational shortest path and MST algorithms, plus disjoint set union for connectivity.
+Build DP intuition from recursion + memoization to table-based solutions.
 
 **Why This Week Comes Here:**  
-These algorithms solve fundamental optimization and connectivity problems.
+DP is fundamental to optimizing recursive solutions; this is your first deep dive.
 
 **MIT Alignment:**  
-- Dijkstra, Bellman-Ford, Floyd-Warshall, MST, and DSU from 6.006/6.046.
+- DP basics and examples from 6.006.
 
-#### 📅 Day 1 (Core) - Single-Source Shortest Paths: Dijkstra
-
-**Topics & Subtopics:**
-- 🎯 Problem Definition
-  - Non-negative edge weights.  
-- 🚍 Dijkstra Algorithm
-  - Priority queue frontier.  
-  - Relaxation steps.  
-- ⏱️ Complexity
-  - O((V+E) log V) with heap.  
-- 🧵 Practical Notes
-  - When Dijkstra is appropriate vs BFS vs others.  
-
-#### 📅 Day 2 (Core) - Bellman-Ford & Negative Weights
+#### 📅 Day 1 (Core) - DP as Recursion + Memoization
 
 **Topics & Subtopics:**
-- 📉 Relaxation Over Edges
-  - Dynamic programming over path lengths.  
-- 🔁 Algorithm Mechanics
-  - V-1 passes over edges.  
-- ⚠️ Negative Cycle Detection
-  - Extra pass to detect changes.  
-- 🧩 Use-Cases
-  - Graphs with negative weights but no negative cycles.  
+- 🧠 Overlapping Subproblems
+  - Fibonacci, climbing stairs.  
+- 🔁 Top-Down Approach
+  - Recursion + memoization.  
+- ↕ Bottom-Up Approach
+  - Tabulation; filling tables iteratively.  
 
-#### 📅 Day 3 (Core, Enhanced) - All-Pairs Shortest Paths: Floyd-Warshall
+#### 📅 Day 2 (Core) - 1D DP & Knapsack Family
 
 **Topics & Subtopics:**
-- 🌐 APSP Problem
-  - Distances between all pairs of vertices.  
-- 🧮 DP Formulation
-  - Intermediate vertices up to k.  
-  - Triple-nested loops and state transitions.  
-- ⏱️ Complexity
-  - O(V³) time, O(V²) space.  
-- 🧩 Use-Cases
-  - Dense graphs; small V.  
+- 🪜 Climbing Stairs Variants
+  - Min cost, constraints.  
+- 🏠 House Robber / Non-Adjacent Sum
+  - Choose non-adjacent elements for max sum.  
+- 💰 Coin Change
+  - Min coins, number of ways.  
+- 🎒 0/1 Knapsack
+  - Classic state (i, weight).  
 
-#### 📅 Day 4 (Core) - Minimum Spanning Trees: Kruskal & Prim
-
-**Topics & Subtopics:**
-- 🌳 MST Definition
-  - Spanning tree of minimum total weight.  
-- 🧮 Cut Property
-  - Greedy choice correctness intuition.  
-- ✂️ Kruskal Algorithm
-  - Sort edges; DSU for merging components.  
-- ⚙️ Prim Algorithm
-  - Grow tree from a start node via priority queue.  
-- 🧵 Applications
-  - Network design; base for clustering.  
-
-#### 📅 Day 5 (Optional Advanced) - DSU / Union-Find in Depth
+#### 📅 Day 3 (Core) - 2D DP: Grids & Edit Distance
 
 **Topics & Subtopics:**
-- 🔗 Disjoint Set Structure
-  - Parent pointers, rank/size.  
-- ⚙️ Operations
-  - find with path compression.  
-  - union by rank/size.  
-- ⏱️ Complexity
-  - Inverse Ackermann α(n) intuition.  
-- 🧩 Use-Cases
-  - Connectivity queries; Kruskal MST; offline queries.  
+- 🧩 Grid DP
+  - Unique paths; obstacles.  
+- 🔤 Edit Distance
+  - Insert/delete/replace operations.  
+  - Matrix interpretation.  
+
+#### 📅 Day 4 (Core) - DP on Sequences
+
+**Topics & Subtopics:**
+- 🔗 Longest Common Subsequence (LCS)
+  - DP state and transitions.  
+- 📈 Longest Increasing Subsequence (LIS)
+  - O(n²) DP and O(n log n) idea (high-level).  
+
+#### 📅 Day 5 (Optional Advanced) - Story-Driven DP (MIT 6.006 Style)
+
+**Topics & Subtopics:**
+- 📄 Text Justification
+  - Spaces, badness function, DP on word positions.  
+- ♠️ Blackjack-Style DP
+  - States as (hand, dealer’s shown card).  
+- 🤹 Interpreting DP States
+  - How to choose meaningful states.    
 """
 
 ---------- support file prompt
@@ -654,12 +813,11 @@ These algorithms solve fundamental optimization and connectivity problems.
 - use **SYSTEM_PROMPT_v12_FOR_AI_CHAT_FINAL.md** and **WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md** files as starting point, 
 - follow **Template_v12_Narrative_FINAL.md file** for structure,
 - use **COMPLETE_SYLLABUS_v12_FINAL_Updated.md** file for syllabus,
-- use MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config
- and file naming convention.
+- use MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config  and file naming convention.
 - use **Generic_AI_Self_Check_Correction_Step.md** file for error check in generated content and self error correction context
 
 **Action** :
-- generate week 09 Support files, 
+- generate week 10 Support files, 
 """
 - `Week_X_Guidelines.md`
 - `Week_X_Summary_Key_Concepts.md`
@@ -713,82 +871,66 @@ VISUAL_PLAYBOOK_GENERATION_PROMPT_v12_UPDATED.md
 WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md
 ```
 
-week 09 syllabus as :
+week 10 syllabus as :
 
 """
-### 🛣️ Week 9 - Graph Algorithms I: Shortest Paths, MST & Union-Find
+### 🧮 Week 10 - Dynamic Programming I: Fundamentals
 
 **Primary Goal:**  
-Learn foundational shortest path and MST algorithms, plus disjoint set union for connectivity.
+Build DP intuition from recursion + memoization to table-based solutions.
 
 **Why This Week Comes Here:**  
-These algorithms solve fundamental optimization and connectivity problems.
+DP is fundamental to optimizing recursive solutions; this is your first deep dive.
 
 **MIT Alignment:**  
-- Dijkstra, Bellman-Ford, Floyd-Warshall, MST, and DSU from 6.006/6.046.
+- DP basics and examples from 6.006.
 
-#### 📅 Day 1 (Core) - Single-Source Shortest Paths: Dijkstra
-
-**Topics & Subtopics:**
-- 🎯 Problem Definition
-  - Non-negative edge weights.  
-- 🚍 Dijkstra Algorithm
-  - Priority queue frontier.  
-  - Relaxation steps.  
-- ⏱️ Complexity
-  - O((V+E) log V) with heap.  
-- 🧵 Practical Notes
-  - When Dijkstra is appropriate vs BFS vs others.  
-
-#### 📅 Day 2 (Core) - Bellman-Ford & Negative Weights
+#### 📅 Day 1 (Core) - DP as Recursion + Memoization
 
 **Topics & Subtopics:**
-- 📉 Relaxation Over Edges
-  - Dynamic programming over path lengths.  
-- 🔁 Algorithm Mechanics
-  - V-1 passes over edges.  
-- ⚠️ Negative Cycle Detection
-  - Extra pass to detect changes.  
-- 🧩 Use-Cases
-  - Graphs with negative weights but no negative cycles.  
+- 🧠 Overlapping Subproblems
+  - Fibonacci, climbing stairs.  
+- 🔁 Top-Down Approach
+  - Recursion + memoization.  
+- ↕ Bottom-Up Approach
+  - Tabulation; filling tables iteratively.  
 
-#### 📅 Day 3 (Core, Enhanced) - All-Pairs Shortest Paths: Floyd-Warshall
+#### 📅 Day 2 (Core) - 1D DP & Knapsack Family
 
 **Topics & Subtopics:**
-- 🌐 APSP Problem
-  - Distances between all pairs of vertices.  
-- 🧮 DP Formulation
-  - Intermediate vertices up to k.  
-  - Triple-nested loops and state transitions.  
-- ⏱️ Complexity
-  - O(V³) time, O(V²) space.  
-- 🧩 Use-Cases
-  - Dense graphs; small V.  
+- 🪜 Climbing Stairs Variants
+  - Min cost, constraints.  
+- 🏠 House Robber / Non-Adjacent Sum
+  - Choose non-adjacent elements for max sum.  
+- 💰 Coin Change
+  - Min coins, number of ways.  
+- 🎒 0/1 Knapsack
+  - Classic state (i, weight).  
 
-#### 📅 Day 4 (Core) - Minimum Spanning Trees: Kruskal & Prim
-
-**Topics & Subtopics:**
-- 🌳 MST Definition
-  - Spanning tree of minimum total weight.  
-- 🧮 Cut Property
-  - Greedy choice correctness intuition.  
-- ✂️ Kruskal Algorithm
-  - Sort edges; DSU for merging components.  
-- ⚙️ Prim Algorithm
-  - Grow tree from a start node via priority queue.  
-- 🧵 Applications
-  - Network design; base for clustering.  
-
-#### 📅 Day 5 (Optional Advanced) - DSU / Union-Find in Depth
+#### 📅 Day 3 (Core) - 2D DP: Grids & Edit Distance
 
 **Topics & Subtopics:**
-- 🔗 Disjoint Set Structure
-  - Parent pointers, rank/size.  
-- ⚙️ Operations
-  - find with path compression.  
-  - union by rank/size.  
-- ⏱️ Complexity
-  - Inverse Ackermann (n) intuition.  
-- 🧩 Use-Cases
-  - Connectivity queries; Kruskal MST; offline queries.  
+- 🧩 Grid DP
+  - Unique paths; obstacles.  
+- 🔤 Edit Distance
+  - Insert/delete/replace operations.  
+  - Matrix interpretation.  
+
+#### 📅 Day 4 (Core) - DP on Sequences
+
+**Topics & Subtopics:**
+- 🔗 Longest Common Subsequence (LCS)
+  - DP state and transitions.  
+- 📈 Longest Increasing Subsequence (LIS)
+  - O(n²) DP and O(n log n) idea (high-level).  
+
+#### 📅 Day 5 (Optional Advanced) - Story-Driven DP (MIT 6.006 Style)
+
+**Topics & Subtopics:**
+- 📄 Text Justification
+  - Spaces, badness function, DP on word positions.  
+- ♠️ Blackjack-Style DP
+  - States as (hand, dealer’s shown card).  
+- 🤹 Interpreting DP States
+  - How to choose meaningful states.  
 """
