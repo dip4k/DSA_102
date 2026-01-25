@@ -263,7 +263,7 @@ try to use visual representation (Graphs, charts, flow diagram, sequence diagram
 
 use SYSTEM_PROMPT_v12_FOR_AI_CHAT_FINAL.md file as starting point, 
 follow Template_v12_Narrative_FINAL.md file for structure,
-COMPLETE_SYLLABUS_v12_FINAL_Updated.md file for syllabus,
+COMPLETE_SYLLABUS_v13_FINAL.md file for syllabus,
 MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config
  and 
 
@@ -273,7 +273,7 @@ generate week 03 support files 5 files total, have detailed and structured conte
 
 all reference files are
 ```
-COMPLETE_SYLLABUS_v12_FINAL_Updated.md
+COMPLETE_SYLLABUS_v13_FINAL.md
 EMOJI_ICON_GUIDE_v12.md
 MASTER_PROMPT_v12_FINAL.md
 SYSTEM_CONFIG_v12_FINAL.md
@@ -289,7 +289,7 @@ WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md
 
 use SYSTEM_PROMPT_v12_EXTENDED_SUPPORT_CSHARP.md file as starting point, 
 follow Template_v12_Narrative_FINAL.md file for structure,
-COMPLETE_SYLLABUS_v12_FINAL_Updated.md file for syllabus,
+COMPLETE_SYLLABUS_v13_FINAL.md file for syllabus,
 MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config
  and 
 
@@ -298,7 +298,7 @@ generate week 06 support file for csharp extended file
 
 all reference files are
 ```
-COMPLETE_SYLLABUS_v12_FINAL_Updated.md
+COMPLETE_SYLLABUS_v13_FINAL.md
 EMOJI_ICON_GUIDE_v12.md
 MASTER_PROMPT_v12_FINAL.md
 SYSTEM_CONFIG_v12_FINAL.md
@@ -313,7 +313,7 @@ WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md
 ----------------
 
 use VISUAL_PLAYBOOK_GENERATION_PROMPT_v12_UPDATED.md file as starting point, 
-follow COMPLETE_SYLLABUS_v12_FINAL_Updated.md file for syllabus,
+follow COMPLETE_SYLLABUS_v13_FINAL.md file for syllabus,
 MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config
  and 
 
@@ -322,7 +322,7 @@ create week 06 hybrid support md file
 
 all reference files are
 ```
-COMPLETE_SYLLABUS_v12_FINAL_Updated.md
+COMPLETE_SYLLABUS_v13_FINAL.md
 EMOJI_ICON_GUIDE_v12.md
 MASTER_PROMPT_v12_FINAL.md
 SYSTEM_CONFIG_v12_FINAL.md
@@ -337,7 +337,7 @@ WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md
 
 **Prompt context**:
 - use **GENERIC WEEK GENERATION PROMPT TEMPLATE v1.0.md** file to create FULL week 10 PLAYBOOK as a downloadable markdown file.
-- Follow correct curriculum mentioned here **COMPLETE_SYLLABUS_v12_FINAL_Updated.md.**
+- Follow correct curriculum mentioned here **COMPLETE_SYLLABUS_v13_FINAL.md.**
 - use MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config and file naming convention.
 - use **Generic_AI_Self_Check_Correction_Step.md** file for error check in generated content and self error correction context
  
@@ -374,7 +374,7 @@ WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md
 all reference files that might need for knowing course data and context:
 
 ```
-COMPLETE_SYLLABUS_v12_FINAL_Updated.md
+COMPLETE_SYLLABUS_v13_FINAL.md
 EMOJI_ICON_GUIDE_v12.md
 MASTER_PROMPT_v12_FINAL.md
 SYSTEM_CONFIG_v12_FINAL.md
@@ -457,7 +457,7 @@ DP is fundamental to optimizing recursive solutions; this is your first deep div
 **Prompt context**:
 - use **SYSTEM_PROMPT_v12_FOR_AI_CHAT_FINAL.md** and **WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md** files as starting point, 
 - follow **Template_v12_Narrative_FINAL.md file** for structure,
-- use **COMPLETE_SYLLABUS_v12_FINAL_Updated.md** file for syllabus,
+- use **COMPLETE_SYLLABUS_v13_FINAL.md** file for syllabus,
 - use MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config and file naming convention.
 - use **Generic_AI_Self_Check_Correction_Step.md** file for error check in generated content and self error correction context
 
@@ -497,7 +497,7 @@ If content is exceeding 12,000-18,000 word limit for all required topic and sect
 all reference files that might need for knowing course data and context:
 
 ```
-COMPLETE_SYLLABUS_v12_FINAL_Updated.md
+COMPLETE_SYLLABUS_v13_FINAL.md
 EMOJI_ICON_GUIDE_v12.md
 MASTER_PROMPT_v12_FINAL.md
 SYSTEM_CONFIG_v12_FINAL.md
@@ -579,7 +579,7 @@ DP is fundamental to optimizing recursive solutions; this is your first deep div
 
 **Prompt context**:
 - use **VISUAL_PLAYBOOK_GENERATION_PROMPT_v12_UPDATED.md** file as starting point, 
-- use **COMPLETE_SYLLABUS_v12_FINAL_Updated.md** file for syllabus,
+- use **COMPLETE_SYLLABUS_v13_FINAL.md** file for syllabus,
 - use MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config  and file naming convention.
 - use **Generic_AI_Self_Check_Correction_Step.md** file for error check in generated content and self error correction context
 
@@ -613,7 +613,7 @@ FILENAME: Week_[WEEK_NUMBER]_Visual_Concepts_Playbook_HYBRID.md (2 digit week nu
 all reference files that might need for knowing course data and context:
 
 ```
-COMPLETE_SYLLABUS_v12_FINAL_Updated.md
+COMPLETE_SYLLABUS_v13_FINAL.md
 EMOJI_ICON_GUIDE_v12.md
 MASTER_PROMPT_v12_FINAL.md
 SYSTEM_CONFIG_v12_FINAL.md
@@ -696,7 +696,7 @@ DP is fundamental to optimizing recursive solutions; this is your first deep div
 **Prompt context**:
 - use **CONSOLIDATED_CSHARP_EXTENDED_SUPPORT_MASTER_PROMPT_v13.md** file as starting point, 
 - use **SYSTEM_PROMPT_v13_EXTENDED_SUPPORT_CSHARP.md** and **SYSTEM_PROMPT_v12_EXTENDED_SUPPORT_CSHARP.md** files as reference
-- use **COMPLETE_SYLLABUS_v12_FINAL_Updated.md** file for syllabus,
+- use **COMPLETE_SYLLABUS_v13_FINAL.md** file for syllabus,
 - use MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config and file naming convention.
 - use **Generic_AI_Self_Check_Correction_Step.md** file for error check in generated content and self error correction context
 
@@ -729,7 +729,7 @@ DP is fundamental to optimizing recursive solutions; this is your first deep div
 all reference files that might need for knowing course data and context:
 
 ```
-COMPLETE_SYLLABUS_v12_FINAL_Updated.md
+COMPLETE_SYLLABUS_v13_FINAL.md
 EMOJI_ICON_GUIDE_v12.md
 MASTER_PROMPT_v12_FINAL.md
 SYSTEM_CONFIG_v12_FINAL.md
@@ -812,7 +812,7 @@ DP is fundamental to optimizing recursive solutions; this is your first deep div
 **Prompt context**:
 - use **SYSTEM_PROMPT_v12_FOR_AI_CHAT_FINAL.md** and **WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md** files as starting point, 
 - follow **Template_v12_Narrative_FINAL.md file** for structure,
-- use **COMPLETE_SYLLABUS_v12_FINAL_Updated.md** file for syllabus,
+- use **COMPLETE_SYLLABUS_v13_FINAL.md** file for syllabus,
 - use MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config  and file naming convention.
 - use **Generic_AI_Self_Check_Correction_Step.md** file for error check in generated content and self error correction context
 
@@ -857,7 +857,7 @@ DP is fundamental to optimizing recursive solutions; this is your first deep div
 all reference files that might need for knowing course data and context:
 
 ```
-COMPLETE_SYLLABUS_v12_FINAL_Updated.md
+COMPLETE_SYLLABUS_v13_FINAL.md
 EMOJI_ICON_GUIDE_v12.md
 MASTER_PROMPT_v12_FINAL.md
 SYSTEM_CONFIG_v12_FINAL.md

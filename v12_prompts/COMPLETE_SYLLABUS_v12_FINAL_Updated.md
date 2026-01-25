@@ -1,4 +1,4 @@
-# 📘 COMPLETE_SYLLABUS_v12_FINAL_Updated.md
+# 📘 COMPLETE_SYLLABUS_v13_FINAL.md
 **Version:** 12.1  
 **Status:** ✅ OFFICIAL FINAL SYLLABUS (Narrative-First, MIT 6.006/6.046 Aligned)  
 **Philosophy:**  

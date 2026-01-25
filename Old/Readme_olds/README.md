@@ -1,8 +1,8 @@
-# 📚 DSA Master Curriculum v13
+# 📚 DSA Master Curriculum v12
 ## **Narrative-First, Interview-Ready, Production-Grade**
 
-**Version:** 13.0 (Professional Edition, Complete Syllabus)  
-**Status:** ✅ Complete, MIT-Level Depth, v13 Comprehensive Syllabus-Aligned  
+**Version:** 12.1 (Rev 4, Syllabus-Synced)  
+**Status:** ✅ Complete, MIT-Level Depth, v12.1 Syllabus-Aligned  
 **License:** 📜 MIT (Free for learning and teaching)
 
 ---
@@ -11,14 +11,14 @@
 
 This is a **comprehensive, narrative-driven Data Structures and Algorithms curriculum** designed to transform you from foundational understanding (RAM model, Big-O, recursion) to mastery (advanced patterns, systems design, production-grade code, interview readiness) over **19 weeks**.
 
-It preserves the **structure, tone, and visual style** of professional DSA education, while delivering the **complete phase, week, and day-by-day syllabus** aligned with `COMPLETE_SYLLABUS_v13.md` (v13.0).
+It preserves the **structure, tone, and visual style** of the original v12 README, while updating the **phase, week, and day-by-day syllabus** to match `COMPLETE_SYLLABUS_v13_FINAL.md` (v12.1).
 
 ### 🧠 Core Philosophy
 
 - 🎓 **Mental Models First** — Understand *why* before *how*. Systems-level thinking precedes code.
 - 📖 **Narrative-Driven** — Reads like MIT lecture notes from a master teacher, not a reference manual checklist.
 - ⚙️ **Systems-Grounded** — Every concept connects to **real production systems** (Linux kernel, PostgreSQL, Redis, Netflix engineering).
-- 🎨 **Pattern-Centric** — 180+ topics organized as **learnable, reusable patterns** across interview problems.
+- 🎨 **Pattern-Centric** — 95+ topics organized as **learnable, reusable patterns** across interview problems.
 - 🎯 **Interview-Ready** — ~**98% coverage** of real FAANG-style technical interview question patterns.
 - 💻 **Production-Grade Code** — C# implementations with professional quality, not LeetCode spaghetti.
 - 🌐 **Visual + Interactive** — 30+ ASCII diagrams per week + dedicated visual playbooks and external visualization tools.
@@ -34,7 +34,7 @@ It preserves the **structure, tone, and visual style** of professional DSA educa
 - Hope interview questions match what you practiced
 - Fight against forgetting (high cognitive load, low retention)
 
-### ✅ v13 Approach (Understanding)
+### ✅ v12 Approach (Understanding)
 - Build **mental models** of how data structures live in memory
 - Understand **why** some algorithms are faster (cache behavior, locality, CPU physics)
 - Learn **patterns** that appear across 100+ problems (two-pointer, window, DP families, graph templates)
@@ -88,17 +88,17 @@ It preserves the **structure, tone, and visual style** of professional DSA educa
 
 ---
 
-## 📊 Curriculum Overview: 7 Phases, 19 Weeks (v13.0)
+## 📊 Curriculum Overview: 7 Phases, 19 Weeks (v12.1)
 
 | Phase | Weeks | Focus | Topics | Interview Coverage | Goal |
 |-------|-------|-------|--------|--------------------|------|
-| **🟦 A: Foundations** | 1–3 | RAM model, Big-O, Recursion, Linear DS, Sorting, Hashing | 15+ core | 25–30% | Foundation Set |
-| **🟩 B: Core Patterns** | 4–6 | Two-Pointer, Sliding Window, Hash/Stack/Intervals, Strings | 15+ core | 70–80% | Strong Base |
-| **🟨 C: Trees, Graphs & DP** | 7–11 | Trees, BSTs, Graphs, Shortest Paths, DP I–II | 25+ core | 80–88% | Competent |
-| **🟧 D: Paradigms** | 12–13 | Greedy, Algorithm Paradigms, Amortized Analysis | 10+ core | 85–90% | Proficient |
-| **🟪 E: Integration & Extensions** | 14–15 | Matrix problems, Backtracking, Bits, Advanced Strings & Flow | 15+ core | 90–95% | Advanced |
-| **🟫 F: Deep Dives (Optional)** | 16–18 | Segment Trees, BIT, Geometry, HLD, FFT, Probabilistic DS | 15+ advanced | 95%+ | Elite |
-| **🔴 G: Mock Interviews** | 19 | Full Mock Interviews, Weak Points, Final Prep | Integration | 98% | Interview Ready |
+| **🏗️ A: Foundations** | 1–3 | RAM model, Big-O, Recursion, Linear DS, Sorting, Hashing | 15+ core | 25–30% | Foundation Set |
+| **📋 B: Core Patterns** | 4–6 | Two-Pointer, Sliding Window, Hash/Stack/Intervals, Strings | 15+ core | 70–80% | Strong Base |
+| **🌳 C: Trees, Graphs & DP** | 7–11 | Trees, BSTs, Graphs, Shortest Paths, DP I–II | 25+ core | 80–88% | Competent |
+| **⚙️ D: Paradigms** | 12–13 | Greedy, Advanced Graphs, Amortized Analysis | 10+ core | 85–90% | Proficient |
+| **🔄 E: Integration & DP Mastery** | 14–15 | Matrix problems, Backtracking, Bits, Advanced Strings & Flow | 15+ core | 90–95% | Advanced |
+| **🚀 F: Deep Dives (Optional)** | 16–18 | Segment Trees, BIT, Geometry, HLD, FFT, Probabilistic DS, Flow | 15+ advanced | 95%+ | Elite |
+| **🎤 G: Mock Interviews** | 19 | Full Mock Interviews, Weak Points, Final Prep | Integration | 98% | Interview Ready |
 
 ---
 
@@ -113,9 +113,9 @@ It preserves the **structure, tone, and visual style** of professional DSA educa
 Week 1–3 : Build foundations (RAM model, Big-O, recursion, space)
 Week 4–6 : Master core patterns (arrays & strings)
 Week 7–11: Trees, graphs, DP I–II (classic CS core)
-Week 12–13: Paradigms (greedy, algorithm paradigms, amortized analysis)
+Week 12–13: Paradigms (greedy, advanced graphs, amortized analysis)
 Week 14–15: Integration (matrix problems, backtracking, bits, advanced strings, intro to flow)
-Week 16–18: Optional deep dives (segment trees, BIT, geometry, HLD, FFT, probabilistic DS)
+Week 16–18: Optional deep dives (segment trees, geometry, HLD, FFT, probabilistic DS)
 Week 19   : Mock interviews & integration
 ```
 
@@ -138,12 +138,12 @@ Week 1 :   Weeks 4–5 (Two-pointer, windows, Tier 1 critical patterns)
 Week 2 :   Week 6 (strings) + core of Week 7 (tree basics)
 Week 3 :   Weeks 8–9 (graph fundamentals, shortest paths, MST)
 Week 4 :   Weeks 10–11 (DP fundamentals + trees/DAGs)
-Week 5 :   Weeks 12–13 (greedy, algorithm paradigms, amortized)
+Week 5 :   Weeks 12–13 (greedy, advanced graphs, amortized)
 Week 6–8:  Week 19-style mocks + focused gap-filling using Summaries & QA
 ```
 
 **Expected Outcomes:**
-- ✅ Strong pattern classification across 100+ patterns
+- ✅ Strong pattern classification across 70+ patterns
 - ✅ Ability to solve most medium/hard interview problems
 - ✅ Clear, structured communication during interviews
 
@@ -156,7 +156,7 @@ Week 6–8:  Week 19-style mocks + focused gap-filling using Summaries & QA
 
 ```text
 Need trees/graphs?  → Week 7–9 Summaries + Roadmaps + Interview_QA
-Weak on DP?         → Week 10–11 + Week 15 Summaries + Visual Playbooks
+Weak on DP?         → Week 10–11 + Week 14 Summaries + Visual Playbooks
 String algorithms?   → Week 6 + Week 15
 Greedy/amortized?    → Week 12–13
 Flows/advanced DS?   → Weeks 16–18 overview
@@ -164,7 +164,7 @@ Flows/advanced DS?   → Weeks 16–18 overview
 
 **Benefits:**
 - ✅ No wasted time on topics you already know
-- ✅ Fast "map" of what to review for a given role
+- ✅ Fast “map” of what to review for a given role
 
 ---
 
@@ -267,7 +267,7 @@ Every week follows a **consistent file structure** so you always know where to g
 ### 💻 File 8: **WeekX_ProblemSolving_Roadmap_Extended_CSharp.md** (3,000–4,000 words)
 **Purpose:** 💻 Production-grade C# implementations and patterns  
 **Contains:**
-- 🎯 Problem "signals" mapped to patterns and C# collections
+- 🎯 Problem “signals” mapped to patterns and C# collections
 - 💡 C#-specific mental model per pattern
 - 🔧 C# skeletons (guard clauses, comments explaining *why*, not just *what*)
 - 📚 Notes on performance characteristics and pitfalls
@@ -277,53 +277,53 @@ Every week follows a **consistent file structure** so you always know where to g
 
 ---
 
-## 📋 Detailed Week-by-Week Breakdown (v13.0)
+## 📋 Detailed Week-by-Week Breakdown (v12.1)
 
-### 🟦 **PHASE A: FOUNDATIONS & COMPUTATIONAL THINKING (Weeks 1–3)**
+### 🏗️ **PHASE A: FOUNDATIONS (Weeks 1–3)**
 
-#### 🧠 **Week 1: Computational Fundamentals, Peak Finding & Asymptotics**  
-**Topics:** RAM Model, Pointers, Complexity Analysis, Space, Recursion I-II, Peak Finding
+#### 🧠 **Week 1: Computational Fundamentals**  
+Topics: RAM Model, Pointers, Complexity Analysis, Space, Recursion, Peak Finding
 
 - 📅 **Day 1:** RAM Model, Virtual Memory, Pointers  
-- 📅 **Day 2:** Asymptotic Analysis (Big-O, Big-Ω, Big-Θ)  
-- 📅 **Day 3:** Space Complexity  
-- 📅 **Day 4:** Recursion I (Call Stack & Patterns)  
-- 📅 **Day 5:** Recursion II (Memoization & Advanced)  
+- 📅 **Day 2:** Big-O, Big-Ω, Big-Θ (Asymptotic Analysis)  
+- 📅 **Day 3:** Space Complexity (Stack, Heap, Memory)  
+- 📅 **Day 4:** Recursion I (Call Stack, Basic Patterns)  
+- 📅 **Day 5:** Recursion II (Memoization, Optimization)  
 - 🌟 **Day 6 (Optional):** Peak Finding (1D & 2D, MIT 6.006)
 
 ---
 
 #### 🗂️ **Week 2: Linear Data Structures & Binary Search**  
-**Topics:** Arrays, Dynamic Arrays, Linked Lists, Stacks, Queues, Binary Search
+Topics: Arrays, Dynamic Arrays, Linked Lists, Stacks, Queues, Binary Search
 
-- 📅 **Day 1:** Static Arrays & Memory Layout  
-- 📅 **Day 2:** Dynamic Arrays & Amortized Growth  
-- 📅 **Day 3:** Linked Lists & Cache Effects  
-- 📅 **Day 4:** Stacks, Queues & Deques  
-- 📅 **Day 5:** Binary Search & Invariants
+- 📅 **Day 1:** Static Arrays (Memory Layout, Indexing, Row/Column-Major)  
+- 📅 **Day 2:** Dynamic Arrays (Doubling Strategy, Amortized Growth)  
+- 📅 **Day 3:** Linked Lists (Singly, Doubly; trade-offs and cache effects)  
+- 📅 **Day 4:** Stacks & Queues (LIFO/FIFO, Deques, Circular Buffers)  
+- 📅 **Day 5:** Binary Search (Invariants, Variants, Answer Space)
 
 ---
 
 #### 🔀 **Week 3: Sorting, Heaps & Hashing**  
-**Topics:** Elementary Sorts, Merge/Quick Sort, Heaps, Hash Tables
+Topics: Elementary Sorts, Merge/Quick Sort, Heaps, Hash Tables
 
-- 📅 **Day 1:** Elementary Sorts (Bubble, Selection, Insertion)  
-- 📅 **Day 2:** Merge Sort & Quick Sort  
-- 📅 **Day 3:** Heaps, Heapify & Heap Sort  
-- 📅 **Day 4:** Hash Tables I (Separate Chaining)  
-- 📅 **Day 5:** Hash Tables II (Open Addressing & Rolling Hash)
+- 📅 **Day 1:** Elementary Sorts (Bubble, Selection, Insertion; stability, in-place)  
+- 📅 **Day 2:** Merge Sort & Quick Sort (divide & conquer, recurrences, hybrids)  
+- 📅 **Day 3:** Heaps, Heapify & Heap Sort (binary heap, priority queues)  
+- 📅 **Day 4:** Hash Tables I (Separate Chaining, Load Factor, Resizing)  
+- 📅 **Day 5:** Hash Tables II (Open Addressing, Universal Hashing, Rolling Hash)
 
 ---
 
-### 🟩 **PHASE B: CORE PATTERNS & STRING MANIPULATION (Weeks 4–6)**
+### 📋 **PHASE B: CORE PATTERNS (Weeks 4–6)**
 
-#### 👉 **Week 4: Core Problem-Solving Patterns I**  
-**Topics:** Two-Pointer, Sliding Window, Divide & Conquer, Binary Search as Pattern
+#### 👉 **Week 4: Problem-Solving Patterns I**  
+Topics: Two-Pointer, Sliding Window, Divide & Conquer, Binary Search as Pattern
 
 - 📅 **Day 1:** Two-Pointer Techniques  
 - 📅 **Day 2:** Sliding Window (Fixed Size)  
 - 📅 **Day 3:** Sliding Window (Variable Size)  
-- 📅 **Day 4:** Divide & Conquer Pattern  
+- 📅 **Day 4:** Divide & Conquer Patterns  
 - 📅 **Day 5:** Binary Search as Pattern
 
 **Interview Coverage:** 25–30%  
@@ -332,12 +332,12 @@ Every week follows a **consistent file structure** so you always know where to g
 ---
 
 #### 🌟 **Week 5: Tier 1 Critical Patterns** ⭐  
-**Topics:** Hash Maps, Monotonic Stack, Intervals, Partition & Kadane, Fast-Slow Pointers
+Topics: Hash Maps, Monotonic Stack, Intervals, Partition & Kadane, Fast-Slow Pointers
 
 - 📅 **Day 1:** Hash Map & Hash Set Patterns  
 - 📅 **Day 2:** Monotonic Stack  
 - 📅 **Day 3:** Merge Operations & Interval Patterns  
-- 📅 **Day 4:** Partition, Cyclic Sort & Kadane's Algorithm  
+- 📅 **Day 4:** Partition, Cyclic Sort & Kadane’s Algorithm  
 - 📅 **Day 5:** Fast-Slow Pointers & Cycle Detection
 
 **Interview Coverage:** 40–50%  
@@ -346,176 +346,144 @@ Every week follows a **consistent file structure** so you always know where to g
 ---
 
 #### 📝 **Week 6: String Manipulation Patterns**  
-**Topics:** Palindromes, Substrings, Parentheses, String Building, Matching
+Topics: Palindromes, Substrings, Parentheses, String Building
 
 - 📅 **Day 1:** Palindrome Patterns  
-- 📅 **Day 2:** Substring & Sliding Window  
+- 📅 **Day 2:** Substring Sliding Window  
 - 📅 **Day 3:** Parentheses & Bracket Matching  
-- 📅 **Day 4:** String Transformations & Building  
-- 🌟 **Day 5 (Optional):** String Matching & Rolling Hash
+- 📅 **Day 4:** String Transformations & Building
 
 **Interview Coverage:** 10–15%  
 **Total to Date:** 80%+ interview problems
 
 ---
 
-### 🟨 **PHASE C: TREES, GRAPHS & DYNAMIC PROGRAMMING (Weeks 7–11)**
+### 🌳 **PHASE C: TREES, GRAPHS & DP (Weeks 7–11)**
 
 #### 🌲 **Week 7: Trees & Balanced Search Trees**
-**Topics:** Binary Trees, Traversals, BSTs, AVL Trees, Red-Black Trees, Tree Patterns, Augmented Trees
-
-- 📅 **Day 1:** Binary Trees & Traversals  
-- 📅 **Day 2:** Binary Search Trees (BSTs)  
-- 📅 **Day 3:** Balanced BSTs (AVL & Red-Black)  
-- 📅 **Day 4:** Tree Patterns (Paths, Diameter, LCA)  
-- 🌟 **Day 5 (Optional):** Augmented Trees & Order-Statistics
+- Binary Tree Anatomy & Traversals (DFS/BFS)  
+- Binary Search Trees (search/insert/delete; degeneracy)  
+- Balanced Trees (AVL, Red-Black – conceptual)  
+- Tree Patterns (path sums, diameter, LCA, serialization)  
+- Optional: Augmented BSTs & Order-Statistic Trees
 
 ---
 
 #### 🌐 **Week 8: Graph Fundamentals**
-**Topics:** Graph Models, Representations, BFS, DFS, Connectivity, Bipartite Graphs, SCCs
-
-- 📅 **Day 1:** Graph Models & Representations  
-- 📅 **Day 2:** Breadth-First Search (BFS)  
-- 📅 **Day 3:** Depth-First Search (DFS)  
-- 📅 **Day 4:** Topological Sort & Cycle Detection  
-- 📅 **Day 5:** Connectivity & Advanced Search (2-Color, SCCs)
-
----
-
-#### 🔗 **Week 9: Graph Algorithms I – Shortest Paths & MST**
-**Topics:** Dijkstra, Bellman-Ford, Floyd-Warshall, Kruskal, Prim, Union-Find
-
-- 📅 **Day 1:** Dijkstra's Algorithm  
-- 📅 **Day 2:** Bellman-Ford & Negative Cycles  
-- 📅 **Day 3:** Floyd-Warshall (All-Pairs Shortest Paths)  
-- 📅 **Day 4:** Minimum Spanning Trees (Kruskal & Prim)  
-- 🌟 **Day 5:** Union-Find (Disjoint Set Union)
+- Graph Models & Representations (adjacency list/matrix, implicit graphs)  
+- Breadth-First Search (BFS) – layers, unweighted shortest paths  
+- Depth-First Search (DFS) – recursion/stack, edge types, cycle detection  
+- Topological Sort (DFS post-order, Kahn’s algorithm)  
+- Connectivity & Bipartite Graphs (components, 2-coloring)  
+- Optional: Strongly Connected Components (SCCs)
 
 ---
 
-#### 💾 **Week 10: Dynamic Programming I – Fundamentals**
-**Topics:** DP Basics, 1D DP, 2D DP, Knapsack Family, LCS, LIS, Sequence DP
-
-- 📅 **Day 1:** DP Basics & Memoization vs Tabulation  
-- 📅 **Day 2:** 1D DP (Stairs, House Robber, Coin Change)  
-- 📅 **Day 3:** 2D DP (Grids, Edit Distance)  
-- 📅 **Day 4:** Sequence DP (LCS, LIS)  
-- 🌟 **Day 5 (Optional):** Story-Driven DP Problems
+#### 🔗 **Week 9: Graph Algorithms I**
+- Dijkstra (single-source, non-negative weights)  
+- Bellman–Ford (negative weights, negative cycles)  
+- Floyd–Warshall (all-pairs shortest paths via DP)  
+- Minimum Spanning Trees (Kruskal & Prim) + DSU  
+- Optional: DSU deep dive & amortized analysis
 
 ---
 
-#### 🧠 **Week 11: Dynamic Programming II – Advanced**
-**Topics:** DP on Trees, DP on DAGs, Bitmask DP, Subset DP, State Compression
-
-- 📅 **Day 1:** DP on Trees (Diameter, Independent Set)  
-- 📅 **Day 2:** DP on DAGs (Topological Order, Path Counting)  
-- 📅 **Day 3:** Bitmask & Subset DP (TSP, Hamiltonian Paths)  
-- 📅 **Day 4:** State Space Optimization & Circular Arrays  
-- 🌟 **Day 5 (Optional):** Complex Mixed DP Problems
+#### 💾 **Week 10: Dynamic Programming I**
+- DP basics (recursion + memoization; top-down vs bottom-up)  
+- 1D DP & knapsack family (stairs, house robber, coin change, knapsack)  
+- 2D DP: grids & edit distance  
+- Sequence DP: LCS & LIS  
+- Optional: story-driven DP problems
 
 ---
 
-### 🟧 **PHASE D: ALGORITHM PARADIGMS (Weeks 12–13)**
-
-#### 💰 **Week 12: Greedy Algorithms & Exchange Arguments**
-**Topics:** Greedy Choice Property, Interval Scheduling, Activity Selection, Huffman Coding, Exchange Arguments
-
-- 📅 **Day 1:** Greedy Algorithm Fundamentals  
-- 📅 **Day 2:** Interval Scheduling & Activity Selection  
-- 📅 **Day 3:** MST as Greedy (Cut Property & Proof)  
-- 📅 **Day 4:** Huffman Coding & Optimal Prefix Trees  
-- 📅 **Day 5:** When Greedy Fails (Counterexamples vs DP)
+#### 🧠 **Week 11: Dynamic Programming II**
+- DP on trees (diameter, independent set)  
+- DP on DAGs (topological order, longest paths, path counting)  
+- Bitmask & subset DP (TSP-style, subset constraints)  
+- Optional: state compression & space optimization  
+- Optional: mixed DP problems
 
 ---
 
-#### 📊 **Week 13: Backtracking & Branch & Bound**
-**Topics:** Backtracking Fundamentals, Backtracking Problems, Branch & Bound, Amortized Analysis
+### ⚙️ **PHASE D: ALGORITHM PARADIGMS (Weeks 12–13)**
 
-- 📅 **Day 1:** Backtracking Fundamentals  
-- 📅 **Day 2:** Backtracking Problems & Pruning  
-- 📅 **Day 3:** Branch & Bound Optimization  
-- 📅 **Day 4:** Amortized Analysis Techniques  
-- 🌟 **Day 5 (Optional):** Advanced Problem Solving
+#### 💰 **Week 12: Greedy & Exchange Arguments**
+- Greedy choice property & optimal substructure  
+- Interval scheduling & activity selection  
+- MST as greedy (cut property)  
+- Huffman coding (optimal prefix codes)  
+- When greedy fails (counterexamples vs DP)
 
 ---
 
-### 🟪 **PHASE E: INTEGRATION & EXTENSIONS (Weeks 14–15)**
+#### 📊 **Week 13: Advanced Graphs & Amortized Analysis**
+- Advanced graph patterns (articulation points, bridges, 2-SAT overview)  
+- Amortized analysis: aggregate, accounting, potential methods  
+- Case studies: dynamic arrays, stacks with multipop, DSU
 
-#### 💾 **Week 14: Matrix Problems, Bitmasks & Number Theory**
-**Topics:** Matrix Traversal, Backtracking, Bitmask Tricks, Number Theory, Probability, Reservoir Sampling
+---
 
-- 📅 **Day 1:** Matrix Traversal & Search Patterns  
-- 📅 **Day 2:** Backtracking on Grids & Constraints  
-- 📅 **Day 3:** Bitmask Tricks & State Compression  
-- 📅 **Day 4 (Optional):** Number Theory & Modular Arithmetic  
-- 🌟 **Day 5 (Optional):** Probability & Sampling
+### 🔄 **PHASE E: INTEGRATION & EXTENSIONS (Weeks 14–15)**
+
+#### 💾 **Week 14: Matrix Problems, Backtracking & Bit Tricks**
+- Matrix traversal & search patterns  
+- Backtracking on grids & constraints (e.g., word search)  
+- Bitmask tricks for subsets & compressed state  
+- Optional: number theory & modular arithmetic  
+- Optional: probability & reservoir sampling
 
 ---
 
 #### 🔗 **Week 15: Advanced Strings & Network Flow**
-**Topics:** KMP, Z-Algorithm, Suffix Arrays, Manacher, String Matching, Network Flow, Max-Flow Min-Cut
-
-- 📅 **Day 1:** KMP String Matching  
-- 📅 **Day 2:** Z-Algorithm & Applications  
-- 📅 **Day 3 (Optional):** Manacher's Algorithm  
-- 📅 **Day 4 (Optional):** Suffix Arrays & Trees  
-- 📅 **Day 5:** Network Flow Basics & Applications
+- KMP string matching (LPS array, O(n + m) matching)  
+- Z-algorithm & applications  
+- Optional: Manacher’s algorithm for palindromes  
+- Suffix arrays/trees (conceptual)  
+- Intro to max-flow/min-cut and simple applications
 
 ---
 
-### 🟫 **PHASE F: ADVANCED DEEP DIVES (Weeks 16–18, Optional)**
+### 🚀 **PHASE F: ADVANCED DEEP DIVES (Weeks 16–18, Optional)**
 
-#### 📊 **Week 16: Advanced Data Structures**
-**Topics:** Segment Trees, Fenwick Tree (BIT), Geometry, Matrix Exponentiation, Convex Hull
-
-- 📅 **Day 1:** Segment Trees & Range Queries  
-- 📅 **Day 2:** Lazy Propagation & Range Updates  
-- 📅 **Day 3:** Fenwick Tree (Binary Indexed Tree)  
-- 📅 **Day 4:** Matrix Exponentiation  
-- 📅 **Day 5:** Computational Geometry Fundamentals
+#### 📊 **Week 16: Segment Trees, BIT & Geometry**
+- Segment Trees (range queries, lazy propagation)  
+- Fenwick Tree (Binary Indexed Tree) advanced usage  
+- Matrix exponentiation  
+- Computational Geometry (closest pair, convex hull, line-sweep)
 
 ---
 
 #### 🎯 **Week 17: Advanced Graphs, HLD & FFT**
-**Topics:** Heavy-Light Decomposition, Advanced String Algorithms, FFT, Polynomial Multiplication
-
-- 📅 **Day 1:** Heavy-Light Decomposition for Forests  
-- 📅 **Day 2:** Advanced Graph Problems  
-- 📅 **Day 3:** Aho-Corasick Algorithm (Conceptual)  
-- 📅 **Day 4:** FFT & Polynomial Operations  
-- 📅 **Day 5:** Advanced Optimization Techniques
+- Heavy-Light Decomposition for path queries  
+- Advanced string algorithms (e.g., Aho–Corasick – conceptual)  
+- FFT and polynomial multiplication
 
 ---
 
-#### 📈 **Week 18: Probabilistic DS & System Design**
-**Topics:** Bloom Filters, Count-Min Sketch, HyperLogLog, Min-Cost Flow, Circulation, Systems Integration
-
-- 📅 **Day 1:** Bloom Filters & Space-Efficient Sets  
-- 📅 **Day 2:** Count-Min Sketch & Frequency Estimation  
-- 📅 **Day 3:** HyperLogLog & Cardinality Estimation  
-- 📅 **Day 4:** Min-Cost Flow & Circulation (Conceptual)  
-- 📅 **Day 5:** Algorithmic Patterns in System Design
+#### 📈 **Week 18: Probabilistic DS & Algorithmic System Design**
+- Bloom Filters  
+- Count-Min Sketch  
+- HyperLogLog  
+- Min-Cost Flow & Circulation (conceptual)  
+- Algorithmic patterns in modern system design
 
 ---
 
-### 🔴 **PHASE G: MOCK INTERVIEWS & FINAL MASTERY (Week 19)**
+### 🎤 **PHASE G: MOCK INTERVIEWS & FINAL MASTERY (Week 19)**
 
 #### 🎮 **Week 19: 5 Full Mock Interviews**
-**Topics:** Mixed Problem-Solving, Communication Skills, Meta-Skills, System Integration
-
-- 📅 **Day 1:** Mock Interview A – Arrays & Strings  
-- 📅 **Day 2:** Mock Interview B – Trees & Graphs  
-- 📅 **Day 3:** Mock Interview C – Dynamic Programming  
-- 📅 **Day 4:** Mixed Problem Solving Session  
-- 📅 **Day 5:** Final Assessment & Weakness Diagnosis
+- Mock interviews mixing arrays, trees, graphs, DP, strings, flows  
+- Weak-point diagnosis & remediation plan  
+- System integration problems  
+- Interview meta-skills: communication, trade-off explanation, handling stress
 
 ---
 
 ## 📊 How This Is Different from Alternatives
 
-| Aspect | v13 Curriculum | LeetCode | YouTube | Books | Educative |
-|--------|----------------|---------|--------|-------|-----------|
+| Aspect | v12 Curriculum | LeetCode | YouTube | Books | Educative |
+|--------|----------------|---------|--------|-------|----------|
 | **Mental Models** | ✅ Deep first (narrative, diagrams) | ❌ Problem list | 🟡 Varies | ✅ Strong | 🟡 Some |
 | **Systems Grounding** | ✅ OS/DB/cache examples | ❌ None | 🟡 Some channels | 🟡 Limited | ❌ None |
 | **Structured Path** | ✅ 19-week arc | ❌ Self-chosen | ❌ Random videos | ✅ Linear | ✅ Linear |
@@ -648,7 +616,7 @@ Every week follows a **consistent file structure** so you always know where to g
 
 ---
 
-### 📊 After Phase E (Week 15 – Integration & Extensions)
+### 📊 After Phase E (Week 15 – Integration & DP Mastery)
 - ✅ Solve 90–95% of interview problems
 - ✅ Integrate multiple patterns in a single solution (e.g., DP + intervals + stack)
 - ✅ Communicate complex solutions and trade-offs clearly
@@ -688,49 +656,44 @@ Quick Refresh?     → Topic-based, 2–4 weeks
 ### Step 2: 📖 Read Orientation Files (15 min)
 
 ```text
-1. README_v13.md                        — overview & map
-2. START_HERE.md                        — path selection
-3. COMPLETE_SYLLABUS_v13.md             — fine-grained syllabus
+1. README_v12_Rev_4.md                — overview & map
+2. START_HERE.md                       — path selection
+3. COMPLETE_SYLLABUS_v13_FINAL.md — fine-grained syllabus
 ```
 
 ### Step 3: 📚 Start Your First Week
 
 ```text
-1. Open Week01_Guidelines.md            — weekly strategy
-2. Study Week01Day01_...Instructional   — narrative learning
+1. Open Week01_Guidelines.md          — weekly strategy
+2. Study Week01Day01_...Instructional — narrative learning
 3. Follow Week01_Daily_Progress_Checklist.md
 4. Use Roadmap + Interview_QA for practice & review
 ```
 
 ---
 
-## 📂 Repository Structure (v13.0)
+## 📂 Repository Structure
 
 ```text
-dsa-master-curriculum-v13/
+dsa-master-curriculum-v12/
 
-📄 README_v13.md                   # Main entrypoint (this file)
-📄 START_HERE.md                   # Path selection & orientation
+📄 README_v12_Rev_4.md          # This file (main entrypoint)
+📄 START_HERE.md                # Path selection & orientation
 📄 LICENSE
 
-📁 v13-syllabus/
-   ├── COMPLETE_SYLLABUS_v13.md
-   ├── COMPLETE_SYLLABUS_v13_DETAILED.md
-   ├── COMPLETE_CONTENT_INDEX.md
-   └── Supporting materials
-
-📁 v13-system-prompts/
-   ├── MASTER_PROMPT_v13.md
-   ├── SYSTEM_CONFIG_v13_FINAL.md
-   ├── SYSTEM_PROMPT_v13_FOR_AI_CHAT.md
+📁 v12-prompts/
+   ├── COMPLETE_SYLLABUS_v13_FINAL.md
+   ├── MASTER_PROMPT_v12_FINAL.md
+   ├── SYSTEM_CONFIG_v12_FINAL.md
+   ├── SYSTEM_PROMPT_v12_FOR_AI_CHAT_FINAL.md
+   ├── SYSTEM_PROMPT_v12_EXTENDED_SUPPORT_CSHARP.md
    ├── SYSTEM_PROMPT_v13_EXTENDED_SUPPORT_CSHARP.md
-   └── Additional support files
-
-📁 v13-templates/
-   ├── Template_v13_Narrative_FINAL.md
-   ├── EMOJI_ICON_GUIDE_v13.md
-   ├── VISUAL_PLAYBOOK_GENERATION_PROMPT_v13.md
-   └── Supporting templates
+   ├── CONSOLIDATED_CSHARP_EXTENDED_SUPPORT_MASTER_PROMPT_v13.md
+   ├── EMOJI_ICON_GUIDE_v12.md
+   ├── Template_v12_Narrative_FINAL.md
+   ├── V12_prompt_usage.md
+   ├── VISUAL_PLAYBOOK_GENERATION_PROMPT_v12_UPDATED.md
+   └── WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md
 
 📁 week01-foundations-i-computational-fundamentals/
    ├── Week01Day01_..._Instructional.md
@@ -758,10 +721,10 @@ dsa-master-curriculum-v13/
 📁 week10-dp-i-fundamentals/
 📁 week11-dp-ii-advanced/
 📁 week12-greedy-and-paradigms/
-📁 week13-backtracking-and-advanced-graphs/
+📁 week13-advanced-graphs-amortized/
 📁 week14-matrix-backtracking-bits/
 📁 week15-advanced-strings-flow/
-📁 week16-advanced-data-structures/
+📁 week16-segment-trees-bit-geometry/
 📁 week17-advanced-graphs-hld-fft/
 📁 week18-probabilistic-ds-systems/
 📁 week19-mock-interviews-mastery/
@@ -812,3 +775,4 @@ For now, this curriculum is primarily a **learning artifact**. If you spot error
 
 ---
 
+**v12.1 (Rev 4)** — Narrative-first, MIT-aligned, interview-ready DSA curriculum.

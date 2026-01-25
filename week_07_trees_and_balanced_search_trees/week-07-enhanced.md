@@ -3,7 +3,7 @@
 
 **Version:** v2.0 (Enhanced)  
 **Status:** ✅ PRODUCTION-READY WITH VISUAL DIAGRAMS  
-**Curriculum Alignment:** COMPLETE_SYLLABUS_v12_FINAL_Updated.md  
+**Curriculum Alignment:** COMPLETE_SYLLABUS_v13_FINAL.md  
 **Phase:** C – Trees, Graphs, Dynamic Programming (Week 7)  
 **Word Count:** 40,000+ words (Full comprehensive coverage + visuals)  
 **Format:** Markdown – Self-contained, offline-first, GitHub-friendly  

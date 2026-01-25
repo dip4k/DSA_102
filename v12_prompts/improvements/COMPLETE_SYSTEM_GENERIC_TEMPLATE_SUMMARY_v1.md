@@ -64,7 +64,7 @@ Two new files created for YOU to generate ANY week:
 
 ### **Original System (v12 - Unchanged)**
 ```
-├─ COMPLETE_SYLLABUS_v12_FINAL_Updated.md (topics, phases)
+├─ COMPLETE_SYLLABUS_v13_FINAL.md (topics, phases)
 ├─ SYSTEM_CONFIG_v12_FINAL.md (quality standards)
 ├─ Template_v12_Narrative_FINAL.md (instructional blueprint)
 ├─ VISUAL_CONCEPTS_PLAYBOOK_GENERATION_PROMPT_v12.md (playbook blueprint)
@@ -323,7 +323,7 @@ Phase 4: Integration & Mastery (Weeks 13-19)
 - [180] WEEK_5_VERIFICATION_REPORT_v1.md
 
 **Original System (v12):**
-- COMPLETE_SYLLABUS_v12_FINAL_Updated.md
+- COMPLETE_SYLLABUS_v13_FINAL.md
 - SYSTEM_CONFIG_v12_FINAL.md
 - Template_v12_Narrative_FINAL.md
 - VISUAL_CONCEPTS_PLAYBOOK_GENERATION_PROMPT_v12.md

@@ -1,7 +1,7 @@
 # 📚 DSA Master Curriculum v12 – Narrative‑First, MIT‑Aligned
 
 > **Status:** ✅ Production‑ready curriculum  
-> **Version:** 12.1 (Aligned with `COMPLETE_SYLLABUS_v12_FINAL_Updated.md`)  
+> **Version:** 12.1 (Aligned with `COMPLETE_SYLLABUS_v13_FINAL.md`)  
 > **License:** 📜 MIT
 
 This repository contains the **full DSA Master Curriculum v12** – a 19‑week, MIT‑style course in Data Structures & Algorithms designed to take you from **hardware‑level intuition** to **interview‑ready, production‑grade problem solving**.
@@ -40,7 +40,7 @@ The curriculum is organized into **7 phases** over **19 weeks**:
 | 🚀 **Phase F – Advanced Deep Dives (Optional)** | 16–18 | Segment trees, BIT, geometry, HLD, FFT, probabilistic DS |
 | 🎤 **Phase G – Integration & Mock Interviews** | 19 | Mixed mock interviews & final mastery |
 
-The **complete, authoritative syllabus** lives in `COMPLETE_SYLLABUS_v12_FINAL_Updated.md`. This README gives a **GitHub‑friendly, phase‑wise and day‑wise overview**.
+The **complete, authoritative syllabus** lives in `COMPLETE_SYLLABUS_v13_FINAL.md`. This README gives a **GitHub‑friendly, phase‑wise and day‑wise overview**.
 
 ---
 
@@ -131,7 +131,7 @@ Each instructional file also includes:
 
 ## 📚 Phase‑Wise & Week‑Wise Syllabus (Current v12)
 
-Below is a **high‑level but detailed** view of the syllabus, extracted from `COMPLETE_SYLLABUS_v12_FINAL_Updated.md`.
+Below is a **high‑level but detailed** view of the syllabus, extracted from `COMPLETE_SYLLABUS_v13_FINAL.md`.
 
 > For precise bullet‑level content, always refer to the syllabus file itself; this summary is optimized for GitHub readability.
 
@@ -361,7 +361,7 @@ DSA-Master-v12/
   LICENSE
 
   v12-prompts/
-    COMPLETE_SYLLABUS_v12_FINAL_Updated.md
+    COMPLETE_SYLLABUS_v13_FINAL.md
     MASTER_PROMPT_v12_FINAL.md
     SYSTEM_CONFIG_v12_FINAL.md
     SYSTEM_PROMPT_v12_FOR_AI_CHAT_FINAL.md
@@ -401,7 +401,7 @@ Use this as a **reference layout** and adjust folder naming as needed for your p
 
 1. **Skim this README** to understand phases and file types.  
 2. Open `START_HERE.md` to choose your learning path (full, acceleration, or topic‑based).  
-3. Read `COMPLETE_SYLLABUS_v12_FINAL_Updated.md` if you want every detail.  
+3. Read `COMPLETE_SYLLABUS_v13_FINAL.md` if you want every detail.  
 4. Begin with **Week 1** (or your target week), starting from `WeekXGuidelines.md` and the Day 1 instructional file.
 
 This README is designed to be **GitHub‑ready**: professional, self‑contained, and aligned with the current v12 syllabus, while preserving the narrative‑first philosophy of the DSA Master course.

@@ -56,7 +56,7 @@ Keep: At your desk during week generation
 ```
 Open: COMPLETE_WEEK_GENERATION_WORKFLOW_v1.md
 Go to: PHASE 1
-Follow: Step 1.1 (Extract topics from COMPLETE_SYLLABUS_v12_FINAL_Updated.md)
+Follow: Step 1.1 (Extract topics from COMPLETE_SYLLABUS_v13_FINAL.md)
 Save: Topics in a document
 ```
 
@@ -163,7 +163,7 @@ Each generation is better because **based on real learning data**.
 ## 📊 YOUR FILES
 
 **Existing (unchanged):**
-- COMPLETE_SYLLABUS_v12_FINAL_Updated.md
+- COMPLETE_SYLLABUS_v13_FINAL.md
 - SYSTEM_CONFIG_v12_FINAL.md
 - Template_v12_Narrative_FINAL.md
 - VISUAL_CONCEPTS_PLAYBOOK_GENERATION_PROMPT_v12.md

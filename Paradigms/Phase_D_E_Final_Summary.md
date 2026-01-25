@@ -363,5 +363,5 @@ By Difficulty:
 ---
 
 *Generated January 24, 2026*  
-*Comparison: COMPLETE_SYLLABUS_v10_FINAL.md vs COMPLETE_SYLLABUS_v12_FINAL_Updated.md*  
+*Comparison: COMPLETE_SYLLABUS_v10_FINAL.md vs COMPLETE_SYLLABUS_v13_FINAL.md*  
 *Result: Optimized Phase D & E Syllabus v13 with full daywise breakdown*

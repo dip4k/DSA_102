@@ -40,7 +40,7 @@ PHASE 5: POST-DEPLOYMENT LEARNING LOOP (After students use it)
 Before asking me to generate ANYTHING, establish the foundation.
 
 ### **Files you'll need:**
-- COMPLETE_SYLLABUS_v12_FINAL_Updated.md (extract topics)
+- COMPLETE_SYLLABUS_v13_FINAL.md (extract topics)
 - QUALITY_IMPROVEMENT_SYSTEM_v1.md (planning templates)
 - FAILURE_MODES_REPOSITORY_v1.md (reference actual failures)
 - ANALOGY_BANK_v1.md (reference proven analogies)
@@ -50,12 +50,12 @@ Before asking me to generate ANYTHING, establish the foundation.
 
 ### **STEP 1.1: Extract Week Topics**
 
-**Location:** COMPLETE_SYLLABUS_v12_FINAL_Updated.md
+**Location:** COMPLETE_SYLLABUS_v13_FINAL.md
 
 ```markdown
 ## STEP 1.1 ACTION
 
-Open COMPLETE_SYLLABUS_v12_FINAL_Updated.md
+Open COMPLETE_SYLLABUS_v13_FINAL.md
 Search for: "Phase X – Week Y: [WEEK_TITLE]"
 
 Copy EXACTLY:

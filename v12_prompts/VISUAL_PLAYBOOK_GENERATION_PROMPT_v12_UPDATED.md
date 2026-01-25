@@ -3,7 +3,7 @@
 **Version:** 12.2 – WITH COMPLETE SYLLABUS v12 REFERENCE  
 **Status:** ✅ PRODUCTION-READY TEMPLATE  
 **Created:** Saturday, January 10, 2026, 5:48 PM IST  
-**Updated:** To reference COMPLETE_SYLLABUS_v12_FINAL_Updated.md for all week/day topics  
+**Updated:** To reference COMPLETE_SYLLABUS_v13_FINAL.md for all week/day topics  
 **Purpose:** Generate hybrid visual support files for ANY week of DSA curriculum  
 **Philosophy:** Offline-first with optional web enhancement | Professional quality | Immediate deployment
 
@@ -18,7 +18,7 @@ This template generates **Week XX Visual Concepts Playbook (HYBRID)** files that
 - ✅ **Educationally validated** (15 quiz questions + 8-10 failure modes)
 - ✅ **Production-grade quality** (consistent across all weeks)
 - ✅ **Immediate deployment** (100% ready to use)
-- ✅ **SYLLABUS-ALIGNED** (references COMPLETE_SYLLABUS_v12_FINAL_Updated.md for all topics)
+- ✅ **SYLLABUS-ALIGNED** (references COMPLETE_SYLLABUS_v13_FINAL.md for all topics)
 
 **Output Format:** Markdown file (~18,000 words, 5 days × 5 topics)  
 **Time to Generate:** 2-3 hours per week using this template  
@@ -30,7 +30,7 @@ This template generates **Week XX Visual Concepts Playbook (HYBRID)** files that
 
 ### FOR IMMEDIATE USE (Next 2-3 minutes):
 
-1. **Open:** `COMPLETE_SYLLABUS_v12_FINAL_Updated.md`
+1. **Open:** `COMPLETE_SYLLABUS_v13_FINAL.md`
 
 2. **Find your week's topics:**
    - Search for: `Phase X – Week Y: [WEEK_TITLE]`
@@ -59,7 +59,7 @@ This template generates **Week XX Visual Concepts Playbook (HYBRID)** files that
 
 ### File Location:
 ```
-COMPLETE_SYLLABUS_v12_FINAL_Updated.md
+COMPLETE_SYLLABUS_v13_FINAL.md
 ```
 
 ### Search Pattern:
@@ -107,7 +107,7 @@ Then your replacements would be:
 
 ## 📚 COMPLETE TOPIC MAPPING: ALL 19 WEEKS (From Syllabus v12)
 
-Use this to quickly identify your week's topics. For exact wording, always cross-check with COMPLETE_SYLLABUS_v12_FINAL_Updated.md.
+Use this to quickly identify your week's topics. For exact wording, always cross-check with COMPLETE_SYLLABUS_v13_FINAL.md.
 
 ```
 WEEK | PHASE | TITLE (Approx) | DAY 1 | DAY 2 | DAY 3 | DAY 4 | DAY 5
@@ -148,7 +148,7 @@ GENERATE WEEK [WEEK_NUMBER] VISUAL CONCEPTS PLAYBOOK (HYBRID)
 ================================================================================
 
 INSTRUCTIONS:
-1. Topics below are from COMPLETE_SYLLABUS_v12_FINAL_Updated.md
+1. Topics below are from COMPLETE_SYLLABUS_v13_FINAL.md
 2. This playbook uses Days 1-5 Core topics (skip Day 6 Optional)
 3. Follow the template structure exactly
 4. Produce ~18,000 words with 30+ diagrams
@@ -160,7 +160,7 @@ METADATA & REQUIREMENTS
 WEEK: [WEEK_NUMBER]
 TITLE: [WEEK_TITLE]
 FILENAME: Week_[WEEK_NUMBER]_Visual_Concepts_Playbook_HYBRID.md
-SYLLABUS_SOURCE: COMPLETE_SYLLABUS_v12_FINAL_Updated.md
+SYLLABUS_SOURCE: COMPLETE_SYLLABUS_v13_FINAL.md
 TOTAL_WORDS: ~18,000
 FORMAT: Markdown hybrid (ASCII diagrams + web resource links)
 DEPLOYMENT: Immediate production use
@@ -197,7 +197,7 @@ Metadata block with:
   - Theme/Topics: [WEEK_TITLE]
   - Core topics: [DAY_1_TOPIC], [DAY_2_TOPIC], [DAY_3_TOPIC], [DAY_4_TOPIC], [DAY_5_TOPIC]
   - Format: Hybrid (Enhanced ASCII + Web Resource Links)
-  - Syllabus source: COMPLETE_SYLLABUS_v12_FINAL_Updated.md
+  - Syllabus source: COMPLETE_SYLLABUS_v13_FINAL.md
   - Purpose statement
 
 Visual Legend:
@@ -359,7 +359,7 @@ Comprehensive checklist covering:
 CONTENT REQUIREMENTS
 ================================================================================
 
-TOPICS: Use ONLY the 5 Core day topics from COMPLETE_SYLLABUS_v12_FINAL_Updated.md
+TOPICS: Use ONLY the 5 Core day topics from COMPLETE_SYLLABUS_v13_FINAL.md
   - NOT the Day 6 Optional Advanced topic
   - Follow syllabus topic names exactly
 
@@ -481,7 +481,7 @@ QUALITY VALIDATION
 Before finalizing, verify:
 
 ✅ TOPICS:
-  - All 5 day topics from COMPLETE_SYLLABUS_v12_FINAL_Updated.md
+  - All 5 day topics from COMPLETE_SYLLABUS_v13_FINAL.md
   - Day 6 Optional NOT included
   - Topic names match syllabus exactly
   - Core days clearly labeled
@@ -561,7 +561,7 @@ Start by creating the file header with:
 
 Generate complete, production-ready markdown file ready for immediate deployment.
 
-Topics are from COMPLETE_SYLLABUS_v12_FINAL_Updated.md – use them EXACTLY as written.
+Topics are from COMPLETE_SYLLABUS_v13_FINAL.md – use them EXACTLY as written.
 
 ================================================================================
 ```
@@ -570,7 +570,7 @@ Topics are from COMPLETE_SYLLABUS_v12_FINAL_Updated.md – use them EXACTLY as w
 
 ## 🎯 KEY UPDATES FROM VERSION 12.1
 
-✅ **Now references COMPLETE_SYLLABUS_v12_FINAL_Updated.md** for all topic extraction  
+✅ **Now references COMPLETE_SYLLABUS_v13_FINAL.md** for all topic extraction  
 ✅ **Clear extraction instructions** showing how to find Day 1-5 Core topics  
 ✅ **Warns against including** Day 6 Optional Advanced content  
 ✅ **Complete topic mapping** table for all 19 weeks (extracted from syllabus)  
@@ -582,7 +582,7 @@ Topics are from COMPLETE_SYLLABUS_v12_FINAL_Updated.md – use them EXACTLY as w
 
 ## ✅ USAGE WORKFLOW
 
-1. **Open:** COMPLETE_SYLLABUS_v12_FINAL_Updated.md
+1. **Open:** COMPLETE_SYLLABUS_v13_FINAL.md
 2. **Find:** Your week's section (Phase X – Week Y: [TITLE])
 3. **Extract:** Day 1-5 Core topics (skip Day 6 Optional)
 4. **Copy:** This generation prompt
@@ -595,7 +595,7 @@ Topics are from COMPLETE_SYLLABUS_v12_FINAL_Updated.md – use them EXACTLY as w
 ## 📞 SUPPORT
 
 **Files referenced:**
-- COMPLETE_SYLLABUS_v12_FINAL_Updated.md (official curriculum)
+- COMPLETE_SYLLABUS_v13_FINAL.md (official curriculum)
 - VISUAL_TEMPLATE_QUICK_START_GUIDE.txt (step-by-step)
 - DEPLOYMENT_READY_SUMMARY.md (overview)
 
@@ -606,4 +606,4 @@ Topics are from COMPLETE_SYLLABUS_v12_FINAL_Updated.md – use them EXACTLY as w
 
 **Version:** 12.2 | **Status:** ✅ PRODUCTION-READY TEMPLATE  
 **Updated:** Saturday, January 10, 2026, 5:48 PM IST  
-**Syllabus Reference:** COMPLETE_SYLLABUS_v12_FINAL_Updated.md
+**Syllabus Reference:** COMPLETE_SYLLABUS_v13_FINAL.md

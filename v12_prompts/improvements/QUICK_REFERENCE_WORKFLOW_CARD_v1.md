@@ -21,7 +21,7 @@ PHASE 5: POST-DEPLOYMENT (1 week) ← Collect data, update repos
 
 ### Step 1.1: Extract Topics (5 min)
 ```
-Open: COMPLETE_SYLLABUS_v12_FINAL_Updated.md
+Open: COMPLETE_SYLLABUS_v13_FINAL.md
 Find: Phase X – Week Y: [TITLE]
 Copy: Week #, Phase, Day 1-5 Topics (skip Day 6)
 Save: In your planning package
@@ -345,7 +345,7 @@ That's it. You're ready.
 ## 📚 ALL FILES YOU NEED
 
 **Existing System (use these):**
-- ✅ COMPLETE_SYLLABUS_v12_FINAL_Updated.md
+- ✅ COMPLETE_SYLLABUS_v13_FINAL.md
 - ✅ SYSTEM_CONFIG_v12_FINAL.md
 - ✅ Template_v12_Narrative_FINAL.md
 - ✅ VISUAL_CONCEPTS_PLAYBOOK_GENERATION_PROMPT_v12.md
