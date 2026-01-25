@@ -749,7 +749,7 @@ DP is incredibly powerful. This week extends basic patterns to more complex stru
 - use **Generic_AI_Self_Check_Correction_Step.md** file for error check in generated content and self error correction context
 
 **Action** :
-- generate week 07 Csharp extended support md file, have detailed and structured content for generated file, dont skip any subsection or sub topic. cover topics in detailed.
+- generate week 11 Csharp extended support md file, have detailed and structured content for generated file, dont skip any subsection or sub topic. cover topics in detailed.
 - strictly follow template structure and file naming convention as per context
 - Apply GENERIC AI SELF-CHECK & CORRECTION STEP before output (use **Generic_AI_Self_Check_Correction_Step.md** file):
   1. Verify all references (items, values, indices) exist in problem
