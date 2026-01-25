@@ -1,0 +1,336 @@
+Phase 1: Reorder (1-2 hours)
+ Move "Fast & Slow Pointers" from Week 13 to Week 4, Day 5
+
+ Rename Week 4 Day 5 to "Fast & Slow Pointers Pattern"
+
+ Update prerequisites/dependencies
+
+Phase 2: Inject (2-3 hours)
+ Expand Week 9, Day 3 to include "Bit Manipulation" sub-topic
+
+ Expand Week 9, Day 4 to include "Reservoir Sampling" sub-topic
+
+ Generate content for these new sub-topics (use existing framework)
+
+Phase 3: Emphasize (1 hour)
+ Rename Week 5, Day 4 from "Heaps" to "Heaps & Top K Elements Pattern"
+
+ Update content to explicitly highlight "Top K" as a named pattern
+
+Phase 4: Optional (2-3 hours, if desired)
+ Add Week 10, Day 3 "Meet-in-the-Middle & Advanced Search" (optional)
+
+ Or defer to Week 14 as an advanced optional topic
+
+Phase 5: Update (1-2 hours)
+ Regenerate curriculum document
+
+ Update all cross-references
+
+ Verify no broken dependencies
+
+ Update syllabus manifest
+ 
+ -----------------
+ 
+ Generate all Week 1 instructional and support files.
+Week number: 1
+Days: 5
+Topics: RAM Model, Big-O, Space Complexity, Recursion I, Recursion II
+Total files: 11 (5 instructional + 6 support)
+Deliver one at a time, as downloadable .md files
+---
+ 
+ update context to generate all weekly files in one single prompt session (total 11+ files) one by one and download them as md file one by one
+ 
+---
+
+update context to generate all weekly files in one single prompt session (total 11+ files) one by one and download them as md file one by one, 
+
+important context update
+dont clutter/pollute output response window with file content. provide all generated files as downloadable md file.
+
+⚡ Final EXECUTION RULE update
+Concurrent Delivery: generate all files at once, one by one.
+Wait State:Dont pause between file genration and providing generated content as downloadable md file
+Quality Check: Each file is verified against SYSTEM_CONFIG_v8.md before delivery.
+Format: Complete, downloadable Markdown (.md) file with proper hierarchy and emojis.
+
+----
+
+generate **Week_2_Day_5_Binary_Search_Instructional.md** file content as per set context and template and structure
+
+---
+
+strict context update -> dont use any programming language for code, strictly follow no-code approach, if required and necessary then only use C# language.
+
+---
+
+Re-Generate all Week 4.5 instructional files + support files day wise
+Week number: 4.5
+Days: 1-5 + weekly support files
+
+Topics: 
+"""
+## **⭐ WEEK 4.5: TIER 1 - CRITICAL PROBLEM-SOLVING PATTERNS** ⭐ **v8.0**
+**Goal:** Master patterns that solve 70-80% of interview problems  
+**Duration:** 5 days | ~25,000-35,000 words  
+**Difficulty:** 🟡 Medium (Critical!)  
+**Prerequisites:** Week 1-4  
+**Interview Coverage:** 70-80% cumulative
+
+### Daily Breakdown
+
+**Day 1: Hash Map / Hash Set**
+- HashMap: O(1) average lookup/insertion
+- HashSet: membership testing
+- Two sum problem
+- Anagram detection
+- Duplicate detection & frequency counting
+- Real-world: LRU cache foundation
+
+**Day 2: Monotonic Stack**
+- Maintaining monotonic order
+- Next greater element
+- Trapping rain water
+- Largest rectangle in histogram
+- Daily temperatures problem
+
+**Day 3: Merge Operations & Intervals** ⭐ **RESTORED & ENHANCED**
+- Merging sorted arrays: O(n) time
+- Merging sorted lists: O(m+n) time
+- Merge K sorted lists: heap approach
+- **Merge Intervals (NEW):** Interval scheduling, overlapping intervals
+- Merging in real systems (merge sort, merge join)
+
+**Day 4 (Part A): Partition & Cyclic Sort** ⭐ **ENHANCED**
+- Dutch National Flag problem
+- Move zeroes to end
+- Partition by pivot (quicksort)
+- **Cyclic Sort pattern (NEW):** Finding missing numbers, duplicates
+- In-place segregation with O(1) space
+- Quicksort partitioning
+
+**Day 4 (Part B): Kadane's Algorithm**
+- Maximum subarray problem
+- Maximum product subarray
+- DP formulation (T[i] = max subarray ending at i)
+- Constraint variations
+- Real-world: financial analysis
+
+**Day 5: Fast & Slow Pointers** ⭐ **PROMOTED from Week 13**
+- Fast & Slow Pointers mechanics
+- Linked list cycle detection
+- Finding cycle start
+- Midpoint finding
+- Happy number problem
+- **Interview Frequency:** 60% (High ROI)
+"""
+
+Total files: 5 instructional + 5 support
+
+generate files in multiple batches
+
+batch 1 -> week 4.5 day 1 and 5 weekly support files
+batch 2 -> week 4.5 day 2 and day 3
+batch 3 -> week 4.5 day 4 and day 5
+
+Proceed to Week 4.5 using the existing v8 references and new V9 config references 
+use create file content as per set context and template and structure, dont skip section and dont compact response output
+
+for visualisation use proper ascii diagrams and if available then only use modern mermaid code
+
+---
+
+generate file Week_3_Day_3_Heap_Sort_And_Variants_Instructional.md as per structure and context
+
+
+Update context to generate files in batches,
+
+generate week 4.5 day 2 instructional file, refer syllabus for exact topic details
+
+follow Rules from system config , master prompt and template, use updated syllabus.
+
+Quality Checklist
+- Verify all 11 sections present
+- Confirm cognitive lenses included
+- Check emoji usage consistency (v8 style)
+- Verify no LaTeX encoding
+- Confirm all core concepts covered
+- Validate Markdown formatting
+
+provide each file as downloadable md file one by one
+
+-------------------
+
+Use SYSTEM_PROMPT_v10_FOR_AI_CHAT as refer these files for standard and context
+
+"""
+COMPLETE_SYLLABUS_v10_FINAL
+TEMPLATE_v10
+SYSTEM_CONFIG_v10_FINAL
+MASTER_PROMPT_v10_FINAL
+WEEKLY_BATCH_GENERATION_PROMPT_v10
+EMOJI_ICON_GUIDE_v8
+"""
+
+follow this standard alaso mentioned in system prompt for AI
+
+"""
+## 🏗 PRIMARY DIRECTIVES (Instructional Files)
+
+1. **Follow `TEMPLATE_v10` exactly.**  
+   - Do not reorder or omit sections.  
+   - Keep headings and emojis exactly as defined.  
+
+2. **Mental-Model-First Approach.**  
+   - Use vivid analogies, diagrams, invariants, state explanations.  
+   - Emphasize mechanical reasoning and pattern recognition.  
+
+3. **No Code by Default.**  
+   - Explain logic, states, and transformations in natural language.  
+   - Only use **minimal C#** snippets if absolutely necessary (logic clarity).  
+   - Never use Python, Java, C++, or pseudo-code disguised as other languages.  
+
+4. **No LaTeX.**  
+   - Use plain text math: `O(n log n)`, `n²`, `(n choose k)`.  
+   - Do not include `$...$`, `\[...\]`, or LaTeX-like formatting.  
+
+5. **Visual & Structural Requirements.**  
+   - ≥1 concept summary/comparison table [relevant Sections].  
+   - ≥1 complexity table (Section 5).  
+   - ≥2-3 visuals (ASCII diagrams, trace tables, or simple Mermaid flows).  
+   - Integrate diagrams and tables naturally (not as afterthoughts).  
+
+6. **Mandatory Blocks.**  
+   - 11 core sections (The Why → The What → … → Retention Hook).  
+   - 🧩 Cognitive Lenses block (5 lenses).  
+   - ⚔ Supplementary Outcomes block (practice problems, interview Q&A, misconceptions, advanced concepts, external resources).  
+
+7. **Coverage Requirements.**  
+   - Section 2 must list ALL core concepts/variations/operations for that topic day.  
+   - Section 6 must name 5-10 specific real systems (OS, DB, network, applications, cloud).  
+   - Practice problems: 8-10 (real sources, no solutions).  
+   - Interview questions: 6+ with follow-ups (no solutions).  
+   - Misconceptions: 3-5 (with stated misconceptions, why plausible, correction, memory aid, impact).  
+   - Advanced concepts: 3-5.  
+   - External resources: 3-5.  
+
+8. **Word Count Target.**  
+   - 7,500-15,000 words per instructional file.  
+   - No per-section quotas; use as much space as needed for clarity and depth.
+"""
+
+also refer this updated context
+"""
+1. avoid topic/concept related short names or abbreviations
+2. keep clarity of topics in mind, use easily understandable languages whenever possible
+3. try to use visual representation (Graphs, charts, flow diagram, sequence diagrams, ASCII diagrams, trace tables, or simple Mermaid flows) to explain concepts/topics rather than explaining with words, whenever it is possible, helps in understanding and remembering.
+4. use mermaid diagrams or ASCII diagrams fro visual representation, use best one which is suitable
+5. while generating files use file name as per conventions for example **Week_01_Day_1_RAM_Model_And_Pointers_Instructional.md**.
+6. Update context to always provide output as downloadable md file.
+7. For mermaid diagrams, use modern mermaid context and correct code , verify rendering
+8. strictly **No LaTeX.** symbols or codes, keep things with markdown compatible
+"""
+
+Generate week 01 day 3 content following updated context, Template v10 and System Config v10 and all updated system config and system context
+
+---
+
+Week_02_Guidelines.md : Overview, objectives, and pitfalls for the week.
+
+Week_02_Summary_Key_Concepts.md : Concept map, comparisons, and key insights.
+
+Week_02_Interview_QA_Reference.md : 38 interview questions covering all Week 2 topics.
+
+Week_02_Problem_Solving_Roadmap.md : Strategy from mechanics to advanced logic.
+
+Week_02_Daily_Progress_Checklist.md : Daily actionable items and practice problems.
+
+---
+
+use SYSTEM_PROMPT_v11_EXTENDED_SUPPORT_CSHARP to generate week 02 extended support file
+
+---
+
+re-generate content of file Week_04_Day_4_Divide_and_Conquer_Instructional.md
+
+as it is not strictly following all sections and supplementary guideline instructions.
+
+try to use visual representation (Graphs, charts, flow diagram, sequence diagrams, ASCII diagrams, trace tables, or simple Mermaid flows) to explain concepts/topics rather than explaining with words
+
+----
+
+use SYSTEM_PROMPT_v12_FOR_AI_CHAT_FINAL.md file as starting point, 
+follow Template_v12_Narrative_FINAL.md file for structure,
+COMPLETE_SYLLABUS_v13_FINAL.md file for syllabus,
+MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config
+ and 
+
+generate week 03 support files 5 files total, have detailed and structured content for all files, dont skip any subsection or sub topic.
+
+---
+
+all reference files are
+```
+COMPLETE_SYLLABUS_v13_FINAL.md
+EMOJI_ICON_GUIDE_v12.md
+MASTER_PROMPT_v12_FINAL.md
+SYSTEM_CONFIG_v12_FINAL.md
+SYSTEM_PROMPT_v12_EXTENDED_SUPPORT_CSHARP.md
+SYSTEM_PROMPT_v12_FOR_AI_CHAT_FINAL.md
+Template_v12_Narrative_FINAL.md
+V12_prompt_usage.md
+VISUAL_PLAYBOOK_GENERATION_PROMPT_v12_UPDATED.md
+WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md
+```
+
+------------------
+
+use SYSTEM_PROMPT_v12_EXTENDED_SUPPORT_CSHARP.md file as starting point, 
+follow Template_v12_Narrative_FINAL.md file for structure,
+COMPLETE_SYLLABUS_v13_FINAL.md file for syllabus,
+MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config
+ and 
+
+generate week 06 support file for csharp extended file
+---
+
+all reference files are
+```
+COMPLETE_SYLLABUS_v13_FINAL.md
+EMOJI_ICON_GUIDE_v12.md
+MASTER_PROMPT_v12_FINAL.md
+SYSTEM_CONFIG_v12_FINAL.md
+SYSTEM_PROMPT_v12_EXTENDED_SUPPORT_CSHARP.md
+SYSTEM_PROMPT_v12_FOR_AI_CHAT_FINAL.md
+Template_v12_Narrative_FINAL.md
+V12_prompt_usage.md
+VISUAL_PLAYBOOK_GENERATION_PROMPT_v12_UPDATED.md
+WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md
+```
+
+----------------
+
+use VISUAL_PLAYBOOK_GENERATION_PROMPT_v12_UPDATED.md file as starting point, 
+follow COMPLETE_SYLLABUS_v13_FINAL.md file for syllabus,
+MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config
+ and 
+
+create week 06 hybrid support md file 
+---
+
+all reference files are
+```
+COMPLETE_SYLLABUS_v13_FINAL.md
+EMOJI_ICON_GUIDE_v12.md
+MASTER_PROMPT_v12_FINAL.md
+SYSTEM_CONFIG_v12_FINAL.md
+SYSTEM_PROMPT_v12_EXTENDED_SUPPORT_CSHARP.md
+SYSTEM_PROMPT_v12_FOR_AI_CHAT_FINAL.md
+Template_v12_Narrative_FINAL.md
+V12_prompt_usage.md
+VISUAL_PLAYBOOK_GENERATION_PROMPT_v12_UPDATED.md
+WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md
+```
+
