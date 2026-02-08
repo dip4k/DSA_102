@@ -172,6 +172,57 @@ Flows/advanced DS?   → Weeks 16–18 overview
 
 Every week follows a **consistent file structure** so you always know where to go.
 
+### 🎬 File 1: **Instructional Files** (5–6 per week)
+**Purpose:** 🏫 Deep learning in narrative form (MIT-style lectures). Build COnceptual understanding.  
+**Structure (5-Chapter Arc):**
+1. 🎣 Context & Motivation  
+2. 🧠 Mental Model  
+3. ⚙️ Mechanics & Implementation  
+4. 🏭 Performance & Real Systems  
+5. 🎓 Integration & Mastery
+
+**Use When:** You need to truly *understand* a concept, not just memorize patterns
+
+---
+
+### 🎨 File 2: **WeekX_VisualConceptsPlaybook_HYBRID.md** (1 file for full week)
+**Purpose:** 🖼️ Offline visual learning + enhanced with external references. Leran concepts visually  
+**Contains:**
+- 🗺️ Pattern family trees (per day)
+- 📊 30+ ASCII diagrams & trace tables per week
+- ⚠️ Failure modes (wrong vs right, side-by-side)
+- ❓ 15 quiz questions (no answers)
+- 🌐 Links to interactive visual references
+
+**Use When:** You are a visual learner or need quick, diagram-based revision
+
+---
+
+### 💻 File 3: **Week_X_ProblemSolving_Roadmap_Extended_CSharp.md** (1 file per week)
+**Purpose:** 💻 Production-grade C# implementations and patterns, see problems or patterns for weekly topics in C# language. Useful for revision or checking how concept is used or implemented in C# or using C#.  
+**Contains:**
+- 🎯 Problem "signals" mapped to patterns and C# collections
+- 💡 C#-specific mental model per pattern
+- 🔧 C# skeletons (guard clauses, comments explaining *why*, not just *what*)
+- 📚 Notes on performance characteristics and pitfalls
+- 🪜 C#-focused problem ladders
+
+**Use When:** Implementing in C# or preparing for C#-heavy interviews
+
+---
+
+### 💻 File 4: **WEEK_X_FULL_PLAYBOOK.md.md** (1 file per week)
+**Purpose:** 💻 Conceptual weekly summary. used for quick refresher and revision.  
+**Contains:**
+- includes daywise concepts/topics summary
+- Pattern selection tables
+
+**Use When:** Required reviesion or quick recap.
+
+---
+
+## 5 support files.
+
 ### 📋 File 1: **WeekX_Guidelines.md** (3,000–4,000 words)
 **Purpose:** 🧭 Strategic weekly overview and learning roadmap  
 **Contains:**
@@ -238,46 +289,7 @@ Every week follows a **consistent file structure** so you always know where to g
 
 ---
 
-### 🎬 File 6: **Instructional Files** (5–6 per week, 12,000–18,000 words each)
-**Purpose:** 🏫 Deep learning in narrative form (MIT-style lectures)  
-**Structure (5-Chapter Arc):**
-1. 🎣 Context & Motivation  
-2. 🧠 Mental Model  
-3. ⚙️ Mechanics & Implementation  
-4. 🏭 Performance & Real Systems  
-5. 🎓 Integration & Mastery
-
-**Use When:** You need to truly *understand* a concept, not just memorize patterns
-
----
-
-### 🎨 File 7: **WeekX_VisualConceptsPlaybook_HYBRID.md** (~18,000 words)
-**Purpose:** 🖼️ Offline visual learning + enhanced with external tools  
-**Contains:**
-- 🗺️ Pattern family trees (per day)
-- 📊 30+ ASCII diagrams & trace tables per week
-- ⚠️ Failure modes (wrong vs right, side-by-side)
-- ❓ 15 quiz questions (no answers)
-- 🌐 Links to interactive visual tools
-
-**Use When:** You are a visual learner or need quick, diagram-based revision
-
----
-
-### 💻 File 8: **WeekX_ProblemSolving_Roadmap_Extended_CSharp.md** (3,000–4,000 words)
-**Purpose:** 💻 Production-grade C# implementations and patterns  
-**Contains:**
-- 🎯 Problem "signals" mapped to patterns and C# collections
-- 💡 C#-specific mental model per pattern
-- 🔧 C# skeletons (guard clauses, comments explaining *why*, not just *what*)
-- 📚 Notes on performance characteristics and pitfalls
-- 🪜 C#-focused problem ladders
-
-**Use When:** Implementing in C# or preparing for C#-heavy interviews
-
----
-
-## 📋 Detailed Week-by-Week Breakdown (v13.0)
+## 📋 Detailed Week-by-Week Topic/Syllabus Breakdown (v13.0)
 
 ### 🟦 **PHASE A: FOUNDATIONS & COMPUTATIONAL THINKING (Weeks 1–3)**
 
@@ -696,8 +708,8 @@ Quick Refresh?     → Topic-based, 2–4 weeks
 ### Step 3: 📚 Start Your First Week
 
 ```text
-1. Open Week01_Guidelines.md            — weekly strategy
-2. Study Week01Day01_...Instructional   — narrative learning
+1. Open Week_01_Guidelines.md            — weekly strategy
+2. Study Week_01_Day_01_...Instructional   — narrative learning
 3. Follow Week01_Daily_Progress_Checklist.md
 4. Use Roadmap + Interview_QA for practice & review
 ```
@@ -712,59 +724,58 @@ dsa-master-curriculum-v13/
 📄 README_v13.md                   # Main entrypoint (this file)
 📄 START_HERE.md                   # Path selection & orientation
 📄 LICENSE
+📄 COMPLETE_SYLLABUS_v13.md
+📄 COMPLETE_CONTENT_INDEX.md
 
-📁 v13-syllabus/
-   ├── COMPLETE_SYLLABUS_v13.md
-   ├── COMPLETE_SYLLABUS_v13_DETAILED.md
-   ├── COMPLETE_CONTENT_INDEX.md
-   └── Supporting materials
-
-📁 v13-system-prompts/
-   ├── MASTER_PROMPT_v13.md
-   ├── SYSTEM_CONFIG_v13_FINAL.md
-   ├── SYSTEM_PROMPT_v13_FOR_AI_CHAT.md
+📁 v12orV13-prompts/
+   ├── MASTER_PROMPT.md
+   ├── SYSTEM_CONFIG.md
+   ├── SYSTEM_PROMPT_v12_FOR_AI_CHAT.md
    ├── SYSTEM_PROMPT_v13_EXTENDED_SUPPORT_CSHARP.md
    └── Additional support files
 
-📁 v13-templates/
-   ├── Template_v13_Narrative_FINAL.md
-   ├── EMOJI_ICON_GUIDE_v13.md
-   ├── VISUAL_PLAYBOOK_GENERATION_PROMPT_v13.md
+📁 v12-templates/
+   ├── Template_v12_Narrative_FINAL.md
+   ├── EMOJI_ICON_GUIDE_v12.md
+   ├── VISUAL_PLAYBOOK_GENERATION_PROMPT_v12.md
    └── Supporting templates
 
-📁 week01-foundations-i-computational-fundamentals/
-   ├── Week01Day01_..._Instructional.md
-   ├── Week01Day02_..._Instructional.md
-   ├── Week01Day03_..._Instructional.md
-   ├── Week01Day04_..._Instructional.md
-   ├── Week01Day05_..._Instructional.md
-   ├── Week01Day06_PeakFinding_Instructional.md
-   ├── Week01_Guidelines.md
-   ├── Week01_Summary_KeyConcepts.md
-   ├── Week01_Interview_QA_Reference.md
-   ├── Week01_Problem_Solving_Roadmap.md
-   ├── Week01_Daily_Progress_Checklist.md
-   ├── Week01_VisualConceptsPlaybook_HYBRID.md
-   └── Week01_ProblemSolving_Roadmap_Extended_CSharp.md
+📁 week_01_foundations_i_computational_fundamentals/
+   │   Week_01_Day_01_RAM_Model_Pointers_Instructional.md
+   │   Week_01_Day_02_Asymptotic_Analysis_Instructional.md
+   │   Week_01_Day_03_Space_Complexity_Memory_Usage_Instructional.md
+   │   Week_01_Day_04_Recursion_I_Call_Stack_Instructional.md
+   │   Week_01_Day_05_Recursion_II_Memoization_Instructional.md
+   │   Week_01_Day_06_Peak_Finding_Algorithmic_Thinking_Instructional.md
+   │   WEEK_01_FULL_PLAYBOOK.md
+   │   Week_01_Problem_Solving_Roadmap_Extended_CSharp.md
+   │   Week_01_Visual_Concepts_Playbook_HYBRID.md
+   │
+   ├───📁 support files
+   │       Week01_DailyProgressChecklist.md
+   │       Week01_Guidelines.md
+   │       Week01_InterviewQA_Reference.md
+   │       Week01_ProblemSolvingRoadmap.md
+   │       Week01_Summary_KeyConcepts.md
 
-📁 week02-foundations-ii-linear-data-structures/
-📁 week03-foundations-iii-sorting-and-hashing/
-📁 week04-core-patterns-i/
-📁 week05-tier1-critical-patterns/
-📁 week06-string-patterns/
-📁 week07-trees-and-balanced-bsts/
-📁 week08-graph-fundamentals/
-📁 week09-graph-algorithms-i/
-📁 week10-dp-i-fundamentals/
-📁 week11-dp-ii-advanced/
-📁 week12-greedy-and-paradigms/
-📁 week13-backtracking-and-advanced-graphs/
-📁 week14-matrix-backtracking-bits/
-📁 week15-advanced-strings-flow/
-📁 week16-advanced-data-structures/
-📁 week17-advanced-graphs-hld-fft/
-📁 week18-probabilistic-ds-systems/
-📁 week19-mock-interviews-mastery/
+📁 week_02_foundations_ii_linear_data_structures/
+📁 week_03_foundations_iii_sorting_and_hashing/
+📁 week_04_core_problem_solving_patterns_i/
+📁 week_05_tier_1_critical_patterns/
+📁 week_06_string_manipulation_patterns/
+📁 week_07_trees_and_balanced_search_trees/
+📁 week_08_graph_fundamentals/
+📁 week_09_graph_algorithms_i/
+📁 week_10_dynamic_programming_i_fundamentals/
+📁 week_11_dp_ii_advanced/
+📁 week_12_greedy_and_paradigms/
+📁 week_13_backtracking_and_branch_bound/
+📁 week_14_matrix_backtracking_bits/
+📁 week_15_advanced_strings_flow/
+📁 week_16_advanced_data_structures/
+📁 week_17_advanced_graphs_hld_fft/
+📁 week_18_probabilistic_ds_systems/
+📁 week_19_mock_interviews_mastery/
 
 📁 assets/
    ├── diagrams/
