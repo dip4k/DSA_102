@@ -570,6 +570,39 @@ This week covers fundamental data structures and the most important search algor
 
 ---
 
+### 📅 DAY 6: STRINGS & NUMBERS - REPRESENTATION & CONVERSIONS | 120 min
+
+**Topics:**
+- **Why representations matter (engineering motivation)**
+  - Real failures and costs: overflow bugs, encoding corruption, performance traps (concat-in-loop)
+  - Bridge concept: how low-level representation affects correctness + speed in later weeks (sorting/string algorithms)
+
+- **Strings: representation, encoding, immutability**
+  - String as a character sequence; common implementations store metadata (length/hash) + character buffer
+  - Encoding basics: ASCII vs Unicode; UTF-8 (1–4 bytes) vs UTF-16 (commonly used by C#/Java) and implications
+  - Immutability: why it exists (thread-safety, hashing/interning), and what it costs (allocations/copies)
+
+- **String operations: cost model + performance traps**
+  - Indexing is O(1) address math; comparison is O(n) (often early-exit)
+  - Concatenation allocates and copies; repeated `+=` in loops leads to O(n²) behavior
+  - Fix: use `StringBuilder`/buffering patterns for efficient building (amortized behavior)
+
+- **Numbers: bases, integer storage, overflow**
+  - Base systems: binary and hexadecimal; conversion patterns via repeated division/remainders
+  - Signed integers via two’s complement (bit-level negation + add 1) and range intuition
+  - Overflow/underflow: fixed bit-width wraparound behavior; practical need for bounds checks
+
+- **String ↔ number conversions (core algorithms)**
+  - `atoi`: trim whitespace, sign handling, digit accumulation (`res = res*10 + digit`), stop on non-digit, overflow detection strategy
+  - `itoa`: handle 0 and sign, extract digits with `% 10` and `/ 10`, reverse/build output
+  - Base conversions: generalize digit extraction and digit-to-char mapping (0–9, A–F for hex)
+
+- **Floating point (awareness-level)**
+  - IEEE-754 idea: sign/exponent/mantissa; precision limits imply `0.1 + 0.2 != 0.3` in binary floating point
+  - Use epsilon-based comparisons when equality is unsafe
+
+---
+
 ## 📌 WEEK 3: SORTING, HEAPS & HASHING
 
 ### Weekly Goal

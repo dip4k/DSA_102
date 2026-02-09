@@ -301,6 +301,7 @@ Every week follows a **consistent file structure** so you always know where to g
 - 📅 **Day 3:** Linked Lists & Cache Effects  
 - 📅 **Day 4:** Stacks, Queues & Deques  
 - 📅 **Day 5:** Binary Search & Invariants
+- 📅 **Day 6:** Strings & Numbers conceptual understanding
 
 ---
 

@@ -48,6 +48,7 @@
 - Day 3: Linked Lists | 90 min
 - Day 4: Stacks, Queues & Deques | 90 min
 - Day 5: Binary Search & Invariants | 90 min
+- Day 6: Strings & Numbers conceptual understanding | 120 min
 
 #### Week 3: Sorting, Heaps & Hashing
 - Day 1: Elementary Sorts (Bubble, Selection, Insertion) | 90 min
