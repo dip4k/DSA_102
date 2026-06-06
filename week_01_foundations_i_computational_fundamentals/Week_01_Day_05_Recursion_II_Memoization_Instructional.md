@@ -146,7 +146,7 @@ The recursive call is the last operation. In languages with tail-call optimizati
 
 **3. Divide-and-Conquer:** Splits problem into independent subproblems. Each subproblem is solved once. Time is usually O(n log n) or better, determined by the recurrence relation.
 
-**4. Tail Recursion:** Recursive call is the last operation. Compiler can optimize to O(1) stack space. Same time complexity, but safer memory usage.
+**4. Tail Recursion:** Recursive call is the last operation. Some languages/compilers can optimize this to O(1) stack space via tail-call optimization (TCO). In common interview languages such as C#, Java, and Python, you should not assume TCO is guaranteed.
 
 **5. Mutual Recursion:** A calls B, B calls A. Harder to analyze. Requires careful termination logic.
 
@@ -835,7 +835,6 @@ With memoization mastered, you're now ready for dynamic programming (Week 10), w
 
 ---
 
-**Word Count:** ~17,200 words  
 **Inline Visuals:** 9 diagrams and traces  
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—comprehensive theory, practical patterns, and real systems  

@@ -802,7 +802,6 @@ The call stack is the foundation of how all programs execute. Master it, and rec
 
 ---
 
-**Word Count:** ~16,500 words  
 **Inline Visuals:** 8 diagrams and traces  
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—comprehensive theory and practical application  

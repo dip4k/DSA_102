@@ -750,6 +750,3 @@ public ListNode DetectCycleStart(ListNode head)
 
 ---
 
-**Status:** Production-Ready Problem-Solving Roadmap | **Format:** Extended C# Support  
-**Generated:** January 08, 2026 | **System:** v12 Extended C# Template
-

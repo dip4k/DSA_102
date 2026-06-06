@@ -722,7 +722,13 @@ Early computers (1950s-1960s) had memory measured in kilobytes. Programmers obse
 
 **End of Week 1 Day 1: RAM Model & Pointers**
 
-**Word Count:** ~15,800 words  
-**Status:** ✅ Complete instructional file (v12 narrative-first format)
 
 Next: Week 1 Day 2 (Asymptotic Analysis)
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+

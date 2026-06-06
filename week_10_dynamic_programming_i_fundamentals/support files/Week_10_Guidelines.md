@@ -3,7 +3,6 @@
 **Week:** 10 | **Phase:** C (Trees, Graphs & Dynamic Programming)  
 **Theme:** Dynamic Programming I: Building Intuition from Recursion to Tables  
 **Difficulty:** 🟡 Intermediate to 🔴 Advanced  
-**Status:** ✅ Complete Learning Framework for Week 10
 
 ---
 
@@ -371,6 +370,5 @@ At the end of each day, ask yourself:
 
 ---
 
-**Status:** ✅ Week 10 Guidelines Complete — Ready for Implementation
 
 All sections align with v12 narrative-first philosophy and MIT 6.006 DP fundamentals.

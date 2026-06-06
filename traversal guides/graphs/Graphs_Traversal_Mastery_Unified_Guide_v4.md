@@ -1,4 +1,4 @@
-# 🕸️ Flow‑Wise Graph Traversal Mastery — Unified (v4)
+# 🕸️ Flow‑Wise Graph Traversal Mastery — Final Unified Guide
 
 **Goal:** Professional-grade intuition for graph traversal and search from **basic DFS/BFS** to **advanced graph algorithms**. [file:198]
 
@@ -592,3 +592,124 @@ List<int> Dijkstra(int n, (int u,int v,int w)[] edges, int src)
 - For weighted graphs: did I accidentally use BFS instead of Dijkstra/0–1 BFS?
 - For grids: did I apply the bounds/blocked/visited gates in the right order?
 - For state graphs: is my visited key correct and minimal?
+
+---
+
+# L9 — Advanced Weighted, Matching, and Flow Extensions
+
+Use this layer after L1-L8 are stable. These are not "basic traversal" anymore, but they reuse the same frontier + metadata + invariant discipline.
+
+## L9.1 Bellman-Ford
+- Use when edges can be negative and you still need shortest paths.
+- Frontier idea: not a queue frontier, but repeated edge-relaxation passes.
+- Invariant: after `i` full passes, all shortest paths using at most `i` edges are correct.
+- Key interview edge case: one extra pass that still improves distance means a reachable negative cycle exists.
+
+## L9.2 Floyd-Warshall
+- Use for all-pairs shortest paths on small dense graphs.
+- State view: `dist[i][j]` improves as more intermediate vertices are allowed.
+- Invariant: after considering vertices `0..k`, `dist[i][j]` is the best path using only those intermediates.
+
+## L9.3 A* Search
+- Use when you have a good admissible heuristic and want practical shortest-path speedups.
+- Frontier: min-heap keyed by `g + h`.
+- Invariant: heuristic must never overestimate the remaining cost.
+
+## L9.4 Dinic Max Flow
+- Use for max-flow problems once the graph becomes clearly about capacities, source, sink, and residual edges.
+- Frontier layers still matter: BFS builds the level graph; DFS sends blocking flow.
+- Invariant: residual graph always reflects remaining augmenting capacity.
+
+## L9.5 Hopcroft-Karp
+- Use for maximum bipartite matching once BFS/DFS and bipartite graphs are already comfortable.
+- Invariant: BFS layers identify shortest augmenting paths; DFS augments only along valid layered paths.
+
+## L9.6 Other advanced graph extensions
+- `Should`: shortest path with exactly K edges, multi-source Dijkstra, DAG DP for multiple best paths.
+- `Optional`: 2-SAT via SCC, Eulerian path, min-cut side recovery, minimum vertex cover in bipartite graphs.
+
+---
+
+# Practice Ladder — Foundational to Advanced
+
+## Core traversal drills (Must)
+
+### L1-L2 foundations
+- Path existence / Keys and Rooms / Flood Fill
+- Number of Islands / Max Area of Island
+- Number of Provinces / connected components
+- Clone Graph / iterative DFS discipline
+
+### L3 shortest path and coloring
+- Open the Lock
+- Word Ladder
+- 01 Matrix
+- Rotting Oranges
+- Is Graph Bipartite?
+- Possible Bipartition
+
+### L4 DAG / cycle / constrained frontier
+- Course Schedule
+- Course Schedule II
+- Find Eventual Safe States
+- 0-1 BFS style problems such as minimum obstacles / directional grid cost
+
+### L5-L8 deeper graph mastery
+- Shortest Path in Binary Matrix
+- Network Delay Time
+- Path With Minimum Effort
+- Critical Connections in a Network
+- MST problems (Connecting Cities, Min Cost to Connect All Points)
+
+## Advanced drill ladder (Should / Optional)
+- Bellman-Ford distances and path reconstruction
+- Floyd-Warshall distances plus next-matrix path recovery
+- Dijkstra with path counts and lexicographic tie-breaking
+- Multi-source Dijkstra
+- A* on grid
+- Dinic max flow and min cut side extraction
+- Hopcroft-Karp maximum matching
+- 2-SAT with SCC
+- Eulerian path in directed and undirected graphs
+
+---
+
+# Driver-Based Drill Track
+
+If you want coding repetition rather than theory review, use this sequence while reading the guide:
+
+## Foundational driver drills
+- Build adjacency lists (directed and undirected)
+- BFS order, DFS recursive order, DFS iterative order
+- Reachability, shortest path reconstruction, connected components
+- Cycle detection (directed and undirected)
+- Bipartite checking, topological sort, 0-1 BFS, Dijkstra, SCC, bridges, MST, DSU queries
+
+## Advanced driver drills
+- Bellman-Ford and negative cycles
+- Floyd-Warshall with reconstruction
+- Dijkstra variants
+- A* search
+- Dinic max flow
+- Hopcroft-Karp matching
+- Exact-K-edge shortest path, DAG DP, offline DSU, Eulerian path
+
+Rule of thumb:
+- `Must`: complete the foundational driver drills.
+- `Should`: add Bellman-Ford, Floyd-Warshall, and one flow/matching drill.
+- `Optional`: finish the full advanced pack.
+
+---
+
+# Fluent Learning Workflow
+
+Use this single-file workflow so you do not need separate graph mastery, visual, and drill documents:
+
+1. Read the level section and say the invariant aloud.
+2. Dry-run the tiny visual before touching code.
+3. Implement the template in one language.
+4. Solve one LeetCode-style problem from the matching practice ladder.
+5. Write one sentence explaining why the chosen frontier was correct.
+6. Only then move to the next level.
+
+This guide is now the canonical merged source for graph traversal learning, practice sequencing, advanced extensions, and visual reinforcement.

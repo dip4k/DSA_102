@@ -113,7 +113,7 @@
 ### Day 5: Advanced String Matching (Optional)
 **Likelihood in Interview:** ⭐⭐⭐ (Less Common, More Advanced)
 
-**Question 1: Implement Karp-Rabin (Design)**
+**Question 1: Implement Rabin-Karp (Design)**
 - **Difficulty:** Hard
 - **Follow-up 1:** How would you handle hash collisions?
 - **Follow-up 2:** What modulus would you choose and why?
@@ -330,4 +330,4 @@ Shows you think like a production engineer.
 
 ---
 
-**Version:** 1.0 | **Status:** ✅ Production Ready | **Generated:** January 10, 2026
+

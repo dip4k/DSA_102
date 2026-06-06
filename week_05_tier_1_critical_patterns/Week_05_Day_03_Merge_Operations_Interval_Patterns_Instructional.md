@@ -373,6 +373,18 @@ public int MaxIntervals(int[][] intervals)
 
 ### Performance Analysis
 
+### Explicit Complexity Callouts (Core Patterns)
+
+- Merge Intervals
+    - Time Complexity: O(n log n) due to sorting + O(n) merge scan.
+    - Space Complexity: O(n) output storage (in-place variants can reduce auxiliary overhead).
+- Insert Interval (sorted non-overlapping input)
+    - Time Complexity: O(n)
+    - Space Complexity: O(n) for result buffer.
+- Merge K Sorted Lists (heap)
+    - Time Complexity: O(N log k), where N is total elements across all lists.
+    - Space Complexity: O(k) heap.
+
 **Merge Intervals:**
 
 | Approach | Time | Space | Constants |
@@ -588,8 +600,4 @@ Sort (hard), then linear scan (easy). This principle applies to:
 By Week 15, you'll see this pattern in 30+ problems. Master it on Day 3.
 
 ---
-
-**Word Count:** ~13,000 words | **Difficulty:** 🟡 Medium | **Time:** 4-5 hours  
-**Generated:** January 08, 2026 | **System:** v12 Narrative-First Architecture  
-**Status:** ✅ Production-Ready
 

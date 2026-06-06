@@ -1,31 +1,42 @@
 # 📘 COMPLETE DSA SYLLABUS v13 - FULL CONTENT INDEX
 ## All 19 Weeks + All Phases + All Days Comprehensive
 
-**Date:** January 25, 2026  
-**Version:** 13.0 COMPLETE & PRODUCTION READY  
 **Total Duration:** 235-270 hours | 19 weeks | 95+ study days
 
 ---
 
 ## 🎯 WHAT YOU NOW HAVE
 
-### ✅ Complete Slimmed Version
-**File:** `DSA_COMPLETE_SYLLABUS_v13_SLIM.md` [ID: 133]
-- Weeks 1-9 (Phase A, B, C partial)
-- Professional formatting with emojis
-- Phase overview table
-- All weekly/daily breakdowns
-- Clean, scannable format
-- Metadata removed
-- Production-ready
+### ✅ Canonical Syllabus Source
+**File:** `COMPLETE_SYLLABUS_v13.md`
+- All 19 weeks in one canonical sequence
+- Weekly goals + weekly outcomes across all weeks
+- Day-wise topic/subtopic breakdowns
+- Student-mode execution guidance
 
-### ✅ Remaining Complete Content
-**File:** `PHASE_C_TO_G_COMPLETE.md` [ID: 137]
-- Weeks 10-11 (Phase C continued - Full DP Content)
-- Weeks 12-13 (Phase D - Greedy & Backtracking)
-- Weeks 14-15 (Phase E - Integration & Extensions)
-- Weeks 16-18 (Phase F - Advanced Topics Optional)
-- Week 19 (Phase G - Mock Interviews)
+### ✅ Student Navigation Sources
+**Files:** `README_v13.md`, `START_HERE.md`
+- Study-path guidance (mastery / interview / quick reference)
+- Repository navigation and file-selection rules
+- Manual study workflow without CI dependency
+
+### ✅ Curriculum Folder Sources
+- `week_*` folders hold learner-facing weekly content
+- Use top-level week files and `support files/` first
+- Ignore `v10/`, `v12/`, and `_v12_` files unless doing version comparison
+
+---
+
+## 🧭 SEQUENCE ADJUSTMENTS (EASIER LEARNING)
+
+The current order is already strong, but these optional adjustments improve flow for many learners:
+
+1. **Amortized analysis reinforcement:**
+   Revisit Week 2 Day 2 (dynamic arrays) when studying Week 13 Day 4.
+2. **Advanced strings continuity:**
+   Pair Week 14 Day 4 with Week 15 Day 1 as a two-day advanced-string mini-track.
+3. **Range-query readiness:**
+   Treat Week 15 Day 2 (segment trees/fenwick) as recommended pre-read before Week 16 advanced DS.
 
 ---
 
@@ -163,14 +174,14 @@
 - Day 4: Advanced String Problems | 120 min
 - Day 5 (Optional): Number Theory Depth & Advanced | 90 min
 
-#### Week 15: Advanced Strings & Network Flow
+#### Week 15: Advanced Strings, Range Queries & Network Flow
 - Day 1: Z-Algorithm & Advanced String Matching | 120 min
 - Day 2: Segment Trees & Range Queries | 120 min
 - Day 3: Network Flow Basics | 120 min
 - Day 4: Network Flow Applications | 90 min
-- Day 5 (Optional): Special Topics (Geometry, Randomized) | 90 min
+- Day 5 (Optional): Design Patterns & Company-Specific Extensions | 90 min
 
-**Topics Covered:** 50+ | **Techniques:** Matrices, Bitmasks, Number Theory, String Algorithms, Network Flow
+**Topics Covered:** 50+ | **Techniques:** Matrices, Bitmasks, Number Theory, String Algorithms, Range Queries, Network Flow
 
 ---
 
@@ -285,41 +296,32 @@
 
 ---
 
-## 📦 YOUR COMPLETE DELIVERABLES
+## 📦 CURRENT STUDENT DELIVERABLES
 
-### Main Slimmed File (Weeks 1-9)
-📄 **DSA_COMPLETE_SYLLABUS_v13_SLIM.md** [ID: 133]
-- Optimized for readability
-- Professional formatting
-- Phase-wise summary table
-- Daily breakdowns
-- All topics included
+### Primary Files
+📄 **COMPLETE_SYLLABUS_v13.md**
+- Canonical 19-week syllabus source
+- Weekly goals/outcomes + day-level topic breakdowns
 
-### Complete Remaining Content (Weeks 10-19)
-📄 **PHASE_C_TO_G_COMPLETE.md** [ID: 137]
-- Full DP content (Weeks 10-11)
-- Greedy & Backtracking (Weeks 12-13)
-- Integration & Extensions (Weeks 14-15)
-- Advanced Topics (Weeks 16-18 optional)
-- Mock Interviews (Week 19)
+📄 **README_v13.md**
+- Repository overview and practical learning paths
 
-### Supplementary Files
-📄 **Delivery Summary** [ID: 131]
-- What was delivered
-- Quality metrics
-- Next steps
+📄 **START_HERE.md**
+- Fast onboarding and week-folder navigation
 
-📄 **Visual Summary** [ID: 132]
-- ASCII art presentation
-- Quick reference format
-- Structure overview
+### Primary Content Folders
+📁 **week_01_* ... week_19_***
+- Top-level instructional and weekly playbook files
+
+📁 **support files/** (inside week folders)
+- Guidelines, Summary, Interview QA, Roadmap, Daily checklist
 
 ---
 
 ## 🚀 HOW TO USE
 
 ### Study Workflow
-1. **Start with Week 1, Day 1** in SLIM file
+1. **Start with Week 1, Day 1** in `COMPLETE_SYLLABUS_v13.md`
 2. **Follow daily structure:** 90-120 min per day
 3. **Each day includes:**
    - Topics with subtopics
@@ -337,11 +339,11 @@
    - Revisit topics as needed
    - Build confidence
 
-### When You Reach Week 10
-- Continue in Week 1-9 file through remaining days
-- Then switch to `PHASE_C_TO_G_COMPLETE.md`
-- Follow same 90-120 min daily structure
-- Complete all 19 weeks sequentially
+### Daily Study Entry Order (Student Mode)
+1. Read the target day in `COMPLETE_SYLLABUS_v13.md`
+2. Open matching week folder and day instructional file
+3. Use `support files/` for summary/review/checklist
+4. Skip `v10/`, `v12/`, and `_v12_` files unless comparing versions
 
 ---
 
@@ -404,8 +406,8 @@
 
 You now have a **complete, professional-grade 19-week DSA curriculum** with:
 
-✅ **Weeks 1-9** in slimmed format  
-✅ **Weeks 10-19** in complete detailed format  
+✅ **One canonical 19-week syllabus source**  
+✅ **Aligned student onboarding files**  
 ✅ **All 95+ study days** mapped out  
 ✅ **180+ unique topics** with subtopics  
 ✅ **All 7 phases** from fundamentals to interviews  
@@ -415,9 +417,6 @@ You now have a **complete, professional-grade 19-week DSA curriculum** with:
 
 ---
 
-**Status:** ✅ COMPLETE & READY TO USE  
-**Date:** January 25, 2026  
-**Version:** 13.0  
 
 **Your path to DSA mastery is laid out. Follow the structure, practice daily, and you will master Data Structures & Algorithms. 🚀**
 

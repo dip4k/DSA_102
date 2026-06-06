@@ -1067,5 +1067,13 @@ All three are correct and optimal. Kruskal and Prim are preferred in education d
 
 ---
 
-**Status:** ✅ Week 09 Day 04 Instructional File — COMPLETE & CORRECTED (approximately 18,500 words)
+
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
 

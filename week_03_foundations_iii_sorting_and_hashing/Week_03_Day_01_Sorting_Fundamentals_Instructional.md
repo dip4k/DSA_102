@@ -928,3 +928,12 @@ When should you reach for these algorithms?
 - CLRS (Introduction to Algorithms): Sorting basics and stability discussion.
 - Visualgo: Sorting visualizations for intuition.
 - Official language/runtime docs: Check stability guarantees of built-in sorting APIs.
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+

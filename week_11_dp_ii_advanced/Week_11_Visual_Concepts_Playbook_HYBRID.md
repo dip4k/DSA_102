@@ -4,7 +4,6 @@
 **Scope:** Week 11 (Days 01-05) — DP on Trees, DAGs, Bitmask, and Advanced Patterns
 **Format:** Markdown with ASCII diagrams, flowcharts, and visual representations
 **Target:** Visual learners, concept mapping, quick reference
-**Updated:** January 2026
 
 ---
 

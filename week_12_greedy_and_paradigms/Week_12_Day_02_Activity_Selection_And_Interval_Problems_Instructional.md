@@ -792,4 +792,12 @@ The meeting room / interval partitioning variant emerges naturally from operatio
 ---
 
 **End of Week 12 Day 02 Instructional File**  
-**Status:** ✅ Complete | **Visuals:** Multiple interval timelines & tables | **Real Systems:** Calendar, CPU, Ads scheduling
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+

@@ -1,6 +1,5 @@
 # 🗺️ Week_03_Extended_CSharp_Problem_Solving_Implementation — COMPLETE v13
 
-**Version:** v1.0 HYBRID (Pattern Recognition + Production Implementation)  
 **Week:** 3 – Foundations III: Sorting, Heaps & Hashing  
 **Purpose:** Master sorting algorithms, heaps, and hash tables through pattern recognition, understanding, and practice  
 **Target:** Transform Week 3 topics into interview-ready C# coding skills  
@@ -19,7 +18,7 @@
 - **Day 2:** Merge Sort & Quick Sort — Divide-and-conquer with O(n log n) guarantees
 - **Day 3:** Heaps, Heapify & Heap Sort — Array-based tree structure with O(log n) operations
 - **Day 4:** Hash Tables I: Separate Chaining — O(1) expected time with linked lists
-- **Day 5:** Hash Tables II: Open Addressing & Rolling Hash (Karp-Rabin) — Probing strategies + string hashing
+- **Day 5:** Hash Tables II: Open Addressing & Rolling Hash (Rabin-Karp) — Probing strategies + string hashing
 
 ---
 
@@ -38,7 +37,7 @@ Use this decision tree when you encounter a problem in Week 3:
 | "Priority queue", "K largest/smallest", "Dijkstra algorithm", "Event simulation" | **Heap (Min/Max)** | O(log n) insert/extract with O(1) peek; array-based tree | Custom `MinHeap<T>` or `PriorityQueue<T>` | O(log n) / O(n) |
 | "Fast lookup", "Insert/delete O(1)", "Cache working set", "Expected O(1)" | **Hash Table (Separate Chaining)** | Linked lists in buckets; good hash + moderate load factor → O(1) expected | `Dictionary<K,V>` or custom | O(1) expected / O(n) |
 | "Probing-based", "Cache locality", "No linked lists", "Load factor control" | **Hash Table (Open Addressing)** | Linear/quadratic/double hashing; fewer allocations; better cache | `Dictionary<K,V>` internal | O(1) expected / O(n) |
-| "Substring search", "Pattern matching", "Plagiarism detection", "DNA sequences" | **Rolling Hash (Karp-Rabin)** | O(1) sliding window updates; polynomial hash modulo prime | `string` + hash | O(n+m) / O(1) |
+| "Substring search", "Pattern matching", "Plagiarism detection", "DNA sequences" | **Rolling Hash (Rabin-Karp)** | O(1) sliding window updates; polynomial hash modulo prime | `string` + hash | O(n+m) / O(1) |
 
 **HOW TO READ THIS:**
 - See "[Signal X]" in a problem? IMMEDIATELY think "[Pattern Y]"
@@ -60,7 +59,7 @@ Learn WHAT NOT TO DO and WHY:
 | Not maintaining heap invariant during insert/extract | Heap property violated; operations become O(n) | "Peek" gives wrong min/max; sort fails | Always bubble up after insert, bubble down after extract |
 | Hash table with poor hash function | Clustered collisions; chains become O(n) long | "O(1) insert" degrades to O(n); lookup timeout | Use good hash (uniform distribution, randomized seed) |
 | Hash table without resizing | Load factor grows unbounded; collisions explode | Performance degrades from O(1) to O(n) after ~70% full | Resize buckets (double) and rehash when load factor >0.75 |
-| String substring search with naive O(n*m) | Repeated pattern matching redundant; catastrophic backtracking | TLE on long strings with patterns; 1M string vs 1K pattern → 10⁹ ops | Use Karp-Rabin rolling hash (O(n+m)) |
+| String substring search with naive O(n*m) | Repeated pattern matching redundant; catastrophic backtracking | TLE on long strings with patterns; 1M string vs 1K pattern → 10⁹ ops | Use Rabin-Karp rolling hash (O(n+m)) |
 | Merge Sort without auxiliary array copy | Merging in-place requires complex logic; easy to corrupt | Wrong merged order; in-place merge O(n log n) space is a myth | Use auxiliary array (O(n) space); copy is cheaper than bugs |
 | Heap sort with unstable comparison | Heap is inherently unstable; if stability needed, breaks | Equal elements change order (wrong for secondary sorts) | Use Merge Sort if stability required; heaps are fine for numeric sorts |
 
@@ -580,7 +579,7 @@ public class HashTableChaining<K, V> where K : notnull
 
 ---
 
-### Pattern 5: Rolling Hash (Karp-Rabin Substring Search)
+### Pattern 5: Rolling Hash (Rabin-Karp Substring Search)
 
 #### 🧠 Mental Model
 Compute polynomial hash of pattern. For each window in text, compute hash of window. If hashes match, verify substring match (check for hash collisions). Key insight: rolling hash updates in O(1) by removing old character and adding new one.
@@ -595,7 +594,7 @@ Compute polynomial hash of pattern. For each window in text, compute hash of win
 
 ```csharp
 /// <summary>
-/// Karp-Rabin Rolling Hash - Substring Search
+/// Rabin-Karp Rolling Hash - Substring Search
 /// Time: O(n+m) average | Space: O(1)
 /// 
 /// 🧠 MENTAL MODEL:
@@ -684,7 +683,7 @@ public class KarpRabinMatcher
 #### 🔴 C# Engineering Notes
 - 🔴 **CRITICAL:** Verify substring on hash match. Hash collisions can give false positives.
 - 🟡 **PERFORMANCE:** Use large prime for modulo to reduce collisions. BASE^(m-1) mod PRIME precomputed once.
-- 🟢 **BEST PRACTICE:** For single pattern, use `string.IndexOf()`. Karp-Rabin shines for multiple patterns or streaming text.
+- 🟢 **BEST PRACTICE:** For single pattern, use `string.IndexOf()`. Rabin-Karp shines for multiple patterns or streaming text.
 
 ---
 
@@ -700,7 +699,7 @@ public class KarpRabinMatcher
 | Priority queue, K-largest problems | `PriorityQueue<T>` (C# 10+) or Min-Heap | O(log n) insert/extract, O(1) peek | Need custom control | Implement Min Heap |
 | Fast lookup/insert, unknown size | `Dictionary<K,V>` | Built-in optimized hash table | Need to understand internals | Custom Hash Table |
 | Hash table learning, separate chaining | Custom `HashTableChaining<K,V>` | Illustrates collisions, resizing, load factor | Production code | `Dictionary<K,V>` |
-| Substring search, multiple patterns | Karp-Rabin rolling hash | O(n+m) vs naive O(n*m); scales to multiple patterns | Single pattern search | `string.IndexOf()` |
+| Substring search, multiple patterns | Rabin-Karp rolling hash | O(n+m) vs naive O(n*m); scales to multiple patterns | Single pattern search | `string.IndexOf()` |
 
 **KEY INSIGHT:**
 Sorting determines algorithm choice (elementary vs divide-conquer). Hashing speed depends on hash quality and load factor management.
@@ -747,7 +746,7 @@ These problems twist the pattern. When does it work? When does it break?
 | 4 | #49 | 🟡 Medium | Group Anagrams | Hash of sorted string as key | Detect anagram groups in O(n*k log k) |
 | 5 | #3 | 🟡 Medium | Longest Substring Without Repeating | Hash table + sliding window | Expand/contract window with hash state |
 | 6 | #560 | 🟡 Medium | Subarray Sum Equals K | Hash of prefix sums | Cumulative sum collisions → target count |
-| 7 | #28 | 🟡 Medium | Implement `strStr()` | Karp-Rabin or KMP | Rolling hash faster than naive |
+| 7 | #28 | 🟡 Medium | Implement `strStr()` | Rabin-Karp or KMP | Rolling hash faster than naive |
 
 **STAGE 2 GOAL:** Pattern boundaries. When do variations apply? When is core pattern insufficient?
 
@@ -761,7 +760,7 @@ Hard problems rarely use just one pattern. These combine multiple:
 |---|---|---|---|---|---|
 | 1 | #295 | 🔴 Hard | Two Heaps | Min-heap + Max-heap for median | Maintain balance: larger half in min-heap |
 | 2 | #588 | 🔴 Hard | File System | Hash tables + tries (tree structure) | Nested hash dict for directory paths |
-| 3 | #76 | 🔴 Hard | Minimum Window Substring | Karp-Rabin + sliding window + hash | Rolling hash optimization on character sets |
+| 3 | #76 | 🔴 Hard | Minimum Window Substring | Rabin-Karp + sliding window + hash | Rolling hash optimization on character sets |
 
 **STAGE 3 GOAL:** Real-world thinking. Professional problems combine multiple patterns.
 
@@ -798,7 +797,7 @@ These mistakes are EASY to make:
 - ❌ Hash table without resizing → Load factor unbounded → Resize when count/capacity > 0.75
   - Example: 1000 inserts in 16 buckets = 62.5 load factor → all O(1) become O(n)
 
-- ❌ Karp-Rabin without verification → Hash collisions give false positives → Always verify substring match on hash hit
+- ❌ Rabin-Karp without verification → Hash collisions give false positives → Always verify substring match on hash hit
   - Example: Pattern "ab" might hash to same as "cd" → check actual substring
 
 - ❌ `(low + high) / 2` overflow in binary search before sort → Integer wraparound → Use `low + (high - low) / 2` and test with sorted array
@@ -816,7 +815,7 @@ These mistakes are EASY to make:
 | **Quick Sort** | "Partition around pivot, recursively sort sides" | `Partition(arr, low, high); QuickSortHelper(arr, low, p-1);` | "Fast average", "In-place", "Randomize pivot" |
 | **Heap (Min)** | "Complete tree: parent ≤ children; bubble up/down" | `BubbleUp(i); BubbleDown(0); parent = (i-1)/2; left = 2i+1;` | "K largest", "Priority queue", "Dijkstra" |
 | **Hash Table** | "Buckets + linked lists; hash → bucket, traverse list" | `int idx = Math.Abs(key.GetHashCode()) % capacity;` | "O(1) lookup", "Dictionary", "Resize > 0.75 load" |
-| **Karp-Rabin** | "Rolling polynomial hash; O(1) window update" | `hash = (hash * BASE - (text[i] * pow) + text[i+m]) % PRIME;` | "Substring search", "Multiple patterns", "Plagiarism" |
+| **Rabin-Karp** | "Rolling polynomial hash; O(1) window update" | `hash = (hash * BASE - (text[i] * pow) + text[i+m]) % PRIME;` | "Substring search", "Multiple patterns", "Plagiarism" |
 
 ---
 
@@ -849,7 +848,7 @@ These mistakes are EASY to make:
 - [ ] Explain WHY load factor matters (resize when > 0.75)
 - [ ] Explain WHEN separate chaining vs open addressing
 
-- [ ] Recognize Karp-Rabin signals ("substring search", "multiple patterns", "rolling hash")
+- [ ] Recognize Rabin-Karp signals ("substring search", "multiple patterns", "rolling hash")
 - [ ] Recall rolling hash update without notes (O(1) window move)
 - [ ] Explain WHY rolling hash O(n+m) vs naive O(n*m)
 - [ ] Explain WHEN to verify on hash match
@@ -930,7 +929,7 @@ This file is self-contained. You have:
 | Intro Sort (Hybrid) | O(n log n) guaranteed | O(log n) | Quick→Heap fallback; .NET default |
 | Heap Insert/Extract | O(log n) | O(1) | Per operation; building O(n) |
 | Hash Table Ops | O(1) expected / O(n) worst | O(n) | Expected; depends on load factor |
-| Karp-Rabin Search | O(n+m) average | O(1) | Sliding window hash update |
+| Rabin-Karp Search | O(n+m) average | O(1) | Sliding window hash update |
 
 ---
 
@@ -938,7 +937,6 @@ This file is self-contained. You have:
 
 ---
 
-**Status:** ✅ WEEK 3 PRODUCTION READY & COMPREHENSIVE
 
 This file combines:
 - ✅ **Pattern selection guidance** (v11 strength) — Know WHEN/WHY to choose
@@ -947,4 +945,5 @@ This file combines:
 - ✅ **Progressive learning** (v11 strength) — Practice from easy to hard
 - ✅ **Interview readiness** (v13 integration) — Pass technical interviews
 - ✅ **Complete coverage** (WEEK 3 TOPICS) — All sorting, heaps, hashing algorithms
+
 

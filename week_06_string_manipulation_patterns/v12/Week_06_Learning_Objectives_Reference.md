@@ -107,9 +107,9 @@
 **After completing this day, you will be able to:**
 
 - [ ] Understand rolling hash as incremental polynomial evaluation
-- [ ] Implement Karp-Rabin pattern matching with O(1) hash updates
+- [ ] Implement Rabin-Karp pattern matching with O(1) hash updates
 - [ ] Analyze collision probability and choose appropriate moduli
-- [ ] Compare Karp-Rabin vs KMP vs Boyer-Moore trade-offs
+- [ ] Compare Rabin-Karp vs KMP vs Boyer-Moore trade-offs
 - [ ] Apply rolling hash to plagiarism detection systems
 - [ ] Extend to approximate matching with Hamming distance threshold
 - [ ] Recognize when rolling hash is superior to other approaches
@@ -165,7 +165,7 @@
 - [ ] Can code sliding window for "longest without repeats" cleanly
 - [ ] Can write valid bracket checker without referencing notes
 - [ ] Can optimize string building with StringBuilder pattern
-- [ ] Can trace Karp-Rabin algorithm step-by-step
+- [ ] Can trace Rabin-Karp algorithm step-by-step
 
 ### Problem-Solving Checks
 - [ ] Can adapt palindrome logic to new problem variants
@@ -231,4 +231,4 @@
 
 ---
 
-**Version:** 1.0 | **Status:** ✅ Production Ready | **Generated:** January 10, 2026
+

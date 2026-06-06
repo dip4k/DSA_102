@@ -1,6 +1,5 @@
 # 🧗 Week 08 Problem Solving Roadmap – Graph Fundamentals
 
-Version: v1.0  
 Filename: `Week_08_Problem_Solving_Roadmap.md`  
 Week: 08 – Graph Fundamentals: Representations, BFS, DFS & Topological Sort
 

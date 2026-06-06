@@ -63,13 +63,11 @@ Step 1: left=0, right=0
         Window [a]
         Distinct chars: {a}
         Constraint: ≤ 2 ✓
-        Status: Can expand
 
 Step 2: left=0, right=1
         Window [a, b]
         Distinct chars: {a, b}
         Constraint: ≤ 2 ✓
-        Status: Can expand
 
 Step 3: left=0, right=2
         Window [a, b, c]
@@ -81,7 +79,6 @@ Step 4: left=1, right=2
         Window [b, c]
         Distinct chars: {b, c}
         Constraint: ≤ 2 ✓
-        Status: Can expand
 
 ... continues with expand/shrink as needed
 ```
@@ -597,10 +594,17 @@ Master variable-size sliding windows, and you've mastered a fundamental pattern 
 
 ---
 
-**Word Count:** ~16,200 words  
 **Inline Visuals:** 8 (ASCII diagrams, trace tables, comparison matrices)  
 **Real-World Stories:** 3 (Browser LRU cache, Database streaming, TCP congestion)  
 **Interview-Ready:** Yes — covers mechanics, amortized analysis, and production scenarios  
 
-**Status:** ✅ COMPLETE — Week 04 Day 03 Instructional File
+
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
 

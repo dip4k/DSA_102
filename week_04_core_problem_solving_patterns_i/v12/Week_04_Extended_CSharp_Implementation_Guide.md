@@ -1006,7 +1006,5 @@ Use these as:
 
 ---
 
-**Generated:** January 8, 2026  
 **Language:** C# (.NET 5.0+)  
-**Status:** ✅ Production-Ready
 

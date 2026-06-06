@@ -743,9 +743,8 @@ Augmented data structures were formalized in Cormen, Leiserson, and Rivest's inf
 
 **Visual Elements: 11 diagrams (augmented tree structures, rank traces, query visualizations)**
 
-**Status:** ✅ Week 7 Day 5 Instructional File — COMPLETE
 
-This file follows the v12 Narrative-First architecture:
+This file follows the Unified v13 Narrative-First architecture:
 - ✅ 5-chapter arc: Context → Mental Model → Mechanics → Reality → Mastery
 - ✅ Inline visuals placed exactly where concepts introduced
 - ✅ Production case studies (5 detailed stories: leaderboards, databases, analytics, social networks, data warehouses)
@@ -758,3 +757,13 @@ This file follows the v12 Narrative-First architecture:
 - ✅ Handles trade-offs and design decisions
 - ✅ Connections to segment trees, Fenwick trees, and other advanced structures
 - ✅ MIT 6.046 advanced level content
+
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+

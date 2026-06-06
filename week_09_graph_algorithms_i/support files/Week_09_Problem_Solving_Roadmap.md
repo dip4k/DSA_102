@@ -1,8 +1,6 @@
 # 🗺️ Week 09 Problem-Solving Roadmap — Progressive Practice Path
 
-**Version:** 1.0  
 **Purpose:** Structured problem-solving progression from easy to hard  
-**Status:** ✅ ACTIVE
 
 ---
 
@@ -1178,6 +1176,4 @@ Proof by induction on edges added:
 - [ ] Score 60%+ on first attempts
 
 ---
-
-**Status:** ✅ Week 09 Problem-Solving Roadmap — COMPLETE
 

@@ -529,7 +529,4 @@ Cyclic Sort works by resolving these cycles one by one. If a cycle has length K,
 
 ---
 
-**Generated:** January 03, 2026
-**Version:** Template v10.0 Mental-Model-First
 **File:** Week_05_Day_4A_Partition_Cyclic_Sort_Instructional.md
-**Status:** ✅ Ready for Review

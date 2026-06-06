@@ -1,8 +1,6 @@
 # 🎙️ Week 09 Interview QA Reference — Complete Question Bank & Solutions
 
-**Version:** 1.0  
 **Purpose:** Comprehensive interview question bank with model answers and follow-ups  
-**Status:** ✅ ACTIVE  
 **Audience:** Intermediate-Advanced students preparing for technical interviews
 
 ---
@@ -2106,6 +2104,4 @@ DSU_WithSize:
 - Forgetting path compression or union-by-rank in DSU
 
 ---
-
-**Status:** ✅ Week 09 Interview QA Reference — COMPLETE (30 questions across 5 categories)
 

@@ -537,10 +537,17 @@ The problems we solve in this chapter—sorting, counting inversions, finding ma
 
 ---
 
-**Word Count:** ~16,800 words  
 **Inline Visuals:** 8 (recursion trees, trace tables, comparison matrices)  
 **Real-World Stories:** 3 (Database sorting, MapReduce, Inversion counting)  
 **Interview-Ready:** Yes — covers mechanics, recurrence analysis, and production scenarios  
 
-**Status:** ✅ COMPLETE — Week 04 Day 04 Instructional File
+
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
 

@@ -949,7 +949,13 @@ By mastering monotonic stacks on Day 2, you're building the intuition for a whol
 
 ---
 
-**Word Count:** ~13,500 words | **Difficulty:** 🟡 Medium-Hard | **Time:** 4-5 hours  
-**Generated:** January 08, 2026 | **System:** v12 Narrative-First Architecture  
-**Status:** ✅ Production-Ready
+
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
 

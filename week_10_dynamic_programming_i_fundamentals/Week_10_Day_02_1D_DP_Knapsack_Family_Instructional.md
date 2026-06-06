@@ -978,7 +978,6 @@ By the 1970s-80s, DP had been applied to bioinformatics (sequence alignment—ed
 - ✓ No count mismatches (items/capacities consistent)
 - ✓ No missing steps (all operations detailed)
 
-**Status:** ✅ **READY FOR DELIVERY** — All quality gates passed.
 
 ---
 

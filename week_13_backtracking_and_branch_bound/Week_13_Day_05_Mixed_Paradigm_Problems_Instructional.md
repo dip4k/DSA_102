@@ -2146,7 +2146,6 @@ for any input sequence σ
 
 **End of Week 13, Day 05 Instructional File**
 
-**Word Count**: ~18,000 words
 
 ---
 
@@ -2197,3 +2196,12 @@ You've now mastered:
 These techniques form the foundation for tackling NP-hard problems in interviews, competitions, and production systems. You're now equipped to design sophisticated algorithms that balance optimality, efficiency, and practicality.
 
 **Keep building, keep optimizing, keep mastering!** 💪
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+

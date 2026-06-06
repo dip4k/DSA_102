@@ -1,5 +1,7 @@
 # 📘 WEEK 03 DAY 01: ELEMENTARY SORTS - BUBBLE, SELECTION, INSERTION — ENGINEERING GUIDE
 
+> Canonical learner-facing Day 1 file: prefer `Week_03_Day_01_Sorting_Fundamentals_Instructional.md`. This file remains as a focused elementary-sorts companion.
+
 **Metadata:**
 - **Week:** 03 | **Day:** 01
 - **Category:** Algorithms (Sorting Fundamentals)
@@ -1435,3 +1437,12 @@ Shift cost (insertion): move a block right by one
 Swap:  [A, B] -> [B, A]
 Shift: [X, A, B] insert Y -> [X, Y, A, B]
 ```
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+

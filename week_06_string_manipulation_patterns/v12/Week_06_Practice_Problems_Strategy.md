@@ -99,7 +99,7 @@
 | 1 | #187 | Repeated DNA Sequences | 🟡 Medium | Rolling hash | O(n) | O(n) |
 | 2 | #438 | Find All Anagrams | 🟡 Medium | Sliding window freq | O(n) | O(k) |
 | 3 | #686 | Repeated String Match | 🟡 Medium | Pattern repetition | O(n+m) | O(n) |
-| 4 | #214 | Shortest Palindrome | 🔴 Hard | Karp-Rabin for palindrome | O(n) | O(n) |
+| 4 | #214 | Shortest Palindrome | 🔴 Hard | Rabin-Karp for palindrome | O(n) | O(n) |
 | 5 | #30 | Substring with Concatenation | 🔴 Hard | Multi-pattern hash | O(nm) | O(n) |
 | 6 | #482 | License Key Formatting | 🟢 Easy | Character transformation | O(n) | O(n) |
 | 7 | #28 | Implement strstr() | 🟢 Easy | Basic pattern match | O(nm) or O(n+m) | O(1) |
@@ -108,7 +108,7 @@
 - Warm up: #482, #28 (basic)
 - Core: #187 (rolling hash signature)
 - Multi-pattern: #438, #30 (extension)
-- Advanced: #214 (Karp-Rabin for palindrome)
+- Advanced: #214 (Rabin-Karp for palindrome)
 
 ---
 
@@ -221,4 +221,4 @@
 
 ---
 
-**Version:** 1.0 | **Status:** ✅ Production Ready | **Generated:** January 10, 2026
+

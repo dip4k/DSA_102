@@ -659,6 +659,14 @@ The term "greedy" was popularized in the 1970s as algorithm analysis formalized.
 
 **End of Week 12 Day 1 Instructional File**
 
-**Status:** ✅ Complete | **Word Count:** ~18,000 words | **Visuals:** 7 diagrams/tables | **Real-world systems:** 3 detailed case studies
 
 **Next:** Week 12 Day 2 — Activity Selection & Interval Problems
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+

@@ -1,7 +1,6 @@
 # 🗺 WEEK 2 — CONCEPT MAP & SUMMARY
 
 **Week Theme:** Linear Data Structures & Search  
-**Status:** Foundation Complete
 
 ---
 

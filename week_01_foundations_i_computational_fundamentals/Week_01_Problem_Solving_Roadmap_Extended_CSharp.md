@@ -1,6 +1,5 @@
 # 🗺️ Week 01 Problem-Solving Roadmap Extended C# — Production-Grade Implementations
 
-**Version:** v1.0  
 **Purpose:** Week 01–specific C# problem-solving playbook for Foundations (RAM, Asymptotics, Space, Recursion)  
 **Target:** Transform mental models into C# coding fluency  
 **Prerequisites:** Week 01 instructional files + standard support files complete  
@@ -655,6 +654,5 @@ By week's end, you should be able to:
 
 ---
 
-**Status:** ✅ Week 01 Extended C# Roadmap Complete  
 **Next:** Proceed to Week 01 Daily Progress Checklist or move to Week 02 content
 

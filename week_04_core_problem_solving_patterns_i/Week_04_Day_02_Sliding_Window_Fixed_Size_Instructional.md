@@ -533,10 +533,17 @@ Master fixed-size sliding windows, and you're ready for variable-size windows (t
 
 ---
 
-**Word Count:** ~15,800 words  
 **Inline Visuals:** 9 (ASCII diagrams, trace tables, comparison matrices)  
 **Real-World Stories:** 3 (Trading platforms, CDN monitoring, Netflix streaming)  
 **Interview-Ready:** Yes — covers mechanics, data structures, trade-offs, and applications  
 
-**Status:** ✅ COMPLETE — Week 04 Day 02 Instructional File
+
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
 

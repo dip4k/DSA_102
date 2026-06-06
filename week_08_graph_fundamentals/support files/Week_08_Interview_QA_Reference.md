@@ -1,6 +1,5 @@
 # 🎤 Week 08 Interview Q&A Reference – Graph Fundamentals
 
-Version: v1.0  
 Filename: `Week_08_Interview_QA_Reference.md`  
 Week: 08 – Graph Fundamentals: Representations, BFS, DFS & Topological Sort
 

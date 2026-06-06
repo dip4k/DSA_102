@@ -603,9 +603,17 @@ Often, the answers lead to elegant, efficient solutions.
 
 ---
 
-**Word Count:** ~14,800 words  
 **Inline Visuals:** 6 diagrams and traces  
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers both theory and practical applications  
 **Batch Status:** ✅ COMPLETE — Week 01 Day 06 (Optional Advanced) Final
+
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
 

@@ -3,7 +3,6 @@
 **Week:** 4 | **Title:** Core Problem-Solving Patterns I  
 **Duration:** 5 days | **Total Content:** ~80,500 words  
 **Difficulty:** 🟡 Intermediate (builds on Weeks 1-3)  
-**Status:** Complete and Production-Ready
 
 ---
 
@@ -296,6 +295,4 @@ These patterns—two-pointers, sliding windows, divide & conquer, binary search 
 | **Total** | **5 Patterns** | **20h** | **All Core** | **40 problems** |
 
 ---
-
-**Status:** Ready to begin. Start with Day 1 instructional file.
 

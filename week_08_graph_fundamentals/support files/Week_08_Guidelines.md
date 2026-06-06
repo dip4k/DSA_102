@@ -1,6 +1,5 @@
 # 🌐 Week 08 Guidelines – Graph Fundamentals: Representations, BFS, DFS & Topological Sort
 
-Version: v1.0  
 Filename: `Week_08_Guidelines.md`  
 Week: 08 – Phase C: Trees, Graphs, Dynamic Programming  
 Theme: **From trees to general graphs – modelling, traversing, and ordering complex systems**

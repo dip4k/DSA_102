@@ -1395,7 +1395,6 @@ After Week 11, you're ready for:
 
 **WEEK 11 COMPLETE** ✅
 
-**Status:** Production-Ready for DSA Master Curriculum  
 **Total Content:** ~25,000 words across 5 days + optional days  
 **Visuals:** 20+ inline ASCII diagrams and traces  
 **Practice:** 40+ problems across difficulty levels  
@@ -1403,7 +1402,6 @@ After Week 11, you're ready for:
 
 ---
 
-**File Generated:** January 26, 2026, 2:30 AM IST  
 **Format:** Markdown (.md)  
 **Verified:** ✅ All sections complete, self-check passed
 

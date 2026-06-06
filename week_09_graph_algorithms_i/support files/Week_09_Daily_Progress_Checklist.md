@@ -1,8 +1,6 @@
 # ✅ Week 09 Daily Progress Checklist — Graph Algorithms I
 
-**Version:** 1.0  
 **Purpose:** Track daily progress and ensure complete coverage of all Week 09 topics  
-**Status:** ✅ ACTIVE
 
 ---
 
@@ -519,6 +517,4 @@ This checklist helps you track:
 | 5 | [ ] | [ ] | [ ] | [ ] | Not started / In progress / Complete |
 
 ---
-
-**Status:** ✅ Week 09 Daily Progress Checklist — COMPLETE
 

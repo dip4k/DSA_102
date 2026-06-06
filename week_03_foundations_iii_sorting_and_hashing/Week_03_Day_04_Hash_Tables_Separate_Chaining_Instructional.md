@@ -749,9 +749,17 @@ Master hash tables—their design, their applications, their trade-offs—and yo
 
 ---
 
-**Word Count:** ~16,500 words  
 **Inline Visuals:** 10 diagrams and traces  
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers mechanics, design, and applications  
 **Batch Status:** ✅ COMPLETE — Week 03 Day 04 Final
+
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
 

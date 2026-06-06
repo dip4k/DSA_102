@@ -1,6 +1,5 @@
 # 🗺️ Week_03_Extended_CSharp_Problem_Solving_Implementation
 
-**Version:** v1.0 HYBRID (Pattern Recognition + Production Implementation)  
 **Purpose:** Master Week 3 patterns (Sorting, Heaps & Hashing) through recognition, understanding, and practice  
 **Target:** Transform pattern knowledge into interview-ready C# coding skills  
 **Prerequisites:** Week 3 instructional files + standard support files complete
@@ -22,7 +21,7 @@ Use this decision tree when you encounter a problem in Week 3:
 | "k largest", "top k", "frequent elements" | **Heap-based Top-K** | Build heap, extract k times | Heap or `PriorityQueue<T>` | O(n) build/O(k log n) extract |
 | "Key-value lookup", "O(1) average", "store mapping" | **Hash Table (Separate Chaining)** | Hash function → bucket → chain | `Dictionary<K,V>` | O(1) avg/O(n) worst |
 | "No collisions expected", "direct lookup" | **Hash Table (Open Addressing)** | Linear/quadratic/double hashing probing | `T[]` with probe function | O(1) avg/O(n) worst |
-| "Substring search", "pattern matching" | **Rolling Hash / Karp-Rabin** | Polynomial hash on sliding window | hash state variable | O(n+m) avg/O(nm) worst |
+| "Substring search", "pattern matching" | **Rolling Hash / Rabin-Karp** | Polynomial hash on sliding window | hash state variable | O(n+m) avg/O(nm) worst |
 | "Small dataset", "nearly sorted" | **Insertion Sort** | Grow sorted prefix; cheap for small n | `T[]` (in-place) | O(n²) worst/O(1) |
 | "Already sorted or reverse sorted" | **Bubble Sort** (rare) | Simple but slow; only for education | `T[]` (in-place) | O(n²) worst/O(1) |
 
@@ -46,7 +45,7 @@ Learn WHAT NOT TO DO and WHY:
 | Building heap incorrectly (not sift-down) | Heap property violated; peek/extract wrong | Wrong answer or crashes | Use heapify-down for each element in reverse order |
 | Storing large objects directly as hash values | Collision chains become very long; hash degrades | O(n) lookups despite "hash table" | Store reference/pointer; use good hash function to distribute |
 | Using weak hash function (e.g., `x % 10`) | Collisions cluster; all items in few buckets | O(n) operations despite hashing | Use multiplier-based or universal hash family; randomize seed |
-| Applying string search without preprocessing | Every mismatch requires recomparing from start | O(nm) naive search gets TLE | Use KMP or Karp-Rabin for O(n+m) average |
+| Applying string search without preprocessing | Every mismatch requires recomparing from start | O(nm) naive search gets TLE | Use KMP or Rabin-Karp for O(n+m) average |
 
 **ANTI-PATTERN LESSON:**
 Understand not just the pattern, but understand its boundaries.
@@ -508,7 +507,7 @@ public class MinHeap<T> where T : IComparable<T> {
 
 ---
 
-### Pattern 5: Rolling Hash (Karp-Rabin)
+### Pattern 5: Rolling Hash (Rabin-Karp)
 
 #### 🧠 Mental Model
 For a string, compute polynomial hash: `hash = c[0]*base^(n-1) + c[1]*base^(n-2) + ... + c[n-1]`. As you slide the window, remove the leftmost character's contribution and add the new rightmost character. All in O(1) per character after preprocessing.
@@ -523,7 +522,7 @@ For a string, compute polynomial hash: `hash = c[0]*base^(n-1) + c[1]*base^(n-2)
 
 ```csharp
 /// <summary>
-/// Karp-Rabin rolling hash for substring search.
+/// Rabin-Karp rolling hash for substring search.
 /// Time Complexity: O(n + m) average, O(nm) worst | Space Complexity: O(1)
 /// 
 /// 🧠 MENTAL MODEL:
@@ -602,7 +601,7 @@ public class RollingHash {
 #### 🔴 C# Engineering Notes
 - 🔴 **CRITICAL:** Verify exact match when hashes match (hash collision possible)
 - 🟡 **PERFORMANCE:** Use modulo arithmetic to keep hash small (avoid overflow)
-- 🟢 **BEST PRACTICE:** Karp-Rabin is elegant; use for programming contests
+- 🟢 **BEST PRACTICE:** Rabin-Karp is elegant; use for programming contests
 
 ---
 
@@ -699,7 +698,7 @@ Common bugs you'll hit and how to fix them:
 | Heap Extract | Forget to bubble down | Heap property violated | After moving last to root, BubbleDown to leaves |
 | Hash Table | Bad hash function (e.g., modulo on biased data) | All keys hash to same bucket | Use BASE multiplier: `hash = (hash * 31 + char) % MOD` |
 | Rolling Hash | Don't verify exact match on hash collision | False positives | After hash match, compare strings directly |
-| Substring Search | Use naive O(nm) comparison loop | TLE on large strings | Use Karp-Rabin rolling hash O(n+m) |
+| Substring Search | Use naive O(nm) comparison loop | TLE on large strings | Use Rabin-Karp rolling hash O(n+m) |
 
 ### 🎯 Week 3 Collection Gotchas
 
@@ -838,5 +837,4 @@ This file is self-contained. You have:
 
 ---
 
-**Status:** ✅ Week 3 Complete
 

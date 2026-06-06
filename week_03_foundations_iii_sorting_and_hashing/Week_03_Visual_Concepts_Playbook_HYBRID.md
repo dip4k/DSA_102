@@ -968,7 +968,7 @@ AMORTIZED COST:
 
 ---
 
-## 🔐 DAY 5: ROLLING HASH & KARP-RABIN
+## 🔐 DAY 5: ROLLING HASH & RABIN-KARP
 
 ### Pattern Map: String Hashing
 
@@ -976,7 +976,7 @@ AMORTIZED COST:
 STRING MATCHING PATTERNS
 ├─ Naive: O(nm) compare
 │
-├─ Rolling Hash (Karp-Rabin)
+├─ Rolling Hash (Rabin-Karp)
 │  ├─ Compute hash once
 │  ├─ Update in O(1) per position
 │  ├─ Compare hashes instead of strings
@@ -992,7 +992,7 @@ STRING MATCHING PATTERNS
 
 ### Pattern 5.1: Rolling Hash Window
 
-**Interactive Resource:** 🔗 [GeeksforGeeks Karp-Rabin](https://www.geeksforgeeks.org/rabin-karp-algorithm-for-pattern-searching/)
+**Interactive Resource:** 🔗 [GeeksforGeeks Rabin-Karp](https://www.geeksforgeeks.org/rabin-karp-algorithm-for-pattern-searching/)
 
 #### Visual 1: Hash Update Formula
 
@@ -1129,7 +1129,7 @@ Ensures result always in range [0, q-1]
 │     │ (Chaining)       │ O(n) worst    │ dynamic sets    │
 │     │                  │               │                 │
 │ 5   │ Rolling Hash     │ O(n+m) exp /  │ Substring       │
-│     │ (Karp-Rabin)     │ O(nm) worst   │ search, pattern │
+│     │ (Rabin-Karp)     │ O(nm) worst   │ search, pattern │
 │     │                  │               │ matching        │
 └────────────────────────────────────────────────────────────┘
 ```
@@ -1148,7 +1148,7 @@ Quick Sort           │ Cache efficiency needed │ O(n log n) avg / O(1)
 Heap Sort            │ In-place, no extra mem  │ O(n log n) / O(1)
 Hash Table (chain)   │ Fast lookup/insert      │ O(1) avg / O(n) chain
 Priority Queue (heap)│ Extract min/max quickly │ O(log n) / O(1)
-Karp-Rabin           │ Substring patterns      │ O(n+m) / O(1)
+Rabin-Karp           │ Substring patterns      │ O(n+m) / O(1)
 ```
 
 ---
@@ -1192,9 +1192,7 @@ Karp-Rabin           │ Substring patterns      │ O(n+m) / O(1)
 
 ---
 
-**Version:** 1.0 Hybrid Approach | **Generated:** Friday, January 09, 2026, 1:10 AM IST  
-**System:** v12 Visual Concepts Framework + Web Resources  
-**Status:** ✅ PRODUCTION-READY WITH EMBEDDED REFERENCES
 
 **Use web resource links for interactive visualizations while studying!**
+
 

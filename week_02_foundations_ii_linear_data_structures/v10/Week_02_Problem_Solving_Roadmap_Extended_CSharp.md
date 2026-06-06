@@ -1,6 +1,5 @@
 5dxcfv# 🗺️ WEEK_02_PROBLEM_SOLVING_ROADMAP_EXTENDED_CSHARP
 
-**Version:** v1.0  
 **Purpose:** Week-specific C# problem-solving playbook  
 **Target:** Transform Week 2 linear-structure knowledge into C# coding fluency  
 **Prerequisites:** Week 2 instructional files + standard support files complete  

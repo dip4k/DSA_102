@@ -1115,8 +1115,8 @@ Monotonic deque      │ Sliding max/min with all values    │ O(n) / O(k)
 Variable window      │ At most k distinct, min window     │ O(n) / O(k)
 Merge sort           │ Sort + count inversions            │ O(n logn)/O(n)
 Partition sort       │ Find kth smallest, sort            │ O(n) avg/O(n)
-Binary search        │ Search in sorted, answer space     │ O(log n)/O(1)
-Peak finding         │ Local max in unsorted array        │ O(log n)/O(1)
+Binary search        │ Search in sorted, answer space     │ Time O(log n), Space O(1)
+Peak finding         │ Local max in unsorted array        │ Time O(log n), Space O(1)
 ```
 
 ---
@@ -1162,9 +1162,6 @@ Peak finding         │ Local max in unsorted array        │ O(log n)/O(1)
 
 ---
 
-**Version:** 1.1 Hybrid Approach | **Generated:** Friday, January 09, 2026  
-**System:** v12 Visual Concepts Framework + Web Resources  
-**Status:** ✅ PRODUCTION-READY WITH EMBEDDED REFERENCES
 
 **Use web resource links for interactive visualizations while studying!**
 

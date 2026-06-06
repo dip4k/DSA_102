@@ -1078,7 +1078,7 @@ Mitigation: Always specify encoding explicitly, never assume
 
 2. **Rope Data Structure:** Tree of string segments. O(log n) insert/delete. Used by editors for large files.
 
-3. **Rolling Hash:** Sliding window hash for substring matching. O(1) per slide after preprocessing. Enables Karp-Rabin algorithm.
+3. **Rolling Hash:** Sliding window hash for substring matching. O(1) per slide after preprocessing. Enables Rabin-Karp algorithm.
 
 4. **Arbitrary Precision Arithmetic:** Numbers larger than CPU word size (64-bit). Represented as arrays of digits. Used in cryptography, Python's `int`.
 
@@ -1161,3 +1161,13 @@ You've mastered this chapter when you can:
 *Engineering Guide – Phase A: Foundations*  
 *DSA Mastery Curriculum v13*  
 *Comprehensive, production-grade, interview-ready*
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+
+

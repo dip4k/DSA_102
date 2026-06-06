@@ -1,8 +1,6 @@
 # 📚 DSA Master Curriculum v13
 ## **Narrative-First, Interview-Ready, Production-Grade**
 
-**Version:** 13.0 (Professional Edition, Complete Syllabus)  
-**Status:** ✅ Complete, MIT-Level Depth, v13 Comprehensive Syllabus-Aligned  
 **License:** 📜 MIT (Free for learning and teaching)
 
 ---
@@ -96,8 +94,8 @@ It preserves the **structure, tone, and visual style** of professional DSA educa
 | **🟩 B: Core Patterns** | 4–6 | Two-Pointer, Sliding Window, Hash/Stack/Intervals, Strings | 15+ core | 70–80% | Strong Base |
 | **🟨 C: Trees, Graphs & DP** | 7–11 | Trees, BSTs, Graphs, Shortest Paths, DP I–II | 25+ core | 80–88% | Competent |
 | **🟧 D: Paradigms** | 12–13 | Greedy, Algorithm Paradigms, Amortized Analysis | 10+ core | 85–90% | Proficient |
-| **🟪 E: Integration & Extensions** | 14–15 | Matrix problems, Backtracking, Bits, Advanced Strings & Flow | 15+ core | 90–95% | Advanced |
-| **🟫 F: Deep Dives (Optional)** | 16–18 | Segment Trees, BIT, Geometry, HLD, FFT, Probabilistic DS | 15+ advanced | 95%+ | Elite |
+| **🟪 E: Integration & Extensions** | 14–15 | Matrix problems, Bits, Number Theory, Advanced Strings, Range Queries, Flow | 15+ core | 90–95% | Advanced |
+| **🟫 F: Deep Dives (Optional)** | 16–18 | Advanced DS, Geometry, HLD, FFT, Probabilistic DS | 15+ advanced | 95%+ | Elite |
 | **🔴 G: Mock Interviews** | 19 | Full Mock Interviews, Weak Points, Final Prep | Integration | 98% | Interview Ready |
 
 ---
@@ -114,8 +112,8 @@ Week 1–3 : Build foundations (RAM model, Big-O, recursion, space)
 Week 4–6 : Master core patterns (arrays & strings)
 Week 7–11: Trees, graphs, DP I–II (classic CS core)
 Week 12–13: Paradigms (greedy, algorithm paradigms, amortized analysis)
-Week 14–15: Integration (matrix problems, backtracking, bits, advanced strings, intro to flow)
-Week 16–18: Optional deep dives (segment trees, BIT, geometry, HLD, FFT, probabilistic DS)
+Week 14–15: Integration (matrix problems, bits, number theory, advanced strings, range queries, flow)
+Week 16–18: Optional deep dives (advanced DS, geometry, HLD, FFT, probabilistic DS)
 Week 19   : Mock interviews & integration
 ```
 
@@ -211,7 +209,7 @@ Every week follows a **consistent file structure** so you always know where to g
 
 ---
 
-### 💻 File 4: **WEEK_X_FULL_PLAYBOOK.md.md** (1 file per week)
+### 💻 File 4: **WEEK_X_FULL_PLAYBOOK.md** (1 file per week)
 **Purpose:** 💻 Conceptual weekly summary. used for quick refresher and revision.  
 **Contains:**
 - includes daywise concepts/topics summary
@@ -466,21 +464,21 @@ Every week follows a **consistent file structure** so you always know where to g
 
 ---
 
-#### 🔗 **Week 15: Advanced Strings & Network Flow**
-**Topics:** KMP, Z-Algorithm, Suffix Arrays, Manacher, String Matching, Network Flow, Max-Flow Min-Cut
+#### 🔗 **Week 15: Advanced Strings, Range Queries & Network Flow**
+**Topics:** Z-Algorithm, advanced string matching, segment trees, Fenwick trees, max-flow, matching, and design-heavy extensions
 
-- 📅 **Day 1:** KMP String Matching  
-- 📅 **Day 2:** Z-Algorithm & Applications  
-- 📅 **Day 3 (Optional):** Manacher's Algorithm  
-- 📅 **Day 4 (Optional):** Suffix Arrays & Trees  
-- 📅 **Day 5:** Network Flow Basics & Applications
+- 📅 **Day 1:** Z-Algorithm & Advanced String Matching  
+- 📅 **Day 2:** Segment Trees & Range Queries  
+- 📅 **Day 3:** Network Flow Basics  
+- 📅 **Day 4:** Network Flow Applications  
+- 📅 **Day 5 (Optional):** Design Patterns & Company-Specific Extensions
 
 ---
 
 ### 🟫 **PHASE F: ADVANCED DEEP DIVES (Weeks 16–18, Optional)**
 
 #### 📊 **Week 16: Advanced Data Structures**
-**Topics:** Segment Trees, Fenwick Tree (BIT), Geometry, Matrix Exponentiation, Convex Hull
+**Topics:** Skip lists, treaps, persistent structures, cache-oblivious ideas, randomized DS
 
 - 📅 **Day 1:** Segment Trees & Range Queries  
 - 📅 **Day 2:** Lazy Propagation & Range Updates  
@@ -728,18 +726,19 @@ dsa-master-curriculum-v13/
 📄 COMPLETE_SYLLABUS_v13.md
 📄 COMPLETE_CONTENT_INDEX.md
 
-📁 v12orV13-prompts/
-   ├── MASTER_PROMPT.md
-   ├── SYSTEM_CONFIG.md
-   ├── SYSTEM_PROMPT_v12_FOR_AI_CHAT.md
-   ├── SYSTEM_PROMPT_v13_EXTENDED_SUPPORT_CSHARP.md
-   └── Additional support files
+📁 final_prompts/
+   ├── UNIFIED_SYSTEM_CONTEXT.md
+   ├── UNIFIED_MASTER_PROMPT.md
+   ├── UNIFIED_TEMPLATE_NARRATIVE.md
+   ├── UNIFIED_WEEKLY_BATCH_PROMPT.md
+   ├── language_support/
+   │   ├── CSHARP_STUDY_MATERIAL_LOGIC.md
+   │   └── PYTHON_STUDY_MATERIAL_LOGIC.md
+   └── MIGRATION_MAP.md
 
-📁 v12-templates/
-   ├── Template_v12_Narrative_FINAL.md
-   ├── EMOJI_ICON_GUIDE_v12.md
-   ├── VISUAL_PLAYBOOK_GENERATION_PROMPT_v12.md
-   └── Supporting templates
+📁 Old/
+   ├── v12_prompts_archive/
+   └── context_engineering_archive/
 
 📁 week_01_foundations_i_computational_fundamentals/
    │   Week_01_Day_01_RAM_Model_Pointers_Instructional.md
@@ -753,11 +752,11 @@ dsa-master-curriculum-v13/
    │   Week_01_Visual_Concepts_Playbook_HYBRID.md
    │
    ├───📁 support files
-   │       Week01_DailyProgressChecklist.md
-   │       Week01_Guidelines.md
-   │       Week01_InterviewQA_Reference.md
-   │       Week01_ProblemSolvingRoadmap.md
-   │       Week01_Summary_KeyConcepts.md
+   │       Week_01_Daily_Progress_Checklist.md
+   │       Week_01_Guidelines.md
+   │       Week_01_Interview_QA_Reference.md
+   │       Week_01_Problem_Solving_Roadmap.md
+   │       Week_01_Summary_Key_Concepts.md
 
 📁 week_02_foundations_ii_linear_data_structures/
 📁 week_03_foundations_iii_sorting_and_hashing/
@@ -799,6 +798,17 @@ dsa-master-curriculum-v13/
 
 ---
 
+## 👨‍🎓 Student Manual Mode
+
+This repository is designed to be used manually by students. CI pipelines and automated validation are optional and not required for normal learning flow.
+
+Canonical study rule:
+- Use top-level files in each `week_*` folder first.
+- Use `support files/` for weekly summary/checklist/roadmap references.
+- Ignore `v10/`, `v12/`, and files with `_v12_` in their name unless you are explicitly doing a version comparison.
+
+---
+
 ## 🤝 Contributing, FAQ, License & Footer
 
 ### 🤝 Contributing
@@ -823,4 +833,5 @@ For now, this curriculum is primarily a **learning artifact**. If you spot error
 📜 **MIT License** — You may use, modify, and teach from this material. Attribution is appreciated but not required.
 
 ---
+
 

@@ -747,3 +747,12 @@ DP emerged from Bellman's principle of optimality (1950s). It's not new, but it'
 
 **File Status:** ✅ COMPLETE — Exceeds 12,000-18,000 word guideline (21,456 words), includes 5 cognitive lenses, 7 inline visuals (taxonomy, examples, traces), comprehensive recognition framework, 5-step strategy guide, 4 real-world case studies, 5-chapter narrative arc, and extensive supplementary outcomes. All Week 11 Day 05 syllabus topics covered with emphasis on problem recognition, intuition building, and multi-concept integration. This completes Week 11 mastery.
 
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+

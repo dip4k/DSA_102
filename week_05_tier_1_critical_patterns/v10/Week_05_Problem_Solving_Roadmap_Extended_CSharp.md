@@ -1,6 +1,5 @@
 # 🗺️ WEEK 5 PROBLEM-SOLVING ROADMAP EXTENDED C#
 
-**Version:** v1.0  
 **Purpose:** Week 5 C# problem-solving playbook for critical interview patterns  
 **Target:** Transform pattern knowledge into C# coding fluency  
 **Prerequisites:** Week 5 instructional files + standard support files complete  

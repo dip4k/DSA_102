@@ -36,7 +36,7 @@ You might wonder: "If we have efficient O(n log n) algorithms like merge sort an
 **Practical Value:**
 - **Small Datasets:** For n less than 10-20, elementary sorts can be faster than complex algorithms due to lower constant factors and no recursion overhead
 - **Nearly Sorted Data:** Insertion sort achieves O(n) on nearly sorted arrays, making it ideal for incremental updates
-- **Hybrid Algorithms:** Modern sorting implementations (like Timsort in Python and Java) use insertion sort for small subarrays
+- **Hybrid Algorithms:** Modern sorting implementations (like TimSort in Python and Java) use insertion sort for small subarrays
 - **Embedded Systems:** Memory-constrained environments benefit from in-place, simple algorithms
 - **Teaching Stability:** Understanding which elementary sorts are stable vs unstable prepares you for advanced sorting discussions
 
@@ -249,7 +249,7 @@ Pass 4: Insert 2 into sorted [3, 4, 5, 8]
 - Predictable performance characteristics
 
 **Hybrid Sorting Algorithms:**
-- Timsort (Python, Java): Uses insertion sort for runs less than 64 elements
+- TimSort (Python, Java object arrays): Uses insertion sort for runs less than 64 elements
 - Introsort (C++ STL): Switches to insertion sort for small partitions
 - Pattern-defeating quicksort: Falls back to insertion sort
 
@@ -764,13 +764,13 @@ graph TD
 
 ## 🏭 Real Systems — Integration in Production
 
-### System 1: Python's Timsort — Hybrid Algorithm
+### System 1: Python's TimSort — Hybrid Algorithm
 
-**Context:** Python's built-in `sort()` and `sorted()` functions use Timsort, invented by Tim Peters in 2002.
+**Context:** Python's built-in `sort()` and `sorted()` functions use TimSort, invented by Tim Peters in 2002.
 
 **How Elementary Sorts Are Used:**
-- Timsort divides the array into **runs** (monotonic sequences)
-- For runs shorter than 64 elements, Timsort uses **binary insertion sort**
+- TimSort divides the array into **runs** (monotonic sequences)
+- For runs shorter than 64 elements, TimSort uses **binary insertion sort**
 - Binary insertion sort is insertion sort with binary search to find insertion position
 - This exploits insertion sort's O(n) performance on small, partially sorted data
 
@@ -1506,7 +1506,7 @@ Is n < 20?
 - 1945: Merge sort (John von Neumann)
 - 1960: Quicksort (Tony Hoare)
 - 1991: Smoothsort (Edsger Dijkstra)
-- 2002: Timsort (Tim Peters) — hybrid using insertion sort
+- 2002: TimSort (Tim Peters) — hybrid using insertion sort
 
 **Legacy:**
 - Elementary sorts remain in modern implementations (hybrid algorithms)
@@ -1572,7 +1572,7 @@ Is n < 20?
 
 **Question 3: When does insertion sort achieve O(n) time complexity?**
 - Follow-up: Explain the relationship between inversions and insertion sort's running time.
-- Follow-up: Why is insertion sort used in hybrid sorting algorithms like Timsort?
+- Follow-up: Why is insertion sort used in hybrid sorting algorithms like TimSort?
 
 **Question 4: Compare the number of comparisons and swaps for bubble, selection, and insertion sort on a reverse-sorted array of size n.**
 - Follow-up: Which algorithm would you choose if comparisons are cheap but swaps are expensive?
@@ -1618,7 +1618,7 @@ Is n < 20?
 **Misconception 4:**
 - **Stated:** "Elementary sorts are useless in modern computing."
 - **Why Plausible:** We have O(n log n) algorithms that are far superior.
-- **Correction:** Elementary sorts are used extensively in hybrid algorithms (Timsort, introsort), embedded systems, and small-data scenarios. They remain production workhorses.
+- **Correction:** Elementary sorts are used extensively in hybrid algorithms (TimSort, introsort), embedded systems, and small-data scenarios. They remain production workhorses.
 - **Memory Aid:** "Small and simple algorithms thrive in small and simple contexts."
 - **Impact:** Undervaluing elementary sorts leads to over-engineering solutions for small problems.
 
@@ -1689,3 +1689,4 @@ Is n < 20?
 ---
 
 *End of Week_03_Day_1_Elementary_Sorts_Bubble_Selection_Insertion_Instructional.md*
+

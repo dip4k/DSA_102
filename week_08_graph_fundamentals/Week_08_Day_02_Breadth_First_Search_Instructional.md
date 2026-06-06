@@ -907,7 +907,6 @@ In Week 8 Day 3, you'll learn DFS, which explores differently but has similar st
 
 ## 📊 METADATA & COMPLETION CHECKLIST
 
-**Word Count:** ~17,200 words (within 12,000–18,000 range)
 
 **5-Chapter Structure:** ✅ Complete
 - Chapter 1: Context & Motivation (1,050 words)
@@ -956,4 +955,3 @@ In Week 8 Day 3, you'll learn DFS, which explores differently but has similar st
 - ✅ No code except pseudocode; logic in plain English
 - ✅ Ready for immediate use in instruction
 
-**Status:** ✅ COMPLETE & READY FOR DELIVERY

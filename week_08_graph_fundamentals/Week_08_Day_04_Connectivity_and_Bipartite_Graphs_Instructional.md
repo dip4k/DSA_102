@@ -1027,3 +1027,12 @@ Connectivity and bipartite structure look deceptively simple: “are we in the s
 Once you are fluent in these ideas, you start to see them everywhere: in clustering users, in checking schedulability, in counting regions on maps, in network failure analysis. Day 4 transforms BFS/DFS from mere traversals into **tools for understanding the shape and constraints of entire systems**.
 
 You are now ready to step into directed worlds—**strongly connected components** and beyond—where direction and cycles combine to form richer structure, but the core intuition remains the same: traverse carefully, maintain invariants, and let the graph reveal its hidden shape.
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+

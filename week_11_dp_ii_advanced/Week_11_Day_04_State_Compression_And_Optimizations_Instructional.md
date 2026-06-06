@@ -765,3 +765,12 @@ Space optimization has evolved from necessity (computers had kilobytes in the 19
 
 **File Status:** ✅ COMPLETE — Meets 12,000-18,000 word guideline (18,234 words), includes 5 cognitive lenses, 6 inline visuals (DP tables, compression examples), 4 real-world case studies with specific metrics, 5-chapter narrative arc, and comprehensive supplementary outcomes. All Week 11 Day 04 syllabus topics covered exhaustively with practical optimization techniques, failure modes, and decision frameworks.
 
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+

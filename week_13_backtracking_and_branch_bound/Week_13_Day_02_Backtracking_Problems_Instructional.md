@@ -2009,7 +2009,6 @@ Add to constraint set
 
 **End of Week 13, Day 02 Instructional File**
 
-**Word Count**: ~28,000 words
 
 ---
 

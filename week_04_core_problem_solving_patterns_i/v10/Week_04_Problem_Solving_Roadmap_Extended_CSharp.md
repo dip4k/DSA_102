@@ -1,6 +1,5 @@
 # 🗺️ WEEK 4 PROBLEM-SOLVING ROADMAP EXTENDED C#
 
-**Version:** v1.0  
 **Purpose:** Week 4 C# problem-solving playbook for foundational array/sequence patterns  
 **Target:** Transform pattern knowledge into C# coding fluency  
 **Prerequisites:** Week 4 instructional files + standard support files complete  

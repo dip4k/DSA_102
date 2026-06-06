@@ -3,7 +3,6 @@
 **Document Type:** Visual Learning Resource & Reference Guide
 **Scope:** Week 10 (Days 01-05) — Dynamic Programming Fundamentals
 **Target:** Visual learners, quick reference, concept reinforcement
-**Updated:** January 2026
 
 ---
 

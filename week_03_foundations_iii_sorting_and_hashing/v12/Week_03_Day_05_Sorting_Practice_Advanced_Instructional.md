@@ -449,7 +449,6 @@ This lesson—that context matters, that generic solutions are rarely optimal—
 
 ---
 
-**Word Count:** ~12,000 words  
 **Inline Visuals:** 8 diagrams and decision trees  
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers mechanics, design decisions, and systems thinking  

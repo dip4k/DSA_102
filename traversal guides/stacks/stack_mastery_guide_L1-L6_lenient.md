@@ -242,3 +242,32 @@ Tie-break rule to state explicitly:
 - Stack is LIFO and core operations (push/pop/peek): https://www.geeksforgeeks.org/dsa/introduction-to-stack-data-structure-and-algorithm-tutorials/
 - Fundamental stack operations list: https://www.geeksforgeeks.org/dsa/basic-operations-in-stack-data-structure-with-implementations/
 - Next Greater Element via monotonic stack (O(n) idea): https://www.geeksforgeeks.org/dsa/next-greater-element/
+
+---
+
+## Timed practice ladder (merged)
+
+### Must
+- `20` Valid Parentheses
+- `155` Min Stack
+- `232` Implement Queue using Stacks
+- `394` Decode String
+- `496` Next Greater Element I
+- `739` Daily Temperatures
+
+### Should
+- `901` Online Stock Span
+- `71` Simplify Path
+- `316` Remove Duplicate Letters
+- `402` Remove K Digits
+- `856` Score of Parentheses
+- `32` Longest Valid Parentheses
+
+### Optional advanced
+- `84` Largest Rectangle in Histogram
+- `907` Sum of Subarray Minimums
+
+### Drill rule
+- Before coding, write: traversal direction, what the stack stores, the monotonic rule if any, and the inequality choice for duplicates.
+
+This file is now the merged stack mastery source for concepts, visuals, drills, and problem sequencing.

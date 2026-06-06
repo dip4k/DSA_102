@@ -1,7 +1,5 @@
 # 📋 Week 09 Guidelines — Graph Algorithms I: Shortest Paths, MST & Union–Find
 
-**Version:** 1.0  
-**Status:** ✅ ACTIVE  
 **Last Updated:** January 23, 2026  
 **Target Audience:** DSA Mastery Course Students (Intermediate-Advanced)
 
@@ -461,6 +459,4 @@ Week End Target:
 **If not confident on any above:** Review that section before moving forward.
 
 ---
-
-**Status:** ✅ Week 09 Guidelines — COMPLETE
 

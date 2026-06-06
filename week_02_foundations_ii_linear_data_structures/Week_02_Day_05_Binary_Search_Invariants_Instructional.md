@@ -628,9 +628,17 @@ Master binary search, and you master a fundamental pattern that appears througho
 
 ---
 
-**Word Count:** ~16,500 words  
 **Inline Visuals:** 9 diagrams and traces  
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers mechanics, variants, and answer-space pattern  
 **Batch Status:** ✅ COMPLETE — Week 02 Day 05 Final
+
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
 

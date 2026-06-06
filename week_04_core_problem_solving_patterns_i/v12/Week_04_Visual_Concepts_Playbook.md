@@ -1471,7 +1471,3 @@ Peak finding         │ Local max in unsorted array    │ O(log n)/O(1)
 
 ---
 
-**Version:** 1.0 | **Generated:** January 09, 2026  
-**System:** v12 Visual Concepts Framework  
-**Status:** ✅ PRODUCTION-READY
-

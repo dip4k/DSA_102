@@ -486,3 +486,36 @@ After each line of code, update the drawing.
 - If head can change, did I use dummy?
 - Did I terminate the final tail with null?
 - Am I comparing node identity (same node) vs node value?
+
+---
+
+# 🎯 Timed Practice Ladder (Merged)
+
+Use this as the single follow-up practice route after reading the mastery guide.
+
+## Must
+- `206` Reverse Linked List
+- `21` Merge Two Sorted Lists
+- `19` Remove Nth Node From End
+- `141` Linked List Cycle
+- `876` Middle of the Linked List
+
+## Should
+- `82` Remove Duplicates from Sorted List II
+- `92` Reverse Linked List II
+- `160` Intersection of Two Linked Lists
+- `234` Palindrome Linked List
+- `143` Reorder List
+- `148` Sort List
+
+## Optional stretch
+- `25` Reverse Nodes in k-Group
+- `1669` Merge In Between Linked Lists
+- `287` Find the Duplicate Number (array-as-linked-list cycle logic)
+
+Timebox rule:
+- Easy: 15-35 min
+- Medium: 35-60 min
+- Hard / composition-heavy: 60-95 min
+
+This file now serves as the merged source for explanations, visual intuition, invariants, and practice sequencing.

@@ -585,11 +585,11 @@ public class HashTableOpenAddressing<K, V> where K : notnull {
 
 ## 🏗️ STRING MATCHING IMPLEMENTATION
 
-### Karp-Rabin Rolling Hash
+### Rabin-Karp Rolling Hash
 
 ```csharp
 /// <summary>
-/// Karp-Rabin algorithm for substring search using rolling hash.
+/// Rabin-Karp algorithm for substring search using rolling hash.
 /// Time: O(n + m) expected, O(nm) worst-case
 /// Space: O(1) hash values
 /// </summary>
@@ -787,4 +787,5 @@ var plagiarism = PlagiarismDetector.FindPlagiarism(doc1, doc2);
 **Lines of Code:** ~800  
 **Production-Ready:** Yes  
 **Test Coverage:** Comprehensive
+
 

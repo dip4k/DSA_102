@@ -896,3 +896,43 @@ Pick one and I’ll expand with traced, index-by-index walkthroughs:
 - 🪟 Sliding window: “exactly K distinct” built from “at most K distinct”
 - 🎛️ State machine: quoted CSV-like fields with escapes
 - 🌍 Unicode: safe “character counting” strategy for UI
+
+---
+
+# Advanced Pattern Matching Appendix (Merged)
+
+Use this appendix as the single extension layer for pattern matching beyond cursor walking and windows.
+
+## When to use what
+- `KMP` for single-pattern matching with deterministic linear worst-case.
+- `Rabin-Karp` for rolling-hash candidate filtering and repeated fixed-length pattern scans.
+- `Z-algorithm` for prefix-match driven pattern search.
+- `Trie` for prefix search, autocomplete, and dictionary-style matching.
+- `Suffix array / suffix automaton` for substring-query heavy workloads.
+- `Manacher` when the task is specifically about palindromic substrings.
+
+## Drill ladder (merged)
+
+### Must
+- Valid palindrome / reverse vowels / remove consecutive duplicates
+- Longest substring without repeating characters
+- Longest substring with at most `k` distinct characters
+- Anagram start indices / permutation inclusion
+
+### Should
+- Rabin-Karp all pattern matches
+- KMP first occurrence / repeated substring pattern
+- Z-algorithm all pattern matches / longest happy prefix
+- Trie insert-search-prefix operations
+
+### Optional advanced
+- Manacher longest palindromic substring
+- Suffix-array style substring reasoning
+- Unicode- and performance-sensitive traversal scenarios
+
+## KMP trace reminder
+- Maintain a fallback table (`lps` / prefix function).
+- On mismatch, fallback using prior prefix knowledge instead of restarting from zero.
+- Debug by printing `(i, len)` or `(textIndex, patternIndex)` transitions.
+
+This file is now the merged source for foundational string traversal, advanced pattern matching, drills, Unicode awareness, and performance guidance.

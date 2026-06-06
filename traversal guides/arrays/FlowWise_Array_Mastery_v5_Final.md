@@ -842,6 +842,28 @@ void ChunkedSum(int[] a, int chunk)
 
 ## 🧪 Practice Map
 
+---
+
+## Guided Study Workflow (Merged)
+
+Use this single-file routine instead of jumping between quickstart, drill guide, visual playbook, and practice sheets.
+
+1. Read one level.
+2. State the invariant aloud.
+3. Dry-run the visual once.
+4. Solve 3 to 5 drills from the matching level.
+5. Write a 2-line postmortem: what failed and what invariant fixed it.
+
+### Higher-order pattern bundles
+- Reader/writer + variable window
+- Answer-space binary search + monotonic feasibility check
+- Monotonic stack + partition boundary reasoning
+- Prefix/suffix carry + in-place region updates
+
+These bundle patterns were previously split across separate deepen/guided files; they are now treated as advanced combinations of Levels 3-8 already covered in this guide.
+
+This file is now the single merged source for array traversal learning, practice sequencing, visual intuition, and advanced bundle progression.
+
 **Level 1:** linear search, max/min, copy array
 
 **Level 2:** rotate array, search matrix, circular queue

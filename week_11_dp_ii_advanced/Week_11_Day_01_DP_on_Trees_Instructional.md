@@ -39,6 +39,8 @@ By the end of this day, students will:
 
 ---
 
+## 📖 CHAPTER 1: CONTEXT & MOTIVATION
+
 ## 🌳 INTRODUCTION TO TREE DP
 
 ### What Makes Trees Special for DP?
@@ -76,6 +78,8 @@ With cycles (general graph):
 ```
 
 ---
+
+## 🧠 CHAPTER 2: MENTAL MODEL & STATE DESIGN
 
 ## 🏗️ TREE DP FRAMEWORK & MINDSET
 
@@ -161,6 +165,8 @@ Function TreeDP(node, parent):
 ```
 
 ---
+
+## 🔧 CHAPTER 3: MECHANICS & IMPLEMENTATION
 
 ## 🎯 MAXIMUM INDEPENDENT SET PROBLEM
 
@@ -1017,6 +1023,31 @@ For each node as "highest" point on path:
 
 ---
 
+## 📈 CHAPTER 4: PERFORMANCE, TRADE-OFFS & SYSTEMS
+
+### Performance and Trade-Off Summary
+
+- Maximum Independent Set on tree
+  - Time Complexity: O(n)
+  - Space Complexity: O(n)
+  - Trade-off: recursive DFS is concise; iterative stack is safer for deep skewed trees.
+- Tree Diameter
+  - Time Complexity: O(n)
+  - Space Complexity: O(h) recursion stack (plus adjacency storage)
+  - Trade-off: maintain top-2 child depths instead of sorting child list to reduce constants.
+- Tree Rerooting
+  - Time Complexity: O(n)
+  - Space Complexity: O(n)
+  - Trade-off: higher implementation complexity to avoid O(n^2) recomputation.
+
+### Systems Integration Notes
+
+- Tree DP patterns appear in ownership hierarchies, compiler AST transforms, and aggregation rollups.
+- Rerooting enables fast "evaluate at every pivot" analytics over hierarchical structures.
+- Production systems should guard recursion depth for worst-case chains.
+
+---
+
 ## ⚠️ COMMON PITFALLS & DEBUGGING
 
 ### Pitfall 1: Parent-Child Confusion
@@ -1106,6 +1137,28 @@ foreach (int val in subtree_values)
 ✓ Are all DP states initialized?
 ✓ Is the final answer correct location (dp[root])?
 ```
+
+---
+
+## 🌍 CHAPTER 5: INTEGRATION & MASTERY
+
+### Pattern Selection Rules
+
+- Use subtree aggregation when values are descendant-local and composable.
+- Use include/exclude state DP for adjacency-constrained choices.
+- Use rerooting when answers are required for every possible root.
+
+### Interview Communication Cues
+
+- Declare state semantics first, then transitions, then base cases.
+- Justify post-order traversal as dependency-safe evaluation order.
+- Call out complexity and implementation risks (overflow, parent checks, recursion depth).
+
+### Progression Path
+
+- Basic: subtree sums, depth, and counts.
+- Intermediate: independent set and diameter.
+- Advanced: rerooting, multi-state coloring, hybrid node-edge weighted DP.
 
 ---
 

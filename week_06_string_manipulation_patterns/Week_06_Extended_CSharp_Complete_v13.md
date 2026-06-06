@@ -1,6 +1,5 @@
 # 🗺️ Week_06_Extended_CSharp_Problem_Solving_Implementation — COMPLETE v13
 
-**Version:** v1.0 HYBRID (Pattern Recognition + Production Implementation)  
 **Week:** 6 – Tier 1.5 String Manipulation Patterns  
 **Purpose:** Master practical string patterns for palindromes, substrings, parentheses, and transformations  
 **Target:** Transform Week 6 string patterns into interview-ready C# coding skills  
@@ -19,7 +18,7 @@
 - **Day 2:** Substring & Sliding Window on Strings (longest without repeating, character replacement, anagram substrings, minimum window)
 - **Day 3:** Parentheses & Bracket Matching (valid parentheses, generate parentheses, longest valid, minimum remove)
 - **Day 4:** String Transformations & Building (atoi, roman numerals, zigzag, compression, performance)
-- **Day 5:** String Matching & Rolling Hash (Karp-Rabin revisited, algorithm comparisons, applications)
+- **Day 5:** String Matching & Rolling Hash (Rabin-Karp revisited, algorithm comparisons, applications)
 
 ---
 
@@ -38,7 +37,7 @@ Use this decision tree when you encounter a problem in Week 6:
 | "Longest valid parentheses", "Longest valid substring", "Stack tracking indices" | **Valid Parentheses DP/Stack** | Stack stores indices; calculate lengths on valid substrings | `Stack<int>` | O(n) / O(n) |
 | "String to integer", "Atoi", "Overflow", "Sign handling" | **String Parsing** | Character-by-character scan; overflow/sign guards | `string` iteration | O(n) / O(1) |
 | "Roman numerals", "Integer to string", "Mapping", "Range-based lookup" | **String Encoding** | Map values to symbols; reverse lookup; greedy | `Dictionary<int,string>` | O(log n) / O(1) |
-| "Substring search", "Pattern matching", "Rolling hash", "Karp-Rabin" | **Rolling Hash Search** | Polynomial hash; O(1) window update; verify on match | `string` | O(n+m) / O(1) |
+| "Substring search", "Pattern matching", "Rolling hash", "Rabin-Karp" | **Rolling Hash Search** | Polynomial hash; O(1) window update; verify on match | `string` | O(n+m) / O(1) |
 
 **HOW TO READ THIS:**
 - See "[Signal X]" in a problem? IMMEDIATELY think "[Pattern Y]"
@@ -745,7 +744,7 @@ public class StringParsingSolution
 
 ---
 
-### Pattern 5: String Matching (Karp-Rabin Revisited)
+### Pattern 5: String Matching (Rabin-Karp Revisited)
 
 #### 🧠 Mental Model
 Polynomial rolling hash: H = c₀*b⁰ + c₁*b¹ + ... + cₙ₋₁*bⁿ⁻¹ (mod prime). Rolling update: remove leftmost, add rightmost in O(1). Verify on hash match to avoid false positives.
@@ -760,7 +759,7 @@ Polynomial rolling hash: H = c₀*b⁰ + c₁*b¹ + ... + cₙ₋₁*bⁿ⁻¹ (
 
 ```csharp
 /// <summary>
-/// String Matching with Rolling Hash (Karp-Rabin)
+/// String Matching with Rolling Hash (Rabin-Karp)
 /// Time: O(n + m) average, O(n*m) worst | Space: O(1)
 /// 
 /// 🧠 MENTAL MODEL:
@@ -774,7 +773,7 @@ public class RollingHashStringMatcher
     private const int BASE = 256;
     
     /// <summary>
-    /// Find All Occurrences of Pattern in Text - Karp-Rabin
+    /// Find All Occurrences of Pattern in Text - Rabin-Karp
     /// Time: O(n + m) average | Space: O(1)
     /// </summary>
     public static List<int> FindPattern(string text, string pattern)
@@ -924,7 +923,7 @@ Week 6 is string-centric. StringBuilder prevents TLE. Frequency maps enable slid
 | 4 | #767 | 🟡 Medium | Reorganize String | Frequency + greedy placement | Interleaving with frequency balance |
 | 5 | #438 | 🟡 Medium | Find All Anagram Substrings | Fixed window frequency | Sliding window with frequency compare |
 | 6 | #22 | 🟡 Medium | Generate Parentheses | Backtracking (DFS) | Exponential but necessary |
-| 7 | #28 | 🟡 Medium | Implement strStr() | Rolling hash or KMP | Karp-Rabin verification |
+| 7 | #28 | 🟡 Medium | Implement strStr() | Rolling hash or KMP | Rabin-Karp verification |
 
 **STAGE 2 GOAL:** Pattern boundaries. When do variations apply?
 
@@ -1004,7 +1003,7 @@ Week 6 is string-centric. StringBuilder prevents TLE. Frequency maps enable slid
 - [ ] Explain WHY guard BEFORE multiply
 - [ ] Explain WHEN each step matters
 
-- [ ] Recognize String Match signals ("substring search", "rolling hash", "pattern", "Karp-Rabin")
+- [ ] Recognize String Match signals ("substring search", "rolling hash", "pattern", "Rabin-Karp")
 - [ ] Recall rolling hash update without notes (O(1) window slide)
 - [ ] Explain WHY verify on match (collision avoidance)
 - [ ] Explain WHEN to use vs built-in
@@ -1087,7 +1086,6 @@ This file is self-contained. You have:
 
 ---
 
-**Status:** ✅ WEEK 6 PRODUCTION READY & COMPREHENSIVE
 
 This file combines:
 - ✅ **Pattern selection guidance** (v11 strength) — Know WHEN/WHY to choose
@@ -1096,4 +1094,5 @@ This file combines:
 - ✅ **Progressive learning** (v11 strength) — Practice from easy to hard
 - ✅ **Interview readiness** (v13 integration) — Pass technical interviews
 - ✅ **Complete coverage** (WEEK 6 TOPICS) — All string manipulation patterns
+
 

@@ -49,6 +49,15 @@ There are two ways to implement this caching strategy, and each has its place:
 
 > **💡 Insight:** Dynamic programming is not a new algorithmic technique. It's the marriage of two simple ideas: *recursive decomposition* (which you already know) and *caching results* (which any systems engineer understands). Together, they turn intractable problems into solvable ones.
 
+### When Dynamic Programming Does NOT Apply
+
+Dynamic programming is powerful, but it is not a universal hammer. You need two properties:
+
+1. **Overlapping subproblems** — the same subproblem appears more than once.
+2. **Optimal substructure** — an optimal solution can be built from optimal solutions to subproblems.
+
+If either property fails, DP is usually the wrong tool. For example, plain tree traversal has no overlapping subproblems, so memoization adds overhead without helping. Likewise, some constraint problems do not compose cleanly from optimal subparts, so brute-force search, greedy reasoning, or graph methods fit better.
+
 ---
 
 ## 🧠 CHAPTER 2: BUILDING THE MENTAL MODEL
@@ -394,24 +403,20 @@ The theoretical improvements are real, but engineering matters. Let's compare on
 Naive Recursion (O(2^n)):
   Function calls: 40,730,022,147 (billions!)
   Estimated time: Hours or days
-  Status: ❌ Infeasible
 
 Top-Down Memoization (O(n)):
   Function calls: 99 (just n*2 lookups/computations)
   Estimated time: Microseconds
   Cache lookups: Hash table O(1) average, O(n) worst
-  Status: ✅ Feasible, but slightly slower due to recursion overhead
 
 Bottom-Up Tabulation (O(n)):
   Array accesses: ~100 (n iterations, O(1) per)
   Estimated time: Microseconds (slightly faster than top-down)
   No recursion overhead, no hash table collisions
-  Status: ✅ Feasible, optimal efficiency
 
 Space-Optimized (O(1) space):
   Array/variables: Just a few integers
   Time: Still O(n)
-  Status: ✅ Best for Fibonacci-like problems where only recent values matter
 ```
 
 ### 🏭 Real-World Systems
@@ -710,7 +715,6 @@ The term "memoization" (not "memorization") was coined by Donald Michie in 1968,
 
 ✅ **Red Flags Check:** None of the 7 red flags present (input mismatch, logic jump, math error, state contradiction, algorithm overshoot, count mismatch, missing steps)
 
-**Status:** ✅ **READY FOR DELIVERY** — All quality gates passed.
 
 ---
 

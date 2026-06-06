@@ -1,8 +1,6 @@
 # 📚 DSA Master Curriculum v13
 ## **Narrative-First, Interview-Ready, Production-Grade**
 
-**Version:** 13.0 (Professional Edition, Complete Syllabus)  
-**Status:** ✅ Complete, MIT-Level Depth, v13 Comprehensive Syllabus-Aligned  
 **License:** 📜 MIT (Free for learning and teaching)
 
 ---
@@ -96,8 +94,8 @@ It preserves the **structure, tone, and visual style** of professional DSA educa
 | **🟩 B: Core Patterns** | 4–6 | Two-Pointer, Sliding Window, Hash/Stack/Intervals, Strings | 15+ core | 70–80% | Strong Base |
 | **🟨 C: Trees, Graphs & DP** | 7–11 | Trees, BSTs, Graphs, Shortest Paths, DP I–II | 25+ core | 80–88% | Competent |
 | **🟧 D: Paradigms** | 12–13 | Greedy, Algorithm Paradigms, Amortized Analysis | 10+ core | 85–90% | Proficient |
-| **🟪 E: Integration & Extensions** | 14–15 | Matrix problems, Backtracking, Bits, Advanced Strings & Flow | 15+ core | 90–95% | Advanced |
-| **🟫 F: Deep Dives (Optional)** | 16–18 | Segment Trees, BIT, Geometry, HLD, FFT, Probabilistic DS | 15+ advanced | 95%+ | Elite |
+| **🟪 E: Integration & Extensions** | 14–15 | Matrix problems, Bits, Number Theory, Advanced Strings, Range Queries, Flow | 15+ core | 90–95% | Advanced |
+| **🟫 F: Deep Dives (Optional)** | 16–18 | Advanced DS, Geometry, HLD, FFT, Probabilistic DS | 15+ advanced | 95%+ | Elite |
 | **🔴 G: Mock Interviews** | 19 | Full Mock Interviews, Weak Points, Final Prep | Integration | 98% | Interview Ready |
 
 ---
@@ -114,8 +112,8 @@ Week 1–3 : Build foundations (RAM model, Big-O, recursion, space)
 Week 4–6 : Master core patterns (arrays & strings)
 Week 7–11: Trees, graphs, DP I–II (classic CS core)
 Week 12–13: Paradigms (greedy, algorithm paradigms, amortized analysis)
-Week 14–15: Integration (matrix problems, backtracking, bits, advanced strings, intro to flow)
-Week 16–18: Optional deep dives (segment trees, BIT, geometry, HLD, FFT, probabilistic DS)
+Week 14–15: Integration (matrix problems, bits, number theory, advanced strings, range queries, flow)
+Week 16–18: Optional deep dives (advanced DS, geometry, HLD, FFT, probabilistic DS)
 Week 19   : Mock interviews & integration
 ```
 
@@ -453,21 +451,21 @@ Every week follows a **consistent file structure** so you always know where to g
 
 ---
 
-#### 🔗 **Week 15: Advanced Strings & Network Flow**
-**Topics:** KMP, Z-Algorithm, Suffix Arrays, Manacher, String Matching, Network Flow, Max-Flow Min-Cut
+#### 🔗 **Week 15: Advanced Strings, Range Queries & Network Flow**
+**Topics:** Z-Algorithm, advanced string matching, segment trees, Fenwick trees, max-flow, matching, and design-heavy extensions
 
-- 📅 **Day 1:** KMP String Matching  
-- 📅 **Day 2:** Z-Algorithm & Applications  
-- 📅 **Day 3 (Optional):** Manacher's Algorithm  
-- 📅 **Day 4 (Optional):** Suffix Arrays & Trees  
-- 📅 **Day 5:** Network Flow Basics & Applications
+- 📅 **Day 1:** Z-Algorithm & Advanced String Matching  
+- 📅 **Day 2:** Segment Trees & Range Queries  
+- 📅 **Day 3:** Network Flow Basics  
+- 📅 **Day 4:** Network Flow Applications  
+- 📅 **Day 5 (Optional):** Design Patterns & Company-Specific Extensions
 
 ---
 
 ### 🟫 **PHASE F: ADVANCED DEEP DIVES (Weeks 16–18, Optional)**
 
 #### 📊 **Week 16: Advanced Data Structures**
-**Topics:** Segment Trees, Fenwick Tree (BIT), Geometry, Matrix Exponentiation, Convex Hull
+**Topics:** Skip lists, treaps, persistent structures, cache-oblivious ideas, randomized DS
 
 - 📅 **Day 1:** Segment Trees & Range Queries  
 - 📅 **Day 2:** Lazy Propagation & Range Updates  
@@ -696,7 +694,7 @@ Quick Refresh?     → Topic-based, 2–4 weeks
 ### Step 3: 📚 Start Your First Week
 
 ```text
-1. Open Week01_Guidelines.md            — weekly strategy
+1. Open Week_01_Guidelines.md            — weekly strategy
 2. Study Week01Day01_...Instructional   — narrative learning
 3. Follow Week01_Daily_Progress_Checklist.md
 4. Use Roadmap + Interview_QA for practice & review
@@ -711,60 +709,36 @@ dsa-master-curriculum-v13/
 
 📄 README_v13.md                   # Main entrypoint (this file)
 📄 START_HERE.md                   # Path selection & orientation
-📄 LICENSE
+📄 COMPLETE_SYLLABUS_v13.md
+📄 COMPLETE_CONTENT_INDEX.md
 
-📁 v13-syllabus/
-   ├── COMPLETE_SYLLABUS_v13.md
-   ├── COMPLETE_SYLLABUS_v13_DETAILED.md
-   ├── COMPLETE_CONTENT_INDEX.md
-   └── Supporting materials
+📁 final_prompts/                 # Unified generation framework (active)
+   ├── UNIFIED_SYSTEM_CONTEXT.md
+   ├── UNIFIED_MASTER_PROMPT.md
+   ├── UNIFIED_TEMPLATE_NARRATIVE.md
+   ├── UNIFIED_WEEKLY_BATCH_PROMPT.md
+   ├── QUALITY_VALIDATION_CHECKLIST.md
+   ├── MIGRATION_MAP.md
+   └── language_support/
+       ├── CSHARP_STUDY_MATERIAL_LOGIC.md
+       └── PYTHON_STUDY_MATERIAL_LOGIC.md
 
-📁 v13-system-prompts/
-   ├── MASTER_PROMPT_v13.md
-   ├── SYSTEM_CONFIG_v13_FINAL.md
-   ├── SYSTEM_PROMPT_v13_FOR_AI_CHAT.md
-   ├── SYSTEM_PROMPT_v13_EXTENDED_SUPPORT_CSHARP.md
-   └── Additional support files
+📁 .github/                       # Copilot/GenAI context engineering
+   ├── copilot-instructions.md
+   ├── UNIFIED_CONTEXT_MANIFEST.md
+   ├── instructions/
+   ├── prompts/
+   └── skills/
 
-📁 v13-templates/
-   ├── Template_v13_Narrative_FINAL.md
-   ├── EMOJI_ICON_GUIDE_v13.md
-   ├── VISUAL_PLAYBOOK_GENERATION_PROMPT_v13.md
-   └── Supporting templates
+📁 week_01_foundations_i_computational_fundamentals/
+📁 week_02_foundations_ii_linear_data_structures/
+📁 week_03_foundations_iii_sorting_and_hashing/
+📁 ...
+📁 week_19_mock_interviews_mastery/
 
-📁 week01-foundations-i-computational-fundamentals/
-   ├── Week01Day01_..._Instructional.md
-   ├── Week01Day02_..._Instructional.md
-   ├── Week01Day03_..._Instructional.md
-   ├── Week01Day04_..._Instructional.md
-   ├── Week01Day05_..._Instructional.md
-   ├── Week01Day06_PeakFinding_Instructional.md
-   ├── Week01_Guidelines.md
-   ├── Week01_Summary_KeyConcepts.md
-   ├── Week01_Interview_QA_Reference.md
-   ├── Week01_Problem_Solving_Roadmap.md
-   ├── Week01_Daily_Progress_Checklist.md
-   ├── Week01_VisualConceptsPlaybook_HYBRID.md
-   └── Week01_ProblemSolving_Roadmap_Extended_CSharp.md
-
-📁 week02-foundations-ii-linear-data-structures/
-📁 week03-foundations-iii-sorting-and-hashing/
-📁 week04-core-patterns-i/
-📁 week05-tier1-critical-patterns/
-📁 week06-string-patterns/
-📁 week07-trees-and-balanced-bsts/
-📁 week08-graph-fundamentals/
-📁 week09-graph-algorithms-i/
-📁 week10-dp-i-fundamentals/
-📁 week11-dp-ii-advanced/
-📁 week12-greedy-and-paradigms/
-📁 week13-backtracking-and-advanced-graphs/
-📁 week14-matrix-backtracking-bits/
-📁 week15-advanced-strings-flow/
-📁 week16-advanced-data-structures/
-📁 week17-advanced-graphs-hld-fft/
-📁 week18-probabilistic-ds-systems/
-📁 week19-mock-interviews-mastery/
+📁 Old/                           # Archived legacy systems and prompts
+   ├── v12_prompts_archive/
+   └── context_engineering_archive/
 
 📁 assets/
    ├── diagrams/
@@ -784,6 +758,37 @@ dsa-master-curriculum-v13/
 - ✅ **MIT-Level Rigor:** Explicit coverage of core 6.006/6.046 topics
 - ✅ **Visual Support:** At least 30 diagrams per week via Visual Playbook
 - ✅ **Interview-Ready:** Hundreds of Q&A prompts with realistic follow-ups
+
+---
+
+## 👨‍🎓 Student Manual Mode
+
+This repository is designed to be used manually by students. CI pipelines and automated validation are optional and not required for normal learning flow.
+
+Canonical study rule:
+- Use top-level files in each `week_*` folder first.
+- Use `support files/` for weekly summary/checklist/roadmap references.
+- Ignore `v10/`, `v12/`, and files with `_v12_` in their name unless you are explicitly doing a version comparison.
+
+---
+
+## 🧩 Generation Quality Governance
+
+Active generation framework now uses `final_prompts/` with validation gates in `final_prompts/QUALITY_VALIDATION_CHECKLIST.md`.
+
+### Required quality dimensions
+
+- **Structure:** Instructional files must follow the 5-chapter arc from motivation to mastery.
+- **Depth:** File types should meet target depth bands (instructional, support, visual, language support).
+- **Cohesion:** Content must flow from basic to advanced without disconnected sections.
+- **Coverage:** Every day must cover syllabus topics and subtopics, including major variations.
+- **Consistency:** Support files must reinforce instructional files and roadmaps.
+
+### Language support policy
+
+- **C# track:** Production-oriented implementation depth.
+- **Python track:** Clarity-first, idiomatic implementation depth.
+- Conceptual files remain language-agnostic unless implementation is required.
 
 ---
 
@@ -814,8 +819,6 @@ For now, this curriculum is primarily a **learning artifact**. If you spot error
 
 **v13.0 (Professional Edition)** — Narrative-first, MIT-aligned, comprehensive DSA curriculum with 500+ subtopics, 19 weeks, 235-270 hours of expert content.
 
-**Status:** ✅ COMPLETE & PRODUCTION READY  
-**Date:** January 26, 2026  
-**Version:** 13.0  
 
 **All files are available for download and immediate use.**
+

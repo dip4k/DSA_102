@@ -2023,7 +2023,6 @@ for any sequence σ, constant c
 
 **End of Week 13, Day 04 Instructional File**
 
-**Word Count**: ~18,500 words
 
 ---
 
@@ -2064,3 +2063,12 @@ If you can complete 3/4 challenges, you're ready for **Day 5: Mixed Paradigm Pro
 - Consider revisiting amortized analysis when studying advanced data structures (B-trees, skip lists, persistent structures)
 
 **Congratulations on mastering amortized analysis!** 🎉
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+

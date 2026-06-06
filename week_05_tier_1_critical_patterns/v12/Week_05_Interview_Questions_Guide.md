@@ -489,6 +489,3 @@
 
 ---
 
-**Status:** Interview-Ready Questions | **Time:** 3-5 hours of discussion  
-**Generated:** January 08, 2026 | **System:** v12
-

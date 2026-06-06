@@ -1,11 +1,9 @@
 # 📚 WEEK 03: FOUNDATIONS III - SORTING, HEAPS & HASHING
-## Elementary Sorts, Merge Sort, Quick Sort, Heaps, Hash Tables, Rolling Hash & Karp-Rabin
+## Elementary Sorts, Merge Sort, Quick Sort, Heaps, Hash Tables, Rolling Hash & Rabin-Karp
 
 **Phase:** A (Foundations)  
 **Week:** 3 of 19  
-**Status:** READY FOR DEPLOYMENT  
 **Last Updated:** January 15, 2026, 2:56 AM IST  
-**Word Count:** 24,000+ words  
 **Format:** Complete Visual Concepts Playbook - Correct Edition  
 
 ---
@@ -18,7 +16,7 @@ After this week, you will master:
 2. ✅ **Advanced Sorts** — Merge sort, quick sort; divide-and-conquer principles
 3. ✅ **Heaps** — Binary heap model, operations, heap sort, priority queues
 4. ✅ **Hash Tables I** — Separate chaining, load factor, resizing, amortized analysis
-5. ✅ **Hash Tables II** — Open addressing, universal hashing, rolling hash (Karp-Rabin)
+5. ✅ **Hash Tables II** — Open addressing, universal hashing, rolling hash (Rabin-Karp)
 6. ✅ **String Hashing** — Polynomial rolling hash, substring search, collision handling
 7. ✅ **Practical Trade-offs** — Stability, in-place, cache behavior, real implementations
 8. ✅ **60+ Problems** — Apply all sorting, hashing, and heap techniques confidently
@@ -1742,7 +1740,7 @@ But concept same: Hash, collision handling, resizing
 
 ---
 
-# 🚪 DAY 5: HASH TABLES II - OPEN ADDRESSING & ROLLING HASH (KARP-RABIN)
+# 🚪 DAY 5: HASH TABLES II - OPEN ADDRESSING & ROLLING HASH (RABIN-KARP)
 
 ## 🎓 Context: Alternative Hash Table Strategies & String Hashing
 
@@ -1758,7 +1756,7 @@ But concept same: Hash, collision handling, resizing
 **Scenario:** Detect identical code snippets in 10M files
 - **Data:** 1T characters total
 - **Problem:** O(N·M) string matching too slow
-- **Solution:** Rolling hash (Karp-Rabin) in O(N+M)
+- **Solution:** Rolling hash (Rabin-Karp) in O(N+M)
 
 ### Open Addressing Concepts
 
@@ -1807,7 +1805,7 @@ Best theoretical properties:
 └─ Requires good h2
 ```
 
-### Karp-Rabin Rolling Hash
+### Rabin-Karp Rolling Hash
 
 **Concept: Polynomial Hash on Strings**
 ```
@@ -2006,7 +2004,7 @@ public void InsertDoubleHash(int key, string value)
 // Independent hash functions reduce clustering
 ```
 
-### Pattern 4: Rolling Hash (Karp-Rabin)
+### Pattern 4: Rolling Hash (Rabin-Karp)
 
 ```csharp
 public class RollingHash
@@ -2065,7 +2063,7 @@ public class RollingHash
 // Compare hashes: O(N+M) total instead of O(N·M)
 ```
 
-### Pattern 5: Karp-Rabin Substring Search
+### Pattern 5: Rabin-Karp Substring Search
 
 ```csharp
 public class KarpRabinSearch
@@ -2207,7 +2205,7 @@ Reference DNA: 3 billion base pairs
 Query sequences: 10,000 × 1M bases
 
 Find all matches:
-├─ Karp-Rabin rolling hash:
+├─ Rabin-Karp rolling hash:
 │  ├─ Precompute patterns: 10,000 × O(1M) = O(10M)
 │  ├─ Roll through reference: O(3B)
 │  └─ Total: O(3B + 10M) ≈ instant
@@ -2224,7 +2222,7 @@ Find all matches:
 3. ✅ **Quadratic probing:** +1, +4, +9... (reduced clustering)
 4. ✅ **Double hashing:** Two independent hash functions
 5. ✅ **Rolling hash:** O(1) per slide for pattern matching
-6. ✅ **Karp-Rabin:** O(N+M) substring search
+6. ✅ **Rabin-Karp:** O(N+M) substring search
 
 ---
 
@@ -2242,7 +2240,7 @@ Find all matches:
 - C) Random positions
 - D) All positions
 
-**Q3:** Karp-Rabin rolling hash reduces matching from:
+**Q3:** Rabin-Karp rolling hash reduces matching from:
 - A) O(N) to O(1)
 - B) O(N·M) to O(N+M) ✓
 - C) O(N) to O(M)
@@ -2316,7 +2314,7 @@ HASHING PROBLEM CLASSIFICATION:
 Need fast lookup?
 ├─ Dictionary/map operations → Separate chaining
 ├─ Memory critical → Open addressing
-├─ Pattern matching needed → Rolling hash (Karp-Rabin)
+├─ Pattern matching needed → Rolling hash (Rabin-Karp)
 ├─ Integer keys only → Direct addressing
 └─ Distributed system → Consistent hashing
 
@@ -2350,7 +2348,7 @@ Need priority management?
 - Timsort-like hybrid sorting
 - Open addressing variants
 - Universal hashing
-- Karp-Rabin with verification
+- Rabin-Karp with verification
 
 ---
 
@@ -2365,7 +2363,7 @@ Need priority management?
 | **Advanced Sorts** | 2 (Merge, Quick) |
 | **Heap Operations** | 5+ complete (Insert, Extract, Build, Sort, PQ) |
 | **Hash Tables** | 2 strategies × 2 implementations |
-| **String Hashing** | Karp-Rabin rolling hash |
+| **String Hashing** | Rabin-Karp rolling hash |
 | **Failure Modes** | 15 total (3 per day × 5 days) |
 | **Quiz Questions** | 15 total (3 per day × 5 days) |
 | **Trace Tables** | 15+ detailed walkthroughs |
@@ -2393,7 +2391,7 @@ Verify you can solve independently:
 - [ ] Resizing and rehashing
 - [ ] Open addressing with linear probing
 - [ ] Double hashing
-- [ ] Karp-Rabin rolling hash
+- [ ] Rabin-Karp rolling hash
 - [ ] Pattern matching with rolling hash
 
 ---
@@ -2429,4 +2427,5 @@ Week 3 teaches the **essential primitives** that every computer system uses:
 **Next Recommended:** Week 04 - Problem-Solving Patterns
 
 **END OF WEEK 03 COMPLETE PLAYBOOK - CORRECTED EDITION**
+
 

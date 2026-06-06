@@ -688,9 +688,17 @@ Master heaps—their structure, their operations, their real-world applications�
 
 ---
 
-**Word Count:** ~15,500 words  
 **Inline Visuals:** 10 diagrams and traces  
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers mechanics, analysis, and advanced applications  
 **Batch Status:** ✅ COMPLETE — Week 03 Day 03 Final
+
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
 

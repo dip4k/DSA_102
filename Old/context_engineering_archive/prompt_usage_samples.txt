@@ -1,0 +1,1183 @@
+---------- instructional file prompt
+
+**Prompt context**:
+- use **SYSTEM_PROMPT_v12_FOR_AI_CHAT_FINAL.md** and **WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md** files as starting point, 
+- follow **Template_v12_Narrative_FINAL.md file** for structure,
+- use **COMPLETE_SYLLABUS_v13_FINAL.md** file for syllabus,
+- use MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config and file naming convention.
+- use **Generic_AI_Self_Check_Correction_Step.md** file for error check in generated content and self error correction context
+
+
+**Action** :
+- generate week 03 Day 01 instructional file as downloadable markdown md file, have detailed and structured content for generated file, dont skip any subsection or sub topic. cover topics in detailed.
+- strictly follow template structure and file naming convention as per context
+- dont use any programming language first, and use only Csharp (c#) / .net language only when required to explain concept or topic or coding example.
+- Apply GENERIC AI SELF-CHECK & CORRECTION STEP before output (use **Generic_AI_Self_Check_Correction_Step.md** file):
+  1. Verify all references (items, values, indices) exist in problem
+  2. Verify logic flow (each step follows logically from previous)
+  3. Verify numbers (totals cumulative, counts match actual items)
+  4. Verify state consistency (changes tracked, transitions explained)
+  5. Verify termination (algorithm stops at correct condition)
+  6. Check 7 red flags (input mismatch, logic jump, math error, etc.)
+  7. If any issue found → Fix using templates before output
+  8. When all checks pass → Generate markdown file
+- file naming format is like this
+"""
+📂 FILE STRUCTURE & NAMING
+**Instructional Files:**
+- `Week_X_Day_Y_[Topic_Name]_Instructional.md`
+- Example: `Week_07_Day_03_Binary_Search_Trees_Instructional.md` (week and day are 2 digit numbers as 01 09, 12, etc)
+"""
+
+**important rule**
+- ensure all topics and subtopics of the day are covered properly and have sufficient content to explain them, include visual diagrams and visual representations for them.
+- extend content and word limit in such scenarios
+- If content is exceeding 12,000-18,000 word limit for all required topic and section explanation then don't follow word limit and allo till 30,000 words to be generated.
+
+**Enhancement Rule**: should follow this to enhance content generation 
+1. Cover all topics/subtopics for week/day mentioned in syllabus file
+2. Make sure generated content is following moto of our dsa mastery course
+3. Add and enhance topics/subtopics or contents, which are not part of syllabus subsections but related to [topic] and essential/required for learning following course moto.
+4. Recheck all generated content to ensure quality and structure of generated content as per contexts and templates.
+
+---
+
+all reference files that might need for knowing course data and context:
+
+```
+COMPLETE_SYLLABUS_v13_FINAL.md
+EMOJI_ICON_GUIDE_v12.md
+MASTER_PROMPT_v12_FINAL.md
+SYSTEM_CONFIG_v12_FINAL.md
+SYSTEM_PROMPT_v12_EXTENDED_SUPPORT_CSHARP.md (old csharp template)
+SYSTEM_PROMPT_v13_EXTENDED_SUPPORT_CSHARP.md (current ref csharp template)
+CONSOLIDATED_CSHARP_EXTENDED_SUPPORT_MASTER_PROMPT_v13 (current csharp template)
+SYSTEM_PROMPT_v12_FOR_AI_CHAT_FINAL.md
+Template_v12_Narrative_FINAL.md
+V12_prompt_usage.md
+VISUAL_PLAYBOOK_GENERATION_PROMPT_v12_UPDATED.md
+WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md
+```
+
+week 03 syllabus as :
+
+"""
+## 📌 WEEK 3: SORTING, HEAPS & HASHING
+
+### Weekly Goal
+Understand sorting algorithm trade-offs, heap structures, and hash table implementations. Master core primitives used throughout DSA.
+
+### Weekly Outcomes
+- Know when each sort is appropriate (O(n²) vs O(n log n))
+- Build and operate heaps
+- Implement hash tables with collision resolution
+- Understand rolling hash for string pattern matching
+- Analyze real-world performance vs asymptotic complexity
+
+### Summary
+This week covers three fundamental primitives used across countless algorithms. Students learn sorting algorithms from theory to practice, understand heap structure and operations, and master hash tables both for explicit use and as internal tools.
+
+---
+
+### 📅 DAY 1: ELEMENTARY SORTS - BUBBLE, SELECTION, INSERTION | 90 min
+
+**Topics:**
+- **Bubble Sort**
+  - Adjacent swaps: compare neighbors, swap if out of order
+  - Larger elements "bubble" up each pass
+  - Best case: O(n) if already sorted (with early termination)
+  - Worst case: O(n²)
+  - Stable: equal elements maintain order
+
+- **Selection Sort**
+  - Partition array: sorted (left) | unsorted (right)
+  - Find minimum in unsorted, swap to sorted partition
+  - Exactly n-1 swaps total
+  - O(n²) always (no best case improvement)
+  - Not stable: swapping breaks relative order
+
+- **Insertion Sort**
+  - Grow sorted prefix by inserting next element
+  - Shift elements to make space
+  - Insert element at correct position
+  - Best case: O(n) if sorted
+  - Worst case: O(n²) if reverse sorted
+  - Stable and in-place
+  - Small constant factors
+
+- **Comparison**
+  - Bubble sort: worst of the three, avoid
+  - Selection sort: minimal swaps, not adaptive
+  - Insertion sort: adaptive, small constants, stable
+  - All have O(n²) worst case
+
+- **Adaptive Behavior**
+  - "Nearly sorted" input: few elements out of place
+  - Insertion sort: O(n) + O(inversions) effectively
+  - Bubble/selection: still O(n²) always
+
+- **When Elementary Sorts Win**
+  - Small arrays: n < 50, constants dominate
+  - Nearly sorted: insertion sort O(n)
+  - Hybrid: use insertion on small subarrays in quicksort
+  - Hardware limitations: predictable, cache-friendly
+
+- **Stability & In-Place**
+  - Stability: equal elements maintain relative order (matters for multi-key sort)
+  - In-place: O(1) extra space (or O(log n) with recursion)
+  - Trade-offs: stability sometimes requires extra space
+
+---
+
+### 📅 DAY 2: MERGE SORT & QUICKSORT | 120 min
+
+**Topics:**
+- **Merge Sort**
+  - Divide array in half recursively
+  - Recursively sort both halves
+  - Merge two sorted halves in O(n) time
+  - Recurrence: T(n) = 2T(n/2) + O(n) → O(n log n)
+
+- **Merge Operation**
+  - Two pointers on sorted arrays
+  - Compare elements, take smaller, advance pointer
+  - Merge time: O(m+n) where m, n are half sizes
+  - Preserves stability: equal elements from left processed first
+
+- **Merge Sort Characteristics**
+  - Guaranteed O(n log n) worst-case (predictable for real-time)
+  - Stable: maintains relative order of equal elements
+  - Requires O(n) extra space for merge buffers
+  - Not in-place; external sorts (disk-based) use merge
+  - Top-down (recursive) or bottom-up (iterative) implementation
+
+- **Quicksort**
+  - Partition around pivot: smaller left, larger right
+  - Recursively sort halves
+  - In-place with careful partition
+  - Expected O(n log n); worst-case O(n²)
+
+- **Partitioning**
+  - Move pivot to correct position (partition position)
+  - Rearrange so smaller on left, larger on right
+  - Multiple strategies:
+    - Hoare partition: two pointers from ends
+    - Lomuto partition: one pointer, simpler
+  - All O(n) but different constant factors
+
+- **Pivot Selection**
+  - Poor pivot choice: leads to O(n²) (sorted input with first element pivot)
+  - Randomized pivot: expected O(n log n)
+  - Median-of-three: first, middle, last element
+  - Better pivot: reduces worst case likelihood
+
+- **Quicksort Characteristics**
+  - Not stable: partition breaks relative order
+  - In-place: O(log n) extra space for recursion
+  - Fast in practice: better cache, fewer data movements
+  - Worst-case O(n²) but rare with good pivot strategy
+
+- **3-Way Partition**
+  - Handles duplicates efficiently
+  - Partition into: < pivot, = pivot, > pivot
+  - Don't recurse on middle section
+  - Improves performance on many duplicate elements
+
+- **Hybrid Algorithms**
+  - Introsort: quicksort → switches to heapsort if depth too deep
+  - Prevents worst-case O(n²)
+  - Used in C++ std::sort
+  - Timsort (Python, Java): merge sort + insertion sort hybrid
+
+- **Memory Effects**
+  - Merge sort: sequential access, good prefetching, predictable
+  - Quicksort: more random access, but in-place
+  - Cache efficiency: quicksort often faster despite asymptotics
+  - Modern CPUs: quicksort frequently beats merge sort
+
+- **Practical Considerations**
+  - Quicksort: faster average case, standard choice
+  - Merge sort: stable, guaranteed O(n log n)
+  - Introsort: best of both (C++ standard)
+  - Timsort: optimized for real data patterns
+
+---
+
+### 📅 DAY 3: HEAPS, HEAPIFY & HEAP SORT | 90 min
+
+**Topics:**
+- **Binary Heap Structure**
+  - Complete binary tree in array
+  - Parent of index i: (i-1)/2
+  - Left child: 2i+1; right child: 2i+2
+  - Min-heap: parent ≤ children
+  - Max-heap: parent ≥ children
+
+- **Heap Operations**
+  - Insert: add to end, bubble up (sift-up)
+    - Compare with parent, swap if violates heap property, recurse up
+    - Time: O(log n)
+  - Extract-min/max: remove root, move last to root, bubble down (sift-down)
+    - Compare with children, swap with smaller/larger, recurse down
+    - Time: O(log n)
+  - Find-min/max: root element, O(1)
+
+- **Heapify (Build Heap)**
+  - Bottom-up approach: start from last non-leaf
+  - For each node: sift down if needed
+  - Process all internal nodes: O(n) total time
+  - Surprising result: O(n) not n×O(log n)
+  - Why: most nodes near leaves (sift-down trivial)
+
+- **Heap Sort**
+  - Build heap: O(n)
+  - Extract-min repeatedly n times: n×O(log n) = O(n log n)
+  - In-place variant: swap root with last, contract array, sift-down
+  - Total: O(n log n) worst-case
+  - Not stable: extraction order differs from insertion order
+
+- **Priority Queue**
+  - Heap-based implementation
+  - Operations: insert (enqueue), extract-min/max (dequeue), peek
+  - All O(log n) except peek O(1)
+  - Applications: Dijkstra, event simulation, task scheduling
+
+- **Min-Heap vs Max-Heap**
+  - Min-heap: smallest at root (priority = smallest)
+  - Max-heap: largest at root (priority = largest)
+  - Convert: negate values or use different comparator
+  - Both useful depending on problem
+
+- **Decrease-Key & Delete**
+  - Decrease-key: sift element up
+  - Delete: decrease to -∞, extract-min
+  - Fibonacci heaps: O(1) amortized decrease-key (complex)
+
+- **Practical Variants**
+  - D-ary heaps: each node has d children
+  - Better cache locality than binary
+  - Used in some systems (d=4)
+  - Leftist heaps: mergeable heaps
+  - Skew heaps: amortized version of leftist
+
+---
+
+### 📅 DAY 4: HASH TABLES I - SEPARATE CHAINING | 90 min
+
+**Topics:**
+- **Hash Function Basics**
+  - Map key → bucket index [0, m-1]
+  - Desiderata: uniformity, fast computation, deterministic
+  - Integer hash: h(key) = key % m
+  - String hash: (a₀×b⁰ + a₁×b¹ + ...) % m
+
+- **Hash Function Quality**
+  - Uniformity: collisions minimized, even distribution
+  - Fast: O(1) computation
+  - Deterministic: same input always same output
+  - Avalanche effect: small input change → big hash change
+
+- **Separate Chaining**
+  - Buckets as linked lists (or vectors)
+  - Collision: multiple keys hash to same bucket
+  - Search: hash key, scan chain for key
+  - Expected O(1) operations given good hash and load factor
+
+- **Hash Table Operations**
+  - Insert: hash key, append to chain
+    - Expected O(1) if hash uniform and load factor reasonable
+  - Delete: hash key, remove from chain
+    - Expected O(1)
+  - Search/lookup: hash key, scan chain
+    - Expected O(1), worst-case O(n)
+
+- **Load Factor & Resizing**
+  - Load factor: a = n/m (elements / buckets)
+  - As a increases, chains get longer
+  - Typical: keep a < 1 (less than one element per bucket on average)
+  - Too small: waste space
+  - Too large: long chains, slow operations
+
+- **Dynamic Resizing**
+  - When a exceeds threshold (e.g., a > 2), resize
+  - Double number of buckets typically
+  - Rehash all elements (may go to different bucket)
+  - Amortized O(1) insertion with doubling strategy
+
+- **Collision Frequency**
+  - Birthday paradox: collisions occur faster than intuition
+  - With m buckets and n elements, expect Θ(n²/m) collisions
+  - At a=1: expect ~1 collision pair
+  - Managing collisions critical for performance
+
+- **Chaining Trade-offs**
+  - Simple implementation
+  - Expected O(1) operations
+  - Worst-case O(n) if all hash to one bucket (unlikely)
+  - Space: n + m (elements + buckets)
+
+- **Real-World Implementations**
+  - Python dict: hash table (used to be open addressing, now hybrid)
+  - C++ unordered_map: hash table with separate chaining
+  - Java HashMap: hash table with chaining (buckets are linked lists)
+
+---
+
+### 📅 DAY 5: HASH TABLES II - OPEN ADDRESSING & ROLLING HASH | 120 min
+
+**Topics:**
+- **Open Addressing Overview**
+  - No separate chains; all elements in single table
+  - Collision: probe for empty slot
+  - Probe sequence: h(key), h(key)+1, h(key)+2, ...
+  - Find empty slot; insert there
+
+- **Linear Probing**
+  - h_i(key) = (h(key) + i) mod m
+  - Simple but suffers primary clustering
+  - Cluster: contiguous occupied slots attract more collisions
+  - Long probes increase search time
+
+- **Quadratic Probing**
+  - h_i(key) = (h(key) + i²) mod m
+  - Reduces clustering
+  - May not probe all slots if m not prime
+  - Secondary clustering still possible
+
+- **Double Hashing**
+  - h_i(key) = (h₁(key) + i×h₂(key)) mod m
+  - Two independent hash functions
+  - Probes entire table (if h₂ coprime to m)
+  - Reduces clustering significantly
+  - Better distribution than linear/quadratic
+
+- **Load Factor Constraints**
+  - Open addressing: typically keep a < 0.5 (half-full)
+  - As a → 1, expected probes → ∞
+  - Higher space usage than chaining
+  - Better cache locality than chaining
+
+- **Deletion in Open Addressing**
+  - Can't just remove (breaks probe chains)
+  - Tombstones: mark deleted slots
+  - Tombstones accumulate: need rehashing periodically
+  - Search skips tombstones; insert reuses them
+
+- **Hash Security**
+  - Hash flooding: adversary chooses keys hashing same
+  - DoS attack: degrades to O(n) operations
+  - Mitigation: randomized hash seed per table
+  - SipHash: cryptographic hash (Python 3.3+, Ruby)
+
+- **Universal Hashing**
+  - Family of hash functions with property:
+    - For any two distinct keys, P[h(k₁) = h(k₂)] ≤ 1/m
+  - Randomized seed: prevents adversarial collisions
+  - Guarantees good performance against adversarial input
+
+- **Rolling Hash / Polynomial Hash**
+  - Hash string s = (s[0]×b^(n-1) + s[1]×b^(n-2) + ... + s[n-1]) mod p
+  - Sliding window: hash of substring [i, i+k)
+  - Update: remove s[i]×b^(n-1), multiply by b, add s[i+k]
+  - All in O(1) time per slide
+
+- **Rolling Hash Implementation**
+  - Modular arithmetic: mod large prime to prevent overflow
+  - Precompute powers of b mod p
+  - Handle collision: verify full strings match
+  - Choose b (typically 256 or 31) and p (typically large prime)
+
+- **Karp-Rabin Algorithm**
+  - String matching using rolling hash
+  - Hash pattern P and each substring of text T
+  - If hashes match: verify (check for collision)
+  - Time: O(n+m) expected; O(nm) worst-case (but rare)
+  - Applications: substring search, plagiarism detection, DNA sequences
+
+- **Karp-Rabin Multi-Pattern**
+  - Hash multiple patterns simultaneously
+  - Search for any pattern match
+  - O(n + m + k×log k) where k = number of patterns
+  - Better than KMP for multiple patterns
+"""
+
+---------- weekly playbook prompt
+
+**Prompt context**:
+- use **GENERIC WEEK GENERATION PROMPT TEMPLATE v1.0.md** file to create FULL week 13 PLAYBOOK as a downloadable markdown file.
+- Follow correct curriculum mentioned here **COMPLETE_SYLLABUS_v13_FINAL.md.**
+- use MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config and file naming convention.
+- use **Generic_AI_Self_Check_Correction_Step.md** file for error check in generated content and self error correction context
+ 
+**Rule and Action**:
+- generate WEEK_[x]_FULL_PLAYBOOK.md file for week 13
+- provide full file not just quick summary without skipping any topic/subtopic, section/subsection for each day of the week.
+- use proper structure and formatting, use appropriate emojis and icons.
+- include visual diagram to explain concepts more clearly
+- dont use any programming language first, and use only Csharp (c#) .net language only when required to explain concept or topic or coding example.
+- Apply GENERIC AI SELF-CHECK & CORRECTION STEP before output (use **Generic_AI_Self_Check_Correction_Step.md** file):
+  1. Verify all references (items, values, indices) exist in problem
+  2. Verify logic flow (each step follows logically from previous)
+  3. Verify numbers (totals cumulative, counts match actual items)
+  4. Verify state consistency (changes tracked, transitions explained)
+  5. Verify termination (algorithm stops at correct condition)
+  6. Check 7 red flags (input mismatch, logic jump, math error, etc.)
+  7. If any issue found → Fix using templates before output
+  8. When all checks pass → Generate markdown file
+- file should be in markdown format
+- file naming format is like this
+"""
+📂 FILE STRUCTURE & NAMING
+**WEEK_[x]_FULL_PLAYBOOK.md**
+"""
+
+**important rule**
+- ensure all topics and subtopics of the day are covered properly and have sufficient content to explain them, include visual diagrams and visual representations for them.
+- extend content and word limit in such scenarios
+- If content is exceeding 12,000-18,000 word limit for all required topic and section explanation then don't follow word limit and allo till 30,000 words to be generated.
+
+**Enhancement**: should follow this to enhance content generation 
+1. Cover all topics/subtopics for week/day mentioned in syllabus file
+2. Make sure generated content is following moto of our dsa mastery course
+3. Add and enhance topics/subtopics or contents, which are not part of syllabus subsections but related to [topic] and essential/required for learning following course moto.
+4. Recheck all generated content to ensure quality and structure of generated content as per contexts and templates.
+
+---
+
+all reference files that might need for knowing course data and context:
+
+```
+COMPLETE_SYLLABUS_v13_FINAL.md
+EMOJI_ICON_GUIDE_v12.md
+MASTER_PROMPT_v12_FINAL.md
+SYSTEM_CONFIG_v12_FINAL.md
+SYSTEM_PROMPT_v12_EXTENDED_SUPPORT_CSHARP.md (old csharp template)
+SYSTEM_PROMPT_v13_EXTENDED_SUPPORT_CSHARP.md (current ref csharp template)
+CONSOLIDATED_CSHARP_EXTENDED_SUPPORT_MASTER_PROMPT_v13 (current csharp template)
+SYSTEM_PROMPT_v12_FOR_AI_CHAT_FINAL.md
+Template_v12_Narrative_FINAL.md
+V12_prompt_usage.md
+VISUAL_PLAYBOOK_GENERATION_PROMPT_v12_UPDATED.md
+WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md
+```
+
+week 13 syllabus as :
+
+"""
+## 📌 WEEK 13: BACKTRACKING & BRANCH & BOUND
+
+### Weekly Goal
+Master backtracking for combinatorial problems and branch & bound for optimization.
+
+### Weekly Topics
+- Backtracking template and pruning
+- N-queens, sudoku, permutations
+- Branch & bound for optimization
+- Amortized analysis
+
+---
+
+### 📅 DAY 1: BACKTRACKING FUNDAMENTALS | 90 min
+
+**Topics:**
+- **Backtracking Concept**
+  - Build solution incrementally
+  - At each step: try all valid choices
+  - If choice doesn't lead to solution: backtrack
+  - Equivalent to DFS on solution tree
+
+- **Backtracking Template**
+  - State: current partial solution
+  - Choices: next decisions to try
+  - Constraints: which choices valid
+  - DFS: recursively explore
+  - Prune: skip invalid branches
+
+- **State Space Tree**
+  - Root: empty solution
+  - Internal node: partial solution
+  - Leaf: complete solution or pruned node
+  - DFS traversal explores tree
+
+---
+
+### 📅 DAY 2: BACKTRACKING PROBLEMS | 120 min
+
+**Topics:**
+- **N-Queens Problem**
+  - Place n queens on n×n board, no attacks
+  - DFS with pruning: place queens column by column
+  - Check diagonals and rows
+
+- **Sudoku Solver**
+  - Fill grid with digits 1-9
+  - Constraints: rows, columns, 3×3 boxes
+  - Backtracking: try digits, backtrack if conflict
+
+- **Permutations & Combinations**
+  - Generate all permutations: backtracking
+  - Generate all combinations: backtracking with skip
+
+- **Word Search**
+  - Find word in grid (adjacent cells)
+  - DFS with backtracking
+  - Mark visited to avoid cycles
+
+- **Maze Solving**
+  - Find path from start to exit
+  - DFS with backtracking
+  - Mark visited cells
+
+---
+
+### 📅 DAY 3: BRANCH & BOUND | 120 min
+
+**Topics:**
+- **Branch & Bound Concept**
+  - Systematic search for optimization
+  - Branch: explore sub-problem spaces
+  - Bound: compute upper/lower bounds
+  - Prune: skip branches that can't improve best
+
+- **Best-First Search**
+  - Priority queue ordered by bound
+  - Process most promising nodes first
+  - Often finds good solution early
+
+- **TSP with Branch & Bound**
+  - Lower bound: minimum spanning tree
+  - Branch: expand tour by adding cities
+  - Prune: if partial tour + bound > best, skip
+
+- **Knapsack with Branch & Bound**
+  - Upper bound: fractional knapsack value
+  - Branch: include/exclude items
+  - Prune: if partial + bound ≤ best, skip
+
+---
+
+### 📅 DAY 4: AMORTIZED ANALYSIS | 120 min
+
+**Topics:**
+- **Amortized Complexity Concept**
+  - Average cost over sequence of operations
+  - Some operations expensive, many cheap
+  - Amortized = total cost / operations
+
+- **Aggregate Analysis**
+  - Total cost for n operations
+  - Divide by n for amortized cost
+
+- **Accounting Method**
+  - Assign cost to operations
+  - "Bank account" of future work
+  - Show account never goes negative
+
+- **Potential Method**
+  - Define potential function on data structure
+  - Amortized cost = actual + change in potential
+  - Sum amortized costs bounds total actual
+
+- **Dynamic Arrays**
+  - Doubling strategy: O(1) amortized append
+  - Prove using accounting or potential
+
+- **Self-Adjusting Structures**
+  - Splay trees: O(log n) amortized
+  - Fibonacci heaps: complex amortized bounds
+
+---
+
+### 📅 DAY 5 (OPTIONAL): MIXED PARADIGM PROBLEMS | 90 min
+
+**Topics:**
+- **Combining Paradigms**
+  - Backtracking with pruning (greedy heuristics)
+  - Branch & bound with greedy estimates
+  - DP for subproblem optimization
+"""
+
+----------- visual playbook file prompt
+
+**Prompt context**:
+- use **VISUAL_PLAYBOOK_GENERATION_PROMPT_v12_UPDATED.md** file as starting point, 
+- use **COMPLETE_SYLLABUS_v13_FINAL.md** file for syllabus,
+- use MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config  and file naming convention.
+- use **Generic_AI_Self_Check_Correction_Step.md** file for error check in generated content and self error correction context
+
+**Action** :
+- generate week 13 visual hybrid support md file, have detailed and structured content for generated file, dont skip any subsection or sub topic. cover topics in detailed.
+- strictly follow template structure and file naming convention as per context
+- use visual diagrams, charts and external visual images and resources that will help explain concept clearly
+- Apply GENERIC AI SELF-CHECK & CORRECTION STEP before output (use **Generic_AI_Self_Check_Correction_Step.md** file):
+  1. Verify all references (items, values, indices) exist in problem
+  2. Verify logic flow (each step follows logically from previous)
+  3. Verify numbers (totals cumulative, counts match actual items)
+  4. Verify state consistency (changes tracked, transitions explained)
+  5. Verify termination (algorithm stops at correct condition)
+  6. Check 7 red flags (input mismatch, logic jump, math error, etc.)
+  7. If any issue found → Fix using templates before output
+  8. When all checks pass → Generate markdown file
+- file naming format is like this
+"""
+FILENAME: Week_[WEEK_NUMBER]_Visual_Concepts_Playbook_HYBRID.md (2 digit week number like 01, 09, 12)
+"""
+
+**important rule**
+- ensure all topics and subtopics of the day are covered properly and have sufficient content to explain them, include visual diagrams and visual representations for them.
+- extend content and word limit in such scenarios
+- If content is exceeding 12,000-18,000 word limit for all required topic and section explanation then don't follow word limit and allo till 30,000 words to be generated.
+
+**Enhancement**: should follow this to enhance content generation
+1. Cover all topics/subtopics for week/day mentioned in syllabus file
+2. Make sure generated content is following moto of our dsa mastery course
+3. Add and enhance topics/subtopics or contents, which are not part of syllabus subsections but related to [topic] and essential/required for learning following course moto.
+4. Recheck all generated content to ensure quality and structure of generated content as per contexts and templates.
+
+---
+
+all reference files that might need for knowing course data and context:
+
+```
+COMPLETE_SYLLABUS_v13_FINAL.md
+EMOJI_ICON_GUIDE_v12.md
+MASTER_PROMPT_v12_FINAL.md
+SYSTEM_CONFIG_v12_FINAL.md
+SYSTEM_PROMPT_v12_EXTENDED_SUPPORT_CSHARP.md (old csharp template)
+SYSTEM_PROMPT_v13_EXTENDED_SUPPORT_CSHARP.md (current ref csharp template)
+CONSOLIDATED_CSHARP_EXTENDED_SUPPORT_MASTER_PROMPT_v13 (current csharp template)
+SYSTEM_PROMPT_v12_FOR_AI_CHAT_FINAL.md
+Template_v12_Narrative_FINAL.md
+V12_prompt_usage.md
+VISUAL_PLAYBOOK_GENERATION_PROMPT_v12_UPDATED.md
+WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md
+```
+
+week 13 syllabus as :
+
+"""
+## 📌 WEEK 13: BACKTRACKING & BRANCH & BOUND
+
+### Weekly Goal
+Master backtracking for combinatorial problems and branch & bound for optimization.
+
+### Weekly Topics
+- Backtracking template and pruning
+- N-queens, sudoku, permutations
+- Branch & bound for optimization
+- Amortized analysis
+
+---
+
+### 📅 DAY 1: BACKTRACKING FUNDAMENTALS | 90 min
+
+**Topics:**
+- **Backtracking Concept**
+  - Build solution incrementally
+  - At each step: try all valid choices
+  - If choice doesn't lead to solution: backtrack
+  - Equivalent to DFS on solution tree
+
+- **Backtracking Template**
+  - State: current partial solution
+  - Choices: next decisions to try
+  - Constraints: which choices valid
+  - DFS: recursively explore
+  - Prune: skip invalid branches
+
+- **State Space Tree**
+  - Root: empty solution
+  - Internal node: partial solution
+  - Leaf: complete solution or pruned node
+  - DFS traversal explores tree
+
+---
+
+### 📅 DAY 2: BACKTRACKING PROBLEMS | 120 min
+
+**Topics:**
+- **N-Queens Problem**
+  - Place n queens on n×n board, no attacks
+  - DFS with pruning: place queens column by column
+  - Check diagonals and rows
+
+- **Sudoku Solver**
+  - Fill grid with digits 1-9
+  - Constraints: rows, columns, 3×3 boxes
+  - Backtracking: try digits, backtrack if conflict
+
+- **Permutations & Combinations**
+  - Generate all permutations: backtracking
+  - Generate all combinations: backtracking with skip
+
+- **Word Search**
+  - Find word in grid (adjacent cells)
+  - DFS with backtracking
+  - Mark visited to avoid cycles
+
+- **Maze Solving**
+  - Find path from start to exit
+  - DFS with backtracking
+  - Mark visited cells
+
+---
+
+### 📅 DAY 3: BRANCH & BOUND | 120 min
+
+**Topics:**
+- **Branch & Bound Concept**
+  - Systematic search for optimization
+  - Branch: explore sub-problem spaces
+  - Bound: compute upper/lower bounds
+  - Prune: skip branches that can't improve best
+
+- **Best-First Search**
+  - Priority queue ordered by bound
+  - Process most promising nodes first
+  - Often finds good solution early
+
+- **TSP with Branch & Bound**
+  - Lower bound: minimum spanning tree
+  - Branch: expand tour by adding cities
+  - Prune: if partial tour + bound > best, skip
+
+- **Knapsack with Branch & Bound**
+  - Upper bound: fractional knapsack value
+  - Branch: include/exclude items
+  - Prune: if partial + bound ≤ best, skip
+
+---
+
+### 📅 DAY 4: AMORTIZED ANALYSIS | 120 min
+
+**Topics:**
+- **Amortized Complexity Concept**
+  - Average cost over sequence of operations
+  - Some operations expensive, many cheap
+  - Amortized = total cost / operations
+
+- **Aggregate Analysis**
+  - Total cost for n operations
+  - Divide by n for amortized cost
+
+- **Accounting Method**
+  - Assign cost to operations
+  - "Bank account" of future work
+  - Show account never goes negative
+
+- **Potential Method**
+  - Define potential function on data structure
+  - Amortized cost = actual + change in potential
+  - Sum amortized costs bounds total actual
+
+- **Dynamic Arrays**
+  - Doubling strategy: O(1) amortized append
+  - Prove using accounting or potential
+
+- **Self-Adjusting Structures**
+  - Splay trees: O(log n) amortized
+  - Fibonacci heaps: complex amortized bounds
+
+---
+
+### 📅 DAY 5 (OPTIONAL): MIXED PARADIGM PROBLEMS | 90 min
+
+**Topics:**
+- **Combining Paradigms**
+  - Backtracking with pruning (greedy heuristics)
+  - Branch & bound with greedy estimates
+  - DP for subproblem optimization
+"""
+
+------- csharp support file prompt
+
+**Prompt context**:
+- use **CONSOLIDATED_CSHARP_EXTENDED_SUPPORT_MASTER_PROMPT_v13.md** file as starting point, 
+- use **SYSTEM_PROMPT_v13_EXTENDED_SUPPORT_CSHARP.md** and **SYSTEM_PROMPT_v12_EXTENDED_SUPPORT_CSHARP.md** files as reference
+- use **COMPLETE_SYLLABUS_v13_FINAL.md** file for syllabus,
+- use MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config and file naming convention.
+- use **Generic_AI_Self_Check_Correction_Step.md** file for error check in generated content and self error correction context
+
+**Action** :
+- generate week 13 Csharp extended support md file, have detailed and structured content for generated file, dont skip any subsection or sub topic. cover topics in detailed.
+- strictly follow template structure and file naming convention as per context
+- Apply GENERIC AI SELF-CHECK & CORRECTION STEP before output (use **Generic_AI_Self_Check_Correction_Step.md** file):
+  1. Verify all references (items, values, indices) exist in problem
+  2. Verify logic flow (each step follows logically from previous)
+  3. Verify numbers (totals cumulative, counts match actual items)
+  4. Verify state consistency (changes tracked, transitions explained)
+  5. Verify termination (algorithm stops at correct condition)
+  6. Check 7 red flags (input mismatch, logic jump, math error, etc.)
+  7. If any issue found → Fix using templates before output
+  8. When all checks pass → Generate markdown file
+- file naming format is like this
+"""
+📂 FILE STRUCTURE & NAMING
+**Week_[X]_Extended_CSharp_Problem_Solving_Implementation.md**
+"""
+
+**important rule**
+- ensure all topics and subtopics of the day are covered properly and have sufficient content to explain them, include visual diagrams and visual representations for them.
+- extend content and word limit in such scenarios
+- If content is exceeding 12,000-18,000 word limit for all required topic and section explanation then don't follow word limit and allo till 30,000 words to be generated.
+
+**Enhancement**: should follow this to enhance content generation 
+1. Cover all topics/subtopics for week/day mentioned in syllabus file
+2. Make sure generated content is following moto of our dsa mastery course
+3. Add and enhance topics/subtopics or contents, which are not part of syllabus subsections but related to [topic] and essential/required for learning following course moto.
+4. Recheck all generated content to ensure quality and structure of generated content as per contexts and templates.
+
+---
+
+all reference files that might need for knowing course data and context:
+
+```
+COMPLETE_SYLLABUS_v13_FINAL.md
+EMOJI_ICON_GUIDE_v12.md
+MASTER_PROMPT_v12_FINAL.md
+SYSTEM_CONFIG_v12_FINAL.md
+SYSTEM_PROMPT_v12_EXTENDED_SUPPORT_CSHARP.md (old csharp template)
+SYSTEM_PROMPT_v13_EXTENDED_SUPPORT_CSHARP.md (current ref csharp template)
+CONSOLIDATED_CSHARP_EXTENDED_SUPPORT_MASTER_PROMPT_v13 (current csharp template)
+SYSTEM_PROMPT_v12_FOR_AI_CHAT_FINAL.md
+Template_v12_Narrative_FINAL.md
+V12_prompt_usage.md
+VISUAL_PLAYBOOK_GENERATION_PROMPT_v12_UPDATED.md
+WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md
+```
+
+week 13 syllabus as :
+
+"""
+## 📌 WEEK 13: BACKTRACKING & BRANCH & BOUND
+
+### Weekly Goal
+Master backtracking for combinatorial problems and branch & bound for optimization.
+
+### Weekly Topics
+- Backtracking template and pruning
+- N-queens, sudoku, permutations
+- Branch & bound for optimization
+- Amortized analysis
+
+---
+
+### 📅 DAY 1: BACKTRACKING FUNDAMENTALS | 90 min
+
+**Topics:**
+- **Backtracking Concept**
+  - Build solution incrementally
+  - At each step: try all valid choices
+  - If choice doesn't lead to solution: backtrack
+  - Equivalent to DFS on solution tree
+
+- **Backtracking Template**
+  - State: current partial solution
+  - Choices: next decisions to try
+  - Constraints: which choices valid
+  - DFS: recursively explore
+  - Prune: skip invalid branches
+
+- **State Space Tree**
+  - Root: empty solution
+  - Internal node: partial solution
+  - Leaf: complete solution or pruned node
+  - DFS traversal explores tree
+
+---
+
+### 📅 DAY 2: BACKTRACKING PROBLEMS | 120 min
+
+**Topics:**
+- **N-Queens Problem**
+  - Place n queens on n×n board, no attacks
+  - DFS with pruning: place queens column by column
+  - Check diagonals and rows
+
+- **Sudoku Solver**
+  - Fill grid with digits 1-9
+  - Constraints: rows, columns, 3×3 boxes
+  - Backtracking: try digits, backtrack if conflict
+
+- **Permutations & Combinations**
+  - Generate all permutations: backtracking
+  - Generate all combinations: backtracking with skip
+
+- **Word Search**
+  - Find word in grid (adjacent cells)
+  - DFS with backtracking
+  - Mark visited to avoid cycles
+
+- **Maze Solving**
+  - Find path from start to exit
+  - DFS with backtracking
+  - Mark visited cells
+
+---
+
+### 📅 DAY 3: BRANCH & BOUND | 120 min
+
+**Topics:**
+- **Branch & Bound Concept**
+  - Systematic search for optimization
+  - Branch: explore sub-problem spaces
+  - Bound: compute upper/lower bounds
+  - Prune: skip branches that can't improve best
+
+- **Best-First Search**
+  - Priority queue ordered by bound
+  - Process most promising nodes first
+  - Often finds good solution early
+
+- **TSP with Branch & Bound**
+  - Lower bound: minimum spanning tree
+  - Branch: expand tour by adding cities
+  - Prune: if partial tour + bound > best, skip
+
+- **Knapsack with Branch & Bound**
+  - Upper bound: fractional knapsack value
+  - Branch: include/exclude items
+  - Prune: if partial + bound ≤ best, skip
+
+---
+
+### 📅 DAY 4: AMORTIZED ANALYSIS | 120 min
+
+**Topics:**
+- **Amortized Complexity Concept**
+  - Average cost over sequence of operations
+  - Some operations expensive, many cheap
+  - Amortized = total cost / operations
+
+- **Aggregate Analysis**
+  - Total cost for n operations
+  - Divide by n for amortized cost
+
+- **Accounting Method**
+  - Assign cost to operations
+  - "Bank account" of future work
+  - Show account never goes negative
+
+- **Potential Method**
+  - Define potential function on data structure
+  - Amortized cost = actual + change in potential
+  - Sum amortized costs bounds total actual
+
+- **Dynamic Arrays**
+  - Doubling strategy: O(1) amortized append
+  - Prove using accounting or potential
+
+- **Self-Adjusting Structures**
+  - Splay trees: O(log n) amortized
+  - Fibonacci heaps: complex amortized bounds
+
+---
+
+### 📅 DAY 5 (OPTIONAL): MIXED PARADIGM PROBLEMS | 90 min
+
+**Topics:**
+- **Combining Paradigms**
+  - Backtracking with pruning (greedy heuristics)
+  - Branch & bound with greedy estimates
+  - DP for subproblem optimization
+"""
+
+---------- support file prompt
+
+**Prompt context**:
+- use **SYSTEM_PROMPT_v12_FOR_AI_CHAT_FINAL.md** and **WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md** files as starting point, 
+- follow **Template_v12_Narrative_FINAL.md file** for structure,
+- use **COMPLETE_SYLLABUS_v13_FINAL.md** file for syllabus,
+- use MASTER_PROMPT_v12_FINAL.md and SYSTEM_CONFIG_v12_FINAL.md files for context and system config  and file naming convention.
+- use **Generic_AI_Self_Check_Correction_Step.md** file for error check in generated content and self error correction context
+
+**Action** :
+- generate week 13 Support files, 
+"""
+- `Week_X_Guidelines.md`
+- `Week_X_Summary_Key_Concepts.md`
+- `Week_X_Daily_Progress_Checklist.md`
+"""
+- have detailed and structured content for generated file, dont skip any subsection or sub topic. cover topics in detailed.
+- strictly follow template structure and file naming convention as per context
+- Apply GENERIC AI SELF-CHECK & CORRECTION STEP before output (use **Generic_AI_Self_Check_Correction_Step.md** file):
+1. Verify all references (items, values, indices) exist in problem
+2. Verify logic flow (each step follows logically from previous)
+3. Verify numbers (totals cumulative, counts match actual items)
+4. Verify state consistency (changes tracked, transitions explained)
+5. Verify termination (algorithm stops at correct condition)
+6. Check 7 red flags (input mismatch, logic jump, math error, etc.)
+7. If any issue found → Fix using templates before output
+8. When all checks pass → Generate markdown file
+- file naming format is like this
+"""
+📂 FILE STRUCTURE & NAMING
+**Support Files:**
+- `Week_X_Guidelines.md`
+- `Week_X_Summary_Key_Concepts.md`
+- `Week_X_Interview_QA_Reference.md`
+- `Week_X_Problem_Solving_Roadmap.md`
+- `Week_X_Daily_Progress_Checklist.md`
+"""
+
+**Enhancement**: should follow this to enhance content generation 
+
+1. Cover all topics/subtopics for week/day mentioned in syllabus file
+2. Make sure generated content is following moto of our dsa mastery course
+3. Add and enhance topics/subtopics or contents, which are not part of syllabus subsections but related to [topic] and essential/required for learning following course moto.
+4. Recheck all generated content to ensure quality and structure of generated content as per contexts and templates.
+
+---
+
+all reference files that might need for knowing course data and context:
+
+```
+COMPLETE_SYLLABUS_v13_FINAL.md
+EMOJI_ICON_GUIDE_v12.md
+MASTER_PROMPT_v12_FINAL.md
+SYSTEM_CONFIG_v12_FINAL.md
+SYSTEM_PROMPT_v12_EXTENDED_SUPPORT_CSHARP.md (old csharp template)
+SYSTEM_PROMPT_v13_EXTENDED_SUPPORT_CSHARP.md (current ref csharp template)
+CONSOLIDATED_CSHARP_EXTENDED_SUPPORT_MASTER_PROMPT_v13 (current csharp template)
+SYSTEM_PROMPT_v12_FOR_AI_CHAT_FINAL.md
+Template_v12_Narrative_FINAL.md
+V12_prompt_usage.md
+VISUAL_PLAYBOOK_GENERATION_PROMPT_v12_UPDATED.md
+WEEKLY_BATCH_GENERATION_PROMPT_v12_FINAL.md
+```
+
+week 13 syllabus as :
+
+"""
+## 📌 WEEK 13: BACKTRACKING & BRANCH & BOUND
+
+### Weekly Goal
+Master backtracking for combinatorial problems and branch & bound for optimization.
+
+### Weekly Topics
+- Backtracking template and pruning
+- N-queens, sudoku, permutations
+- Branch & bound for optimization
+- Amortized analysis
+
+---
+
+### 📅 DAY 1: BACKTRACKING FUNDAMENTALS | 90 min
+
+**Topics:**
+- **Backtracking Concept**
+  - Build solution incrementally
+  - At each step: try all valid choices
+  - If choice doesn't lead to solution: backtrack
+  - Equivalent to DFS on solution tree
+
+- **Backtracking Template**
+  - State: current partial solution
+  - Choices: next decisions to try
+  - Constraints: which choices valid
+  - DFS: recursively explore
+  - Prune: skip invalid branches
+
+- **State Space Tree**
+  - Root: empty solution
+  - Internal node: partial solution
+  - Leaf: complete solution or pruned node
+  - DFS traversal explores tree
+
+---
+
+### 📅 DAY 2: BACKTRACKING PROBLEMS | 120 min
+
+**Topics:**
+- **N-Queens Problem**
+  - Place n queens on n×n board, no attacks
+  - DFS with pruning: place queens column by column
+  - Check diagonals and rows
+
+- **Sudoku Solver**
+  - Fill grid with digits 1-9
+  - Constraints: rows, columns, 3×3 boxes
+  - Backtracking: try digits, backtrack if conflict
+
+- **Permutations & Combinations**
+  - Generate all permutations: backtracking
+  - Generate all combinations: backtracking with skip
+
+- **Word Search**
+  - Find word in grid (adjacent cells)
+  - DFS with backtracking
+  - Mark visited to avoid cycles
+
+- **Maze Solving**
+  - Find path from start to exit
+  - DFS with backtracking
+  - Mark visited cells
+
+---
+
+### 📅 DAY 3: BRANCH & BOUND | 120 min
+
+**Topics:**
+- **Branch & Bound Concept**
+  - Systematic search for optimization
+  - Branch: explore sub-problem spaces
+  - Bound: compute upper/lower bounds
+  - Prune: skip branches that can't improve best
+
+- **Best-First Search**
+  - Priority queue ordered by bound
+  - Process most promising nodes first
+  - Often finds good solution early
+
+- **TSP with Branch & Bound**
+  - Lower bound: minimum spanning tree
+  - Branch: expand tour by adding cities
+  - Prune: if partial tour + bound > best, skip
+
+- **Knapsack with Branch & Bound**
+  - Upper bound: fractional knapsack value
+  - Branch: include/exclude items
+  - Prune: if partial + bound ≤ best, skip
+
+---
+
+### 📅 DAY 4: AMORTIZED ANALYSIS | 120 min
+
+**Topics:**
+- **Amortized Complexity Concept**
+  - Average cost over sequence of operations
+  - Some operations expensive, many cheap
+  - Amortized = total cost / operations
+
+- **Aggregate Analysis**
+  - Total cost for n operations
+  - Divide by n for amortized cost
+
+- **Accounting Method**
+  - Assign cost to operations
+  - "Bank account" of future work
+  - Show account never goes negative
+
+- **Potential Method**
+  - Define potential function on data structure
+  - Amortized cost = actual + change in potential
+  - Sum amortized costs bounds total actual
+
+- **Dynamic Arrays**
+  - Doubling strategy: O(1) amortized append
+  - Prove using accounting or potential
+
+- **Self-Adjusting Structures**
+  - Splay trees: O(log n) amortized
+  - Fibonacci heaps: complex amortized bounds
+
+---
+
+### 📅 DAY 5 (OPTIONAL): MIXED PARADIGM PROBLEMS | 90 min
+
+**Topics:**
+- **Combining Paradigms**
+  - Backtracking with pruning (greedy heuristics)
+  - Branch & bound with greedy estimates
+  - DP for subproblem optimization
+"""

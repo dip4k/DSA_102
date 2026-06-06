@@ -1791,7 +1791,6 @@ State B: Path [0,1,2], Cost=60
 
 **End of Week 13, Day 03 Instructional File**
 
-**Word Count**: ~16,500 words
 
 ---
 

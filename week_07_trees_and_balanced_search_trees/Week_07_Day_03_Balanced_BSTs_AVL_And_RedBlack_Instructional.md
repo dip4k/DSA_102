@@ -781,9 +781,8 @@ The progression shows engineering evolution: simpler idea (AVL) → practical im
 
 **Visual Elements: 10 diagrams (tree structures, rotations, rebalancing traces, comparisons)**
 
-**Status:** ✅ Week 7 Day 3 Instructional File — COMPLETE
 
-This file follows the v12 Narrative-First architecture:
+This file follows the Unified v13 Narrative-First architecture:
 - ✅ 5-chapter arc: Context → Mental Model → Mechanics → Reality → Mastery
 - ✅ Inline visuals placed exactly where concepts introduced
 - ✅ Production case studies (5 detailed stories: libraries, kernel, databases, version control, real-time systems)
@@ -795,3 +794,13 @@ This file follows the v12 Narrative-First architecture:
 - ✅ Interview-focused supplementary outcomes (8 Q&A, 10 practice problems)
 - ✅ Handles trade-offs between AVL and Red-Black
 - ✅ Connections to augmented trees and advanced concepts
+
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+

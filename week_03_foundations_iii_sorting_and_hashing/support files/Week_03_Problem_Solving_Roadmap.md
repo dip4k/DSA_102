@@ -1,6 +1,5 @@
 # 📋 Week_03_Problem_Solving_Roadmap — Sorting, Heaps & Hashing
 
-**Version:** 12.0 FINAL  
 **Week:** 3 – Foundations III: Sorting, Heaps & Hashing  
 **Purpose:** Transform Week 3 sorting, heaps, and hashing knowledge into problem-solving fluency  
 **Target Audience:** Learners progressing from Week 2 linear structures to Week 3 advanced data structures  
@@ -34,7 +33,7 @@ Discover the elegant tree structure that maintains order implicitly through a si
 **Day 4: Hash Tables I**  
 Understand how hash functions and collision resolution via separate chaining give us O(1) average-case operations. See where hash tables appear in Python, Java, C#.
 
-**Day 5: Hash Tables II & Karp-Rabin**  
+**Day 5: Hash Tables II & Rabin-Karp**  
 Dive into open addressing strategies, universal hashing (guarding against adversarial inputs), and the elegant rolling hash algorithm that powers substring search and plagiarism detection.
 
 ---
@@ -99,7 +98,7 @@ Dive into open addressing strategies, universal hashing (guarding against advers
 
 ---
 
-### Day 5: Hash Tables II — Open Addressing & Rolling Hash (Karp-Rabin)
+### Day 5: Hash Tables II — Open Addressing & Rolling Hash (Rabin-Karp)
 
 | Concept | What You'll Learn | Key Mental Model | Time Allocation |
 |---------|------------------|------------------|-----------------|
@@ -109,8 +108,8 @@ Dive into open addressing strategies, universal hashing (guarding against advers
 | **Load Factor Limits** | Critical thresholds for open addressing | "α < 0.5 for linear probing; α < 0.75 for quadratic/double hashing; resize when exceeded" | 15 min study |
 | **Hash Flooding & Security** | Adversarial collision attacks | "Attacker crafts inputs to hash to same bucket → denial of service; mitigate with randomized seeds" | 20 min analysis |
 | **Universal Hashing** | Collision probability guarantee | "Family of hash functions: for any two distinct keys, Pr[collision] ≤ 1/m; randomized selection" | 25 min study |
-| **Rolling Hash (Karp-Rabin)** | O(1) window update for substring search | "H = c₀*b^(k-1) + c₁*b^(k-2) + ... + c_(k-1); remove c₀*b^(k-1), add new char, O(1) per slide" | 30 min study + 25 min trace |
-| **Karp-Rabin Applications** | Substring search, plagiarism, DNA matching | "Find all occurrences in O(n+m) average; verify on hash match to avoid false positives" | 20 min analysis |
+| **Rolling Hash (Rabin-Karp)** | O(1) window update for substring search | "H = c₀*b^(k-1) + c₁*b^(k-2) + ... + c_(k-1); remove c₀*b^(k-1), add new char, O(1) per slide" | 30 min study + 25 min trace |
+| **Rabin-Karp Applications** | Substring search, plagiarism, DNA matching | "Find all occurrences in O(n+m) average; verify on hash match to avoid false positives" | 20 min analysis |
 
 **Daily Goal:** Trace open addressing with linear, quadratic, and double hashing. Understand rolling hash update arithmetic. Apply rolling hash to find pattern occurrences in text.
 
@@ -160,7 +159,7 @@ Dive into open addressing strategies, universal hashing (guarding against advers
 8. **Resizing Schedules** — When do we resize (threshold α)? Why double instead of adding fixed size? Amortized cost analysis
 9. **Adversarial Hash Input** — Design input that causes hash flooding in simple modulo-based hash; explain universal hashing defense
 
-#### Karp-Rabin Deep Dive
+#### Rabin-Karp Deep Dive
 10. **Rolling Hash Verification** — Implement pattern search with rolling hash; verify on collision to avoid false positives; discuss probability of collision given prime modulus
 11. **Multiple Pattern Search** — Extend rolling hash to search for multiple patterns simultaneously; discuss tradeoffs vs. Aho-Corasick
 
@@ -178,7 +177,7 @@ Dive into open addressing strategies, universal hashing (guarding against advers
 
 3. **Hash Table Load Balancing** — Design a load-balanced hash table for distributed systems. Each key should hash to a node in a cluster. When a node fails, minimal rebalancing. (Introduction to consistent hashing.)
 
-4. **Karp-Rabin for Plagiarism** — Given two documents, use rolling hash to find matching substrings of length k (indicating plagiarism). Optimize for large documents. Discuss false-positive probability and hash size choice.
+4. **Rabin-Karp for Plagiarism** — Given two documents, use rolling hash to find matching substrings of length k (indicating plagiarism). Optimize for large documents. Discuss false-positive probability and hash size choice.
 
 5. **Cache-Efficient Sorting** — Explain why merge sort has better cache locality than quicksort. Given CPU cache sizes (L1, L2, L3), predict which sort is faster for array size 100MB. How would you optimize?
 
@@ -228,7 +227,7 @@ Dive into open addressing strategies, universal hashing (guarding against advers
 
 **Hashing:** "Hash tables achieve O(1) average lookup via a hash function + collision resolution. Separate chaining uses linked lists per bucket; open addressing probes for empty slots. Both degrade under heavy load (high α) or poor hash functions. Universal hashing provides probabilistic guarantees against adversarial input."
 
-**Rolling Hash:** "Polynomial hash enables O(1) window updates by factoring out the departing character and adding the arriving character. Used in substring search (Karp-Rabin), plagiarism detection, and DNA matching. Always verify on hash match to guard against collisions."
+**Rolling Hash:** "Polynomial hash enables O(1) window updates by factoring out the departing character and adding the arriving character. Used in substring search (Rabin-Karp), plagiarism detection, and DNA matching. Always verify on hash match to guard against collisions."
 
 ---
 
@@ -435,5 +434,4 @@ Push through the tracing exercises. They're not busy work. They're how your brai
 
 *End of Week 03 Problem Solving Roadmap — Version 12.0 FINAL*
 
-**Status:** ✅ COMPLETE & PRODUCTION READY
 

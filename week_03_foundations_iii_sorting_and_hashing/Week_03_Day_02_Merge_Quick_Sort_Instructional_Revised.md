@@ -679,9 +679,17 @@ Master both algorithms, understand their trade-offs, and you understand a princi
 
 ---
 
-**Word Count:** ~17,500 words  
 **Inline Visuals:** 12 diagrams and traces  
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers mechanics, analysis, and systems thinking  
 **Batch Status:** ✅ COMPLETE — Week 03 Day 02 (Revised) Final
+
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
 

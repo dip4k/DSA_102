@@ -319,6 +319,47 @@ Pointers:
 | 4 | 2 | 9 | 2 | 10 | 9 | [1,2,3,4,9] |
 | end | - | - | - | - | append remaining (10) | [1,2,3,4,9,10] |
 
+---
+
+# Merge-Family Extensions (Merged)
+
+These are the important merge-like traversal applications folded into the sorting mastery file.
+
+## Union and difference of sorted arrays
+- Same primitive as merge: compare fronts, emit, and advance at least one cursor.
+- Add duplicate-handling rules explicitly.
+
+## Merge intervals
+- Sort by start time, then scan with an anchor interval.
+- Invariant: the current merged interval is the correct collapse of everything processed so far.
+
+## Merge join (database-style)
+- Traverse two sorted relations by key.
+- On equal keys, emit matching pairs; otherwise advance the smaller key.
+
+## K-way merge
+- Generalize two-way merge with a priority queue of current heads.
+- Invariant: the heap frontier always exposes the next globally smallest candidate.
+
+## Timed practice ladder (merged)
+
+### Must
+- Merge two sorted arrays/lists
+- Merge sort implementation and trace
+- Quicksort partition trace
+- Sort colors / Dutch National Flag
+
+### Should
+- Merge intervals
+- Union/intersection/difference of sorted arrays
+- K-way merge
+
+### Optional advanced
+- Merge join interpretation
+- Interval-style merge variants with database or streaming framing
+
+This file is now the merged source for quicksort, mergesort, merge-family techniques, and sorting traversal practice.
+
 This is pure “two sorted arrays” traversal (Level 3 merge traversal).
 
 ---

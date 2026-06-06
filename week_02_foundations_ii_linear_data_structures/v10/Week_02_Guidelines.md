@@ -1,7 +1,6 @@
 # 🎯 WEEK 2 — GUIDELINES & LEARNING STRATEGY
 
 **Week Theme:** Linear Data Structures & Search  
-**Status:** Core Building Blocks  
 **Prerequisites:** Week 1 (Foundations, Memory Model)
 
 ---

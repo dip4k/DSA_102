@@ -82,7 +82,7 @@ COLLISION RESOLUTION:
 
 ```
 ╔════════════════════════════════════════════════════════════╗
-║ STRING MATCHING (KARP-RABIN)                               ║
+║ STRING MATCHING (RABIN-KARP)                               ║
 ╠════════════════════════════════════════════════════════════╣
 ║ Operation       │ Time            │ Notes                  ║
 ╠════════════════════════════════════════════════════════════╣
@@ -260,7 +260,7 @@ bool TryGetValue(K key, out V value) {
 }
 ```
 
-### Karp-Rabin Rolling Hash Template
+### Rabin-Karp Rolling Hash Template
 
 ```csharp
 const int PRIME = 101, BASE = 256;
@@ -347,4 +347,5 @@ HASHING:
 **Document Status:** ✅ COMPLETE  
 **Format:** Printable, copy-paste ready  
 **Purpose:** Rapid reference for Week 03 concepts
+
 

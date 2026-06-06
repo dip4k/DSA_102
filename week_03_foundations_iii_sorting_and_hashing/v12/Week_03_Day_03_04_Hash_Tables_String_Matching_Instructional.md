@@ -386,8 +386,6 @@ Bloom filters use multiple hash functions to test set membership:
 
 ---
 
-**Word Count:** ~12,000 words  
-**Status:** ✅ COMPLETE — Week 03 Day 03 Final
 
 ---
 
@@ -617,7 +615,4 @@ Plagiarism detectors use rolling hashes (Rabin-Karp):
 - **Suffix Tree:** Generalize suffix array for other string problems
 
 ---
-
-**Word Count:** ~8,000 words  
-**Status:** ✅ COMPLETE — Week 03 Day 04 Final
 

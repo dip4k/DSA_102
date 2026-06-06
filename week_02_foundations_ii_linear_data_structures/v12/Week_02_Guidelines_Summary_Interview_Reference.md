@@ -334,5 +334,3 @@
 
 ---
 
-**Status:** ✅ Week 02 Support Files Complete
-

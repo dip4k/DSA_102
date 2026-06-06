@@ -262,7 +262,7 @@ Hash Table (Open Addressing)
 ├─ Delete:          O(1/(1-α)) average (with tombstones)
 └─ Clustering:      Primary (linear), Secondary (quadratic)
 
-Karp-Rabin Rolling Hash
+Rabin-Karp Rolling Hash
 ├─ Preprocess:      O(m) for pattern
 ├─ Scan Text:       O(n) with rolling hash
 ├─ Total:           O(n + m) expected
@@ -405,4 +405,5 @@ Not In-Place (O(n) extra space):
 **Document Status:** ✅ COMPLETE  
 **Total Sections:** 5 major parts with 15 subsections  
 **Visual Reference:** Comprehensive for Week 03 theory
+
 

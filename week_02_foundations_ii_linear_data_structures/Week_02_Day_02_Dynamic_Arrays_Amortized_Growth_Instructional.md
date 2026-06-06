@@ -614,9 +614,17 @@ This pattern—**structure enabling efficiency**—appears in every advanced dat
 
 ---
 
-**Word Count:** ~15,800 words  
 **Inline Visuals:** 9 diagrams and traces  
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers amortized analysis fundamentals  
 **Batch Status:** ✅ COMPLETE — Week 02 Day 02 Final
+
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
 

@@ -341,6 +341,3 @@ If you can't do this → Revisit that section:
 
 ---
 
-**Status:** Study Plan Ready | **Duration:** 15-25 hours  
-**Generated:** January 08, 2026 | **System:** v12
-

@@ -121,7 +121,7 @@ Expected false positives: O(n/modulus) with large prime
 
 **Algorithm Comparison:**
 - Naive: O(nm)
-- Karp-Rabin: O(n+m) average, O(nm) worst with collisions
+- Rabin-Karp: O(n+m) average, O(nm) worst with collisions
 - KMP: O(n+m) guaranteed
 - Boyer-Moore: O(n/m) average for long patterns
 
@@ -140,7 +140,7 @@ Is the problem about STRINGS?
 ├─ SUBSTRING with constraints?
 │  ├─ Variable constraints? → Sliding window (expand/contract)
 │  ├─ Fixed-size match? → Fixed window (slide by one)
-│  └─ Multiple patterns? → Karp-Rabin or Aho-Corasick
+│  └─ Multiple patterns? → Rabin-Karp or Aho-Corasick
 
 ├─ BRACKET-like (nesting)?
 │  ├─ Validate? → Stack (LIFO)
@@ -153,9 +153,9 @@ Is the problem about STRINGS?
 │  └─ Build/concatenate? → StringBuilder
 
 └─ PATTERN MATCHING at scale?
-   ├─ Multiple patterns? → Karp-Rabin or Aho-Corasick
+   ├─ Multiple patterns? → Rabin-Karp or Aho-Corasick
    ├─ Large text? → Rolling hash
-   └─ Approximate matching? → Karp-Rabin with threshold
+   └─ Approximate matching? → Rabin-Karp with threshold
 ```
 
 ---
@@ -322,4 +322,4 @@ def solve(pattern, text):
 
 ---
 
-**Version:** 1.0 | **Status:** ✅ Production Ready | **Generated:** January 10, 2026
+

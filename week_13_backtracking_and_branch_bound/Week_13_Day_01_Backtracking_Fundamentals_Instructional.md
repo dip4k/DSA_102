@@ -994,7 +994,6 @@ RL agents explore state-action trees. When an action leads to low reward, the ag
 
 **End of Week 13, Day 01 Instructional File**
 
-**Word Count**: ~18,500 words
 
 ---
 

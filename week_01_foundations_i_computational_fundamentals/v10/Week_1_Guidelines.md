@@ -1,7 +1,6 @@
 # 🎯 WEEK 1 — GUIDELINES & LEARNING STRATEGY
 
 **Week Theme:** Computational Foundations & Mental Models  
-**Status:** Foundation Building  
 **Prerequisites:** None (Entry point to curriculum)
 
 ---

@@ -761,7 +761,5 @@ In the 1970s-80s, algorithms (sorting, searching) were the frontier. Computer sc
 
 **End of Week 1 Day 2: Asymptotic Analysis — Big-O, Big-Ω, Big-Θ**
 
-**Word Count:** ~16,200 words  
-**Status:** ✅ Complete instructional file (v12 narrative-first format)
 
 **Next:** Week 1 Day 3 (Space Complexity & Memory Usage)

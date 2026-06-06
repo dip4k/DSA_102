@@ -436,6 +436,27 @@ Greedy here is not about being perfect; it’s about being **predictably good**.
 
 ## 🔗 CHAPTER 5: INTEGRATION & MASTERY
 
+### Complexity Snapshot (Systems-Focused)
+
+- Kruskal MST
+   - Time Complexity: O(E log E)
+   - Space Complexity: O(V + E)
+- Prim MST (binary heap)
+   - Time Complexity: O(E log V)
+   - Space Complexity: O(V + E)
+- LRU Cache operations (hash map + doubly linked list)
+   - Time Complexity: O(1) average for get/put/evict
+   - Space Complexity: O(C), where C is cache capacity
+- Greedy Set Cover (naive implementation)
+   - Time Complexity: O(mn) to O(mn + m log m) depending on data structures
+   - Approximation guarantee: O(log n)
+
+### Failure Modes in Production Use
+
+- Greedy routing can get trapped in local minima without fallback policy.
+- LRU may thrash under cyclic scans larger than cache capacity.
+- Greedy approximations can satisfy bounds yet still miss domain-specific constraints without post-validation.
+
 ### Connecting the Dots
 
 Across Week 12, you have seen three faces of greedy:
@@ -608,4 +629,3 @@ Understanding greedy’s behavior in these contexts helps in debugging and optim
 ---
 
 **End of Week 12 Day 05 Instructional File**  
-**Status:** ✅ Complete | **Scope:** Optional Greedy in Systems (Networks, Caches, Approximation)

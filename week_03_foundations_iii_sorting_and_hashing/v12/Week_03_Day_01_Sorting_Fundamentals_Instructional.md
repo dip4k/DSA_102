@@ -545,7 +545,6 @@ More profoundly, sorting teaches that structure enables efficiency. Once sorted,
 
 ---
 
-**Word Count:** ~17,000 words  
 **Inline Visuals:** 10 diagrams and traces  
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers mechanics, comparison, and applications  

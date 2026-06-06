@@ -674,7 +674,6 @@ This is where algorithms meets systems. Big-O complexity tells half the story. M
 
 ---
 
-**Word Count:** ~15,400 words  
 **Inline Visuals:** 8 diagrams and traces  
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers both mechanics and design principles  

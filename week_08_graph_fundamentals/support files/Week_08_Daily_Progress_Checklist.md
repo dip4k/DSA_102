@@ -1,6 +1,5 @@
 # ✅ Week 08 Daily Progress Checklist – Graph Fundamentals
 
-Version: v1.0  
 Filename: `Week_08_Daily_Progress_Checklist.md`  
 Week: 08 – Graph Fundamentals: Representations, BFS, DFS & Topological Sort
 

@@ -758,6 +758,41 @@ Default: recursion for clarity; iterative DFS for deep trees; BFS for level/shor
 ---
 
 ## ✅ Pre‑drills readiness checklist
+
+---
+
+# Practice Ladder (Merged)
+
+## Must
+- Preorder / inorder / postorder traversal
+- Level-order traversal
+- Maximum depth / minimum depth
+- BST iterator / kth smallest via inorder reasoning
+- Right side view / zigzag / largest value per row
+
+## Should
+- Vertical order / distance-K / leaf-similar / serialization
+- Diameter / max path sum / path-sum backtracking
+- Morris inorder as a space-optimized follow-up
+- Trie traversal and lexicographic DFS in the appendix
+
+## Optional advanced
+- Construct tree from traversals
+- Flatten tree to linked list
+- Segment tree / BIT / trie traversal mechanics from the appendix
+
+## Morris implementation note (merged)
+- Inorder: create thread to inorder predecessor, remove on second encounter.
+- Preorder: visit when creating the thread.
+- Postorder: advanced variant using reversed edge emission and strict restoration.
+- Safety rule: only use Morris when O(1) auxiliary-space traversal is explicitly valuable.
+
+## Drill workflow
+1. Hand-trace frontier and visit timing.
+2. State the invariant out loud.
+3. Implement only after the trace is stable.
+
+This file is now the single merged source for tree traversal concepts, appendix material, practice sequencing, Morris notes, and drill guidance.
 - I can state the traversal contract (frontier + timing + state).
 - I can dry-run and list stack/queue snapshots.
 - I can switch between node pointers and adjacency list + parent.

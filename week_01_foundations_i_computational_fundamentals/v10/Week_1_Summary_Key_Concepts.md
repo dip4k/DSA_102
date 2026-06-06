@@ -1,7 +1,6 @@
 # 🗺 WEEK 1 — CONCEPT MAP & SUMMARY
 
 **Week Theme:** Computational Foundations  
-**Status:** Foundation Complete
 
 ---
 

@@ -1,6 +1,5 @@
 # 🗺️ WEEK_03_PROBLEM_SOLVING_ROADMAP_EXTENDED_CSHARP
 
-**Version:** v1.0  
 **Purpose:** Week-specific C# problem-solving playbook  
 **Target:** Transform pattern knowledge into C# coding fluency  
 **Prerequisites:** Week 03 instructional files + standard support files complete  

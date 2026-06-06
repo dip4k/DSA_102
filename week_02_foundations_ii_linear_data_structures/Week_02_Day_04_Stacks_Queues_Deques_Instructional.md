@@ -696,9 +696,17 @@ The lesson transcends data structures: constraining your interface options often
 
 ---
 
-**Word Count:** ~16,200 words  
 **Inline Visuals:** 10 diagrams and traces  
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers implementations and design patterns  
 **Batch Status:** ✅ COMPLETE — Week 02 Day 04 Final
+
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
 

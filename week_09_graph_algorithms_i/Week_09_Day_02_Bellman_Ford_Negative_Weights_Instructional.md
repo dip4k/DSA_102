@@ -827,5 +827,13 @@ This analogy breaks down for nonconvex optimization, but it highlights the diffe
 
 ---
 
-**Status:** ✅ Week 09 Day 02 Instructional File — COMPLETE (approximately 18,000 words, all 5 chapters with detailed traces, self-check verification applied)
+
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
 

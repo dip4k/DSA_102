@@ -350,6 +350,3 @@ Recurs in all heap operations. Key insight: O(log n) depth means O(log n) bubbli
 
 ---
 
-**Word Count:** ~10,000 words  
-**Status:** ✅ COMPLETE — Week 03 Day 02 Final
-

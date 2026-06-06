@@ -73,10 +73,10 @@ Person[] sorted = indices.Select(i => people[i]).ToArray();
 // Only one reorder pass, saves swap overhead
 ```
 
-### Optimization 3: Hybrid Algorithms (Timsort, Introsort)
+### Optimization 3: Hybrid Algorithms (TimSort, Introsort)
 
 ```csharp
-// GOOD: Timsort (Python, Java)
+// GOOD: TimSort (Python, Java object arrays)
 // For small arrays (< 64): Use insertion sort (O(n²) but low constants)
 // For large arrays: Use merge sort (O(n log n) guaranteed)
 // Exploits natural runs (already sorted segments)
@@ -404,4 +404,5 @@ Recommendation: Keep α ≤ 0.75 for O(1) average behavior
 **Document Status:** ✅ COMPLETE  
 **Sections:** 8 optimization categories  
 **Production-Ready:** Yes
+
 

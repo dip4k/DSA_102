@@ -757,7 +757,6 @@ Each choice reflects understanding: understanding the data, understanding the al
 
 ## 📊 METADATA & COMPLETION CHECKLIST
 
-**Word Count:** ~15,800 words (within 12,000–18,000 range)
 
 **5-Chapter Structure:** ✅ Complete
 - Chapter 1: Context & Motivation (970 words)
@@ -804,4 +803,3 @@ Each choice reflects understanding: understanding the data, understanding the al
 - ✅ Smooth transitions between chapters
 - ✅ Ready for immediate use in instruction
 
-**Status:** ✅ COMPLETE & READY FOR DELIVERY

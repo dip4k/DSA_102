@@ -810,9 +810,8 @@ Tree pattern algorithms are ancient (1960s with Knuth). They're so fundamental t
 
 **Visual Elements: 10 diagrams (tree structures, path examples, serialization traces, comparisons)**
 
-**Status:** ✅ Week 7 Day 4 Instructional File — COMPLETE
 
-This file follows the v12 Narrative-First architecture:
+This file follows the Unified v13 Narrative-First architecture:
 - ✅ 5-chapter arc: Context → Mental Model → Mechanics → Reality → Mastery
 - ✅ Inline visuals placed exactly where concepts introduced
 - ✅ Production case studies (5 detailed stories: financial reporting, social networks, file systems, compilers, game development)
@@ -824,3 +823,13 @@ This file follows the v12 Narrative-First architecture:
 - ✅ Interview-focused supplementary outcomes (8 Q&A, 12 practice problems)
 - ✅ Handles edge cases and common mistakes
 - ✅ Connections to graph algorithms and advanced concepts
+
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+

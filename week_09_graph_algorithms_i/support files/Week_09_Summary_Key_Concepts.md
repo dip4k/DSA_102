@@ -1,8 +1,6 @@
 # 📊 Week 09 Summary — Key Concepts & Quick Reference
 
-**Version:** 1.0  
 **Purpose:** Quick-reference guide for Week 09 algorithms, complexities, and decision trees  
-**Status:** ✅ ACTIVE
 
 ---
 
@@ -449,6 +447,4 @@ Kruskal(Graph):
 - [ ] Ready for graph interview questions
 
 ---
-
-**Status:** ✅ Week 09 Summary — COMPLETE
 

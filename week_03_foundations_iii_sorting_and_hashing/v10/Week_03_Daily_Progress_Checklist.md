@@ -67,4 +67,3 @@
 - [ ] **Mock Interview:** Explain to a rubber duck why Quick Sort is usually preferred over Heap Sort.
 - [ ] **Cleanup:** Organize your notes and diagrams for the week.
 
-**Status:** ⬜ Not Started | 🟦 In Progress | ✅ Complete

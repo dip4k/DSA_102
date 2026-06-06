@@ -582,7 +582,4 @@ Let `N` be the length of the string.
 
 ---
 
-**Generated:** January 03, 2026  
-**Version:** Template v10.0 Mental-Model-First  
 **File:** Week_06_Day_02_Substring_Sliding_Window_Instructional.md  
-**Status:** ✅ Ready for Review

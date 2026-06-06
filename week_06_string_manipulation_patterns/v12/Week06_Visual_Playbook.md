@@ -1,6 +1,5 @@
 # 🎨 Week 06 Visual Playbook: Concept Maps, Diagrams & Flowcharts
 
-**Status:** Visual Reference Guide  
 **Audience:** Visual learners, students needing diagram-based understanding  
 **Purpose:** ASCII art concept maps, state machine diagrams, algorithm visualizations  
 **Focus:** One diagram per pattern, plus integrated week visualization  
@@ -40,7 +39,7 @@ WEEK 06: STRING PATTERNS
                  │            │
             ┌────┴──────┐    ┌┴──────────────────┐
             │           │    │                   │
-         PARSE      TRANSFORM ROLLING HASH   KARP-RABIN
+         PARSE      TRANSFORM ROLLING HASH   RABIN-KARP
          (atoi)     (Roman)   PATTERN         MATCHING
          BUILD      (RLE)     MATCHING        (Optimal)
          (StringBuilder)      (O(n+m))        (Multiple
@@ -524,7 +523,7 @@ Greedy Algorithm Trace:
 
 ---
 
-## 📊 PATTERN 5: ROLLING HASH (Karp-Rabin — Day 5, Optional)
+## 📊 PATTERN 5: ROLLING HASH (Rabin-Karp — Day 5, Optional)
 
 ### Polynomial Rolling Hash Mechanism
 
@@ -656,7 +655,7 @@ START: Read problem statement
   ├─ Key word: "pattern" OR "multiple occurrences" OR "search" OR "plagiarism"?
   │  YES → Single pattern or MULTIPLE patterns?
   │  │     SINGLE → Consider KMP or Boyer-Moore
-  │  │     MULTIPLE → Day 5: ROLLING HASH (Karp-Rabin)
+  │  │     MULTIPLE → Day 5: ROLLING HASH (Rabin-Karp)
   │  │     │           Use: Multiple patterns, large corpus
   │  │     │           Time: O(n + m) expected
   │  │     │           Space: O(1) auxiliary
@@ -683,7 +682,7 @@ Time Complexity Comparison (Visual)
            │  │  │  │  ┌─ Stack Matching
            │  │  │  │  │  ┌─ StringBuilder + greedy
       O(nlogn)
-           │  │  │  │  │  │  ┌─ Karp-Rabin (expected)
+           │  │  │  │  │  │  ┌─ Rabin-Karp (expected)
       O(1)│  │  │  │  │  │  │
            └──┴──┴──┴──┴──┴──┴──────────────────
               Easy Medium   Hard        Massive Scale
@@ -803,7 +802,7 @@ Quick Lookup: Time × Space for All Week 06 Patterns
 ║ Building          ║ amortized  ║ amortized  ║ (always O)  ║
 ╠═══════════════════╬════════════╬════════════╬═════════════╣
 ║ Rolling Hash      ║ O(n+m)     ║ O(1) aux   ║ O(n+m)      ║
-║ (Karp-Rabin)      ║ expected   ║ +O(m)      ║ if no cols  ║
+║ (Rabin-Karp)      ║ expected   ║ +O(m)      ║ if no cols  ║
 ║                   ║            ║ pattern    ║             ║
 ╚═══════════════════╩════════════╩════════════╩═════════════╝
 
@@ -844,8 +843,8 @@ n = text length
 
 ---
 
-**Status:** Week 06 Visual Playbook Complete  
 **Total Diagrams:** 15+ ASCII visualizations  
 **Coverage:** All 5 patterns + decision trees + mastery flowchart  
 **Format:** Pure ASCII (no external tools needed)  
 **Print-Friendly:** Yes, reference cards included
+

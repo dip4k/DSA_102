@@ -1,6 +1,5 @@
 # 📚 Week 08 Summary – Key Concepts & Mental Models
 
-Version: v1.0  
 Filename: `Week_08_Summary_Key_Concepts.md`  
 Week: 08 – Graph Fundamentals: Representations, BFS, DFS & Topological Sort
 

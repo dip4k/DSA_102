@@ -369,3 +369,51 @@ def shortest_subarray_ge_k(nums, K):
 - For levels: did I freeze `levelSize`?
 - For deques: are indices increasing and values (or dp/prefix) monotone?
 - For PQ: do I skip stale entries?
+
+---
+
+# Deque Supplements (Merged)
+
+Use these as the two-ended extensions of the queue model.
+
+## Deque mental model
+- Front-consume = queue-style processing.
+- Back-consume = stack-style processing.
+- Two-ended consume = symmetric shrink / candidate filtering.
+- 0-1 BFS = deque as a two-cost shortest-path frontier.
+
+## Core deque-specific use cases
+- Sliding window maximum/minimum
+- Recent-history buffers with both-end updates
+- 0-1 BFS for graphs with edge costs only `0` or `1`
+- Candidate maintenance where expired indices leave from the front and dominated indices leave from the back
+
+## Deque caution
+- A deque is not the window itself; it is the candidate structure supporting the window.
+
+---
+
+# Queue and Deque Drill Ladder (Merged)
+
+## Must
+- Recent Counter / time-window expiration
+- Sliding window maximum
+- Sliding window minimum
+- BFS level-order / layered processing
+
+## Should
+- First negative in each window
+- Queue using stacks
+- Shortest subarray with sum at least K
+- 0-1 BFS
+
+## Optional
+- Deque as DP frontier (Jump Game VI style)
+- Priority-queue frontier comparisons with Dijkstra-style problems
+
+Driver-style coding rule:
+- Write the invariant first.
+- State what the queue/deque stores.
+- Dry-run one queue snapshot before implementing.
+
+This file now serves as the merged source for queue traversal, deque reasoning, practice sequencing, and frontier debugging.

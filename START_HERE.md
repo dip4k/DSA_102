@@ -1,4 +1,4 @@
-# 🚀 START HERE — DSA Master Curriculum v12 Orientation Guide
+# 🚀 START HERE — DSA Master Curriculum v13 Orientation Guide
 
 **Quick Navigation:**
 - New to this curriculum? → Read **Orientation** section
@@ -13,7 +13,7 @@ This is a **complete, production-grade DSA curriculum** for serious learners.
 
 ### **What Makes This Different?**
 
-| Aspect | Typical Curriculum | DSA Master v12 |
+| Aspect | Typical Curriculum | DSA Master v13 |
 |--------|---|---|
 | **Teaching Style** | Reference manual | MIT lecture hall |
 | **Depth** | Surface-level | MIT 6.006/6.046J level |
@@ -78,7 +78,7 @@ Week 7-8: Practice        (30-50 problems, mock interviews)
 4. **Week 06:** String Patterns (substring, palindromes)
 5. **Week 07:** Trees (binary search trees, tree traversal)
 6. **Week 08-14:** Binary Search, Graph basics, DP basics, Greedy
-7. **Week 15:** Interview Integration (pattern combination practice)
+7. **Week 15:** Advanced strings, range queries, and network flow integration
 
 **Time Estimate:**
 - Read guidelines + key concepts: 8 hours
@@ -89,9 +89,9 @@ Week 7-8: Practice        (30-50 problems, mock interviews)
 
 **Starting Point:**
 1. Read: `START_HERE.md` → This file
-2. Then: `week_03/Week_03_Guidelines.md` (week 3 is essential foundation)
+2. Then: `week_03_foundations_iii_sorting_and_hashing/` (week 3 is essential foundation)
 3. Study: `Week_03_Day_05_Hash_Tables_Open_Addressing_Rolling_Hash_Instructional.md`
-4. Then: `week_04/Week_04_Guidelines.md`
+4. Then: `week_04_core_problem_solving_patterns_i/`
 5. Practice: `Week_04_Problem_Solving_Roadmap.md` (do 50+ problems here)
 
 ---
@@ -108,13 +108,13 @@ Week 7-8: Practice        (30-50 problems, mock interviews)
 **Quick Lookup Map:**
 | Question | File |
 |----------|------|
-| **Big-O Analysis** | `week_01/Week_01_Summary_Key_Concepts.md` |
-| **Sorting Comparison** | `week_03/Week_03_Summary_Key_Concepts.md` |
-| **Two Pointers Pattern** | `week_04/Week_04_Interview_QA_Reference.md` |
-| **Sliding Window** | `week_04/Week_04_Summary_Key_Concepts.md` |
-| **Dynamic Programming** | `week_14/Week_14_Summary_Key_Concepts.md` |
-| **Graph Algorithms** | `week_09/Week_09_Summary_Key_Concepts.md` |
-| **Any Topic XYZ** | `week_X/Week_X_Summary_Key_Concepts.md` |
+| **Big-O Analysis** | `week_01_foundations_i_computational_fundamentals/` |
+| **Sorting Comparison** | `week_03_foundations_iii_sorting_and_hashing/` |
+| **Two Pointers Pattern** | `week_04_core_problem_solving_patterns_i/` |
+| **Sliding Window** | `week_04_core_problem_solving_patterns_i/` |
+| **Dynamic Programming** | `week_10_dynamic_programming_i_fundamentals/` and `week_11_dp_ii_advanced/` |
+| **Graph Algorithms** | `week_08_graph_fundamentals/` and `week_09_graph_algorithms_i/` |
+| **Any Topic XYZ** | `week_XX_.../` corresponding folder |
 
 **Starting Point:**
 1. Bookmark the repo
@@ -136,25 +136,25 @@ Week 7-8: Practice        (30-50 problems, mock interviews)
 **For PATH 1 (Mastery):**
 ```bash
 → week_01_foundations_i_computational_fundamentals/
-→ Read: Week_01_Guidelines.md
+-> Read: support files/Week_01_Guidelines.md
 → Then: Week_01_Day_01_RAM_Model_Pointers_Instructional.md
-→ Follow: Daily checklist in Week_01_Daily_Progress_Checklist.md
+-> Follow: support files/Week_01_Daily_Progress_Checklist.md
 ```
 
 **For PATH 2 (Interview Prep):**
 ```bash
 → week_03_foundations_iii_sorting_and_hashing/
-→ Read: Week_03_Guidelines.md
-→ Then: Week_03_Summary_Key_Concepts.md
+-> Read: support files/Week_03_Guidelines.md
+-> Then: support files/Week_03_Summary_Key_Concepts.md
 → Study: Week_03_Day_05_Hash_Tables_Open_Addressing_Rolling_Hash_Instructional.md
-→ Move to: week_04/Week_04_Guidelines.md
+-> Move to: week_04_core_problem_solving_patterns_i/
 ```
 
 **For PATH 3 (Quick Reference):**
 ```bash
 → Use the Quick Lookup Map above
 → Example: "I need to understand heaps"
-→ Go to: week_03/Week_03_Summary_Key_Concepts.md
+-> Go to: week_03_foundations_iii_sorting_and_hashing/
 → Done in 5-10 minutes
 ```
 
@@ -180,16 +180,22 @@ Week 7-8: Practice        (30-50 problems, mock interviews)
 
 ```
 Week_X/
-├── Week_X_Day_01_[Topic]_Instructional.md    ← Learn the concept
+├── Week_X_Day_01_[Topic]_Instructional.md       <- Learn the concept
 ├── Week_X_Day_02_[Topic]_Instructional.md       (deep, MIT-level)
 ├── ...
-│
-├── Week_X_Guidelines.md                      ← Weekly strategy
-├── Week_X_Summary_Key_Concepts.md            ← Reference for week
-├── Week_X_Interview_QA_Reference.md          ← 30-50 interview Q&A
-├── Week_X_Problem_Solving_Roadmap.md         ← Structured problems
-└── Week_X_Daily_Progress_Checklist.md        ← Daily action items
+├── WEEK_XX_FULL_PLAYBOOK.md                   <- Week integration map
+├── Week_XX_Visual_Concepts_Playbook_HYBRID.md
+├── support files/                             <- Guidelines/Summary/QA/Roadmap/Checklist
+├── v10/                                       <- legacy snapshot (ignore for active study)
+└── v12/                                       <- legacy snapshot (ignore for active study)
 ```
+
+### Canonical File Selection Rule
+
+- Prefer top-level week files first.
+- If multiple top-level files cover the same day, prefer zero-padded names like `Day_01` over `Day_1` and names without `(1)` suffixes.
+- Use `support files/` for summary, checklist, and roadmap support.
+- Ignore files inside `v10/`, `v12/`, and filenames containing `_v12_` unless explicitly comparing versions.
 
 **Which file for what?**
 
@@ -229,7 +235,7 @@ How this fits prior/future knowledge → Socratic reflection → Retention hook
 
 ---
 
-## 🧠 THE v12 TEACHING PHILOSOPHY
+## 🧠 THE v13 TEACHING PHILOSOPHY
 
 This curriculum is different from typical DSA resources because:
 
@@ -405,6 +411,7 @@ Pick your path. Read the next file. Start learning.
 ---
 
 **Last Updated:** January 7, 2026  
-**Curriculum:** DSA Master v12 (MIT-Level, Narrative-First)  
+**Curriculum:** DSA Master v13 (MIT-Level, Narrative-First)  
 **Next:** Read your chosen path's first file and start learning.
+
 

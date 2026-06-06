@@ -816,9 +816,8 @@ BSTs were formalized in the 1960s as computer scientists moved from arrays to dy
 
 **Visual Elements: 12 diagrams (BST structures, insertion/deletion sequences, execution traces, complexity tables)**
 
-**Status:** ✅ Week 7 Day 2 Instructional File — COMPLETE
 
-This file follows the v12 Narrative-First architecture:
+This file follows the Unified v13 Narrative-First architecture:
 - ✅ 5-chapter arc: Context → Mental Model → Mechanics → Reality → Mastery
 - ✅ Inline visuals placed exactly where concepts introduced (12 diagrams)
 - ✅ Production case studies (5 detailed stories: Java TreeMap, file systems, databases, compilers, Redis)
@@ -827,3 +826,13 @@ This file follows the v12 Narrative-First architecture:
 - ✅ All three deletion cases explained in detail
 - ✅ Real systems grounding (production systems relying on BSTs)
 - ✅ Interview-focused supplementary outcomes with edge cases
+
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+

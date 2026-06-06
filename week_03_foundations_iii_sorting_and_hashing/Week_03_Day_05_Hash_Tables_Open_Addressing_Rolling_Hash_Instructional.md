@@ -1,12 +1,12 @@
-# 📘 Week 03 Day 05: Hash Tables II — Open Addressing & Rolling Hash (Karp-Rabin) — ENGINEERING GUIDE
+# 📘 Week 03 Day 05: Hash Tables II — Open Addressing & Rolling Hash (Rabin-Karp) — ENGINEERING GUIDE
 
 **Metadata:**
 - **Week:** 3 | **Day:** 5
 - **Category:** Foundations / Advanced Data Structures & Algorithms
 - **Difficulty:** 🟠 Advanced (builds on Week 3 Day 4, strings, polynomial math)
-- **Real-World Impact:** Open addressing hash tables are ubiquitous in performance-critical systems (C++ standard library, Google's hashmap, high-frequency trading). Karp-Rabin rolling hash powers plagiarism detection, DNA sequence matching, and substring search. Understanding both collision resolution strategies and advanced hashing techniques is essential for systems programming, competitive programming, and security-aware application design.
+- **Real-World Impact:** Open addressing hash tables are ubiquitous in performance-critical systems (SwissTable-style maps, dense hash maps, high-frequency trading). Rabin-Karp rolling hash powers plagiarism detection, DNA sequence matching, and substring search. Understanding both collision resolution strategies and advanced hashing techniques is essential for systems programming, competitive programming, and security-aware application design.
 - **Prerequisites:** Week 3 Day 4 (hash tables, load factor), Week 2 (arrays, strings)
-- **MIT Alignment:** Open addressing from MIT 6.006 Lecture 10; Karp-Rabin and universal hashing from MIT 6.006–6.046
+- **MIT Alignment:** Open addressing from MIT 6.006 Lecture 10; Rabin-Karp and universal hashing from MIT 6.006–6.046
 
 ---
 
@@ -18,7 +18,7 @@
 - ⚙️ **Implement** linear probing, quadratic probing, and double hashing with analysis of clustering.
 - ⚖️ **Evaluate** when open addressing outperforms chaining (cache behavior, α threshold).
 - 🏭 **Defend** against hash flooding attacks via universal hashing and randomization.
-- 🎯 **Master** rolling hash and Karp-Rabin algorithm for O(n+m) substring matching and plagiarism detection.
+- 🎯 **Master** rolling hash and Rabin-Karp algorithm for O(n+m) substring matching and plagiarism detection.
 
 ---
 
@@ -407,7 +407,7 @@ public class HashTableDoubleHashing<K, V> where K : notnull {
 }
 ```
 
-### 🔧 Operation 3: Karp-Rabin Rolling Hash (String Matching)
+### 🔧 Operation 3: Rabin-Karp Rolling Hash (String Matching)
 
 ```csharp
 public class KarpRabinRollingHash {
@@ -444,7 +444,7 @@ public class KarpRabinRollingHash {
         return hash;
     }
     
-    // Find all occurrences of pattern in text using Karp-Rabin
+    // Find all occurrences of pattern in text using Rabin-Karp
     public static List<int> FindPattern(string text, string pattern) {
         var matches = new List<int>();
         int n = text.Length;
@@ -649,9 +649,9 @@ if ((float)count / table.Length > 0.75f) {
 
 ### Real Systems: Where Open Addressing Dominates
 
-> **🏭 Real-World Systems Story 1: C++ STL and Google's DenseHashMap**
+> **🏭 Real-World Systems Story 1: SwissTable-Style Maps and Dense Hash Maps**
 
-C++ uses open addressing (linear probing variant) in std::unordered_map:
+Many modern high-performance hash maps use open addressing with cache-friendly table layouts. `std::unordered_map` is only guaranteed average O(1) behavior by the standard; its exact collision strategy is implementation-dependent and is often node-based rather than open-addressed.
 
 ```cpp
 // Cache behavior:
@@ -687,14 +687,14 @@ Online plagiarism detectors (Turnitin, Grammarly) use rolling hash:
 ```
 Compare student submission against 1 billion prior submissions.
 Naive substring matching: O(n × 10^9) = impossible.
-Karp-Rabin rolling hash: O(n + 10^9) = feasible.
+Rabin-Karp rolling hash: O(n + 10^9) = feasible.
 
 Rolling hash indexes all submissions in O(10^9) time.
 Then searches new submission in O(n) time.
 Total: seconds instead of years.
 ```
 
-### Karp-Rabin Complexity Analysis
+### Rabin-Karp Complexity Analysis
 
 | Operation | Time | Notes |
 |-----------|------|-------|
@@ -721,11 +721,11 @@ For plagiarism detection:
 
 **Building on Prior Weeks:**
 - **Arrays (Week 2 Day 1):** Open addressing uses array directly
-- **Strings (Week 2):** Karp-Rabin for efficient string matching
+- **Strings (Week 2):** Rabin-Karp for efficient string matching
 - **Recursion (Week 1):** Recursive hashing formulas
 
 **Foreshadowing Future:**
-- **Week 5 (Patterns):** Karp-Rabin for pattern matching problems
+- **Week 5 (Patterns):** Rabin-Karp for pattern matching problems
 - **Week 8 (Graphs):** Hash-based algorithms for deduplication
 - **Week 10 (Advanced Hashing):** Consistent hashing, bloom filters
 
@@ -796,17 +796,17 @@ Hash tables (1953) → Separate chaining (1966) → Open addressing variants (19
 |---------|-----------|-------------|
 | Implement linear probing | 🟡 | Probing, load factor |
 | Implement double hashing | 🟠 | Independent hash functions |
-| Implement Karp-Rabin | 🟡 | Rolling hash, modulo arithmetic |
+| Implement Rabin-Karp | 🟡 | Rolling hash, modulo arithmetic |
 | Find all occurrences | 🟡 | Pattern matching |
 | Plagiarism detection | 🟠 | Hash indexing + rolling hash |
-| DNA sequence matching | 🟠 | Karp-Rabin on biological data |
+| DNA sequence matching | 🟠 | Rabin-Karp on biological data |
 
 ### 🎙️ Interview Questions
 
 1. **Q:** Implement linear probing. Why does it suffer from clustering?  
    **Follow-up:** How does quadratic probing or double hashing help?
 
-2. **Q:** Explain Karp-Rabin algorithm. Why is rolling hash O(1)?  
+2. **Q:** Explain Rabin-Karp algorithm. Why is rolling hash O(1)?  
    **Follow-up:** How do you handle hash collisions?
 
 3. **Q:** Find all occurrences of pattern in text in O(n+m) time.  
@@ -865,9 +865,18 @@ Master open addressing, rolling hash, and universal hashing—their mechanics, t
 
 ---
 
-**Word Count:** ~18,000 words  
 **Inline Visuals:** 12 diagrams and traces  
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers mechanics, analysis, and applications  
 **Batch Status:** ✅ COMPLETE — Week 03 Day 05 Final
+
+
+
+---
+
+## 📊 Complexity Recap
+
+- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
+- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+
 

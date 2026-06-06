@@ -20,6 +20,36 @@
 
 ---
 
+## 🎯 HIGH-ROI EXECUTION GUIDANCE (STUDENT MODE)
+
+### Topic Priority Tags
+
+Use these tags mentally while studying each day:
+- `Must`: high-frequency FAANG/MAANG interview topics that should be mastered end-to-end.
+- `Should`: important extensions that improve depth and variant handling.
+- `Optional`: advanced/competitive material for stretch goals.
+
+Recommended mapping by phase:
+- Phases A-E (Weeks 1-15): treat almost all core day topics as `Must`.
+- Phase F (Weeks 16-18): treat as `Should/Optional` depending on target role.
+- Phase G (Week 19): treat as `Must` for interview simulation and communication practice.
+
+### Interview Execution Objectives (High ROI)
+
+Prioritize explicit interview execution in these week ranges:
+- Weeks 4-6: fast pattern identification, template choice, boundary-condition communication.
+- Weeks 7-11: tree/graph/DP state narration, trade-off defense, complexity articulation.
+- Week 19: full mock rounds with constraints clarification, solution narration, and follow-up handling.
+
+### Required Per-Day Self-Check
+
+For each day, verify:
+- Topic and subtopic coverage completed.
+- At least one verbal explanation of time and space complexity.
+- At least one variant solved beyond the base pattern.
+
+---
+
 # 🟦 PHASE A: FOUNDATIONS & COMPUTATIONAL THINKING
 ## Weeks 1-3 | 40-45 hours | Building Mental Models
 
@@ -126,6 +156,12 @@ This week establishes the theoretical foundation for all subsequent work. Studen
   - Pattern: T(n) = a·T(n/b) + O(n^d)
   - Result depends on comparing a vs b^d
   - Dominance of recursion tree work
+
+- **Correctness & Proof Toolkit**
+  - Loop invariants: prove iterative algorithms preserve the right state
+  - Induction: prove recursive algorithms and recurrences formally
+  - Exchange arguments: justify greedy choices when local decisions seem risky
+  - Counterexamples: disprove wrong heuristics quickly before coding
 
 ---
 
@@ -728,7 +764,7 @@ This week covers three fundamental primitives used across countless algorithms. 
   - Introsort: quicksort → switches to heapsort if depth too deep
   - Prevents worst-case O(n²)
   - Used in C++ std::sort
-  - Timsort (Python, Java): merge sort + insertion sort hybrid
+  - TimSort (Python and Java object arrays): stable merge/insertion hybrid optimized for natural runs
 
 - **Memory Effects**
   - Merge sort: sequential access, good prefetching, predictable
@@ -858,9 +894,9 @@ This week covers three fundamental primitives used across countless algorithms. 
   - Space: n + m (elements + buckets)
 
 - **Real-World Implementations**
-  - Python dict: hash table (used to be open addressing, now hybrid)
-  - C++ unordered_map: hash table with separate chaining
-  - Java HashMap: hash table with chaining (buckets are linked lists)
+  - Python dict: compact hash table with open addressing and probing
+  - C++ unordered_map: average O(1) hash table; exact collision strategy is implementation-dependent
+  - Java HashMap: bucketed hash table with chaining and tree bins in heavy-collision cases
 
 ---
 
@@ -928,14 +964,14 @@ This week covers three fundamental primitives used across countless algorithms. 
   - Handle collision: verify full strings match
   - Choose b (typically 256 or 31) and p (typically large prime)
 
-- **Karp-Rabin Algorithm**
+- **Rabin-Karp Algorithm**
   - String matching using rolling hash
   - Hash pattern P and each substring of text T
   - If hashes match: verify (check for collision)
   - Time: O(n+m) expected; O(nm) worst-case (but rare)
   - Applications: substring search, plagiarism detection, DNA sequences
 
-- **Karp-Rabin Multi-Pattern**
+- **Rabin-Karp Multi-Pattern**
   - Hash multiple patterns simultaneously
   - Search for any pattern match
   - O(n + m + k×log k) where k = number of patterns
@@ -1468,6 +1504,12 @@ This week covers patterns that appear in 50%+ of interview problems. Each patter
   - Process events: +1 for start, -1 for end
   - Track current and maximum concurrent
 
+- **Coordinate Compression & Event Modeling**
+  - Replace sparse coordinates (for example up to 10^9) with dense ranks while preserving order
+  - Enables Fenwick tree, segment tree, or difference-array techniques on large numeric domains
+  - Common pairing: sweep line + compressed coordinates for coverage and overlap queries
+  - Signal: use when values are huge but the number of distinct endpoints is only O(n)
+
 - **Applications**
   - Calendar consolidation
   - Room scheduling
@@ -1905,7 +1947,7 @@ This week applies pattern knowledge to strings. Strings are arrays of characters
 ### 📅 DAY 5 (OPTIONAL): STRING MATCHING & ROLLING HASH | 90 min
 
 **Topics:**
-- **Karp-Rabin Algorithm**
+- **Rabin-Karp Algorithm**
   - Rolling hash for pattern matching
   - Compute hash of pattern and first window
   - Slide window, update hash in O(1)
@@ -1918,7 +1960,7 @@ This week applies pattern knowledge to strings. Strings are arrays of characters
   - Choose: b = 256 (alphabet size), p = large prime
 
 - **Collision Handling**
-  - On hash match: verify actual string (Karp-Rabin feature)
+  - On hash match: verify actual string (Rabin-Karp feature)
   - Reduces false positives
   - Handles hash collisions transparently
 
@@ -1936,7 +1978,7 @@ This week applies pattern knowledge to strings. Strings are arrays of characters
 - **Comparing Pattern Matching Algorithms**
   - KMP: O(n+m), no extra space
   - Boyer-Moore: O(n/m) average, slow on short patterns
-  - Karp-Rabin: O(n+m) average, simple hash computation
+  - Rabin-Karp: O(n+m) average, simple hash computation
   - Choice depends on application and alphabet size
 
 ---
@@ -3227,6 +3269,12 @@ DP is incredibly powerful. This week extends basic patterns to more complex stru
 ### Weekly Goal
 Learn greedy algorithm design and when greedy is guaranteed optimal.
 
+### Weekly Outcomes
+- Identify when greedy choice property is valid vs when DP/backtracking is required
+- Prove correctness using exchange arguments or stays-ahead reasoning
+- Solve core interval, scheduling, and coding-compression style greedy problems
+- Communicate trade-offs between greedy simplicity and optimality guarantees
+
 ### Weekly Topics
 - Greedy algorithm template and correctness proofs
 - Activity selection and interval problems
@@ -3346,6 +3394,12 @@ Learn greedy algorithm design and when greedy is guaranteed optimal.
 
 ### Weekly Goal
 Master backtracking for combinatorial problems and branch & bound for optimization.
+
+### Weekly Outcomes
+- Build reusable backtracking templates with pruning checkpoints
+- Solve canonical search-space problems (N-Queens, Sudoku, permutations/combinations)
+- Apply branch-and-bound to optimization variants with clear bounds
+- Explain time-space behavior and pruning impact during interviews
 
 ### Weekly Topics
 - Backtracking template and pruning
@@ -3488,6 +3542,8 @@ Master backtracking for combinatorial problems and branch & bound for optimizati
 - Solve bitwise operation problems
 - Apply number theory (GCD, primes, modular arithmetic)
 - Solve advanced string problems
+- Understand range-query data structures and when they justify extra implementation cost
+- Bridge from standalone algorithms to practical interview design problems
 - Understand network flow basics
 
 ---
@@ -3496,6 +3552,12 @@ Master backtracking for combinatorial problems and branch & bound for optimizati
 
 ### Weekly Goal
 Master specialized problem domains: matrices, bitwise operations, and number theory.
+
+### Weekly Outcomes
+- Solve matrix traversal/transformation problems with boundary-safe logic
+- Use bit tricks and bitmasking for subset/state problems efficiently
+- Apply GCD, modular arithmetic, and prime-based reasoning in coding tasks
+- Choose the right specialized technique under time pressure
 
 ### Weekly Topics
 - Matrix operations and patterns
@@ -3602,6 +3664,12 @@ Master specialized problem domains: matrices, bitwise operations, and number the
   - Auto-complete, spell checking
   - Compressed trie (radix tree) for space efficiency
 
+- **Radix Sorting for Strings & Integers**
+  - LSD radix sort for fixed-length keys
+  - MSD radix sort / 3-way string quicksort for variable-length strings
+  - Beats comparison-sorting lower bounds when key structure is exploitable
+  - Trade-offs: alphabet size, stability, auxiliary memory, and implementation complexity
+
 - **Aho-Corasick Algorithm**
   - Multi-pattern matching
   - Combine AC automaton with failure functions
@@ -3622,16 +3690,23 @@ Master specialized problem domains: matrices, bitwise operations, and number the
 
 ---
 
-## 📌 WEEK 15: ADVANCED STRINGS & NETWORK FLOW
+## 📌 WEEK 15: ADVANCED STRINGS, RANGE QUERIES & NETWORK FLOW
 
 ### Weekly Goal
-Master advanced string algorithms and introduction to network flow.
+Master advanced string algorithms, range-query data structures, and core flow concepts that round out upper-tier interview preparation.
+
+### Weekly Outcomes
+- Apply Z/KMP/suffix-based ideas for advanced string matching problems
+- Solve range query/update tasks with segment tree or Fenwick tree
+- Understand max-flow foundations and map flow to matching/cut formulations
+- Recognize when design-heavy data-structure questions require combining multiple primitives
+- Explain where advanced strings and flow appear in interview-style variants
 
 ### Weekly Topics
 - Z-algorithm and string matching
 - Segment trees and range queries
 - Network flow basics and algorithms
-- Real-world applications
+- Design patterns and real-world applications
 
 ---
 
@@ -3684,6 +3759,12 @@ Master advanced string algorithms and introduction to network flow.
   - Simpler implementation
   - Same O(log n) operations
 
+- **When Range Structures Are Worth It**
+  - Prefer prefix sums when data is static and only range-sum queries matter
+  - Prefer Fenwick tree for simpler point-update + prefix/range-sum workflows
+  - Prefer segment tree when combining different range queries or lazy range updates
+  - Interview guidance: understand trade-offs even if full lazy propagation is treated as stretch material
+
 ---
 
 ### 📅 DAY 3: NETWORK FLOW BASICS | 120 min
@@ -3733,18 +3814,20 @@ Master advanced string algorithms and introduction to network flow.
 
 ---
 
-### 📅 DAY 5 (OPTIONAL): SPECIAL TOPICS | 90 min
+### 📅 DAY 5 (OPTIONAL): DESIGN PATTERNS & COMPANY-SPECIFIC EXTENSIONS | 90 min
 
 **Topics:**
-- **Geometry Algorithms**
-  - Convex hull
-  - Line intersection
-  - Point in polygon
+- **Data Structure Design Patterns**
+  - LRU cache: hash map + doubly linked list for O(1) get/put
+  - LFU cache: frequency buckets + hash map trade-offs
+  - Median maintenance: two heaps for online statistics
+  - Time-based key-value store and other "combine two primitives" interview patterns
 
-- **Randomized Algorithms**
-  - Quicksort with random pivot
-  - Monte Carlo vs Las Vegas
-  - Fingerprinting
+- **Company-Specific Extensions**
+  - Coordinate compression revisited for sweep-line and range-query problems
+  - Geometry algorithms: convex hull, line intersection, point in polygon
+  - Randomized algorithms: Monte Carlo vs Las Vegas, fingerprinting, randomized pivoting
+  - Guidance: treat these as role-dependent extensions after Weeks 1-15 core mastery
 
 ---
 
@@ -3767,6 +3850,12 @@ Master advanced string algorithms and introduction to network flow.
 
 ### Weekly Goal
 Study data structures beyond standard libraries.
+
+### Weekly Outcomes
+- Understand when advanced structures outperform standard library choices
+- Implement or reason about randomized/persistent/dynamic-tree structures
+- Evaluate operational complexity and practical implementation risk
+- Decide if a problem truly needs advanced DS or simpler alternatives
 
 ### Weekly Topics
 - Skip lists and treaps
@@ -3853,6 +3942,12 @@ Study data structures beyond standard libraries.
 ### Weekly Goal
 Master advanced algorithmic techniques used in competitive programming.
 
+### Weekly Outcomes
+- Apply advanced DP optimizations where recurrence structure allows
+- Solve impartial game setups using Grundy/nimber reasoning
+- Use combinatorics tools for counting-heavy interview variants
+- Explain optimization validity and constraints clearly
+
 ### Weekly Topics
 - Advanced DP (convex hull trick, slope optimization)
 - Game theory and nimbers
@@ -3922,6 +4017,12 @@ Master advanced algorithmic techniques used in competitive programming.
 
 ### Weekly Goal
 Master techniques and patterns from competitive programming.
+
+### Weekly Outcomes
+- Use meet-in-the-middle and decomposition techniques for hard constraints
+- Apply HLD/sqrt decomposition where path/range query patterns demand it
+- Recognize when advanced tricks are beneficial vs overengineering
+- Build speed and precision under contest-like pressure
 
 ### Weekly Topics
 - Meet-in-the-middle
@@ -4006,6 +4107,12 @@ Master techniques and patterns from competitive programming.
 
 ### Weekly Goal
 Conduct mock interviews and identify remaining weak areas.
+
+### Weekly Outcomes
+- Complete full mock rounds with clear solution communication
+- Diagnose weakness patterns and close high-impact gaps quickly
+- Demonstrate reliable complexity explanation and edge-case handling
+- Build final interview confidence with repeatable execution routines
 
 ### Weekly Topics
 - Mock interview sessions
@@ -4119,6 +4226,7 @@ Conduct mock interviews and identify remaining weak areas.
    - Map remaining weak spots to weeks/topics
    - Design targeted practice schedule
    - Set goals for continued improvement
+  - Classify remaining topics into Must (Weeks 1-15 core), Should (selected Week 15 topics), and Optional (Weeks 16-18 company-specific)
 
 4. Meta-skills practice
    - Asking clarifying questions
@@ -4177,8 +4285,8 @@ Conduct mock interviews and identify remaining weak areas.
 | B | 4-6 | Arrays, Strings | Two-Pointer, Sliding Window, Hashing | Greedy, BS | 50+ Patterns |
 | C | 7-11 | Trees, Graphs | DFS/BFS, Shortest Path, MST, DP | Graph, DP | 100+ Patterns |
 | D | 12-13 | Trees, Graphs | MST, Greedy, Backtracking, B&B | Greedy, Backtrack, B&B | Analysis |
-| E | 14-15 | Special, Strings, Flow | Advanced String, Network Flow | Integration | Specialized |
-| F | 16-18 | Segment Trees, Geometry | Advanced Graph, Geometry | Competitive | Advanced |
+| E | 14-15 | Specialized Structures, Strings, Flow | Advanced String, Range Query, Network Flow | Integration | Specialized |
+| F | 16-18 | Advanced DS, Geometry | Advanced Graph, DP Optimizations, Geometry | Competitive | Advanced |
 | G | 19 | - | Interview Problems | Mixed | Problem-Solving |
 
 ### Topics Count
