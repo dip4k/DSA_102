@@ -157,59 +157,10 @@ Iteration 2:
 
 Iteration 3:
   slow = slow.next = 4
-  fast = fast.next.next = 3
-  Do they meet? 4 == 3? No
+    fast = fast.next.next = 4
+  Do they meet? 4 == 4? YES
 
-Iteration 4:
-  slow = slow.next = 5
-  fast = fast.next.next = 4
-  Do they meet? 5 == 4? No
-
-Iteration 5:
-  slow = slow.next = 3 (wraps to cycle)
-  fast = fast.next.next = 5 (in cycle)
-  Do they meet? 3 == 5? No
-
-Iteration 6:
-  slow = slow.next = 4
-  fast = fast.next.next = 3
-  Do they meet? 4 == 3? No
-
-Iteration 7:
-  slow = slow.next = 5
-  fast = fast.next.next = 4
-  Do they meet? 5 == 4? No
-
-Iteration 8:
-  slow = slow.next = 3
-  fast = fast.next.next = 5
-  Do they meet? 3 == 5? No
-
-Iteration 9:
-  slow = slow.next = 4
-  fast = fast.next.next = 3
-  Do they meet? 4 == 3? No
-
-Iteration 10:
-  slow = slow.next = 5
-  fast = fast.next.next = 4
-  Do they meet? 5 == 4? No
-
-Iteration 11:
-  slow = slow.next = 3
-  fast = fast.next.next = 5
-  Do they meet? 3 == 5? No
-
-Wait, let me retrace more carefully. 
-Cycle: 3→4→5→3
-
-Iteration 5:
-  Before: slow = 5, fast = 4
-  slow = slow.next = 3 (enters cycle)
-  fast = fast.next.next = 5 (was 4, moves to 5, then to 3)
-  Check: 3 == 3? YES! They meet!
-
-Result: Cycle detected!
+Result: Cycle detected in 3 iterations.
 ```
 
 **Inline Trace Table:**
@@ -217,17 +168,9 @@ Result: Cycle detected!
 | Iteration | slow | fast | slow == fast | Action |
 |-----------|------|------|--------------|--------|
 | 0 | 1 | 1 | Yes | Initialize |
-| 1 | 2 | 3 | No | Both advance |
-| 2 | 3 | 5 | No | Both advance |
-| 3 | 4 | 3 | No | Both advance (cycle wraps) |
-| 4 | 5 | 4 | No | Both advance |
-| 5 | 3 | 5 | No | Both advance |
-| 6 | 4 | 3 | No | Both advance |
-| 7 | 5 | 4 | No | Both advance |
-| 8 | 3 | 5 | No | Both advance |
-| 9 | 4 | 3 | No | Both advance |
-| 10 | 5 | 4 | No | Both advance |
-| 11 | 3 | 3 | YES | **Cycle Found!** |
+| 1 | 2 | 3 | No | Advance |
+| 2 | 3 | 5 | No | Advance |
+| 3 | 4 | 4 | YES | **Cycle Found** |
 
 **C# Implementation:**
 
@@ -273,56 +216,17 @@ So we reset one pointer to head and move both pointers at speed 1. They meet at 
 Linked List: 1 → 2 → 3 → 4 → 5 → 3 (cycle starts at 3)
 
 Step 1: Find meeting point (from cycle detection)
-  Meeting point: 3
+  Meeting point: 4
 
 Step 2: Reset one pointer to head
   ptr1 = 1 (head)
-  ptr2 = 3 (meeting point)
+  ptr2 = 4 (meeting point)
 
 Step 3: Move both at speed 1 until they meet
-  Iteration 1: ptr1 = 2, ptr2 = 4
-  Iteration 2: ptr1 = 3, ptr2 = 5
-  Iteration 3: ptr1 = 4, ptr2 = 3
-  Iteration 4: ptr1 = 5, ptr2 = 4
-  Iteration 5: ptr1 = 3, ptr2 = 5
-  Iteration 6: ptr1 = 4, ptr2 = 3
-  ...
+  Iteration 1: ptr1 = 2, ptr2 = 5
+  Iteration 2: ptr1 = 3, ptr2 = 3  -> Meet at cycle start
 
-Wait, they're not meeting. Let me reconsider.
-
-Actually, the theorem states:
-  Distance(head → cycle start) = Distance(meeting point → cycle start)
-
-So:
-  ptr1 starts at head (1)
-  ptr2 starts at meeting point (3)
-  Both move at speed 1
-  They meet when:
-    ptr1 has moved: distance to cycle start
-    ptr2 has moved: from meeting to cycle start, which equals the same distance
-  
-  So they should meet at the cycle start.
-
-Let me retrace with correct understanding:
-  List: 1 → 2 → 3 → 4 → 5 → 3
-  Meeting point found at 3 (after traversal)
-  
-  ptr1 = 1, ptr2 = 3
-  ptr1.next = 2, ptr2.next = 4
-  ptr1.next = 3, ptr2.next = 5
-  ptr1.next = 4, ptr2.next = 3
-  ptr1.next = 5, ptr2.next = 4
-  ptr1.next = 3, ptr2.next = 5
-  
-  Hmm, they're oscillating. The theorem might not be working as I stated.
-
-Let me look up the correct proof: The distance from head to cycle start equals the distance from meeting point to cycle start. So:
-
-  If we move ptr1 from head and ptr2 from meeting at the same speed, after k steps:
-    ptr1 is at cycle start
-    ptr2 should also be at cycle start
-    
-  But the cycle creates distance complications.
+Result: cycle entry node is 3.
 ```
 
 **C# Implementation (Correct):**

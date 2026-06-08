@@ -1,6 +1,6 @@
 ---
-mode: ask
-tools: ["codebase", "editFiles", "search"]
+agent: agent
+tools: [vscode, execute, read, agent, edit, search, web, browser, todo]
 description: "Run a repository-wide unification pass (excluding Old/) to align docs and generation context with v13 goals."
 ---
 

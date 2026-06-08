@@ -1,5 +1,6 @@
 ---
-agent: ask
+agent: agent
+tools: [vscode, execute, read, agent, edit, search, web, browser, todo]
 description: "Generate or revise a full week package (instructional, support, visual, and C# files) aligned to v13 syllabus and repo conventions."
 ---
 
@@ -30,5 +31,12 @@ Execution requirements
 11. For instructional files, follow the canonical narrative arc: Context & Motivation -> Mental Model -> Mechanics -> Performance -> Integration.
 
 Output
-- Create or update files directly in repo.
+- Format all source block responses with explicit, complete `// filepath:` comments on the first line. 
+- Ensure code block identifiers match the correct file extension language parsing rules so that VS Code "Copilot Edits" (Ctrl+Shift+I) can parse and safely apply them to the workspace directly.
 - Provide a short completion summary with file list and what changed.
+
+Rule
+- Write output blocks so they can be processed cleanly by the VS Code Chat apply command.
+- Ensure each and every file generated or updated adheres to the v13 syllabus and repo conventions, including naming, structure, and content requirements, emojis,code blocks, depth of explanation, and coverage of topics/subtopics.
+- If the `scope` input is not "full", only generate or update files relevant to the specified scope (instructional/support/visual/csharp) while still ensuring all required topics/subtopics for that scope are covered.
+- If a `refinement_file` is provided, use it to make targeted improvements to the generated content, ensuring that the refinements align with the overall quality and style guidelines of the v13 syllabus and repo conventions.

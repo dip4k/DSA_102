@@ -1,6 +1,6 @@
 ---
-mode: ask
-tools: ["codebase", "search", "editFiles", "problems"]
+agent: agent
+tools: [vscode, execute, read, agent, edit, search, web, browser, todo]
 description: "Validate generated week files for structure, depth, cohesion, sequence, and syllabus coverage using unified quality checklist."
 ---
 

@@ -1,6 +1,6 @@
 ---
-mode: ask
-tools: ["codebase", "editFiles", "search"]
+agent: agent
+tools: [vscode, execute, read, agent, edit, search, web, browser, todo]
 description: "Run daily practice review: log solved attempts, classify mistakes, and schedule reattempts."
 ---
 

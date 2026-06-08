@@ -810,32 +810,88 @@ Result: All elements checked
 
 ---
 
+## 💾 DAY 6: STRINGS, NUMBERS & REPRESENTATIONS
+
+### Pattern 6.1: String Immutability heap copy cost (Conconcatenation)
+
+#### Visual 1: Naive String Concatenation heap mutations
+
+```
+Before concatenation:
+s1 at Address 0x1000: "Hi"
+s2 at Address 0x2000: "!!!"
+
+Concat: s3 = s1 + s2
+
+Heap mutations trace:
+1. Allocate contiguous block of size (s1.Length + s2.Length) at Address 0x3000
+2. Copy "Hi" characters (2 chars) from 0x1000 into 0x3000
+3. Copy "!!!" characters (3 chars) from 0x2000 into 0x3014
+Result (s3) is a brand new object pointing to Address 0x3000
+
+Memory Allocation Trace:
+┌────────────────────────┐
+│ Address 0x1000: "Hi"   │  ← Still allocated in heap (garbage until GC collects)
+├────────────────────────┤
+│ Address 0x2000: "!!!"   │  ← Still allocated in heap (garbage until GC collects)
+├────────────────────────┤
+│ Address 0x3000: "Hi!!!"│  ← New string object created
+└────────────────────────┘
+
+TIME: O(N) where N is total combined characters size.
+```
+
+---
+
+### Pattern 6.2: Signed Integer Numbers representations (Two's Complement)
+
+#### Visual 2: 8-bit Two's Complement Scale negations
+
+To logically negate value (from 5 to -5) at the hardware register level:
+1. Flip all bit configurations (the NOT operator `~`).
+2. Add 1 to the flipped bit result.
+
+```
+Positive 5 bits layout:
+  [ 0 | 0 | 0 | 0 | 0 | 1 | 0 | 1 ]   - Value 5
+
+Step 1: Flip all bits (NOT ~5):
+  [ 1 | 1 | 1 | 1 | 1 | 0 | 1 | 0 ]   - Value -6 (Two's complement placeholder)
+
+Step 2: Add 1:
+  [ 1 | 1 | 1 | 1 | 1 | 0 | 1 | 1 ]   - Value -5 (MSB bit 7 represents negation flag)
+```
+
+---
+
 ## 🎯 WEEK 02 VISUAL SUMMARY TABLE
 
 ```
-┌─────────────────────────────────────────────────────┐
-│ DAY │ TOPIC         │ Complexity    │ Key Feature │
-├─────────────────────────────────────────────────────┤
-│ 1   │ Static Arrays │ O(1) access   │ Contiguous  │
-│     │ Memory Layout │ O(n) insert   │ memory      │
-│     │               │ O(1) space    │             │
-│     │               │               │             │
-│ 2   │ Dynamic Array │ O(1) amortiz. │ Doubling    │
-│     │ Amortized     │ O(n) reallocate│ strategy   │
-│     │ Analysis      │ O(n) capacity │             │
-│     │               │               │             │
-│ 3   │ Linked Lists  │ O(n) search   │ Pointer     │
-│     │ Pointer Chain │ O(1) insert   │ chaining    │
-│     │               │ O(n) space    │ at head     │
-│     │               │               │             │
-│ 4   │ Stack/Queue   │ O(1) ops      │ LIFO/FIFO   │
-│     │ Deques        │ O(1) space    │ circular    │
-│     │               │               │ buffer      │
-│     │               │               │             │
-│ 5   │ Binary Search │ O(log n)      │ Invariant   │
-│     │ Invariants    │ O(1) space    │ halving     │
-│     │               │               │             │
-└─────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│ DAY │ TOPIC         │ Complexity       │ Key Feature │
+├──────────────────────────────────────────────────────────────┤
+│ 1   │ Static Arrays │ O(1) access      │ Contiguous  │
+│     │ Memory Layout │ O(n) insert      │ memory      │
+│     │               │ O(1) space       │             │
+│     │               │                  │             │
+│ 2   │ Dynamic Array │ O(1) amortiz.    │ Doubling    │
+│     │ Amortized     │ O(n) reallocate  │ strategy    │
+│     │ Analysis      │ O(n) capacity    │             │
+│     │               │                  │             │
+│ 3   │ Linked Lists  │ O(n) search      │ Pointer     │
+│     │ Pointer Chain │ O(1) insert      │ chaining    │
+│     │               │ O(n) space       │ at head     │
+│     │               │                  │             │
+│ 4   │ Stack/Queue   │ O(1) ops         │ LIFO/FIFO   │
+│     │ Deques        │ O(1) space       │ circular    │
+│     │               │                  │ buffer      │
+│     │               │                  │             │
+│ 5   │ Binary Search │ O(log n)         │ Invariant   │
+│     │ Invariants    │ O(1) space       │ halving     │
+│     │               │                  │             │
+│ 6   │ Strings/Nums  │ Conversions O(N) │ Encoding &  │
+│     │ Representations│ StringBuilder O(N)│ Immutability│
+└──────────────────────────────────────────────────────────────┘
 ```
 
 ---

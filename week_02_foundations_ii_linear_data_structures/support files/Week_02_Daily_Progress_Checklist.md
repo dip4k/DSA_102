@@ -1,235 +1,119 @@
 # ✅ Week 02 Daily Progress Checklist: Detailed Execution Plan
 
-**Purpose:** Track progress, ensure mastery
+**Purpose:** Track daily learning milestones, verify structural mechanics, and maintain steady progress through 6 structured study days.
 
 ---
 
-## 📅 MONDAY: Day 1 Core — Static & Dynamic Arrays
+## 📅 MONDAY: Day 1 — Static Arrays & Memory Layout
 
-### Morning Session (2.5 hours)
-
-**Read Instructional (45 min)**
-- [ ] Read Week 02 Day 1: Static & Dynamic Arrays
-- [ ] Key concepts: address formula, doubling, amortized
-- [ ] 3 insights:
-  1. ___________________________________
-  2. ___________________________________
-  3. ___________________________________
-
-**Visualize & Understand (75 min)**
-- [ ] Draw static array memory layout (base=0x1000, elements 4 bytes each)
-  - [ ] Index 0 → address 0x1000
-  - [ ] Index 5 → address 0x1014
-- [ ] Draw dynamic array growth (sizes 1→2→4→8)
-  - [ ] Show reallocation at each doubling
-  - [ ] Calculate total work: 1+2+4+8 = 15 vs O(n)=8
-
-### Afternoon Session (3 hours)
-
-**Implement (2 hours)**
-- [ ] Static array class with address calculation
-  - [ ] Time: _____ min
-- [ ] Dynamic array with doubling
-  - [ ] grow() method
-  - [ ] Time: _____ min
-  - [ ] Test: insert 10 elements, verify capacities 1,2,4,8
-
-**Trace & Analysis (1 hour)**
-- [ ] Manually trace 5 inserts, show reallocation
-- [ ] Amortized analysis: total work = 1+2+4 = 7 for 4 inserts
-- [ ] Per insert: 7/4 ≈ O(1)
-
-### Evening: Ready for Day 2? ☐ Yes ☐ No
+### Sessions & Deliverables
+*   **Study & Read (45 min)**:
+    *   [ ] Read Week 02 Day 1: Static Arrays & Memory Layout.
+    *   [ ] Key concepts: address offset calculation formula (`Base + Index x Stride`), Row-Major vs. Column-Major mapping, L1/L2 Cache line prefetching (64-byte blocks).
+*   **Visualize & Understand (45 min)**:
+    *   [ ] Draw a static array block in contiguous memory. Label the byte offsets.
+    *   [ ] Trace why index accessing is a fast O(1) mathematical operation.
+*   **Code & Benchmark (60 min)**:
+    *   [ ] Code a static array address calculator.
+    *   [ ] Run a memory access stride benchmark comparing sequential row-major loops vs. vertical column-wise skips.
+*   **Review & Verify**:
+    *   [ ] Did you verify why sequential stride is 10-100x faster than vertical or random access? ☐ Yes
 
 ---
 
-## 📅 TUESDAY: Day 2 Core — Linked Lists
+## 📅 TUESDAY: Day 2 — Dynamic Arrays & Amortized Growth
 
-### Morning Session (2.5 hours)
-
-**Read Instructional (50 min)**
-- [ ] Read Week 02 Day 2: Linked Lists
-- [ ] Node structure, operations, trade-offs
-
-**Visualize (75 min)**
-- [ ] Draw singly linked list: Head → [10|next] → [20|next] → null
-- [ ] Show insert at position 1: create node, update pointers
-- [ ] Show delete at head: update Head pointer
-- [ ] Trace reverse operation on [1→2→3→null]
-
-### Afternoon Session (3 hours)
-
-**Implement (2.5 hours)**
-- [ ] Singly linked list: insert, delete, search
-  - [ ] Time: _____ min
-  - [ ] Test: [10,20,30], insert 25 at position 2
-- [ ] Reverse linked list (iterative)
-  - [ ] Time: _____ min
-  - [ ] Pointer updates clear? ☐ Yes
-- [ ] Find middle with two pointers
-  - [ ] Slow and fast pointers
-  - [ ] Odd vs even length
-
-**Analysis (30 min)**
-- [ ] Compare to array: insert middle is O(n) both!
-  - [ ] Why linked list doesn't win?
-  - [ ] Cache locality difference
-
-### Evening: Ready for Day 3? ☐ Yes ☐ No
+### Sessions & Deliverables
+*   **Study & Read (45 min)**:
+    *   [ ] Read Week 02 Day 2: Dynamic Arrays & Amortized Growth.
+    *   [ ] Key concepts: logical size vs. physical capacity, reallocation costs, and geometric doubling strategy.
+*   **Visualize & Understand (45 min)**:
+    *   [ ] Draw a dynamic array resizing sequence (sizes 1 -> 2 -> 4 -> 8).
+    *   [ ] Total work for N elements: show why the sum of doubling copies equals a geometric series (2N - 1 = O(N)).
+*   **Code & Implement (60 min)**:
+    *   [ ] Implement a custom Dynamic Array class (`Push`, `Get`, `Resize` methods).
+    *   [ ] Implement pop options with lazy shrinking (shrink when length drops below capacity/4).
+*   **Review & Verify**:
+    *   [ ] Can you explain the difference between amortized cost vs. worst-case individual reallocation? ☐ Yes
 
 ---
 
-## 📅 WEDNESDAY: Day 3 Core — Stacks & Queues
+## 📅 WEDNESDAY: Day 3 — Linked Lists
 
-### Morning Session (2 hours)
-
-**Read Instructional (45 min)**
-- [ ] Read Week 02 Day 3: Stacks, Queues, Deques
-
-**Visualize (75 min)**
-- [ ] Stack with array: push 1,2,3; show top pointer
-- [ ] Queue with circular buffer: enqueue/dequeue wraparound
-- [ ] Deque with both pointers
-
-### Afternoon Session (2.5 hours)
-
-**Implement (1.5 hours)**
-- [ ] Stack with array (fixed size)
-- [ ] Queue with circular buffer
-  - [ ] Wraparound logic
-  - [ ] Distinguish full vs empty
-- [ ] Min stack (auxiliary stack)
-
-**Applications (1 hour)**
-- [ ] Valid parentheses using stack
-- [ ] Level-order BFS using queue
-
-### Evening: Ready for Days 4-5? ☐ Yes ☐ No
+### Sessions & Deliverables
+*   **Study & Read (45 min)**:
+    *   [ ] Read Week 02 Day 3: Linked Lists.
+    *   [ ] Key concepts: Singly Linked Lists (SLL) vs. Doubly Linked Lists (DLL), pointer manipulation, and cache locality trade-offs.
+*   **Visualize & Understand (45 min)**:
+    *   [ ] Draw a singly linked list reversal on paper.
+    *   [ ] Visual check: show prev, current, and next pointer re-wirings step-by-step.
+*   **Code & Implement (60 min)**:
+    *   [ ] Implement singly and doubly linked list node operations.
+    *   [ ] Implement iterative linked list reversal ($O(N)$ time, $O(1)$ space).
+    *   [ ] Implement middle node search using slow/fast pointers.
+*   **Review & Verify**:
+    *   [ ] Are you saving adjacent references before updating pointer links to prevent lost nodes? ☐ Yes
 
 ---
 
-## 📅 THURSDAY: Day 4 Core — Binary Search (Part 1)
+## 📅 THURSDAY: Day 4 — Stacks, Queues & Deques
 
-### Morning Session (2.5 hours)
-
-**Read Instructional (50 min)**
-- [ ] Read Week 02 Day 4-5: Binary Search
-
-**Visualize (75 min)**
-- [ ] Draw binary search tree for [1,3,5,7,9,11], target=7
-  - [ ] Iteration 1: low=0, high=6, mid=3, arr[3]=7 ✓
-- [ ] Draw first occurrence on [1,2,2,2,3]
-  - [ ] Multiple iterations needed
-- [ ] Answer space: minimize max load
-  - [ ] Binary search on capacity 1..100
-  - [ ] Feasibility check: greedy assignment
-
-### Afternoon Session (3 hours)
-
-**Code Binary Search (2 hours)**
-- [ ] Classic binary search
-  - [ ] Time: _____ min, correct? ☐ Yes
-  - [ ] Invariant [low, high) maintained? ☐
-- [ ] First occurrence
-  - [ ] Modification: when high=mid vs mid+1?
-  - [ ] Test on [1,2,2,2,3] for target=2
-- [ ] Answer space: capacity planning
-  - [ ] Feasibility function
-  - [ ] Binary search to find minimum
-
-**Analysis (1 hour)**
-- [ ] Trace each variant, mark invariant at each step
-- [ ] Why O(log n)?
-
-### Evening: Ready for more? ☐ Yes ☐ No
+### Sessions & Deliverables
+*   **Study & Read (45 min)**:
+    *   [ ] Read Week 02 Day 4: Stacks, Queues & Deques.
+    *   [ ] Key concepts: LIFO vs. FIFO semantics, expression parsing patterns, and circular queue optimization.
+*   **Visualize & Understand (45 min)**:
+    *   [ ] Draw a circular buffer queue. Show how head/tail pointers wrap around sequentially.
+    *   [ ] Trace the state of a parentheses matching stack on the string "({[]})".
+*   **Code & Implement (60 min)**:
+    *   [ ] Implement an array-backed circular queue with wraparound indices.
+    *   [ ] Solve valid parentheses matching using a stack.
+*   **Review & Verify**:
+    *   [ ] Can you distinguish how a full circular queue is differenced from an empty circular queue? ☐ Yes
 
 ---
 
-## 📅 FRIDAY: Day 5 Core — Binary Search (Part 2)
+## 📅 FRIDAY: Day 5 — Binary Search & Invariants
 
-### Morning Session (2.5 hours)
-
-**Implement Variants (1.5 hours)**
-- [ ] Last occurrence
-- [ ] Lower bound (first ≥)
-- [ ] Upper bound (first >)
-- [ ] Test on [1,2,2,2,3]: target=2
-  - [ ] First: index 1
-  - [ ] Last: index 3
-  - [ ] Lower: 1
-  - [ ] Upper: 4
-
-**Advanced Problems (1 hour)**
-- [ ] Rotated sorted array peak
-- [ ] Minimize maximum load (detailed)
-- [ ] Aggressive cows: maximize min distance
-
-### Afternoon Session (3 hours)
-
-**Practice (3 hours)**
-- [ ] 5-6 binary search problems
-  - [ ] LeetCode: basic, variants, answer space mix
-  - [ ] Times: _____, _____, _____ (should decrease)
-- [ ] Answer space: at least 2 problems
+### Sessions & Deliverables
+*   **Study & Read (45 min)**:
+    *   [ ] Read Week 02 Day 5: Binary Search & Invariants.
+    *   [ ] Key concepts: high-order index overflow protection, bounds mapping (lower/upper bound), and answer space optimization.
+*   **Visualize & Understand (45 min)**:
+    *   [ ] Draw first and last occurrence searches on a sorted duplicate sequence like [1, 2, 2, 2, 3].
+    *   [ ] Concept check: trace answer-space capacity sifting on paper.
+*   **Code & Implement (60 min)**:
+    *   [ ] Implement binary search first/last occurrences, lower bounds, and upper bounds.
+    *   [ ] Solve a binary search on answer space problem (e.g. Split Array Largest Sum).
+*   **Review & Verify**:
+    *   [ ] Does your midpoint index check avoid high overflow (using `low + (high - low) / 2`)? ☐ Yes
 
 ---
 
-## 📅 SATURDAY: Integration & Synthesis
+## 📅 SATURDAY: Day 6 — Strings, Numbers & Conversions
 
-### Morning (2 hours)
-
-**Review All (90 min)**
-- [ ] Arrays: < 2 min explanation
-- [ ] Linked lists: < 2 min explanation
-- [ ] Stacks/queues: < 2 min explanation
-- [ ] Binary search: < 2 min explanation
-- [ ] When to use each: < 1 min each
-- [ ] Total: _____ min (target < 15 min)
-
-**Decision Quiz (30 min)**
-- [ ] Given 8 scenarios, choose structure:
-  1. Need random access → _______________
-  2. Frequent insertion at head → _______________
-  3. FIFO order needed → _______________
-  4. Find in sorted array → _______________
-  5. (continue for 8 total)
-  - [ ] Accuracy: ____ / 8
-
-### Afternoon (2 hours)
-
-**Integration Problems (2 hours)**
-- [ ] LRU cache: hash map + doubly linked list
-- [ ] Merge k sorted linked lists
-- [ ] Sliding window with deque
-- [ ] Times: _____, _____, _____
-- [ ] All correct? ☐ Yes ☐ Review
+### Sessions & Deliverables
+*   **Study & Read (45 min)**:
+    *   [ ] Read Week 02 Day 6: Strings & Numbers.
+    *   [ ] Key concepts: UTF-16 surrogate pairs, string immutability copies, signed integer Two's complement representation, and conversion mechanisms.
+*   **Visualize & Understand (45 min)**:
+    *   [ ] Sketch how string immutability creates intermediate garbage overhead in a loop.
+    *   [ ] Trace positive/negative integer boundaries across 8-bit limits.
+*   **Code & Implement (60 min)**:
+    *   [ ] Implement string-to-integer conversion (`atoi`) with whitespace skipping, sign checking, and overflow clamping.
+    *   [ ] Implement integer-to-string conversion (`itoa`) with proper handling of zero and negative values.
+*   **Review & Verify**:
+    *   [ ] Does your conversion code explicitly clamp overflows before multiplying by 10 and adding? ☐ Yes
 
 ---
 
-## 🎯 MASTERY VERIFICATION
+## 🏁 WEEKLY MASTERY VERIFICATION
 
-**By end of Week 02, verify:**
-
-- [ ] Dynamic array implementation with doubling
-- [ ] Singly linked list (insert, delete, reverse)
-- [ ] Stack (array-based)
-- [ ] Queue (circular buffer)
-- [ ] Deque (both pointers)
-- [ ] Binary search (classic)
-- [ ] Binary search variants (first/last, bounds)
-- [ ] Binary search on answer space (3+ problems)
-- [ ] 20-25 problems total completed
-- [ ] Can explain amortized analysis
-- [ ] Can choose right structure for task
-
-**Final Assessment:**
-- [ ] Can code all structures without reference? ☐ Yes ☐ Partial
-- [ ] Understand amortized complexity? ☐ Yes ☐ Partial
-- [ ] Recognize binary search opportunities? ☐ Yes ☐ Partial
-- [ ] Ready for Week 03? ☐ YES
-
----
-
-**Total Time:** 22+ hours  
-**Mastery Level:** ______ / 100  
-**Ready for Week 03?** ☐ YES ☐ REVIEW
+By the end of Week 02, verify:
+*   [ ] You can explain static address calculators and row-major cache lines.
+*   [ ] You can implement dynamic array doubling and lazy shrinking (length <= capacity/4).
+*   [ ] You can reverse a singly linked list in-place and find the middle node using slow/fast pointers.
+*   [ ] You can implement a circular queue using modular indices without index drift.
+*   [ ] You can implement binary search, lower bounds, upper bounds, and answer space.
+*   [ ] You can implement `atoi` and `itoa` with complete overflow protections.
+*   [ ] You can explain why String builders are linear O(N) when repeated string concatenations are quadratic O(N^2).

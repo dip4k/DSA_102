@@ -1643,6 +1643,134 @@ D) left / right
 
 ---
 
+# 📦 DAY 6: STRINGS & NUMBERS - REPRESENTATION & CONVERSIONS
+
+## 🎓 Context: Hardware-Level Primitives
+
+### Engineering Problem: Preventing Overflow & Corruption
+In virtual machines, text editors, and database engines, data is physically represented as contiguous bytes. When converting user inputs (like a port number string "8080" or lines count "150000") into numeric register variables, we must understand representations to protect against:
+- **Integer Overflow**: Values exceeding register limits wrap across positive/negative axes.
+- **Concatenation Memory Bloat**: Repeatedly appending characters to immutable string objects triggers high-frequency heap allocations and $O(N^2)$ copying costs.
+
+### What are Strings and Numbers?
+- **String**: A stable sequence of characters stored in memory. In runtimes like .NET and Java, strings are immutable and encoded in UTF-16 (2 bytes per character).
+- **Signed Integer**: Stored in standard register bits using Two's Complement encoding.
+
+---
+
+## 💡 Mental Model: Display Cases & Bit Scales
+
+### 1. Strings as Sealed Display Cases
+Think of an immutable string like a sealed glass case with fixed compartments. To enlarge it:
+1. Allocate a brand new, larger display case.
+2. Copy all character items from the old case over.
+3. Discard the old case (leaving work for the Garbage Collector).
+To avoid this $O(N^2)$ overhead during repeated modifications, use a `StringBuilder` growable array buffer, which allocates memory geometrically and appends items in O(1) amortized time.
+
+### 2. Two's Complement Parity Scale
+Signed numbers allocate their most significant bit (MSB) as a sign marker. Negating $X$ is performed by inverting all register bits (NOT) and adding 1:
+$$-X = \sim X + 1$$
+
+---
+
+## 🔧 Mechanics: Conversions From Scratch
+
+### 1. atoi: String-to-Integer Parser (C#)
+```csharp
+public static int Atoi(string s) {
+    if (string.IsNullOrEmpty(s)) return 0;
+    int idx = 0, sign = 1, result = 0;
+
+    // 1. Skip leading whitespaces
+    while (idx < s.Length && s[idx] == ' ') idx++;
+
+    // 2. Read optional sign
+    if (idx < s.Length && (s[idx] == '+' || s[idx] == '-')) {
+        sign = (s[idx] == '-') ? -1 : 1;
+        idx++;
+    }
+
+    // 3. Process digits & safeguard against overflow
+    while (idx < s.Length && char.IsDigit(s[idx])) {
+        int digit = s[idx] - '0';
+
+        // Check overflow threshold BEFORE multiplying
+        if (result > (int.MaxValue - digit) / 10) {
+            return sign == 1 ? int.MaxValue : int.MinValue;
+        }
+
+        result = result * 10 + digit;
+        idx++;
+    }
+    return result * sign;
+}
+```
+
+### 2. itoa: Integer-to-String Writer (Python)
+```python
+def itoa(n: int) -> str:
+    if n == 0:
+        return "0"
+    
+    is_negative = n < 0
+    # Handle absolute values to prevent overflow limits
+    temp = abs(n)
+    digits = []
+    
+    # Extract digits right-to-left
+    while temp > 0:
+        digits.append(chr((temp % 10) + ord('0')))
+        temp //= 10
+        
+    digits.reverse()
+    result = "".join(digits)
+    return "-" + result if is_negative else result
+```
+
+---
+
+## 📘 Chapter 4: Performance and Systems
+
+*   **String Concatenation Cost**: Modifying strings directly inside loops copies characters repeatedly, compounding to $O(N^2)$ work.
+*   **Encodings Overhead**:
+    *   **ASCII**: 7-bit values (1 byte per char), English only.
+    *   **UTF-8**: Variable-length (1 to 4 bytes), backward-compatible with ASCII, standard for web payloads.
+    *   **UTF-16**: Fixed 2 bytes per char (except surrogate pairs for high emojis), memory footprint is higher.
+
+---
+
+## 🎯 Key Takeaways: Day 6
+1.  ✅ **Strings are immutable**: Modifying characters creates a brand new heap allocation.
+2.  **Use StringBuilder** to compile concatenated character values in linear O(N) time.
+3.  **Two's complement** enables register-level logical negation by flipping bits and adding 1.
+4.  **Protect against overflow** by checking division bounds before multiplying and adding digits.
+
+---
+
+## ✅ Day 6 Quiz
+
+**Q1:** Building a string of length N character-by-character using += inside a loop takes:  
+A) O(1)  
+B) O(N)  
+C) O(N^2)  ✅  
+D) O(N log N)  
+
+**Q2:** Signed integers represent negative values using:  
+A) Left shift  
+B) Unsigned bit-width  
+C) Two's Complement  ✅  
+D) ASCII offsets  
+
+**Q3:** The base address formula of UTF-16 strings multiplies indices by:  
+A) 1 byte  
+B) 2 bytes  ✅  
+C) 4 bytes  
+D) 8 bytes  
+
+---
+
+---
+
 # 🎓 WEEK 02: INTEGRATION & SYNTHESIS
 
 ## 📊 Week 2 Complexity Reference Table

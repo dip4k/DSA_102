@@ -29,23 +29,30 @@ description: "Generate or refine DSA curriculum files by week/day with v13 sylla
 2. Read neighboring files in target week folder.
 3. Generate content with narrative-first progression.
 4. Apply technical self-check (correctness, complexity, edge cases, consistency).
-5. Save files with existing naming convention.
-6. Update learning_tracking if requested.
+5. Validate walkthrough integrity: example traces, state tables, and code outcomes must match without self-correction text.
+6. Save files with existing naming convention.
+7. Update learning_tracking if requested.
 
 ## Formatting Expectations
 - Use meaningful emoji section markers in learner-facing material where they improve readability.
 - Instructional files should follow the canonical 5-part arc: Context & Motivation, Mental Model, Mechanics, Performance, Integration.
 - Support files and language guides should feel visually aligned with the instructional files for the same week.
+- Enforce canonical instructional filename format: `Week_XX_Day_YY_[Topic_Name]_Instructional.md` (2-digit week/day).
 
 ## Content Requirements
 - Explicit complexity and trade-off discussion.
 - Pattern recognition signals and pitfalls.
 - At least one concrete edge-case analysis per major concept.
 - Interview follow-up variants for high-frequency patterns.
+- Deterministic walkthroughs only; do not include exploratory or contradictory narration in final learner-facing files.
+- For arithmetic topics, state validity constraints explicitly (for example, inverse existence and modulus assumptions).
 - Visual elements only where they improve explanation quality.
 - Narrative continuity and basic -> advanced progression within each file.
 - Proper separation and cohesion between instructional, support, visual, and language-support files.
 - Use emoji sparingly but consistently for headings, warnings, and learner checkpoints.
+- Keep explanations no-code-first and use C#/.NET only when implementation is required.
+- Ensure complete day topic/subtopic coverage; add visuals where needed for clarity.
+- Allow depth expansion up to 30,000 words when complete syllabus coverage requires it.
 
 ## Depth Targets
 - Instructional: 7,500-15,000 words.
@@ -58,3 +65,4 @@ description: "Generate or refine DSA curriculum files by week/day with v13 sylla
 - Claims are consistent and technically correct.
 - No placeholders or unresolved references.
 - Naming and style match target folder conventions.
+- Unified self-check completed per `final_prompts/QUALITY_VALIDATION_CHECKLIST.md` and `final_prompts/UNIFIED_MASTER_PROMPT.md` mandatory checks.

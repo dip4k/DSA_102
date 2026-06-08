@@ -22,7 +22,7 @@ Title block
 
 ## Chapter 3: Mechanics
 - Step-by-step logic flow
-- Trace examples and edge cases
+- Trace examples and edge cases (deterministic final form; avoid self-correcting narration)
 - Common failure patterns
 - At least one wrong-approach contrast
 

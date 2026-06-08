@@ -39,3 +39,13 @@ Use this checklist before accepting generated curriculum files.
 - Emojis used meaningfully, not excessively.
 - Visuals/tables are used where they add clarity.
 - No prompt artifacts or unresolved placeholders.
+
+## 7) Walkthrough Integrity Validation
+- Worked examples are deterministic and final-form (no exploratory or self-correcting narration).
+- Trace logs, inline tables, and code snippets agree on state transitions and outcomes.
+- No internal contradiction between explanation text and shown values.
+
+## 8) Arithmetic Preconditions Validation
+- Formula validity constraints are stated where required (for example, modular inverse existence conditions).
+- Number-theory content distinguishes single-query checks from batch precomputation techniques.
+- Overflow caveats are explicit when multiplication can exceed integer bounds under large moduli.
