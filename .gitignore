@@ -638,3 +638,4 @@ CodeCoverage/
 TestResult.xml
 nunit-*.xml
 .vscode/settings.json
+DSA_Master_Curriculum_v8.code-workspace
