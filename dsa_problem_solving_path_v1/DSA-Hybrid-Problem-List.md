@@ -18,15 +18,15 @@ Let's start with the absolute basics. In this phase, you'll build your foundatio
 
 
 
-| # | Problem & Difficulty | Pattern | Key Concept |
-|---|----------------------|---------|-------------|
-| 1 | **Binary Search** (LC 704)<br>🟢 Easy \| 🔑 Anchor | Binary Search | Search space halving, template |
-| 2 | **First Bad Version** (LC 278)<br>🟢 Easy \| 🎯 Practice | Binary Search | Minimization variant |
-| 3 | **Climbing Stairs** (LC 70)<br>🟢 Easy \| 🔑 Anchor | 1D DP | Fibonacci DP, state definition |
-| 4 | **Power of Two** (LC 231)<br>🟢 Easy \| 🎯 Practice | Bit Manipulation | n & (n-1) trick |
-| 5 | **Power of Three** (LC 326)<br>🟢 Easy \| 🎯 Practice | Math | Logarithm properties |
-| 6 | **Counting Bits** (LC 338)<br>🟢 Easy \| ⭐ High Value | DP + Bit | count[i] = count[i>>1] + (i&1) |
-| 7 | **Find Pivot Index** (LC 724)<br>🟢 Easy \| 🔑 Anchor | Prefix Sum | leftSum = total - rightSum - curr |
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 1 | **Binary Search** (704) | 🟢 Easy | 🔑 Anchor | Binary Search | Search space halving, template |
+| 2 | **First Bad Version** (278) | 🟢 Easy | 🎯 Practice | Binary Search | Minimization variant |
+| 3 | **Climbing Stairs** (70) | 🟢 Easy | 🔑 Anchor | 1D DP | Fibonacci DP, state definition |
+| 4 | **Power of Two** (231) | 🟢 Easy | 🎯 Practice | Bit Manipulation | n & (n-1) trick |
+| 5 | **Power of Three** (326) | 🟢 Easy | 🎯 Practice | Math | Logarithm properties |
+| 6 | **Counting Bits** (338) | 🟢 Easy | ⭐ High Value | DP + Bit | count[i] = count[i>>1] + (i&1) |
+| 7 | **Find Pivot Index** (724) | 🟢 Easy | 🔑 Anchor | Prefix Sum | leftSum = total - rightSum - curr |
 
 
 ---
@@ -39,33 +39,33 @@ This is the bread and butter of technical interviews. We'll focus heavily on Has
 
 ### Part A: Hash Maps & Basic Two-Pointers (Week 2)
 
-| # | Problem & Difficulty | Pattern | Key Concept |
-|---|----------------------|---------|-------------|
-| 1 | **Two Sum** (LC 1)<br>🟢 Easy \| 🔑 Anchor | Hash Map | Complement search, value→index |
-| 2 | **Contains Duplicate** (LC 217)<br>🟢 Easy \| 🎯 Practice | Hash Set | Existence check |
-| 3 | **Valid Anagram** (LC 242)<br>🟢 Easy \| ⭐ High Value | Hash Map | Frequency map or sort |
-| 4 | **Group Anagrams** (LC 49)<br>🟡 Medium \| 🔑 Anchor | Hash Map | Sorted string as key |
-| 5 | **Valid Palindrome** (LC 125)<br>🟢 Easy \| 🔑 Anchor | Two Pointers | Opposite direction, filter chars |
-| 6 | **Merge Sorted Array** (LC 88)<br>🟢 Easy \| ⭐ High Value | Two Pointers | Backward iteration, in-place |
-| 7 | **Move Zeroes** (LC 283)<br>🟢 Easy \| 🎯 Practice | Two Pointers | Slow/fast pointers, order preserved |
-| 8 | **Best Time to Buy and Sell Stock** (LC 121)<br>🟢 Easy \| 🔑 Anchor | Greedy/DP | Track min, update max profit |
-| 9 | **Majority Element** (LC 169)<br>🟢 Easy \| ⭐ High Value | Boyer-Moore | Voting algorithm, cancellation |
-| 10 | **Single Number** (LC 136)<br>🟢 Easy \| 🎯 Practice | Bit (XOR) | XOR all, duplicates cancel |
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 1 | **Two Sum** (1) | 🟢 Easy | 🔑 Anchor | Hash Map | Complement search, value→index |
+| 2 | **Contains Duplicate** (217) | 🟢 Easy | 🎯 Practice | Hash Set | Existence check |
+| 3 | **Valid Anagram** (242) | 🟢 Easy | ⭐ High Value | Hash Map | Frequency map or sort |
+| 4 | **Group Anagrams** (49) | 🟡 Medium | 🔑 Anchor | Hash Map | Sorted string as key |
+| 5 | **Valid Palindrome** (125) | 🟢 Easy | 🔑 Anchor | Two Pointers | Opposite direction, filter chars |
+| 6 | **Merge Sorted Array** (88) | 🟢 Easy | ⭐ High Value | Two Pointers | Backward iteration, in-place |
+| 7 | **Move Zeroes** (283) | 🟢 Easy | 🎯 Practice | Two Pointers | Slow/fast pointers, order preserved |
+| 8 | **Best Time to Buy and Sell Stock** (121) | 🟢 Easy | 🔑 Anchor | Greedy/DP | Track min, update max profit |
+| 9 | **Majority Element** (169) | 🟢 Easy | ⭐ High Value | Boyer-Moore | Voting algorithm, cancellation |
+| 10 | **Single Number** (136) | 🟢 Easy | 🎯 Practice | Bit (XOR) | XOR all, duplicates cancel |
 
 
 ### Part B: Sliding Window & Advanced Two-Pointers (Week 3)
 
-| # | Problem & Difficulty | Pattern | Key Concept |
-|---|----------------------|---------|-------------|
-| 11 | **Longest Substring Without Repeating** (LC 3)<br>🟡 Medium \| 🔑 Anchor | Sliding Window | Variable window, expand/contract |
-| 12 | **Longest Repeating Character Replacement** (LC 424)<br>🟡 Medium \| 💡 Advanced | Sliding Window | Window valid: len - maxFreq ≤ k |
-| 13 | **Container With Most Water** (LC 11)<br>🟡 Medium \| 🔑 Anchor | Two Pointers | Move shorter height, greedy |
-| 14 | **3Sum** (LC 15)<br>🟡 Medium \| 🔑 Anchor | Two Pointers + Sort | Fix one, two-pointer on rest |
-| 15 | **Product of Array Except Self** (LC 238)<br>🟡 Medium \| ⭐ High Value | Prefix/Suffix | Left products, then right |
-| 16 | **Top K Frequent Elements** (LC 347)<br>🟡 Medium \| ⭐ High Value | Hash Map + Heap | Frequency map + min heap |
-| 17 | **Subarray Sum Equals K** (LC 560)<br>🟡 Medium \| 💡 Advanced | Prefix Sum + Map | prefixSum[j] - prefixSum[i] = k |
-| 18 | **Rotate Array** (LC 189)<br>🟡 Medium \| 🎯 Practice | Array | Three reverses trick |
-| 19 | **Missing Number** (LC 268)<br>🟢 Easy \| 🎯 Practice | Math/Bit | Sum formula or XOR |
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 11 | **Longest Substring Without Repeating** (3) | 🟡 Medium | 🔑 Anchor | Sliding Window | Variable window, expand/contract |
+| 12 | **Longest Repeating Character Replacement** (424) | 🟡 Medium | 💡 Advanced | Sliding Window | Window valid: len - maxFreq ≤ k |
+| 13 | **Container With Most Water** (11) | 🟡 Medium | 🔑 Anchor | Two Pointers | Move shorter height, greedy |
+| 14 | **3Sum** (15) | 🟡 Medium | 🔑 Anchor | Two Pointers + Sort | Fix one, two-pointer on rest |
+| 15 | **Product of Array Except Self** (238) | 🟡 Medium | ⭐ High Value | Prefix/Suffix | Left products, then right |
+| 16 | **Top K Frequent Elements** (347) | 🟡 Medium | ⭐ High Value | Hash Map + Heap | Frequency map + min heap |
+| 17 | **Subarray Sum Equals K** (560) | 🟡 Medium | 💡 Advanced | Prefix Sum + Map | prefixSum[j] - prefixSum[i] = k |
+| 18 | **Rotate Array** (189) | 🟡 Medium | 🎯 Practice | Array | Three reverses trick |
+| 19 | **Missing Number** (268) | 🟢 Easy | 🎯 Practice | Math/Bit | Sum formula or XOR |
 
 
 **Pattern Connections**:
@@ -81,31 +81,33 @@ Time to manipulate pointers and states. You'll learn the Fast/Slow pointer techn
 
 
 
-| # | Problem & Difficulty | Pattern | Key Concept |
-|---|----------------------|---------|-------------|
-| 1 | **Reverse Linked List** (LC 206)<br>🟢 Easy \| 🔑 Anchor | Linked List | Three pointers: prev, curr, next |
-| 2 | **Merge Two Sorted Lists** (LC 21)<br>🟢 Easy \| 🔑 Anchor | Linked List | Dummy node pattern |
-| 3 | **Linked List Cycle** (LC 141)<br>🟢 Easy \| 🔑 Anchor | Fast/Slow | Floyd's algorithm, detect cycle |
-| 4 | **Linked List Cycle II** (LC 142)<br>🟡 Medium \| 💡 Advanced | Fast/Slow | Find cycle entry point |
-| 5 | **Middle of the Linked List** (LC 876)<br>🟢 Easy \| 🎯 Practice | Fast/Slow | Fast 2x, slow 1x |
-| 6 | **Palindrome Linked List** (LC 234)<br>🟢 Easy \| ⭐ High Value | Fast/Slow + Reverse | Find middle + reverse + compare |
-| 7 | **Valid Parentheses** (LC 20)<br>🟢 Easy \| 🔑 Anchor | Stack | LIFO, matching pairs |
-| 8 | **Remove Nth Node From End** (LC 19)<br>🟡 Medium \| ⭐ High Value | Two Pointers | N-ahead pointer, one-pass |
-| 9 | **Reorder List** (LC 143)<br>🟡 Medium \| 💡 Advanced | Multiple Patterns | Middle + reverse + merge |
-| 10 | **Add Two Numbers** (LC 2)<br>🟡 Medium \| ⭐ High Value | Linked List | Digit-by-digit, carry handling |
-| 11 | **Daily Temperatures** (LC 739)<br>🟡 Medium \| 🔑 Anchor | Monotonic Stack | Decreasing stack, next greater |
-| 12 | **Min Stack** (LC 155)<br>🟡 Medium \| ⭐ High Value | Stack Design | Auxiliary min stack, O(1) getMin |
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 1 | **Reverse Linked List** (206) | 🟢 Easy | 🔑 Anchor | Linked List | Three pointers: prev, curr, next |
+| 2 | **Merge Two Sorted Lists** (21) | 🟢 Easy | 🔑 Anchor | Linked List | Dummy node pattern |
+| 3 | **Linked List Cycle** (141) | 🟢 Easy | 🔑 Anchor | Fast/Slow | Floyd's algorithm, detect cycle |
+| 4 | **Linked List Cycle II** (142) | 🟡 Medium | 💡 Advanced | Fast/Slow | Find cycle entry point |
+| 5 | **Middle of the Linked List** (876) | 🟢 Easy | 🎯 Practice | Fast/Slow | Fast 2x, slow 1x |
+| 6 | **Palindrome Linked List** (234) | 🟢 Easy | ⭐ High Value | Fast/Slow + Reverse | Find middle + reverse + compare |
+| 7 | **Valid Parentheses** (20) | 🟢 Easy | 🔑 Anchor | Stack | LIFO, matching pairs |
+| 8 | **Remove Nth Node From End** (19) | 🟡 Medium | ⭐ High Value | Two Pointers | N-ahead pointer, one-pass |
+| 9 | **Reorder List** (143) | 🟡 Medium | 💡 Advanced | Multiple Patterns | Middle + reverse + merge |
+| 10 | **Add Two Numbers** (2) | 🟡 Medium | ⭐ High Value | Linked List | Digit-by-digit, carry handling |
+| 11 | **Daily Temperatures** (739) | 🟡 Medium | 🔑 Anchor | Monotonic Stack | Decreasing stack, next greater |
+| 12 | **Min Stack** (155) | 🟡 Medium | ⭐ High Value | Stack Design | Auxiliary min stack, O(1) getMin |
 
 **Advanced Problems (Attempt after mastering first 12)**:
-| 13 | Swap Nodes in Pairs | 24 | M | 🎯 | Linked List | 30/22/15 |
-| 14 | Reverse Nodes in k-Group | 25 | H | 💡 | Linked List | 50/40/30 |
-| 15 | Rotate List | 61 | M | 🎯 | Linked List | 30/22/15 |
-| 16 | Partition List | 86 | M | 🎯 | Linked List | 30/22/15 |
-| 17 | Sort List | 148 | M | 💡 | Merge Sort | 40/30/22 |
-| 18 | Intersection of Two Linked Lists | 160 | E | 🎯 | Two Pointers | 25/18/12 |
-| 19 | Remove Linked List Elements | 203 | E | 🎯 | Linked List | 20/15/10 |
-| 20 | Odd Even Linked List | 328 | M | 🎯 | Linked List | 30/22/15 |
-| 21 | Flatten Multilevel Doubly Linked List | 430 | M | 💡 | DFS | 40/30/22 |
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 13 | **Swap Nodes in Pairs** (24) | 🟡 Medium | 🎯 Practice | Linked List | Dummy node, swap adjacent |
+| 14 | **Reverse Nodes in k-Group** (25) | 🔴 Hard | 💡 Advanced | Linked List | Check length k, reverse k nodes |
+| 15 | **Rotate List** (61) | 🟡 Medium | 🎯 Practice | Linked List | Connect tail to head, break at len-k |
+| 16 | **Partition List** (86) | 🟡 Medium | 🎯 Practice | Linked List | Two dummy lists: < x and >= x |
+| 17 | **Sort List** (148) | 🟡 Medium | 💡 Advanced | Merge Sort | Merge sort, find middle with fast/slow |
+| 18 | **Intersection of Two Linked Lists** (160) | 🟢 Easy | 🎯 Practice | Two Pointers | Switch heads at end, equalizes length |
+| 19 | **Remove Linked List Elements** (203) | 🟢 Easy | 🎯 Practice | Linked List | Dummy node, skip target values |
+| 20 | **Odd Even Linked List** (328) | 🟡 Medium | 🎯 Practice | Linked List | Separate odd/even pointers, merge |
+| 21 | **Flatten Multilevel Doubly Linked List** (430) | 🟡 Medium | 💡 Advanced | DFS | DFS, connect child to next, track tail |
 
 
 **Pattern Connections**:
@@ -123,38 +125,40 @@ Recursion is king here. You'll learn the difference between top-down (passing st
 
 ### Part A: Basic Tree Recursion (Week 5)
 
-| # | Problem & Difficulty | Pattern | Key Concept |
-|---|----------------------|---------|-------------|
-| 1 | **Maximum Depth of Binary Tree** (LC 104)<br>🟢 Easy \| 🔑 Anchor | DFS (Bottom-Up) | 1 + max(left, right) |
-| 2 | **Invert Binary Tree** (LC 226)<br>🟢 Easy \| 🔑 Anchor | DFS | Swap children, recurse |
-| 3 | **Same Tree** (LC 100)<br>🟢 Easy \| 🎯 Practice | DFS | Structural + value equality |
-| 4 | **Symmetric Tree** (LC 101)<br>🟢 Easy \| ⭐ High Value | DFS | Mirror checking, dual recursion |
-| 5 | **Diameter of Binary Tree** (LC 543)<br>🟢 Easy \| 🔑 Anchor | DFS (Bottom-Up) | leftHeight + rightHeight |
-| 6 | **Balanced Binary Tree** (LC 110)<br>🟢 Easy \| 🎯 Practice | DFS | Height balance: |
-| 7 | **Path Sum** (LC 112)<br>🟢 Easy \| 🎯 Practice | DFS (Top-Down) | Subtract curr, check leaf == 0 |
-| 8 | **Binary Tree Level Order Traversal** (LC 102)<br>🟡 Medium \| 🔑 Anchor | BFS | Queue, level separation |
-| 9 | **Binary Tree Right Side View** (LC 199)<br>🟡 Medium \| ⭐ High Value | BFS/DFS | Last element per level |
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 1 | **Maximum Depth of Binary Tree** (104) | 🟢 Easy | 🔑 Anchor | DFS (Bottom-Up) | 1 + max(left, right) |
+| 2 | **Invert Binary Tree** (226) | 🟢 Easy | 🔑 Anchor | DFS | Swap children, recurse |
+| 3 | **Same Tree** (100) | 🟢 Easy | 🎯 Practice | DFS | Structural + value equality |
+| 4 | **Symmetric Tree** (101) | 🟢 Easy | ⭐ High Value | DFS | Mirror checking, dual recursion |
+| 5 | **Diameter of Binary Tree** (543) | 🟢 Easy | 🔑 Anchor | DFS (Bottom-Up) | leftHeight + rightHeight |
+| 6 | **Balanced Binary Tree** (110) | 🟢 Easy | 🎯 Practice | DFS | Height balance: |
+| 7 | **Path Sum** (112) | 🟢 Easy | 🎯 Practice | DFS (Top-Down) | Subtract curr, check leaf == 0 |
+| 8 | **Binary Tree Level Order Traversal** (102) | 🟡 Medium | 🔑 Anchor | BFS | Queue, level separation |
+| 9 | **Binary Tree Right Side View** (199) | 🟡 Medium | ⭐ High Value | BFS/DFS | Last element per level |
 
 
 ### Part B: BST & Advanced Trees (Week 6)
 
-| # | Problem & Difficulty | Pattern | Key Concept |
-|---|----------------------|---------|-------------|
-| 10 | **Validate Binary Search Tree** (LC 98)<br>🟡 Medium \| 🔑 Anchor | BST | Range validation (min, max) |
-| 11 | **Lowest Common Ancestor of BST** (LC 235)<br>🟡 Medium \| 🎯 Practice | BST | Use BST property, split point |
-| 12 | **Lowest Common Ancestor of Binary Tree** (LC 236)<br>🟡 Medium \| 🔑 Anchor | DFS | Return node if found, LCA if both |
-| 13 | **Kth Smallest Element in BST** (LC 230)<br>🟡 Medium \| ⭐ High Value | BST + Inorder | Inorder gives sorted, count to k |
-| 14 | **Convert Sorted Array to BST** (LC 108)<br>🟢 Easy \| 🎯 Practice | BST + D&C | Middle as root, recurse halves |
-| 15 | **Binary Tree Maximum Path Sum** (LC 124)<br>🔴 Hard \| 💡 Advanced | DFS (Bottom-Up) | node + max(0,left) + max(0,right) |
-| 16 | **Serialize and Deserialize Binary Tree** (LC 297)<br>🔴 Hard \| 💡 Advanced | Tree Design | Preorder with null markers |
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 10 | **Validate Binary Search Tree** (98) | 🟡 Medium | 🔑 Anchor | BST | Range validation (min, max) |
+| 11 | **Lowest Common Ancestor of BST** (235) | 🟡 Medium | 🎯 Practice | BST | Use BST property, split point |
+| 12 | **Lowest Common Ancestor of Binary Tree** (236) | 🟡 Medium | 🔑 Anchor | DFS | Return node if found, LCA if both |
+| 13 | **Kth Smallest Element in BST** (230) | 🟡 Medium | ⭐ High Value | BST + Inorder | Inorder gives sorted, count to k |
+| 14 | **Convert Sorted Array to BST** (108) | 🟢 Easy | 🎯 Practice | BST + D&C | Middle as root, recurse halves |
+| 15 | **Binary Tree Maximum Path Sum** (124) | 🔴 Hard | 💡 Advanced | DFS (Bottom-Up) | node + max(0,left) + max(0,right) |
+| 16 | **Serialize and Deserialize Binary Tree** (297) | 🔴 Hard | 💡 Advanced | Tree Design | Preorder with null markers |
 
-| 17 | Subtree of Another Tree | 572 | E | 🎯 | DFS | 30/22/15 |
-| 18 | Construct Tree from Preorder & Inorder | 105 | M | 💡 | Tree Construction | 45/35/25 |
-| 19 | Binary Tree Zigzag Level Order | 103 | M | 🎯 | BFS | 30/22/15 |
-| 20 | Count Good Nodes in Binary Tree | 1448 | M | ⭐ | DFS | 30/22/15 |
-| 21 | Binary Tree Paths | 257 | E | 🎯 | DFS | 25/18/12 |
-| 22 | Sum of Left Leaves | 404 | E | 🎯 | DFS | 20/15/10 |
-| 23 | Find Leaves of Binary Tree | 366 | M | 💡 | DFS | 35/25/18 |
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 17 | **Subtree of Another Tree** (572) | 🟢 Easy | 🎯 Practice | DFS | DFS, Same Tree check at each node |
+| 18 | **Construct Tree from Preorder & Inorder** (105) | 🟡 Medium | 💡 Advanced | Tree Construction | Preorder gives root, Inorder gives sizes |
+| 19 | **Binary Tree Zigzag Level Order** (103) | 🟡 Medium | 🎯 Practice | BFS | BFS, reverse alternate levels |
+| 20 | **Count Good Nodes in Binary Tree** (1448) | 🟡 Medium | ⭐ High Value | DFS | DFS, pass max_val down |
+| 21 | **Binary Tree Paths** (257) | 🟢 Easy | 🎯 Practice | DFS | DFS, string building |
+| 22 | **Sum of Left Leaves** (404) | 🟢 Easy | 🎯 Practice | DFS | DFS, flag for is_left |
+| 23 | **Find Leaves of Binary Tree** (366) | 🟡 Medium | 💡 Advanced | DFS | DFS (Bottom-Up), return height |
 
 **Weeks 5-6 Checkpoint**: ✅ BST properties | ✅ LCA patterns | ✅ Inorder traversal | ✅ Tree construction
 
@@ -173,32 +177,34 @@ Graphs can look intimidating, but they boil down to a few core templates. We'll 
 
 ### Part A: Grid DFS/BFS (Week 7)
 
-| # | Problem & Difficulty | Pattern | Key Concept |
-|---|----------------------|---------|-------------|
-| 1 | **Flood Fill** (LC 733)<br>🟢 Easy \| 🔑 Anchor | DFS/BFS | 4-directional, color change |
-| 2 | **Number of Islands** (LC 200)<br>🟡 Medium \| 🔑 Anchor | DFS/BFS | Component counting, mark visited |
-| 3 | **Max Area of Island** (LC 695)<br>🟡 Medium \| 🎯 Practice | DFS/BFS | Return area from DFS |
-| 4 | **Rotting Oranges** (LC 994)<br>🟡 Medium \| 🔑 Anchor | Multi-Source BFS | Add all rotten to queue, track time |
-| 5 | **Surrounded Regions** (LC 130)<br>🟡 Medium \| ⭐ High Value | DFS/BFS | Border search, mark safe |
-| 6 | **Pacific Atlantic Water Flow** (LC 417)<br>🟡 Medium \| 💡 Advanced | Multi-Source DFS | Two DFS, intersection |
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 1 | **Flood Fill** (733) | 🟢 Easy | 🔑 Anchor | DFS/BFS | 4-directional, color change |
+| 2 | **Number of Islands** (200) | 🟡 Medium | 🔑 Anchor | DFS/BFS | Component counting, mark visited |
+| 3 | **Max Area of Island** (695) | 🟡 Medium | 🎯 Practice | DFS/BFS | Return area from DFS |
+| 4 | **Rotting Oranges** (994) | 🟡 Medium | 🔑 Anchor | Multi-Source BFS | Add all rotten to queue, track time |
+| 5 | **Surrounded Regions** (130) | 🟡 Medium | ⭐ High Value | DFS/BFS | Border search, mark safe |
+| 6 | **Pacific Atlantic Water Flow** (417) | 🟡 Medium | 💡 Advanced | Multi-Source DFS | Two DFS, intersection |
 
 
 ### Part B: Graph Structures & Topological Sort (Week 8)
 
-| # | Problem & Difficulty | Pattern | Key Concept |
-|---|----------------------|---------|-------------|
-| 7 | **Clone Graph** (LC 133)<br>🟡 Medium \| ⭐ High Value | DFS/BFS | Hash map: old→new, DFS clone |
-| 8 | **Number of Provinces** (LC 547)<br>🟡 Medium \| 🎯 Practice | DFS/Union-Find | Adjacency matrix, components |
-| 9 | **Course Schedule** (LC 207)<br>🟡 Medium \| 🔑 Anchor | Topological Sort | Kahn's algorithm, cycle detection |
-| 10 | **Course Schedule II** (LC 210)<br>🟡 Medium \| ⭐ High Value | Topological Sort | Return actual order |
-| 11 | **Graph Valid Tree** (LC 261)<br>🟡 Medium \| 💡 Advanced | DFS/Union-Find | n-1 edges, no cycles, connected |
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 7 | **Clone Graph** (133) | 🟡 Medium | ⭐ High Value | DFS/BFS | Hash map: old→new, DFS clone |
+| 8 | **Number of Provinces** (547) | 🟡 Medium | 🎯 Practice | DFS/Union-Find | Adjacency matrix, components |
+| 9 | **Course Schedule** (207) | 🟡 Medium | 🔑 Anchor | Topological Sort | Kahn's algorithm, cycle detection |
+| 10 | **Course Schedule II** (210) | 🟡 Medium | ⭐ High Value | Topological Sort | Return actual order |
+| 11 | **Graph Valid Tree** (261) | 🟡 Medium | 💡 Advanced | DFS/Union-Find | n-1 edges, no cycles, connected |
 
 **Advanced Graph Problems (Practice after core)**:
-| 12 | Word Ladder | 127 | H | 💡 | BFS | 50/40/30 |
-| 13 | Word Ladder II | 126 | H | 💡 | BFS + Backtracking | 60/50/40 |
-| 14 | Alien Dictionary | 269 | H | 💡 | Topological Sort | 50/40/30 |
-| 15 | Evaluate Division | 399 | M | 💡 | DFS/Union-Find | 40/30/22 |
-| 16 | Accounts Merge | 721 | M | ⭐ | Union-Find | 40/30/22 |
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 12 | **Word Ladder** (127) | 🔴 Hard | 💡 Advanced | BFS | BFS on word transformations, wildcards |
+| 13 | **Word Ladder II** (126) | 🔴 Hard | 💡 Advanced | BFS + Backtracking | BFS for shortest path + DFS for paths |
+| 14 | **Alien Dictionary** (269) | 🔴 Hard | 💡 Advanced | Topological Sort | Build graph from adjacent words, Topo Sort |
+| 15 | **Evaluate Division** (399) | 🟡 Medium | 💡 Advanced | DFS/Union-Find | Graph of divisions, DFS/BFS or Union Find |
+| 16 | **Accounts Merge** (721) | 🟡 Medium | ⭐ High Value | Union-Find | Union-Find on emails, map to names |
 
 **Weeks 7-8 Checkpoint**: ✅ Topological sort (Kahn's) | ✅ Cycle detection | ✅ Multi-source patterns | ✅ Tree conditions
 
@@ -215,27 +221,29 @@ We're leveling up Binary Search. Instead of just finding an element, you'll lear
 
 
 
-| # | Problem & Difficulty | Pattern | Key Concept |
-|---|----------------------|---------|-------------|
-| 1 | **Merge Intervals** (LC 56)<br>🟡 Medium \| 🔑 Anchor | Intervals + Sort | Sort by start, merge overlaps |
-| 2 | **Insert Interval** (LC 57)<br>🟡 Medium \| ⭐ High Value | Intervals | Three phases: before, merge, after |
-| 3 | **Non-overlapping Intervals** (LC 435)<br>🟡 Medium \| 💡 Advanced | Greedy + Intervals | Sort by end, greedy keep earliest |
-| 4 | **Meeting Rooms** (LC 252)<br>🟢 Easy \| 🎯 Practice | Intervals + Sort | Check if start < prev end |
-| 5 | **Search in Rotated Sorted Array** (LC 33)<br>🟡 Medium \| 🔑 Anchor | Binary Search | Check which half sorted |
-| 6 | **Find Minimum in Rotated Array** (LC 153)<br>🟡 Medium \| 🎯 Practice | Binary Search | Compare mid with right |
-| 7 | **Find First and Last Position** (LC 34)<br>🟡 Medium \| 🔑 Anchor | Binary Search | Two binary searches: left, right |
-| 8 | **Koko Eating Bananas** (LC 875)<br>🟡 Medium \| 🔑 Anchor | BS on Answer | Binary search on speed k |
-| 9 | **Search a 2D Matrix** (LC 74)<br>🟡 Medium \| 🎯 Practice | Binary Search | Treat as 1D: row=mid//cols |
-| 10 | **Find Peak Element** (LC 162)<br>🟡 Medium \| ⭐ High Value | Binary Search | Follow gradient: mid > mid+1 |
-| 11 | **Sort Colors** (LC 75)<br>🟡 Medium \| ⭐ High Value | Two Pointers | Dutch flag, three-way partition |
-| 12 | **Capacity To Ship Packages** (LC 1011)<br>🟡 Medium \| 💡 Advanced | BS on Answer | Binary search on capacity |
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 1 | **Merge Intervals** (56) | 🟡 Medium | 🔑 Anchor | Intervals + Sort | Sort by start, merge overlaps |
+| 2 | **Insert Interval** (57) | 🟡 Medium | ⭐ High Value | Intervals | Three phases: before, merge, after |
+| 3 | **Non-overlapping Intervals** (435) | 🟡 Medium | 💡 Advanced | Greedy + Intervals | Sort by end, greedy keep earliest |
+| 4 | **Meeting Rooms** (252) | 🟢 Easy | 🎯 Practice | Intervals + Sort | Check if start < prev end |
+| 5 | **Search in Rotated Sorted Array** (33) | 🟡 Medium | 🔑 Anchor | Binary Search | Check which half sorted |
+| 6 | **Find Minimum in Rotated Array** (153) | 🟡 Medium | 🎯 Practice | Binary Search | Compare mid with right |
+| 7 | **Find First and Last Position** (34) | 🟡 Medium | 🔑 Anchor | Binary Search | Two binary searches: left, right |
+| 8 | **Koko Eating Bananas** (875) | 🟡 Medium | 🔑 Anchor | BS on Answer | Binary search on speed k |
+| 9 | **Search a 2D Matrix** (74) | 🟡 Medium | 🎯 Practice | Binary Search | Treat as 1D: row=mid//cols |
+| 10 | **Find Peak Element** (162) | 🟡 Medium | ⭐ High Value | Binary Search | Follow gradient: mid > mid+1 |
+| 11 | **Sort Colors** (75) | 🟡 Medium | ⭐ High Value | Two Pointers | Dutch flag, three-way partition |
+| 12 | **Capacity To Ship Packages** (1011) | 🟡 Medium | 💡 Advanced | BS on Answer | Binary search on capacity |
 
-| 13 | Meeting Rooms II | 253 | M | ⭐ | Heap | 35/25/18 |
-| 14 | Minimum Arrows to Burst Balloons | 452 | M | 💡 | Greedy + Intervals | 35/28/20 |
-| 15 | Search a 2D Matrix II | 240 | M | ⭐ | Binary Search | 35/25/18 |
-| 16 | Median of Two Sorted Arrays | 4 | H | 💡 | Binary Search | 60/50/40 |
-| 17 | Split Array Largest Sum | 410 | H | 💡 | BS on Answer | 50/40/30 |
-| 18 | Find K Closest Elements | 658 | M | ⭐ | Binary Search | 35/25/18 |
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 13 | **Meeting Rooms II** (253) | 🟡 Medium | ⭐ High Value | Heap | Min-heap of end times or Chronological sort |
+| 14 | **Minimum Arrows to Burst Balloons** (452) | 🟡 Medium | 💡 Advanced | Greedy + Intervals | Sort by end time, greedy |
+| 15 | **Search a 2D Matrix II** (240) | 🟡 Medium | ⭐ High Value | Binary Search | Start top-right or bottom-left |
+| 16 | **Median of Two Sorted Arrays** (4) | 🔴 Hard | 💡 Advanced | Binary Search | Binary search on smaller array for partition |
+| 17 | **Split Array Largest Sum** (410) | 🔴 Hard | 💡 Advanced | BS on Answer | Binary search on max sum, count subarrays |
+| 18 | **Find K Closest Elements** (658) | 🟡 Medium | ⭐ High Value | Binary Search | Binary search for left bound, sliding window |
 
 
 **Pattern Connections**:
@@ -251,22 +259,24 @@ Greedy algorithms require proving that a local optimum leads to a global optimum
 
 
 
-| # | Problem & Difficulty | Pattern | Key Concept |
-|---|----------------------|---------|-------------|
-| 1 | **Maximum Subarray** (LC 53)<br>🟡 Medium \| 🔑 Anchor | Greedy/DP | Kadane's algorithm |
-| 2 | **Jump Game** (LC 55)<br>🟡 Medium \| 🔑 Anchor | Greedy | Track furthest reachable |
-| 3 | **Jump Game II** (LC 45)<br>🟡 Medium \| 💡 Advanced | Greedy | Track current end, next end |
-| 4 | **Gas Station** (LC 134)<br>🟡 Medium \| ⭐ High Value | Greedy | Total gas ≥ cost, start at surplus |
-| 5 | **Partition Labels** (LC 763)<br>🟡 Medium \| ⭐ High Value | Greedy | Last occurrence, extend partition |
-| 6 | **Best Time to Buy and Sell Stock II** (LC 122)<br>🟡 Medium \| 🎯 Practice | Greedy | Collect all positive differences |
-| 7 | **Assign Cookies** (LC 455)<br>🟢 Easy \| 🎯 Practice | Greedy + Sort | Smallest cookie satisfies child |
-| 8 | **Min Arrows to Burst Balloons** (LC 452)<br>🟡 Medium \| 💡 Advanced | Greedy + Intervals | Sort by end, shoot at end |
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 1 | **Maximum Subarray** (53) | 🟡 Medium | 🔑 Anchor | Greedy/DP | Kadane's algorithm |
+| 2 | **Jump Game** (55) | 🟡 Medium | 🔑 Anchor | Greedy | Track furthest reachable |
+| 3 | **Jump Game II** (45) | 🟡 Medium | 💡 Advanced | Greedy | Track current end, next end |
+| 4 | **Gas Station** (134) | 🟡 Medium | ⭐ High Value | Greedy | Total gas ≥ cost, start at surplus |
+| 5 | **Partition Labels** (763) | 🟡 Medium | ⭐ High Value | Greedy | Last occurrence, extend partition |
+| 6 | **Best Time to Buy and Sell Stock II** (122) | 🟡 Medium | 🎯 Practice | Greedy | Collect all positive differences |
+| 7 | **Assign Cookies** (455) | 🟢 Easy | 🎯 Practice | Greedy + Sort | Smallest cookie satisfies child |
+| 8 | **Min Arrows to Burst Balloons** (452) | 🟡 Medium | 💡 Advanced | Greedy + Intervals | Sort by end, shoot at end |
 
-| 9 | Queue Reconstruction by Height | 406 | M | 💡 | Greedy | 40/30/22 |
-| 10 | Task Scheduler | 621 | M | ⭐ | Greedy | 40/30/22 |
-| 11 | Minimum Number of Taps | 1326 | H | 💡 | Greedy | 50/40/30 |
-| 12 | Bag of Tokens | 948 | M | 🎯 | Greedy | 30/22/15 |
-| 13 | Boats to Save People | 881 | M | 🎯 | Greedy | 30/22/15 |
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 9 | **Queue Reconstruction by Height** (406) | 🟡 Medium | 💡 Advanced | Greedy | Sort by height desc, insert by k |
+| 10 | **Task Scheduler** (621) | 🟡 Medium | ⭐ High Value | Greedy | Max heap of frequencies or Math formula |
+| 11 | **Minimum Number of Taps** (1326) | 🔴 Hard | 💡 Advanced | Greedy | Jump Game II variant on intervals |
+| 12 | **Bag of Tokens** (948) | 🟡 Medium | 🎯 Practice | Greedy | Two pointers, greedy face up/down |
+| 13 | **Boats to Save People** (881) | 🟡 Medium | 🎯 Practice | Greedy | Two pointers, heaviest + lightest |
 
 
 **Pattern Connections**:
@@ -284,51 +294,53 @@ DP is often the most feared topic, but it's just recursion with memoization. We'
 
 ### Part A: 1D DP Foundations (Week 11)
 
-| # | Problem & Difficulty | Pattern | Key Concept |
-|---|----------------------|---------|-------------|
-| 1 | **Climbing Stairs** (LC 70)<br>🟢 Easy \| 🔑 Anchor | 1D DP | dp[i] = dp[i-1] + dp[i-2] |
-| 2 | **Min Cost Climbing Stairs** (LC 746)<br>🟢 Easy \| 🎯 Practice | 1D DP | cost[i] + min(dp[i-1], dp[i-2]) |
-| 3 | **House Robber** (LC 198)<br>🟡 Medium \| 🔑 Anchor | 1D DP | max(rob i + dp[i-2], dp[i-1]) |
-| 4 | **House Robber II** (LC 213)<br>🟡 Medium \| ⭐ High Value | 1D DP | Two sub-problems: [0:n-2], [1:n-1] |
-| 5 | **Coin Change** (LC 322)<br>🟡 Medium \| 🔑 Anchor | Unbounded Knapsack | dp[i] = min(dp[i], dp[i-coin] + 1) |
-| 6 | **Decode Ways** (LC 91)<br>🟡 Medium \| ⭐ High Value | 1D DP | Check single and double digit |
-| 7 | **Maximum Product Subarray** (LC 152)<br>🟡 Medium \| 💡 Advanced | 1D DP | Track max and min (negatives) |
-| 8 | **Word Break** (LC 139)<br>🟡 Medium \| 🔑 Anchor | 1D DP | dp[i] = can break s[0:i] |
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 1 | **Climbing Stairs** (70) | 🟢 Easy | 🔑 Anchor | 1D DP | dp[i] = dp[i-1] + dp[i-2] |
+| 2 | **Min Cost Climbing Stairs** (746) | 🟢 Easy | 🎯 Practice | 1D DP | cost[i] + min(dp[i-1], dp[i-2]) |
+| 3 | **House Robber** (198) | 🟡 Medium | 🔑 Anchor | 1D DP | max(rob i + dp[i-2], dp[i-1]) |
+| 4 | **House Robber II** (213) | 🟡 Medium | ⭐ High Value | 1D DP | Two sub-problems: [0:n-2], [1:n-1] |
+| 5 | **Coin Change** (322) | 🟡 Medium | 🔑 Anchor | Unbounded Knapsack | dp[i] = min(dp[i], dp[i-coin] + 1) |
+| 6 | **Decode Ways** (91) | 🟡 Medium | ⭐ High Value | 1D DP | Check single and double digit |
+| 7 | **Maximum Product Subarray** (152) | 🟡 Medium | 💡 Advanced | 1D DP | Track max and min (negatives) |
+| 8 | **Word Break** (139) | 🟡 Medium | 🔑 Anchor | 1D DP | dp[i] = can break s[0:i] |
 
 
 ### Part B: 2D DP & Sequences (Week 12)
 
-| # | Problem & Difficulty | Pattern | Key Concept |
-|---|----------------------|---------|-------------|
-| 9 | **Unique Paths** (LC 62)<br>🟡 Medium \| 🔑 Anchor | 2D Grid DP | dp[i][j] = dp[i-1][j] + dp[i][j-1] |
-| 10 | **Unique Paths II** (LC 63)<br>🟡 Medium \| 🎯 Practice | 2D Grid DP | Handle obstacles: dp[i][j] = 0 |
-| 11 | **Minimum Path Sum** (LC 64)<br>🟡 Medium \| ⭐ High Value | 2D Grid DP | grid + min(dp[i-1][j], dp[i][j-1]) |
-| 12 | **Longest Common Subsequence** (LC 1143)<br>🟡 Medium \| 🔑 Anchor | 2D Sequence DP | If match: dp[i-1][j-1]+1; else: max |
-| 13 | **Edit Distance** (LC 72)<br>🔴 Hard \| 🔑 Anchor | 2D Sequence DP | Insert, delete, replace operations |
-| 14 | **Longest Increasing Subsequence** (LC 300)<br>🟡 Medium \| 🔑 Anchor | 1D DP + BS | O(n²) DP or O(n log n) binary search |
-| 15 | **Longest Palindromic Substring** (LC 5)<br>🟡 Medium \| ⭐ High Value | 2D DP / Expand | Expand around center or DP table |
-| 16 | **Palindromic Substrings** (LC 647)<br>🟡 Medium \| 🎯 Practice | 2D DP / Expand | Count instead of track longest |
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 9 | **Unique Paths** (62) | 🟡 Medium | 🔑 Anchor | 2D Grid DP | dp[i][j] = dp[i-1][j] + dp[i][j-1] |
+| 10 | **Unique Paths II** (63) | 🟡 Medium | 🎯 Practice | 2D Grid DP | Handle obstacles: dp[i][j] = 0 |
+| 11 | **Minimum Path Sum** (64) | 🟡 Medium | ⭐ High Value | 2D Grid DP | grid + min(dp[i-1][j], dp[i][j-1]) |
+| 12 | **Longest Common Subsequence** (1143) | 🟡 Medium | 🔑 Anchor | 2D Sequence DP | If match: dp[i-1][j-1]+1; else: max |
+| 13 | **Edit Distance** (72) | 🔴 Hard | 🔑 Anchor | 2D Sequence DP | Insert, delete, replace operations |
+| 14 | **Longest Increasing Subsequence** (300) | 🟡 Medium | 🔑 Anchor | 1D DP + BS | O(n²) DP or O(n log n) binary search |
+| 15 | **Longest Palindromic Substring** (5) | 🟡 Medium | ⭐ High Value | 2D DP / Expand | Expand around center or DP table |
+| 16 | **Palindromic Substrings** (647) | 🟡 Medium | 🎯 Practice | 2D DP / Expand | Count instead of track longest |
 
 
 ### Part C: Advanced DP (Week 13)
 
-| # | Problem & Difficulty | Pattern | Key Concept |
-|---|----------------------|---------|-------------|
-| 17 | **Partition Equal Subset Sum** (LC 416)<br>🟡 Medium \| 🔑 Anchor | 0/1 Knapsack | Target = totalSum/2, knapsack DP |
-| 18 | **Target Sum** (LC 494)<br>🟡 Medium \| ⭐ High Value | DP/Backtracking | Transform to subset sum problem |
-| 19 | **Combination Sum IV** (LC 377)<br>🟡 Medium \| 💡 Advanced | Unbounded Knapsack | Order matters variant |
-| 20 | **Best Time Stock with Cooldown** (LC 309)<br>🟡 Medium \| 💡 Advanced | State Machine DP | Three states: hold, sold, cooldown |
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 17 | **Partition Equal Subset Sum** (416) | 🟡 Medium | 🔑 Anchor | 0/1 Knapsack | Target = totalSum/2, knapsack DP |
+| 18 | **Target Sum** (494) | 🟡 Medium | ⭐ High Value | DP/Backtracking | Transform to subset sum problem |
+| 19 | **Combination Sum IV** (377) | 🟡 Medium | 💡 Advanced | Unbounded Knapsack | Order matters variant |
+| 20 | **Best Time Stock with Cooldown** (309) | 🟡 Medium | 💡 Advanced | State Machine DP | Three states: hold, sold, cooldown |
 
-| 21 | Regular Expression Matching | 10 | H | 💡 | 2D DP | 60/50/40 |
-| 22 | Wildcard Matching | 44 | H | 💡 | 2D DP | 60/50/40 |
-| 23 | Burst Balloons | 312 | H | 💡 | Interval DP | 60/50/40 |
-| 24 | Distinct Subsequences | 115 | H | 💡 | 2D DP | 50/40/30 |
-| 25 | Interleaving String | 97 | M | 💡 | 2D DP | 45/35/25 |
-| 26 | Longest Valid Parentheses | 32 | H | 💡 | Stack/DP | 50/40/30 |
-| 27 | Minimum Window Substring | 76 | H | 💡 | Sliding Window | 50/40/30 |
-| 28 | Trapping Rain Water | 42 | H | 💡 | Two Pointers/DP | 45/35/25 |
-| 29 | Maximal Rectangle | 85 | H | 💡 | Stack + DP | 60/50/40 |
-| 30 | Scramble String | 87 | H | 💡 | 3D DP | 60/50/40 |
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 21 | **Regular Expression Matching** (10) | 🔴 Hard | 💡 Advanced | 2D DP | 2D DP, match preceding element |
+| 22 | **Wildcard Matching** (44) | 🔴 Hard | 💡 Advanced | 2D DP | 2D DP or Two pointers with backtracking |
+| 23 | **Burst Balloons** (312) | 🔴 Hard | 💡 Advanced | Interval DP | Interval DP, last balloon to burst |
+| 24 | **Distinct Subsequences** (115) | 🔴 Hard | 💡 Advanced | 2D DP | 2D DP, match character or skip |
+| 25 | **Interleaving String** (97) | 🟡 Medium | 💡 Advanced | 2D DP | 2D DP, path finding in grid |
+| 26 | **Longest Valid Parentheses** (32) | 🔴 Hard | 💡 Advanced | Stack/DP | Stack of indices or DP array |
+| 27 | **Minimum Window Substring** (76) | 🔴 Hard | 💡 Advanced | Sliding Window | Sliding window, character frequency map |
+| 28 | **Trapping Rain Water** (42) | 🔴 Hard | 💡 Advanced | Two Pointers/DP | Two pointers, max_left and max_right |
+| 29 | **Maximal Rectangle** (85) | 🔴 Hard | 💡 Advanced | Stack + DP | Histogram DP on each row |
+| 30 | **Scramble String** (87) | 🔴 Hard | 💡 Advanced | 3D DP | 3D DP or Recursion with memoization |
 
 **Weeks 11-13 Checkpoint**: ✅ 0/1 knapsack | ✅ State machine DP | ✅ Space optimization | ✅ 2D sequence patterns
 
@@ -347,27 +359,29 @@ When you need to generate all possibilities, you use Backtracking. We'll learn h
 
 
 
-| # | Problem & Difficulty | Pattern | Key Concept |
-|---|----------------------|---------|-------------|
-| 1 | **Subsets** (LC 78)<br>🟡 Medium \| 🔑 Anchor | Backtracking | Include/exclude decision tree |
-| 2 | **Subsets II** (LC 90)<br>🟡 Medium \| ⭐ High Value | Backtracking | Sort, skip duplicates |
-| 3 | **Permutations** (LC 46)<br>🟡 Medium \| 🔑 Anchor | Backtracking | Swap with each remaining |
-| 4 | **Permutations II** (LC 47)<br>🟡 Medium \| 💡 Advanced | Backtracking | Frequency map, skip used |
-| 5 | **Combinations** (LC 77)<br>🟡 Medium \| 🎯 Practice | Backtracking | Fixed size k, start index |
-| 6 | **Combination Sum** (LC 39)<br>🟡 Medium \| 🔑 Anchor | Backtracking | Unlimited use, stay at index |
-| 7 | **Combination Sum II** (LC 40)<br>🟡 Medium \| ⭐ High Value | Backtracking | Limited use, skip duplicates |
-| 8 | **Letter Combinations Phone** (LC 17)<br>🟡 Medium \| 🎯 Practice | Backtracking | Digit→letters mapping |
-| 9 | **Generate Parentheses** (LC 22)<br>🟡 Medium \| ⭐ High Value | Backtracking | Track open/close count |
-| 10 | **Word Search** (LC 79)<br>🟡 Medium \| 🔑 Anchor | Backtracking + Grid | 4-directional, mark visited |
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 1 | **Subsets** (78) | 🟡 Medium | 🔑 Anchor | Backtracking | Include/exclude decision tree |
+| 2 | **Subsets II** (90) | 🟡 Medium | ⭐ High Value | Backtracking | Sort, skip duplicates |
+| 3 | **Permutations** (46) | 🟡 Medium | 🔑 Anchor | Backtracking | Swap with each remaining |
+| 4 | **Permutations II** (47) | 🟡 Medium | 💡 Advanced | Backtracking | Frequency map, skip used |
+| 5 | **Combinations** (77) | 🟡 Medium | 🎯 Practice | Backtracking | Fixed size k, start index |
+| 6 | **Combination Sum** (39) | 🟡 Medium | 🔑 Anchor | Backtracking | Unlimited use, stay at index |
+| 7 | **Combination Sum II** (40) | 🟡 Medium | ⭐ High Value | Backtracking | Limited use, skip duplicates |
+| 8 | **Letter Combinations Phone** (17) | 🟡 Medium | 🎯 Practice | Backtracking | Digit→letters mapping |
+| 9 | **Generate Parentheses** (22) | 🟡 Medium | ⭐ High Value | Backtracking | Track open/close count |
+| 10 | **Word Search** (79) | 🟡 Medium | 🔑 Anchor | Backtracking + Grid | 4-directional, mark visited |
 
-| 11 | Palindrome Partitioning | 131 | M | 💡 | Backtracking | 45/35/25 |
-| 12 | N-Queens | 51 | H | 💡 | Backtracking | 50/40/30 |
-| 13 | N-Queens II | 52 | H | 💡 | Backtracking | 50/40/30 |
-| 14 | Sudoku Solver | 37 | H | 💡 | Backtracking | 60/50/40 |
-| 15 | Restore IP Addresses | 93 | M | 🎯 | Backtracking | 35/28/20 |
-| 16 | Combination Sum III | 216 | M | 🎯 | Backtracking | 30/22/15 |
-| 17 | Word Search II | 212 | H | 💡 | Backtracking + Trie | 60/50/40 |
-| 18 | Expression Add Operators | 282 | H | 💡 | Backtracking | 60/50/40 |
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 11 | **Palindrome Partitioning** (131) | 🟡 Medium | 💡 Advanced | Backtracking | Backtracking, check palindrome prefix |
+| 12 | **N-Queens** (51) | 🔴 Hard | 💡 Advanced | Backtracking | Backtracking, track cols, diags, anti-diags |
+| 13 | **N-Queens II** (52) | 🔴 Hard | 💡 Advanced | Backtracking | Backtracking, count solutions only |
+| 14 | **Sudoku Solver** (37) | 🔴 Hard | 💡 Advanced | Backtracking | Backtracking, try 1-9, validate row/col/box |
+| 15 | **Restore IP Addresses** (93) | 🟡 Medium | 🎯 Practice | Backtracking | Backtracking, valid segments (0-255) |
+| 16 | **Combination Sum III** (216) | 🟡 Medium | 🎯 Practice | Backtracking | Backtracking, 1-9, fixed size k |
+| 17 | **Word Search II** (212) | 🔴 Hard | 💡 Advanced | Backtracking + Trie | Trie + Backtracking, prune found words |
+| 18 | **Expression Add Operators** (282) | 🔴 Hard | 💡 Advanced | Backtracking | Backtracking, track eval and prev operand |
 
 
 **Pattern Connections**:
@@ -384,26 +398,28 @@ Time for advanced data structures. Use Heaps for top-K problems, Tries for prefi
 
 
 
-| # | Problem & Difficulty | Pattern | Key Concept |
-|---|----------------------|---------|-------------|
-| 1 | **Kth Largest Element in Array** (LC 215)<br>🟡 Medium \| 🔑 Anchor | Heap/Quickselect | Min heap of size k, O(n log k) |
-| 2 | **Top K Frequent Elements** (LC 347)<br>🟡 Medium \| 🔑 Anchor | Heap + Hash Map | Frequency map + min heap |
-| 3 | **K Closest Points to Origin** (LC 973)<br>🟡 Medium \| 🎯 Practice | Heap | Max heap of size k by distance |
-| 4 | **Find Median from Data Stream** (LC 295)<br>🔴 Hard \| 🔑 Anchor | Two Heaps | Max heap (left) + min heap (right) |
-| 5 | **Merge k Sorted Lists** (LC 23)<br>🔴 Hard \| ⭐ High Value | Heap | K-way merge with min heap |
-| 6 | **Last Stone Weight** (LC 1046)<br>🟢 Easy \| 🎯 Practice | Max Heap | Simple heap simulation |
-| 7 | **Number of Connected Components** (LC 323)<br>🟡 Medium \| 🔑 Anchor | Union-Find | Template, count components |
-| 8 | **Graph Valid Tree** (LC 261)<br>🟡 Medium \| ⭐ High Value | Union-Find | n-1 edges, no cycles |
-| 9 | **Implement Trie** (LC 208)<br>🟡 Medium \| 🔑 Anchor | Trie Design | Insert, search, startsWith |
-| 10 | **Design Add Search Words DS** (LC 211)<br>🟡 Medium \| 💡 Advanced | Trie + Backtracking | Wildcard search with '.' |
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 1 | **Kth Largest Element in Array** (215) | 🟡 Medium | 🔑 Anchor | Heap/Quickselect | Min heap of size k, O(n log k) |
+| 2 | **Top K Frequent Elements** (347) | 🟡 Medium | 🔑 Anchor | Heap + Hash Map | Frequency map + min heap |
+| 3 | **K Closest Points to Origin** (973) | 🟡 Medium | 🎯 Practice | Heap | Max heap of size k by distance |
+| 4 | **Find Median from Data Stream** (295) | 🔴 Hard | 🔑 Anchor | Two Heaps | Max heap (left) + min heap (right) |
+| 5 | **Merge k Sorted Lists** (23) | 🔴 Hard | ⭐ High Value | Heap | K-way merge with min heap |
+| 6 | **Last Stone Weight** (1046) | 🟢 Easy | 🎯 Practice | Max Heap | Simple heap simulation |
+| 7 | **Number of Connected Components** (323) | 🟡 Medium | 🔑 Anchor | Union-Find | Template, count components |
+| 8 | **Graph Valid Tree** (261) | 🟡 Medium | ⭐ High Value | Union-Find | n-1 edges, no cycles |
+| 9 | **Implement Trie** (208) | 🟡 Medium | 🔑 Anchor | Trie Design | Insert, search, startsWith |
+| 10 | **Design Add Search Words DS** (211) | 🟡 Medium | 💡 Advanced | Trie + Backtracking | Wildcard search with '.' |
 
-| 11 | Kth Smallest in Sorted Matrix | 378 | M | ⭐ | Heap/Binary Search | 40/30/22 |
-| 12 | Ugly Number II | 264 | M | 💡 | Heap/DP | 40/30/22 |
-| 13 | Find K Pairs with Smallest Sums | 373 | M | 💡 | Heap | 45/35/25 |
-| 14 | Smallest Range Covering K Lists | 632 | H | 💡 | Heap | 60/50/40 |
-| 15 | Replace Words | 648 | M | ⭐ | Trie | 35/25/18 |
-| 16 | Word Search II | 212 | H | 💡 | Trie + Backtracking | 60/50/40 |
-| 17 | Redundant Connection | 684 | M | ⭐ | Union-Find | 35/28/20 |
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 11 | **Kth Smallest in Sorted Matrix** (378) | 🟡 Medium | ⭐ High Value | Heap/Binary Search | Min-heap or Binary search on value range |
+| 12 | **Ugly Number II** (264) | 🟡 Medium | 💡 Advanced | Heap/DP | Three pointers (x2, x3, x5), min multiples |
+| 13 | **Find K Pairs with Smallest Sums** (373) | 🟡 Medium | 💡 Advanced | Heap | Min-heap with (sum, i, j) |
+| 14 | **Smallest Range Covering K Lists** (632) | 🔴 Hard | 💡 Advanced | Heap | Min-heap of list pointers, track max_val |
+| 15 | **Replace Words** (648) | 🟡 Medium | ⭐ High Value | Trie | Trie, find shortest prefix |
+| 16 | **Word Search II** (212) | 🔴 Hard | 💡 Advanced | Trie + Backtracking | Trie + Backtracking, prune found words |
+| 17 | **Redundant Connection** (684) | 🟡 Medium | ⭐ High Value | Union-Find | Union-Find, find cycle edge |
 
 
 **Pattern Connections**:
@@ -414,27 +430,30 @@ Time for advanced data structures. Use Heaps for top-K problems, Tries for prefi
 
 ---
 
-## Phase 1: Arrays, Strings, and Hashing
+## Phase 10: Advanced Graphs
 
-This is the bread and butter of technical interviews. We'll focus heavily on Hash Maps for O(1) lookups and Two-Pointer techniques. Master the Sliding Window pattern here—it's incredibly high ROI.
+Advanced graph algorithms like Dijkstra, Minimum Spanning Trees, and Eulerian Paths.
 
 
 
-| # | Problem & Difficulty | Pattern | Key Concept |
-|---|----------------------|---------|-------------|
-| 1 | **Network Delay Time** (LC 743)<br>🟡 Medium \| 🔑 Anchor | Dijkstra | Single-source shortest path |
-| 2 | **Cheapest Flights Within K Stops** (LC 787)<br>🟡 Medium \| ⭐ High Value | BFS/DP | K-constrained shortest path |
-| 3 | **Path with Maximum Probability** (LC 1514)<br>🟡 Medium \| 🎯 Practice | Dijkstra Variant | Max heap by probability |
-| 4 | **Min Cost to Connect All Points** (LC 1584)<br>🟡 Medium \| 🔑 Anchor | MST (Prim/Kruskal) | Minimum spanning tree |
-| 5 | **Critical Connections in Network** (LC 1192)<br>🔴 Hard \| 💡 Advanced | Tarjan's Algorithm | Bridges, low-link values |
-| 6 | **Swim in Rising Water** (LC 778)<br>🔴 Hard \| 💡 Advanced | Binary Search/Dijkstra | Time binary search |
 
-| 7 | Shortest Path in Binary Matrix | 1091 | M | ⭐ | BFS | 35/25/18 |
-| 8 | All Paths from Source to Target | 797 | M | 🎯 | DFS/Backtracking | 35/25/18 |
-| 9 | Find City With Smallest Neighbors | 1334 | M | ⭐ | Floyd-Warshall | 40/30/22 |
-| 10 | Min Cost to Reach Destination | 1928 | H | 💡 | Dijkstra + DP | 60/50/40 |
-| 11 | Shortest Path Visiting All Nodes | 847 | H | 💡 | BFS + Bitmask | 60/50/40 |
-| 12 | Reachable Nodes in Subdivided Graph | 882 | H | 💡 | Dijkstra | 60/50/40 |
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 1 | **Network Delay Time** (743) | 🟡 Medium | 🔑 Anchor | Dijkstra | Single-source shortest path |
+| 2 | **Cheapest Flights Within K Stops** (787) | 🟡 Medium | ⭐ High Value | BFS/DP | K-constrained shortest path |
+| 3 | **Path with Maximum Probability** (1514) | 🟡 Medium | 🎯 Practice | Dijkstra Variant | Max heap by probability |
+| 4 | **Min Cost to Connect All Points** (1584) | 🟡 Medium | 🔑 Anchor | MST (Prim/Kruskal) | Minimum spanning tree |
+| 5 | **Critical Connections in Network** (1192) | 🔴 Hard | 💡 Advanced | Tarjan's Algorithm | Bridges, low-link values |
+| 6 | **Swim in Rising Water** (778) | 🔴 Hard | 💡 Advanced | Binary Search/Dijkstra | Time binary search |
+
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 7 | **Shortest Path in Binary Matrix** (1091) | 🟡 Medium | ⭐ High Value | BFS | BFS, 8-directional, shortest path |
+| 8 | **All Paths from Source to Target** (797) | 🟡 Medium | 🎯 Practice | DFS/Backtracking | DFS, DAG guarantees no cycles |
+| 9 | **Find City With Smallest Neighbors** (1334) | 🟡 Medium | ⭐ High Value | Floyd-Warshall | Floyd-Warshall or Dijkstra from all nodes |
+| 10 | **Min Cost to Reach Destination** (1928) | 🔴 Hard | 💡 Advanced | Dijkstra + DP | Dijkstra with time constraint |
+| 11 | **Shortest Path Visiting All Nodes** (847) | 🔴 Hard | 💡 Advanced | BFS + Bitmask | BFS with bitmask for visited state |
+| 12 | **Reachable Nodes in Subdivided Graph** (882) | 🔴 Hard | 💡 Advanced | Dijkstra | Dijkstra, max/min heap on distance |
 
 
 **Pattern Connections**:
@@ -444,40 +463,43 @@ This is the bread and butter of technical interviews. We'll focus heavily on Has
 
 ---
 
-## Phase 1: Arrays, Strings, and Hashing
+## Phase 11: Design & Advanced Data Structures
 
-This is the bread and butter of technical interviews. We'll focus heavily on Hash Maps for O(1) lookups and Two-Pointer techniques. Master the Sliding Window pattern here—it's incredibly high ROI.
+Data structure design problems and advanced structures like Segment Trees and LFUs.
 
 
 
-| # | Problem & Difficulty | Pattern | Key Concept |
-|---|----------------------|---------|-------------|
-| 1 | **LRU Cache** (LC 146)<br>🟡 Medium \| 🔑 Anchor | Design | DLL + hash map, O(1) operations |
-| 2 | **Trapping Rain Water** (LC 42)<br>🔴 Hard \| 🔑 Anchor | Two Pointers/Stack | min(maxLeft, maxRight) - height |
-| 3 | **Longest Consecutive Sequence** (LC 128)<br>🟡 Medium \| ⭐ High Value | Hash Set | O(n), check sequence starts |
-| 4 | **Basic Calculator II** (LC 227)<br>🟡 Medium \| ⭐ High Value | Stack | Operator precedence, stack |
-| 5 | **Sliding Window Maximum** (LC 239)<br>🔴 Hard \| 💡 Advanced | Monotonic Deque | Decreasing deque, max in window |
-| 6 | **Largest Rectangle in Histogram** (LC 84)<br>🔴 Hard \| 💡 Advanced | Monotonic Stack | Increasing stack, area calculation |
-| 7 | **Valid Sudoku** (LC 36)<br>🟡 Medium \| 🎯 Practice | Hash Set | Three sets: row, col, box |
-| 8 | **Rotate Image** (LC 48)<br>🟡 Medium \| 🎯 Practice | Matrix | Transpose + reverse rows |
-| 9 | **Spiral Matrix** (LC 54)<br>🟡 Medium \| 🎯 Practice | Matrix | Four boundaries, spiral traversal |
-| 10 | **Insert Delete GetRandom O(1)** (LC 380)<br>🟡 Medium \| ⭐ High Value | Array + Hash Map | Map: val→index, swap with last |
-| 11 | **Time Based Key-Value Store** (LC 981)<br>🟡 Medium \| ⭐ High Value | Hash Map + BS | Map to (timestamp, value) list |
-| 12 | **Encode and Decode Strings** (LC 271)<br>🟡 Medium \| ⭐ High Value | String Design | Length prefix: "4:word5:hello" |
 
-| 13 | LFU Cache | 460 | H | 💡 | Design | 60/50/40 |
-| 14 | All O'one Data Structure | 432 | H | 💡 | Design | 60/50/40 |
-| 15 | Design Twitter | 355 | M | ⭐ | Design | 50/40/30 |
-| 16 | Design Search Autocomplete | 642 | H | 💡 | Trie + Design | 60/50/40 |
-| 17 | Longest Substring with K Distinct | 340 | M | ⭐ | Sliding Window | 35/25/18 |
-| 18 | Maximum Frequency Stack | 895 | H | 💡 | Stack + Hash Map | 50/40/30 |
-| 19 | Design Snake Game | 353 | M | 💡 | Design | 50/40/30 |
-| 20 | Design Tic-Tac-Toe | 348 | M | ⭐ | Design | 40/30/22 |
-| 21 | Range Sum Query 2D - Mutable | 308 | H | 💡 | Segment Tree | 60/50/40 |
-| 22 | Serialize and Deserialize BST | 449 | M | ⭐ | Tree + Design | 40/30/22 |
-| 23 | Design File System | 588 | M | 💡 | Trie + Design | 50/40/30 |
-| 24 | Random Pick with Weight | 528 | M | ⭐ | Prefix Sum + BS | 35/28/20 |
-| 25 | Online Stock Span | 901 | M | ⭐ | Monotonic Stack | 35/25/18 |
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 1 | **LRU Cache** (146) | 🟡 Medium | 🔑 Anchor | Design | DLL + hash map, O(1) operations |
+| 2 | **Trapping Rain Water** (42) | 🔴 Hard | 🔑 Anchor | Two Pointers/Stack | min(maxLeft, maxRight) - height |
+| 3 | **Longest Consecutive Sequence** (128) | 🟡 Medium | ⭐ High Value | Hash Set | O(n), check sequence starts |
+| 4 | **Basic Calculator II** (227) | 🟡 Medium | ⭐ High Value | Stack | Operator precedence, stack |
+| 5 | **Sliding Window Maximum** (239) | 🔴 Hard | 💡 Advanced | Monotonic Deque | Decreasing deque, max in window |
+| 6 | **Largest Rectangle in Histogram** (84) | 🔴 Hard | 💡 Advanced | Monotonic Stack | Increasing stack, area calculation |
+| 7 | **Valid Sudoku** (36) | 🟡 Medium | 🎯 Practice | Hash Set | Three sets: row, col, box |
+| 8 | **Rotate Image** (48) | 🟡 Medium | 🎯 Practice | Matrix | Transpose + reverse rows |
+| 9 | **Spiral Matrix** (54) | 🟡 Medium | 🎯 Practice | Matrix | Four boundaries, spiral traversal |
+| 10 | **Insert Delete GetRandom O(1)** (380) | 🟡 Medium | ⭐ High Value | Array + Hash Map | Map: val→index, swap with last |
+| 11 | **Time Based Key-Value Store** (981) | 🟡 Medium | ⭐ High Value | Hash Map + BS | Map to (timestamp, value) list |
+| 12 | **Encode and Decode Strings** (271) | 🟡 Medium | ⭐ High Value | String Design | Length prefix: "4:word5:hello" |
+
+| # | Problem | Difficulty | Priority | Pattern | Key Concept |
+|---|---------|------------|----------|---------|-------------|
+| 13 | **LFU Cache** (460) | 🔴 Hard | 💡 Advanced | Design | Two hash maps (key->val, freq->DLL) |
+| 14 | **All O'one Data Structure** (432) | 🔴 Hard | 💡 Advanced | Design | Doubly linked list of frequency buckets |
+| 15 | **Design Twitter** (355) | 🟡 Medium | ⭐ High Value | Design | Hash maps + Max heap for recent tweets |
+| 16 | **Design Search Autocomplete** (642) | 🔴 Hard | 💡 Advanced | Trie + Design | Trie + Hash map for frequencies |
+| 17 | **Longest Substring with K Distinct** (340) | 🟡 Medium | ⭐ High Value | Sliding Window | Sliding window, hash map for counts |
+| 18 | **Maximum Frequency Stack** (895) | 🔴 Hard | 💡 Advanced | Stack + Hash Map | Hash maps (freq, group->stack) |
+| 19 | **Design Snake Game** (353) | 🟡 Medium | 💡 Advanced | Design | Queue for body, Hash set for fast lookup |
+| 20 | **Design Tic-Tac-Toe** (348) | 🟡 Medium | ⭐ High Value | Design | Arrays for row/col sums, track diagonals |
+| 21 | **Range Sum Query 2D - Mutable** (308) | 🔴 Hard | 💡 Advanced | Segment Tree | 2D Binary Indexed Tree (Fenwick) |
+| 22 | **Serialize and Deserialize BST** (449) | 🟡 Medium | ⭐ High Value | Tree + Design | Preorder traversal, upper/lower bounds |
+| 23 | **Design File System** (588) | 🟡 Medium | 💡 Advanced | Trie + Design | Trie or Hash map, track paths and values |
+| 24 | **Random Pick with Weight** (528) | 🟡 Medium | ⭐ High Value | Prefix Sum + BS | Prefix sum array + Binary search |
+| 25 | **Online Stock Span** (901) | 🟡 Medium | ⭐ High Value | Monotonic Stack | Monotonic Stack (decreasing), accumulate span |
 
 **Weeks 17-18 Checkpoint**: ✅ Design problems | ✅ Fast problem recognition | ✅ Mock interview ready | ✅ <30 min Medium
 
@@ -629,7 +651,7 @@ This is the bread and butter of technical interviews. We'll focus heavily on Has
 - [ ] Phase 8 - Backtracking (Week 14)
 - [ ] Phase 9 - Heaps & Data Structures (Week 15)
 - [ ] Phase 10 - Advanced Graphs (Week 16)
-- [ ] Phase 11 - Mixed Practice (Weeks 17-18)
+- [ ] Phase 11 - Design & Advanced Data Structures (Weeks 17-18)
 
 ### Pattern Mastery Checklist
 - [ ] Hash Map for complement search
