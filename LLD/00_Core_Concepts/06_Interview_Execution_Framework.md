@@ -2,11 +2,48 @@
 
 A successful Low-Level Design (LLD) or Machine Coding interview is rarely won on raw syntax knowledge. Candidates fail because of **poor time management, under-specified requirements, over-engineering too early, or writing untestable code**.
 
-This framework provides a repeatable, battle-tested playbook for 45-minute OOD rounds and 90-minute Machine Coding rounds at top tech firms (FAANG, Uber, Stripe, Atlassian, Razorpay, PhonePe, Swiggy).
+This framework provides a repeatable, battle-tested playbook combining the **CrackingWalnuts 6-Step Design Funnel** with production .NET patterns for 45-minute OOD rounds and 90-minute Machine Coding rounds at top tech firms (FAANG, Uber, Stripe, Atlassian, Razorpay, PhonePe, Swiggy).
 
 ---
 
-## ⏱️ 1. Pacing & Time Allocation Strategy
+## 🎯 1. The Repeatable 6-Step Design Funnel (CrackingWalnuts Methodology)
+
+Never start by blindly coding or sketching random classes. Use this funnel to systematically transform any ambiguous prompt into an airtight architecture:
+
+```mermaid
+flowchart TD
+    S1["1. Requirement Mining\n(Extract functional rules, scale, invariants, & out-of-scope boundaries)"] --> S2["2. Class Discovery\n(Categorize into Entities, Value Objects, & Domain Services)"]
+    S2 --> S3["3. Relationship Discovery\n(Establish 1:1, 1:N, M:N; Composition vs Aggregation; Ownership)"]
+    S3 --> S4["4. Pattern Selection\n(Apply GoF patterns ONLY when forced by explicit variance drivers)"]
+    S4 --> S5["5. Design Evolution (V1 → V4)\n(Naive Baseline → Decoupled Patterns → O(1) Indexing → Concurrency & Fault Tolerance)"]
+    S5 --> S6["6. 'You've Seen This Before'\n(Anchor to known Problem Archetypes & reuse mental models)"]
+```
+
+1. **Step 1: Requirement Mining**: Extract hard business constraints and explicit exclusions. Identify the primary happy path, failure states, and concurrency expectations (e.g., can two users book the same locker simultaneously?).
+2. **Step 2: Class Discovery**: Classify discovered nouns into:
+   - **Entities**: Objects defined by mutable identity (`Locker`, `Booking`, `AuctionItem`).
+   - **Value Objects**: Immutable attributes evaluated by equality (`Money`, `Dimensions`, `OtpCode`).
+   - **Domain Services / Orchestrators**: Coordinators without persistent identity (`LockerAllocationService`, `AuctionEngine`).
+3. **Step 3: Relationship Discovery**: Map structural associations:
+   - *Composition* (Locker cannot exist without a LockerBay/Kiosk).
+   - *Aggregation* (Package is temporarily held by a Locker).
+   - *Multiplicity* (1 Kiosk has N Lockers; 1 Customer has M Bookings).
+4. **Step 4: Pattern Selection (Just-in-Time)**:
+   - Does allocation or pricing change? $\rightarrow$ **Strategy Pattern**.
+   - Do entities transition through distinct valid stages? $\rightarrow$ **State Pattern**.
+   - Do decoupled subsystems need asynchronous notifications? $\rightarrow$ **Observer Pattern**.
+   - Do external providers need uniform contracts? $\rightarrow$ **Adapter / Factory Pattern**.
+5. **Step 5: Design Evolution (V1 $\rightarrow$ V4)**:
+   - **V1**: Naive working baseline (in-memory list, linear scan).
+   - **V2**: Pattern decoupling (interfaces, dependency injection, OCP).
+   - **V3**: Algorithmic scalability (indexing, hash lookups, balanced trees).
+   - **V4**: Production concurrency, thread-safety, deadlocks, and fault tolerance.
+6. **Step 6: "You've Seen This Before" (Naming the Family)**:
+   - Anchor the problem immediately to one of the 6 core problem archetypes (Allocation, Financial Ledger, Stateful Workflow, Messaging, In-Memory DS, or Gateway).
+
+---
+
+## ⏱️ 2. Pacing & Time Allocation Strategy
 
 ### The 45-Minute OOD Round (Focus: Class Design, Patterns & Tradeoffs)
 Used by Google, Meta, Microsoft, Amazon for System/Object-Oriented Design screening.
@@ -67,7 +104,7 @@ gantt
 
 ---
 
-## 🧭 2. The Requirement Discovery Cheatsheet
+## 🧭 3. The Requirement Discovery Cheatsheet
 
 Never start coding immediately. Spend the first 10 minutes asking targeted questions categorized into these 5 dimensions:
 
@@ -95,7 +132,7 @@ Never start coding immediately. Spend the first 10 minutes asking targeted quest
 
 ---
 
-## 🧠 3. The Noun-Verb Domain Extraction Technique
+## 🧠 4. The Noun-Verb Domain Extraction Technique
 
 When given an ambiguous prompt, use this systematic linguistic parsing technique:
 
@@ -128,7 +165,7 @@ flowchart LR
 
 ---
 
-## 📝 4. Live Coding Architecture Blueprint (Layering)
+## 📝 5. Live Coding Architecture Blueprint (Layering)
 
 Structure your code cleanly inside your single file or project using these 4 strict layers:
 
@@ -150,7 +187,7 @@ Structure your code cleanly inside your single file or project using these 4 str
 
 ---
 
-## 💯 5. The Senior Machine Coding Evaluation Rubric
+## 💯 6. The Senior Machine Coding Evaluation Rubric
 
 Top product companies evaluate your code against this 100-point scorecard:
 
@@ -164,13 +201,50 @@ Top product companies evaluate your code against this 100-point scorecard:
 
 ---
 
-## 🚀 6. The 5-Minute Pre-Submission Checklist
+## 🎖️ 7. The "Hire" vs. "Strong Hire" Staff Rubric (CrackingWalnuts Differentiation)
+
+What separates an L5 (Senior Engineer) from an L6/L7 (Staff/Principal Engineer) in an LLD interview? Interviewers at Google, Meta, Uber, and Amazon grade against these exact behavioral and technical signals:
+
+| Dimension | ⚠️ Lean No Hire / No Hire | 🟡 Hire (L5 Senior) | 🟢 Strong Hire (L6+ Staff/Principal) |
+| :--- | :--- | :--- | :--- |
+| **Problem Intake & Framing** | Jumps straight to coding without confirming scope; ignores boundary limits. | Clarifies functional requirements, asks basic scale questions, clarifies Happy Path. | **Mines requirements systematically**: separates core vs out-of-scope, discovers hidden concurrency bottlenecks, defines invariant guarantees upfront. |
+| **Class Modeling & Invariants** | Anemic classes (public getters/setters); business logic leaks into service classes or controllers. | Creates cohesive classes; uses Value Objects for primitive fields; separates state from logic. | **Rich Aggregate Root**: Entities enforce their own invariants (`order.AddItem()` checks status); zero public setters; immutability by default using C# `record`. |
+| **Pattern Application** | Zero patterns (massive `if/else` ladders) OR pattern vomiting (forcing AbstractFactory + Visitor everywhere). | Applies Strategy/Factory where required; justifies patterns with Open/Closed Principle. | **Just-in-Time Pattern Selection**: Starts clean, identifies the *specific variance driver* (e.g., dynamic pricing), explains why a pattern is chosen over alternatives, and discusses trade-offs. |
+| **Concurrency & Synchronization** | Ignores multi-threading; uses `List<T>` across threads; introduces data corruption or deadlocks. | Wraps critical sections in `lock(obj)` or `SemaphoreSlim`; uses `ConcurrentDictionary`. | **Deterministic lock ordering** (`Min(id1, id2)`), lock-free primitives (`Interlocked`), reader/writer separation (`ReaderWriterLockSlim`), and optimistic vs pessimistic concurrency trade-offs. |
+| **Evolution & Curveballs** | Panics or rewrites entire codebase when interviewer adds a new requirement mid-interview. | Adapts code with minor refactoring; implements new rule in a new class. | **Fluid 4-Stage Evolution**: Anticipates curveballs; design already has extension seams; articulates how V1 seamlessly scales to V4 with zero regression. |
+| **Communication & Defense** | Defensive when questioned; cannot explain why an approach was chosen over another. | Explains code clearly; receptive to interviewer hints and redirects. | **Architectural Partnership**: Drives the conversation, proactively brings up edge cases before the interviewer spots them, explicitly outlines production tradeoffs (memory vs CPU vs lock contention). |
+
+---
+
+## 🛡️ 7. Interviewer Traps & Conversational Counter-Scripts
+
+In senior rounds, interviewers deliberately test your resilience with loaded traps. Here is how to counter them with Staff-level poise:
+
+### Trap 1: "Why don't we just use a simple `switch` statement instead of Strategy Pattern?"
+* ❌ **Bad Answer**: *"Because SOLID principles say switch statements are bad."* (Dogmatic, academic).
+* ✅ **Staff Counter-Script**:
+  > *"For 2 static options that never change, a simple `switch` expression is indeed less cognitive overhead. However, our requirement specifies that new pricing rules / allocation strategies will be added frequently by different teams. A Strategy pattern allows us to comply with the Open/Closed Principle—we can introduce a `SurgePricingStrategy` via DI without touching or risking regression in existing, tested billing logic."*
+
+### Trap 2: "What happens if 5,000 requests hit this method at the exact same millisecond?"
+* ❌ **Bad Answer**: *"I will just wrap the whole method in a C# `lock` statement."* (Creates a massive thread bottleneck / serializes execution).
+* ✅ **Staff Counter-Script**:
+  > *"A coarse-grained lock would serialize all 5,000 threads and starve the thread pool. Instead, we partition our locking: we lock at the individual resource level (e.g., per `RoomId` or `LockerId` using a key-based `ConcurrentDictionary<string, SemaphoreSlim>`), or we use database-level atomic operations (`UPDATE ... WHERE status = 'Available'`) combined with distributed Redis locks. That way, concurrent requests for different resources run completely in parallel."*
+
+### Trap 3: "Should we make this collection asynchronous and distribute it right away?"
+* ❌ **Bad Answer**: *"Yes, let's put Kafka, Redis, and microservices in here right now."* (Over-engineering machine coding round).
+* ✅ **Staff Counter-Script**:
+  > *"In this 45/90 minute scope, our contract is an in-memory component. I will design the core domain interfaces (`IRepository`, `IEventPublisher`) so that the application layer is agnostic of storage. Today, we implement an in-memory thread-safe version with `ConcurrentDictionary`; when moving to distributed production, we can swap in a Redis or SQL adapter without modifying any domain or service logic."*
+
+---
+
+## 🚀 8. The 5-Minute Pre-Submission Checklist
 
 Before telling the interviewer you are finished, verify:
 * [ ] Does the code compile without any warnings or syntax errors?
-* [ ] Are all public entity properties protected with `private set`?
+* [ ] Are all public entity properties protected with `private set` or `init`?
 * [ ] Did I handle invalid inputs (e.g., negative money, null strings, overlapping times)?
 * [ ] Is every shared in-memory collection thread-safe?
 * [ ] Did I demonstrate both the happy path and at least two edge-case failures in `Main()`?
 * [ ] Can I verbally explain *why* I picked this design pattern over alternatives?
+* [ ] Have I walked through the V1 $\rightarrow$ V4 evolution with the interviewer?
 

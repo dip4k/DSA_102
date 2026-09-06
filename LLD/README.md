@@ -23,11 +23,11 @@ Do not skip these. In a senior interview, defending your architecture is just as
 * [05. Backend Architecture (Outbox, CQRS, Idempotency)](./00_Core_Concepts/05_Backend_Architecture.md)
 * [06. Interview Execution Framework (45m OOD vs 90m Machine Coding)](./00_Core_Concepts/06_Interview_Execution_Framework.md)
 * [07. Concurrency & Synchronization Patterns](./00_Core_Concepts/07_Concurrency_and_Synchronization_Patterns.md)
-* [08. LLD Problem Families & Design Evolution (V1 → V2)](./00_Core_Concepts/08_LLD_Problem_Families_and_Evolution.md)
+* [08. LLD Problem Families & 4-Stage Evolution (V1 → V4)](./00_Core_Concepts/08_LLD_Problem_Families_and_Evolution.md)
 
 ---
 
-## 💻 3. The 25-Problem Portfolio (Code Implementations)
+## 💻 3. The 27-Problem Portfolio (Code Implementations)
 These are production C# architectural templates. Each file contains domain modeling, thread-safe code, Mermaid architectural diagrams, and a dedicated **"🗣️ Interviewer Discussion & Tradeoffs"** section.
 
 ### 🔥 Tier 1: Highest Priority (The Golden 8)
@@ -50,18 +50,20 @@ These are production C# architectural templates. Each file contains domain model
 15. [Food Delivery System (Swiggy / Zomato)](./02_Tier2_Classic_LLD/21_Food_Delivery_System.md)
 16. [In-Memory File System (Composite Pattern + Trie)](./02_Tier2_Classic_LLD/24_In_Memory_File_System.md)
 17. [Board Game Engine (Tic-Tac-Toe & Chess Lite)](./02_Tier2_Classic_LLD/25_Board_Game_Engine.md)
+18. [Amazon Locker System (Best-Fit Strategy + OTP Verification)](./02_Tier2_Classic_LLD/26_Amazon_Locker_System.md)
 
 ### 🟢 Tier 3: DSA + LLD Hybrids
-18. [LRU Cache (Pure DSA)](./03_Tier3_DSA_Screening/15_LRU_Cache.md)
-19. [Merge Intervals (Calendar Algorithm)](./03_Tier3_DSA_Screening/16_Merge_Intervals.md)
-20. [Invalid Transactions (Validation + Sliding Windows)](./03_Tier3_DSA_Screening/17_Invalid_Transactions.md)
+19. [LRU Cache (Pure DSA)](./03_Tier3_DSA_Screening/15_LRU_Cache.md)
+20. [Merge Intervals (Calendar Algorithm)](./03_Tier3_DSA_Screening/16_Merge_Intervals.md)
+21. [Invalid Transactions (Validation + Sliding Windows)](./03_Tier3_DSA_Screening/17_Invalid_Transactions.md)
 
 ### 🟣 Tier 4: Senior Backend (Distributed & Financial Systems)
-21. [Rate Limiter (Token Bucket + Interlocked)](./04_Tier4_Senior_Backend/09_Rate_Limiter.md)
-22. [Pub/Sub Message Queue (Observer + Backpressure)](./04_Tier4_Senior_Backend/14_Pub_Sub.md)
-23. [In-Memory Transactional Key-Value Store (Redis-Lite)](./04_Tier4_Senior_Backend/19_Transactional_Key_Value_Store.md)
-24. [Digital Wallet & Double-Entry Ledger](./04_Tier4_Senior_Backend/22_Digital_Wallet_Ledger.md)
-25. [Stock Exchange Order Matching Engine (Nasdaq Lite)](./04_Tier4_Senior_Backend/23_Stock_Exchange_Matching_Engine.md)
+22. [Rate Limiter (Token Bucket + Interlocked)](./04_Tier4_Senior_Backend/09_Rate_Limiter.md)
+23. [Pub/Sub Message Queue (Observer + Backpressure)](./04_Tier4_Senior_Backend/14_Pub_Sub.md)
+24. [In-Memory Transactional Key-Value Store (Redis-Lite)](./04_Tier4_Senior_Backend/19_Transactional_Key_Value_Store.md)
+25. [Digital Wallet & Double-Entry Ledger](./04_Tier4_Senior_Backend/22_Digital_Wallet_Ledger.md)
+26. [Stock Exchange Order Matching Engine (Nasdaq Lite)](./04_Tier4_Senior_Backend/23_Stock_Exchange_Matching_Engine.md)
+27. [Online Auction & Real-Time Bidding Engine (Anti-Sniping + Escrow)](./04_Tier4_Senior_Backend/26_Online_Auction_System.md)
 
 ---
 
@@ -69,8 +71,8 @@ These are production C# architectural templates. Each file contains domain model
 To achieve true mastery, cross-reference the concepts in this repo with these industry-standard resources:
 
 ### LLD & Machine Coding Interview Repositories (Language-Agnostic)
+* **[CrackingWalnuts LLD](https://crackingwalnuts.com/low-level-design):** Pioneer of the repeatable 6-step framework, V1 $\rightarrow$ V4 evolution, and 90+ multi-language interview problems.
 * **[ashishps1/awesome-low-level-design](https://github.com/ashishps1/awesome-low-level-design):** The top community repository covering OOP, design patterns, UML, and end-to-end LLD code.
-* **[CrackingWalnuts LLD](https://crackingwalnuts.com/low-level-design):** Great library of 90+ multi-language object-oriented design problems and frameworks.
 * **[kumaransg/LLD](https://github.com/kumaransg/LLD):** Machine coding problems asked at Flipkart, Swiggy, Uber, and PhonePe.
 * **[workat.tech Machine Coding Practice](https://workat.tech/machine-coding/practice):** Structured 90-minute practice problems for machine coding rounds.
 * **[donnemartin/system-design-primer](https://github.com/donnemartin/system-design-primer):** The benchmark repo for system design and object-oriented design questions.
