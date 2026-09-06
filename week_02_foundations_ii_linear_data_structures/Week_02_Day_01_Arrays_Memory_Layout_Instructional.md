@@ -308,7 +308,7 @@ public class CacheEffectsDemo {
         Console.WriteLine($"Stride 16: {sw.ElapsedMilliseconds}ms");
         
         // Random access (worst case)
-        Random rand = new Random();
+        Random rand = new();
         int[] randomIndices = new int[array.Length];
         for (int i = 0; i < randomIndices.Length; i++) {
             randomIndices[i] = rand.Next(array.Length);
@@ -611,13 +611,3 @@ This principle—**structure enables efficiency**—is the theme of the entire c
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers both theory and practical optimization  
 **Batch Status:** ✅ COMPLETE — Week 02 Day 01 Final
-
-
-
----
-
-## 📊 Complexity Recap
-
-- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
-- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
-

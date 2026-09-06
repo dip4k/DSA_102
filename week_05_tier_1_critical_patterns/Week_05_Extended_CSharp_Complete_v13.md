@@ -83,6 +83,9 @@ Use dictionaries/sets for O(1) lookup. For two-sum: store first element, lookup 
 #### 💻 Core C# Implementation (Battle-Tested)
 
 ```csharp
+using System;
+using System.Collections.Generic;
+
 /// <summary>
 /// Hash Map/Set Patterns - Two Sum, Frequency, Membership
 /// Time: O(n) | Space: O(n)
@@ -222,7 +225,7 @@ public class HashPatternsSolution
             // Sort characters to get canonical form
             char[] chars = str.ToCharArray();
             Array.Sort(chars);
-            string sorted = new string(chars);
+            string sorted = new(chars);
             
             // Add to group
             if (!groups.ContainsKey(sorted))
@@ -233,7 +236,7 @@ public class HashPatternsSolution
         }
         
         // Convert to result
-        IList<IList<string>> result = new List<IList<string>>();
+        IList<IList<string>> result = new();
         foreach (var group in groups.Values)
         {
             result.Add(group);
@@ -265,6 +268,9 @@ Stack maintains indices in increasing/decreasing order of values. For next great
 #### 💻 Core C# Implementation (Battle-Tested)
 
 ```csharp
+using System;
+using System.Collections.Generic;
+
 /// <summary>
 /// Monotonic Stack Pattern
 /// Time: O(n) single pass | Space: O(n)
@@ -427,6 +433,9 @@ Sort intervals by start time. Merge overlapping: if current.start ≤ last.end, 
 #### 💻 Core C# Implementation (Battle-Tested)
 
 ```csharp
+using System;
+using System.Collections.Generic;
+
 /// <summary>
 /// Interval Definition
 /// </summary>
@@ -606,6 +615,8 @@ Track `max_ending_here` (best sum ending at current position) and `max_so_far` (
 #### 💻 Core C# Implementation (Battle-Tested)
 
 ```csharp
+using System;
+
 /// <summary>
 /// Kadane's Algorithm Pattern - Maximum Subarray Problems
 /// Time: O(n) | Space: O(1)
@@ -1127,7 +1138,6 @@ This file is self-contained. You have:
 
 ---
 
-
 This file combines:
 - ✅ **Pattern selection guidance** (v11 strength) — Know WHEN/WHY to choose
 - ✅ **Production-grade code** (v12 strength) — Know HOW to implement
@@ -1135,4 +1145,3 @@ This file combines:
 - ✅ **Progressive learning** (v11 strength) — Practice from easy to hard
 - ✅ **Interview readiness** (v13 integration) — Pass technical interviews
 - ✅ **Complete coverage** (WEEK 5 TOPICS) — All Tier 1 critical patterns
-

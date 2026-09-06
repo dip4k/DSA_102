@@ -186,6 +186,8 @@ Choose a pivot element and partition the array so elements < pivot are left, > p
 #### 💻 Core C# Implementation (Battle-Tested)
 
 ```csharp
+using System;
+
 /// <summary>
 /// Quick Sort - Fast average O(n log n), randomized pivot
 /// Time: O(n log n) average, O(n²) worst | Space: O(log n) stack
@@ -284,6 +286,8 @@ Array-based binary tree where parent ≤ children (min-heap). Array index relati
 #### 💻 Core C# Implementation (Battle-Tested)
 
 ```csharp
+using System.Collections.Generic;
+
 /// <summary>
 /// Min Heap - O(log n) insert/extract, O(1) peek
 /// Time: Insert/Extract O(log n), Peek O(1) | Space: O(n)
@@ -433,6 +437,9 @@ Array of buckets (linked lists). Hash function maps key to bucket index. Collisi
 #### 💻 Core C# Implementation (Battle-Tested)
 
 ```csharp
+using System;
+using System.Collections.Generic;
+
 /// <summary>
 /// Hash Table with Separate Chaining
 /// Time: O(1) expected (O(n) worst if all hash to same bucket) | Space: O(n)
@@ -593,6 +600,8 @@ Compute polynomial hash of pattern. For each window in text, compute hash of win
 #### 💻 Core C# Implementation (Battle-Tested)
 
 ```csharp
+using System.Collections.Generic;
+
 /// <summary>
 /// Rabin-Karp Rolling Hash - Substring Search
 /// Time: O(n+m) average | Space: O(1)
@@ -937,7 +946,6 @@ This file is self-contained. You have:
 
 ---
 
-
 This file combines:
 - ✅ **Pattern selection guidance** (v11 strength) — Know WHEN/WHY to choose
 - ✅ **Production-grade code** (v12 strength) — Know HOW to implement
@@ -945,5 +953,3 @@ This file combines:
 - ✅ **Progressive learning** (v11 strength) — Practice from easy to hard
 - ✅ **Interview readiness** (v13 integration) — Pass technical interviews
 - ✅ **Complete coverage** (WEEK 3 TOPICS) — All sorting, heaps, hashing algorithms
-
-

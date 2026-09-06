@@ -162,6 +162,9 @@ Front [        ] Back (empty)
 ### 🔧 Operation 1: Stack Using Dynamic Array
 
 ```csharp
+using System;
+using System.Collections.Generic;
+
 public class Stack<T> {
     private T[] data;
     private int top = -1;  // -1 means empty
@@ -224,6 +227,8 @@ int y = stack.Pop();  // y = 20
 A naive queue using arrays is inefficient:
 
 ```csharp
+using System;
+
 // BAD: Naive queue (wastes space after dequeues)
 public class QueueNaive<T> {
     private T[] data;
@@ -251,6 +256,8 @@ public class QueueNaive<T> {
 **Better: Circular Buffer Queue**
 
 ```csharp
+using System.Collections.Generic;
+
 public class Queue<T> {
     private T[] data;
     private int front = 0;
@@ -405,9 +412,11 @@ public class Deque<T> {
 Stack is perfect for evaluating postfix expressions:
 
 ```csharp
+using System.Collections.Generic;
+
 public class PostfixEvaluator {
     public static int Evaluate(string[] tokens) {
-        Stack<int> stack = new Stack<int>();
+        Stack<int> stack = new();
         
         foreach (string token in tokens) {
             if (int.TryParse(token, out int num)) {
@@ -526,7 +535,7 @@ This ensures fairness and efficient CPU utilization.
 BFS uses a queue to explore nodes level-by-level:
 ```csharp
 public void BFS(Graph g, Node start) {
-    Queue<Node> queue = new Queue<Node>();
+    Queue<Node> queue = new();
     queue.Enqueue(start);
     
     while (!queue.IsEmpty()) {
@@ -700,13 +709,3 @@ The lesson transcends data structures: constraining your interface options often
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers implementations and design patterns  
 **Batch Status:** ✅ COMPLETE — Week 02 Day 04 Final
-
-
-
----
-
-## 📊 Complexity Recap
-
-- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
-- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
-

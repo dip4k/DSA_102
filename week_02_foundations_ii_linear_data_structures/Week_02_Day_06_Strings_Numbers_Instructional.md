@@ -307,7 +307,7 @@ Complexity: O(n²)
 ### StringBuilder Solution
 
 ```csharp
-StringBuilder sb = new StringBuilder();
+StringBuilder sb = new();
 for (int i = 0; i < 1000; i++)
 {
     sb.Append(i).Append(",");  // Append to buffer, don't copy old data
@@ -357,7 +357,7 @@ csv += "," + "2024-01-28";
 **Efficient Approach (StringBuilder):**
 
 ```csharp
-StringBuilder sb = new StringBuilder();
+StringBuilder sb = new();
 sb.Append("John").Append(",")
   .Append("Doe").Append(",")
   .Append("30").Append(",")
@@ -1161,13 +1161,3 @@ You've mastered this chapter when you can:
 *Engineering Guide – Phase A: Foundations*  
 *DSA Mastery Curriculum v13*  
 *Comprehensive, production-grade, interview-ready*
-
-
----
-
-## 📊 Complexity Recap
-
-- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
-- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
-
-

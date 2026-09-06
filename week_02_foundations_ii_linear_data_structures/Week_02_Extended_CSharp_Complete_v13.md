@@ -83,6 +83,8 @@ A manual `IEnumerator<T>` over nodes; you advance a `current` reference by follo
 #### 💻 Core C# Implementation (Battle-Tested)
 
 ```csharp
+using System;
+
 /// <summary>
 /// Singly Linked List Node - Foundation
 /// </summary>
@@ -354,7 +356,7 @@ public ListNode RemoveNthFromEnd(ListNode head, int n)
     // STEP 2: Dummy node
     // Why? Simplifies "delete head" case.
     // Dummy → head → ... → null
-    ListNode dummy = new ListNode(0);
+    ListNode dummy = new(0);
     dummy.Next = head;
     
     // STEP 3: Initialize pointers with gap
@@ -563,6 +565,8 @@ First-In-First-Out (FIFO) semantics: enqueue at back, dequeue from front. Think 
 #### 💻 Core C# Implementation (Battle-Tested)
 
 ```csharp
+using System.Collections.Generic;
+
 /// <summary>
 /// Binary tree node for BFS examples
 /// </summary>
@@ -1131,7 +1135,6 @@ This file is self-contained. You have:
 
 ---
 
-
 This file combines:
 - ✅ **Pattern selection guidance** (v11 strength) — Know WHEN/WHY to choose
 - ✅ **Production-grade code** (v12 strength) — Know HOW to implement
@@ -1139,4 +1142,3 @@ This file combines:
 - ✅ **Progressive learning** (v11 strength) — Practice from easy to hard
 - ✅ **Interview readiness** (v13 integration) — Pass technical interviews
 - ✅ **Complete coverage** (WEEK 2 TOPICS) — Arrays, linked lists, stacks, queues, binary search
-

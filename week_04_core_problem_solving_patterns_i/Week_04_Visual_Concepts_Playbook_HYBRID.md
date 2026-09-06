@@ -1162,6 +1162,4 @@ Peak finding         │ Local max in unsorted array        │ Time O(log n), S
 
 ---
 
-
 **Use web resource links for interactive visualizations while studying!**
-

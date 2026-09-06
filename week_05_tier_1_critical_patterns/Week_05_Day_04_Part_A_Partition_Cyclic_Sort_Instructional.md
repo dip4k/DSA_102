@@ -569,4 +569,3 @@ The in-place constraint forces elegance. You can't hide complexity in extra spac
 By the end of Day 4 (after Kadane's), you'll have mastered 8 critical patterns covering 50%+ of interview problems. These patterns—hash, stack, intervals, partitions—are the vocabulary of efficient algorithms.
 
 ---
-

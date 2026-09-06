@@ -119,6 +119,9 @@ Query "Find another book?": Add card, O(1)
 ### C# Hash Map Patterns
 
 ```csharp
+using System;
+using System.Collections.Generic;
+
 public class HashMapPatterns
 {
     // Pattern 1: Frequency Counter O(N) time, O(N) space
@@ -202,7 +205,7 @@ public class HashMapPatterns
             // Sort characters to get canonical form
             char[] chars = word.ToCharArray();
             Array.Sort(chars);
-            string canonical = new string(chars);
+            string canonical = new(chars);
             
             if (!groups.ContainsKey(canonical))
                 groups[canonical] = new List<string>();
@@ -216,7 +219,7 @@ public class HashMapPatterns
     // Pattern 6: Contains duplicate O(N) time, O(N) space
     public bool ContainsDuplicate(int[] nums)
     {
-        HashSet<int> seen = new HashSet<int>();
+        HashSet<int> seen = new();
         
         foreach (int num in nums)
         {
@@ -248,10 +251,10 @@ public class HashMapPatterns
     public int[] Intersection(int[] arr1, int[] arr2)
     {
         // Store first array in hash set
-        HashSet<int> set1 = new HashSet<int>(arr1);
+        HashSet<int> set1 = new(arr1);
         
         // Find intersection
-        HashSet<int> intersection = new HashSet<int>();
+        HashSet<int> intersection = new();
         foreach (int num in arr2)
         {
             if (set1.Contains(num))
@@ -515,13 +518,16 @@ Next taller:
 ### C# Monotonic Stack Patterns
 
 ```csharp
+using System;
+using System.Collections.Generic;
+
 public class MonotonicStackPatterns
 {
     // Pattern 1: Next Greater Element O(N) time, O(N) space
     public int[] NextGreaterElement(int[] nums)
     {
         int[] result = new int[nums.Length];
-        Stack<int> stack = new Stack<int>();
+        Stack<int> stack = new();
         
         // Process from right to left
         for (int i = nums.Length - 1; i >= 0; i--)
@@ -544,7 +550,7 @@ public class MonotonicStackPatterns
     public int[] DailyTemperatures(int[] temps)
     {
         int[] result = new int[temps.Length];
-        Stack<int> stack = new Stack<int>();  // Stack of indices
+        Stack<int> stack = new();  // Stack of indices
         
         for (int i = 0; i < temps.Length; i++)
         {
@@ -564,7 +570,7 @@ public class MonotonicStackPatterns
     // Pattern 3: Largest rectangle in histogram O(N) time, O(N) space
     public int LargestRectangleInHistogram(int[] heights)
     {
-        Stack<int> stack = new Stack<int>();
+        Stack<int> stack = new();
         int maxArea = 0;
         
         for (int i = 0; i < heights.Length; i++)
@@ -596,7 +602,7 @@ public class MonotonicStackPatterns
     // Pattern 4: Trapping rain water O(N) time, O(N) space
     public int TrapRainWater(int[] heights)
     {
-        Stack<int> stack = new Stack<int>();
+        Stack<int> stack = new();
         int waterTrapped = 0;
         
         for (int i = 0; i < heights.Length; i++)
@@ -623,7 +629,7 @@ public class MonotonicStackPatterns
     public int[] PreviousSmallerElement(int[] nums)
     {
         int[] result = new int[nums.Length];
-        Stack<int> stack = new Stack<int>();
+        Stack<int> stack = new();
         
         for (int i = 0; i < nums.Length; i++)
         {
@@ -732,7 +738,7 @@ while (stack.Count > 0) {
 
 **WRONG - Mixes indices and values in stack**
 ```csharp
-Stack<int> stack = new Stack<int>();  // Meant for indices
+Stack<int> stack = new();  // Meant for indices
 // But sometimes push values, sometimes indices
 while (heights[stack.Peek()] > heights[i])  // ← Expects indices
     stack.Pop();
@@ -743,7 +749,7 @@ while (heights[stack.Peek()] > heights[i])  // ← Expects indices
 **CORRECT - Be clear what stack stores**
 ```csharp
 // Clearly store indices
-Stack<int> stack = new Stack<int>();  // Stores indices
+Stack<int> stack = new();  // Stores indices
 while (stack.Count > 0 && heights[stack.Peek()] > heights[i]) {
     int idx = stack.Pop();
     // Use idx to access heights
@@ -894,6 +900,9 @@ Merge:
 ### C# Interval Patterns
 
 ```csharp
+using System;
+using System.Collections.Generic;
+
 public class IntervalPatterns
 {
     public class Interval
@@ -917,7 +926,7 @@ public class IntervalPatterns
         // Sort by start time
         intervals.Sort((a, b) => a.Start.CompareTo(b.Start));
         
-        List<Interval> merged = new List<Interval>();
+        List<Interval> merged = new();
         Interval current = intervals[0];
         
         for (int i = 1; i < intervals.Count; i++)
@@ -942,7 +951,7 @@ public class IntervalPatterns
     // Pattern 2: Insert interval O(N) time, O(N) space
     public List<Interval> InsertInterval(List<Interval> intervals, Interval newInterval)
     {
-        List<Interval> result = new List<Interval>();
+        List<Interval> result = new();
         int i = 0;
         
         // Add all intervals ending before new interval starts
@@ -1007,7 +1016,7 @@ public class IntervalPatterns
     // Pattern 4: Interval intersection O(N+M) time, O(min(N,M)) space
     public List<Interval> IntervalIntersection(List<Interval> intervals1, List<Interval> intervals2)
     {
-        List<Interval> result = new List<Interval>();
+        List<Interval> result = new();
         int i = 0, j = 0;
         
         while (i < intervals1.Count && j < intervals2.Count)
@@ -1104,7 +1113,7 @@ Result: [[1,6], [8,10], [15,18]] ✅
 **WRONG - Assumes intervals are sorted**
 ```csharp
 public List<Interval> MergeIntervals(List<Interval> intervals) {
-    List<Interval> merged = new List<Interval>();
+    List<Interval> merged = new();
     Interval current = intervals[0];
     
     for (int i = 1; i < intervals.Count; i++) {
@@ -1714,6 +1723,8 @@ Step | Slow | Fast | Position
 ### C# Implementations
 
 ```csharp
+using System;
+
 public class KadaneAndFastSlow
 {
     // Pattern 1: Kadane's Algorithm O(N) time, O(1) space
@@ -2221,4 +2232,3 @@ Pattern recognition → faster solutions → better interviews.
 **Ready for Deployment:** YES ✅  
 **Quality Score:** 9.5/10 ⭐⭐⭐⭐⭐  
 **Next:** Week 06 - Advanced String Patterns
-

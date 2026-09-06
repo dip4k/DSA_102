@@ -150,6 +150,8 @@ Violates complete tree structure; index arithmetic breaks down.
 ### 🔧 Operation 1: Insert (Bubble-Up)
 
 ```csharp
+using System.Collections.Generic;
+
 public class MaxHeap {
     private List<int> heap = new();
     
@@ -255,6 +257,8 @@ public class MaxHeap {
 ### 🔧 Operation 3: Build-Heap (Heapify All Elements)
 
 ```csharp
+using System.Collections.Generic;
+
 public class MaxHeap {
     // Build heap from arbitrary array in O(n) time
     public static MaxHeap BuildHeap(int[] arr) {
@@ -355,6 +359,9 @@ public class HeapSort {
 ### 📉 Progressive Example: Priority Queue Use Case
 
 ```csharp
+using System;
+using System.Collections.Generic;
+
 public class PriorityQueueExample {
     public static void TaskScheduler() {
         PriorityQueue<(string name, int priority), int> pq = new();
@@ -692,13 +699,3 @@ Master heaps—their structure, their operations, their real-world applications�
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers mechanics, analysis, and advanced applications  
 **Batch Status:** ✅ COMPLETE — Week 03 Day 03 Final
-
-
-
----
-
-## 📊 Complexity Recap
-
-- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
-- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
-

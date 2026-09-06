@@ -82,6 +82,8 @@ Start one pointer at each end of sorted array. Move pointers inward: if sum is t
 #### 💻 Core C# Implementation (Battle-Tested)
 
 ```csharp
+using System;
+
 /// <summary>
 /// Two Sum in Sorted Array - Two Pointers (Opposite Direction)
 /// Time: O(n) | Space: O(1)
@@ -364,6 +366,8 @@ Compute result for first window of size k. Then slide window by removing leftmos
 #### 💻 Core C# Implementation (Battle-Tested)
 
 ```csharp
+using System.Collections.Generic;
+
 /// <summary>
 /// Maximum in Sliding Window (Fixed Size k)
 /// Time: O(n) | Space: O(k) for deque
@@ -531,6 +535,9 @@ Two pointers (left, right) define window. Expand right to include new elements. 
 #### 💻 Core C# Implementation (Battle-Tested)
 
 ```csharp
+using System;
+using System.Collections.Generic;
+
 /// <summary>
 /// Longest Substring with At Most K Distinct Characters (Variable Window)
 /// Time: O(n) amortized | Space: O(k) for character frequency
@@ -835,6 +842,8 @@ Problem: "Can we achieve X?" Search in answer space [min_possible, max_possible]
 #### 💻 Core C# Implementation (Battle-Tested)
 
 ```csharp
+using System;
+
 /// <summary>
 /// Binary Search on Answer Space Pattern
 /// Time: O(log(max_answer) * f(n)) | Space: O(1)
@@ -1192,7 +1201,6 @@ This file is self-contained. You have:
 
 ---
 
-
 This file combines:
 - ✅ **Pattern selection guidance** (v11 strength) — Know WHEN/WHY to choose
 - ✅ **Production-grade code** (v12 strength) — Know HOW to implement
@@ -1200,4 +1208,3 @@ This file combines:
 - ✅ **Progressive learning** (v11 strength) — Practice from easy to hard
 - ✅ **Interview readiness** (v13 integration) — Pass technical interviews
 - ✅ **Complete coverage** (WEEK 4 TOPICS) — All core problem-solving patterns
-

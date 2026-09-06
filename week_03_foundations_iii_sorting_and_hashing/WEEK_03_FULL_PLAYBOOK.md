@@ -670,7 +670,7 @@ private int Partition(int[] arr, int left, int right)
 ### Pattern 3: Randomized Quick Sort - Avoid Worst Case
 
 ```csharp
-private static Random random = new Random();
+private static Random random = new();
 
 private int RandomPartition(int[] arr, int left, int right)
 {
@@ -919,9 +919,11 @@ Min-Heap: Parent <= children (root is minimum)
 ### Pattern 1: Min-Heap Insert and Extract - O(log N)
 
 ```csharp
+using System.Collections.Generic;
+
 public class MinHeap
 {
-    private List<int> heap = new List<int>();
+    private List<int> heap = new();
     
     public void Insert(int val)
     {
@@ -1164,9 +1166,11 @@ private void HeapifyDownMax(int[] arr, int idx, int size)
 ### Pattern 4: Priority Queue (using heap)
 
 ```csharp
+using System.Collections.Generic;
+
 public class PriorityQueue<T> where T : IComparable<T>
 {
-    private List<T> heap = new List<T>();
+    private List<T> heap = new();
     
     public void Enqueue(T item)
     {
@@ -1447,6 +1451,9 @@ Resizing:
 ### Pattern 1: Basic Hash Table with Separate Chaining
 
 ```csharp
+using System;
+using System.Collections.Generic;
+
 public class HashTable<K, V>
 {
     private const int INITIAL_CAPACITY = 16;
@@ -1842,6 +1849,8 @@ Rolling window: Slide right by one character
 ### Pattern 1: Open Addressing with Linear Probing
 
 ```csharp
+using System;
+
 public class HashTableOpenAddressing
 {
     private const int INITIAL_CAPACITY = 16;
@@ -2066,16 +2075,18 @@ public class RollingHash
 ### Pattern 5: Rabin-Karp Substring Search
 
 ```csharp
+using System.Collections.Generic;
+
 public class KarpRabinSearch
 {
     public List<int> FindPattern(string text, string pattern)
     {
-        List<int> matches = new List<int>();
+        List<int> matches = new();
         
         if (pattern.Length > text.Length)
             return matches;
         
-        RollingHash rolling = new RollingHash();
+        RollingHash rolling = new();
         long patternHash = rolling.ComputeHash(pattern);
         long textHash = rolling.ComputeHash(text.Substring(0, pattern.Length));
         
@@ -2427,5 +2438,3 @@ Week 3 teaches the **essential primitives** that every computer system uses:
 **Next Recommended:** Week 04 - Problem-Solving Patterns
 
 **END OF WEEK 03 COMPLETE PLAYBOOK - CORRECTED EDITION**
-
-

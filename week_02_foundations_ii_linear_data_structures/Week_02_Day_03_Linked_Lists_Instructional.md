@@ -163,6 +163,8 @@ Benefits:
 ### 🔧 Operation 1: Singly Linked List Node & Basic Operations
 
 ```csharp
+using System.Collections.Generic;
+
 public class SinglyLinkedList<T> {
     // Node structure
     private class Node {
@@ -181,7 +183,7 @@ public class SinglyLinkedList<T> {
     
     // Push to front: O(1)
     public void PushFront(T value) {
-        Node newNode = new Node(value);
+        Node newNode = new(value);
         if (head == null) {
             head = tail = newNode;
         } else {
@@ -193,7 +195,7 @@ public class SinglyLinkedList<T> {
     
     // Push to back: O(1) with tail, O(n) without
     public void PushBack(T value) {
-        Node newNode = new Node(value);
+        Node newNode = new(value);
         if (tail == null) {
             head = tail = newNode;
         } else {
@@ -263,7 +265,7 @@ public class SinglyLinkedList<T> {
         }
         
         // Insert after current
-        Node newNode = new Node(value);
+        Node newNode = new(value);
         newNode.next = current.next;
         current.next = newNode;
         if (newNode.next == null) tail = newNode;
@@ -297,6 +299,8 @@ public class SinglyLinkedList<T> {
 ### 🔧 Operation 2: Doubly Linked List for Bidirectional Access
 
 ```csharp
+using System.Collections.Generic;
+
 public class DoublyLinkedList<T> {
     private class Node {
         public T value;
@@ -316,7 +320,7 @@ public class DoublyLinkedList<T> {
     public void InsertAfter(Node node, T value) {
         if (node == null) throw new ArgumentNullException();
         
-        Node newNode = new Node(value);
+        Node newNode = new(value);
         newNode.next = node.next;
         newNode.prev = node;
         
@@ -394,7 +398,7 @@ But if we need to insert at arbitrary index k:
 ```csharp
 // BAD: Only update next, not prev (in doubly linked list)
 public void InsertBad(Node node, T value) {
-    Node newNode = new Node(value);
+    Node newNode = new(value);
     newNode.next = node.next;
     // FORGOT: newNode.prev = node;
     // Result: prev pointer is broken!
@@ -402,7 +406,7 @@ public void InsertBad(Node node, T value) {
 
 // CORRECT: Update both directions
 public void InsertGood(Node node, T value) {
-    Node newNode = new Node(value);
+    Node newNode = new(value);
     newNode.next = node.next;
     newNode.prev = node;
     if (node.next != null) {
@@ -484,6 +488,8 @@ An LRU (Least Recently Used) cache must:
 
 **Solution:** Doubly linked list + hash map.
 ```csharp
+using System.Collections.Generic;
+
 // Doubly linked list maintains order (most recent at tail)
 // Hash map provides O(1) lookup by key
 public class LRUCache<K, V> {
@@ -678,4 +684,3 @@ This is where algorithms meets systems. Big-O complexity tells half the story. M
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers both mechanics and design principles  
 **Batch Status:** ✅ COMPLETE — Week 02 Day 03 Final
-

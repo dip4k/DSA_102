@@ -432,7 +432,7 @@ public List<List<string>> GroupAnagrams(string[] words)
         // Create canonical form: sorted characters
         char[] chars = word.ToCharArray();
         Array.Sort(chars);
-        string canonical = new string(chars);
+        string canonical = new(chars);
         
         // Group under canonical form
         if (!groups.ContainsKey(canonical))
@@ -991,4 +991,3 @@ By mastering this week, you're learning to think like a systems engineer. You're
 Each sub-problem has a pattern. Hash patterns are the first bucket of patterns you'll solve again and again throughout your career.
 
 ---
-

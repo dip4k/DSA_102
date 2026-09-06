@@ -164,6 +164,8 @@ Push(9): RESIZE NEEDED AGAIN!
 ### 🔧 Operation 1: Push (Append) with Resizing
 
 ```csharp
+using System;
+
 public class DynamicArray<T> {
     private T[] data;
     private int length = 0;
@@ -295,7 +297,7 @@ private void Shrink() {
 
 ```csharp
 public static void AnalyzeCosts() {
-    DynamicArray<int> arr = new DynamicArray<int>();
+    DynamicArray<int> arr = new();
     
     int totalOperations = 0;
     int resizeCount = 0;
@@ -364,7 +366,7 @@ public void PushSmart(T value) {
 // Solution: Reserve capacity only when needed, or use shrinking
 
 // Over-allocation example:
-DynamicArray<int> arr = new DynamicArray<int>();
+DynamicArray<int> arr = new();
 for (int i = 0; i < 1000000; i++) {
     arr.Push(i);  // Final capacity might be 1048576, but length is 1000000
 }
@@ -618,13 +620,3 @@ This pattern—**structure enabling efficiency**—appears in every advanced dat
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers amortized analysis fundamentals  
 **Batch Status:** ✅ COMPLETE — Week 02 Day 02 Final
-
-
-
----
-
-## 📊 Complexity Recap
-
-- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
-- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
-

@@ -107,6 +107,8 @@ Direct access, instant ✅
 ### C# Array Usage
 
 ```csharp
+using System;
+
 public class ArrayOperations
 {
     public void BasicArrayOperations()
@@ -373,11 +375,14 @@ Add new: [1][2][3][4]
 ### C# List<T> (Dynamic Array)
 
 ```csharp
+using System;
+using System.Collections.Generic;
+
 public class DynamicArrayDemo
 {
     public void ListGrowthBehavior()
     {
-        List<int> list = new List<int>();
+        List<int> list = new();
         
         // Initially: Capacity = 0, Count = 0
         Console.WriteLine($"Initial: Capacity={list.Capacity}, Count={list.Count}");
@@ -671,6 +676,8 @@ Result: [10] → [20] → [25] → [30] → [40] ✅
 ### C# Linked List Node and Basic Operations
 
 ```csharp
+using System;
+
 // Node class
 public class LinkedListNode<T>
 {
@@ -697,7 +704,7 @@ public class LinkedListImpl<T>
     // Insert at beginning: O(1)
     public void InsertAtHead(T value)
     {
-        LinkedListNode<T> newNode = new LinkedListNode<T>(value);
+        LinkedListNode<T> newNode = new(value);
         newNode.next = head;  // Link new node to old head
         head = newNode;       // Update head
     }
@@ -705,7 +712,7 @@ public class LinkedListImpl<T>
     // Insert at end: O(N) - must traverse to find last
     public void InsertAtTail(T value)
     {
-        LinkedListNode<T> newNode = new LinkedListNode<T>(value);
+        LinkedListNode<T> newNode = new(value);
 
         if (head == null)
         {
@@ -764,7 +771,7 @@ public class LinkedListImpl<T>
 }
 
 // Usage
-LinkedListImpl<int> list = new LinkedListImpl<int>();
+LinkedListImpl<int> list = new();
 list.InsertAtHead(30);
 list.InsertAtHead(20);
 list.InsertAtHead(10);
@@ -809,7 +816,7 @@ Result:  30 → 20 → 10 → null ✅
 **WRONG - Loses next pointer before reassigning**
 ```csharp
 public void InsertAfter(LinkedListNode<T> node, T value) {
-    LinkedListNode<T> newNode = new LinkedListNode<T>(value);
+    LinkedListNode<T> newNode = new(value);
     newNode.next = node.next;  // ← Should do this first!
     node.next = newNode;
 }
@@ -872,7 +879,7 @@ public void InsertAtTail(T value) {
 **CORRECT - Check for empty list**
 ```csharp
 public void InsertAtTail(T value) {
-    LinkedListNode<T> newNode = new LinkedListNode<T>(value);
+    LinkedListNode<T> newNode = new(value);
     
     if (head == null) {  // ← Handle empty list
         head = newNode;
@@ -1032,6 +1039,8 @@ Peek():             View Person1 (don't remove)
 ### C# Stack Implementation
 
 ```csharp
+using System.Collections.Generic;
+
 public class Stack<T>
 {
     private Node<T> top;
@@ -1056,7 +1065,7 @@ public class Stack<T>
     // Push: Add to top: O(1)
     public void Push(T value)
     {
-        Node<T> newNode = new Node<T>(value);
+        Node<T> newNode = new(value);
         newNode.next = top;
         top = newNode;
     }
@@ -1092,7 +1101,7 @@ public class ParenthesisChecker
 {
     public bool IsValid(string s)
     {
-        Stack<char> stack = new Stack<char>();
+        Stack<char> stack = new();
 
         foreach (char c in s)
         {
@@ -1129,6 +1138,9 @@ bool result = checker.IsValid(expr);  // true
 ### C# Queue Implementation
 
 ```csharp
+using System;
+using System.Collections.Generic;
+
 public class Queue<T>
 {
     private Node<T> front;
@@ -1155,7 +1167,7 @@ public class Queue<T>
     // Enqueue: Add to back: O(1)
     public void Enqueue(T value)
     {
-        Node<T> newNode = new Node<T>(value);
+        Node<T> newNode = new(value);
 
         if (back == null)
         {
@@ -1204,7 +1216,7 @@ public class TaskScheduler
 {
     public void ProcessTasks()
     {
-        Queue<string> taskQueue = new Queue<string>();
+        Queue<string> taskQueue = new();
 
         // Enqueue tasks
         taskQueue.Enqueue("Task1");
@@ -1257,7 +1269,7 @@ public T Pop() {
 **WRONG - Doesn't maintain back pointer**
 ```csharp
 public void Enqueue(T value) {
-    Node<T> newNode = new Node<T>(value);
+    Node<T> newNode = new(value);
     back.next = newNode;  // ← Back becomes stale
     // Missing: back = newNode;
 }
@@ -1279,7 +1291,7 @@ back = newNode;  // ← Update back pointer
 ```csharp
 // Wants: Process tasks in order (Task1, Task2, Task3)
 // But uses Stack, gets: (Task3, Task2, Task1) ❌
-Stack<string> tasks = new Stack<string>();
+Stack<string> tasks = new();
 tasks.Push("Task1");
 tasks.Push("Task2");
 tasks.Push("Task3");
@@ -1290,7 +1302,7 @@ tasks.Push("Task3");
 ```csharp
 // Stack for LIFO (undo/redo, recursion)
 // Queue for FIFO (task scheduling, BFS)
-Queue<string> tasks = new Queue<string>();
+Queue<string> tasks = new();
 tasks.Enqueue("Task1");
 tasks.Enqueue("Task2");
 tasks.Enqueue("Task3");
@@ -1449,6 +1461,8 @@ Find "Smith" in ~10 flips instead of checking all 1M names sequentially
 ### C# Binary Search
 
 ```csharp
+using System;
+
 public class BinarySearch
 {
     // Iterative approach
@@ -1940,4 +1954,3 @@ Master implementation details (pointer manipulation, boundary conditions) and yo
 **Ready for Deployment:** YES ✅  
 **Quality Score:** 9.5/10 ⭐⭐⭐⭐⭐  
 **Next:** Week 03 - Sorting and Hashing
-

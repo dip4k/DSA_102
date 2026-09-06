@@ -211,6 +211,8 @@ public class MergeSort {
 **In-Place Merge Sort (Advanced):**
 
 ```csharp
+using System;
+
 // Standard merge sort uses O(n) extra space
 // In-place merge is possible but complex (O(n) time but intricate)
 // Most practical implementations trade simplicity for extra space
@@ -251,6 +253,8 @@ public class MergeSortInPlace {
 ### 🔧 Operation 2: Quick Sort (Detailed)
 
 ```csharp
+using System;
+
 public class QuickSort {
     public static void Sort(int[] arr) {
         if (arr.Length <= 1) return;
@@ -305,7 +309,7 @@ public class QuickSort {
     
     // Randomized Pivot Selection (avoid O(n²) worst case)
     private static int Partition(int[] arr, int low, int high) {
-        Random rand = new Random();
+        Random rand = new();
         int randomIndex = low + rand.Next(high - low + 1);
         
         // Swap random pivot to end
@@ -350,6 +354,8 @@ public class QuickSort {
 ### 🔧 Operation 3: Hybrid Approaches (Real Systems)
 
 ```csharp
+using System;
+
 // Modern languages use hybrid approaches
 // Example: Introsort (used in C++ STL, C#)
 
@@ -394,6 +400,8 @@ public class IntroSort {
 ### 📉 Progressive Example: Detailed Trace with Costs
 
 ```csharp
+using System;
+
 public class SortingComparison {
     public static void AnalyzeCosts() {
         int[] arr = { 5, 2, 8, 1, 9, 3, 7, 4 };
@@ -451,7 +459,7 @@ private static void MergeSortOptimized(int[] arr) {
 // Result: O(n²) recursion depth
 
 // CORRECT: Randomize pivot
-Random rand = new Random();
+Random rand = new();
 int randomIndex = low + rand.Next(high - low + 1);
 (arr[randomIndex], arr[high]) = (arr[high], arr[randomIndex]);
 // Now probability of O(n²) is O(1 / 2^n)
@@ -683,13 +691,3 @@ Master both algorithms, understand their trade-offs, and you understand a princi
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers mechanics, analysis, and systems thinking  
 **Batch Status:** ✅ COMPLETE — Week 03 Day 02 (Revised) Final
-
-
-
----
-
-## 📊 Complexity Recap
-
-- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
-- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
-

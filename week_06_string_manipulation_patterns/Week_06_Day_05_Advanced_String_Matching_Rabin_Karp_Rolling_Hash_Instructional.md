@@ -704,13 +704,3 @@ When you encounter a pattern matching problem at scale—plagiarism detection, D
 These questions will guide you to the right tool.
 
 ---
-
-
----
-
-## 📊 Complexity Recap
-
-- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
-- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
-
-

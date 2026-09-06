@@ -596,15 +596,4 @@ Master variable-size sliding windows, and you've mastered a fundamental pattern 
 
 **Inline Visuals:** 8 (ASCII diagrams, trace tables, comparison matrices)  
 **Real-World Stories:** 3 (Browser LRU cache, Database streaming, TCP congestion)  
-**Interview-Ready:** Yes — covers mechanics, amortized analysis, and production scenarios  
-
-
-
-
----
-
-## 📊 Complexity Recap
-
-- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
-- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
-
+**Interview-Ready:** Yes — covers mechanics, amortized analysis, and production scenarios

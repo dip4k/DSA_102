@@ -153,6 +153,8 @@ Even with adversarial inputs, collision probability is at most 1/m. Expected cha
 **Example: Multiply-Add-Divide (MAD) Hash Function:**
 
 ```csharp
+using System;
+
 public class UniversalHash {
     private readonly int p;  // Large prime (e.g., 2^31 - 1)
     private readonly int a;  // Random a in [1, p-1]
@@ -164,7 +166,7 @@ public class UniversalHash {
         p = 2147483647;  // Mersenne prime 2^31 - 1
         
         // Randomize a, b for each table instance
-        Random rand = new Random();
+        Random rand = new();
         a = rand.Next(1, p);
         b = rand.Next(0, p);
     }
@@ -187,6 +189,8 @@ public class UniversalHash {
 ### 🔧 Operation 1: Open Addressing with Linear Probing
 
 ```csharp
+using System;
+
 public class HashTableLinearProbing<K, V> where K : notnull {
     private struct Entry {
         public K Key;
@@ -305,6 +309,8 @@ public class HashTableLinearProbing<K, V> where K : notnull {
 ### 🔧 Operation 2: Double Hashing (Better Distribution)
 
 ```csharp
+using System;
+
 public class HashTableDoubleHashing<K, V> where K : notnull {
     private struct Entry {
         public K Key;
@@ -410,6 +416,8 @@ public class HashTableDoubleHashing<K, V> where K : notnull {
 ### 🔧 Operation 3: Rabin-Karp Rolling Hash (String Matching)
 
 ```csharp
+using System.Collections.Generic;
+
 public class KarpRabinRollingHash {
     private const int PRIME = 101;      // Prime for modulo
     private const int BASE = 256;       // Alphabet size
@@ -521,6 +529,8 @@ public class KarpRabinRollingHash {
 ### 🔧 Operation 4: Plagiarism Detection Using Rolling Hash
 
 ```csharp
+using System.Collections.Generic;
+
 public class PlagiarismDetector {
     // Find similar segments between two documents using rolling hash
     public static List<(int, int, int)> FindSimilarSegments(
@@ -869,14 +879,3 @@ Master open addressing, rolling hash, and universal hashing—their mechanics, t
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers mechanics, analysis, and applications  
 **Batch Status:** ✅ COMPLETE — Week 03 Day 05 Final
-
-
-
----
-
-## 📊 Complexity Recap
-
-- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
-- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
-
-

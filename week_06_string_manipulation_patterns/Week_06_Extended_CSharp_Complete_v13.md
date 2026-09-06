@@ -84,6 +84,8 @@ Two approaches: (1) Two-pointer from ends: O(1) space, compare until middle. (2)
 #### 💻 Core C# Implementation (Battle-Tested)
 
 ```csharp
+using System;
+
 /// <summary>
 /// Palindrome Patterns - Two-Pointer and Expand-Around-Center
 /// Time: O(n) or O(n²) | Space: O(1) or O(n)
@@ -230,6 +232,9 @@ Variable window: expand right, add character to frequency map. Shrink left when 
 #### 💻 Core C# Implementation (Battle-Tested)
 
 ```csharp
+using System;
+using System.Collections.Generic;
+
 /// <summary>
 /// Sliding Window on Strings - Variable and Fixed Windows
 /// Time: O(n) amortized | Space: O(1) for character sets
@@ -403,6 +408,9 @@ Stack stores open brackets. On open, push. On close, check top matches type; pop
 #### 💻 Core C# Implementation (Battle-Tested)
 
 ```csharp
+using System;
+using System.Collections.Generic;
+
 /// <summary>
 /// Parentheses & Bracket Matching - Stack-Based Solutions
 /// Time: O(n) | Space: O(n)
@@ -561,6 +569,8 @@ atoi: scan left-to-right, skip whitespace, handle sign, accumulate digits with o
 #### 💻 Core C# Implementation (Battle-Tested)
 
 ```csharp
+using System.Collections.Generic;
+
 /// <summary>
 /// String Parsing & Encoding - atoi, Roman Numerals, Compression
 /// Time: O(n) | Space: O(1) or O(n) for result
@@ -758,6 +768,8 @@ Polynomial rolling hash: H = c₀*b⁰ + c₁*b¹ + ... + cₙ₋₁*bⁿ⁻¹ (
 #### 💻 Core C# Implementation (Battle-Tested)
 
 ```csharp
+using System.Collections.Generic;
+
 /// <summary>
 /// String Matching with Rolling Hash (Rabin-Karp)
 /// Time: O(n + m) average, O(n*m) worst | Space: O(1)
@@ -1086,7 +1098,6 @@ This file is self-contained. You have:
 
 ---
 
-
 This file combines:
 - ✅ **Pattern selection guidance** (v11 strength) — Know WHEN/WHY to choose
 - ✅ **Production-grade code** (v12 strength) — Know HOW to implement
@@ -1094,5 +1105,3 @@ This file combines:
 - ✅ **Progressive learning** (v11 strength) — Practice from easy to hard
 - ✅ **Interview readiness** (v13 integration) — Pass technical interviews
 - ✅ **Complete coverage** (WEEK 6 TOPICS) — All string manipulation patterns
-
-

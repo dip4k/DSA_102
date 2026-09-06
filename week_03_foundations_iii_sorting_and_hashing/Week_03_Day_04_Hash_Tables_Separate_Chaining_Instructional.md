@@ -195,6 +195,9 @@ Strategy: When α exceeds threshold (e.g., 0.75), resize to double buckets
 ### 🔧 Operation 1: Hash Table with Separate Chaining
 
 ```csharp
+using System;
+using System.Collections.Generic;
+
 public class HashTableChaining<K, V> where K : notnull {
     private List<(K, V)>[] buckets;
     private int count = 0;
@@ -336,6 +339,8 @@ public class HashTableChaining<K, V> where K : notnull {
 ### 🔧 Operation 2: Custom Hash Function for Strings
 
 ```csharp
+using System;
+
 public class StringHashTable {
     // Good hash function for strings (FNV-1a variant)
     private static int HashString(string key) {
@@ -382,6 +387,8 @@ string[] words = ["apple", "apply", "applet", "approval", ...];
 ### 🔧 Operation 3: Analyzing Collision Probability
 
 ```csharp
+using System;
+
 public class CollisionAnalysis {
     // Birthday paradox: probability of collision in hash table
     // With m buckets and n keys, expected collisions ≈ n² / (2m)
@@ -753,13 +760,3 @@ Master hash tables—their design, their applications, their trade-offs—and yo
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers mechanics, design, and applications  
 **Batch Status:** ✅ COMPLETE — Week 03 Day 04 Final
-
-
-
----
-
-## 📊 Complexity Recap
-
-- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
-- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
-

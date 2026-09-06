@@ -389,7 +389,6 @@ Level 2:  [38,27]  [43,3]   [9,82]  [10]
           /    \    /   \    /   \     |
 Level 3: [38] [27][43] [3] [9] [82]  (base)
 
-
 MERGE PHASE (Bottom-Up Reconstruction):
 ───────────────────────────────────────
 
@@ -671,7 +670,6 @@ TREE VIEW:
      / \ /
     7  4 5
 
-
 TIME: O(log n) - height of heap
 SPACE: O(1) just swaps
 ```
@@ -723,7 +721,6 @@ TREE VIEW:
       3   5          (was 2)
      / \
     7   4
-
 
 TIME: O(log n) - height of heap
 SPACE: O(1) just swaps
@@ -1192,7 +1189,4 @@ Rabin-Karp           │ Substring patterns      │ O(n+m) / O(1)
 
 ---
 
-
 **Use web resource links for interactive visualizations while studying!**
-
-

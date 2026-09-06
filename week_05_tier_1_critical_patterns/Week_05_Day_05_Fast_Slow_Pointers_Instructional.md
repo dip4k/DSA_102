@@ -582,4 +582,3 @@ Together, these 6 patterns cover **65% of interview problems**. The remaining 35
 Week 5 represents the culmination of **Tier 1 Critical Patterns**. You're now equipped to recognize and solve the majority of coding interview problems with confidence and efficiency.
 
 ---
-

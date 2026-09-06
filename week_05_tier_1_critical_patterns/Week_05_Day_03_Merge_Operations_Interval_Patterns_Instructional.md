@@ -600,4 +600,3 @@ Sort (hard), then linear scan (easy). This principle applies to:
 By Week 15, you'll see this pattern in 30+ problems. Master it on Day 3.
 
 ---
-

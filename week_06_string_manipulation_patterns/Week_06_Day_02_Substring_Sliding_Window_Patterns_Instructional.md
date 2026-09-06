@@ -728,12 +728,3 @@ This pattern isn't limited to strings. You'll encounter similar adaptive-window 
 When you see a problem involving sequences and constraints, pause. Ask: **"Can I maintain a sliding window to solve this?"** More often than not, the answer is yes, and the solution is elegant.
 
 ---
-
-
----
-
-## 📊 Complexity Recap
-
-- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
-- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
-

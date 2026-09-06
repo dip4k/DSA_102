@@ -596,7 +596,7 @@ public double[] GetAverages(int[] nums, int k)
 public int[] MaxSlidingWindow(int[] nums, int k)
 {
     int[] result = new int[nums.Length - k + 1];
-    Deque<int> deque = new Deque<int>();  // Stores indices
+    Deque<int> deque = new();  // Stores indices
     
     for (int i = 0; i < nums.Length; i++)
     {
@@ -638,7 +638,7 @@ public int[] MaxSlidingWindow(int[] nums, int k)
 public long[] FirstNegativeInKWindows(int[] nums, int k)
 {
     long[] result = new long[nums.Length - k + 1];
-    Queue<int> negativeIndices = new Queue<int>();
+    Queue<int> negativeIndices = new();
     
     // Process first window
     for (int i = 0; i < k; i++)
@@ -2137,4 +2137,3 @@ Week 4 is where **problems become tractable**:
 **Next Recommended:** Week 05 - Critical Patterns
 
 **END OF WEEK 04 COMPLETE PLAYBOOK - CORRECTED EDITION**
-

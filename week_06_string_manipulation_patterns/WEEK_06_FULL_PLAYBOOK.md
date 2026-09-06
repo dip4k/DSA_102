@@ -118,6 +118,8 @@ Even-length palindrome:
 ### C# Palindrome Detection Implementations
 
 ```csharp
+using System;
+
 public class PalindromeDetection
 {
     // Approach 1: Two-pointer O(N) time, O(1) space
@@ -206,7 +208,7 @@ public class PalindromeDetection
         }
         
         // Reverse
-        string reversed = new string(clean.Reverse().ToArray());
+        string reversed = new(clean.Reverse().ToArray());
         
         // Compare
         return clean == reversed;
@@ -468,6 +470,8 @@ Result: "aba" or "bab"
 ### C# Longest Palindrome Approaches
 
 ```csharp
+using System;
+
 public class LongestPalindrome
 {
     // Approach 1: Expand around center O(N²) time, O(1) space
@@ -848,12 +852,15 @@ All windows: O(N) iterations
 ### C# Substring Operations
 
 ```csharp
+using System;
+using System.Collections.Generic;
+
 public class SubstringOperations
 {
     // Operation 1: Generate all substrings O(N²) time, O(N²) space
     public List<string> GetAllSubstrings(string s)
     {
-        List<string> substrings = new List<string>();
+        List<string> substrings = new();
         
         // All starting positions
         for (int i = 0; i < s.Length; i++)
@@ -871,7 +878,7 @@ public class SubstringOperations
     // Operation 2: Find all unique substrings O(N²) time, O(N²) space
     public HashSet<string> GetUniqueSubstrings(string s)
     {
-        HashSet<string> unique = new HashSet<string>();
+        HashSet<string> unique = new();
         
         for (int i = 0; i < s.Length; i++)
         {
@@ -927,7 +934,7 @@ public class SubstringOperations
     // Operation 5: Find all occurrences of pattern O(N·M) time
     public List<int> FindAllOccurrences(string text, string pattern)
     {
-        List<int> positions = new List<int>();
+        List<int> positions = new();
         
         for (int i = 0; i <= text.Length - pattern.Length; i++)
         {
@@ -951,7 +958,7 @@ public class SubstringOperations
     // Operation 6: Find pattern with rolling hash O(N+M) average
     public List<int> FindAllOccurrencesHash(string text, string pattern)
     {
-        List<int> positions = new List<int>();
+        List<int> positions = new();
         
         if (pattern.Length > text.Length)
             return positions;
@@ -1265,12 +1272,15 @@ Final: Stack empty ✅ VALID!
 ### C# Parentheses Matching
 
 ```csharp
+using System;
+using System.Collections.Generic;
+
 public class ParenthesesValidator
 {
     // Validation: Check if valid matching O(N) time, O(N) space
     public bool IsValid(string s)
     {
-        Stack<char> stack = new Stack<char>();
+        Stack<char> stack = new();
         
         foreach (char c in s)
         {
@@ -1384,7 +1394,7 @@ public class ParenthesesValidator
     // Generate all valid combinations with N pairs O(Catalan) time
     public List<string> GenerateValidCombinations(int n)
     {
-        List<string> result = new List<string>();
+        List<string> result = new();
         GenerateHelper(result, "", 0, 0, n);
         return result;
     }
@@ -1650,6 +1660,9 @@ All in ONE pass through string
 ### C# Advanced String Techniques
 
 ```csharp
+using System;
+using System.Collections.Generic;
+
 public class AdvancedStringTechniques
 {
     // Comprehensive validator: Multiple checks, single pass O(N)
@@ -1661,8 +1674,8 @@ public class AdvancedStringTechniques
         var result = new ValidationResult { IsValid = true };
         
         // State variables for multiple checks
-        Stack<char> bracketStack = new Stack<char>();
-        HashSet<string> seenPatterns = new HashSet<string>();
+        Stack<char> bracketStack = new();
+        HashSet<string> seenPatterns = new();
         int left = 0, right = s.Length - 1;
         
         // Single pass through string
@@ -2187,4 +2200,3 @@ Master Week 6 and you'll recognize these patterns everywhere.
 **Ready for Deployment:** YES ✅  
 **Quality Score:** 9.5/10 ⭐⭐⭐⭐⭐  
 **Next:** Week 07 - Core Binary Trees
-

@@ -607,4 +607,3 @@ These principles extend to 30+ interview problems. Master Kadane's on Day 4B, an
 By the end of Week 5, you'll have mastered 8 critical patterns—hash, stack, intervals, partition, Kadane, and more. Together, they cover 60% of interview problems. The remaining 40% are variations of these patterns or require graph/tree concepts (Week 7+).
 
 ---
-

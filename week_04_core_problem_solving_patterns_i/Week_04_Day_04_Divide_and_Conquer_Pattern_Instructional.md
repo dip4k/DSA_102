@@ -539,15 +539,4 @@ The problems we solve in this chapter—sorting, counting inversions, finding ma
 
 **Inline Visuals:** 8 (recursion trees, trace tables, comparison matrices)  
 **Real-World Stories:** 3 (Database sorting, MapReduce, Inversion counting)  
-**Interview-Ready:** Yes — covers mechanics, recurrence analysis, and production scenarios  
-
-
-
-
----
-
-## 📊 Complexity Recap
-
-- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
-- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
-
+**Interview-Ready:** Yes — covers mechanics, recurrence analysis, and production scenarios

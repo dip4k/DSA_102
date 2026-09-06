@@ -1546,4 +1546,3 @@ This playbook is designed for **mastery, not memorization**. Each pattern teache
 Master these mental models, and the code becomes implementation detail.
 
 ---
-

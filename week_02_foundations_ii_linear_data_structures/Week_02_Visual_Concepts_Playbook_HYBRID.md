@@ -390,7 +390,6 @@ head ──→ [15] ──→ [10] → [20] → [30]
 
 TIME: O(1) constant!
 
-
 INSERT 25 AFTER NODE [20]:
 
 BEFORE:
@@ -654,7 +653,6 @@ mid = lo + (hi-lo)/2 = 0 + 3 = 3
 Array[3] = 7 == TARGET ✓
 FOUND at index 3!
 
-
 ITERATION 1 (Not found immediately):
 lo=0, hi=6
 mid = 0 + 3 = 3
@@ -678,7 +676,6 @@ mid = 4 + (4-4)/2 = 4
 
 Array[4] = 9 == TARGET ✓
 FOUND at index 4!
-
 
 INVARIANT MAINTAINED:
 ┌────────────────────────────────┐
@@ -739,7 +736,6 @@ lo > hi, STOP
 
 RESULT: Index 2 (LEFTMOST occurrence) ✓
 
-
 FIND LAST OCCURRENCE OF 5:
 ────────────────────────
 
@@ -754,7 +750,6 @@ mid = 3, Array[3] = 5 == target
 Continue until lo > hi
 
 RESULT: Index 4 (RIGHTMOST occurrence) ✓
-
 
 TEMPLATE DIFFERENCE:
 ┌─────────────────────────────┐
@@ -953,6 +948,4 @@ Binary Search Tree  │ O(logn)│ O(logn)│ O(logn)│ O(n)  │ Ordered
 
 ---
 
-
 **Use web resource links for interactive visualizations while studying!**
-

@@ -1437,12 +1437,3 @@ Shift cost (insertion): move a block right by one
 Swap:  [A, B] -> [B, A]
 Shift: [X, A, B] insert Y -> [X, Y, A, B]
 ```
-
-
----
-
-## 📊 Complexity Recap
-
-- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
-- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
-

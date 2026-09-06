@@ -627,12 +627,3 @@ This principle isn't limited to strings. Palindromes are one manifestation of a 
 When you encounter a new problem asking you to find or validate patterns, pause. Ask yourself: **"Is there symmetry here? Can I exploit it?"** This question, asked regularly, separates competent engineers from great ones.
 
 ---
-
-
----
-
-## 📊 Complexity Recap
-
-- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
-- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
-

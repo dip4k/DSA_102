@@ -547,5 +547,4 @@ Master the invariant, and you master the pattern. That's the essence of two-poin
 
 **Inline Visuals:** 8 (ASCII diagrams, trace tables, comparison matrices)  
 **Real-World Stories:** 3 (PostgreSQL merge joins, Netflix buffering, IoT deduplication)  
-**Interview-Ready:** Yes — covers mechanics, analysis, and applications  
-
+**Interview-Ready:** Yes — covers mechanics, analysis, and applications

@@ -726,12 +726,3 @@ This principle extends far beyond brackets:
 When you encounter a problem involving nesting, hierarchies, or "last-in-first-out" semantics, pause. Ask: **"Can I model this as a stack problem?"** More often than not, the answer is yes, and the solution becomes clear.
 
 ---
-
-
----
-
-## 📊 Complexity Recap
-
-- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
-- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
-
