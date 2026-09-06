@@ -1,426 +1,541 @@
 # 🎯 HYBRID PRACTICE PROBLEM LIST (PHASES) — 300+ LeetCode Problems
 ## Topic-aligned • Pattern-first • Interview-focused
 
-This file is organized strictly by **phases** (matching the hybrid curriculum).
-Each problem includes: LC#, priority, **topics to know**, and a 1-line **approach**.
+> **A curated master practice curriculum of 338 unique LeetCode problems structured across 12 logical learning phases.**  
+> **Philosophy:** Master the core problem patterns first through anchor problems, solidify variations, and elevate algorithmic maturity with advanced and challenge problems.  
+> **Target Audience:** Software Engineers, Senior Developers, and Tech Leads preparing for product-company and Big-Tech interviews.
+
+---
+
+## 📊 Curriculum Overview & Statistics
+
+### 🚥 Difficulty Distribution
+| Difficulty | Problems | Percentage | Role in Curriculum |
+| :---: | :---: | :---: | :--- |
+| 🟢 **Easy** | 68 | 20.1% | Syntax fluency, base templates, foundational invariants |
+| 🟡 **Medium** | 217 | 64.2% | The interview battleground (~70% of questions in live technical rounds) |
+| 🔴 **Hard** | 53 | 15.7% | Multi-pattern synthesis, subtle invariant proofs, stretch challenges |
+| **Total** | **338** | **100%** | **Comprehensive Full-Spectrum Mastery** |
 
 ### 🧭 Priority Legend
-- 🔑 ANCHOR — master first
-- ⭐ HIGH VALUE — frequent in interviews
-- 🧱 STANDARD — core coverage
-- 🎯 PRACTICE — reinforce variations
-- 💡 ADVANCED — multi-pattern / tricky
-- 🧪 CHALLENGE — optional stretch
+- 🔑 **ANCHOR** (62 Problems) — Master these first. The core canonical problem for every pattern.
+- ⭐ **HIGH VALUE** (55 Problems) — High frequency in tech interviews; direct variations of anchor patterns.
+- 🧱 **STANDARD** (67 Problems) — Core pattern coverage across fundamental scenarios.
+- 🎯 **PRACTICE** (89 Problems) — Pattern reinforcement, edge-case handling, and speed building.
+- 💡 **ADVANCED** (45 Problems) — Multi-pattern combinations and non-obvious state spaces.
+- 🧪 **CHALLENGE** (20 Problems) — Stretch problems that test deep algorithmic intuition.
 
-**Total unique problems:** 338+
+---
+
+## 🗺️ Quick Phase Navigation
+
+| Phase | Focus Topic | Total Problems | Anchor Count | Direct Jump |
+| :---: | :--- | :---: | :---: | :---: |
+| **Phase 0** | Foundations & Core Patterns 🧠 | 10 | 4 | [Jump to Phase 0](#phase-0--foundations--core-patterns-) |
+| **Phase 1** | Arrays, Strings & Hashing 🧺 | 36 | 5 | [Jump to Phase 1](#phase-1--arrays-strings--hashing-) |
+| **Phase 2** | Two Pointers & Sliding Window ↔️🪟 | 35 | 8 | [Jump to Phase 2](#phase-2--two-pointers--sliding-window-️) |
+| **Phase 3** | Linked Lists + Stacks/Queues 🔗📚 | 38 | 6 | [Jump to Phase 3](#phase-3--linked-lists--stacksqueues-) |
+| **Phase 4** | Trees & BST (DFS/BFS) 🌳 | 36 | 6 | [Jump to Phase 4](#phase-4--trees--bst-dfsbfs-) |
+| **Phase 5** | Graphs (DFS/BFS + Topo) 🗺️ | 32 | 4 | [Jump to Phase 5](#phase-5--graphs-dfsbfs--topo-️) |
+| **Phase 6** | Binary Search + Intervals 📏🔍 | 34 | 7 | [Jump to Phase 6](#phase-6--binary-search--intervals-) |
+| **Phase 7** | Greedy & Monotonic Patterns 🪙 | 17 | 3 | [Jump to Phase 7](#phase-7--greedy--monotonic-patterns-) |
+| **Phase 8** | Dynamic Programming (1D/2D/Knapsack) 🧩 | 31 | 8 | [Jump to Phase 8](#phase-8--dynamic-programming-1d2dknapsack-) |
+| **Phase 9** | Backtracking & Combinatorics 🌿 | 22 | 4 | [Jump to Phase 9](#phase-9--backtracking--combinatorics-) |
+| **Phase 10** | Heaps, Tries, Union-Find, Advanced DS 🧲🌲🤝 | 28 | 4 | [Jump to Phase 10](#phase-10--heaps-tries-union-find-advanced-ds-) |
+| **Phase 11** | Advanced Graphs + Design + Mixed Core 🚀 | 19 | 3 | [Jump to Phase 11](#phase-11--advanced-graphs--design--mixed-interview-core-) |
 
 ---
 
 ## Phase 0 — Foundations & Core Patterns 🧠
 
-| # | Problem | LC# | Priority | Topics to know | Hybrid approach |
-|---:|---|---:|---|---|---|
-| 1 | Valid Parentheses | 20 | 🔑 ANCHOR | Stack | Push opens; pop/match closes |
-| 2 | Maximum Subarray | 53 | 🔑 ANCHOR | Kadane, greedy/DP | Track best ending here |
-| 3 | Climbing Stairs | 70 | 🔑 ANCHOR | 1D DP, recurrence | dp[i]=dp[i-1]+dp[i-2] |
-| 4 | Binary Search | 704 | 🔑 ANCHOR | Big-O, loop invariants | Classic BS template; shrink search space |
-| 5 | Single Number | 136 | ⭐ HIGH VALUE | XOR properties | XOR all; duplicates cancel |
-| 6 | Counting Bits | 338 | ⭐ HIGH VALUE | DP + bit ops | dp[i]=dp[i>>1]+(i&1) |
-| 7 | Power of Two | 231 | 🎯 PRACTICE | Bit tricks | n>0 and n&(n-1)==0 |
-| 8 | First Bad Version | 278 | 🎯 PRACTICE | Boundary search | BS for leftmost true |
-| 9 | Find the Duplicate Number | 287 | 💡 ADVANCED | Cycle detection, binary search | Floyd cycle on values-as-next |
-| 10 | Median of Two Sorted Arrays | 4 | 🧪 CHALLENGE | Binary search partitions | Partition arrays; median from borders |
+| # | Problem | LC# | Difficulty | Priority | Pattern Tags | Hybrid Approach & Core Invariant |
+| :---: | :--- | :---: | :---: | :---: | :--- | :--- |
+| 1 | [Valid Parentheses](https://leetcode.com/problems/valid-parentheses/) | 20 | 🟢 Easy | 🔑 ANCHOR | `#stack` | Push opens; pop/match closes |
+| 2 | [Maximum Subarray](https://leetcode.com/problems/maximum-subarray/) | 53 | 🟡 Medium | 🔑 ANCHOR | `#kadanes-algorithm` `#greedy` `#dynamic-programming` | Track best ending here |
+| 3 | [Climbing Stairs](https://leetcode.com/problems/climbing-stairs/) | 70 | 🟢 Easy | 🔑 ANCHOR | `#1d-dp` | Dp[i]=dp[i-1]+dp[i-2] |
+| 4 | [Binary Search](https://leetcode.com/problems/binary-search/) | 704 | 🟢 Easy | 🔑 ANCHOR | `#binary-search` `#search-template` `#loop-invariant` | Classic BS template; shrink search space |
+| 5 | [Single Number](https://leetcode.com/problems/single-number/) | 136 | 🟢 Easy | ⭐ HIGH VALUE | `#bit-manipulation` | XOR all; duplicates cancel |
+| 6 | [Counting Bits](https://leetcode.com/problems/counting-bits/) | 338 | 🟢 Easy | ⭐ HIGH VALUE | `#dynamic-programming` `#bit-manipulation` | Dp[i]=dp[i>>1]+(i&1) |
+| 7 | [Power of Two](https://leetcode.com/problems/power-of-two/) | 231 | 🟢 Easy | 🎯 PRACTICE | `#bit-manipulation` | N>0 and n&(n-1)==0 |
+| 8 | [First Bad Version](https://leetcode.com/problems/first-bad-version/) | 278 | 🟢 Easy | 🎯 PRACTICE | `#binary-search` `#boundary-search` `#lower-bound` | BS for leftmost true |
+| 9 | [Find the Duplicate Number](https://leetcode.com/problems/find-the-duplicate-number/) | 287 | 🟡 Medium | 💡 ADVANCED | `#binary-search-on-answer` | Floyd cycle on values-as-next |
+| 10 | [Median of Two Sorted Arrays](https://leetcode.com/problems/median-of-two-sorted-arrays/) | 4 | 🔴 Hard | 🧪 CHALLENGE | `#binary-search` | Partition arrays; median from borders |
+
+> [!TIP]
+> ### 💡 Phase 0 Milestone — Foundations & Algorithmic Invariants
+> - **Bit Manipulation Invariant:** `n & (n - 1)` clears the lowest set bit. Duplicates cancel via $x \oplus x = 0$.
+> - **Kadane's Principle:** Local optimum decision: extend previous contiguous subarray or discard negative history and start fresh.
+> - **Binary Search Template:** Invariant search space $[L, R]$ where condition partitions space into monotonically valid / invalid halves.
+
 ---
 
 ## Phase 1 — Arrays, Strings & Hashing 🧺
 
-| # | Problem | LC# | Priority | Topics to know | Hybrid approach |
-|---:|---|---:|---|---|---|
-| 1 | Two Sum | 1 | 🔑 ANCHOR | Hash map | Store seen; check target-x |
-| 2 | Group Anagrams | 49 | 🔑 ANCHOR | Hashing key | Key by sorted string / counts |
-| 3 | Product of Array Except Self | 238 | 🔑 ANCHOR | Prefix/suffix products | Two passes; no division |
-| 4 | Top K Frequent Elements | 347 | 🔑 ANCHOR | Hash + heap/buckets | Count then select top-k |
-| 5 | Subarray Sum Equals K | 560 | 🔑 ANCHOR | Prefix sum + hash | Count prefixSum-k occurrences |
-| 6 | Rotate Image | 48 | ⭐ HIGH VALUE | Matrix ops | Transpose then reverse rows |
-| 7 | Set Matrix Zeroes | 73 | ⭐ HIGH VALUE | Matrix markers | Use first row/col as flags |
-| 8 | Longest Consecutive Sequence | 128 | ⭐ HIGH VALUE | Hash set | Start only at sequence heads |
-| 9 | Majority Element | 169 | ⭐ HIGH VALUE | Boyer–Moore | Cancel pairs; keep candidate |
-| 10 | Kth Largest Element in an Array | 215 | ⭐ HIGH VALUE | Heap/quickselect | Min-heap size k or quickselect |
-| 11 | Encode and Decode Strings | 271 | ⭐ HIGH VALUE | String design | Length-prefix encoding |
-| 12 | Contiguous Array | 525 | ⭐ HIGH VALUE | Prefix sum map | Map diff(count1-count0)->first index |
-| 13 | Valid Sudoku | 36 | 🧱 STANDARD | Constraints, hashing | Row/col/box sets |
-| 14 | Spiral Matrix | 54 | 🧱 STANDARD | Boundaries | 4 pointers; traverse layers |
-| 15 | Contains Duplicate | 217 | 🧱 STANDARD | Set | Insert; detect repeat |
-| 16 | Valid Anagram | 242 | 🧱 STANDARD | Counts, sorting | Frequency map or sort |
-| 17 | Find All Duplicates in an Array | 442 | 🧱 STANDARD | Index marking | Negate; if already neg => dup |
-| 18 | Find All Numbers Disappeared in an Array | 448 | 🧱 STANDARD | Index marking | Negate at index=abs(x)-1 |
-| 19 | Sort Characters By Frequency | 451 | 🧱 STANDARD | Hash + bucket/heap | Count then sort by freq |
-| 20 | Continuous Subarray Sum | 523 | 🧱 STANDARD | Prefix mod | Seen mod; subarray len>=2 |
-| 21 | Reorganize String | 767 | 🧱 STANDARD | Heap greedy | Place most frequent with cooldown |
-| 22 | Subarray Sums Divisible by K | 974 | 🧱 STANDARD | Prefix mod counts | Count equal mods |
-| 23 | Happy Number | 202 | 🎯 PRACTICE | Cycle detection | Use set or Floyd on digit-square |
-| 24 | Isomorphic Strings | 205 | 🎯 PRACTICE | Bijection mapping | Map s->t and t->s |
-| 25 | Missing Number | 268 | 🎯 PRACTICE | XOR/sum | XOR indices and values |
-| 26 | Word Pattern | 290 | 🎯 PRACTICE | Mapping | Pattern↔word bijection |
-| 27 | Intersection of Two Arrays | 349 | 🎯 PRACTICE | Set | Set intersection |
-| 28 | Intersection of Two Arrays II | 350 | 🎯 PRACTICE | Counts | Count with map then output |
-| 29 | Ransom Note | 383 | 🎯 PRACTICE | Counts | Count magazine letters |
-| 30 | First Unique Character in a String | 387 | 🎯 PRACTICE | Counts | Count then first count==1 |
-| 31 | Maximum Product of Three Numbers | 628 | 🎯 PRACTICE | Sorting | Pick top3 or 2min*max |
-| 32 | Backspace String Compare | 844 | 🎯 PRACTICE | Stack/2ptr | Simulate or skip-back pointers |
-| 33 | Sort Array By Parity | 905 | 🎯 PRACTICE | Two pointers | Partition even/odd |
-| 34 | Sort Array By Parity II | 922 | 🎯 PRACTICE | Two pointers | Place evens on even idx |
-| 35 | Reorder Data in Log Files | 937 | 🎯 PRACTICE | Sorting | Custom comparator; stable |
-| 36 | Maximum Erasure Value | 1695 | 🎯 PRACTICE | Window + set | Unique window sum max |
+| # | Problem | LC# | Difficulty | Priority | Pattern Tags | Hybrid Approach & Core Invariant |
+| :---: | :--- | :---: | :---: | :---: | :--- | :--- |
+| 1 | [Two Sum](https://leetcode.com/problems/two-sum/) | 1 | 🟢 Easy | 🔑 ANCHOR | `#hash-map` | Store seen; check `target - x` |
+| 2 | [Group Anagrams](https://leetcode.com/problems/group-anagrams/) | 49 | 🟡 Medium | 🔑 ANCHOR | `#hash-map` | Key by sorted string / counts |
+| 3 | [Product of Array Except Self](https://leetcode.com/problems/product-of-array-except-self/) | 238 | 🟡 Medium | 🔑 ANCHOR | `#prefix-suffix-product` `#array` `#space-optimization` | Two passes; no division |
+| 4 | [Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/) | 347 | 🟡 Medium | 🔑 ANCHOR | `#hash-map` `#heap` | Count then select top-k |
+| 5 | [Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/) | 560 | 🟡 Medium | 🔑 ANCHOR | `#prefix-sum` `#hash-map` | Count prefixSum-k occurrences |
+| 6 | [Rotate Image](https://leetcode.com/problems/rotate-image/) | 48 | 🟡 Medium | ⭐ HIGH VALUE | `#matrix-grid` | Transpose then reverse rows |
+| 7 | [Set Matrix Zeroes](https://leetcode.com/problems/set-matrix-zeroes/) | 73 | 🟡 Medium | ⭐ HIGH VALUE | `#matrix-grid` | Use first row/col as flags |
+| 8 | [Longest Consecutive Sequence](https://leetcode.com/problems/longest-consecutive-sequence/) | 128 | 🟡 Medium | ⭐ HIGH VALUE | `#hash-set` | Start only at sequence heads |
+| 9 | [Majority Element](https://leetcode.com/problems/majority-element/) | 169 | 🟢 Easy | ⭐ HIGH VALUE | `#boyer-moore-voting` `#frequency` `#array` | Cancel pairs; keep candidate |
+| 10 | [Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/) | 215 | 🟡 Medium | ⭐ HIGH VALUE | `#heap` | Min-heap size k or quickselect |
+| 11 | [Encode and Decode Strings](https://leetcode.com/problems/encode-and-decode-strings/) | 271 | 🟡 Medium | ⭐ HIGH VALUE | `#system-design` | Length-prefix encoding |
+| 12 | [Contiguous Array](https://leetcode.com/problems/contiguous-array/) | 525 | 🟡 Medium | ⭐ HIGH VALUE | `#prefix-sum` | Map diff(count1-count0)->first index |
+| 13 | [Valid Sudoku](https://leetcode.com/problems/valid-sudoku/) | 36 | 🟡 Medium | 🧱 STANDARD | `#hash-map` | Row/col/box sets |
+| 14 | [Spiral Matrix](https://leetcode.com/problems/spiral-matrix/) | 54 | 🟡 Medium | 🧱 STANDARD | `#matrix-grid` `#boundary-shrink` | 4 pointers; traverse layers |
+| 15 | [Contains Duplicate](https://leetcode.com/problems/contains-duplicate/) | 217 | 🟢 Easy | 🧱 STANDARD | `#hash-set` | Insert; detect repeat |
+| 16 | [Valid Anagram](https://leetcode.com/problems/valid-anagram/) | 242 | 🟢 Easy | 🧱 STANDARD | `#hash-map` `#frequency-map` `#string` | Frequency map or sort |
+| 17 | [Find All Duplicates in an Array](https://leetcode.com/problems/find-all-duplicates-in-an-array/) | 442 | 🟡 Medium | 🧱 STANDARD | `#array-indexing` `#in-place-marking` | Negate; if already neg => dup |
+| 18 | [Find All Numbers Disappeared in an Array](https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/) | 448 | 🟢 Easy | 🧱 STANDARD | `#array-indexing` `#in-place-marking` | Negate at index=abs(x)-1 |
+| 19 | [Sort Characters By Frequency](https://leetcode.com/problems/sort-characters-by-frequency/) | 451 | 🟡 Medium | 🧱 STANDARD | `#hash-map` `#heap` | Count then sort by freq |
+| 20 | [Continuous Subarray Sum](https://leetcode.com/problems/continuous-subarray-sum/) | 523 | 🟡 Medium | 🧱 STANDARD | `#prefix-sum` `#modulo-arithmetic` | Seen mod; subarray len>=2 |
+| 21 | [Reorganize String](https://leetcode.com/problems/reorganize-string/) | 767 | 🟡 Medium | 🧱 STANDARD | `#heap` `#greedy` | Place most frequent with cooldown |
+| 22 | [Subarray Sums Divisible by K](https://leetcode.com/problems/subarray-sums-divisible-by-k/) | 974 | 🟡 Medium | 🧱 STANDARD | `#prefix-sum` `#modulo-arithmetic` | Count equal mods |
+| 23 | [Happy Number](https://leetcode.com/problems/happy-number/) | 202 | 🟢 Easy | 🎯 PRACTICE | `#cycle-detection` | Use set or Floyd on digit-square |
+| 24 | [Isomorphic Strings](https://leetcode.com/problems/isomorphic-strings/) | 205 | 🟢 Easy | 🎯 PRACTICE | `#hash-map` `#bijection-mapping` | Map s->t and t->s |
+| 25 | [Missing Number](https://leetcode.com/problems/missing-number/) | 268 | 🟢 Easy | 🎯 PRACTICE | `#bit-manipulation` | XOR indices and values |
+| 26 | [Word Pattern](https://leetcode.com/problems/word-pattern/) | 290 | 🟢 Easy | 🎯 PRACTICE | `#hash-map` `#bijection-mapping` | Pattern↔word bijection |
+| 27 | [Intersection of Two Arrays](https://leetcode.com/problems/intersection-of-two-arrays/) | 349 | 🟢 Easy | 🎯 PRACTICE | `#hash-set` | Set intersection |
+| 28 | [Intersection of Two Arrays II](https://leetcode.com/problems/intersection-of-two-arrays-ii/) | 350 | 🟢 Easy | 🎯 PRACTICE | `#hash-map` `#frequency-map` | Count with map then output |
+| 29 | [Ransom Note](https://leetcode.com/problems/ransom-note/) | 383 | 🟢 Easy | 🎯 PRACTICE | `#hash-map` `#frequency-map` | Count magazine letters |
+| 30 | [First Unique Character in a String](https://leetcode.com/problems/first-unique-character-in-a-string/) | 387 | 🟢 Easy | 🎯 PRACTICE | `#hash-map` `#frequency-map` | Count then first count==1 |
+| 31 | [Maximum Product of Three Numbers](https://leetcode.com/problems/maximum-product-of-three-numbers/) | 628 | 🟢 Easy | 🎯 PRACTICE | `#sorting` | Pick top3 or 2min*max |
+| 32 | [Backspace String Compare](https://leetcode.com/problems/backspace-string-compare/) | 844 | 🟢 Easy | 🎯 PRACTICE | `#two-pointers` `#stack` | Simulate or skip-back pointers |
+| 33 | [Sort Array By Parity](https://leetcode.com/problems/sort-array-by-parity/) | 905 | 🟢 Easy | 🎯 PRACTICE | `#two-pointers` | Partition even/odd |
+| 34 | [Sort Array By Parity II](https://leetcode.com/problems/sort-array-by-parity-ii/) | 922 | 🟢 Easy | 🎯 PRACTICE | `#two-pointers` | Place evens on even idx |
+| 35 | [Reorder Data in Log Files](https://leetcode.com/problems/reorder-data-in-log-files/) | 937 | 🟡 Medium | 🎯 PRACTICE | `#sorting` | Custom comparator; stable |
+| 36 | [Maximum Erasure Value](https://leetcode.com/problems/maximum-erasure-value/) | 1695 | 🟡 Medium | 🎯 PRACTICE | `#sliding-window` `#hash-set` | Unique window sum max |
+
+> [!TIP]
+> ### 💡 Phase 1 Milestone — Frequency Maps & Index Marking
+> - **Complement Lookup:** Store history in `Dictionary<TKey, TValue>` to convert $O(N^2)$ pair searches into $O(1)$ amortized probes.
+> - **Canonical Representation:** When grouping equivalence classes (e.g. anagrams), derive a unique immutable key (sorted string or 26-element tuple).
+> - **In-Place Sign Marking:** When array values are bounded in $[1, N]$, use index `abs(val) - 1` signs to achieve $O(1)$ auxiliary space.
+
 ---
 
 ## Phase 2 — Two Pointers & Sliding Window ↔️🪟
 
-| # | Problem | LC# | Priority | Topics to know | Hybrid approach |
-|---:|---|---:|---|---|---|
-| 1 | Longest Substring Without Repeating Characters | 3 | 🔑 ANCHOR | Sliding window | Expand; shrink on duplicates |
-| 2 | Container With Most Water | 11 | 🔑 ANCHOR | Greedy pointers | Move shorter height inward |
-| 3 | 3Sum | 15 | 🔑 ANCHOR | Sort + 2 pointers | Fix i; scan remaining; skip dups |
-| 4 | Minimum Window Substring | 76 | 🔑 ANCHOR | Window + counts | Expand to satisfy; shrink to min |
-| 5 | Valid Palindrome | 125 | 🔑 ANCHOR | Two pointers | Skip non-alnum; compare |
-| 6 | Two Sum II - Input Array Is Sorted | 167 | 🔑 ANCHOR | Two pointers | Move ends based on sum |
-| 7 | Sliding Window Maximum | 239 | 🔑 ANCHOR | Monotonic deque | Maintain decreasing indices |
-| 8 | Longest Repeating Character Replacement | 424 | 🔑 ANCHOR | Window + freq | Keep maxFreq; shrink if invalid |
-| 9 | Next Permutation | 31 | ⭐ HIGH VALUE | Permutation logic | Find pivot, swap, reverse suffix |
-| 10 | Merge Sorted Array | 88 | ⭐ HIGH VALUE | 3 pointers | Fill from back |
-| 11 | Find All Anagrams in a String | 438 | ⭐ HIGH VALUE | Fixed window | Slide and match counts |
-| 12 | Permutation in String | 567 | ⭐ HIGH VALUE | Fixed window counts | Compare window counts |
-| 13 | Remove Duplicates from Sorted Array | 26 | 🧱 STANDARD | In-place | Slow pointer write unique |
-| 14 | Remove Element | 27 | 🧱 STANDARD | In-place | Overwrite/partition |
-| 15 | Minimum Size Subarray Sum | 209 | 🧱 STANDARD | Variable window | Shrink while sum>=target |
-| 16 | Move Zeroes | 283 | 🧱 STANDARD | Slow/fast | Write non-zeros then fill |
-| 17 | Subarray Product Less Than K | 713 | 🧱 STANDARD | Variable window | Shrink while prod>=k |
-| 18 | Boats to Save People | 881 | 🧱 STANDARD | Sort + 2ptr | Pair heaviest with lightest |
-| 19 | Max Consecutive Ones III | 1004 | 🧱 STANDARD | Window with budget | At most k zeros; shrink when >k |
-| 20 | 3Sum Closest | 16 | 🎯 PRACTICE | Sort + 2ptr | Fix i; minimize abs diff |
-| 21 | 4Sum | 18 | 🎯 PRACTICE | Sort + k-sum | Reduce to 2-sum with pruning |
-| 22 | Reverse String | 344 | 🎯 PRACTICE | Pointers | Swap ends |
-| 23 | Reverse Vowels of a String | 345 | 🎯 PRACTICE | Pointers | Swap vowels |
-| 24 | Valid Palindrome II | 680 | 🎯 PRACTICE | Two pointers | Allow one deletion |
-| 25 | Binary Subarrays With Sum | 930 | 🎯 PRACTICE | Prefix/window | Count via prefix sums |
-| 26 | Bag of Tokens | 948 | 🎯 PRACTICE | Greedy 2ptr | Spend smallest for power; sell largest |
-| 27 | Squares of a Sorted Array | 977 | 🎯 PRACTICE | 2 pointers | Compare abs ends; fill back |
-| 28 | Count Number of Nice Subarrays | 1248 | 🎯 PRACTICE | Prefix | Count odds via prefix |
-| 29 | Number of Substrings Containing All Three Characters | 1358 | 🎯 PRACTICE | Window | Count windows with all chars |
-| 30 | Maximum Number of Vowels in a Substring of Given Length | 1456 | 🎯 PRACTICE | Fixed window | Slide count of vowels |
-| 31 | Longest Subarray of 1's After Deleting One Element | 1493 | 🎯 PRACTICE | Window | Allow one zero |
-| 32 | Shortest Subarray with Sum at Least K | 862 | 💡 ADVANCED | Deque + prefix | Monotonic deque on prefix sums |
-| 33 | Subarrays with K Different Integers | 992 | 💡 ADVANCED | Window | AtMost(K) - AtMost(K-1) |
-| 34 | Longest Continuous Subarray With Absolute Diff <= Limit | 1438 | 💡 ADVANCED | 2 deques | Maintain min/max deques |
-| 35 | Frequency of the Most Frequent Element | 1838 | 💡 ADVANCED | Sort + window | Raise window to nums[r] within k |
+| # | Problem | LC# | Difficulty | Priority | Pattern Tags | Hybrid Approach & Core Invariant |
+| :---: | :--- | :---: | :---: | :---: | :--- | :--- |
+| 1 | [Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/) | 3 | 🟡 Medium | 🔑 ANCHOR | `#sliding-window` | Expand; shrink on duplicates |
+| 2 | [Container With Most Water](https://leetcode.com/problems/container-with-most-water/) | 11 | 🟡 Medium | 🔑 ANCHOR | `#greedy` | Move shorter height inward |
+| 3 | [3Sum](https://leetcode.com/problems/3sum/) | 15 | 🟡 Medium | 🔑 ANCHOR | `#two-pointers` | Fix i; scan remaining; skip dups |
+| 4 | [Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/) | 76 | 🔴 Hard | 🔑 ANCHOR | `#sliding-window` | Expand to satisfy; shrink to min |
+| 5 | [Valid Palindrome](https://leetcode.com/problems/valid-palindrome/) | 125 | 🟢 Easy | 🔑 ANCHOR | `#two-pointers` | Skip non-alnum; compare |
+| 6 | [Two Sum II - Input Array Is Sorted](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/) | 167 | 🟡 Medium | 🔑 ANCHOR | `#two-pointers` | Move ends based on sum |
+| 7 | [Sliding Window Maximum](https://leetcode.com/problems/sliding-window-maximum/) | 239 | 🔴 Hard | 🔑 ANCHOR | `#monotonic-queue` | Maintain decreasing indices |
+| 8 | [Longest Repeating Character Replacement](https://leetcode.com/problems/longest-repeating-character-replacement/) | 424 | 🟡 Medium | 🔑 ANCHOR | `#sliding-window` | Keep maxFreq; shrink if invalid |
+| 9 | [Next Permutation](https://leetcode.com/problems/next-permutation/) | 31 | 🟡 Medium | ⭐ HIGH VALUE | `#permutation-logic` | Find pivot, swap, reverse suffix |
+| 10 | [Merge Sorted Array](https://leetcode.com/problems/merge-sorted-array/) | 88 | 🟢 Easy | ⭐ HIGH VALUE | `#3-pointers` | Fill from back |
+| 11 | [Find All Anagrams in a String](https://leetcode.com/problems/find-all-anagrams-in-a-string/) | 438 | 🟡 Medium | ⭐ HIGH VALUE | `#sliding-window` | Slide and match counts |
+| 12 | [Permutation in String](https://leetcode.com/problems/permutation-in-string/) | 567 | 🟡 Medium | ⭐ HIGH VALUE | `#sliding-window` | Compare window counts |
+| 13 | [Remove Duplicates from Sorted Array](https://leetcode.com/problems/remove-duplicates-from-sorted-array/) | 26 | 🟢 Easy | 🧱 STANDARD | `#two-pointers` `#in-place` | Slow pointer write unique |
+| 14 | [Remove Element](https://leetcode.com/problems/remove-element/) | 27 | 🟢 Easy | 🧱 STANDARD | `#two-pointers` `#in-place` | Overwrite/partition |
+| 15 | [Minimum Size Subarray Sum](https://leetcode.com/problems/minimum-size-subarray-sum/) | 209 | 🟡 Medium | 🧱 STANDARD | `#sliding-window` | Shrink while sum>=target |
+| 16 | [Move Zeroes](https://leetcode.com/problems/move-zeroes/) | 283 | 🟢 Easy | 🧱 STANDARD | `#fast-slow-pointers` `#cycle-detection` | Write non-zeros then fill |
+| 17 | [Subarray Product Less Than K](https://leetcode.com/problems/subarray-product-less-than-k/) | 713 | 🟡 Medium | 🧱 STANDARD | `#sliding-window` | Shrink while prod>=k |
+| 18 | [Boats to Save People](https://leetcode.com/problems/boats-to-save-people/) | 881 | 🟡 Medium | 🧱 STANDARD | `#two-pointers` | Pair heaviest with lightest |
+| 19 | [Max Consecutive Ones III](https://leetcode.com/problems/max-consecutive-ones-iii/) | 1004 | 🟡 Medium | 🧱 STANDARD | `#sliding-window` | At most k zeros; shrink when >k |
+| 20 | [3Sum Closest](https://leetcode.com/problems/3sum-closest/) | 16 | 🟡 Medium | 🎯 PRACTICE | `#two-pointers` | Fix i; minimize abs diff |
+| 21 | [4Sum](https://leetcode.com/problems/4sum/) | 18 | 🟡 Medium | 🎯 PRACTICE | `#two-pointers` `#k-sum` `#sorting` | Reduce to 2-sum with pruning |
+| 22 | [Reverse String](https://leetcode.com/problems/reverse-string/) | 344 | 🟢 Easy | 🎯 PRACTICE | `#pointers` | Swap ends |
+| 23 | [Reverse Vowels of a String](https://leetcode.com/problems/reverse-vowels-of-a-string/) | 345 | 🟢 Easy | 🎯 PRACTICE | `#pointers` | Swap vowels |
+| 24 | [Valid Palindrome II](https://leetcode.com/problems/valid-palindrome-ii/) | 680 | 🟢 Easy | 🎯 PRACTICE | `#two-pointers` | Allow one deletion |
+| 25 | [Binary Subarrays With Sum](https://leetcode.com/problems/binary-subarrays-with-sum/) | 930 | 🟡 Medium | 🎯 PRACTICE | `#sliding-window` | Count via prefix sums |
+| 26 | [Bag of Tokens](https://leetcode.com/problems/bag-of-tokens/) | 948 | 🟡 Medium | 🎯 PRACTICE | `#two-pointers` `#greedy` | Spend smallest for power; sell largest |
+| 27 | [Squares of a Sorted Array](https://leetcode.com/problems/squares-of-a-sorted-array/) | 977 | 🟢 Easy | 🎯 PRACTICE | `#two-pointers` | Compare abs ends; fill back |
+| 28 | [Count Number of Nice Subarrays](https://leetcode.com/problems/count-number-of-nice-subarrays/) | 1248 | 🟡 Medium | 🎯 PRACTICE | `#prefix` | Count odds via prefix |
+| 29 | [Number of Substrings Containing All Three Characters](https://leetcode.com/problems/number-of-substrings-containing-all-three-characters/) | 1358 | 🟡 Medium | 🎯 PRACTICE | `#sliding-window` | Count windows with all chars |
+| 30 | [Maximum Number of Vowels in a Substring of Given Length](https://leetcode.com/problems/maximum-number-of-vowels-in-a-substring-of-given-length/) | 1456 | 🟡 Medium | 🎯 PRACTICE | `#sliding-window` | Slide count of vowels |
+| 31 | [Longest Subarray of 1's After Deleting One Element](https://leetcode.com/problems/longest-subarray-of-1s-after-deleting-one-element/) | 1493 | 🟡 Medium | 🎯 PRACTICE | `#sliding-window` | Allow one zero |
+| 32 | [Shortest Subarray with Sum at Least K](https://leetcode.com/problems/shortest-subarray-with-sum-at-least-k/) | 862 | 🔴 Hard | 💡 ADVANCED | `#monotonic-queue` | Monotonic deque on prefix sums |
+| 33 | [Subarrays with K Different Integers](https://leetcode.com/problems/subarrays-with-k-different-integers/) | 992 | 🔴 Hard | 💡 ADVANCED | `#sliding-window` | AtMost(K) - AtMost(K-1) |
+| 34 | [Longest Continuous Subarray With Absolute Diff <= Limit](https://leetcode.com/problems/longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit/) | 1438 | 🟡 Medium | 💡 ADVANCED | `#monotonic-queue` | Maintain min/max deques |
+| 35 | [Frequency of the Most Frequent Element](https://leetcode.com/problems/frequency-of-the-most-frequent-element/) | 1838 | 🟡 Medium | 💡 ADVANCED | `#sliding-window` | Raise window to nums[r] within k |
+
+> [!TIP]
+> ### 💡 Phase 2 Milestone — Boundary Pruning & Window Invariants
+> - **Opposing Pointers Elimination:** On sorted arrays, greedily shift boundaries to discard entire rows/columns of candidate spaces.
+> - **Sliding Window Rule:** Expand `right` to include elements; while window invariant is violated, contract `left` to restore validity.
+> - **Exact $K$ Decomposition:** Problems requiring 'exactly $K$' are often solved via `AtMost(K) - AtMost(K - 1)`.
+
 ---
 
 ## Phase 3 — Linked Lists + Stacks/Queues 🔗📚
 
-| # | Problem | LC# | Priority | Topics to know | Hybrid approach |
-|---:|---|---:|---|---|---|
-| 1 | Remove Nth Node From End of List | 19 | 🔑 ANCHOR | Two pointers | Advance fast n; then move both |
-| 2 | Merge Two Sorted Lists | 21 | 🔑 ANCHOR | Dummy node | Merge by choosing smaller head |
-| 3 | Linked List Cycle | 141 | 🔑 ANCHOR | Floyd | Fast/slow meet => cycle |
-| 4 | Min Stack | 155 | 🔑 ANCHOR | Design | Track mins with aux stack |
-| 5 | Reverse Linked List | 206 | 🔑 ANCHOR | Pointers | Iterative prev/curr/next |
-| 6 | Daily Temperatures | 739 | 🔑 ANCHOR | Monotonic stack | Pop while current warmer |
-| 7 | Add Two Numbers | 2 | ⭐ HIGH VALUE | Carry | Simulate addition with carry |
-| 8 | Merge k Sorted Lists | 23 | ⭐ HIGH VALUE | Heap | Push heads; pop/push next |
-| 9 | Trapping Rain Water | 42 | ⭐ HIGH VALUE | Stack/2ptr | Use boundaries; accumulate water |
-| 10 | Copy List with Random Pointer | 138 | ⭐ HIGH VALUE | Hash map | Old->new mapping; reconnect |
-| 11 | Linked List Cycle II | 142 | ⭐ HIGH VALUE | Floyd math | Reset one; move both to entry |
-| 12 | Reorder List | 143 | ⭐ HIGH VALUE | Multi-step | Mid + reverse + merge alternately |
-| 13 | Remove K Digits | 402 | ⭐ HIGH VALUE | Monotonic stack | Pop bigger digits while k>0 |
-| 14 | Minimum Remove to Make Valid Parentheses | 1249 | ⭐ HIGH VALUE | Stack | Mark invalid indices; rebuild |
-| 15 | Simplify Path | 71 | 🧱 STANDARD | Stack | Process '/', '.', '..' |
-| 16 | Evaluate Reverse Polish Notation | 150 | 🧱 STANDARD | Stack | Apply ops to top two |
-| 17 | Palindrome Linked List | 234 | 🧱 STANDARD | Reverse half | Find mid; reverse 2nd half; compare |
-| 18 | Decode String | 394 | 🧱 STANDARD | Stack | Parse k[substr] |
-| 19 | Next Greater Element I | 496 | 🧱 STANDARD | Monotonic stack | Map next greater via stack |
-| 20 | Next Greater Element II | 503 | 🧱 STANDARD | Circular stack | Traverse twice; mod index |
-| 21 | Asteroid Collision | 735 | 🧱 STANDARD | Stack | Simulate collisions |
-| 22 | Middle of the Linked List | 876 | 🧱 STANDARD | Fast/slow | Slow ends at middle |
-| 23 | Online Stock Span | 901 | 🧱 STANDARD | Monotonic stack | Pop while price >= top |
-| 24 | Swap Nodes in Pairs | 24 | 🎯 PRACTICE | Pointer ops | Swap in-place with dummy |
-| 25 | Rotate List | 61 | 🎯 PRACTICE | Cycle | Make cycle; break at new tail |
-| 26 | Intersection of Two Linked Lists | 160 | 🎯 PRACTICE | Pointer sync | Two runners switch heads |
-| 27 | Implement Stack using Queues | 225 | 🎯 PRACTICE | Queue rotation | Rotate to simulate stack |
-| 28 | Implement Queue using Stacks | 232 | 🎯 PRACTICE | 2 stacks | Amortized enqueue/dequeue |
-| 29 | Odd Even Linked List | 328 | 🎯 PRACTICE | Rewire | Separate odd/even chains |
-| 30 | Implement Circular Queue | 622 | 🎯 PRACTICE | Design | Array ring buffer |
-| 31 | Design Circular Deque | 641 | 🎯 PRACTICE | Design | Array ring buffer |
-| 32 | Minimum Add to Make Parentheses Valid | 921 | 🎯 PRACTICE | Greedy/stack | Count balance; add needed |
-| 33 | Remove All Adjacent Duplicates In String | 1047 | 🎯 PRACTICE | Stack | Pop if same as top |
-| 34 | Reverse Nodes in k-Group | 25 | 💡 ADVANCED | Chunk reversal | Reverse k nodes repeatedly |
-| 35 | Largest Rectangle in Histogram | 84 | 💡 ADVANCED | Monotonic stack | Pop heights; compute width |
-| 36 | Sort List | 148 | 💡 ADVANCED | Merge sort | Split with slow/fast; merge |
-| 37 | Exclusive Time of Functions | 636 | 💡 ADVANCED | Stack | Track prev timestamp |
-| 38 | Sum of Subarray Minimums | 907 | 💡 ADVANCED | Monotonic stack | Count contribution via spans |
+| # | Problem | LC# | Difficulty | Priority | Pattern Tags | Hybrid Approach & Core Invariant |
+| :---: | :--- | :---: | :---: | :---: | :--- | :--- |
+| 1 | [Remove Nth Node From End of List](https://leetcode.com/problems/remove-nth-node-from-end-of-list/) | 19 | 🟡 Medium | 🔑 ANCHOR | `#two-pointers` | Advance fast n; then move both |
+| 2 | [Merge Two Sorted Lists](https://leetcode.com/problems/merge-two-sorted-lists/) | 21 | 🟢 Easy | 🔑 ANCHOR | `#dummy-node` | Merge by choosing smaller head |
+| 3 | [Linked List Cycle](https://leetcode.com/problems/linked-list-cycle/) | 141 | 🟢 Easy | 🔑 ANCHOR | `#fast-slow-pointers` `#cycle-detection` | Fast/slow meet => cycle |
+| 4 | [Min Stack](https://leetcode.com/problems/min-stack/) | 155 | 🟡 Medium | 🔑 ANCHOR | `#stack` `#system-design` | Track mins with aux stack |
+| 5 | [Reverse Linked List](https://leetcode.com/problems/reverse-linked-list/) | 206 | 🟢 Easy | 🔑 ANCHOR | `#pointers` | Iterative prev/curr/next |
+| 6 | [Daily Temperatures](https://leetcode.com/problems/daily-temperatures/) | 739 | 🟡 Medium | 🔑 ANCHOR | `#monotonic-stack` | Pop while current warmer |
+| 7 | [Add Two Numbers](https://leetcode.com/problems/add-two-numbers/) | 2 | 🟡 Medium | ⭐ HIGH VALUE | `#carry` | Simulate addition with carry |
+| 8 | [Merge k Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists/) | 23 | 🔴 Hard | ⭐ HIGH VALUE | `#heap` | Push heads; pop/push next |
+| 9 | [Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/) | 42 | 🔴 Hard | ⭐ HIGH VALUE | `#two-pointers` `#stack` | Use boundaries; accumulate water |
+| 10 | [Copy List with Random Pointer](https://leetcode.com/problems/copy-list-with-random-pointer/) | 138 | 🟡 Medium | ⭐ HIGH VALUE | `#hash-map` | Old->new mapping; reconnect |
+| 11 | [Linked List Cycle II](https://leetcode.com/problems/linked-list-cycle-ii/) | 142 | 🟡 Medium | ⭐ HIGH VALUE | `#fast-slow-pointers` `#cycle-detection` | Reset one; move both to entry |
+| 12 | [Reorder List](https://leetcode.com/problems/reorder-list/) | 143 | 🟡 Medium | ⭐ HIGH VALUE | `#multi-step` | Mid + reverse + merge alternately |
+| 13 | [Remove K Digits](https://leetcode.com/problems/remove-k-digits/) | 402 | 🟡 Medium | ⭐ HIGH VALUE | `#monotonic-stack` | Pop bigger digits while k>0 |
+| 14 | [Minimum Remove to Make Valid Parentheses](https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/) | 1249 | 🟡 Medium | ⭐ HIGH VALUE | `#stack` | Mark invalid indices; rebuild |
+| 15 | [Simplify Path](https://leetcode.com/problems/simplify-path/) | 71 | 🟡 Medium | 🧱 STANDARD | `#stack` | Process '/', '.', '..' |
+| 16 | [Evaluate Reverse Polish Notation](https://leetcode.com/problems/evaluate-reverse-polish-notation/) | 150 | 🟡 Medium | 🧱 STANDARD | `#stack` | Apply ops to top two |
+| 17 | [Palindrome Linked List](https://leetcode.com/problems/palindrome-linked-list/) | 234 | 🟢 Easy | 🧱 STANDARD | `#reverse-half` | Find mid; reverse 2nd half; compare |
+| 18 | [Decode String](https://leetcode.com/problems/decode-string/) | 394 | 🟡 Medium | 🧱 STANDARD | `#stack` | Parse k[substr] |
+| 19 | [Next Greater Element I](https://leetcode.com/problems/next-greater-element-i/) | 496 | 🟢 Easy | 🧱 STANDARD | `#monotonic-stack` | Map next greater via stack |
+| 20 | [Next Greater Element II](https://leetcode.com/problems/next-greater-element-ii/) | 503 | 🟡 Medium | 🧱 STANDARD | `#stack` | Traverse twice; mod index |
+| 21 | [Asteroid Collision](https://leetcode.com/problems/asteroid-collision/) | 735 | 🟡 Medium | 🧱 STANDARD | `#stack` | Simulate collisions |
+| 22 | [Middle of the Linked List](https://leetcode.com/problems/middle-of-the-linked-list/) | 876 | 🟢 Easy | 🧱 STANDARD | `#fast-slow-pointers` `#cycle-detection` | Slow ends at middle |
+| 23 | [Online Stock Span](https://leetcode.com/problems/online-stock-span/) | 901 | 🟡 Medium | 🧱 STANDARD | `#monotonic-stack` | Pop while price >= top |
+| 24 | [Swap Nodes in Pairs](https://leetcode.com/problems/swap-nodes-in-pairs/) | 24 | 🟡 Medium | 🎯 PRACTICE | `#linked-list` `#pointer-manipulation` | Swap in-place with dummy |
+| 25 | [Rotate List](https://leetcode.com/problems/rotate-list/) | 61 | 🟡 Medium | 🎯 PRACTICE | `#linked-list` `#cycle-detection` | Make cycle; break at new tail |
+| 26 | [Intersection of Two Linked Lists](https://leetcode.com/problems/intersection-of-two-linked-lists/) | 160 | 🟢 Easy | 🎯 PRACTICE | `#linked-list` `#two-pointers` | Two runners switch heads |
+| 27 | [Implement Stack using Queues](https://leetcode.com/problems/implement-stack-using-queues/) | 225 | 🟢 Easy | 🎯 PRACTICE | `#stack` | Rotate to simulate stack |
+| 28 | [Implement Queue using Stacks](https://leetcode.com/problems/implement-queue-using-stacks/) | 232 | 🟢 Easy | 🎯 PRACTICE | `#stack` | Amortized enqueue/dequeue |
+| 29 | [Odd Even Linked List](https://leetcode.com/problems/odd-even-linked-list/) | 328 | 🟡 Medium | 🎯 PRACTICE | `#linked-list` `#pointer-manipulation` | Separate odd/even chains |
+| 30 | [Implement Circular Queue](https://leetcode.com/problems/design-circular-queue/) | 622 | 🟡 Medium | 🎯 PRACTICE | `#system-design` | Array ring buffer |
+| 31 | [Design Circular Deque](https://leetcode.com/problems/design-circular-deque/) | 641 | 🟡 Medium | 🎯 PRACTICE | `#system-design` | Array ring buffer |
+| 32 | [Minimum Add to Make Parentheses Valid](https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/) | 921 | 🟡 Medium | 🎯 PRACTICE | `#stack` `#greedy` | Count balance; add needed |
+| 33 | [Remove All Adjacent Duplicates In String](https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/) | 1047 | 🟢 Easy | 🎯 PRACTICE | `#stack` | Pop if same as top |
+| 34 | [Reverse Nodes in k-Group](https://leetcode.com/problems/reverse-nodes-in-k-group/) | 25 | 🔴 Hard | 💡 ADVANCED | `#linked-list` `#k-group-reversal` | Reverse k nodes repeatedly |
+| 35 | [Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/) | 84 | 🔴 Hard | 💡 ADVANCED | `#monotonic-stack` | Pop heights; compute width |
+| 36 | [Sort List](https://leetcode.com/problems/sort-list/) | 148 | 🟡 Medium | 💡 ADVANCED | `#linked-list` `#merge-sort` `#divide-and-conquer` | Split with slow/fast; merge |
+| 37 | [Exclusive Time of Functions](https://leetcode.com/problems/exclusive-time-of-functions/) | 636 | 🟡 Medium | 💡 ADVANCED | `#stack` | Track prev timestamp |
+| 38 | [Sum of Subarray Minimums](https://leetcode.com/problems/sum-of-subarray-minimums/) | 907 | 🟡 Medium | 💡 ADVANCED | `#monotonic-stack` | Count contribution via spans |
+
+> [!TIP]
+> ### 💡 Phase 3 Milestone — Pointer Manipulation & Monotonic Structures
+> - **Sentinel / Dummy Nodes:** Prepend a dummy head to eliminate edge cases around empty lists or head deletions/swaps.
+> - **Floyd's Tortoise and Hare:** Relative speed delta of 1 node/step guarantees cycle meeting without extra memory allocations.
+> - **Monotonic Stack Invariant:** Store indices with strictly increasing/decreasing values to resolve nearest greater/smaller elements in $O(N)$ amortized time.
+
 ---
 
 ## Phase 4 — Trees & BST (DFS/BFS) 🌳
 
-| # | Problem | LC# | Priority | Topics to know | Hybrid approach |
-|---:|---|---:|---|---|---|
-| 1 | Validate Binary Search Tree | 98 | 🔑 ANCHOR | BST invariants | Range-check recursion |
-| 2 | Binary Tree Level Order Traversal | 102 | 🔑 ANCHOR | BFS | Queue by level size |
-| 3 | Maximum Depth of Binary Tree | 104 | 🔑 ANCHOR | DFS recursion | Return 1+max(depths) |
-| 4 | Invert Binary Tree | 226 | 🔑 ANCHOR | DFS | Swap children recursively |
-| 5 | Lowest Common Ancestor of a Binary Tree | 236 | 🔑 ANCHOR | DFS | Return node if p/q; combine |
-| 6 | Diameter of Binary Tree | 543 | 🔑 ANCHOR | DFS bottom-up | Height return; update global diam |
-| 7 | Construct Binary Tree from Preorder and Inorder Traversal | 105 | ⭐ HIGH VALUE | Recursion | Pick root from preorder; split inorder |
-| 8 | Flatten Binary Tree to Linked List | 114 | ⭐ HIGH VALUE | DFS | Rewire using preorder |
-| 9 | BST Iterator | 173 | ⭐ HIGH VALUE | Stack | Inorder iterator with stack |
-| 10 | Binary Tree Right Side View | 199 | ⭐ HIGH VALUE | BFS/DFS | Take last of each level |
-| 11 | Kth Smallest Element in a BST | 230 | ⭐ HIGH VALUE | Inorder | Iterate inorder count |
-| 12 | Path Sum III | 437 | ⭐ HIGH VALUE | Prefix sum on tree | DFS with prefix-sum map |
-| 13 | Same Tree | 100 | 🧱 STANDARD | DFS | Compare structure and values |
-| 14 | Symmetric Tree | 101 | 🧱 STANDARD | Mirror DFS | Compare L.left vs R.right |
-| 15 | Convert Sorted Array to Binary Search Tree | 108 | 🧱 STANDARD | Divide and conquer | Mid as root recursively |
-| 16 | Balanced Binary Tree | 110 | 🧱 STANDARD | DFS + sentinel | Return height or -1 if unbalanced |
-| 17 | Path Sum | 112 | 🧱 STANDARD | Top-down | Subtract target along path |
-| 18 | Populating Next Right Pointers in Each Node | 116 | 🧱 STANDARD | BFS/pointers | Connect level next pointers |
-| 19 | Lowest Common Ancestor of a BST | 235 | 🧱 STANDARD | BST property | Walk down by comparing p,q |
-| 20 | Subtree of Another Tree | 572 | 🧱 STANDARD | DFS | Compare at each node |
-| 21 | Merge Two Binary Trees | 617 | 🧱 STANDARD | DFS | Sum nodes; recurse |
-| 22 | Binary Tree Zigzag Level Order Traversal | 103 | 🎯 PRACTICE | BFS | Alternate direction per level |
-| 23 | Construct Binary Tree from Inorder and Postorder Traversal | 106 | 🎯 PRACTICE | Recursion | Root from postorder; split inorder |
-| 24 | Minimum Depth of Binary Tree | 111 | 🎯 PRACTICE | BFS/DFS | BFS first leaf |
-| 25 | Path Sum II | 113 | 🎯 PRACTICE | DFS backtracking | Track path list |
-| 26 | Populating Next Right Pointers in Each Node II | 117 | 🎯 PRACTICE | BFS | Handle missing children |
-| 27 | Sum Root to Leaf Numbers | 129 | 🎯 PRACTICE | DFS | Carry number down |
-| 28 | Insert into a Binary Search Tree | 701 | 🎯 PRACTICE | BST | Iterative/recursive insert |
-| 29 | Range Sum of BST | 938 | 🎯 PRACTICE | DFS | Prune by BST property |
-| 30 | Count Good Nodes in Binary Tree | 1448 | 🎯 PRACTICE | DFS | Track path max |
-| 31 | Pseudo-Palindromic Paths in a Binary Tree | 1457 | 🎯 PRACTICE | Bitmask | Toggle counts; check <=1 odd |
-| 32 | Binary Tree Maximum Path Sum | 124 | 💡 ADVANCED | DFS + global | Best downward gain; update answer |
-| 33 | Serialize and Deserialize Binary Tree | 297 | 💡 ADVANCED | Design + DFS | Preorder with null markers |
-| 34 | House Robber III | 337 | 💡 ADVANCED | Tree DP | Return (rob,skip) per node |
-| 35 | Delete Node in a BST | 450 | 💡 ADVANCED | BST | Find node; replace with successor |
-| 36 | Binary Tree Cameras | 968 | 🧪 CHALLENGE | Greedy/DP | States: covered/hasCam/needsCam |
+| # | Problem | LC# | Difficulty | Priority | Pattern Tags | Hybrid Approach & Core Invariant |
+| :---: | :--- | :---: | :---: | :---: | :--- | :--- |
+| 1 | [Validate Binary Search Tree](https://leetcode.com/problems/validate-binary-search-tree/) | 98 | 🟡 Medium | 🔑 ANCHOR | `#binary-search` `#bst` | Range-check recursion |
+| 2 | [Binary Tree Level Order Traversal](https://leetcode.com/problems/binary-tree-level-order-traversal/) | 102 | 🟡 Medium | 🔑 ANCHOR | `#bfs` | Queue by level size |
+| 3 | [Maximum Depth of Binary Tree](https://leetcode.com/problems/maximum-depth-of-binary-tree/) | 104 | 🟢 Easy | 🔑 ANCHOR | `#dfs` | Return 1+max(depths) |
+| 4 | [Invert Binary Tree](https://leetcode.com/problems/invert-binary-tree/) | 226 | 🟢 Easy | 🔑 ANCHOR | `#dfs` | Swap children recursively |
+| 5 | [Lowest Common Ancestor of a Binary Tree](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/) | 236 | 🟡 Medium | 🔑 ANCHOR | `#dfs` | Return node if p/q; combine |
+| 6 | [Diameter of Binary Tree](https://leetcode.com/problems/diameter-of-binary-tree/) | 543 | 🟢 Easy | 🔑 ANCHOR | `#dfs` | Height return; update global diam |
+| 7 | [Construct Binary Tree from Preorder and Inorder Traversal](https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/) | 105 | 🟡 Medium | ⭐ HIGH VALUE | `#recursion` | Pick root from preorder; split inorder |
+| 8 | [Flatten Binary Tree to Linked List](https://leetcode.com/problems/flatten-binary-tree-to-linked-list/) | 114 | 🟡 Medium | ⭐ HIGH VALUE | `#dfs` | Rewire using preorder |
+| 9 | [BST Iterator](https://leetcode.com/problems/binary-search-tree-iterator/) | 173 | 🟡 Medium | ⭐ HIGH VALUE | `#stack` | Inorder iterator with stack |
+| 10 | [Binary Tree Right Side View](https://leetcode.com/problems/binary-tree-right-side-view/) | 199 | 🟡 Medium | ⭐ HIGH VALUE | `#bfs` `#dfs` | Take last of each level |
+| 11 | [Kth Smallest Element in a BST](https://leetcode.com/problems/kth-smallest-element-in-a-bst/) | 230 | 🟡 Medium | ⭐ HIGH VALUE | `#inorder` | Iterate inorder count |
+| 12 | [Path Sum III](https://leetcode.com/problems/path-sum-iii/) | 437 | 🟡 Medium | ⭐ HIGH VALUE | `#prefix-sum` `#binary-tree` | DFS with prefix-sum map |
+| 13 | [Same Tree](https://leetcode.com/problems/same-tree/) | 100 | 🟢 Easy | 🧱 STANDARD | `#dfs` | Compare structure and values |
+| 14 | [Symmetric Tree](https://leetcode.com/problems/symmetric-tree/) | 101 | 🟢 Easy | 🧱 STANDARD | `#dfs` | Compare L.left vs R.right |
+| 15 | [Convert Sorted Array to Binary Search Tree](https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/) | 108 | 🟢 Easy | 🧱 STANDARD | `#binary-tree` `#divide-and-conquer` | Mid as root recursively |
+| 16 | [Balanced Binary Tree](https://leetcode.com/problems/balanced-binary-tree/) | 110 | 🟢 Easy | 🧱 STANDARD | `#dfs` | Return height or -1 if unbalanced |
+| 17 | [Path Sum](https://leetcode.com/problems/path-sum/) | 112 | 🟢 Easy | 🧱 STANDARD | `#binary-tree` `#dfs-recursion` | Subtract target along path |
+| 18 | [Populating Next Right Pointers in Each Node](https://leetcode.com/problems/populating-next-right-pointers-in-each-node/) | 116 | 🟡 Medium | 🧱 STANDARD | `#bfs` | Connect level next pointers |
+| 19 | [Lowest Common Ancestor of a BST](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/) | 235 | 🟡 Medium | 🧱 STANDARD | `#binary-search` `#bst` | Walk down by comparing p,q |
+| 20 | [Subtree of Another Tree](https://leetcode.com/problems/subtree-of-another-tree/) | 572 | 🟢 Easy | 🧱 STANDARD | `#dfs` | Compare at each node |
+| 21 | [Merge Two Binary Trees](https://leetcode.com/problems/merge-two-binary-trees/) | 617 | 🟢 Easy | 🧱 STANDARD | `#dfs` | Sum nodes; recurse |
+| 22 | [Binary Tree Zigzag Level Order Traversal](https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/) | 103 | 🟡 Medium | 🎯 PRACTICE | `#bfs` | Alternate direction per level |
+| 23 | [Construct Binary Tree from Inorder and Postorder Traversal](https://leetcode.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/) | 106 | 🟡 Medium | 🎯 PRACTICE | `#recursion` | Root from postorder; split inorder |
+| 24 | [Minimum Depth of Binary Tree](https://leetcode.com/problems/minimum-depth-of-binary-tree/) | 111 | 🟢 Easy | 🎯 PRACTICE | `#bfs` `#dfs` | BFS first leaf |
+| 25 | [Path Sum II](https://leetcode.com/problems/path-sum-ii/) | 113 | 🟡 Medium | 🎯 PRACTICE | `#dfs` `#backtracking` | Track path list |
+| 26 | [Populating Next Right Pointers in Each Node II](https://leetcode.com/problems/populating-next-right-pointers-in-each-node-ii/) | 117 | 🟡 Medium | 🎯 PRACTICE | `#bfs` | Handle missing children |
+| 27 | [Sum Root to Leaf Numbers](https://leetcode.com/problems/sum-root-to-leaf-numbers/) | 129 | 🟡 Medium | 🎯 PRACTICE | `#dfs` | Carry number down |
+| 28 | [Insert into a Binary Search Tree](https://leetcode.com/problems/insert-into-a-binary-search-tree/) | 701 | 🟡 Medium | 🎯 PRACTICE | `#binary-search` `#bst` | Iterative/recursive insert |
+| 29 | [Range Sum of BST](https://leetcode.com/problems/range-sum-of-bst/) | 938 | 🟢 Easy | 🎯 PRACTICE | `#dfs` | Prune by BST property |
+| 30 | [Count Good Nodes in Binary Tree](https://leetcode.com/problems/count-good-nodes-in-binary-tree/) | 1448 | 🟡 Medium | 🎯 PRACTICE | `#dfs` | Track path max |
+| 31 | [Pseudo-Palindromic Paths in a Binary Tree](https://leetcode.com/problems/pseudo-palindromic-paths-in-a-binary-tree/) | 1457 | 🟡 Medium | 🎯 PRACTICE | `#bit-manipulation` | Toggle counts; check <=1 odd |
+| 32 | [Binary Tree Maximum Path Sum](https://leetcode.com/problems/binary-tree-maximum-path-sum/) | 124 | 🔴 Hard | 💡 ADVANCED | `#dfs` | Best downward gain; update answer |
+| 33 | [Serialize and Deserialize Binary Tree](https://leetcode.com/problems/serialize-and-deserialize-binary-tree/) | 297 | 🔴 Hard | 💡 ADVANCED | `#dfs` `#system-design` | Preorder with null markers |
+| 34 | [House Robber III](https://leetcode.com/problems/house-robber-iii/) | 337 | 🟡 Medium | 💡 ADVANCED | `#dynamic-programming` `#binary-tree` | Return (rob,skip) per node |
+| 35 | [Delete Node in a BST](https://leetcode.com/problems/delete-node-in-a-bst/) | 450 | 🟡 Medium | 💡 ADVANCED | `#binary-search` `#bst` | Find node; replace with successor |
+| 36 | [Binary Tree Cameras](https://leetcode.com/problems/binary-tree-cameras/) | 968 | 🔴 Hard | 🧪 CHALLENGE | `#greedy` `#dynamic-programming` | States: covered/hasCam/needsCam |
+
+> [!TIP]
+> ### 💡 Phase 4 Milestone — Subtree Information Flow & BST Ordering
+> - **Bottom-Up Tree DP:** Determine what metric each child returns to its parent (e.g., height, subtree sum, node presence).
+> - **BST Invariant:** Every node must satisfy global bounds $(\text{low} < \text{val} < \text{high})$. In-order traversal yields strictly ascending order.
+> - **Level-by-Level BFS:** Snapshot queue count `int count = q.Count` to separate the current depth layer from newly discovered children.
+
 ---
 
 ## Phase 5 — Graphs (DFS/BFS + Topo) 🗺️
 
-| # | Problem | LC# | Priority | Topics to know | Hybrid approach |
-|---:|---|---:|---|---|---|
-| 1 | Number of Islands | 200 | 🔑 ANCHOR | DFS/BFS grid | Count components; mark visited |
-| 2 | Course Schedule | 207 | 🔑 ANCHOR | Topological sort | Kahn indegrees; detect cycle |
-| 3 | Flood Fill | 733 | 🔑 ANCHOR | DFS/BFS grid | Recolor component |
-| 4 | Rotting Oranges | 994 | 🔑 ANCHOR | Multi-source BFS | BFS layers = minutes |
-| 5 | Surrounded Regions | 130 | ⭐ HIGH VALUE | Border DFS | Mark safe from borders; flip rest |
-| 6 | Clone Graph | 133 | ⭐ HIGH VALUE | DFS/BFS + map | Old->new clone mapping |
-| 7 | Course Schedule II | 210 | ⭐ HIGH VALUE | Topo order | Return ordering via Kahn |
-| 8 | Graph Valid Tree | 261 | ⭐ HIGH VALUE | DFS/DSU | n-1 edges + connected + acyclic |
-| 9 | Evaluate Division | 399 | ⭐ HIGH VALUE | Graph weighted | DFS/BFS compute ratios |
-| 10 | 01 Matrix | 542 | ⭐ HIGH VALUE | Multi-source BFS | Distances from all zeros |
-| 11 | Number of Provinces | 547 | 🧱 STANDARD | DFS/DSU | Count connected components |
-| 12 | Max Area of Island | 695 | 🧱 STANDARD | DFS | Return area while marking |
-| 13 | Is Graph Bipartite? | 785 | 🧱 STANDARD | BFS coloring | 2-color with conflict check |
-| 14 | Find Eventual Safe States | 802 | 🧱 STANDARD | Topo/DFS | Reverse graph topo or color DFS |
-| 15 | Shortest Path in Binary Matrix | 1091 | 🧱 STANDARD | BFS | Unweighted shortest path |
-| 16 | Walls and Gates | 286 | 🎯 PRACTICE | Multi-source BFS | BFS from gates to fill distances |
-| 17 | Island Perimeter | 463 | 🎯 PRACTICE | Grid scan | Count edges of land |
-| 18 | Minesweeper | 529 | 🎯 PRACTICE | DFS/BFS | Reveal empties recursively |
-| 19 | All Paths From Source to Target | 797 | 🎯 PRACTICE | DFS backtracking | Enumerate paths in DAG |
-| 20 | Keys and Rooms | 841 | 🎯 PRACTICE | DFS | Visit reachable rooms |
-| 21 | Snakes and Ladders | 909 | 🎯 PRACTICE | BFS | Shortest moves with board jumps |
-| 22 | As Far from Land as Possible | 1162 | 🎯 PRACTICE | Multi-source BFS | Max dist from any land |
-| 23 | Number of Closed Islands | 1254 | 🎯 PRACTICE | DFS | Count components not touching border |
-| 24 | Count Sub Islands | 1905 | 🎯 PRACTICE | DFS | Island in grid2 contained in grid1 |
-| 25 | Find if Path Exists in Graph | 1971 | 🎯 PRACTICE | DFS/BFS | Traverse adjacency list |
-| 26 | Word Ladder | 127 | 💡 ADVANCED | BFS | Layered BFS via wildcard buckets |
-| 27 | Minimum Height Trees | 310 | 💡 ADVANCED | Topo trimming | Peel leaves until centers |
-| 28 | Reconstruct Itinerary | 332 | 💡 ADVANCED | Eulerian path | Hierholzer with min-heap |
-| 29 | Pacific Atlantic Water Flow | 417 | 💡 ADVANCED | Multi-source DFS | Reachability from both oceans |
-| 30 | Redundant Connection II | 685 | 💡 ADVANCED | Graph | Detect node with two parents + cycle |
-| 31 | Bus Routes | 815 | 💡 ADVANCED | BFS | Stops->routes graph |
-| 32 | Alien Dictionary | 269 | 🧪 CHALLENGE | Topo + compare | Build edges by adjacent words |
+| # | Problem | LC# | Difficulty | Priority | Pattern Tags | Hybrid Approach & Core Invariant |
+| :---: | :--- | :---: | :---: | :---: | :--- | :--- |
+| 1 | [Number of Islands](https://leetcode.com/problems/number-of-islands/) | 200 | 🟡 Medium | 🔑 ANCHOR | `#bfs` `#dfs` `#matrix-grid` | Count components; mark visited |
+| 2 | [Course Schedule](https://leetcode.com/problems/course-schedule/) | 207 | 🟡 Medium | 🔑 ANCHOR | `#topological-sort` | Kahn indegrees; detect cycle |
+| 3 | [Flood Fill](https://leetcode.com/problems/flood-fill/) | 733 | 🟢 Easy | 🔑 ANCHOR | `#bfs` `#dfs` `#matrix-grid` | Recolor component |
+| 4 | [Rotting Oranges](https://leetcode.com/problems/rotting-oranges/) | 994 | 🟡 Medium | 🔑 ANCHOR | `#multi-source-bfs` | BFS layers = minutes |
+| 5 | [Surrounded Regions](https://leetcode.com/problems/surrounded-regions/) | 130 | 🟡 Medium | ⭐ HIGH VALUE | `#dfs` | Mark safe from borders; flip rest |
+| 6 | [Clone Graph](https://leetcode.com/problems/clone-graph/) | 133 | 🟡 Medium | ⭐ HIGH VALUE | `#bfs` `#dfs` | Old->new clone mapping |
+| 7 | [Course Schedule II](https://leetcode.com/problems/course-schedule-ii/) | 210 | 🟡 Medium | ⭐ HIGH VALUE | `#topological-sort` | Return ordering via Kahn |
+| 8 | [Graph Valid Tree](https://leetcode.com/problems/graph-valid-tree/) | 261 | 🟡 Medium | ⭐ HIGH VALUE | `#union-find` `#dfs` | N-1 edges + connected + acyclic |
+| 9 | [Evaluate Division](https://leetcode.com/problems/evaluate-division/) | 399 | 🟡 Medium | ⭐ HIGH VALUE | `#graph-weighted` | DFS/BFS compute ratios |
+| 10 | [01 Matrix](https://leetcode.com/problems/01-matrix/) | 542 | 🟡 Medium | ⭐ HIGH VALUE | `#multi-source-bfs` | Distances from all zeros |
+| 11 | [Number of Provinces](https://leetcode.com/problems/number-of-provinces/) | 547 | 🟡 Medium | 🧱 STANDARD | `#union-find` `#dfs` | Count connected components |
+| 12 | [Max Area of Island](https://leetcode.com/problems/max-area-of-island/) | 695 | 🟡 Medium | 🧱 STANDARD | `#dfs` | Return area while marking |
+| 13 | [Is Graph Bipartite?](https://leetcode.com/problems/is-graph-bipartite/) | 785 | 🟡 Medium | 🧱 STANDARD | `#bfs` | 2-color with conflict check |
+| 14 | [Find Eventual Safe States](https://leetcode.com/problems/find-eventual-safe-states/) | 802 | 🟡 Medium | 🧱 STANDARD | `#topological-sort` `#dfs` | Reverse graph topo or color DFS |
+| 15 | [Shortest Path in Binary Matrix](https://leetcode.com/problems/shortest-path-in-binary-matrix/) | 1091 | 🟡 Medium | 🧱 STANDARD | `#bfs` | Unweighted shortest path |
+| 16 | [Walls and Gates](https://leetcode.com/problems/walls-and-gates/) | 286 | 🟡 Medium | 🎯 PRACTICE | `#multi-source-bfs` | BFS from gates to fill distances |
+| 17 | [Island Perimeter](https://leetcode.com/problems/island-perimeter/) | 463 | 🟢 Easy | 🎯 PRACTICE | `#matrix-grid` | Count edges of land |
+| 18 | [Minesweeper](https://leetcode.com/problems/minesweeper/) | 529 | 🟡 Medium | 🎯 PRACTICE | `#bfs` `#dfs` | Reveal empties recursively |
+| 19 | [All Paths From Source to Target](https://leetcode.com/problems/all-paths-from-source-to-target/) | 797 | 🟡 Medium | 🎯 PRACTICE | `#dfs` `#backtracking` | Enumerate paths in DAG |
+| 20 | [Keys and Rooms](https://leetcode.com/problems/keys-and-rooms/) | 841 | 🟡 Medium | 🎯 PRACTICE | `#dfs` | Visit reachable rooms |
+| 21 | [Snakes and Ladders](https://leetcode.com/problems/snakes-and-ladders/) | 909 | 🟡 Medium | 🎯 PRACTICE | `#bfs` | Shortest moves with board jumps |
+| 22 | [As Far from Land as Possible](https://leetcode.com/problems/as-far-from-land-as-possible/) | 1162 | 🟡 Medium | 🎯 PRACTICE | `#multi-source-bfs` | Max dist from any land |
+| 23 | [Number of Closed Islands](https://leetcode.com/problems/number-of-closed-islands/) | 1254 | 🟡 Medium | 🎯 PRACTICE | `#dfs` | Count components not touching border |
+| 24 | [Count Sub Islands](https://leetcode.com/problems/count-sub-islands/) | 1905 | 🟡 Medium | 🎯 PRACTICE | `#dfs` | Island in grid2 contained in grid1 |
+| 25 | [Find if Path Exists in Graph](https://leetcode.com/problems/find-if-path-exists-in-graph/) | 1971 | 🟢 Easy | 🎯 PRACTICE | `#bfs` `#dfs` | Traverse adjacency list |
+| 26 | [Word Ladder](https://leetcode.com/problems/word-ladder/) | 127 | 🔴 Hard | 💡 ADVANCED | `#bfs` | Layered BFS via wildcard buckets |
+| 27 | [Minimum Height Trees](https://leetcode.com/problems/minimum-height-trees/) | 310 | 🟡 Medium | 💡 ADVANCED | `#topological-sort` | Peel leaves until centers |
+| 28 | [Reconstruct Itinerary](https://leetcode.com/problems/reconstruct-itinerary/) | 332 | 🔴 Hard | 💡 ADVANCED | `#graph` `#eulerian-circuit` `#hierholzers-algorithm` | Hierholzer with min-heap |
+| 29 | [Pacific Atlantic Water Flow](https://leetcode.com/problems/pacific-atlantic-water-flow/) | 417 | 🟡 Medium | 💡 ADVANCED | `#dfs` | Reachability from both oceans |
+| 30 | [Redundant Connection II](https://leetcode.com/problems/redundant-connection-ii/) | 685 | 🔴 Hard | 💡 ADVANCED | `#graph` | Detect node with two parents + cycle |
+| 31 | [Bus Routes](https://leetcode.com/problems/bus-routes/) | 815 | 🔴 Hard | 💡 ADVANCED | `#bfs` | Stops->routes graph |
+| 32 | [Alien Dictionary](https://leetcode.com/problems/alien-dictionary/) | 269 | 🔴 Hard | 🧪 CHALLENGE | `#topological-sort` | Build edges by adjacent words |
+
+> [!TIP]
+> ### 💡 Phase 5 Milestone — Graph Traversal & Cycle Detection
+> - **Grid Exploration:** Model 2D matrices as implicit graphs where each cell connects to 4 neighbors; sink visited land cells to prevent cycles.
+> - **Topological Sort (Kahn's Algorithm):** Queue nodes with indegree 0; if total processed nodes $< V$, the graph contains a directed cycle.
+> - **Multi-Source BFS:** Enqueue all starting sources simultaneously to compute shortest distances in lockstep parallel waves.
+
 ---
 
 ## Phase 6 — Binary Search + Intervals 📏🔍
 
-| # | Problem | LC# | Priority | Topics to know | Hybrid approach |
-|---:|---|---:|---|---|---|
-| 1 | Search in Rotated Sorted Array | 33 | 🔑 ANCHOR | Rotated BS | Find sorted half; discard other |
-| 2 | Find First and Last Position of Element | 34 | 🔑 ANCHOR | Boundary BS | Two searches: leftmost/rightmost |
-| 3 | Merge Intervals | 56 | 🔑 ANCHOR | Sort intervals | Merge overlaps by tracking end |
-| 4 | Insert Interval | 57 | 🔑 ANCHOR | Intervals | Append non-overlap; merge; append rest |
-| 5 | Non-overlapping Intervals | 435 | 🔑 ANCHOR | Greedy | Sort by end; count removals |
-| 6 | Koko Eating Bananas | 875 | 🔑 ANCHOR | BS on answer | Feasibility check hours<=h |
-| 7 | Capacity To Ship Packages Within D Days | 1011 | 🔑 ANCHOR | BS on answer | Feasible(capacity) via simulation |
-| 8 | Meeting Rooms II | 253 | ⭐ HIGH VALUE | Heap | Min-heap of end times |
-| 9 | Kth Smallest Element in a Sorted Matrix | 378 | ⭐ HIGH VALUE | BS on value | Count <=mid per row |
-| 10 | Minimum Number of Arrows to Burst Balloons | 452 | ⭐ HIGH VALUE | Greedy | Sort by end; shoot at end |
-| 11 | Interval List Intersections | 986 | ⭐ HIGH VALUE | Two pointers | Advance smaller end |
-| 12 | Search a 2D Matrix | 74 | 🧱 STANDARD | BS | Treat matrix as 1D |
-| 13 | Find Minimum in Rotated Sorted Array | 153 | 🧱 STANDARD | Rotated BS | Compare mid to right |
-| 14 | Find Peak Element | 162 | 🧱 STANDARD | Gradient BS | Move toward rising slope |
-| 15 | Meeting Rooms | 252 | 🧱 STANDARD | Sort | Check start < prevEnd |
-| 16 | Minimum Number of Days to Make m Bouquets | 1482 | 🧱 STANDARD | BS on answer | Feasible(day) by scanning |
-| 17 | Sqrt(x) | 69 | 🎯 PRACTICE | BS | Largest mid^2 <= x |
-| 18 | Search in Rotated Sorted Array II | 81 | 🎯 PRACTICE | Duplicates | Handle equals; shrink bounds |
-| 19 | Find Minimum in Rotated Sorted Array II | 154 | 🎯 PRACTICE | Duplicates | If equal, right-- |
-| 20 | H-Index II | 275 | 🎯 PRACTICE | BS | Find first citation>=n-i |
-| 21 | Valid Perfect Square | 367 | 🎯 PRACTICE | BS | Check mid^2 |
-| 22 | Guess Number Higher or Lower | 374 | 🎯 PRACTICE | BS API | Use feedback to adjust bounds |
-| 23 | Find Right Interval | 436 | 🎯 PRACTICE | Sort + BS | Map start->index; BS for end |
-| 24 | My Calendar I | 729 | 🎯 PRACTICE | Intervals | Store; check overlap |
-| 25 | Car Fleet | 853 | 🎯 PRACTICE | Sort + stack | Compute times; merge fleets |
-| 26 | Find the Smallest Divisor Given a Threshold | 1283 | 🎯 PRACTICE | BS on answer | Sum ceil(nums/d) <= threshold |
-| 27 | Remove Covered Intervals | 1288 | 🎯 PRACTICE | Sort | Sort start asc end desc; count uncovered |
-| 28 | Magnetic Force Between Two Balls | 1552 | 🎯 PRACTICE | BS + greedy | Place balls greedily; maximize min dist |
-| 29 | Split Array Largest Sum | 410 | 💡 ADVANCED | BS + greedy | Check partitions needed for maxSum |
-| 30 | My Calendar II | 731 | 💡 ADVANCED | Sweep | Allow double booking; prevent triple |
-| 31 | Minimum Interval to Include Each Query | 1851 | 💡 ADVANCED | Heap | Sort intervals; add feasible by start |
-| 32 | Divide Intervals Into Minimum Number of Groups | 2406 | 💡 ADVANCED | Heap | Greedy with end-time heap |
-| 33 | My Calendar III | 732 | 🧪 CHALLENGE | Sweep | Max overlap via diff map |
-| 34 | Minimum Number of Taps to Open to Water a Garden | 1326 | 🧪 CHALLENGE | Greedy intervals | Jump-game on coverage |
+| # | Problem | LC# | Difficulty | Priority | Pattern Tags | Hybrid Approach & Core Invariant |
+| :---: | :--- | :---: | :---: | :---: | :--- | :--- |
+| 1 | [Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/) | 33 | 🟡 Medium | 🔑 ANCHOR | `#binary-search` | Find sorted half; discard other |
+| 2 | [Find First and Last Position of Element](https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/) | 34 | 🟡 Medium | 🔑 ANCHOR | `#binary-search` | Two searches: leftmost/rightmost |
+| 3 | [Merge Intervals](https://leetcode.com/problems/merge-intervals/) | 56 | 🟡 Medium | 🔑 ANCHOR | `#intervals` | Merge overlaps by tracking end |
+| 4 | [Insert Interval](https://leetcode.com/problems/insert-interval/) | 57 | 🟡 Medium | 🔑 ANCHOR | `#intervals` | Append non-overlap; merge; append rest |
+| 5 | [Non-overlapping Intervals](https://leetcode.com/problems/non-overlapping-intervals/) | 435 | 🟡 Medium | 🔑 ANCHOR | `#greedy` | Sort by end; count removals |
+| 6 | [Koko Eating Bananas](https://leetcode.com/problems/koko-eating-bananas/) | 875 | 🟡 Medium | 🔑 ANCHOR | `#binary-search-on-answer` | Feasibility check hours<=h |
+| 7 | [Capacity To Ship Packages Within D Days](https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/) | 1011 | 🟡 Medium | 🔑 ANCHOR | `#binary-search-on-answer` | Feasible(capacity) via simulation |
+| 8 | [Meeting Rooms II](https://leetcode.com/problems/meeting-rooms-ii/) | 253 | 🟡 Medium | ⭐ HIGH VALUE | `#heap` | Min-heap of end times |
+| 9 | [Kth Smallest Element in a Sorted Matrix](https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/) | 378 | 🟡 Medium | ⭐ HIGH VALUE | `#binary-search-on-answer` | Count <=mid per row |
+| 10 | [Minimum Number of Arrows to Burst Balloons](https://leetcode.com/problems/minimum-number-of-arrows-to-burst-balloons/) | 452 | 🟡 Medium | ⭐ HIGH VALUE | `#greedy` | Sort by end; shoot at end |
+| 11 | [Interval List Intersections](https://leetcode.com/problems/interval-list-intersections/) | 986 | 🟡 Medium | ⭐ HIGH VALUE | `#two-pointers` | Advance smaller end |
+| 12 | [Search a 2D Matrix](https://leetcode.com/problems/search-a-2d-matrix/) | 74 | 🟡 Medium | 🧱 STANDARD | `#binary-search` | Treat matrix as 1D |
+| 13 | [Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/) | 153 | 🟡 Medium | 🧱 STANDARD | `#binary-search` | Compare mid to right |
+| 14 | [Find Peak Element](https://leetcode.com/problems/find-peak-element/) | 162 | 🟡 Medium | 🧱 STANDARD | `#binary-search` | Move toward rising slope |
+| 15 | [Meeting Rooms](https://leetcode.com/problems/meeting-rooms/) | 252 | 🟢 Easy | 🧱 STANDARD | `#sort` | Check start < prevEnd |
+| 16 | [Minimum Number of Days to Make m Bouquets](https://leetcode.com/problems/minimum-number-of-days-to-make-m-bouquets/) | 1482 | 🟡 Medium | 🧱 STANDARD | `#binary-search-on-answer` | Feasible(day) by scanning |
+| 17 | [Sqrt(x)](https://leetcode.com/problems/sqrtx/) | 69 | 🟢 Easy | 🎯 PRACTICE | `#binary-search` | Largest mid^2 <= x |
+| 18 | [Search in Rotated Sorted Array II](https://leetcode.com/problems/search-in-rotated-sorted-array-ii/) | 81 | 🟡 Medium | 🎯 PRACTICE | `#binary-search` | Handle equals; shrink bounds |
+| 19 | [Find Minimum in Rotated Sorted Array II](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array-ii/) | 154 | 🔴 Hard | 🎯 PRACTICE | `#duplicates` | If equal, right-- |
+| 20 | [H-Index II](https://leetcode.com/problems/h-index-ii/) | 275 | 🟡 Medium | 🎯 PRACTICE | `#binary-search` | Find first citation>=n-i |
+| 21 | [Valid Perfect Square](https://leetcode.com/problems/valid-perfect-square/) | 367 | 🟢 Easy | 🎯 PRACTICE | `#binary-search` | Check mid^2 |
+| 22 | [Guess Number Higher or Lower](https://leetcode.com/problems/guess-number-higher-or-lower/) | 374 | 🟢 Easy | 🎯 PRACTICE | `#binary-search` | Use feedback to adjust bounds |
+| 23 | [Find Right Interval](https://leetcode.com/problems/find-right-interval/) | 436 | 🟡 Medium | 🎯 PRACTICE | `#binary-search` | Map start->index; BS for end |
+| 24 | [My Calendar I](https://leetcode.com/problems/my-calendar-i/) | 729 | 🟡 Medium | 🎯 PRACTICE | `#intervals` | Store; check overlap |
+| 25 | [Car Fleet](https://leetcode.com/problems/car-fleet/) | 853 | 🟡 Medium | 🎯 PRACTICE | `#stack` | Compute times; merge fleets |
+| 26 | [Find the Smallest Divisor Given a Threshold](https://leetcode.com/problems/find-the-smallest-divisor-given-a-threshold/) | 1283 | 🟡 Medium | 🎯 PRACTICE | `#binary-search-on-answer` | Sum ceil(nums/d) <= threshold |
+| 27 | [Remove Covered Intervals](https://leetcode.com/problems/remove-covered-intervals/) | 1288 | 🟡 Medium | 🎯 PRACTICE | `#sort` | Sort start asc end desc; count uncovered |
+| 28 | [Magnetic Force Between Two Balls](https://leetcode.com/problems/magnetic-force-between-two-balls/) | 1552 | 🟡 Medium | 🎯 PRACTICE | `#binary-search-on-answer` `#greedy` | Place balls greedily; maximize min dist |
+| 29 | [Split Array Largest Sum](https://leetcode.com/problems/split-array-largest-sum/) | 410 | 🔴 Hard | 💡 ADVANCED | `#binary-search` `#greedy` | Check partitions needed for maxSum |
+| 30 | [My Calendar II](https://leetcode.com/problems/my-calendar-ii/) | 731 | 🟡 Medium | 💡 ADVANCED | `#sweep-line` `#intervals` `#ordered-map` | Allow double booking; prevent triple |
+| 31 | [Minimum Interval to Include Each Query](https://leetcode.com/problems/minimum-interval-to-include-each-query/) | 1851 | 🔴 Hard | 💡 ADVANCED | `#heap` | Sort intervals; add feasible by start |
+| 32 | [Divide Intervals Into Minimum Number of Groups](https://leetcode.com/problems/divide-intervals-into-minimum-number-of-groups/) | 2406 | 🟡 Medium | 💡 ADVANCED | `#heap` | Greedy with end-time heap |
+| 33 | [My Calendar III](https://leetcode.com/problems/my-calendar-iii/) | 732 | 🔴 Hard | 🧪 CHALLENGE | `#sweep-line` `#intervals` `#ordered-map` | Max overlap via diff map |
+| 34 | [Minimum Number of Taps to Open to Water a Garden](https://leetcode.com/problems/minimum-number-of-taps-to-open-to-water-a-garden/) | 1326 | 🔴 Hard | 🧪 CHALLENGE | `#intervals` `#greedy` | Jump-game on coverage |
+
+> [!TIP]
+> ### 💡 Phase 6 Milestone — Answer Spaces & Interval Overlaps
+> - **Binary Search on Answer Space:** Identify monotonic feasibility predicates `CanAchieve(target)` to minimize the maximum or maximize the minimum.
+> - **Interval Sorting Rule:** Sort by `start` time to merge overlapping intervals; sort by `end` time for greedy non-overlapping selection.
+> - **Concurrency Tracking:** Use a Min-Heap of end times or event sweep-line (`+1` start, `-1` end) to compute peak overlapping capacity.
+
 ---
 
 ## Phase 7 — Greedy & Monotonic Patterns 🪙
 
-| # | Problem | LC# | Priority | Topics to know | Hybrid approach |
-|---:|---|---:|---|---|---|
-| 1 | Jump Game II | 45 | 🔑 ANCHOR | Greedy ranges | BFS-level style on ranges |
-| 2 | Jump Game | 55 | 🔑 ANCHOR | Greedy reach | Track farthest reachable |
-| 3 | Partition Labels | 763 | 🔑 ANCHOR | Greedy | Cut when i reaches max lastIndex |
-| 4 | Gas Station | 134 | ⭐ HIGH VALUE | Greedy proof | If total>=0, start after min prefix |
-| 5 | Largest Number | 179 | ⭐ HIGH VALUE | Custom sort | Sort by xy vs yx |
-| 6 | Queue Reconstruction by Height | 406 | ⭐ HIGH VALUE | Greedy + sort | Sort desc height; insert by k |
-| 7 | Task Scheduler | 621 | ⭐ HIGH VALUE | Greedy | Count max freq; compute idle slots |
-| 8 | Best Time to Buy and Sell Stock II | 122 | 🧱 STANDARD | Greedy | Sum all positive deltas |
-| 9 | Assign Cookies | 455 | 🧱 STANDARD | Greedy + sort | Match smallest satisfiable |
-| 10 | Wiggle Subsequence | 376 | 🎯 PRACTICE | Greedy/DP | Count sign changes |
-| 11 | Can Place Flowers | 605 | 🎯 PRACTICE | Greedy | Place if neighbors empty |
-| 12 | Maximum Swap | 670 | 🎯 PRACTICE | Greedy digits | Swap with farthest larger digit |
-| 13 | Hand of Straights | 846 | 🎯 PRACTICE | Counting | Greedy build sequences from min |
-| 14 | Lemonade Change | 860 | 🎯 PRACTICE | Greedy counts | Use 5/10 bills optimally |
-| 15 | Two City Scheduling | 1029 | 🎯 PRACTICE | Greedy | Sort by cost diff |
-| 16 | Minimum Deletions to Make Character Frequencies Unique | 1647 | 🎯 PRACTICE | Greedy | Decrease freqs to unused |
-| 17 | Candy | 135 | 💡 ADVANCED | Two-pass greedy | Left pass then right pass |
+| # | Problem | LC# | Difficulty | Priority | Pattern Tags | Hybrid Approach & Core Invariant |
+| :---: | :--- | :---: | :---: | :---: | :--- | :--- |
+| 1 | [Jump Game II](https://leetcode.com/problems/jump-game-ii/) | 45 | 🟡 Medium | 🔑 ANCHOR | `#greedy` | BFS-level style on ranges |
+| 2 | [Jump Game](https://leetcode.com/problems/jump-game/) | 55 | 🟡 Medium | 🔑 ANCHOR | `#greedy` | Track farthest reachable |
+| 3 | [Partition Labels](https://leetcode.com/problems/partition-labels/) | 763 | 🟡 Medium | 🔑 ANCHOR | `#greedy` | Cut when i reaches max lastIndex |
+| 4 | [Gas Station](https://leetcode.com/problems/gas-station/) | 134 | 🟡 Medium | ⭐ HIGH VALUE | `#greedy` | If total>=0, start after min prefix |
+| 5 | [Largest Number](https://leetcode.com/problems/largest-number/) | 179 | 🟡 Medium | ⭐ HIGH VALUE | `#custom-sorting` `#greedy` | Sort by xy vs yx |
+| 6 | [Queue Reconstruction by Height](https://leetcode.com/problems/queue-reconstruction-by-height/) | 406 | 🟡 Medium | ⭐ HIGH VALUE | `#greedy` | Sort desc height; insert by k |
+| 7 | [Task Scheduler](https://leetcode.com/problems/task-scheduler/) | 621 | 🟡 Medium | ⭐ HIGH VALUE | `#greedy` | Count max freq; compute idle slots |
+| 8 | [Best Time to Buy and Sell Stock II](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/) | 122 | 🟡 Medium | 🧱 STANDARD | `#greedy` | Sum all positive deltas |
+| 9 | [Assign Cookies](https://leetcode.com/problems/assign-cookies/) | 455 | 🟢 Easy | 🧱 STANDARD | `#greedy` | Match smallest satisfiable |
+| 10 | [Wiggle Subsequence](https://leetcode.com/problems/wiggle-subsequence/) | 376 | 🟡 Medium | 🎯 PRACTICE | `#greedy` `#dynamic-programming` | Count sign changes |
+| 11 | [Can Place Flowers](https://leetcode.com/problems/can-place-flowers/) | 605 | 🟢 Easy | 🎯 PRACTICE | `#greedy` | Place if neighbors empty |
+| 12 | [Maximum Swap](https://leetcode.com/problems/maximum-swap/) | 670 | 🟡 Medium | 🎯 PRACTICE | `#greedy` | Swap with farthest larger digit |
+| 13 | [Hand of Straights](https://leetcode.com/problems/hand-of-straights/) | 846 | 🟡 Medium | 🎯 PRACTICE | `#backtracking` `#counting` | Greedy build sequences from min |
+| 14 | [Lemonade Change](https://leetcode.com/problems/lemonade-change/) | 860 | 🟢 Easy | 🎯 PRACTICE | `#greedy` | Use 5/10 bills optimally |
+| 15 | [Two City Scheduling](https://leetcode.com/problems/two-city-scheduling/) | 1029 | 🟡 Medium | 🎯 PRACTICE | `#greedy` | Sort by cost diff |
+| 16 | [Minimum Deletions to Make Character Frequencies Unique](https://leetcode.com/problems/minimum-deletions-to-make-character-frequencies-unique/) | 1647 | 🟡 Medium | 🎯 PRACTICE | `#greedy` | Decrease freqs to unused |
+| 17 | [Candy](https://leetcode.com/problems/candy/) | 135 | 🔴 Hard | 💡 ADVANCED | `#greedy` | Left pass then right pass |
+
+> [!TIP]
+> ### 💡 Phase 7 Milestone — Local Choice Optimality & Invariants
+> - **Greedy Exchange Proof:** Verify that making the locally optimal choice never eliminates an optimal global solution.
+> - **Reachability Horizon:** In jump/boundary games, track maximum reachable index incrementally rather than testing individual paths.
+> - **Running Deficit Invariant:** In circular problems (e.g. Gas Station), if total sum $\ge 0$, reset starting candidate after the point of greatest deficit.
+
 ---
 
 ## Phase 8 — Dynamic Programming (1D/2D/Knapsack) 🧩
 
-| # | Problem | LC# | Priority | Topics to know | Hybrid approach |
-|---:|---|---:|---|---|---|
-| 1 | Unique Paths | 62 | 🔑 ANCHOR | Grid DP | dp[i][j]=dp[i-1][j]+dp[i][j-1] |
-| 2 | Edit Distance | 72 | 🔑 ANCHOR | 2D DP | Min(insert,delete,replace) |
-| 3 | Word Break | 139 | 🔑 ANCHOR | DP on prefix | dp[i]=any dp[j] and word(j,i) |
-| 4 | House Robber | 198 | 🔑 ANCHOR | 1D DP | dp[i]=max(dp[i-1],dp[i-2]+nums[i]) |
-| 5 | Longest Increasing Subsequence | 300 | 🔑 ANCHOR | DP/BS | Patience: tails[] with BS |
-| 6 | Coin Change | 322 | 🔑 ANCHOR | Unbounded knapsack | dp[a]=min(dp[a],dp[a-c]+1) |
-| 7 | Partition Equal Subset Sum | 416 | 🔑 ANCHOR | 0/1 knapsack | dp[s]=can make sum s |
-| 8 | Longest Common Subsequence | 1143 | 🔑 ANCHOR | 2D DP | Match->diag+1 else max(up,left) |
-| 9 | Longest Palindromic Substring | 5 | ⭐ HIGH VALUE | Expand/DP | Expand around center |
-| 10 | Maximal Square | 221 | ⭐ HIGH VALUE | 2D DP | dp=1+min(top,left,diag) |
-| 11 | Minimum Path Sum | 64 | 🧱 STANDARD | Grid DP | dp=min(top,left)+cell |
-| 12 | Decode Ways | 91 | 🧱 STANDARD | DP on string | dp[i]=single+double choices |
-| 13 | Triangle | 120 | 🧱 STANDARD | DP | Bottom-up min path |
-| 14 | House Robber II | 213 | 🧱 STANDARD | Circular DP | Max(rob 0..n-2, 1..n-1) |
-| 15 | Perfect Squares | 279 | 🧱 STANDARD | DP | dp[i]=min(dp[i-j^2]+1) |
-| 16 | Target Sum | 494 | 🧱 STANDARD | Transform DP | Convert to subset sum count |
-| 17 | Longest Palindromic Subsequence | 516 | 🧱 STANDARD | 2D DP | dp[i][j] longest in s[i:j] |
-| 18 | Delete and Earn | 740 | 🧱 STANDARD | DP transform | Convert to house robber on values |
-| 19 | Min Cost Climbing Stairs | 746 | 🧱 STANDARD | 1D DP | dp[i]=cost[i]+min(dp[i-1],dp[i-2]) |
-| 20 | Min Cost For Tickets | 983 | 🧱 STANDARD | DP | dp[day]=min cost from day |
-| 21 | Unique Paths II | 63 | 🎯 PRACTICE | Grid DP | Obstacle cells set dp=0 |
-| 22 | Palindromic Substrings | 647 | 🎯 PRACTICE | Expand | Count palindromes from centers |
-| 23 | Longest Valid Parentheses | 32 | 💡 ADVANCED | DP/stack | DP lengths or stack indices |
-| 24 | Interleaving String | 97 | 💡 ADVANCED | 2D DP | dp[i][j] whether s3 formed |
-| 25 | Maximum Product Subarray | 152 | 💡 ADVANCED | DP max/min | Track maxProd and minProd |
-| 26 | Best Time to Buy and Sell Stock with Cooldown | 309 | 💡 ADVANCED | State DP | hold/sold/rest transitions |
-| 27 | Combination Sum IV | 377 | 💡 ADVANCED | DP order matters | dp[i]+=dp[i-num] |
-| 28 | Regular Expression Matching | 10 | 🧪 CHALLENGE | 2D DP | Handle '.' and '*' transitions |
-| 29 | Wildcard Matching | 44 | 🧪 CHALLENGE | 2D DP | Handle '?' and '*' |
-| 30 | Distinct Subsequences | 115 | 🧪 CHALLENGE | 2D DP | Count ways to form t from s |
-| 31 | Burst Balloons | 312 | 🧪 CHALLENGE | Interval DP | Choose last balloon in interval |
+| # | Problem | LC# | Difficulty | Priority | Pattern Tags | Hybrid Approach & Core Invariant |
+| :---: | :--- | :---: | :---: | :---: | :--- | :--- |
+| 1 | [Unique Paths](https://leetcode.com/problems/unique-paths/) | 62 | 🟡 Medium | 🔑 ANCHOR | `#dynamic-programming` `#matrix-grid` | Dp[i][j]=dp[i-1][j]+dp[i][j-1] |
+| 2 | [Edit Distance](https://leetcode.com/problems/edit-distance/) | 72 | 🔴 Hard | 🔑 ANCHOR | `#2d-dp` | Min(insert,delete,replace) |
+| 3 | [Word Break](https://leetcode.com/problems/word-break/) | 139 | 🟡 Medium | 🔑 ANCHOR | `#dynamic-programming` | Dp[i]=any dp[j] and word(j,i) |
+| 4 | [House Robber](https://leetcode.com/problems/house-robber/) | 198 | 🟡 Medium | 🔑 ANCHOR | `#1d-dp` | Dp[i]=max(dp[i-1],dp[i-2]+nums[i]) |
+| 5 | [Longest Increasing Subsequence](https://leetcode.com/problems/longest-increasing-subsequence/) | 300 | 🟡 Medium | 🔑 ANCHOR | `#binary-search` `#dynamic-programming` | Patience: tails[] with BS |
+| 6 | [Coin Change](https://leetcode.com/problems/coin-change/) | 322 | 🟡 Medium | 🔑 ANCHOR | `#knapsack` | Dp[a]=min(dp[a],dp[a-c]+1) |
+| 7 | [Partition Equal Subset Sum](https://leetcode.com/problems/partition-equal-subset-sum/) | 416 | 🟡 Medium | 🔑 ANCHOR | `#knapsack` | Dp[s]=can make sum s |
+| 8 | [Longest Common Subsequence](https://leetcode.com/problems/longest-common-subsequence/) | 1143 | 🟡 Medium | 🔑 ANCHOR | `#2d-dp` | Match->diag+1 else max(up,left) |
+| 9 | [Longest Palindromic Substring](https://leetcode.com/problems/longest-palindromic-substring/) | 5 | 🟡 Medium | ⭐ HIGH VALUE | `#dynamic-programming` | Expand around center |
+| 10 | [Maximal Square](https://leetcode.com/problems/maximal-square/) | 221 | 🟡 Medium | ⭐ HIGH VALUE | `#2d-dp` | Dp=1+min(top,left,diag) |
+| 11 | [Minimum Path Sum](https://leetcode.com/problems/minimum-path-sum/) | 64 | 🟡 Medium | 🧱 STANDARD | `#dynamic-programming` `#matrix-grid` | Dp=min(top,left)+cell |
+| 12 | [Decode Ways](https://leetcode.com/problems/decode-ways/) | 91 | 🟡 Medium | 🧱 STANDARD | `#dynamic-programming` | Dp[i]=single+double choices |
+| 13 | [Triangle](https://leetcode.com/problems/triangle/) | 120 | 🟡 Medium | 🧱 STANDARD | `#dynamic-programming` | Bottom-up min path |
+| 14 | [House Robber II](https://leetcode.com/problems/house-robber-ii/) | 213 | 🟡 Medium | 🧱 STANDARD | `#dynamic-programming` | Max(rob 0..n-2, 1..n-1) |
+| 15 | [Perfect Squares](https://leetcode.com/problems/perfect-squares/) | 279 | 🟡 Medium | 🧱 STANDARD | `#dynamic-programming` | Dp[i]=min(dp[i-j^2]+1) |
+| 16 | [Target Sum](https://leetcode.com/problems/target-sum/) | 494 | 🟡 Medium | 🧱 STANDARD | `#dynamic-programming` | Convert to subset sum count |
+| 17 | [Longest Palindromic Subsequence](https://leetcode.com/problems/longest-palindromic-subsequence/) | 516 | 🟡 Medium | 🧱 STANDARD | `#2d-dp` | Dp[i][j] longest in s[i:j] |
+| 18 | [Delete and Earn](https://leetcode.com/problems/delete-and-earn/) | 740 | 🟡 Medium | 🧱 STANDARD | `#dynamic-programming` | Convert to house robber on values |
+| 19 | [Min Cost Climbing Stairs](https://leetcode.com/problems/min-cost-climbing-stairs/) | 746 | 🟢 Easy | 🧱 STANDARD | `#1d-dp` | Dp[i]=cost[i]+min(dp[i-1],dp[i-2]) |
+| 20 | [Min Cost For Tickets](https://leetcode.com/problems/min-cost-for-tickets/) | 983 | 🟡 Medium | 🧱 STANDARD | `#dynamic-programming` | Dp[day]=min cost from day |
+| 21 | [Unique Paths II](https://leetcode.com/problems/unique-paths-ii/) | 63 | 🟡 Medium | 🎯 PRACTICE | `#dynamic-programming` `#matrix-grid` | Obstacle cells set dp=0 |
+| 22 | [Palindromic Substrings](https://leetcode.com/problems/palindromic-substrings/) | 647 | 🟡 Medium | 🎯 PRACTICE | `#expand` | Count palindromes from centers |
+| 23 | [Longest Valid Parentheses](https://leetcode.com/problems/longest-valid-parentheses/) | 32 | 🔴 Hard | 💡 ADVANCED | `#stack` `#dynamic-programming` | DP lengths or stack indices |
+| 24 | [Interleaving String](https://leetcode.com/problems/interleaving-string/) | 97 | 🟡 Medium | 💡 ADVANCED | `#2d-dp` | Dp[i][j] whether s3 formed |
+| 25 | [Maximum Product Subarray](https://leetcode.com/problems/maximum-product-subarray/) | 152 | 🟡 Medium | 💡 ADVANCED | `#dynamic-programming` | Track maxProd and minProd |
+| 26 | [Best Time to Buy and Sell Stock with Cooldown](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/) | 309 | 🟡 Medium | 💡 ADVANCED | `#state-machine-dp` | Hold/sold/rest transitions |
+| 27 | [Combination Sum IV](https://leetcode.com/problems/combination-sum-iv/) | 377 | 🟡 Medium | 💡 ADVANCED | `#dynamic-programming` | Dp[i]+=dp[i-num] |
+| 28 | [Regular Expression Matching](https://leetcode.com/problems/regular-expression-matching/) | 10 | 🔴 Hard | 🧪 CHALLENGE | `#2d-dp` | Handle '.' and '*' transitions |
+| 29 | [Wildcard Matching](https://leetcode.com/problems/wildcard-matching/) | 44 | 🔴 Hard | 🧪 CHALLENGE | `#2d-dp` | Handle '?' and '*' |
+| 30 | [Distinct Subsequences](https://leetcode.com/problems/distinct-subsequences/) | 115 | 🔴 Hard | 🧪 CHALLENGE | `#2d-dp` | Count ways to form t from s |
+| 31 | [Burst Balloons](https://leetcode.com/problems/burst-balloons/) | 312 | 🔴 Hard | 🧪 CHALLENGE | `#intervals` `#interval-dp` | Choose last balloon in interval |
+
+> [!TIP]
+> ### 💡 Phase 8 Milestone — State Definitions & Space Compression
+> - **State Representation:** Define precisely what `dp[i]` or `dp[i][j]` computes (e.g., longest, minimum cost, reachability).
+> - **0/1 vs Unbounded Knapsack:** 0/1 knapsack iterates capacities backward (each item used once); unbounded knapsack iterates forward.
+> - **Space Optimization:** If `dp[i]` depends only on `dp[i-1]` and `dp[i-2]`, reduce memory from $O(N)$ to $O(1)$ using rolling variables.
+
 ---
 
 ## Phase 9 — Backtracking & Combinatorics 🌿
 
-| # | Problem | LC# | Priority | Topics to know | Hybrid approach |
-|---:|---|---:|---|---|---|
-| 1 | Combination Sum | 39 | 🔑 ANCHOR | Backtracking | Reuse current; reduce target |
-| 2 | Permutations | 46 | 🔑 ANCHOR | Backtracking | Swap/used-array generate orderings |
-| 3 | Subsets | 78 | 🔑 ANCHOR | Backtracking | Choose/skip each element |
-| 4 | Word Search | 79 | 🔑 ANCHOR | Grid backtracking | DFS with visited marking |
-| 5 | Generate Parentheses | 22 | ⭐ HIGH VALUE | Backtracking | Add '(' if open<n, ')' if close<open |
-| 6 | Palindrome Partitioning | 131 | ⭐ HIGH VALUE | Backtracking | Cut where substring is palindrome |
-| 7 | Letter Combinations of a Phone Number | 17 | 🧱 STANDARD | Backtracking | DFS over digit->letters |
-| 8 | Combination Sum II | 40 | 🧱 STANDARD | Backtracking | Use once; skip duplicates |
-| 9 | Combinations | 77 | 🧱 STANDARD | Backtracking | For-loop with start index |
-| 10 | Subsets II | 90 | 🧱 STANDARD | Duplicates | Sort; skip duplicates at level |
-| 11 | Permutations II | 47 | 🎯 PRACTICE | Duplicates | Sort; used[] skip duplicates |
-| 12 | N-Queens II | 52 | 🎯 PRACTICE | Counting | Backtracking count solutions |
-| 13 | Restore IP Addresses | 93 | 🎯 PRACTICE | Backtracking | Try 1-3 digits per segment |
-| 14 | Matchsticks to Square | 473 | 🎯 PRACTICE | Backtracking | Assign sticks to 4 buckets |
-| 15 | Beautiful Arrangement | 526 | 🎯 PRACTICE | Backtracking | Place i with divisibility pruning |
-| 16 | Path with Maximum Gold | 1219 | 🎯 PRACTICE | Backtracking | DFS collect; mark visited |
-| 17 | Split a String Into the Max Number of Unique Substrings | 1593 | 🎯 PRACTICE | Backtracking | Use set; try all splits |
-| 18 | Sudoku Solver | 37 | 💡 ADVANCED | Backtracking | Choose empty; try digits with constraints |
-| 19 | N-Queens | 51 | 💡 ADVANCED | Backtracking | Place row-by-row with col/diag sets |
-| 20 | Word Search II | 212 | 💡 ADVANCED | Trie + backtracking | DFS guided by trie |
-| 21 | Expression Add Operators | 282 | 🧪 CHALLENGE | Backtracking | DFS with prev operand for * |
-| 22 | Remove Invalid Parentheses | 301 | 🧪 CHALLENGE | BFS/backtracking | Remove minimal; dedupe states |
+| # | Problem | LC# | Difficulty | Priority | Pattern Tags | Hybrid Approach & Core Invariant |
+| :---: | :--- | :---: | :---: | :---: | :--- | :--- |
+| 1 | [Combination Sum](https://leetcode.com/problems/combination-sum/) | 39 | 🟡 Medium | 🔑 ANCHOR | `#backtracking` | Reuse current; reduce target |
+| 2 | [Permutations](https://leetcode.com/problems/permutations/) | 46 | 🟡 Medium | 🔑 ANCHOR | `#backtracking` | Swap/used-array generate orderings |
+| 3 | [Subsets](https://leetcode.com/problems/subsets/) | 78 | 🟡 Medium | 🔑 ANCHOR | `#backtracking` | Choose/skip each element |
+| 4 | [Word Search](https://leetcode.com/problems/word-search/) | 79 | 🟡 Medium | 🔑 ANCHOR | `#backtracking` `#matrix-grid` | DFS with visited marking |
+| 5 | [Generate Parentheses](https://leetcode.com/problems/generate-parentheses/) | 22 | 🟡 Medium | ⭐ HIGH VALUE | `#backtracking` | Add '(' if open<n, ')' if close<open |
+| 6 | [Palindrome Partitioning](https://leetcode.com/problems/palindrome-partitioning/) | 131 | 🟡 Medium | ⭐ HIGH VALUE | `#backtracking` | Cut where substring is palindrome |
+| 7 | [Letter Combinations of a Phone Number](https://leetcode.com/problems/letter-combinations-of-a-phone-number/) | 17 | 🟡 Medium | 🧱 STANDARD | `#backtracking` | DFS over digit->letters |
+| 8 | [Combination Sum II](https://leetcode.com/problems/combination-sum-ii/) | 40 | 🟡 Medium | 🧱 STANDARD | `#backtracking` | Use once; skip duplicates |
+| 9 | [Combinations](https://leetcode.com/problems/combinations/) | 77 | 🟡 Medium | 🧱 STANDARD | `#backtracking` | For-loop with start index |
+| 10 | [Subsets II](https://leetcode.com/problems/subsets-ii/) | 90 | 🟡 Medium | 🧱 STANDARD | `#duplicates` | Sort; skip duplicates at level |
+| 11 | [Permutations II](https://leetcode.com/problems/permutations-ii/) | 47 | 🟡 Medium | 🎯 PRACTICE | `#duplicates` | Sort; used[] skip duplicates |
+| 12 | [N-Queens II](https://leetcode.com/problems/n-queens-ii/) | 52 | 🔴 Hard | 🎯 PRACTICE | `#backtracking` `#counting` | Backtracking count solutions |
+| 13 | [Restore IP Addresses](https://leetcode.com/problems/restore-ip-addresses/) | 93 | 🟡 Medium | 🎯 PRACTICE | `#backtracking` | Try 1-3 digits per segment |
+| 14 | [Matchsticks to Square](https://leetcode.com/problems/matchsticks-to-square/) | 473 | 🟡 Medium | 🎯 PRACTICE | `#backtracking` | Assign sticks to 4 buckets |
+| 15 | [Beautiful Arrangement](https://leetcode.com/problems/beautiful-arrangement/) | 526 | 🟡 Medium | 🎯 PRACTICE | `#backtracking` | Place i with divisibility pruning |
+| 16 | [Path with Maximum Gold](https://leetcode.com/problems/path-with-maximum-gold/) | 1219 | 🟡 Medium | 🎯 PRACTICE | `#backtracking` | DFS collect; mark visited |
+| 17 | [Split a String Into the Max Number of Unique Substrings](https://leetcode.com/problems/split-a-string-into-the-max-number-of-unique-substrings/) | 1593 | 🟡 Medium | 🎯 PRACTICE | `#backtracking` | Use set; try all splits |
+| 18 | [Sudoku Solver](https://leetcode.com/problems/sudoku-solver/) | 37 | 🔴 Hard | 💡 ADVANCED | `#backtracking` | Choose empty; try digits with constraints |
+| 19 | [N-Queens](https://leetcode.com/problems/n-queens/) | 51 | 🔴 Hard | 💡 ADVANCED | `#backtracking` | Place row-by-row with col/diag sets |
+| 20 | [Word Search II](https://leetcode.com/problems/word-search-ii/) | 212 | 🔴 Hard | 💡 ADVANCED | `#trie` `#backtracking` | DFS guided by trie |
+| 21 | [Expression Add Operators](https://leetcode.com/problems/expression-add-operators/) | 282 | 🔴 Hard | 🧪 CHALLENGE | `#backtracking` | DFS with prev operand for * |
+| 22 | [Remove Invalid Parentheses](https://leetcode.com/problems/remove-invalid-parentheses/) | 301 | 🔴 Hard | 🧪 CHALLENGE | `#bfs` `#backtracking` | Remove minimal; dedupe states |
+
+> [!TIP]
+> ### 💡 Phase 9 Milestone — State-Space Exploration & Pruning
+> - **Backtracking Core Template:** `Choose(candidate) -> Recurse(next_state) -> Undo(candidate)`.
+> - **Duplicate Pruning:** Sort input array first; skip adjacent identical candidates `if (i > start && nums[i] == nums[i-1]) continue;`.
+> - **Permutation vs Combination:** Pass `start` index forward for combinations/subsets; use `used[]` boolean array or in-place swap for permutations.
+
 ---
 
 ## Phase 10 — Heaps, Tries, Union-Find, Advanced DS 🧲🌲🤝
 
-| # | Problem | LC# | Priority | Topics to know | Hybrid approach |
-|---:|---|---:|---|---|---|
-| 1 | Implement Trie (Prefix Tree) | 208 | 🔑 ANCHOR | Trie | Insert/search/prefix |
-| 2 | Design Add and Search Words Data Structure | 211 | 🔑 ANCHOR | Trie + DFS | Wildcard '.' backtrack |
-| 3 | Find Median from Data Stream | 295 | 🔑 ANCHOR | Two heaps | Max-heap left, min-heap right |
-| 4 | Number of Connected Components in an Undirected Graph | 323 | 🔑 ANCHOR | DSU | Union edges; count components |
-| 5 | Random Pick with Weight | 528 | ⭐ HIGH VALUE | Prefix + BS | Prefix sums; pick by random |
-| 6 | Redundant Connection | 684 | ⭐ HIGH VALUE | DSU | First edge creating cycle |
-| 7 | Accounts Merge | 721 | ⭐ HIGH VALUE | DSU | Union emails; group by root |
-| 8 | Snapshot Array | 1146 | ⭐ HIGH VALUE | Design | Versioned arrays via maps |
-| 9 | Design Underground System | 1396 | ⭐ HIGH VALUE | Design | Track check-in; compute averages |
-| 10 | Replace Words | 648 | 🧱 STANDARD | Trie | Replace by shortest root prefix |
-| 11 | Top K Frequent Words | 692 | 🧱 STANDARD | Heap + sort | Heap with custom ordering |
-| 12 | K Closest Points to Origin | 973 | 🧱 STANDARD | Heap | Max-heap size k |
-| 13 | Satisfiability of Equality Equations | 990 | 🧱 STANDARD | DSU | Union == then check != |
-| 14 | Design HashSet | 705 | 🎯 PRACTICE | Buckets | Separate chaining |
-| 15 | Design HashMap | 706 | 🎯 PRACTICE | Buckets | Separate chaining |
-| 16 | Browser History | 1472 | 🎯 PRACTICE | Design | Stack/list with pointer |
-| 17 | Find K Pairs with Smallest Sums | 373 | 💡 ADVANCED | Heap | Push (i,0) per row; expand |
-| 18 | IPO | 502 | 💡 ADVANCED | Greedy + heaps | Max profit among feasible projects |
-| 19 | Smallest Range Covering Elements from K Lists | 632 | 💡 ADVANCED | Heap | Track current max; pop min |
-| 20 | Most Stones Removed with Same Row or Column | 947 | 💡 ADVANCED | DSU | Union rows/cols; answer n-components |
-| 21 | Regions Cut By Slashes | 959 | 💡 ADVANCED | DSU | Union triangles; count regions |
-| 22 | Stream of Characters | 1032 | 💡 ADVANCED | Trie | Reverse trie + stream suffix match |
-| 23 | Smallest String With Swaps | 1202 | 💡 ADVANCED | DSU + sort | Group indices; sort chars per component |
-| 24 | Palindrome Pairs | 336 | 🧪 CHALLENGE | Trie | Split words; match reversed prefixes |
-| 25 | All O(1) Data Structure | 432 | 🧪 CHALLENGE | Design | DLL of counts + maps |
-| 26 | Sliding Window Median | 480 | 🧪 CHALLENGE | Two heaps | Lazy deletion + rebalance |
-| 27 | Making A Large Island | 827 | 🧪 CHALLENGE | DSU/DFS | Label islands; try flip 0 |
-| 28 | Remove Max Number of Edges to Keep Graph Fully Traversable | 1579 | 🧪 CHALLENGE | DSU | Greedy union type3 then others |
+| # | Problem | LC# | Difficulty | Priority | Pattern Tags | Hybrid Approach & Core Invariant |
+| :---: | :--- | :---: | :---: | :---: | :--- | :--- |
+| 1 | [Implement Trie (Prefix Tree)](https://leetcode.com/problems/implement-trie-prefix-tree/) | 208 | 🟡 Medium | 🔑 ANCHOR | `#trie` | Insert/search/prefix |
+| 2 | [Design Add and Search Words Data Structure](https://leetcode.com/problems/design-add-and-search-words-data-structure/) | 211 | 🟡 Medium | 🔑 ANCHOR | `#dfs` `#trie` | Wildcard '.' backtrack |
+| 3 | [Find Median from Data Stream](https://leetcode.com/problems/find-median-from-data-stream/) | 295 | 🔴 Hard | 🔑 ANCHOR | `#two-heaps` | Max-heap left, min-heap right |
+| 4 | [Number of Connected Components in an Undirected Graph](https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/) | 323 | 🟡 Medium | 🔑 ANCHOR | `#union-find` | Union edges; count components |
+| 5 | [Random Pick with Weight](https://leetcode.com/problems/random-pick-with-weight/) | 528 | 🟡 Medium | ⭐ HIGH VALUE | `#binary-search` | Prefix sums; pick by random |
+| 6 | [Redundant Connection](https://leetcode.com/problems/redundant-connection/) | 684 | 🟡 Medium | ⭐ HIGH VALUE | `#union-find` | First edge creating cycle |
+| 7 | [Accounts Merge](https://leetcode.com/problems/accounts-merge/) | 721 | 🟡 Medium | ⭐ HIGH VALUE | `#union-find` | Union emails; group by root |
+| 8 | [Snapshot Array](https://leetcode.com/problems/snapshot-array/) | 1146 | 🟡 Medium | ⭐ HIGH VALUE | `#system-design` | Versioned arrays via maps |
+| 9 | [Design Underground System](https://leetcode.com/problems/design-underground-system/) | 1396 | 🟡 Medium | ⭐ HIGH VALUE | `#system-design` | Track check-in; compute averages |
+| 10 | [Replace Words](https://leetcode.com/problems/replace-words/) | 648 | 🟡 Medium | 🧱 STANDARD | `#trie` | Replace by shortest root prefix |
+| 11 | [Top K Frequent Words](https://leetcode.com/problems/top-k-frequent-words/) | 692 | 🟡 Medium | 🧱 STANDARD | `#heap` | Heap with custom ordering |
+| 12 | [K Closest Points to Origin](https://leetcode.com/problems/k-closest-points-to-origin/) | 973 | 🟡 Medium | 🧱 STANDARD | `#heap` | Max-heap size k |
+| 13 | [Satisfiability of Equality Equations](https://leetcode.com/problems/satisfiability-of-equality-equations/) | 990 | 🟡 Medium | 🧱 STANDARD | `#union-find` | Union == then check != |
+| 14 | [Design HashSet](https://leetcode.com/problems/design-hashset/) | 705 | 🟢 Easy | 🎯 PRACTICE | `#buckets` | Separate chaining |
+| 15 | [Design HashMap](https://leetcode.com/problems/design-hashmap/) | 706 | 🟢 Easy | 🎯 PRACTICE | `#buckets` | Separate chaining |
+| 16 | [Browser History](https://leetcode.com/problems/browser-history/) | 1472 | 🟡 Medium | 🎯 PRACTICE | `#stack` `#system-design` | Stack/list with pointer |
+| 17 | [Find K Pairs with Smallest Sums](https://leetcode.com/problems/find-k-pairs-with-smallest-sums/) | 373 | 🟡 Medium | 💡 ADVANCED | `#heap` | Push (i,0) per row; expand |
+| 18 | [IPO](https://leetcode.com/problems/ipo/) | 502 | 🔴 Hard | 💡 ADVANCED | `#heap` `#greedy` | Max profit among feasible projects |
+| 19 | [Smallest Range Covering Elements from K Lists](https://leetcode.com/problems/smallest-range-covering-elements-from-k-lists/) | 632 | 🔴 Hard | 💡 ADVANCED | `#heap` | Track current max; pop min |
+| 20 | [Most Stones Removed with Same Row or Column](https://leetcode.com/problems/most-stones-removed-with-same-row-or-column/) | 947 | 🟡 Medium | 💡 ADVANCED | `#union-find` | Union rows/cols; answer n-components |
+| 21 | [Regions Cut By Slashes](https://leetcode.com/problems/regions-cut-by-slashes/) | 959 | 🟡 Medium | 💡 ADVANCED | `#union-find` | Union triangles; count regions |
+| 22 | [Stream of Characters](https://leetcode.com/problems/stream-of-characters/) | 1032 | 🔴 Hard | 💡 ADVANCED | `#trie` | Reverse trie + stream suffix match |
+| 23 | [Smallest String With Swaps](https://leetcode.com/problems/smallest-string-with-swaps/) | 1202 | 🟡 Medium | 💡 ADVANCED | `#union-find` | Group indices; sort chars per component |
+| 24 | [Palindrome Pairs](https://leetcode.com/problems/palindrome-pairs/) | 336 | 🔴 Hard | 🧪 CHALLENGE | `#trie` | Split words; match reversed prefixes |
+| 25 | [All O(1) Data Structure](https://leetcode.com/problems/all-oone-data-structure/) | 432 | 🔴 Hard | 🧪 CHALLENGE | `#system-design` | DLL of counts + maps |
+| 26 | [Sliding Window Median](https://leetcode.com/problems/sliding-window-median/) | 480 | 🔴 Hard | 🧪 CHALLENGE | `#two-heaps` | Lazy deletion + rebalance |
+| 27 | [Making A Large Island](https://leetcode.com/problems/making-a-large-island/) | 827 | 🔴 Hard | 🧪 CHALLENGE | `#union-find` `#dfs` | Label islands; try flip 0 |
+| 28 | [Remove Max Number of Edges to Keep Graph Fully Traversable](https://leetcode.com/problems/remove-max-number-of-edges-to-keep-graph-fully-traversable/) | 1579 | 🔴 Hard | 🧪 CHALLENGE | `#union-find` | Greedy union type3 then others |
+
+> [!TIP]
+> ### 💡 Phase 10 Milestone — Specialized Data Structures
+> - **Disjoint Set Union (DSU):** Union by rank + path compression achieves near-linear $O(\alpha(N))$ dynamic connectivity and cycle detection.
+> - **Trie Prefix Matching:** Tree of character edges enables $O(L)$ prefix validation and search, ideal for word boggles and dictionary autocomplete.
+> - **Two Heaps Pattern:** Maintain dynamic running median by balancing a Max-Heap (lower half) and Min-Heap (upper half) within $\le 1$ count.
+
 ---
 
 ## Phase 11 — Advanced Graphs + Design + Mixed Interview Core 🚀
 
-| # | Problem | LC# | Priority | Topics to know | Hybrid approach |
-|---:|---|---:|---|---|---|
-| 1 | LRU Cache | 146 | 🔑 ANCHOR | Design | DLL + hashmap O(1) |
-| 2 | Network Delay Time | 743 | 🔑 ANCHOR | Dijkstra | Min-heap relax edges |
-| 3 | Minimum Cost to Connect All Points | 1584 | 🔑 ANCHOR | MST | Prim/Kruskal |
-| 4 | Basic Calculator II | 227 | ⭐ HIGH VALUE | Stack parsing | Process * /; defer + - |
-| 5 | Insert Delete GetRandom O(1) | 380 | ⭐ HIGH VALUE | Design | Array + hashmap + swap-delete |
-| 6 | Cheapest Flights Within K Stops | 787 | ⭐ HIGH VALUE | BFS/DP | Layer by stops; relax costs |
-| 7 | Time Based Key-Value Store | 981 | ⭐ HIGH VALUE | Design + BS | Store (ts,val) list; BS |
-| 8 | Path With Minimum Effort | 1631 | ⭐ HIGH VALUE | Dijkstra/BS | Minimize max edge cost |
-| 9 | Design Twitter | 355 | 🧱 STANDARD | Design + heap | Merge recent tweets by time |
-| 10 | Path with Maximum Probability | 1514 | 🧱 STANDARD | Dijkstra variant | Max-heap by prob; multiply |
-| 11 | Basic Calculator | 224 | 💡 ADVANCED | Stack | Parse +,-,(,) with sign stack |
-| 12 | Swim in Rising Water | 778 | 💡 ADVANCED | Dijkstra/BS | Minimax path via PQ |
-| 13 | Critical Connections in a Network | 1192 | 💡 ADVANCED | Tarjan | Low-link for bridges |
-| 14 | Shortest Path in a Grid with Obstacles Elimination | 1293 | 💡 ADVANCED | BFS state | (r,c,k) visited |
-| 15 | Minimum Cost to Make at Least One Valid Path in a Grid | 1368 | 💡 ADVANCED | 0-1 BFS | Edges cost 0/1 |
-| 16 | LFU Cache | 460 | 🧪 CHALLENGE | Design | Freq lists + hashmap; O(1) ops |
-| 17 | Parse Lisp Expression | 736 | 🧪 CHALLENGE | Parsing | Recursive descent / stack |
-| 18 | Shortest Path Visiting All Nodes | 847 | 🧪 CHALLENGE | BFS bitmask | State (node,mask) |
-| 19 | Minimum Cost to Reach Destination in Time | 1928 | 🧪 CHALLENGE | DP + Dijkstra | State (node,time) min cost |
+| # | Problem | LC# | Difficulty | Priority | Pattern Tags | Hybrid Approach & Core Invariant |
+| :---: | :--- | :---: | :---: | :---: | :--- | :--- |
+| 1 | [LRU Cache](https://leetcode.com/problems/lru-cache/) | 146 | 🟡 Medium | 🔑 ANCHOR | `#system-design` | DLL + hashmap $O(1)$ |
+| 2 | [Network Delay Time](https://leetcode.com/problems/network-delay-time/) | 743 | 🟡 Medium | 🔑 ANCHOR | `#dijkstras-algorithm` | Min-heap relax edges |
+| 3 | [Minimum Cost to Connect All Points](https://leetcode.com/problems/min-cost-to-connect-all-points/) | 1584 | 🟡 Medium | 🔑 ANCHOR | `#minimum-spanning-tree` | Prim/Kruskal |
+| 4 | [Basic Calculator II](https://leetcode.com/problems/basic-calculator-ii/) | 227 | 🟡 Medium | ⭐ HIGH VALUE | `#stack` | Process * /; defer + - |
+| 5 | [Insert Delete GetRandom O(1)](https://leetcode.com/problems/insert-delete-getrandom-o1/) | 380 | 🟡 Medium | ⭐ HIGH VALUE | `#system-design` | Array + hashmap + swap-delete |
+| 6 | [Cheapest Flights Within K Stops](https://leetcode.com/problems/cheapest-flights-within-k-stops/) | 787 | 🟡 Medium | ⭐ HIGH VALUE | `#bfs` `#dynamic-programming` | Layer by stops; relax costs |
+| 7 | [Time Based Key-Value Store](https://leetcode.com/problems/time-based-key-value-store/) | 981 | 🟡 Medium | ⭐ HIGH VALUE | `#binary-search` `#system-design` | Store (ts,val) list; BS |
+| 8 | [Path With Minimum Effort](https://leetcode.com/problems/path-with-minimum-effort/) | 1631 | 🟡 Medium | ⭐ HIGH VALUE | `#binary-search` `#dijkstras-algorithm` | Minimize max edge cost |
+| 9 | [Design Twitter](https://leetcode.com/problems/design-twitter/) | 355 | 🟡 Medium | 🧱 STANDARD | `#heap` `#system-design` | Merge recent tweets by time |
+| 10 | [Path with Maximum Probability](https://leetcode.com/problems/path-with-maximum-probability/) | 1514 | 🟡 Medium | 🧱 STANDARD | `#dijkstras-algorithm` | Max-heap by prob; multiply |
+| 11 | [Basic Calculator](https://leetcode.com/problems/basic-calculator/) | 224 | 🔴 Hard | 💡 ADVANCED | `#stack` | Parse +,-,(,) with sign stack |
+| 12 | [Swim in Rising Water](https://leetcode.com/problems/swim-in-rising-water/) | 778 | 🔴 Hard | 💡 ADVANCED | `#binary-search` `#dijkstras-algorithm` | Minimax path via PQ |
+| 13 | [Critical Connections in a Network](https://leetcode.com/problems/critical-connections-in-a-network/) | 1192 | 🔴 Hard | 💡 ADVANCED | `#graph` `#tarjans-bridge-finding` `#dfs-low-link` | Low-link for bridges |
+| 14 | [Shortest Path in a Grid with Obstacles Elimination](https://leetcode.com/problems/shortest-path-in-a-grid-with-obstacles-elimination/) | 1293 | 🔴 Hard | 💡 ADVANCED | `#bfs` | (r,c,k) visited |
+| 15 | [Minimum Cost to Make at Least One Valid Path in a Grid](https://leetcode.com/problems/minimum-cost-to-make-at-least-one-valid-path-in-a-grid/) | 1368 | 🔴 Hard | 💡 ADVANCED | `#bfs` | Edges cost 0/1 |
+| 16 | [LFU Cache](https://leetcode.com/problems/lfu-cache/) | 460 | 🔴 Hard | 🧪 CHALLENGE | `#system-design` | Freq lists + hashmap; $O(1)$ ops |
+| 17 | [Parse Lisp Expression](https://leetcode.com/problems/parse-lisp-expression/) | 736 | 🔴 Hard | 🧪 CHALLENGE | `#stack` | Recursive descent / stack |
+| 18 | [Shortest Path Visiting All Nodes](https://leetcode.com/problems/shortest-path-visiting-all-nodes/) | 847 | 🔴 Hard | 🧪 CHALLENGE | `#bfs` `#bit-manipulation` | State (node,mask) |
+| 19 | [Minimum Cost to Reach Destination in Time](https://leetcode.com/problems/minimum-cost-to-reach-destination-in-time/) | 1928 | 🔴 Hard | 🧪 CHALLENGE | `#dijkstras-algorithm` `#dynamic-programming` | State (node,time) min cost |
+
+> [!TIP]
+> ### 💡 Phase 11 Milestone — System-Level Algorithmic Design
+> - **O(1) Eviction Design (LRU/LFU):** Combine `Dictionary` for $O(1)$ key lookup with Doubly Linked List for $O(1)$ node promotion and eviction.
+> - **Dijkstra's Relaxation:** Greedily expand cheapest unvisited node via PriorityQueue on non-negative weighted graphs.
+> - **Minimum Spanning Tree:** Kruskal's with DSU ($O(E \log E)$) for sparse graphs; Prim's with PriorityQueue ($O(E \log V)$) for dense graphs.
+
+---
