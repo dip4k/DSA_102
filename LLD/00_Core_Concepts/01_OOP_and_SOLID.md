@@ -3,6 +3,132 @@
 ## 📌 The Golden Rule of OOP
 > **"Encapsulate what varies, favor composition over inheritance, and program to interfaces, not implementations."**
 
+### 📚 AlgoMaster OOP Quick-Reference Links
+Use these to drill individual concepts before an interview:
+| Concept | Link |
+|---|---|
+| Classes & Objects | [algomaster.io/learn/lld/classes-and-objects](https://algomaster.io/learn/lld/classes-and-objects) |
+| Interfaces | [algomaster.io/learn/lld/interfaces](https://algomaster.io/learn/lld/interfaces) |
+| Encapsulation | [algomaster.io/learn/lld/encapsulation](https://algomaster.io/learn/lld/encapsulation) |
+| Abstraction | [algomaster.io/learn/lld/abstraction](https://algomaster.io/learn/lld/abstraction) |
+| Inheritance | [algomaster.io/learn/lld/inheritance](https://algomaster.io/learn/lld/inheritance) |
+| Polymorphism | [algomaster.io/learn/lld/polymorphism](https://algomaster.io/learn/lld/polymorphism) |
+| Enums | [algomaster.io/learn/lld/enums](https://algomaster.io/learn/lld/enums) |
+| 15 Must-Know OOP Concepts | [algomaster.io/learn/lld/15-must-know-oop-concepts](https://algomaster.io/learn/lld/15-must-know-oop-concepts) |
+
+---
+
+## 🔗 Class Relationships Taxonomy
+
+> **Interviewer probe:** *"What's the difference between Composition and Aggregation? When would you use each?"*
+
+Understanding the four relationship types is critical for drawing UML class diagrams and defending your design choices.
+
+### 1. Association ("uses-a" / "knows-a")
+Two classes are aware of each other, but neither owns the other. Typically modelled via a method parameter or a short-lived reference.
+
+```csharp
+// A Driver uses a Car temporarily — neither owns the other
+public class Driver
+{
+    public void Drive(Car car)  // Association: Car is a parameter, not a field
+    {
+        car.Accelerate();
+    }
+}
+```
+📚 [AlgoMaster: Association](https://algomaster.io/learn/lld/association)
+
+### 2. Aggregation ("has-a" — weak ownership)
+One class **has-a** reference to another, but the contained object can **exist independently**. Lifetime is not controlled by the container.
+
+```csharp
+// A Department has Employees, but Employees can exist without a Department
+public class Department
+{
+    private readonly List<Employee> _employees;
+
+    public Department(List<Employee> employees)   // Injected externally — not owned
+    {
+        _employees = employees;
+    }
+}
+```
+📚 [AlgoMaster: Aggregation](https://algomaster.io/learn/lld/aggregation)
+
+### 3. Composition ("has-a" — strong ownership / whole-part)
+One class **owns** another. The contained object **cannot exist without** the container. Lifetime is controlled by the owner.
+
+```csharp
+// An Order owns its OrderItems — if the Order is deleted, all items are deleted
+public class Order
+{
+    // Created inside Order, not injected — tight lifecycle coupling
+    private readonly List<OrderItem> _items = new();
+
+    public void AddItem(string product, decimal price, int qty)
+        => _items.Add(new OrderItem(product, price, qty));
+}
+```
+📚 [AlgoMaster: Composition](https://algomaster.io/learn/lld/composition)
+
+### 4. Dependency ("depends-on" / "uses transiently")
+The weakest relationship. Class A uses Class B only for the duration of a method call — no field reference is stored.
+
+```csharp
+public class OrderService
+{
+    public void ProcessOrder(Order order, IPaymentGateway gateway)
+    {
+        // gateway is a Dependency — used and discarded within this method
+        gateway.Charge(order.TotalAmount);
+    }
+}
+```
+📚 [AlgoMaster: Dependency](https://algomaster.io/learn/lld/dependency)
+
+### Relationship Strength Summary
+
+| Relationship | UML Notation | Lifetime Shared? | Example |
+|---|---|---|---|
+| **Dependency** | Dashed arrow `-->` | No | `OrderService` uses `IPaymentGateway` in method |
+| **Association** | Solid arrow `→` | No | `Driver` uses `Car` as a parameter |
+| **Aggregation** | Diamond (hollow) `◇→` | No | `Department` has `Employee[]` (injected) |
+| **Composition** | Diamond (filled) `◆→` | Yes | `Order` creates its own `OrderItem[]` |
+
+---
+
+## 💡 Design Principles: DRY, YAGNI & KISS
+
+These three principles sit alongside SOLID and are explicitly tested in senior interviews.
+
+### DRY — Don't Repeat Yourself
+> *"Every piece of knowledge must have a single, unambiguous, authoritative representation within a system."*
+
+**Violation:** Discount calculation logic duplicated in `OrderService`, `InvoiceService`, and `QuoteService`.
+**Fix:** Extract `IDiscountCalculator` service and inject it into all three.
+
+📚 [AlgoMaster: DRY Principle](https://algomaster.io/learn/lld/dry)
+
+### YAGNI — You Aren't Gonna Need It
+> *"Implement things when you actually need them, never when you just foresee that you might need them."*
+
+**Violation:** Building a plugin system, multi-currency support, and GraphQL API for a simple internal CRUD tool before any user has asked for them.
+**Fix:** Start with the simplest thing that works; refactor only when the requirement materialises.
+
+📚 [AlgoMaster: YAGNI Principle](https://algomaster.io/learn/lld/yagni)
+
+### KISS — Keep It Simple, Stupid
+> *"Most systems work best if they are kept simple rather than made complicated."*
+
+**Violation:** Using an Abstract Factory + Builder + Prototype chain to construct a `UserDto` object with 3 fields.
+**Fix:** `new UserDto(user.Id, user.Name, user.Email)` — the simplest thing that solves the problem.
+
+📚 [AlgoMaster: KISS Principle](https://algomaster.io/learn/lld/kiss)
+
+### Interview Tip: Applying all three together
+*"I'm applying DRY by centralising the fee calculation. I'm applying YAGNI by not building a multi-currency engine yet — the spec only mentions GBP. And I'm applying KISS by using a simple strategy map rather than an Abstract Factory until we have 10+ payment providers."*
+
 ---
 
 ## 1. Composition over Inheritance

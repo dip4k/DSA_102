@@ -1,13 +1,13 @@
 # 🎯 HYBRID DSA CURRICULUM
-## Theory + Problems Integration | 19-Week Complete Mastery Path
+## Theory + Problems Integration | Complete Mastery Path
 
 ---
 
 ## 📋 Overview
 
 **Approach**: Learn theory → Apply immediately → Master through practice  
-**Duration**: 19 weeks (133 days)  
-**Time Commitment**: 10-12 hours/week  
+**Duration**: Self-paced (Suggested: ~3-4 months)  
+Take this at your own pace. The goal is deep understanding, not rushing.  
 **Total Problems**: 235+ LeetCode problems  
 **Focus**: Interview readiness + Deep understanding
 
@@ -19,26 +19,20 @@
 4. **Pattern Recognition**: Group problems by underlying patterns
 5. **Progressive Difficulty**: Easy → Medium → Hard within each topic
 
-### ⏱️ Time Allocation Per Topic
-
-- **📖 Theory Study**: 30% (concept, examples, visualizations)
-- **💻 Problem Solving**: 50% (implementation, debugging)
-- **📝 Review & Notes**: 20% (pattern notes, edge cases)
-
 ---
 
-## 🗓️ Week 1: Foundations & Complexity Analysis
+## 🗓️ Phase: Foundations & Complexity Analysis
 
-### Day 1-2: Time & Space Complexity
+### Time & Space Complexity
 
-**📖 Theory (3 hours)**
+**📖 Theory to Study**
 - Big O, Theta, Omega notation
 - Best, average, worst case analysis
 - Common complexities: O(1), O(log n), O(n), O(n log n), O(n²), O(2ⁿ)
 - Space complexity vs auxiliary space
 - Amortized analysis basics
 
-**💻 Problems (2 hours)**
+**💻 Core Problems**
 1. 🔑 **Binary Search** (LC 704) - O(log n) template
 2. 🎯 **First Bad Version** (LC 278) - Minimization variant
 
@@ -49,16 +43,16 @@
 
 ---
 
-### Day 3-4: Bit Manipulation & Math Fundamentals
+### Bit Manipulation & Math Fundamentals
 
-**📖 Theory (2 hours)**
+**📖 Theory to Study**
 - Binary representation and operations
 - AND, OR, XOR, NOT, left/right shift
 - Common tricks: `n & (n-1)`, `n & -n`, XOR properties
 - GCD, LCM, prime numbers
 - Modular arithmetic
 
-**💻 Problems (3 hours)**
+**💻 Core Problems**
 3. 🎯 **Power of Two** (LC 231) - n & (n-1) trick
 4. 🎯 **Power of Three** (LC 326) - Logarithm approach
 5. ⭐ **Counting Bits** (LC 338) - DP + Bit manipulation
@@ -71,16 +65,16 @@
 
 ---
 
-### Day 5-7: Basic DP & Prefix Sum Introduction
+### Basic DP & Prefix Sum Introduction
 
-**📖 Theory (3 hours)**
+**📖 Theory to Study**
 - What is Dynamic Programming?
 - Overlapping subproblems + Optimal substructure
 - Top-down (memoization) vs Bottom-up (tabulation)
 - State definition and recurrence relation
 - Prefix sum technique
 
-**💻 Problems (4 hours)**
+**💻 Core Problems**
 7. 🔑 **Climbing Stairs** (LC 70) - Classic Fibonacci DP
 8. 🔑 **Find Pivot Index** (LC 724) - Prefix sum pattern
 
@@ -89,28 +83,28 @@
 - Recurrence: `dp[i] = f(dp[i-1], dp[i-2], ...)`
 - Prefix sum: O(1) range queries after O(n) preprocessing
 
-**🔄 Week 1 Review**: Solve all 7 problems again without hints
+**🔄 Review:** Solve all 7 problems again without hints
 
 ---
 
-## 🗓️ Week 2-3: Arrays, Strings & Hashing
+## 🗓️ Phase: Arrays, Strings & Hashing
 
-### Week 2: Hash Maps & Two Pointers
+### Hash Maps & Two Pointers
 
-**📖 Theory (4 hours)**
+**📖 Theory to Study**
 - Hash table internals: hash function, collision resolution
 - Hash map vs hash set use cases
 - Two pointers: same direction vs opposite direction
 - In-place array manipulation techniques
 - Time-space tradeoffs
 
-**💻 Day 8-10: Hash Map Patterns (5 hours)**
+**💻 Hash Map Patterns**
 1. 🔑 **Two Sum** (LC 1) - Complement search, O(n)
 2. 🎯 **Contains Duplicate** (LC 217) - Existence check
 3. ⭐ **Valid Anagram** (LC 242) - Frequency counting
 4. 🔑 **Group Anagrams** (LC 49) - Sorted string as key
 
-**💻 Day 11-14: Two Pointers (6 hours)**
+**💻 Two Pointers**
 5. 🔑 **Valid Palindrome** (LC 125) - Opposite direction
 6. ⭐ **Merge Sorted Array** (LC 88) - Backward iteration
 7. 🎯 **Move Zeroes** (LC 283) - Slow/fast pointers
@@ -126,20 +120,20 @@
 
 ---
 
-### Week 3: Sliding Window & Advanced Arrays
+### Sliding Window & Advanced Arrays
 
-**📖 Theory (4 hours)**
+**📖 Theory to Study**
 - Sliding window technique: variable vs fixed size
 - Window expansion and contraction rules
 - Prefix/suffix product patterns
 - Heap for top-K problems
 
-**💻 Day 15-18: Variable Sliding Window (6 hours)**
+**💻 Variable Sliding Window**
 11. 🔑 **Longest Substring Without Repeating** (LC 3) - Expand/contract
 12. 💡 **Longest Repeating Character Replacement** (LC 424) - len - maxFreq ≤ k
 13. 🔑 **Container With Most Water** (LC 11) - Greedy two pointers
 
-**💻 Day 19-21: Advanced Array Techniques (5 hours)**
+**💻 Advanced Array Techniques**
 14. 🔑 **3Sum** (LC 15) - Fix one + two pointers
 15. ⭐ **Product of Array Except Self** (LC 238) - Prefix/suffix products
 16. ⭐ **Top K Frequent Elements** (LC 347) - Frequency + min heap
@@ -152,22 +146,22 @@
 - Prefix sum + map: count subarrays with property
 - Three reverses trick for rotation
 
-**🔄 Week 2-3 Review**: Re-solve all 🔑 ANCHOR problems
+**🔄 Review:** Re-solve all 🔑 ANCHOR problems
 
 ---
 
-## 🗓️ Week 4: Linked Lists, Stacks & Queues
+## 🗓️ Phase: Linked Lists, Stacks & Queues
 
-### Day 22-24: Linked List Fundamentals
+### Linked List Fundamentals
 
-**📖 Theory (3 hours)**
+**📖 Theory to Study**
 - Singly vs doubly linked lists
 - Dummy node pattern for edge cases
 - Fast/slow pointer (Floyd's algorithm)
 - Reverse linked list technique
 - In-place vs extra space
 
-**💻 Problems (6 hours)**
+**💻 Core Problems**
 1. 🔑 **Reverse Linked List** (LC 206) - Three pointers
 2. 🔑 **Merge Two Sorted Lists** (LC 21) - Dummy node
 3. 🔑 **Linked List Cycle** (LC 141) - Fast/slow detection
@@ -182,20 +176,20 @@
 
 ---
 
-### Day 25-28: Stacks & Advanced Linked Lists
+### Stacks & Advanced Linked Lists
 
-**📖 Theory (3 hours)**
+**📖 Theory to Study**
 - Stack LIFO property and applications
 - Monotonic stack for next greater/smaller
 - Stack in function calls and recursion
 - Two-pointer techniques on linked lists
 
-**💻 Stack Problems (4 hours)**
+**💻 Stack Problems**
 7. 🔑 **Valid Parentheses** (LC 20) - Matching pairs
 8. 🔑 **Daily Temperatures** (LC 739) - Monotonic stack
 9. ⭐ **Min Stack** (LC 155) - Auxiliary min stack
 
-**💻 Advanced Linked Lists (4 hours)**
+**💻 Advanced Linked Lists**
 10. ⭐ **Remove Nth Node From End** (LC 19) - N-ahead pointer
 11. 💡 **Reorder List** (LC 143) - Middle + reverse + merge
 12. ⭐ **Add Two Numbers** (LC 2) - Digit-by-digit carry
@@ -205,15 +199,15 @@
 - Valid parentheses: stack for opening, pop on closing
 - N-ahead pointer: create gap of N nodes
 
-**🔄 Week 4 Review**: Focus on pointer manipulation patterns
+**🔄 Review:** Focus on pointer manipulation patterns
 
 ---
 
-## 🗓️ Week 5-6: Trees & Binary Search Trees
+## 🗓️ Phase: Trees & Binary Search Trees
 
-### Week 5: Basic Tree Traversal & Recursion
+### Basic Tree Traversal & Recursion
 
-**📖 Theory (4 hours)**
+**📖 Theory to Study**
 - Binary tree structure and properties
 - Recursion on trees: base case + recursive case
 - DFS: preorder, inorder, postorder
@@ -221,7 +215,7 @@
 - Top-down vs bottom-up recursion
 - Tree height and depth concepts
 
-**💻 Day 29-32: Basic Recursion (6 hours)**
+**💻 Basic Recursion**
 1. 🔑 **Maximum Depth** (LC 104) - Bottom-up: 1 + max(left, right)
 2. 🔑 **Invert Binary Tree** (LC 226) - Swap children
 3. 🎯 **Same Tree** (LC 100) - Structural equality
@@ -230,7 +224,7 @@
 6. 🎯 **Balanced Binary Tree** (LC 110) - |left - right| ≤ 1
 7. 🎯 **Path Sum** (LC 112) - Top-down with target
 
-**💻 Day 33-35: BFS & Level-Order (4 hours)**
+**💻 BFS & Level-Order**
 8. 🔑 **Level Order Traversal** (LC 102) - Queue with level separation
 9. ⭐ **Binary Tree Right Side View** (LC 199) - Last of each level
 
@@ -241,23 +235,23 @@
 
 ---
 
-### Week 6: BST Properties & Advanced Trees
+### BST Properties & Advanced Trees
 
-**📖 Theory (4 hours)**
+**📖 Theory to Study**
 - Binary Search Tree property: left < node < right
 - BST operations: search, insert, delete
 - Inorder traversal gives sorted sequence
 - LCA (Lowest Common Ancestor) techniques
 - Tree construction from traversals
 
-**💻 Day 36-39: BST Patterns (6 hours)**
+**💻 BST Patterns**
 10. 🔑 **Validate BST** (LC 98) - Range validation
 11. 🎯 **LCA of BST** (LC 235) - Use BST property
 12. 🔑 **LCA of Binary Tree** (LC 236) - Return node if found
 13. ⭐ **Kth Smallest in BST** (LC 230) - Inorder to k
 14. 🎯 **Convert Sorted Array to BST** (LC 108) - Middle as root
 
-**💻 Day 40-42: Hard Trees (5 hours)**
+**💻 Hard Trees**
 15. 💡 **Binary Tree Max Path Sum** (LC 124) - node + max(0,left) + max(0,right)
 16. 💡 **Serialize and Deserialize** (LC 297) - Preorder with nulls
 
@@ -267,15 +261,15 @@
 - Inorder on BST = sorted array
 - Tree construction: identify root, split, recurse
 
-**🔄 Week 5-6 Review**: Master tree recursion patterns
+**🔄 Review:** Master tree recursion patterns
 
 ---
 
-## 🗓️ Week 7-8: Graph Theory & Traversal
+## 🗓️ Phase: Graph Theory & Traversal
 
-### Week 7: DFS, BFS & Grid Problems
+### DFS, BFS & Grid Problems
 
-**📖 Theory (4 hours)**
+**📖 Theory to Study**
 - Graph representations: adjacency list vs matrix
 - DFS vs BFS: when to use which
 - Connected components counting
@@ -283,7 +277,7 @@
 - Visited tracking: set, modify grid, separate matrix
 - Multi-source BFS
 
-**💻 Day 43-46: Grid DFS/BFS (6 hours)**
+**💻 Grid DFS/BFS**
 1. 🔑 **Flood Fill** (LC 733) - Basic DFS/BFS
 2. 🔑 **Number of Islands** (LC 200) - Component counting
 3. 🎯 **Max Area of Island** (LC 695) - Return area
@@ -298,16 +292,16 @@
 
 ---
 
-### Week 8: Graph Structures & Topological Sort
+### Graph Structures & Topological Sort
 
-**📖 Theory (4 hours)**
+**📖 Theory to Study**
 - Graph cloning with hash map
 - Cycle detection in directed/undirected graphs
 - Topological sort: Kahn's algorithm (BFS-based)
 - Prerequisites and dependency resolution
 - DAG (Directed Acyclic Graph) properties
 
-**💻 Day 50-53: Graph Algorithms (6 hours)**
+**💻 Graph Algorithms**
 7. ⭐ **Clone Graph** (LC 133) - Hash map old→new
 8. 🎯 **Number of Provinces** (LC 547) - Adjacency matrix DFS
 9. 🔑 **Course Schedule** (LC 207) - Topological sort, cycle detection
@@ -319,22 +313,22 @@
 - Topological sort: indegree array, queue for 0 indegree
 - Tree conditions: n-1 edges AND no cycles AND connected
 
-**🔄 Week 7-8 Review**: DFS vs BFS decision making
+**🔄 Review:** DFS vs BFS decision making
 
 ---
 
-## 🗓️ Week 9: Binary Search & Divide-Conquer
+## 🗓️ Phase: Binary Search & Divide-Conquer
 
-### Day 57-60: Binary Search Mastery
+### Binary Search Mastery
 
-**📖 Theory (4 hours)**
+**📖 Theory to Study**
 - Binary search templates: finding element vs boundary
 - Search space halving principle
 - Rotated array handling
 - Binary search on answer space
 - 2D matrix as 1D array
 
-**💻 Problems (7 hours)**
+**💻 Core Problems**
 1. 🔑 **Search in Rotated Array** (LC 33) - Check which half sorted
 2. 🎯 **Find Minimum in Rotated** (LC 153) - Compare mid with right
 3. 🔑 **Find First and Last Position** (LC 34) - Two BS: left, right
@@ -351,15 +345,15 @@
 
 ---
 
-### Day 61-63: Intervals & Sorting
+### Intervals & Sorting
 
-**📖 Theory (3 hours)**
+**📖 Theory to Study**
 - Interval problems: sort by start vs end
 - Merge overlapping intervals
 - Greedy interval selection
 - Two pointers for sorted arrays
 
-**💻 Problems (5 hours)**
+**💻 Core Problems**
 8. 🔑 **Merge Intervals** (LC 56) - Sort by start, merge overlaps
 9. ⭐ **Insert Interval** (LC 57) - Three phases
 10. 💡 **Non-overlapping Intervals** (LC 435) - Sort by end, greedy
@@ -371,22 +365,22 @@
 - Sort by end: greedy selection
 - Two pointers: three-way partition
 
-**🔄 Week 9 Review**: Master binary search template
+**🔄 Review:** Master binary search template
 
 ---
 
-## 🗓️ Week 10: Greedy Algorithms
+## 🗓️ Phase: Greedy Algorithms
 
-### Day 64-68: Greedy Fundamentals
+### Greedy Fundamentals
 
-**📖 Theory (3 hours)**
+**📖 Theory to Study**
 - Greedy choice property
 - Exchange argument for correctness
 - Greedy vs Dynamic Programming
 - Kadane's algorithm deep dive
 - Jump game strategy
 
-**💻 Problems (8 hours)**
+**💻 Core Problems**
 1. 🔑 **Maximum Subarray** (LC 53) - Kadane's algorithm
 2. 🔑 **Jump Game** (LC 55) - Track furthest reachable
 3. 💡 **Jump Game II** (LC 45) - Track current/next end
@@ -401,15 +395,15 @@
 - Jump game: update furthest reachable, check if reachable
 - Interval greedy: sort by end time, shoot at end
 
-**🔄 Week 10 Review**: Prove greedy correctness
+**🔄 Review:** Prove greedy correctness
 
 ---
 
-## 🗓️ Week 11-13: Dynamic Programming Mastery
+## 🗓️ Phase: Dynamic Programming Mastery
 
-### Week 11: 1D DP Foundation
+### 1D DP Foundation
 
-**📖 Theory (5 hours)**
+**📖 Theory to Study**
 - DP characteristics: optimal substructure + overlapping subproblems
 - State definition: what does dp[i] represent?
 - Recurrence relation derivation
@@ -417,13 +411,13 @@
 - Top-down (memoization) vs bottom-up (tabulation)
 - Space optimization techniques
 
-**💻 Day 71-74: Basic 1D DP (6 hours)**
+**💻 Basic 1D DP**
 1. 🔑 **Climbing Stairs** (LC 70) - Fibonacci pattern
 2. 🎯 **Min Cost Climbing Stairs** (LC 746) - Cost + min(dp[i-1], dp[i-2])
 3. 🔑 **House Robber** (LC 198) - max(rob + dp[i-2], dp[i-1])
 4. ⭐ **House Robber II** (LC 213) - Two sub-problems
 
-**💻 Day 75-77: Unbounded Knapsack (5 hours)**
+**💻 Unbounded Knapsack**
 5. 🔑 **Coin Change** (LC 322) - min(dp[i-coin] + 1)
 6. ⭐ **Decode Ways** (LC 91) - Single + double digit
 7. 💡 **Maximum Product Subarray** (LC 152) - Track max and min
@@ -436,20 +430,20 @@
 
 ---
 
-### Week 12: 2D DP & Sequence Problems
+### 2D DP & Sequence Problems
 
-**📖 Theory (4 hours)**
+**📖 Theory to Study**
 - 2D DP tables: grid vs sequence
 - State definition for two variables
 - Grid DP: path counting, min/max path
 - Sequence DP: string matching, LCS, edit distance
 
-**💻 Day 78-81: Grid DP (5 hours)**
+**💻 Grid DP**
 9. 🔑 **Unique Paths** (LC 62) - dp[i][j] = dp[i-1][j] + dp[i][j-1]
 10. 🎯 **Unique Paths II** (LC 63) - Obstacles handling
 11. ⭐ **Minimum Path Sum** (LC 64) - grid + min(top, left)
 
-**💻 Day 82-84: Sequence DP (6 hours)**
+**💻 Sequence DP**
 12. 🔑 **Longest Common Subsequence** (LC 1143) - If match: dp[i-1][j-1]+1
 13. 🔑 **Edit Distance** (LC 72) - Insert, delete, replace
 14. 🔑 **Longest Increasing Subsequence** (LC 300) - O(n²) DP or O(n log n) BS
@@ -463,15 +457,15 @@
 
 ---
 
-### Week 13: Advanced DP (Knapsack & State Machine)
+### Advanced DP (Knapsack & State Machine)
 
-**📖 Theory (4 hours)**
+**📖 Theory to Study**
 - 0/1 Knapsack vs Unbounded Knapsack
 - Subset sum variations
 - State machine DP for stock problems
 - Space optimization: 1D rolling array
 
-**💻 Day 85-88: Knapsack Patterns (6 hours)**
+**💻 Knapsack Patterns**
 17. 🔑 **Partition Equal Subset Sum** (LC 416) - Target = sum/2
 18. ⭐ **Target Sum** (LC 494) - Transform to subset sum
 19. 💡 **Combination Sum IV** (LC 377) - Order matters
@@ -488,29 +482,29 @@
 - State machine: define states, transitions
 - Interval DP: subproblems on intervals
 
-**🔄 Week 11-13 Review**: Reconstruct DP tables from scratch
+**🔄 Review:** Reconstruct DP tables from scratch
 
 ---
 
-## 🗓️ Week 14: Backtracking & Recursion
+## 🗓️ Phase: Backtracking & Recursion
 
-### Day 92-96: Backtracking Patterns
+### Backtracking Patterns
 
-**📖 Theory (4 hours)**
+**📖 Theory to Study**
 - Backtracking vs brute force
 - Decision tree visualization
 - Pruning strategies
 - Combinations vs permutations
 - Duplicate handling with sorting
 
-**💻 Combinations (4 hours)**
+**💻 Combinations**
 1. 🔑 **Subsets** (LC 78) - Include/exclude tree
 2. ⭐ **Subsets II** (LC 90) - Skip duplicates
 3. 🎯 **Combinations** (LC 77) - Fixed size k
 4. 🔑 **Combination Sum** (LC 39) - Unlimited use
 5. ⭐ **Combination Sum II** (LC 40) - Limited use
 
-**💻 Permutations & Grid (5 hours)**
+**💻 Permutations & Grid**
 6. 🔑 **Permutations** (LC 46) - Swap technique
 7. 💡 **Permutations II** (LC 47) - Frequency map
 8. 🎯 **Letter Combinations** (LC 17) - Digit mapping
@@ -523,22 +517,22 @@
 - Pruning: sort + skip duplicates
 - Grid: mark visited, unmark on backtrack
 
-**🔄 Week 14 Review**: Identify pruning opportunities
+**🔄 Review:** Identify pruning opportunities
 
 ---
 
-## 🗓️ Week 15: Heaps & Advanced Data Structures
+## 🗓️ Phase: Heaps & Advanced Data Structures
 
-### Day 99-103: Heap Fundamentals
+### Heap Fundamentals
 
-**📖 Theory (4 hours)**
+**📖 Theory to Study**
 - Heap properties: min heap vs max heap
 - Heapify operations: bubble up, bubble down
 - Top-K pattern with min/max heap
 - Two heaps for median
 - K-way merge with heap
 
-**💻 Heap Problems (6 hours)**
+**💻 Heap Problems**
 1. 🔑 **Kth Largest Element** (LC 215) - Min heap of size k
 2. 🔑 **Top K Frequent Elements** (LC 347) - Frequency + heap
 3. 🎯 **K Closest Points** (LC 973) - Max heap by distance
@@ -554,15 +548,15 @@
 
 ---
 
-### Day 104-105: Union-Find & Trie
+### Union-Find & Trie
 
-**📖 Theory (3 hours)**
+**📖 Theory to Study**
 - Union-Find: union by rank, path compression
 - Connected components counting
 - Trie structure and operations
 - Prefix matching applications
 
-**💻 Problems (4 hours)**
+**💻 Core Problems**
 7. 🔑 **Number of Connected Components** (LC 323) - Union-Find
 8. ⭐ **Graph Valid Tree** (LC 261) - Union-Find variant
 9. 🔑 **Implement Trie** (LC 208) - Insert, search, startsWith
@@ -573,22 +567,22 @@
 - Trie: children map, isEnd flag
 - Prefix search: traverse trie
 
-**🔄 Week 15 Review**: Implement heap/trie from scratch
+**🔄 Review:** Implement heap/trie from scratch
 
 ---
 
-## 🗓️ Week 16: Advanced Graph Algorithms
+## 🗓️ Phase: Advanced Graph Algorithms
 
-### Day 106-110: Shortest Path & MST
+### Shortest Path & MST
 
-**📖 Theory (5 hours)**
+**📖 Theory to Study**
 - Dijkstra's algorithm: single-source shortest path
 - Priority queue implementation
 - Minimum Spanning Tree: Prim's, Kruskal's
 - Tarjan's algorithm for bridges
 - BFS for unweighted graphs
 
-**💻 Problems (7 hours)**
+**💻 Core Problems**
 1. 🔑 **Network Delay Time** (LC 743) - Dijkstra's
 2. ⭐ **Cheapest Flights K Stops** (LC 787) - BFS/DP variant
 3. 🎯 **Path with Max Probability** (LC 1514) - Max heap Dijkstra
@@ -601,21 +595,21 @@
 - MST: connect all vertices, minimum total weight
 - Bridges: edge whose removal disconnects graph
 
-**🔄 Week 16 Review**: Dijkstra and MST templates
+**🔄 Review:** Dijkstra and MST templates
 
 ---
 
-## 🗓️ Week 17-18: Mixed Practice & Design Problems
+## 🗓️ Phase: Mixed Practice & Design Problems
 
-### Week 17: System Design & Data Structure Design
+### System Design & Data Structure Design
 
-**📖 Theory (4 hours)**
+**📖 Theory to Study**
 - LRU Cache: DLL + hash map
 - Design principles: API clarity, time complexity
 - Trade-offs: time vs space vs simplicity
 - Thread safety considerations (basic)
 
-**💻 Day 113-117: Design Problems (8 hours)**
+**💻 Design Problems**
 1. 🔑 **LRU Cache** (LC 146) - DLL + hash map
 2. 🔑 **Trapping Rain Water** (LC 42) - Two pointers/stack
 3. ⭐ **Longest Consecutive Sequence** (LC 128) - Hash set
@@ -631,9 +625,9 @@
 
 ---
 
-### Week 18: Advanced Mixed Practice
+### Advanced Mixed Practice
 
-**💻 Day 118-122: Interview Simulation (10 hours)**
+**💻 Interview Simulation**
 8. 🎯 **Rotate Image** (LC 48) - Transpose + reverse
 9. 🎯 **Spiral Matrix** (LC 54) - Four boundaries
 10. ⭐ **Insert Delete GetRandom O(1)** (LC 380) - Array + map
@@ -650,13 +644,13 @@
 - Time/space analysis explanation
 - Multiple solutions: brute force → optimal
 
-**🔄 Week 17-18 Review**: Mock interviews, timed practice
+**🔄 Review:** Mock interviews, timed practice
 
 ---
 
-## 🗓️ Week 19: Final Review & Interview Prep
+## 🗓️ Phase: Final Review & Interview Prep
 
-### Day 125-129: Pattern Consolidation
+### Pattern Consolidation
 
 **📖 Review All Patterns (8 hours)**
 - Arrays: two pointers, sliding window, prefix sum
@@ -668,14 +662,14 @@
 - Heaps: top-K, median, k-way merge
 - Binary Search: element, boundary, answer space
 
-**💻 Anchor Problem Sprint (8 hours)**
+**💻 Anchor Problem Sprint**
 - Re-solve all 47 🔑 ANCHOR problems without hints
 - Time yourself: Easy <20 min, Medium <35 min
 - Focus on pattern recognition speed
 
 ---
 
-### Day 130-133: Mock Interviews & Final Prep
+### Mock Interviews & Final Prep
 
 **Day 130-131: Mock Technical Interviews (6 hours)**
 - Simulate real interview conditions
@@ -773,18 +767,17 @@ Create concise notes for:
 
 ## 🔄 Spaced Repetition Schedule
 
-**First Solve**: Day 0 (learn + implement)
-**Review 1**: Day 3 (3 days later)
-**Review 2**: Day 10 (7 days after review 1)
-**Review 3**: Day 24 (14 days after review 2)
+**First Solve**: When you first encounter the pattern
+**Review 1**: A few days later (without looking at notes)
+**Review 2**: About a week later
+**Review 3**: Just before your interviews
 **Mastered**: After 3 successful reviews
 
-### Daily Routine (2 hours)
-- **[30 min]** Theory review or pattern study
-- **[15 min]** Problem analysis (pattern, approach, complexity)
-- **[50 min]** Implementation and testing
-- **[15 min]** Review optimal solution, update notes
-- **[10 min]** Log progress, schedule next review
+### Suggested Study Session
+- Start by reviewing the core theory of the pattern.
+- Spend 15 minutes trying to map out a solution before writing code.
+- Implement and test edge cases.
+- Review the optimal solution and add any "Aha!" moments to your notes.
 
 ---
 
