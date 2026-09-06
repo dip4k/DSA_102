@@ -28,6 +28,268 @@ Tags are standardized into three distinct tiers for precision:
 
 ---
 
+## 🔥 ROI Priority Matrix — Where to Invest First
+
+> Ranked by **Interview Frequency × Pattern Leverage × Learning ROI**. Numbers in parentheses are phases from the curriculum below.
+
+| ROI Rank | Pattern | ROI Score | Best Hard Anchor | Derivatives Unlocked | Phases |
+| :---: | :--- | :---: | :--- | :--- | :--- |
+| 🥇 **1** | **Sliding Window** | 15/15 | [Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/) 🔴 | Longest Repeating, Permutation in String, 6 more | Ph 3 |
+| 🥇 **1** | **Two Pointers** | 15/15 | [Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/) 🔴 | Container, 3Sum, 4Sum, Two Sum II | Ph 2 |
+| 🥈 **2** | **Monotonic Stack / Queue** | 14/15 | [Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/) 🔴 | Sliding Window Max, Daily Temps, Sum Subarray Min | Ph 7, 20 |
+| 🥈 **2** | **Dynamic Programming (1D → 2D)** | 14/15 | [Edit Distance](https://leetcode.com/problems/edit-distance/) 🔴 | LCS, Coin Change, Knapsack, State Machine | Ph 15–16 |
+| 🥉 **3** | **Binary Search on Answer Space** | 13/15 | [Median of Two Sorted Arrays](https://leetcode.com/problems/median-of-two-sorted-arrays/) 🔴 | Koko, Split Array Largest Sum, 5 more | Ph 8 |
+| **4** | **Graph BFS / DFS / Topo Sort** | 13/15 | [Word Ladder](https://leetcode.com/problems/word-ladder/) 🔴 | Islands, Course Schedule, Clone Graph | Ph 12–13 |
+| **5** | **Heap / Two Heaps (Streaming)** | 12/15 | [Find Median from Data Stream](https://leetcode.com/problems/find-median-from-data-stream/) 🔴 | Merge K Lists, Top K, Meeting Rooms II | Ph 10–11 |
+| **6** | **Backtracking + Pruning** | 12/15 | [Word Search II](https://leetcode.com/problems/word-search-ii/) 🔴 | Word Search, N-Queens, Combo Sum | Ph 17–18 |
+| **7** | **Linked List (Multi-Step)** | 11/15 | [Merge K Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists/) 🔴 | Reorder List, Reverse K-Group | Ph 6 |
+| **8** | **Prefix Sum + HashMap** | 11/15 | [Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/) 🟡 | Contiguous Array, Running Sum, Pivot | Ph 4 |
+| **9** | **Union-Find (DSU)** | 10/15 | [Critical Connections in a Network](https://leetcode.com/problems/critical-connections-in-a-network/) 🔴 | Redundant Connection, Accounts Merge, MST | Ph 13, 19 |
+| **10** | **Tree DFS (Bottom-Up DP)** | 10/15 | [Binary Tree Maximum Path Sum](https://leetcode.com/problems/binary-tree-maximum-path-sum/) 🔴 | Diameter, LCA, Serialize/Deserialize | Ph 9 |
+
+> [!TIP]
+> **Study Sprint Priority:** Attack patterns in ROI rank order (1 → 10). Within each pattern, always start with the 🔴 Hard anchor, derive the invariant, then solve the medium derivatives. Easy problems are confirmations, not discoveries.
+
+---
+
+## 🚀 Hard-First Master Execution Schedule
+
+> **Philosophy:** Master the hardest representative problem of each pattern *first*. Once you can derive its boundary conditions and loop invariants from scratch, every medium and easy derivative becomes a 10-minute recognition exercise.
+
+### Sprint Structure
+Each sprint follows this format:
+```
+Day 1 (Hard Anchor)  → Study invariant deeply. Do NOT look at code first. Derive it.
+Day 2 (Medium 1)     → Apply same invariant. Should feel trivially simpler.
+Day 3 (Medium 2)     → Spot the disguise. Same invariant, different domain.
+Day 4 (Reinforcement) → Solve easy/medium variant from memory. Time yourself.
+Day 5 (Review)       → Re-solve the Hard anchor cold. Write the pattern card.
+```
+
+---
+
+### 🏁 Sprint 1 — Two Pointers (ROI Rank #1)
+
+```mermaid
+flowchart TD
+    A["🔴 HARD ANCHOR: Trapping Rain Water (LC 42)"] -->|"Invariant: left_max & right_max walls decide water without knowing internals"| B["🟡 Container With Most Water (LC 11)"]
+    B -->|"Prove: only moving shorter pointer can increase area"| C["🟡 3Sum (LC 15)"]
+    C -->|"Fix outer; two-pointer inner; deduplicate"| D["🟡 4Sum (LC 18)"]
+    D -->|"Generalize to K-Sum via recursion + pruning"| E["🟡 Two Sum II (LC 167)"]
+```
+
+| Day | Problem | LC# | Key Focus |
+|:---:|:---|:---:|:---|
+| 1 | [Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/) 🔴 | 42 | Derive `left_max`/`right_max` boundary invariant from scratch |
+| 2 | [Container With Most Water](https://leetcode.com/problems/container-with-most-water/) 🟡 | 11 | Prove greedy: moving shorter side is the only valid action |
+| 3 | [3Sum](https://leetcode.com/problems/3sum/) 🟡 | 15 | Fix + two-pointer + dedup |
+| 4 | [4Sum](https://leetcode.com/problems/4sum/) 🟡 | 18 | Generalize two-pointer to K-Sum |
+| 5 | [Two Sum II](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/) 🟡 | 167 | Re-solve hard anchor from memory |
+
+**Pattern Unlocked:** After Sprint 1, problems involving sorted arrays + pair/triplet conditions become $O(N)$–$O(N^2)$ decompositions with opposing-pointer shrinkage.
+
+---
+
+### 🏁 Sprint 2 — Sliding Window (ROI Rank #1)
+
+```mermaid
+flowchart TD
+    A["🔴 HARD ANCHOR: Minimum Window Substring (LC 76)"] -->|"Variable window + matchCount counter + shrink on satisfaction"| B["🟡 Longest Repeating Character Replacement (LC 424)"]
+    B -->|"Window invariant: (len - maxFreq) ≤ k"| C["🟡 Longest Substring Without Repeating Characters (LC 3)"]
+    C -->|"Fast shrink via last-seen index map"| D["🟡 Permutation in String (LC 567)"]
+    D -->|"Fixed-size window with frequency matching"| E["🟢 Maximum Average Subarray I (LC 643)"]
+```
+
+| Day | Problem | LC# | Key Focus |
+|:---:|:---|:---:|:---|
+| 1 | [Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/) 🔴 | 76 | `matchCount` variable + two-frequency-map technique |
+| 2 | [Longest Repeating Character Replacement](https://leetcode.com/problems/longest-repeating-character-replacement/) 🟡 | 424 | Window invariant `(windowLen - maxFreq) <= k` |
+| 3 | [Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/) 🟡 | 3 | Last-seen index map: jump left pointer directly |
+| 4 | [Permutation in String](https://leetcode.com/problems/permutation-in-string/) 🟡 | 567 | Fixed-size window, frequency comparison |
+| 5 | Cold re-solve Minimum Window Substring | 76 | Confirm you can derive without notes |
+
+**Pattern Unlocked:** Any "contiguous subarray/substring + find min/max/valid length" problem is a sliding window. The invariant is always: expand `right`, restore validity by contracting `left`.
+
+---
+
+### 🏁 Sprint 3 — Monotonic Stack & Queue (ROI Rank #2)
+
+```mermaid
+flowchart TD
+    A["🔴 HARD ANCHOR: Largest Rectangle in Histogram (LC 84)"] -->|"For each bar, find left & right nearest-smaller via monotonic stack"| B["🔴 Sliding Window Maximum (LC 239)"]
+    B -->|"Monotonic deque: pop smaller from back, pop out-of-window from front"| C["🟡 Daily Temperatures (LC 739)"]
+    C -->|"Single-direction next-greater element"| D["🟡 Online Stock Span (LC 901)"]
+```
+
+| Day | Problem | LC# | Key Focus |
+|:---:|:---|:---:|:---|
+| 1 | [Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/) 🔴 | 84 | Previous-smaller + next-smaller via strictly increasing stack |
+| 2 | [Sliding Window Maximum](https://leetcode.com/problems/sliding-window-maximum/) 🔴 | 239 | Monotonic deque: indices, decreasing values |
+| 3 | [Daily Temperatures](https://leetcode.com/problems/daily-temperatures/) 🟡 | 739 | Simpler one-directional NGE |
+| 4 | [Remove K Digits](https://leetcode.com/problems/remove-k-digits/) 🟡 | 402 | Monotonic stack for lexicographically smallest result |
+| 5 | Cold re-solve Histogram | 84 | Confirm sentinel-0 trick and index math |
+
+**Pattern Unlocked:** Any "nearest greater/smaller element" query is $O(N)$ with a monotonic stack. Any "window min/max" query is $O(N)$ with a monotonic deque.
+
+---
+
+### 🏁 Sprint 4 — Dynamic Programming: 1D → 2D → State Machine (ROI Rank #2)
+
+```mermaid
+flowchart LR
+    A["🔴 Edit Distance (LC 72)"] --> B["🟡 LCS (LC 1143)"]
+    B --> C["🟡 Coin Change (LC 322)"]
+    C --> D["🟡 Partition Subset Sum (LC 416)"]
+    D --> E["🟡 LIS + Patience Sort (LC 300)"]
+    E --> F["🟡 Stock with Cooldown (LC 309)"]
+    F --> G["🔴 Burst Balloons (LC 312)"]
+```
+
+| Day | Problem | LC# | Key Focus |
+|:---:|:---|:---:|:---|
+| 1 | [Edit Distance](https://leetcode.com/problems/edit-distance/) 🔴 | 72 | 3-way branch: insert / delete / replace; base case = empty strings |
+| 2 | [Longest Common Subsequence](https://leetcode.com/problems/longest-common-subsequence/) 🟡 | 1143 | 2D prefix match grid |
+| 3 | [Coin Change](https://leetcode.com/problems/coin-change/) 🟡 | 322 | Unbounded knapsack: iterate amount forwards |
+| 4 | [Partition Equal Subset Sum](https://leetcode.com/problems/partition-equal-subset-sum/) 🟡 | 416 | 0-1 knapsack: iterate capacity backwards |
+| 5 | [Longest Increasing Subsequence](https://leetcode.com/problems/longest-increasing-subsequence/) 🟡 | 300 | $O(N^2)$ DP → $O(N \log N)$ patience sort |
+| 6 | [Best Time to Buy and Sell Stock with Cooldown](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/) 🟡 | 309 | Explicit state machine: `Held` / `Sold` / `Reset` |
+| 7 | [Burst Balloons](https://leetcode.com/problems/burst-balloons/) 🔴 | 312 | Interval DP: choose *last* balloon popped in interval |
+
+**Pattern Unlocked:** DP problems reduce to: (1) define state precisely, (2) write recurrence, (3) establish base cases, (4) optimize space. Knapsack direction (forward vs backward) is the only variation.
+
+---
+
+### 🏁 Sprint 5 — Binary Search on Answer Space (ROI Rank #3)
+
+```mermaid
+flowchart TD
+    A["🔴 HARD ANCHOR: Median of Two Sorted Arrays (LC 4)"] -->|"Partition both arrays; median from border elements"| B["🟡 Koko Eating Bananas (LC 875)"]
+    B -->|"Feasibility predicate: CanFinish(speed)"| C["🟡 Capacity to Ship Packages (LC 1011)"]
+    C -->|"Same predicate structure: CanShip(capacity)"| D["🔴 Split Array Largest Sum (LC 410)"]
+```
+
+| Day | Problem | LC# | Key Focus |
+|:---:|:---|:---:|:---|
+| 1 | [Median of Two Sorted Arrays](https://leetcode.com/problems/median-of-two-sorted-arrays/) 🔴 | 4 | Partition cut: `leftA + leftB = rightA + rightB` |
+| 2 | [Koko Eating Bananas](https://leetcode.com/problems/koko-eating-bananas/) 🟡 | 875 | Write `CanFinish(speed)` → binary search on [1, max] |
+| 3 | [Capacity to Ship Packages](https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/) 🟡 | 1011 | Same template, different predicate |
+| 4 | [Kth Smallest Element in a Sorted Matrix](https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/) 🟡 | 378 | Count elements ≤ mid per row |
+| 5 | [Split Array Largest Sum](https://leetcode.com/problems/split-array-largest-sum/) 🔴 | 410 | Binary search + greedy partition count |
+
+**Pattern Unlocked:** Whenever you see "minimize the maximum" or "maximize the minimum" over a range, the answer space is monotonic → binary search on it with a greedy feasibility check.
+
+---
+
+### 🏁 Sprint 6 — Heap & Two Heaps: Streaming Data (ROI Rank #5)
+
+```mermaid
+flowchart TD
+    A["🔴 HARD ANCHOR: Find Median from Data Stream (LC 295)"] -->|"Two balanced heaps: MaxHeap (lower) + MinHeap (upper)"| B["🔴 Merge K Sorted Lists (LC 23)"]
+    B -->|"Min-heap of K list heads; pop & advance"| C["🟡 Kth Largest Element (LC 215)"]
+    C -->|"Min-heap of size K — keep largest K"| D["🟡 Top K Frequent Elements (LC 347)"]
+    D -->|"Count + heap or bucket sort"| E["🟡 Meeting Rooms II (LC 253)"]
+```
+
+| Day | Problem | LC# | Key Focus |
+|:---:|:---|:---:|:---|
+| 1 | [Find Median from Data Stream](https://leetcode.com/problems/find-median-from-data-stream/) 🔴 | 295 | Two-heap balance invariant: `|maxHeap.Count - minHeap.Count| ≤ 1` |
+| 2 | [Merge K Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists/) 🔴 | 23 | Min-heap of `(value, node)` pairs; advance on pop |
+| 3 | [Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/) 🟡 | 347 | `Dictionary` freq count → min-heap size K |
+| 4 | [Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/) 🟡 | 215 | Min-heap K vs Quickselect tradeoff |
+| 5 | [Meeting Rooms II](https://leetcode.com/problems/meeting-rooms-ii/) 🟡 | 253 | Min-heap of end times for room reuse |
+
+**Pattern Unlocked:** Any "top/bottom K streaming" problem → min-heap size K. Any "dynamic running median" → two balanced heaps. K-way merge → min-heap of heads.
+
+---
+
+### 🏁 Sprint 7 — Graph BFS/DFS/Topological Sort (ROI Rank #4)
+
+```mermaid
+flowchart TD
+    A["🔴 HARD ANCHOR: Word Ladder (LC 127)"] -->|"Implicit graph BFS; wildcard bucket preprocessing"| B["🟡 Rotting Oranges (LC 994)"]
+    B -->|"Multi-source BFS; BFS layers = time units"| C["🟡 Number of Islands (LC 200)"]
+    C -->|"Grid DFS/BFS; sink visited cells"| D["🟡 Course Schedule (LC 207)"]
+    D -->|"Kahn's: indegrees + queue; detect cycle"| E["🟡 Clone Graph (LC 133)"]
+```
+
+| Day | Problem | LC# | Key Focus |
+|:---:|:---|:---:|:---|
+| 1 | [Word Ladder](https://leetcode.com/problems/word-ladder/) 🔴 | 127 | Build implicit graph via wildcard; BFS guarantees shortest path |
+| 2 | [Rotting Oranges](https://leetcode.com/problems/rotting-oranges/) 🟡 | 994 | Multi-source BFS; enqueue all sources first |
+| 3 | [Number of Islands](https://leetcode.com/problems/number-of-islands/) 🟡 | 200 | Connected components via DFS/BFS sinking |
+| 4 | [Course Schedule](https://leetcode.com/problems/course-schedule/) 🟡 | 207 | Topological sort + cycle detection |
+| 5 | [Redundant Connection](https://leetcode.com/problems/redundant-connection/) 🟡 | 684 | Union-Find cycle detection |
+
+**Pattern Unlocked:** Every graph problem reduces to: (1) choose DFS/BFS/Topo, (2) define visited state correctly, (3) process component-by-component.
+
+---
+
+### 🏁 Sprint 8 — Backtracking + Trie Pruning (ROI Rank #6)
+
+```mermaid
+flowchart TD
+    A["🔴 HARD ANCHOR: Word Search II (LC 212)"] -->|"DFS guided by Trie; prune branches with no words"| B["🔴 N-Queens (LC 51)"]
+    B -->|"Row-by-row placement; diagonal bit-sets for constraint propagation"| C["🟡 Word Search (LC 79)"]
+    C -->|"Grid DFS + in-place marking (no visited matrix needed)"| D["🟡 Combination Sum (LC 39)"]
+    D -->|"Unbounded choice + sum pruning; pass start index"| E["🟡 Subsets (LC 78)"]
+```
+
+| Day | Problem | LC# | Key Focus |
+|:---:|:---|:---:|:---|
+| 1 | [Word Search II](https://leetcode.com/problems/word-search-ii/) 🔴 | 212 | Insert words into Trie; DFS grid guided by Trie nodes |
+| 2 | [N-Queens](https://leetcode.com/problems/n-queens/) 🔴 | 51 | Three conflict sets: `cols`, `diag1`, `diag2` (diagonal bitsets) |
+| 3 | [Word Search](https://leetcode.com/problems/word-search/) 🟡 | 79 | In-place `board[r][c] = '#'` marking; restore on backtrack |
+| 4 | [Combination Sum](https://leetcode.com/problems/combination-sum/) 🟡 | 39 | `start` index + prune when `candidate > remaining` |
+| 5 | [Subsets](https://leetcode.com/problems/subsets/) 🟡 | 78 | Include / exclude decision tree |
+
+**Pattern Unlocked:** Backtracking = Choose → Recurse → Undo. Pruning is the difference between $O(K^N)$ brute force and practically fast solutions.
+
+---
+
+### 🏁 Sprint 9 — Tree DFS: Bottom-Up DP (ROI Rank #10)
+
+```mermaid
+flowchart TD
+    A["🔴 HARD ANCHOR: Binary Tree Maximum Path Sum (LC 124)"] -->|"Each subtree returns best downward gain; global answer updated in-node"| B["🔴 Serialize and Deserialize Binary Tree (LC 297)"]
+    B -->|"Pre-order DFS + null markers = unique encoding"| C["🟡 Lowest Common Ancestor (LC 236)"]
+    C -->|"Post-order: if both sides non-null → current is LCA"| D["🟡 Diameter of Binary Tree (LC 543)"]
+    D -->|"Same bottom-up height pattern; global max = L+R"| E["🟡 Validate BST (LC 98)"]
+```
+
+| Day | Problem | LC# | Key Focus |
+|:---:|:---|:---:|:---|
+| 1 | [Binary Tree Maximum Path Sum](https://leetcode.com/problems/binary-tree-maximum-path-sum/) 🔴 | 124 | Subtree returns `max(0, L, R) + val`; update `maxPath = L + R + val` |
+| 2 | [Serialize and Deserialize Binary Tree](https://leetcode.com/problems/serialize-and-deserialize-binary-tree/) 🔴 | 297 | Pre-order with `"null"` tokens; Queue for deserialization |
+| 3 | [Lowest Common Ancestor](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/) 🟡 | 236 | Post-order propagation |
+| 4 | [Diameter of Binary Tree](https://leetcode.com/problems/diameter-of-binary-tree/) 🟢 | 543 | Same bottom-up height but update `diameter = L + R` globally |
+| 5 | [Validate BST](https://leetcode.com/problems/validate-binary-search-tree/) 🟡 | 98 | Propagate `[low, high]` bounds top-down |
+
+**Pattern Unlocked:** Every tree problem has one question: *"What does my subtree return to its parent?"* Answer that and you have the solution.
+
+---
+
+### 🏁 Sprint 10 — Linked List: Multi-Step Transformations (ROI Rank #7)
+
+```mermaid
+flowchart TD
+    A["🔴 HARD ANCHOR: Merge K Sorted Lists (LC 23)"] -->|"Min-heap of list heads + K-way merge"| B["🔴 Reverse Nodes in K-Group (LC 25)"]
+    B -->|"Count K nodes; reverse segment; reconnect tail to recursive call"| C["🟡 Reorder List (LC 143)"]
+    C -->|"Find mid (fast/slow) → reverse 2nd half → interleave merge"| D["🟡 Remove Nth Node From End (LC 19)"]
+    D -->|"Gap-of-N two pointers with dummy head"| E["🟢 Reverse Linked List (LC 206)"]
+```
+
+| Day | Problem | LC# | Key Focus |
+|:---:|:---|:---:|:---|
+| 1 | [Merge K Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists/) 🔴 | 23 | Min-heap of `(node.val, node)` tuples; enqueue `node.next` on pop |
+| 2 | [Reverse Nodes in K-Group](https://leetcode.com/problems/reverse-nodes-in-k-group/) 🔴 | 25 | Count K, reverse, connect tail → recurse |
+| 3 | [Reorder List](https://leetcode.com/problems/reorder-list/) 🟡 | 143 | 3 phases: split mid, reverse, interleave |
+| 4 | [Remove Nth Node From End](https://leetcode.com/problems/remove-nth-node-from-end-of-list/) 🟡 | 19 | Advance fast N steps; then both move together |
+| 5 | [Reverse Linked List](https://leetcode.com/problems/reverse-linked-list/) 🟢 | 206 | Baseline three-pointer reversal |
+
+**Pattern Unlocked:** Linked list multi-step = fast/slow pointer for mid/cycle detection + three-pointer reversal + sentinel dummy head for edge cases.
+
+---
+
 ## 📦 Phase 1 — Arrays, Hashing & Frequency
 
 **Focus:** `HashSet` / `Dictionary`, Frequency maps, Complement lookup, Canonical representation, Array invariants
