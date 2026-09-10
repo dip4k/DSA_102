@@ -1,8 +1,8 @@
-# Trees Traversal
+# Two Pointers Traversal
 
-Welcome to the **Curriculum 2.0** guide for Trees.
+Welcome to the **Curriculum 2.0** guide for Two Pointers.
 
-👉 **[Start the Mastery Guide here](Tree_Traversal_Mastery_Unified_with_Appendix.md)**
+[Start the Mastery Guide here](Two_Pointers_Mastery_Curriculum_v1.md)
 
 ### Philosophy
 - **Mental Model:** What does the index/state mean?

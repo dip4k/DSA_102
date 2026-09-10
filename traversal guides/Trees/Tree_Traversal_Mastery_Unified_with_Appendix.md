@@ -1,800 +1,382 @@
-# 🌳 Tree Traversal Mastery — Unified Guide (All Levels) + Appendix (Pre‑Drills)
+# 🌳 Tree Traversal Mastery — Curriculum 2.0 Unified Guide
 
 **Goal:** Master traversal and navigation across tree variants (binary, BST, N-ary, tries, implicit/array trees, rooted trees from edges), with strong invariants and debugging instincts.
 
 ---
 
-## ✅ Summary list
-- 🧠 One model: **Frontier + Visit timing + State**
-- 🌿 DFS: preorder / inorder / postorder, Euler ENTER/EXIT, path-state backtracking
-- 🧺 BFS: level-order waves, zigzag, views, level aggregates
-- 🧊 Coordinate traversals: vertical order, top/bottom view, diagonal
-- 🎒 Iterative DFS: classic stacks + phase frames; postorder alternatives
-- 🧵 Advanced: Morris inorder (O(1) auxiliary) with strict restore invariant
-- 🌐 Bridge to graphs: rooted trees from **adjacency lists** with `parent/visited`
-- 💾 Serialization: preorder-with-nulls, level-order serialization
-- 🌿 Trie traversal: lexicographic DFS + rollback
+## 1. Quick Revision Summary
+
+| Level | Topic | Mental Model | Pointer State / Invariant | Drill Problems |
+|---|---|---|---|---|
+| **1** | Basic DFS (Recursion) | "Solve node using children's solutions." | `root`: Current valid sub-problem. Invariant: Trust the recursion. | [LeetCode 144], [LeetCode 94], [LeetCode 145] |
+| **2** | Representations | Trees can be memory pointers or math on array indices. | Pointer: `node`, Array: index `i`, Left:`2i+1`, Right:`2i+2`. | [LeetCode 226], [LeetCode 114] |
+| **3** | Iterative & BFS Waves | Explicit state machine or Level-by-level queue waves. | Queue/Stack size boundaries. Invariant: Wave length snapshot. | [LeetCode 102], [LeetCode 103], [LeetCode 199] |
+| **4** | Path & Coordinates | Nodes exist on a 2D grid `(row, col)` or a rooted path. | `(node, path)` or `(node, row, col)`. Left is `(r+1, c-1)`. | [LeetCode 112], [LeetCode 113], [LeetCode 314] |
+| **5** | Tree DP & Control | Local return vs Global state updates. | `dfs(node) -> local_state`. Invariant: Parent receives valid sub-state. | [LeetCode 543], [LeetCode 124], [LeetCode 99] |
+| **Appx**| Graphs & Serialization| Tree as DAG or Prefix strings (Tries). | `dfs(node, parent)`. Invariant: `child != parent` prevents cycles. | [LeetCode 834], [LeetCode 297], [LeetCode 208] |
 
 ---
 
-## 🗺️ Level roadmap
-- **Level 1:** Physical movement + recursion skeleton
-- **Level 2:** Representations (pointers, N-ary, implicit arrays)
-- **Level 3:** Multi-state traversal (iterative control, BFS waves)
-- **Level 4:** Range/path + coordinate traversals
-- **Level 5:** Advanced control + implicit search trees
-- **Appendix:** Missing modules (pre‑drills) that complete the “tree traversal toolkit” and transition you to graphs
+## Level 1: 🟢 Recursive DFS Basics
 
----
+### Mental Model & Invariants
+- **What is the pointer?** The `node` argument representing the root of the current valid sub-tree.
+- **What region is processed?** The entire subtree rooted at `node`.
+- **What is the invariant?** The function always returns the complete result for the subtree rooted at `node`, assuming children return correctly (Trust the recursion).
 
-<a id="mental-model"></a>
-# 🧠 Unified mental model (use for every traversal)
+### Visual State Transitions (Visit Timing)
+| Timing / Step | Node Pointer | Recursive Stack | Action / Invariant |
+| :--- | :--- | :--- | :--- |
+| **Preorder** | `node (1)` | `[1]` | Parent -> Left -> Right. Top-down processing before children. |
+| **Inorder** | `node (2)` | `[1, 2]` | Left -> Parent -> Right. Middle-out, yields sorted order in BST. |
+| **Postorder**| `node (3)` | `[1, 2, 3]` | Left -> Right -> Parent. Bottom-up, aggregating height/size. |
 
-## Why
-Traversals feel like many unrelated recipes until you view them as the same loop with different choices.
-
-## What
-Every traversal is defined by:
-- **Frontier:** what you expand next (stack/queue/deque/thread).
-- **Visit timing:** when you do work (ENTER/BETWEEN/EXIT).
-- **State:** extra info required for ordering/grouping (depth, parent, phase, col, row, diagonal).
-
-## How (step/flow)
-1) Fix child order (binary: left→right; N-ary: children[] order).
-2) Choose frontier (stack for DFS, queue for BFS).
-3) Choose visit timing (pre/in/post or phases).
-4) Add state only if the output demands it (levels/columns/paths).
-
-## Where and When (use cases)
-- Interviews: ordering, grouping, views, subtree queries, serialization.
-- Systems: hierarchical rendering, indexing, permission inheritance, aggregation.
-
-## Common pitfalls
-- Not defining child order.
-- Confusing discovery order with visit order (especially BFS).
-
-## Tips and tricks
-- Write a one-line contract before coding: “Frontier=?, Visit timing=?, State=?”.
-
----
-
-<a id="level-1"></a>
-# Level 1 🟢 Physical movement (recursive DFS basics)
-
-<a id="l1-template"></a>
-## 1.1 Universal recursive DFS template
-
-### Why
-Most tree problems are “solve node using solutions of children.”
-
-### What
-A function that processes a subtree and returns something (value/bool/list/summary).
-
-### How (step/flow)
-1) If node is null → return identity.
-2) PRE work (optional).
-3) Recurse left / children.
-4) IN work (binary only, optional).
-5) Recurse right.
-6) POST work (optional).
-7) Return summary.
-
-### Where and When (use cases)
-Traversal lists, depth/height, validation, subtree properties.
-
-### Common pitfalls
-Missing base case; wrong identity value.
-
-### Tips and tricks
-Say: “When dfs(node) returns, node’s subtree is solved.”
-
-Visual:
-```text
-      1
-     / \
-    2   3
-
-PRE : 1 2 3
-IN  : 2 1 3
-POST: 2 3 1
+### Code Snippets
+Problem: Calculate the sum of all node values in a binary tree using recursive depth-first search.
+```python
+def dfs(node):
+    # 1. Base case: If the current valid sub-tree is empty, return sum 0.
+    if not node: return 0
+    # 2. PRE-ORDER WORK: Action taken top-down before exploring children.
+    # 3. Explore left: Trust the recursion to return the sum of the left subtree.
+    left_val = dfs(node.left)
+    # 4. IN-ORDER WORK: Action taken middle-out between exploring left and right.
+    # 5. Explore right: Trust the recursion to return the sum of the right subtree.
+    right_val = dfs(node.right)
+    # 6. POST-ORDER WORK: Action taken bottom-up after traversing both children.
+    # 7. Aggregate and return the complete result for the subtree rooted at `node`.
+    return left_val + right_val + node.val
 ```
-
-C# template:
+Problem: Calculate the sum of all node values in a binary tree using recursive depth-first search.
 ```csharp
-static T Dfs(BNode? node)
-{
-    if (node == null) return identity;
-    // PRE
-    var left = Dfs(node.Left);
-    // IN (binary only)
-    var right = Dfs(node.Right);
-    // POST
-    return Combine(left, right, node.Val);
+public int DFS(TreeNode node) {
+    // 1. Base case: If the current valid sub-tree is empty, return sum 0.
+    if (node == null) return 0;
+    // 2. PRE-ORDER WORK: Action taken top-down before exploring children.
+    // 3. Explore left: Trust the recursion to return the sum of the left subtree.
+    int leftVal = DFS(node.left);
+    // 4. IN-ORDER WORK: Action taken middle-out between exploring left and right.
+    // 5. Explore right: Trust the recursion to return the sum of the right subtree.
+    int rightVal = DFS(node.right);
+    // 6. POST-ORDER WORK: Action taken bottom-up after traversing both children.
+    // 7. Aggregate and return the complete result for the subtree rooted at `node`.
+    return leftVal + rightVal + node.val;
 }
 ```
 
-Python template:
+### ⚠️ Gotchas & Pitfalls
+- **Null Node Crash**: Failing to handle `if not node:` as the base case leads to Null Reference Exceptions when traversing leaves.
+- **Accidental Global State**: Storing path states or aggregated values in global variables without resetting them between test cases.
+- **Lost Returns**: Forgetting to `return` the recursive function call's result to the parent, returning `None`/`null` by mistake.
+
+### Drill Problems
+- **Easy:**
+  - [LeetCode 144: Binary Tree Preorder Traversal]
+  - [LeetCode 94: Binary Tree Inorder Traversal]
+  - [LeetCode 145: Binary Tree Postorder Traversal]
+- **Medium:**
+  - [LeetCode 104: Maximum Depth of Binary Tree]
+
+---
+
+## Level 2: 🔵 Representations (Pointers vs Arrays)
+
+### Mental Model & Invariants
+- **What is the pointer?** Either an object reference `node` OR an integer index `i`.
+- **What region is processed?** The node in memory or array bounds.
+- **What is the invariant?** Array bounds must be respected (`i < n`). Node connections are mathematically fixed.
+
+### Visual State Transitions (Implicit Array Tree)
+| Node Index `i` | Value | Left Child `2i+1` | Right Child `2i+2` | Parent `(i-1)//2` |
+|---|---|---|---|---|
+| `0` | `A` (Root)| `1` (`B`) | `2` (`C`) | Out of Bounds |
+| `1` | `B` | `3` (`D`) | `4` (`E`) | `0` (`A`) |
+| `2` | `C` | `5` (`F`) | `6` (`G`) | `0` (`A`) |
+
+### Code Snippets (Array Tree Math)
+Problem: Navigate a binary tree implicitly represented as a contiguous array where nodes are mathematically linked.
 ```python
-def dfs(node):
-    if not node:
-        return identity
-    # PRE
-    left = dfs(node.left)
-    # IN
-    right = dfs(node.right)
-    # POST
-    return combine(left, right, node.val)
+# 1. Left Child: Derived mathematically as 2 * current index + 1 (0-indexed).
+def left_child(i): return 2 * i + 1
+# 2. Right Child: Derived mathematically as 2 * current index + 2 (0-indexed).
+def right_child(i): return 2 * i + 2
+# 3. Parent: Derived mathematically as (current index - 1) // 2 (0-indexed).
+def parent(i): return (i - 1) // 2
+```
+Problem: Navigate a binary tree implicitly represented as a contiguous array where nodes are mathematically linked.
+```csharp
+// 1. Left Child: Derived mathematically as 2 * current index + 1 (0-indexed).
+int LeftChild(int i) => 2 * i + 1;
+// 2. Right Child: Derived mathematically as 2 * current index + 2 (0-indexed).
+int RightChild(int i) => 2 * i + 2;
+// 3. Parent: Derived mathematically as (current index - 1) / 2 (0-indexed).
+int Parent(int i) => (i - 1) / 2;
 ```
 
----
+### ⚠️ Gotchas & Pitfalls
+- **Out of Bounds Errors**: Not explicitly checking if the calculated array index `2i+1` or `2i+2` exceeds the array length.
+- **Missing Nodes Mapping**: In implicit array trees, missing nodes still consume indices. Skipping them can shift the entire left/right child math, ruining the structure.
+- **0-Index vs 1-Index Math**: Mixing up math equations. 1-indexed math is `2i` and `2i+1`, whereas 0-indexed is `2i+1` and `2i+2`.
 
-## 1.2 Visit timing: preorder / inorder / postorder
-
-### Why
-Visit timing determines which information is available when you compute.
-
-### What
-- **Preorder:** visit on ENTER (parent first).
-- **Inorder:** visit BETWEEN left and right (binary only).
-- **Postorder:** visit on EXIT (children first).
-
-### How (step/flow)
-- Need to decide before exploring children → preorder.
-- Need BST sorted order → inorder (only if BST invariant holds).
-- Need child results → postorder.
-
-### Where and When (use cases)
-Pre: serialization, outlines; In: BST iteration; Post: aggregation, cleanup.
-
-### Common pitfalls
-Assuming inorder implies sorted without BST property.
-
-### Tips and tricks
-If the formula uses child results, default to postorder.
+### Drill Problems
+- **Easy:**
+  - [LeetCode 226: Invert Binary Tree]
+- **Medium:**
+  - [LeetCode 114: Flatten Binary Tree to Linked List]
 
 ---
 
-## 1.3 Edge cases & recursion safety
-
-### Why
-Trees can degenerate into a chain; recursion depth can break.
-
-### What
-Empty tree, single node, skewed, deep trees.
-
-### How (step/flow)
-1) Handle `root == null`.
-2) Test 1-node.
-3) Test skewed chain.
-
-### Where and When (use cases)
-Always.
-
-### Common pitfalls
-Stack overflow in deep recursion.
-
-### Tips and tricks
-If depth could be huge, switch to Level 3 iterative DFS.
-
----
-
-### ✅ Level 1 invariants
-- Base case is correct.
-- Child order is explicit.
-- Visit timing matches intended traversal.
-
-### 🐛 Level 1 debugging
-Log: `(node, depth, event ENTER/EXIT)`; wrong order ⇒ visit timing/push order.
-
----
-
-<a id="level-2"></a>
-# Level 2 🔵 Representations (what you can traverse)
-
-## 2.1 Pointer-based nodes (binary & N-ary)
-
-### Why
-Most trees are node-pointer based; traversal is pointer walking.
-
-### What
-- Binary: `Left`, `Right`
-- N-ary: `Children[]` (ordered)
-
-### How (step/flow)
-Define node type + deterministic child iteration order.
-
-### Where and When (use cases)
-DOM/AST, org charts, tries.
-
-### Common pitfalls
-Using unordered containers for children when order matters.
-
-### Tips and tricks
-If order matters, store children in list/array (or sorted dictionary for tries).
-
----
-
-## 2.2 Implicit array trees (heap-style)
-
-### Why
-Some trees are stored in arrays; traversal becomes index arithmetic.
-
-### What
-0-based array:
-- left = `2*i + 1`
-- right = `2*i + 2`
-- parent = `(i-1)/2`
-
-### How (step/flow)
-Start at index 0; compute children; stop on out-of-bounds.
-
-### Where and When (use cases)
-Heaps, priority queues, complete trees.
-
-### Common pitfalls
-Mixing 0-based and 1-based formulas.
-
-### Tips and tricks
-Write formulas at the top of the function.
-
----
-
-### ✅ Level 2 invariants
-- Representation rules are fixed (pointers vs array).
-- Child iteration order is deterministic.
-
-### 🐛 Level 2 debugging
-Implicit trees: log `(i, value, leftIndex, rightIndex)`.
-
----
-
-<a id="level-3"></a>
-# Level 3 🟠 Multi-state traversal (iterative DFS + BFS waves)
-
-## 3.1 Iterative DFS: preorder / inorder / postorder (binary)
-
-### Why
-Avoid recursion limits and gain explicit control.
-
-### What
-- Preorder: stack, push right then left.
-- Inorder: push-left chain, visit on pop.
-- Postorder: needs extra state (phase frames, lastVisited, or two stacks).
-
-### How (step/flow)
-1) Declare stack invariant.
-2) Choose the simplest technique that meets requirements.
-
-### Where and When (use cases)
-Deep trees, production safety.
-
-### Common pitfalls
-Wrong push order; visiting at wrong moment.
-
-### Tips and tricks
-Use **phase frames** when order must be deterministic and you want one reusable pattern.
-
----
-
-## 3.2 Phase-frame DFS (ENTER/EXIT)
-
-### Why
-It turns recursion into a reliable iterative state machine.
-
-### What
-Stack items: `(node, phase)` where phase ∈ {ENTER, EXIT}.
-
-### How (step/flow)
-- On ENTER: push EXIT, then push children ENTER in reverse desired processing order.
-- On EXIT: do postorder work.
-
-### Where and When (use cases)
-Iterative postorder, mixed pre+post hooks.
-
-### Common pitfalls
-Scheduling children in wrong order.
-
-### Tips and tricks
-Treat ENTER = expand, EXIT = finalize.
-
----
-
-## 3.3 BFS level-order (waves)
-
-### Why
-Level grouping and minimum-depth logic are natural with BFS.
-
-### What
-Queue frontier + `levelSize` snapshot per wave.
-
-### How (step/flow)
-1) Enqueue root.
-2) While queue not empty: snapshot `levelSize`; pop exactly that many; enqueue children.
-
-### Where and When (use cases)
-Level lists, zigzag, views, per-level aggregates.
-
-### Common pitfalls
-Not snapshotting `levelSize` causes level mixing.
-
-### Tips and tricks
-Queue contains the next frontier only.
-
----
-
-### ✅ Level 3 invariants
-- Stack/queue is exactly the frontier.
-- Phase transitions are consistent.
-
-### 🐛 Level 3 debugging
-DFS: log `(node, phase, stackSize)`; BFS: log `(level, levelSize, queueSnapshot)`.
-
----
-
-<a id="level-4"></a>
-# Level 4 🟣 Range/path + coordinate traversals
-
-## 4.1 Path-state DFS (root-to-leaf, backtracking)
-
-### Why
-Path problems fail if rollback is wrong.
-
-### What
-Maintain `path` that mirrors recursion stack.
-
-### How (step/flow)
-ENTER: push; process; recurse children; EXIT: pop.
-
-### Where and When (use cases)
-Root-to-leaf paths, sums, trie word enumeration.
-
-### Common pitfalls
-Missing pop ⇒ state leaks into siblings.
-
-### Tips and tricks
-Mutate one path list; copy only when committing a result.
-
----
-
-## 4.2 Coordinate traversals (vertical/top/bottom/diagonal)
-
-### Why
-Many problems are “traversal + coordinates + grouping.”
-
-### What
-- Vertical: group by `col`.
-- Top view: first seen per `col`.
-- Bottom view: last seen per `col`.
-- Diagonal: define diagonal transitions (often right=same, left=+1).
-
-### How (step/flow)
-Carry `(row, col)` or `(diagonal)` state and group accordingly.
-
-### Where and When (use cases)
-UI projections, structural summaries.
-
-### Common pitfalls
-Missing tie-break rule when collisions occur.
-
-### Tips and tricks
-If strict ordering is required, store `(col,row,val)` and sort.
-
----
-
-## 4.3 Boundary traversal (anti-clockwise)
-
-### Why
-Composite traversal + de-dup discipline.
-
-### What
-root + left boundary (no leaves) + leaves + right boundary (no leaves, reversed).
-
-### How (step/flow)
-Walk left boundary; collect leaves; walk right boundary and reverse.
-
-### Where and When (use cases)
-Perimeter rendering.
-
-### Common pitfalls
-Duplicating leaves.
-
-### Tips and tricks
-Define `isLeaf()` once.
-
----
-
-### ✅ Level 4 invariants
-- State updates are consistent.
-- De-dup rules are explicit.
-
-### 🐛 Level 4 debugging
-Log `(node, depth=row, col/diag, action)`.
-
----
-
-<a id="level-5"></a>
-# Level 5 🔴 Advanced control + implicit trees
-
-## 5.1 Euler tour ENTER/EXIT times
-
-### Why
-Subtree queries become range problems.
-
-### What
-Record `tin` on ENTER and `tout` on EXIT.
-
-### How (step/flow)
-ENTER: time++; traverse children; EXIT: time++.
-
-### Where and When (use cases)
-Subtree flattening, ancestor checks.
-
-### Common pitfalls
-Recording only one timestamp.
-
-### Tips and tricks
-Treat every node as a lifecycle: ENTER then EXIT.
-
----
-
-## 5.2 Tree DP (postorder summaries + global update)
-
-### Why
-Many classic problems need both a return summary and a global best.
-
-### What
-`dfs(node)` returns summary; global answer updated using children summaries.
-
-### How (step/flow)
-Compute child summaries; update global; return summary.
-
-### Where and When (use cases)
-Diameter, max path sum.
-
-### Common pitfalls
-Mixing return value with global best.
-
-### Tips and tricks
-Write two distinct lines: update global; return summary.
-
----
-
-## 5.3 Morris inorder (O(1) auxiliary) — concept
-
-### Why
-Follow-up constraint: inorder traversal without recursion/stack.
-
-### What
-Temporary threads from inorder predecessor to current; later remove.
-
-### How (step/flow)
-If no left: visit, go right; else find predecessor; create/remove thread accordingly.
-
-### Where and When (use cases)
-Only when explicitly asked for O(1) auxiliary traversal.
-
-### Common pitfalls
-Not removing threads corrupts tree.
-
-### Tips and tricks
-Invariant: every thread created must be removed.
-
----
-
-## 5.4 Implicit search trees (state spaces)
-
-### Why
-Many problems are “tree traversal” without explicit nodes.
-
-### What
-Each state generates next states; DFS enumerates, BFS finds minimum steps.
-
-### How (step/flow)
-Define state, transitions, stopping rule; add visited if states can repeat.
-
-### Where and When (use cases)
-Backtracking generation, shortest-step transformations.
-
-### Common pitfalls
-Treating repeated states as a tree (it’s a graph).
-
-### Tips and tricks
-Ask: “Can two paths reach the same state?” If yes, add visited.
-
----
-
-### ✅ Level 5 invariants
-- Summaries are correct at return time.
-- Threads/structural edits are restored.
-- Visited is used when state repetition exists.
-
----
-
-<a id="appendix-missing-modules"></a>
-# Appendix: Missing Modules (Pre‑Drills)
-
-This appendix completes the traversal toolkit and bridges trees → graphs.
-
-Cross-links:
-- Unified model: see [Unified mental model](#mental-model)
-- Representations: see [Level 2](#level-2)
-- Iterative control: see [Level 3](#level-3)
-- Coordinates/paths: see [Level 4](#level-4)
-
----
-
-<a id="app-adj"></a>
-## A1) 🌐 Tree as adjacency list (rooted tree from edges)
-
-### Why
-Many tree inputs come as edges; traversal must avoid walking back to parent—this is the bridge to graphs.
-
-### What
-Adjacency list `adj[u] = neighbors`, rooted at `root`. Traverse with `(node, parent)` (or `visited[]`).
-
-### How (step/flow)
-1) Build `adj` from edges (bidirectional).
-2) DFS/BFS from root.
-3) Skip `neighbor == parent` (tree) or check `visited` (graph-ready).
-
-### Where and When (use cases)
-- Interview: subtree size, distances, diameter from edges.
-- Systems: relationship-derived hierarchies.
-
-### Common pitfalls
-Forgetting parent/visited ⇒ infinite loop on undirected edges.
-
-### Tips and tricks
-Prefer `parent` for trees; prefer `visited` for graphs.
-
-C# DFS:
+## Level 3: 🟠 Iterative DFS & BFS Waves
+
+### Mental Model & Invariants
+- **What is the pointer?** A dynamic frontier containing nodes: queue (BFS) or stack (DFS).
+- **What region is processed?** BFS processes a strictly defined "level" or "wave".
+- **What is the invariant?** In BFS waves, taking a snapshot of `queue.length` at the start of the loop guarantees we process exactly one level.
+
+### Visual State Transitions (BFS Wave)
+| Step | Queue Content | Wave Size | Action / Invariant |
+|---|---|---|---|
+| 1 | `[Root]` | `len=1` | Wave 1. Pop Root, Enqueue L, R. |
+| 2 | `[L, R]` | `len=2` | Wave 2. Pop L, Enqueue L.left, L.right. |
+| 3 | `[R, L.left, L.right]`| `len=2` (Processing) | Continuing Wave 2. Pop R, Enqueue R.left, R.right. |
+| 4 | `[L.left, L.right, R.left, R.right]` | `len=4` | Wave 3 snapshot ready. |
+
+### Code Snippets (BFS Wave)
+Problem: Traverse a binary tree level-by-level (BFS) to group all node values by their depth.
+```python
+from collections import deque
+
+def bfs(root):
+    # 1. Handle edge case: Empty tree has no levels.
+    if not root: return []
+    # 2. Initialize the dynamic frontier (queue) with the root node.
+    queue = deque([root])
+    levels = []
+    
+    # 3. Process the queue until the frontier is empty.
+    while queue:
+        # 4. INVARIANT: Take a snapshot of the current queue length to process exactly one wave.
+        level_size = len(queue)
+        current_level = []
+        # 5. Process all nodes in the current wave snapshot.
+        for _ in range(level_size):
+            # 6. Dequeue the front node and record its value.
+            node = queue.popleft()
+            current_level.append(node.val)
+            # 7. Expand frontier: Enqueue valid left and right children for the next wave.
+            if node.left: queue.append(node.left)
+            if node.right: queue.append(node.right)
+        # 8. Store the fully processed level.
+        levels.append(current_level)
+    return levels
+```
+Problem: Traverse a binary tree level-by-level (BFS) to group all node values by their depth.
 ```csharp
-static void Dfs(int u, int parent, List<int>[] adj, List<int> preorder)
-{
-    preorder.Add(u);
-    foreach (var v in adj[u])
-    {
-        if (v == parent) continue;
-        Dfs(v, u, adj, preorder);
+public IList<IList<int>> LevelOrder(TreeNode root) {
+    var res = new List<IList<int>>();
+    // 1. Handle edge case: Empty tree has no levels.
+    if (root == null) return res;
+    // 2. Initialize the dynamic frontier (queue) with the root node.
+    var queue = new Queue<TreeNode>();
+    queue.Enqueue(root);
+    
+    // 3. Process the queue until the frontier is empty.
+    while (queue.Count > 0) {
+        // 4. INVARIANT: Take a snapshot of the current queue length to process exactly one wave.
+        int levelSize = queue.Count;
+        var currentLevel = new List<int>();
+        // 5. Process all nodes in the current wave snapshot.
+        for (int i = 0; i < levelSize; i++) {
+            // 6. Dequeue the front node and record its value.
+            var node = queue.Dequeue();
+            currentLevel.Add(node.val);
+            // 7. Expand frontier: Enqueue valid left and right children for the next wave.
+            if (node.left != null) queue.Enqueue(node.left);
+            if (node.right != null) queue.Enqueue(node.right);
+        }
+        // 8. Store the fully processed level.
+        res.Add(currentLevel);
+    }
+    return res;
+}
+```
+
+### ⚠️ Gotchas & Pitfalls
+- **Snapshot Omission**: Processing the queue `while queue:` without capturing the snapshot size `level_size = len(queue)` first, mixing up current and next levels.
+- **Infinite Loops with Graphs**: Treating a cyclic graph like a tree without a `visited` set or parent tracking.
+- **Queue Memory Bloat**: Queues can hold up to $N/2$ nodes at the deepest level of a balanced tree, potentially causing memory limit errors for massive trees.
+
+### Drill Problems
+- **Medium:**
+  - [LeetCode 102: Binary Tree Level Order Traversal]
+  - [LeetCode 103: Binary Tree Zigzag Level Order Traversal]
+  - [LeetCode 199: Binary Tree Right Side View]
+
+---
+
+## Level 4: 🟣 Path & Coordinate Traversals
+
+### Mental Model & Invariants
+- **What is the pointer?** Extended node state: `(node, running_path)` or `(node, row, col)`.
+- **What region is processed?** 2D Grid mapping of tree nodes, or specific root-to-leaf paths.
+- **What is the invariant?** Child coordinates are strictly `(row + 1, col - 1)` for Left and `(row + 1, col + 1)` for Right. For paths, whatever state is ADDED must be REMOVED (Backtracking).
+
+### Code Snippets (Backtracking Path)
+Problem: Find all root-to-leaf paths in a binary tree where the sum of the node values equals a specified target sum.
+```python
+def find_paths(node, target_sum, current_path, res):
+    # 1. Base case: Reached past a leaf node, nothing to process.
+    if not node: return
+    # 2. ADD to state: Include the current node's value in our running path state.
+    current_path.append(node.val)
+    
+    # 3. Check condition: Are we at a leaf node and does the path meet the target sum?
+    if not node.left and not node.right and sum(current_path) == target_sum:
+        # 4. Valid path found: Deep copy the state to results so it isn't mutated later.
+        res.append(list(current_path))
+        
+    # 5. Recursive step: Continue path exploration down the left and right subtrees.
+    find_paths(node.left, target_sum, current_path, res)
+    find_paths(node.right, target_sum, current_path, res)
+    
+    # 6. INVARIANT: BACKTRACK: Remove the current node from the state before returning to the parent.
+    current_path.pop()
+```
+Problem: Find all root-to-leaf paths in a binary tree where the sum of the node values equals a specified target sum.
+```csharp
+public void FindPaths(TreeNode node, int targetSum, List<int> currentPath, List<IList<int>> res) {
+    // 1. Base case: Reached past a leaf node, nothing to process.
+    if (node == null) return;
+    // 2. ADD to state: Include the current node's value in our running path state.
+    currentPath.Add(node.val);
+    
+    // 3. Check condition: Are we at a leaf node and does the path meet the target sum?
+    if (node.left == null && node.right == null && currentPath.Sum() == targetSum) {
+        // 4. Valid path found: Deep copy the state to results so it isn't mutated later.
+        res.Add(new List<int>(currentPath));
+    }
+    
+    // 5. Recursive step: Continue path exploration down the left and right subtrees.
+    FindPaths(node.left, targetSum, currentPath, res);
+    FindPaths(node.right, targetSum, currentPath, res);
+    
+    // 6. INVARIANT: BACKTRACK: Remove the current node from the state before returning to the parent.
+    currentPath.RemoveAt(currentPath.Count - 1);
+}
+```
+
+### ⚠️ Gotchas & Pitfalls
+- **Reference Sharing / Shallow Copy**: Appending `current_path` directly to the results instead of a deep copy (e.g., `list(current_path)`), resulting in all paths reflecting the final empty state.
+- **Missing Backtrack**: Forgetting to `.pop()` the node from the path state after returning from recursive calls, leaving stale data for the next branches.
+- **Negative Coordinates**: In coordinate traversal, negative columns (going left repeatedly) will crash array-based grouping unless offsets or HashMaps are used.
+
+### Drill Problems
+- **Easy:**
+  - [LeetCode 112: Path Sum]
+- **Medium:**
+  - [LeetCode 113: Path Sum II]
+  - [LeetCode 314: Binary Tree Vertical Order Traversal]
+
+---
+
+## Level 5: 🔴 Advanced Control & Tree DP
+
+### Mental Model & Invariants
+- **What is the pointer?** Current node computing local limits.
+- **What region is processed?** Tree Sub-problems.
+- **What is the invariant?** Every recursive call returns exactly the information the parent needs (local state), while selectively updating a global state across all nodes (e.g., maximum diameter).
+
+### Visual State Transitions (Global vs Local State)
+| Node Type | Local Return (to parent) | Global Variable Update | Action / Invariant |
+|---|---|---|---|
+| **Leaf** | `1` (height = 1) | `max(global, 0)` | Base length is 0. Local height is 1. |
+| **Parent** | `max(L, R) + 1` | `max(global, L + R)`| Update global diameter using paths crossing root. |
+
+### Code Snippets (Tree DP)
+Problem: Compute the diameter of a binary tree, defined as the length of the longest path between any two nodes, which may or may not pass through the root.
+```python
+class Solution:
+    def diameterOfBinaryTree(self, root: TreeNode) -> int:
+        # 1. Initialize global state: track the maximum diameter found so far across all nodes.
+        self.max_diam = 0
+        
+        def dfs(node):
+            # 2. Base case: An empty sub-tree has a height of 0.
+            if not node: return 0
+            
+            # 3. Explore left and right: obtain the local height of left and right subtrees.
+            left_height = dfs(node.left)
+            right_height = dfs(node.right)
+            
+            # 4. GLOBAL UPDATE: Update the global max diameter if the path crossing this node is larger.
+            self.max_diam = max(self.max_diam, left_height + right_height)
+            
+            # 5. LOCAL RETURN: Return the strict linear height to the parent node.
+            return 1 + max(left_height, right_height)
+            
+        # 6. Kick off the DFS starting from the root.
+        dfs(root)
+        # 7. Return the globally updated tracking variable.
+        return self.max_diam
+```
+Problem: Compute the diameter of a binary tree, defined as the length of the longest path between any two nodes, which may or may not pass through the root.
+```csharp
+public class Solution {
+    // 1. Initialize global state: track the maximum diameter found so far across all nodes.
+    int maxDiam = 0;
+    
+    public int DiameterOfBinaryTree(TreeNode root) {
+        // 2. Kick off the DFS starting from the root.
+        DFS(root);
+        // 3. Return the globally updated tracking variable.
+        return maxDiam;
+    }
+    
+    private int DFS(TreeNode node) {
+        // 4. Base case: An empty sub-tree has a height of 0.
+        if (node == null) return 0;
+        
+        // 5. Explore left and right: obtain the local height of left and right subtrees.
+        int leftHeight = DFS(node.left);
+        int rightHeight = DFS(node.right);
+        
+        // 6. GLOBAL UPDATE: Update the global max diameter if the path crossing this node is larger.
+        maxDiam = Math.Max(maxDiam, leftHeight + rightHeight);
+        
+        // 7. LOCAL RETURN: Return the strict linear height to the parent node.
+        return 1 + Math.Max(leftHeight, rightHeight);
     }
 }
 ```
 
----
+### ⚠️ Gotchas & Pitfalls
+- **Misaligned Sub-problems**: Returning a path that forks (like a full inverted V shape) to the parent in DP, violating the strict single-path local return rule.
+- **Negative Values**: In Max Path Sum DP, failing to cap negative local path returns at 0 (`max(0, dfs(node))`), which drags down the global sum.
+- **Initialization Danger**: Initializing global max trackers to `0` when the tree contains only negative numbers (should initialize to `-infinity`).
 
-<a id="app-views"></a>
-## A2) 👁️ Full views family (left/right) + enqueue-order policy
-
-### Why
-Views are BFS levels + a selection rule; enqueue order affects what becomes “first.”
-
-### What
-- Left view: first node of each level.
-- Right view: last node of each level.
-
-### How (step/flow)
-BFS with `levelSize`; record `i==0` (left) or `i==levelSize-1` (right).
-
-### Where and When (use cases)
-Diagnostics, outlines, right-side-view problems.
-
-### Common pitfalls
-Not snapshotting `levelSize` mixes levels.
-
-### Tips and tricks
-Standardize child enqueue order (usually left then right), then select first/last.
+### Drill Problems
+- **Easy:**
+  - [LeetCode 543: Diameter of Binary Tree]
+- **Hard:**
+  - [LeetCode 124: Binary Tree Maximum Path Sum]
+  - [LeetCode 99: Recover Binary Search Tree]
 
 ---
 
-<a id="app-vertical"></a>
-## A3) 🧊 Vertical traversal tie-break spec
-
-### Why
-Most vertical-traversal failures are missing determinism rules.
-
-### What
-Track `(col, row, val)` and sort by `(col asc, row asc, val asc)` when the problem demands strict ordering.
-
-### How (step/flow)
-Traverse to collect triples; sort; group by `col`.
-
-### Where and When (use cases)
-Vertical traversal variants with collision ordering.
-
-### Common pitfalls
-Appending in traversal order when spec requires sorting.
-
-### Tips and tricks
-Write tie-break rule at the top of your solution.
-
----
-
-<a id="app-bfs"></a>
-## A4) 🧺 BFS variants toolkit (bottom-up, RTL, aggregates, width)
-
-### Why
-Most BFS variants are “level snapshot + transformation.”
-
-### What
-- Bottom-up: reverse levels after BFS.
-- RTL per level: reverse the level list.
-- Aggregates: sum/max/min/avg/count per level.
-- Width (simple): max `levelSize`.
-
-### How (step/flow)
-Keep one BFS skeleton and plug in a “level handler.”
-
-### Where and When (use cases)
-Level summaries and reporting.
-
-### Common pitfalls
-Reversing the wrong thing (levels vs nodes).
-
-### Tips and tricks
-Separate traversal from presentation.
-
----
-
-<a id="app-postorder"></a>
-## A5) 🎒 Iterative postorder alternatives
-
-### Why
-Postorder is the hardest iterative order; you should recognize the common patterns.
-
-### What
-- Phase frames (ENTER/EXIT): robust default.
-- Two stacks: simple, extra memory.
-- lastVisited: one stack, more logic.
-
-### How (step/flow)
-Choose based on clarity vs memory vs interview comfort.
-
-### Where and When (use cases)
-Bottom-up computations without recursion.
-
-### Common pitfalls
-lastVisited bugs that visit parent too early.
-
-### Tips and tricks
-Default to phase frames under time pressure.
-
----
-
-<a id="app-parent"></a>
-## A6) 🧭 Parent pointers + iterator mindset
-
-### Why
-Parent pointers enable O(1) auxiliary navigation without recursion/stack.
-
-### What
-Inorder successor (with parent pointer):
-- If right exists: leftmost of right.
-- Else climb until you come from a left child.
-
-### How (step/flow)
-Two-case rule; implement carefully.
-
-### Where and When (use cases)
-BST iterators, ordered traversal.
-
-### Common pitfalls
-Applying successor logic to a non-BST when you need sorted semantics.
-
-### Tips and tricks
-Think “Iterator state machine: Current + Next().”
-
----
-
-<a id="app-serialization"></a>
-## A7) 💾 Serialization patterns (preorder-with-nulls, level-order)
-
-### Why
-Traversal defines an encoding; without null markers, decode can be ambiguous.
-
-### What
-- Preorder with `#` markers for nulls.
-- BFS level-order with null placeholders.
-
-### How (step/flow)
-Serialize into tokens; deserialize by consuming tokens with an index/pointer.
-
-### Where and When (use cases)
-Persistence, caching, network transfer.
-
-### Common pitfalls
-Index bugs during deserialize.
-
-### Tips and tricks
-Log token index while debugging.
-
----
-
-<a id="app-trie"></a>
-## A8) 🌿 Trie traversal (lexicographic DFS + rollback)
-
-### Why
-Trie traversal often requires lexicographic output and strict rollback discipline.
-
-### What
-DFS children in sorted order; maintain a mutable path (StringBuilder) and rollback on exit.
-
-### How (step/flow)
-ENTER append char; if terminal emit; DFS children; EXIT remove char.
-
-### Where and When (use cases)
-Autocomplete, dictionary export.
-
-### Common pitfalls
-Unordered children leads to non-lexicographic output.
-
-### Tips and tricks
-Use `SortedDictionary<char, TrieNode>` in C# for ordered traversal.
-
----
-
-<a id="app-limits"></a>
-## A9) 📏 Complexity & limits rulebook
-
-### Why
-Traversal choice is driven by depth/width constraints.
-
-### What
-- Recursive DFS risks stack overflow on skewed trees.
-- BFS memory spikes with high width.
-- Morris is only for explicit O(1) auxiliary constraints.
-
-### How (step/flow)
-Estimate depth/width; choose recursion vs iterative stack vs BFS; add state only when needed.
-
-### Where and When (use cases)
-Production robustness and interview justification.
-
-### Common pitfalls
-Using fancy techniques (Morris) when not required.
-
-### Tips and tricks
-Default: recursion for clarity; iterative DFS for deep trees; BFS for level/shortest-depth behavior.
-
----
-
-## ✅ Pre‑drills readiness checklist
-
----
-
-# Practice Ladder (Merged)
-
-## Must
-- Preorder / inorder / postorder traversal
-- Level-order traversal
-- Maximum depth / minimum depth
-- BST iterator / kth smallest via inorder reasoning
-- Right side view / zigzag / largest value per row
-
-## Should
-- Vertical order / distance-K / leaf-similar / serialization
-- Diameter / max path sum / path-sum backtracking
-- Morris inorder as a space-optimized follow-up
-- Trie traversal and lexicographic DFS in the appendix
-
-## Optional advanced
-- Construct tree from traversals
-- Flatten tree to linked list
-- Segment tree / BIT / trie traversal mechanics from the appendix
-
-## Morris implementation note (merged)
-- Inorder: create thread to inorder predecessor, remove on second encounter.
-- Preorder: visit when creating the thread.
-- Postorder: advanced variant using reversed edge emission and strict restoration.
-- Safety rule: only use Morris when O(1) auxiliary-space traversal is explicitly valuable.
-
-## Drill workflow
-1. Hand-trace frontier and visit timing.
-2. State the invariant out loud.
-3. Implement only after the trace is stable.
-
-This file is now the single merged source for tree traversal concepts, appendix material, practice sequencing, Morris notes, and drill guidance.
-- I can state the traversal contract (frontier + timing + state).
-- I can dry-run and list stack/queue snapshots.
-- I can switch between node pointers and adjacency list + parent.
-- I can explain ordering/tie-break rules when required.
-- I can serialize/deserialize preorder-with-nulls without index bugs.
+## 🌐 Appendix: Graphs, Serialization, Tries
+
+### Mental Model & Invariants
+- **What is the pointer?** Adjacency list node or string index/Trie node.
+- **What is the invariant?** In undirected trees processed as graphs, tracking `node != parent` prevents infinite loops. In serialization, nulls (e.g., `#`) precisely define missing children, allowing perfect reconstruction without ambiguity.
+
+### ⚠️ Gotchas & Pitfalls
+- **Back-edge Infinite Recursion**: Not checking `if neighbor == parent: continue` during DFS on undirected trees.
+- **Double Digit Strings**: When serializing, failing to use delimiters (like commas). `1,2,3` becomes `123` otherwise, merging double-digit node values incorrectly.
+- **Memory Overhead in Tries**: Allocating fixed size arrays (e.g., `[26]`) for every node in a Trie can heavily fragment memory on sparse graphs; consider HashMaps if memory bound.
+
+### Drill Problems
+- **Medium:**
+  - [LeetCode 208: Implement Trie (Prefix Tree)]
+  - [LeetCode 834: Sum of Distances in Tree]
+- **Hard:**
+  - [LeetCode 297: Serialize and Deserialize Binary Tree]

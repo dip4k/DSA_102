@@ -1,8 +1,8 @@
-# Trees Traversal
+# Monotonic Stack Traversal
 
-Welcome to the **Curriculum 2.0** guide for Trees.
+Welcome to the **Curriculum 2.0** guide for Monotonic Stack.
 
-👉 **[Start the Mastery Guide here](Tree_Traversal_Mastery_Unified_with_Appendix.md)**
+[Start the Mastery Guide here](Monotonic_Stack_Mastery_Curriculum_v1.md)
 
 ### Philosophy
 - **Mental Model:** What does the index/state mean?

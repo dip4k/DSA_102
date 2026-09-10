@@ -1,16 +1,10 @@
-# Queues Traversal README
+# Queues Traversal
 
-Use this folder for FIFO traversal, deque patterns, and queue-driven state exploration.
+Welcome to the **Curriculum 2.0** guide for Queues.
 
-Canonical file:
-- `FlowWise_Queue_Traversal_Mastery_Enhanced_v2.md` : the single merged guide for queue, deque, drill, and frontier patterns
+👉 **[Start the Mastery Guide here](FlowWise_Queue_Traversal_Mastery_Enhanced_v2.md)**
 
-Coverage tags:
-- `Must` : basic queue traversal, BFS frontier behavior, circular queue intuition
-- `Should` : deque operations, monotonic deque use cases
-- `Optional` : mixed queue/deque drill extensions
-
-Recommended flow:
-1. Read the mastery guide from FIFO basics through PQ frontier.
-2. Use the merged drill ladder near the end.
-3. Treat the former queue/deque companion files as folded into the mastery guide.
+### Philosophy
+- **Mental Model:** What does the index/state mean?
+- **Invariant:** What region has been processed?
+- **Drill Problems:** Practice each specific transition immediately.

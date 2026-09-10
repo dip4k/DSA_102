@@ -1,883 +1,437 @@
-# 🗺️ Flow-Wise Array Mastery v5 (Final)
+# Array Mastery 2.0: The Complete Problem-Solving Curriculum
 
-**Purpose:** A complete, structured learning guide for array traversal mastery using **what / why / how / visuals / code**.
+This curriculum shifts focus from syntax memorization to state management. For each pattern, you must define the invariant, understand the pointer states, and execute the transitions safely. 
 
-**Primary languages:** C# and Python
+## Summary Table
 
----
-
-## 📌 Table of Contents
-
-- [🗺️ Flow-Wise Array Mastery v5 (Final)](#️-flow-wise-array-mastery-v5-final)
-  - [📌 Table of Contents](#-table-of-contents)
-  - [🧭 How to Use This Guide](#-how-to-use-this-guide)
-  - [🗺️ Learning Roadmap](#️-learning-roadmap)
-  - [🗂️ Problem Mapping Index](#️-problem-mapping-index)
-  - [🟢 Level 1: Physical Movement](#-level-1-physical-movement)
-    - [1A) ➡️ Linear Forward Scan](#1a-️-linear-forward-scan)
-    - [1B) ⬅️ Linear Backward Scan](#1b-️-linear-backward-scan)
-    - [1C) 🔍 Sentinel Stop (Stop on Condition)](#1c--sentinel-stop-stop-on-condition)
-    - [1D) 📏 Half-Open Boundaries](#1d--half-open-boundaries)
-    - [1E) 🧵 Lockstep Iteration](#1e--lockstep-iteration)
-  - [🔵 Level 2: Index Arithmetic](#-level-2-index-arithmetic)
-    - [2A) 🦘 Stride Traversal](#2a--stride-traversal)
-    - [2B) 🔄 Cyclic Traversal (Modulo)](#2b--cyclic-traversal-modulo)
-    - [2C) 🧱 2D-to-1D Mapping](#2c--2d-to-1d-mapping)
-  - [🟠 Level 3: Multi-Cursor Traversal](#-level-3-multi-cursor-traversal)
-    - [3A) 🧹 Reader/Writer (Compaction)](#3a--readerwriter-compaction)
-    - [3B) 🦀 Converging Pointers](#3b--converging-pointers)
-    - [3C) 🔀 Merge-Style Traversal](#3c--merge-style-traversal)
-  - [🟣 Level 4: Range/Window Traversal](#-level-4-rangewindow-traversal)
-    - [4A) 🪟 Fixed-Size Window](#4a--fixed-size-window)
-    - [4B) 🧲 Variable-Size Window](#4b--variable-size-window)
-    - [4C) 🧩 Segment Traversal](#4c--segment-traversal)
-  - [🔴 Level 5: Abstract Traversal](#-level-5-abstract-traversal)
-    - [5A) 🦘 Reachability (Jump Rules)](#5a--reachability-jump-rules)
-    - [5B) 🔍 Binary Search (Index Space)](#5b--binary-search-index-space)
-    - [5C) 🧪 Binary Search on Answer Space](#5c--binary-search-on-answer-space)
-  - [🟤 Level 6: Prefix/Suffix Traversal](#-level-6-prefixsuffix-traversal)
-    - [6A) ➕ Prefix Accumulation](#6a--prefix-accumulation)
-    - [6B) ➖ Suffix Accumulation](#6b--suffix-accumulation)
-    - [6C) 🔄 Two-Pass Carry](#6c--two-pass-carry)
-  - [🟧 Level 7: Monotonic Stack Traversal](#-level-7-monotonic-stack-traversal)
-    - [7A) 📈 Next Greater Element](#7a--next-greater-element)
-  - [🟫 Level 8: In-Place Partition Traversal](#-level-8-in-place-partition-traversal)
-    - [8A) 🇳🇱 Three-Way Partition](#8a--three-way-partition)
-  - [⚙️ Level 9: Cache/Throughput Traversal](#️-level-9-cachethroughput-traversal)
-    - [9A) 📦 Chunked Scans](#9a--chunked-scans)
-  - [✅ Pattern Checklist](#-pattern-checklist)
-  - [🧪 Practice Map](#-practice-map)
+| Level | Mental Model | Pointer State | Drill Problems |
+|-------|--------------|---------------|----------------|
+| **0-3: Boundaries & Index Arithmetic** | The index is a mathematical construct representing position, distance, and boundaries. | Single pointer, bounded by `0` and `N-1`. | [LeetCode 189: Rotate Array], [LeetCode 344: Reverse String], [LeetCode 566: Reshape the Matrix] |
+| **4: Multi-Pointer** | Pointers represent a specific relationship (converging, same direction) spanning an active region. | `L` and `R` pointers, independent or moving towards each other. | [LeetCode 167: Two Sum II - Input Array Is Sorted], [LeetCode 11: Container With Most Water], [LeetCode 88: Merge Sorted Array] |
+| **5: Read/Write Pointers** | Separate reading (discovery) from writing (compaction). Blind scan vs conditional commit. | `Read` pointer scans unconditionally, `Write` points to the next available valid slot. | [LeetCode 27: Remove Element], [LeetCode 283: Move Zeroes], [LeetCode 26: Remove Duplicates from Sorted Array] |
+| **6: Range & Sliding Window** | Treat `[L, R]` as a unified state (the window). Maintain window validity by shrinking/expanding. | Expand `R` unconditionally, shrink `L` conditionally to restore invariant. | [LeetCode 643: Maximum Average Subarray I], [LeetCode 3: Longest Substring Without Repeating Characters], [LeetCode 76: Minimum Window Substring] |
+| **7: Prefix & Suffix State** | Precompute historical state traveling left-to-right or right-to-left to reduce O(N) lookup to O(1). | Implicit pointers building state arrays `Prefix[i]` and `Suffix[i]`. | [LeetCode 1480: Running Sum of 1d Array], [LeetCode 238: Product of Array Except Self], [LeetCode 42: Trapping Rain Water] |
+| **8: Monotonic Deferral** | Do not immediately resolve an element. Defer its resolution using a stack/deque until future data arrives. | Implicit pointer iterating, Stack/Deque stores unresolved indices. | [LeetCode 739: Daily Temperatures], [LeetCode 239: Sliding Window Maximum], [LeetCode 84: Largest Rectangle in Histogram] |
 
 ---
 
-## 🧭 How to Use This Guide
+## Phase 1: Foundation & Index Fluency
 
-- Study one level per sitting.
-- Write templates for each pattern in both languages.
-- Solve 3 to 5 problems per level before moving on.
-- Track invariants. Debug by printing indices and key state.
+### Level 0-3: Boundaries & Index Arithmetic
 
----
+Master the language of indices before writing loops. Understand exactly what an index represents in relation to the array's boundaries.
 
-## 🗺️ Learning Roadmap
+**Mental Models & Invariants:**
+- **What does the index mean?** The index represents an absolute position or mathematical offset from a boundary.
+- **What region is processed?** The whole array, or a specific mathematical mapping of elements.
+- **What is the invariant?** Index operations must always stay within the valid bounds `[0, N-1]`.
 
-| Level | Focus | Key Idea | Typical Problems |
-| --- | --- | --- | --- |
-| 1 | Physical movement | One index | Scan, count, copy |
-| 2 | Index arithmetic | One index + math | Rotate, flatten, stride |
-| 3 | Multi-cursor | Two indices | Two pointers, merge, compaction |
-| 4 | Range/window | Window state | Sliding window, segments |
-| 5 | Abstract traversal | Search space | Binary search, reachability |
-| 6 | Prefix/suffix | Carry state | Prefix sums, two-pass |
-| 7 | Monotonic stack | Deferred resolution | Next greater/smaller |
-| 8 | Partition | Region boundaries | Dutch flag, bucket by key |
-| 9 | Cache/throughput | Memory locality | Chunked scans |
+**Index Mathematical Relationships:**
 
----
+| Concept | Formula / Pattern | Mental Model |
+|---------|-------------------|--------------|
+| **Distance (Inclusive)** | `R - L + 1` | Number of elements including both bounds. |
+| **Middle Element** | `L + (R - L) / 2` | Prevents integer overflow in large arrays. |
+| **Circular Next** | `(i + k) % n` | Wrap around to the beginning seamlessly. |
+| **Mirrored Index** | `n - 1 - i` | Symmetric opposite (e.g., for reversing). |
+| **2D to 1D Mapping** | `row * cols + col`| Flatten a matrix into a single array. |
 
-## 🗂️ Problem Mapping Index
+### ⚠️ Gotchas & Pitfalls
+- **Empty input crashes**: Attempting to access `nums[0]` or `nums[N-1]` when `N=0` causes an index out of bounds error.
+- **Integer overflow**: Using `(L + R) / 2` can overflow in some languages if L and R are large. Use `L + (R - L) / 2`.
+- **Off-by-one errors**: Forgetting that the last valid index is `N-1`, or mixing up `<` and `<=` in loop bounds.
 
-Use this index to map a problem to the correct level, pattern, and invariant.
+**Code Snippets:**
 
-**Legend**
-- Invariant: statement that stays true after each step.
-- State: what you track (indices, counts, sums, deque).
-
-| Level | Pattern / skill | Typical problems (LeetCode examples) | Expected invariant (one-liner) |
-| --- | --- | --- | --- |
-| L1 | Basic traversal | 217 Contains Duplicate, 485 Max Consecutive Ones | Everything before i is processed; accumulator describes that prefix. |
-| L1 | Bounds discipline | 53 Maximum Subarray, 121 Best Time to Buy/Sell Stock | I never read outside bounds; my range meaning is consistent. |
-| L1 | Edge case hygiene | 704 Binary Search (empty), 88 Merge Sorted Array (tiny) | No arr[0] unless n > 0; neighbor access is guarded. |
-| L1 | Lockstep iteration | 350 Intersection of Two Arrays II, 977 Squares of a Sorted Array | Two cursors stay aligned; processed region is final. |
-| L2 | Circular indexing | 189 Rotate Array, 503 Next Greater Element II | Every computed index stays in 0..n-1 after normalization. |
-| L2 | Index math / offsets | 238 Product of Array Except Self, 66 Plus One | All i + offset accesses are safe by design or guarded. |
-| L2 | 2D to 1D mapping | 74 Search a 2D Matrix, 378 Kth Smallest in Sorted Matrix | Mapping is correct; search space shrinks each step. |
-| L3 | Reader/Writer compaction | 27 Remove Element, 26 Remove Duplicates from Sorted Array | nums[0..write-1] is final compacted prefix. |
-| L3 | Converging pointers | 167 Two Sum II, 11 Container With Most Water | Everything outside [l,r] is impossible or already optimal. |
-| L3 | Expand from center | 5 Longest Palindromic Substring, 647 Palindromic Substrings | During expansion, [l..r] stays valid until mismatch. |
-| L4 | Fixed sliding window | 643 Maximum Average Subarray I, 438 Find All Anagrams | Window is exactly k; update is -out +in. |
-| L4 | Variable sliding window | 3 Longest Substring Without Repeats, 76 Minimum Window Substring | Window validity holds; l and r only move forward. |
-| L4 | Prefix sums | 303 Range Sum Query, 560 Subarray Sum Equals K | pref[i+1] = pref[i] + a[i]; range sum uses subtraction. |
-| L4 | Monotonic deque | 239 Sliding Window Maximum, 862 Shortest Subarray at Least K | Deque is monotonic and in-window; front is the answer candidate. |
-| L5 | Partitioning (2-way/3-way) | 75 Sort Colors, 215 Kth Largest Element | Regions are correct; unknown region shrinks. |
-| L5 | Binary search (bounds) | 704 Binary Search, 34 First/Last Position | Answer stays inside bounds; bounds shrink every step. |
-| L5 | Binary search on answer | 1011 Ship Packages, 410 Split Array Largest Sum | Can(x) is monotone; search smallest feasible. |
-
----
-
-## 🟢 Level 1: Physical Movement
-
-### 1A) ➡️ Linear Forward Scan
-
-**What:** Visit indices from 0 to n - 1.
-
-**Why:** Default traversal for scans, counts, and transformations.
-
-**How:** Increment i until i == n.
-
-**Visual**
-```
-Index: 0 1 2 3 4
-Array: A C E G K
-       ^
-       i ->
-```
-
-**C#**
-```csharp
-for (int i = 0; i < arr.Length; i++)
-{
-    int current = arr[i];
-    // process
-}
-```
-
-**Python**
+Problem: Reverse an array of characters in-place using mirrored index mapping.
 ```python
-for i in range(len(arr)):
-    current = arr[i]
-    # process
+# Python: Reversing an array using mirrored index
+def reverse_string(s: list[str]) -> None:
+    # 1. Get the boundary size for the index math
+    n = len(s)
+    # 2. Iterate up to the middle element to avoid double-swapping
+    for i in range(n // 2):
+        # 3. Calculate the mirrored index from the right boundary
+        mirror = n - 1 - i
+        # 4. Swap the current element with its mirror counterpart
+        s[i], s[mirror] = s[mirror], s[i]
 ```
 
-**Pitfalls**
-- Off-by-one errors (`i <= n - 1` is easy to slip)
-- Modifying list length during traversal
-
----
-
-### 1B) ⬅️ Linear Backward Scan
-
-**What:** Visit indices from n - 1 to 0.
-
-**Why:** Prevents overwrite when writing to the right.
-
-**How:** Decrement i until i < 0.
-
-**Visual**
-```
-Index: 0 1 2 3
-Array: A C E G
-          ^
-          i <-
-```
-
-**C#**
+Problem: Rotate an array to the right by k steps utilizing circular index arithmetic.
 ```csharp
-for (int i = arr.Length - 1; i >= 0; i--)
-{
-    int current = arr[i];
-}
-```
-
-**Python**
-```python
-for i in range(len(arr) - 1, -1, -1):
-    current = arr[i]
-```
-
----
-
-### 1C) 🔍 Sentinel Stop (Stop on Condition)
-
-**What:** Traverse until a condition is met.
-
-**Why:** Not all scans need full traversal.
-
-**How:** Check bounds first, then condition.
-
-**Visual**
-```
-Scan until a[i] < 0
-Index: 0 1 2 3 4
-Array: 2 4 1 -3 9
-             ^ stop
-```
-
-**C#**
-```csharp
-int FirstNegativeIndex(int[] a)
-{
-    int i = 0;
-    while (i < a.Length && a[i] >= 0)
-    {
-        i++;
+// C#: Circular next calculation
+public void Rotate(int[] nums, int k) {
+    // 1. Get the array length to set boundaries
+    int n = nums.Length;
+    // 2. Normalize k to prevent unnecessary rotations larger than n
+    k %= n;
+    // 3. Create a temporary array to store the shifted values safely
+    int[] res = new int[n];
+    for (int i = 0; i < n; i++) {
+        // 4. Calculate the new position using modulo for seamless wrap-around
+        res[(i + k) % n] = nums[i];
     }
-    return (i == a.Length) ? -1 : i;
+    // 5. Copy the fully resolved rotated array back to the original reference
+    for (int i = 0; i < n; i++) nums[i] = res[i];
 }
 ```
 
-**Python**
-```python
-def first_negative_index(a):
-    i = 0
-    while i < len(a) and a[i] >= 0:
-        i += 1
-    return -1 if i == len(a) else i
-```
+**Drill Problems:**
+- **Easy**: [LeetCode 344: Reverse String] - Use mirrored indices (L and n-1-L).
+- **Easy**: [LeetCode 566: Reshape the Matrix] - Map 2D coordinates to 1D, then back to new 2D.
+- **Medium**: [LeetCode 189: Rotate Array] - Use circular index math to place items.
 
 ---
 
-### 1D) 📏 Half-Open Boundaries
+## Phase 2: Pointer Relationships & State
 
-**What:** Use [L, R) ranges.
+### Level 4: Multi-Pointer
 
-**Why:** Prevents off-by-one errors and composes well.
+Two pointers represent a specific relationship between positions. They can converge, move in the same direction, or act independently across multiple arrays.
 
-**How:** Start at L, stop before R.
+**Mental Models & Invariants:**
+- **What does the index mean?** The pointers `L` and `R` define the boundaries of the unexplored or active region.
+- **What region is processed?** The shrinking window `[L, R]`, representing remaining candidates.
+- **What is the invariant?** Elements outside `[L, R]` have been safely processed, categorized, or discarded.
 
-**Visual**
+**Converging Pointers State Transition (Two Sum Sorted, Target=9 on `[2, 7, 11, 15]`)**
+
+| Step | L / R Positions | Sum vs Target | Action / Invariant |
+|------|-----------------|---------------|--------------------|
+| **Initial** | `L=0` (val:2), `R=3` (val:15) | 2+15=17 (> 9) | Sum too large. Decrement `R`. `[0, R]` unknown. |
+| **Step 1** | `L=0` (val:2), `R=2` (val:11) | 2+11=13 (> 9) | Sum too large. Decrement `R`. |
+| **Step 2** | `L=0` (val:2), `R=1` (val:7) | 2+7=9 (== 9) | Target found. Return `[L, R]`. |
+
+### ⚠️ Gotchas & Pitfalls
+- **Stagnant pointers**: Forgetting to increment/decrement `L` or `R` during a condition match, leading to an infinite loop.
+- **Pointer crossover**: Using `while L <= R` when it should be `while L < R`, causing duplicate processing of the middle element.
+- **Premature increment**: Updating pointer positions before safely extracting the current values or calculating the distance.
+
+**Code Snippets:**
+
+Problem: Find two numbers in a sorted array that add up to a specific target by converging from both ends.
+```python
+# Python: Two Sum II
+def twoSum(numbers: list[int], target: int) -> list[int]:
+    # 1. Initialize left and right pointers at the boundaries
+    l, r = 0, len(numbers) - 1
+    # 2. Loop while the pointers form a valid unseen region
+    while l < r:
+        # 3. Calculate current sum from pointers
+        curr = numbers[l] + numbers[r]
+        if curr == target:
+            # 4. Target found, return 1-based indices
+            return [l + 1, r + 1]
+        elif curr > target:
+            # 5. Sum too large, shrink the upper boundary
+            r -= 1
+        else:
+            # 6. Sum too small, shrink the lower boundary
+            l += 1
+    return []
 ```
-Index: 0 1 2 3 4 5
-Range:   [ L-----R )
-```
 
-**C#**
+Problem: Find two lines that together with the x-axis form a container holding the maximum amount of water.
 ```csharp
-void ProcessRange(int[] arr, int left, int right)
-{
-    for (int i = left; i < right; i++)
-    {
-        Console.WriteLine(arr[i]);
+// C#: Container With Most Water
+public int MaxArea(int[] height) {
+    // 1. Initialize converging pointers at both ends of the array
+    int l = 0, r = height.Length - 1;
+    int maxArea = 0;
+    // 2. Continue until the pointers cross
+    while (l < r) {
+        // 3. The height of the water is limited by the shorter line
+        int h = Math.Min(height[l], height[r]);
+        // 4. Update max area with the current window size and height
+        maxArea = Math.Max(maxArea, h * (r - l));
+        
+        // 5. Move the pointer pointing to the shorter line to seek a taller one
+        if (height[l] < height[r]) l++;
+        else r--;
     }
+    return maxArea;
 }
 ```
 
----
-
-### 1E) 🧵 Lockstep Iteration
-
-**What:** One index walks two aligned arrays.
-
-**Why:** Comparing or merging aligned data.
-
-**Visual**
-```
-A: 2 4 6
-B: 1 3 5
-    ^
-    i
-```
-
-**C#**
-```csharp
-int limit = Math.Min(a.Length, b.Length);
-for (int i = 0; i < limit; i++)
-{
-    Console.WriteLine(a[i] + b[i]);
-}
-```
-
-**Python**
-```python
-for x, y in zip(a, b):
-    print(x + y)
-```
+**Drill Problems:**
+- **Easy**: [LeetCode 88: Merge Sorted Array] - Independent: Compare ends, write from right to left.
+- **Medium**: [LeetCode 167: Two Sum II - Input Array Is Sorted] - Converging: Narrow search space based on sum.
+- **Medium**: [LeetCode 11: Container With Most Water] - Converging: Move pointer pointing to shorter line.
 
 ---
 
-## 🔵 Level 2: Index Arithmetic
+### Level 5: Read/Write Pointers
 
-### 2A) 🦘 Stride Traversal
+Separate reading (discovery) from writing (compaction). The read pointer blindly scans. The write pointer only commits when a condition is met.
 
-**What:** Visit every k-th element.
+**Mental Models & Invariants:**
+- **What does the index mean?** `Read` discovers elements; `Write` tracks the boundary of the compacted valid prefix.
+- **What region is processed?** The prefix `[0, Write-1]` contains only safely processed valid elements.
+- **What is the invariant?** `Write <= Read` always holds. All elements before `Write` guarantee validity.
 
-**Why:** Sampling or parity scans.
+**Read/Write State Flow (Move Zeroes on `[0, 1, 0, 3]`)**
 
-**How:** i += step.
+| Step | Read Ptr (Val) | Write Ptr | Array State | Rule Applied |
+|------|----------------|-----------|-------------|--------------|
+| **Initial** | `R=0` (0) | `W=0` | `[0, 1, 0, 3]` | Value is 0. Read advances, Write waits. |
+| **Step 1** | `R=1` (1) | `W=0` | `[1, 1, 0, 3]` | Valid! `nums[W]=nums[R]`. `W` increments. |
+| **Step 2** | `R=2` (0) | `W=1` | `[1, 1, 0, 3]` | Value is 0. Read advances, Write waits. |
+| **Step 3** | `R=3` (3) | `W=1` | `[1, 3, 0, 3]` | Valid! `nums[W]=nums[R]`. `W` increments. |
 
-**Visual**
-```
-Index: 0 1 2 3 4 5 6
-Visit: ^   ^   ^   ^   (step=2)
-```
+### ⚠️ Gotchas & Pitfalls
+- **Overwriting unread data**: If `Write` somehow advances faster than `Read`, you might overwrite elements before reading them.
+- **Forgetting to return the correct length**: When the compaction is done, you often need to return `Write` as the new length.
+- **Out of bounds on the read pointer**: Trying to read `Read + 1` or `Read - 1` without checking if it's within bounds.
 
-**C#**
-```csharp
-for (int i = 0; i < a.Length; i += step)
-{
-    sum += a[i];
-}
-```
+**Code Snippets:**
 
-**Python**
+Problem: Move all zeroes in an array to the end while maintaining the relative order of non-zero elements.
 ```python
-for i in range(0, len(a), step):
-    s += a[i]
+# Python: Move Zeroes
+def moveZeroes(nums: list[int]) -> None:
+    # 1. Initialize write pointer to track the boundary of valid elements
+    write = 0
+    # 2. Use read pointer to blindly scan the entire array
+    for read in range(len(nums)):
+        # 3. Condition met: current element is non-zero
+        if nums[read] != 0:
+            # 4. Swap to compact the valid element and advance write pointer
+            nums[write], nums[read] = nums[read], nums[write]
+            write += 1
 ```
 
----
-
-### 2B) 🔄 Cyclic Traversal (Modulo)
-
-**What:** Wrap index with modulo.
-
-**Why:** Circular buffer, rotations.
-
-**How:** (i + 1) % n, (i - 1 + n) % n.
-
-**Visual**
-```
-Index: 0 1 2 3
-Move:  3 -> (3 + 1) % 4 = 0
-```
-
-**C#**
+Problem: Remove all occurrences of a specific value from an array in-place and return the new length.
 ```csharp
-int NextIndex(int i, int n) => (i + 1) % n;
-```
-
-**Python**
-```python
-def next_index(i, n):
-    return (i + 1) % n
-```
-
----
-
-### 2C) 🧱 2D-to-1D Mapping
-
-**What:** Convert (row, col) to linear index.
-
-**Why:** Flatten matrices or binary search a matrix.
-
-**How:** idx = row * cols + col.
-
-**Visual**
-```
-rows=2, cols=3
-(1,0) -> 1*3 + 0 = 3
-```
-
-**C#**
-```csharp
-int Index(int r, int c, int cols) => r * cols + c;
-```
-
-**Python**
-```python
-def index(r, c, cols):
-    return r * cols + c
-```
-
----
-
-## 🟠 Level 3: Multi-Cursor Traversal
-
-### 3A) 🧹 Reader/Writer (Compaction)
-
-**What:** Two forward indices, one reads, one writes.
-
-**Why:** In-place filtering (remove zeros, duplicates).
-
-**How:** If reader valid, write to writer and advance both.
-
-**Visual**
-```
-[1, 0, 2, 0, 3]
- W  R
-After:
-[1, 2, 3, 0, 0]
-    W     R
-```
-
-**Python**
-```python
-def move_zeroes(nums):
-    writer = 0
-    for reader in range(len(nums)):
-        if nums[reader] != 0:
-            nums[writer], nums[reader] = nums[reader], nums[writer]
-            writer += 1
-```
-
-**C#**
-```csharp
-int RemoveElement(int[] a, int val)
-{
-    int w = 0;
-    for (int r = 0; r < a.Length; r++)
-    {
-        if (a[r] != val)
-        {
-            a[w++] = a[r];
+// C#: Remove Element
+public int RemoveElement(int[] nums, int val) {
+    // 1. Write pointer indicates the next available safe slot
+    int write = 0;
+    // 2. Read pointer evaluates every element unconditionally
+    for (int read = 0; read < nums.Length; read++) {
+        // 3. If element differs from the target value, it is valid
+        if (nums[read] != val) {
+            // 4. Commit the valid value to the write slot and increment it
+            nums[write++] = nums[read];
         }
     }
-    return w; // new length
+    // 5. Write pointer naturally reflects the length of the compacted array
+    return write;
 }
 ```
+
+**Drill Problems:**
+- **Easy**: [LeetCode 27: Remove Element] - `W` tracks length of valid prefix.
+- **Easy**: [LeetCode 283: Move Zeroes] - `W` tracks non-zero compact prefix.
+- **Easy**: [LeetCode 26: Remove Duplicates from Sorted Array] - Compare `R` with `R-1`; write only unique.
 
 ---
 
-### 3B) 🦀 Converging Pointers
+### Level 6: Range & Sliding Window
 
-**What:** Left and right move toward each other.
+Treat `[L, R]` as a unified state. Expand `R` to add to the window. Shrink `L` when the window violates a constraint. The goal is maintaining validity.
 
-**Why:** Pair search in sorted arrays.
+**Mental Models & Invariants:**
+- **What does the index mean?** `[L, R]` represents a contiguous active segment (the window).
+- **What region is processed?** The dynamic window between `L` and `R`.
+- **What is the invariant?** The window `[L, R]` satisfies the problem constraint. If violated, shrink `L` until the invariant is restored.
 
-**How:** Adjust left/right based on condition.
+**Variable Window Transition (Longest Subarray Sum <= 5 on `[2, 1, 3, 2]`)**
 
-**Visual**
-```
-[1, 3, 5, 8] target=8
- L        R
-1+8=9 -> R--
- L     R
-1+5=6 -> L++
-   L  R
-3+5=8 found
-```
+| Step | Window `[L, R]` | Values | Current Sum | Action / Invariant Check |
+|------|-----------------|--------|-------------|--------------------------|
+| **Initial** | `[0, 0]` | 2 | 2 (<= 5) | Valid. Record length 1. `R++` |
+| **Step 1** | `[0, 1]` | 2, 1 | 3 (<= 5) | Valid. Record length 2. `R++` |
+| **Step 2** | `[0, 2]` | 2, 1, 3 | 6 (> 5) | Invalid. Sum > 5. Shrink `L++` (remove 2) |
+| **Step 3** | `[1, 2]` | 1, 3 | 4 (<= 5) | Valid again. `R++` |
 
-**C#**
-```csharp
-int[] TwoSumSorted(int[] numbers, int target)
-{
-    int left = 0, right = numbers.Length - 1;
-    while (left < right)
-    {
-        int sum = numbers[left] + numbers[right];
-        if (sum == target) return new[] { left + 1, right + 1 };
-        if (sum < target) left++;
-        else right--;
-    }
-    return Array.Empty<int>();
-}
-```
+### ⚠️ Gotchas & Pitfalls
+- **Shrinking past `R`**: The `L` pointer shrinking past `R`, violating `L <= R`. You must guard the `L` increment or handle negative window sizes.
+- **Missing the last window**: Forgetting to update the global max/min result after the loop finishes if the longest sequence is at the end.
+- **State mismatch**: Forgetting to remove the element at `nums[L]` from the window state (sum, hashmap) before incrementing `L`.
 
----
+**Code Snippets:**
 
-### 3C) 🔀 Merge-Style Traversal
-
-**What:** Two indices for two sorted arrays.
-
-**Why:** Merge or intersection in linear time.
-
-**How:** Advance the pointer you consume.
-
-**C#**
-```csharp
-int CountCommonSorted(int[] a, int[] b)
-{
-    int i = 0, j = 0, count = 0;
-    while (i < a.Length && j < b.Length)
-    {
-        if (a[i] == b[j]) { count++; i++; j++; }
-        else if (a[i] < b[j]) i++;
-        else j++;
-    }
-    return count;
-}
-```
-
-**Python**
+Problem: Find the length of the longest contiguous substring without repeating characters using a sliding window.
 ```python
-def count_common_sorted(a, b):
-    i = j = count = 0
-    while i < len(a) and j < len(b):
-        if a[i] == b[j]:
-            count += 1
-            i += 1
-            j += 1
-        elif a[i] < b[j]:
-            i += 1
-        else:
-            j += 1
-    return count
+# Python: Longest Substring w/o Repeats
+def lengthOfLongestSubstring(s: str) -> int:
+    # 1. Maintain a set to track the state of characters in the current window
+    char_set = set()
+    # 2. Initialize the left boundary of the window
+    l = 0
+    max_len = 0
+    # 3. Expand the window unconditionally by moving the right boundary
+    for r in range(len(s)):
+        # 4. Invariant violated: duplicate character found. Shrink left boundary until valid.
+        while s[r] in char_set:
+            char_set.remove(s[l])
+            l += 1
+        # 5. Invariant restored: safely add new character to the window
+        char_set.add(s[r])
+        # 6. Record the valid window size
+        max_len = max(max_len, r - l + 1)
+    return max_len
 ```
 
----
-
-## 🟣 Level 4: Range/Window Traversal
-
-### 4A) 🪟 Fixed-Size Window
-
-**What:** Maintain state for every size-k subarray.
-
-**Why:** Efficient rolling aggregates.
-
-**How:** Add entering element, remove leaving element.
-
-**Visual**
-```
-idx:  0 1 2 3 4 5
-k=3: [0 1 2] -> [1 2 3] -> [2 3 4]
-```
-
-**C#**
+Problem: Find a contiguous subarray of fixed length k that has the maximum average value.
 ```csharp
-int MaxWindowSum(int[] a, int k)
-{
+// C#: Maximum Average Subarray I (Fixed Window)
+public double FindMaxAverage(int[] nums, int k) {
+    // 1. Setup the initial window state for the first k elements
     int sum = 0;
-    for (int i = 0; i < k; i++) sum += a[i];
-
-    int best = sum;
-    for (int r = k; r < a.Length; r++)
-    {
-        sum += a[r];
-        sum -= a[r - k];
-        if (sum > best) best = sum;
+    for (int i = 0; i < k; i++) sum += nums[i];
+    
+    int maxSum = sum;
+    // 2. Slide the fixed-size window across the rest of the array
+    for (int i = k; i < nums.Length; i++) {
+        // 3. Update the window state: add new right element, subtract old left element
+        sum += nums[i] - nums[i - k];
+        // 4. Track the maximum valid state seen so far
+        maxSum = Math.Max(maxSum, sum);
     }
-    return best;
+    // 5. Compute the final average using the maximum sum
+    return (double)maxSum / k;
 }
 ```
+
+**Drill Problems:**
+- **Easy**: [LeetCode 643: Maximum Average Subarray I] - Fixed window size K.
+- **Medium**: [LeetCode 3: Longest Substring Without Repeating Characters] - Variable window. Shrink `L` until char is unique.
+- **Hard**: [LeetCode 76: Minimum Window Substring] - Variable window. Maintain frequency map validity.
 
 ---
 
-### 4B) 🧲 Variable-Size Window
+## Phase 3: Precomputation & Optimization
 
-**What:** Expand right, shrink left to restore invariant.
+### Level 7: Prefix & Suffix State
 
-**Why:** Longest/shortest subarray under constraint.
+Turn O(N) historical lookups into O(1) lookups by precomputing state traveling left-to-right (Prefix) or right-to-left (Suffix).
 
-**How:** Update state when moving L/R.
+**Mental Models & Invariants:**
+- **What does the index mean?** The index `i` cleanly separates the array into a `[0, i-1]` history (Prefix) and an `[i+1, N-1]` future (Suffix).
+- **What region is processed?** Two passes: left-to-right to build prefix state, right-to-left to build suffix state.
+- **What is the invariant?** `Prefix[i]` holds aggregated state *up to* index `i`. Future dependencies are stripped away.
 
-**C# Template**
-```csharp
-int L = 0;
-for (int R = 0; R < a.Length; R++)
-{
-    // include a[R]
-    while (/* invalid */)
-    {
-        // remove a[L]
-        L++;
-    }
-    // window [L..R] valid here
-}
-```
+**Prefix/Suffix Product Flow (Array: `[1, 2, 3, 4]`)**
 
-**Python Template**
+| Index | Value | Prefix[i] (Left) | Suffix[i] (Right) | Result (Prefix * Suffix) |
+|-------|-------|------------------|-------------------|--------------------------|
+| **0** | 1 | 1 (default) | 24 (2\*3\*4) | 24 |
+| **1** | 2 | 1 (1) | 12 (3\*4) | 12 |
+| **2** | 3 | 2 (1\*2) | 4 (4) | 8 |
+| **3** | 4 | 6 (1\*2\*3) | 1 (default) | 6 |
+
+### ⚠️ Gotchas & Pitfalls
+- **Modification during read**: Updating the original array in-place while still needing its original values for future prefix/suffix calculations.
+- **Boundary default values**: Failing to initialize the default state (e.g., 0 for sum, 1 for product) for indices outside the array bounds.
+- **Array size mismatch**: Allocating an array of size `N` but trying to access `N` instead of `N-1`, leading to out of bounds when checking the "rightmost" suffix.
+
+**Code Snippets:**
+
+Problem: Return an array where each element is the product of all other elements, without using division.
 ```python
-left = 0
-for right in range(len(a)):
-    # include a[right]
-    while is_invalid():
-        # remove a[left]
-        left += 1
-```
-
----
-
-### 4C) 🧩 Segment Traversal
-
-**What:** Process contiguous blocks (runs).
-
-**Why:** Useful for run-length logic or grouping.
-
-**How:** Extend right until value changes.
-
-**C#**
-```csharp
-void ProcessRuns(int[] a)
-{
-    int i = 0;
-    while (i < a.Length)
-    {
-        int start = i;
-        int value = a[i];
-        while (i < a.Length && a[i] == value) i++;
-        int end = i; // [start, end)
-        // process run
-    }
-}
-```
-
----
-
-## 🔴 Level 5: Abstract Traversal
-
-### 5A) 🦘 Reachability (Jump Rules)
-
-**What:** Explore what indices are reachable.
-
-**Why:** Some arrays define transitions.
-
-**How:** Maintain farthest reachable index.
-
-**C#**
-```csharp
-bool CanReachEnd(int[] a)
-{
-    int farthest = 0;
-    for (int i = 0; i <= farthest && i < a.Length; i++)
-    {
-        farthest = Math.Max(farthest, i + a[i]);
-    }
-    return farthest >= a.Length - 1;
-}
-```
-
----
-
-### 5B) 🔍 Binary Search (Index Space)
-
-**What:** Search a sorted array by halving.
-
-**Why:** Log-time search.
-
-**How:** Shrink [L, R] by comparing mid.
-
-**C#**
-```csharp
-int BinarySearch(int[] a, int target)
-{
-    int L = 0, R = a.Length - 1;
-    while (L <= R)
-    {
-        int mid = L + (R - L) / 2;
-        if (a[mid] == target) return mid;
-        if (a[mid] < target) L = mid + 1;
-        else R = mid - 1;
-    }
-    return -1;
-}
-```
-
----
-
-### 5C) 🧪 Binary Search on Answer Space
-
-**What:** Search a value range with a monotonic check.
-
-**Why:** Implicit arrays (capacity, speed, time).
-
-**How:** If check(mid) true, move right to mid, else move left.
-
-**Python**
-```python
-def min_eating_speed(piles, h):
-    def can_finish(k):
-        hours = 0
-        for p in piles:
-            hours += (p + k - 1) // k
-        return hours <= h
-
-    left, right = 1, max(piles)
-    while left < right:
-        mid = left + (right - left) // 2
-        if can_finish(mid):
-            right = mid
-        else:
-            left = mid + 1
-    return left
-```
-
----
-
-## 🟤 Level 6: Prefix/Suffix Traversal
-
-### 6A) ➕ Prefix Accumulation
-
-**What:** Carry a running aggregate forward.
-
-**Why:** Enables O(1) range sum queries.
-
-**How:** pref[i] = pref[i - 1] + a[i].
-
-**C#**
-```csharp
-int[] PrefixSums(int[] a)
-{
-    int[] pref = new int[a.Length];
-    int run = 0;
-    for (int i = 0; i < a.Length; i++)
-    {
-        run += a[i];
-        pref[i] = run;
-    }
-    return pref;
-}
-```
-
----
-
-### 6B) ➖ Suffix Accumulation
-
-**What:** Carry aggregate from right to left.
-
-**Why:** Useful for suffix max/min or right-side totals.
-
-**C#**
-```csharp
-int[] SuffixSums(int[] a)
-{
-    int[] suf = new int[a.Length];
-    int run = 0;
-    for (int i = a.Length - 1; i >= 0; i--)
-    {
-        run += a[i];
-        suf[i] = run;
-    }
-    return suf;
-}
-```
-
----
-
-### 6C) 🔄 Two-Pass Carry
-
-**What:** Combine left and right aggregates.
-
-**Why:** Problems like product of array except self.
-
-**Python**
-```python
-def product_except_self(nums):
+# Python: Product of Array Except Self
+def productExceptSelf(nums: list[int]) -> list[int]:
     n = len(nums)
-    out = [1] * n
-
-    left = 1
+    res = [1] * n
+    
+    # 1. Initialize running prefix product state
+    prefix = 1
+    # 2. Traverse left-to-right building up prefix dependencies
     for i in range(n):
-        out[i] *= left
-        left *= nums[i]
-
-    right = 1
+        res[i] = prefix
+        prefix *= nums[i]
+    
+    # 3. Initialize running suffix product state
+    suffix = 1
+    # 4. Traverse right-to-left, multiplying suffix with the precomputed prefix
     for i in range(n - 1, -1, -1):
-        out[i] *= right
-        right *= nums[i]
-
-    return out
+        res[i] *= suffix
+        suffix *= nums[i]
+        
+    return res
 ```
 
----
-
-## 🟧 Level 7: Monotonic Stack Traversal
-
-### 7A) 📈 Next Greater Element
-
-**What:** Stack of unresolved indices.
-
-**Why:** Resolve future-dependent relationships in O(n).
-
-**How:** Pop while current is greater than stack top.
-
-**C#**
+Problem: Compute a running sum of an array where each element contains the sum of all elements up to that index.
 ```csharp
-int[] NextGreater(int[] a)
-{
-    int n = a.Length;
-    int[] ans = new int[n];
-    Array.Fill(ans, -1);
-
-    var st = new Stack<int>();
-    for (int i = 0; i < n; i++)
-    {
-        while (st.Count > 0 && a[i] > a[st.Peek()])
-            ans[st.Pop()] = a[i];
-
-        st.Push(i);
+// C#: Running Sum of 1D Array
+public int[] RunningSum(int[] nums) {
+    // 1. Allocate state array for the prefix sum
+    int[] prefix = new int[nums.Length];
+    // 2. Base case: first element has no prior history
+    prefix[0] = nums[0];
+    // 3. Build state iteratively using only the immediately preceding state and current value
+    for (int i = 1; i < nums.Length; i++) {
+        prefix[i] = prefix[i - 1] + nums[i];
     }
-    return ans;
+    return prefix;
 }
 ```
 
+**Drill Problems:**
+- **Easy**: [LeetCode 1480: Running Sum of 1d Array] - Basic prefix sum.
+- **Medium**: [LeetCode 238: Product of Array Except Self] - Multiply `Prefix[i-1] * Suffix[i+1]`.
+- **Hard**: [LeetCode 42: Trapping Rain Water] - `Min(MaxLeft[i], MaxRight[i]) - Height[i]`.
+
 ---
 
-## 🟫 Level 8: In-Place Partition Traversal
+### Level 8: Monotonic Deferral
 
-### 8A) 🇳🇱 Three-Way Partition
+Do not immediately resolve an element. Store its index in a stack/deque until future data arrives that answers its question (e.g., finding the Next Greater Element).
 
-**What:** Maintain small, mid, and large regions.
+**Mental Models & Invariants:**
+- **What does the index mean?** It points to an unresolved question waiting for future data (e.g., waiting for a warmer day).
+- **What region is processed?** Left-to-right iteration while maintaining a monotonic structure.
+- **What is the invariant?** The stack/deque strictly preserves elements in monotonic order. Incoming data that breaks this order causes older data to be resolved and popped.
 
-**Why:** One-pass bucketing for 0/1/2 or small key sets.
+### ⚠️ Gotchas & Pitfalls
+- **Stack containing values instead of indices**: Storing values in the stack makes it impossible to calculate distances (e.g., `i - stack.pop()`). Always store indices.
+- **Unresolved elements remaining**: Forgetting that after the loop finishes, there may still be unresolved elements left in the stack.
+- **Monotonicity direction flip**: Accidentally using a monotonically increasing stack when a monotonically decreasing one is needed for the problem.
 
-**How:** Swap with boundaries and adjust pointers.
+**Code Snippets:**
 
-**C#**
+Problem: For each day, find the number of days you have to wait until a warmer temperature.
+```python
+# Python: Daily Temperatures
+def dailyTemperatures(temperatures: list[int]) -> list[int]:
+    res = [0] * len(temperatures)
+    # 1. Initialize stack to hold indices of unresolved days
+    stack = [] 
+    # 2. Iterate through each temperature to process incoming data
+    for i, t in enumerate(temperatures):
+        # 3. If current temperature breaks the decreasing monotonicity, resolve pending indices
+        while stack and temperatures[stack[-1]] < t:
+            prev_i = stack.pop()
+            # 4. Calculate the distance between the resolved day and the current day
+            res[prev_i] = i - prev_i
+        # 5. Defer the current day's index onto the stack
+        stack.append(i)
+    return res
+```
+
+Problem: For each day, find the number of days you have to wait until a warmer temperature.
 ```csharp
-void Partition012(int[] a)
-{
-    int low = 0, mid = 0, high = a.Length - 1;
-    while (mid <= high)
-    {
-        if (a[mid] == 0) { (a[low], a[mid]) = (a[mid], a[low]); low++; mid++; }
-        else if (a[mid] == 1) { mid++; }
-        else { (a[mid], a[high]) = (a[high], a[mid]); high--; }
+// C#: Daily Temperatures
+public int[] DailyTemperatures(int[] temperatures) {
+    int[] res = new int[temperatures.Length];
+    // 1. Maintain a stack of indices for elements awaiting a larger value
+    Stack<int> stack = new Stack<int>();
+    for (int i = 0; i < temperatures.Length; i++) {
+        // 2. While incoming data resolves the top of the stack, pop and process
+        while (stack.Count > 0 && temperatures[stack.Peek()] < temperatures[i]) {
+            int prev_i = stack.Pop();
+            // 3. Compute distance (days waited) for the resolved index
+            res[prev_i] = i - prev_i;
+        }
+        // 4. Push the current unresolved index onto the monotonic stack
+        stack.Push(i);
     }
+    return res;
 }
 ```
 
----
-
-## ⚙️ Level 9: Cache/Throughput Traversal
-
-### 9A) 📦 Chunked Scans
-
-**What:** Process data in contiguous blocks.
-
-**Why:** Improves locality and throughput on large arrays.
-
-**How:** Iterate in fixed chunk sizes, then handle remainder.
-
-**C#**
-```csharp
-void ChunkedSum(int[] a, int chunk)
-{
-    int i = 0;
-    long total = 0;
-    for (; i + chunk <= a.Length; i += chunk)
-    {
-        for (int j = 0; j < chunk; j++) total += a[i + j];
-    }
-    for (; i < a.Length; i++) total += a[i];
-}
-```
-
----
-
-## ✅ Pattern Checklist
-
-| Pattern | Invariant | Common Use |
-| --- | --- | --- |
-| Forward scan | i in [0..n) | scan/copy |
-| Backward scan | i in [n-1..0] | overwrite-safe write |
-| Lockstep | same index for A/B | aligned arrays |
-| Reader/Writer | writer <= reader | in-place filter |
-| Converging | left < right | sorted pair |
-| Fixed window | size constant | rolling sum |
-| Variable window | invariant valid | best subarray |
-| Prefix sum | pref[i] = sum(0..i) | range sums |
-| Binary search | [L,R] shrinks | sorted search |
-
----
-
-## 🧪 Practice Map
-
----
-
-## Guided Study Workflow (Merged)
-
-Use this single-file routine instead of jumping between quickstart, drill guide, visual playbook, and practice sheets.
-
-1. Read one level.
-2. State the invariant aloud.
-3. Dry-run the visual once.
-4. Solve 3 to 5 drills from the matching level.
-5. Write a 2-line postmortem: what failed and what invariant fixed it.
-
-### Higher-order pattern bundles
-- Reader/writer + variable window
-- Answer-space binary search + monotonic feasibility check
-- Monotonic stack + partition boundary reasoning
-- Prefix/suffix carry + in-place region updates
-
-These bundle patterns were previously split across separate deepen/guided files; they are now treated as advanced combinations of Levels 3-8 already covered in this guide.
-
-This file is now the single merged source for array traversal learning, practice sequencing, visual intuition, and advanced bundle progression.
-
-**Level 1:** linear search, max/min, copy array
-
-**Level 2:** rotate array, search matrix, circular queue
-
-**Level 3:** remove duplicates, two sum sorted, merge arrays
-
-**Level 4:** longest substring, min size subarray sum, max k-window sum
-
-**Level 5:** jump game, classic binary search, answer-space search
-
-**Level 6:** product except self, prefix range query, suffix max
-
-**Level 7:** next greater element, daily temperatures
-
-**Level 8:** sort colors, 3-way partition
-
-**Level 9:** chunked scans, cache-friendly traversal
+**Drill Problems:**
+- **Medium**: [LeetCode 739: Daily Temperatures] - Stack maintains unresolved colder days.
+- **Hard**: [LeetCode 239: Sliding Window Maximum] - Deque maintains strictly decreasing useful elements.
+- **Hard**: [LeetCode 84: Largest Rectangle in Histogram] - Stack resolves when a shorter bar is found.

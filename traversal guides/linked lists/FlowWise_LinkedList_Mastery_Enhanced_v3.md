@@ -1,43 +1,38 @@
-# 🔗 Flow-Wise Linked List Mastery (v3)
-**Goal:** Master traversal + pointer rewiring with invariants (Level 1 → Level 5).  
-**Core idea:** Linked lists aren’t about clever math—they’re about safe reference management.
+# 🔗 Problem-Solving Curriculum 2.0: Linked List Mastery
+
+## 🧭 The One-Page Linked List Blueprint
+
+| Level | Mental Model | Pointer State (Invariant) | Drill Problems |
+| :---: | :--- | :--- | :--- |
+| **L1: Physical Layer** | Safe traversal & Null boundaries | `curr` always points to next unvisited node; processed prefix is final. | [LeetCode 1290: Convert Binary Number in a Linked List to Integer], [LeetCode 83: Remove Duplicates from Sorted List] |
+| **L2: Structural Layer** | Dummy nodes & Deletion | `prev` points to the node *before* the target; target bypassed safely. | [LeetCode 203: Remove Linked List Elements], [LeetCode 24: Swap Nodes in Pairs] |
+| **L3: Multi-View Layer** | Fast/Slow & Fixed-Gap | `fast` moves 2x; cycle = meet. `prev` is reversed prefix, `curr` is next. | [LeetCode 141: Linked List Cycle], [LeetCode 206: Reverse Linked List] |
+| **L4: Range Layer** | Sublist Anchoring & Stitching | Anchor nodes connect to boundaries; sublist tails terminate at `null`. | [LeetCode 92: Reverse Linked List II], [LeetCode 86: Partition List] |
+| **L5: Abstract Layer** | Multi-stage Composition | Independent stages return well-formed lists; no cycles introduced. | [LeetCode 234: Palindrome Linked List], [LeetCode 143: Reorder List] |
 
 ---
 
-# 🧭 One-page Level Mapping Index (Linked Lists)
-Use this to instantly map a linked-list problem to its **level**, **pattern**, and **invariant**.
+## 🧱 Baseline Node Definitions
 
-| Level | Pattern / skill | Typical problems (LeetCode examples) | Expected invariant (one-liner) |
-|---|---|---|---|
-| L1 | Basic traversal | 1290 Convert Binary Number in a LL, 1721 Swapping Nodes in a LL | “curr always points to next unvisited node; processed prefix is final.” |
-| L1 | Null boundary control | 83 Remove Duplicates from Sorted List, 328 Odd Even Linked List | “If you access curr.next, guard guarantees it exists.” |
-| L2 | Dummy/sentinel + prev deletion | 203 Remove LL Elements, 19 Remove Nth From End, 82 Remove Duplicates II | “prev always points to node before candidate; head deletion becomes normal.” |
-| L3 | Fast/slow pointers | 876 Middle, 141 Cycle, 142 Cycle II | “fast moves 2x; cycle => meet; no cycle => fast hits null.” [web:84] |
-| L3 | Reverse (prev/curr/nxt) | 206 Reverse LL, 92 Reverse LL II (core) | “prev is reversed prefix; curr is next node to rewire.” |
-| L3 | Merge stitching | 21 Merge Two Sorted Lists, 23 Merge k Sorted Lists | “dummy.next..tail is final sorted prefix.” |
-| L4 | Sublist operations | 25 Reverse k-Group, 86 Partition List, 160 Intersection | “anchors remain connected; tails terminate at null.” |
-| L5 | Composition | 234 Palindrome, 143 Reorder, 148 Sort List, 138 Copy Random Pointer | “Each stage returns a well-formed list; no nodes lost; no cycles introduced.” |
+Problem: Define the fundamental building block of a singly linked list. Each node must store data and a reference to the next node.
 
----
-
-# 🧱 Baseline node definitions
-
-## 🐍 Python
 ```python
+# Python
 class ListNode:
+    # 1. Initialize node with a value and an optional next pointer
     def __init__(self, val=0, next=None):
         self.val = val
         self.next = next
 ```
 
-## 🟦 C#
 ```csharp
-public class ListNode
-{
+// C#
+public class ListNode {
+    // 1. Declare fields for the node's value and next pointer
     public int val;
     public ListNode next;
-    public ListNode(int val = 0, ListNode next = null)
-    {
+    // 2. Initialize node with a value and an optional next pointer
+    public ListNode(int val = 0, ListNode next = null) {
         this.val = val;
         this.next = next;
     }
@@ -46,476 +41,351 @@ public class ListNode
 
 ---
 
-# 🟢 Level 1: The Physical Layer (Pointer Movement)
-**Goal:** Muscle memory for safe traversal.
+## 🟢 Level 1: The Physical Layer (Pointer Movement)
 
-## Topics to know
-- ➡️ forward traversal
-- 🛑 null boundary control
-- 🧩 empty & single handling
-- 🧵 lockstep traversal
-- 📏 length/tail scan
+**Mental Model:** Linked list traversal is safe reference management. Null is your out-of-bounds marker.
+**Invariant:** `curr` represents the node currently being processed. The prefix up to `curr` is fully processed and immutable.
 
-## Things to master
-- ✅ never do curr.next unless you proved curr exists
-- ✅ you can draw pointer positions quickly
+### Basic Traversal & Null Boundary Control
 
----
+**State Transitions:**
+| Step | `curr` | Action / Invariant |
+| :--- | :--- | :--- |
+| 0 | `head` | Setup: `curr` starts at the beginning. |
+| 1 | Node A | Process A. `curr` points to A. |
+| 2 | Node B | Process B. `curr` advanced to `curr.next`. |
+| 3 | `null` | Traversal complete. `curr` is null. |
 
-## 1.1 ➡️ Basic traversal
+**Code Snippet:**
 
-**Why:** Every linked list algorithm starts with “walk nodes safely.”
+Problem: Traverse a linked list from start to finish to process each node's value. Ensure the traversal stops safely at the null boundary.
 
-**What:** curr=head; while curr: process; curr=curr.next.
-
-**How (step/flow):**
-1) curr=head
-2) while curr != null:
-3) process curr
-4) curr=curr.next
-
-**Where:** searching, counting, converting list to array.
-
-**When:** read-only logic.
-
-**Visual**
-```text
-head → [A] → [B] → [C] → null
-         ^
-        curr moves →
-```
-
-**Pitfalls**
-- ❌ accessing curr.next.val without checking curr.next
-
-**Tips**
-- 💡 If cycle is possible, switch to Level 3 fast/slow.
-
-**Practice (LeetCode)**
-- 1290 Convert Binary Number in a Linked List to Integer
-- 1721 Swapping Nodes in a Linked List
-
----
-
-## 1.2 🛑 Boundary control (null guards)
-
-**Why:** Null is your out-of-bounds.
-
-**What:** Choose guard by access depth.
-
-**How (step/flow):**
-- Need only curr? use `while curr`
-- Need curr.next? use `while curr and curr.next`
-
-**Where:** dedup, pairwise operations.
-
-**When:** you touch neighbors.
-
-**Visual**
-```text
-Safe patterns:
+```python
+# Python
+# 1. Initialize pointer to the head of the list
+curr = head
+# 2. Iterate safely until hitting the null boundary
 while curr:
-  use curr ✅
-
-while curr and curr.next:
-  use curr.next ✅
+    # 3. Process the current node's value
+    print(curr.val)
+    # 4. Advance pointer to the next unvisited node
+    curr = curr.next
 ```
 
-**Practice (LeetCode)**
-- 83 Remove Duplicates from Sorted List
-- 328 Odd Even Linked List
-
----
-
-## 1.3 🧩 Empty & single
-
-**Why:** Many pointer patterns assume at least 2 nodes.
-
-**What:** empty: head==null, single: head.next==null.
-
-**How:** guard early if you need neighbors.
-
-**Visual**
-```text
-Empty:  head -> null
-Single: head -> [X] -> null
+```csharp
+// C#
+// 1. Initialize pointer to the head of the list
+ListNode curr = head;
+// 2. Iterate safely until hitting the null boundary
+while (curr != null) {
+    // 3. Process the current node's value
+    Console.WriteLine(curr.val);
+    // 4. Advance pointer to the next unvisited node
+    curr = curr.next;
+}
 ```
 
-**Practice (LeetCode)**
-- 206 Reverse Linked List (handles empty/single)
-- 21 Merge Two Sorted Lists (handles empty inputs)
+### ⚠️ Gotchas & Pitfalls
+* **Null Pointer Exception on Empty Input:** Always check if `head` is null before trying to access `head.val` or `head.next` outside of a safe `while(curr)` loop.
+* **Infinite Loops:** Forgetting to advance the pointer (`curr = curr.next`) inside the traversal loop will cause it to run forever.
+* **Premature Termination:** Returning `curr` instead of `head` at the end; `curr` is usually `null` by the end of a full traversal.
+
+**Drill Problems (L1):**
+* **Easy:** [LeetCode 1290: Convert Binary Number in a Linked List to Integer], [LeetCode 83: Remove Duplicates from Sorted List]
+* **Medium:** [LeetCode 1721: Swapping Nodes in a Linked List], [LeetCode 328: Odd Even Linked List]
 
 ---
 
-## 1.4 🧵 Lockstep traversal
+## 🔵 Level 2: The Structural Layer (Local Rewiring)
 
-**Why:** Many tasks compare or align two lists.
+**Mental Model:** Changing structure (insertion/deletion) requires a reference to the node *before* the target (`prev`). A `dummy` node eliminates special edge cases for deleting the head.
+**Invariant:** `prev` always safely anchors the list before the modification point. Before modifying `curr.next`, `curr.next` must be saved.
 
-**What:** move p and q together.
+### Dummy Sentinels & The "Save Next" Rule
 
-**How:** while p and q: compare; p=p.next; q=q.next.
+**State Transitions (Deletion):**
+| Step | `prev` | `curr` | Action / Invariant |
+| :--- | :--- | :--- | :--- |
+| 0 | `dummy` | `head` | Setup: Dummy points to head. `prev` is before `curr`. |
+| 1 | `dummy` | Node A (Target) | `curr` is target. Rewire: `prev.next = curr.next`. |
+| 2 | `dummy` | Node B | `curr` advances. `prev` remains anchored before new `curr`. |
 
-**Where:** compare lists, intersection after alignment, compare halves.
+**Code Snippet:**
 
-**Practice (LeetCode)**
-- 160 Intersection of Two Linked Lists
-- 234 Palindrome Linked List (compare phase)
+Problem: Remove all nodes in a linked list that match a specific target value. Safely bypass the targets without losing the rest of the list.
 
----
+```python
+# Python
+# 1. Create a dummy sentinel node to safely handle head deletions
+dummy = ListNode(0, head)
+# 2. Initialize prev to anchor before current, and curr to the head
+prev, curr = dummy, head
 
-## 1.5 📏 Length + tail
-
-**Why:** rotate and split operations need length and/or tail.
-
-**What:** one pass to compute both.
-
-**How:** count++, tail=curr, curr=curr.next.
-
-**Pitfalls**
-- ❌ hangs if cycle exists
-
-**Practice (LeetCode)**
-- 61 Rotate List
-- 19 Remove Nth Node From End of List (length variant)
-
----
-
-# 🔵 Level 2: The Structural Layer (Local Rewiring)
-**Goal:** safe insertion/deletion with minimal state.
-
-## Topics to know
-- ➕ insertion at head
-- ➖ deletion with prev
-- 🧷 save-next-before-rewire rule
-- 🧸 dummy/sentinel node
-
-## Things to master
-- ✅ your first move before rewiring is: save nxt
-- ✅ dummy node reflex when head might change
-
----
-
-## 2.1 ➕ Insert at head
-
-**Why:** simplest pointer change.
-
-**What:** new.next=head; head=new.
-
-**How:** do it in that order.
-
-**Practice (LeetCode)**
-- 707 Design Linked List (insert head)
-- 147 Insertion Sort List (inserting nodes into a sorted prefix)
-
----
-
-## 2.2 ➖ Delete using prev (and why dummy helps)
-
-**Why:** singly list can’t go backward.
-
-**What:** prev.next = curr.next deletes curr.
-
-**How (step/flow):**
-1) prev points to node before curr
-2) rewire prev.next
-3) move curr using a saved next reference
-
-**Visual**
-```text
-prev → [P] → [C] → [N]
-Delete C:
-prev.next = C.next
-prev → [P] → [N]
+# 3. Traverse the list up to the null boundary
+while curr:
+    if curr.val == target:
+        # 4. Target found: bypass curr by linking prev to curr's next
+        prev.next = curr.next
+    else:
+        # 5. Target not found: advance prev safely
+        prev = curr
+    # 6. Always advance curr to the next unvisited node
+    curr = curr.next
 ```
 
-**Practice (LeetCode)**
-- 203 Remove Linked List Elements
-- 237 Delete Node in a Linked List
+```csharp
+// C#
+// 1. Create a dummy sentinel node to safely handle head deletions
+ListNode dummy = new ListNode(0, head);
+// 2. Initialize prev to anchor before current, and curr to the head
+ListNode prev = dummy;
+ListNode curr = head;
 
----
-
-## 2.3 🧷 Save next before rewiring
-
-**Why:** after you change curr.next, you might lose the remainder.
-
-**What:** nxt = curr.next comes first.
-
-**How:** save → rewire → advance.
-
-**Practice (LeetCode)**
-- 206 Reverse Linked List
-- 24 Swap Nodes in Pairs
-
----
-
-## 2.4 🧸 Dummy / sentinel node
-
-**Why:** head deletion becomes normal-case logic.
-
-**What:** dummy.next=head; prev=dummy.
-
-**Where:** remove nth from end, remove duplicates II.
-
-**Practice (LeetCode)**
-- 19 Remove Nth Node From End of List
-- 82 Remove Duplicates from Sorted List II
-
----
-
-# 🟠 Level 3: The Multi-View Layer (Two Pointers + Stitching)
-**Goal:** fast/slow, fixed-gap, merge, reverse.
-
-## Topics to know
-- 🐢🐇 fast/slow pointers
-- 🎯 fixed-gap pointers
-- 🤝 merge stitching
-- 🔁 reverse (prev/curr/nxt)
-
-## Things to master
-- ✅ correct guard: while fast and fast.next
-- ✅ you can explain why cycle => meet (not just memorize)
-
-### Reference note
-cp-algorithms describes the tortoise-and-hare cycle detection steps: slow moves 1, fast moves 2, meet implies a cycle; fast reaching null implies no cycle. [web:84]
-
----
-
-## 3.1 🐢🐇 Fast/slow pointers
-
-**Why:** detect cycles and find middle without extra memory.
-
-**What:** slow=1 step, fast=2 steps.
-
-**How:** while fast and fast.next: slow=slow.next, fast=fast.next.next.
-
-**Visual**
-```text
-slow: A → B → C → D
-fast: A → C → E → ...
-fast moves 2 nodes per loop
+// 3. Traverse the list up to the null boundary
+while (curr != null) {
+    if (curr.val == target) {
+        // 4. Target found: bypass curr by linking prev to curr's next
+        prev.next = curr.next; 
+    } else {
+        // 5. Target not found: advance prev safely
+        prev = curr;
+    }
+    // 6. Always advance curr to the next unvisited node
+    curr = curr.next;
+}
 ```
 
-**Practice (LeetCode)**
-- 876 Middle of the Linked List
-- 141 Linked List Cycle
+### ⚠️ Gotchas & Pitfalls
+* **Losing the Head Node:** If the head itself needs deletion and you didn't use a dummy node, you might accidentally return the deleted head instead of the new head.
+* **Skipping Consecutive Targets:** Advancing `prev` when a deletion occurs. If two adjacent nodes need to be deleted, advancing `prev` too early will skip the second target.
+* **Memory Leaks:** In languages without automatic garbage collection, forgetting to free the memory of the bypassed node can cause memory leaks.
+
+**Drill Problems (L2):**
+* **Easy:** [LeetCode 203: Remove Linked List Elements]
+* **Medium:** [LeetCode 82: Remove Duplicates from Sorted List II], [LeetCode 24: Swap Nodes in Pairs]
 
 ---
 
-## 3.2 🔁 Find cycle start (advanced)
+## 🟠 Level 3: The Multi-View Layer (Two Pointers & Stitching)
 
-**Why:** after meeting, reset one pointer to head; move both 1 step; meet at entry. [web:84]
+**Mental Model:** Advanced operations require maintaining multiple independent views (Fast/Slow, Reversal).
+**Invariants:**
+- *Fast/Slow:* `fast` travels exactly 2x `slow`. If there is a cycle, they will meet. If not, `fast` bounds checking applies.
+- *Reversal:* `prev` holds the fully reversed prefix. `curr` is the next node to process.
 
-**Practice (LeetCode)**
-- 142 Linked List Cycle II
-- 287 Find the Duplicate Number (array-as-linked-list)
+### Reversing a Linked List
 
----
+**State Transitions (Reversal):**
+| Step | `prev` | `curr` | Action / Invariant |
+| :--- | :--- | :--- | :--- |
+| 0 | `null` | Node A | Setup: Prefix is empty (`null`). `curr` is start. |
+| 1 | Node A | Node B | Save B. `A.next = null`. Prefix is A. `curr` becomes B. |
+| 2 | Node B | Node C | Save C. `B.next = A`. Prefix is B->A. `curr` becomes C. |
+| Final| Tail | `null` | `curr` hits null. `prev` points to new head of reversed list. |
 
-## 3.3 🎯 Fixed-gap pointers (nth from end)
+**Code Snippet:**
 
-**Why:** one pass without computing length.
+Problem: Reverse a singly linked list in-place. Maintain a reversed prefix while traversing and rewiring each node's next pointer.
 
-**What:** keep fast n nodes ahead.
-
-**How:** advance fast n; then move both until fast at last.
-
-**Practice (LeetCode)**
-- 19 Remove Nth Node From End of List
-- 61 Rotate List (gap & reconnection reasoning)
-
----
-
-## 3.4 🤝 Merge two sorted lists
-
-**Why:** core pointer-stitching primitive.
-
-**What:** tail always points to last node of output.
-
-**How:** attach smaller head, advance that list, advance tail.
-
-**Visual**
-```text
-A: 1 → 3 → 7
-B: 2 → 4 → 5
-out: dummy → 1 → 2 → 3 → 4 → 5 → 7
-              ^
-             tail
+```python
+# Python
+# 1. prev represents the fully reversed prefix, initially null
+prev, curr = None, head
+# 2. Traverse until the next unvisited node is null
+while curr:
+    # 3. Save the next node before modifying curr's pointer
+    nxt = curr.next
+    # 4. Rewire curr to point backward to the reversed prefix
+    curr.next = prev
+    # 5. Advance prev (the reversed prefix grows)
+    prev = curr
+    # 6. Advance curr to process the next unvisited node
+    curr = nxt
 ```
 
-**Practice (LeetCode)**
-- 21 Merge Two Sorted Lists
-- 23 Merge k Sorted Lists
-
----
-
-## 3.5 🔁 Reverse list (prev/curr/nxt)
-
-**Why:** most common transformation.
-
-**What:** prev is reversed prefix.
-
-**How (step/flow):**
-1) nxt=curr.next
-2) curr.next=prev
-3) prev=curr
-4) curr=nxt
-
-**Visual**
-```text
-prev   curr   nxt
-null ← [A] → [B] → [C] → null
+```csharp
+// C#
+// 1. prev represents the fully reversed prefix, initially null
+ListNode prev = null;
+ListNode curr = head;
+// 2. Traverse until the next unvisited node is null
+while (curr != null) {
+    // 3. Save the next node before modifying curr's pointer
+    ListNode nxt = curr.next;
+    // 4. Rewire curr to point backward to the reversed prefix
+    curr.next = prev;
+    // 5. Advance prev (the reversed prefix grows)
+    prev = curr;
+    // 6. Advance curr to process the next unvisited node
+    curr = nxt;
+}
 ```
 
-**Practice (LeetCode)**
-- 206 Reverse Linked List
-- 92 Reverse Linked List II (core reversal inside)
+### ⚠️ Gotchas & Pitfalls
+* **Cycle Check `NullReferenceException`:** When using fast/slow pointers, writing `while(fast != null)` but failing to check `fast.next != null` before doing `fast = fast.next.next`.
+* **Cycle Off-By-One:** Depending on initialization (`fast = head` vs `fast = head.next`), they might meet at a different point in the cycle.
+* **Lost "Next" Reference in Reversal:** Updating `curr.next` without first saving it into a temporary variable, severing the rest of the list.
+
+**Drill Problems (L3):**
+* **Easy:** [LeetCode 206: Reverse Linked List], [LeetCode 141: Linked List Cycle], [LeetCode 876: Middle of the Linked List]
+* **Medium:** [LeetCode 19: Remove Nth Node From End of List]
 
 ---
 
-# 🟣 Level 4: The Range Layer (Sublist Operations)
-**Goal:** manipulate segments safely and terminate tails.
+## 🟣 Level 4: The Range Layer (Sublist Operations)
 
-## Topics to know
-- 🔄 reverse sublist [m..n]
-- 🔁 reverse k-group
-- 🧺 stable partition (two chains)
-- 🧽 dedup patterns
-- 🔀 intersection/stitch
+**Mental Model:** Operating on a segment (sublist) requires identifying and holding anchors (the node before the sublist and the node after the sublist).
+**Invariant:** Anchor nodes maintain connection to the rest of the list. A processed sublist must be correctly terminated or spliced.
 
-## Things to master
-- ✅ anchor pointers: beforeRange, rangeTail, afterRange
-- ✅ always null-terminate final tail
+### Stable Partitioning & Anchoring
 
----
+**State Transitions (Partitioning into Less and Greater):**
+| Step | `less` tail | `greater` tail | Action / Invariant |
+| :--- | :--- | :--- | :--- |
+| 0 | `less_dummy` | `greater_dummy` | Setup chains. |
+| 1 | Node < x | `greater_dummy` | Append to `less` chain. Advance `less`. |
+| 2 | Node < x | Node >= x | Append to `greater` chain. Advance `greater`. |
+| Final| Last < x | Last >= x | Stitch: `less.next = greater_dummy.next`. Terminate: `greater.next = null`. |
 
-## 4.1 🔄 Reverse Linked List II (range)
+**Code Snippet:**
 
-**Why:** teaches anchors + local reversal.
+Problem: Partition a linked list around a value `x`, such that all nodes less than `x` come before nodes greater than or equal to `x`. Preserve the original relative order.
 
-**Visual anchors**
-```text
-before → [m] → ... → [n] → after
-   |      \____reverse____/
- reconnect: before.next = newHead, oldHead.next = after
+```python
+# Python
+# 1. Create dummy heads to anchor the 'less' and 'greater' sublists
+less_dummy, greater_dummy = ListNode(0), ListNode(0)
+# 2. Initialize tail pointers for both chains
+less, greater = less_dummy, greater_dummy
+curr = head
+
+# 3. Traverse the original list
+while curr:
+    if curr.val < x:
+        # 4. Append to the 'less' chain and advance its tail
+        less.next = curr
+        less = less.next
+    else:
+        # 5. Append to the 'greater' chain and advance its tail
+        greater.next = curr
+        greater = greater.next
+    # 6. Advance curr to process the next node
+    curr = curr.next
+
+# 7. Stitch the less chain's tail to the head of the greater chain
+less.next = greater_dummy.next
+# 8. Terminate the final tail node to prevent cycles
+greater.next = None
 ```
 
-**Practice (LeetCode)**
-- 92 Reverse Linked List II
-- 25 Reverse Nodes in k-Group
+```csharp
+// C#
+// 1. Create dummy heads to anchor the 'less' and 'greater' sublists
+ListNode lessDummy = new ListNode(0);
+ListNode greaterDummy = new ListNode(0);
+// 2. Initialize tail pointers for both chains
+ListNode less = lessDummy, greater = greaterDummy;
+ListNode curr = head;
 
----
-
-## 4.2 🧺 Stable partition (two chains)
-
-**Why:** stable grouping is easier by building two lists then connecting.
-
-**Visual**
-```text
-lowDummy → ...lowTail
-highDummy → ...highTail
-Connect: lowTail.next = highDummy.next
-Terminate: highTail.next = null
+// 3. Traverse the original list
+while (curr != null) {
+    if (curr.val < x) {
+        // 4. Append to the 'less' chain and advance its tail
+        less.next = curr;
+        less = less.next;
+    } else {
+        // 5. Append to the 'greater' chain and advance its tail
+        greater.next = curr;
+        greater = greater.next;
+    }
+    // 6. Advance curr to process the next node
+    curr = curr.next;
+}
+// 7. Stitch the less chain's tail to the head of the greater chain
+less.next = greaterDummy.next;
+// 8. Terminate the final tail node to prevent cycles
+greater.next = null;
 ```
 
-**Practice (LeetCode)**
-- 86 Partition List
-- 328 Odd Even Linked List
+### ⚠️ Gotchas & Pitfalls
+* **Accidental Cycles on Reconnection:** Forgetting to terminate the final tail node (e.g., `greater.next = null`), causing a cycle back into the stitched list.
+* **Orphaned Sublists:** Losing the anchor to the segment *before* the reversed/modified sublist, making it impossible to stitch the modified segment back into the main list.
+* **Boundary Edge Cases:** Dealing with `left = 1` in sublist reversal where there is no node *before* the reversed segment unless a dummy head is used.
+
+**Drill Problems (L4):**
+* **Medium:** [LeetCode 92: Reverse Linked List II], [LeetCode 86: Partition List]
+* **Hard:** [LeetCode 25: Reverse Nodes in k-Group]
 
 ---
 
-## 4.3 🧽 Dedup on sorted list
+## 🔴 Level 5: The Abstract Layer (Composition)
 
-**Why:** duplicates form runs; you either skip extras (83) or remove all duplicates (82).
+**Mental Model:** Complex problems are combinations of L1-L4 components. Build modularly.
+**Invariant:** Each composed stage (find mid, reverse half, interleave) receives a well-formed list and outputs a well-formed list with no loss of nodes or cycles.
 
-**Practice (LeetCode)**
-- 83 Remove Duplicates from Sorted List
-- 82 Remove Duplicates from Sorted List II
+### Multi-Stage Composition (E.g., Reorder List)
 
----
+**State Transitions (Reorder List):**
+| Stage | Operation | Output / Invariant |
+| :--- | :--- | :--- |
+| 1 | Fast/Slow (L3) | Find middle. Split into `L1` (head to mid) and `L2` (mid to end). |
+| 2 | Reverse (L3) | `L2` becomes reversed. `prev` is new head of `L2`. |
+| 3 | Lockstep (L1/L2) | Weave `L1` and `L2`. Temporary pointers save next nodes during rewiring. |
 
-## 4.4 🔀 Intersection / stitching
+**Code Snippet (Weaving Phase):**
 
-**Why:** trains identity vs value thinking.
+Problem: Interleave two well-formed linked lists (L1 and reversed L2) in lockstep. Safely weave their nodes without losing references to the remaining chains.
 
-**Practice (LeetCode)**
-- 160 Intersection of Two Linked Lists
-- 1669 Merge In Between Linked Lists
-
----
-
-# 🔴 Level 5: The Abstract Layer (Composition)
-**Goal:** solve “multi-stage” problems reliably.
-
-## Topics to know
-- 🪞 palindrome (split + reverse + compare)
-- 🧵 reorder (split + reverse + weave)
-- 🧮 sort list (merge sort)
-- ➕ digit/carry pipelines
-- 🧬 clone pointer structures
-
-## Things to master
-- ✅ stage invariants: after each stage list is still well-formed
-- ✅ you can prove “no nodes lost”
-
-**Practice (LeetCode)**
-- 234 Palindrome Linked List, 143 Reorder List
-- 148 Sort List, 2 Add Two Numbers
-- 138 Copy List with Random Pointer, 430 Flatten a Multilevel Doubly Linked List
-
----
-
-# 🧰 Traversal mastery add-ons (linked lists)
-
-## A) 🧪 Micro-tracing (interview superpower)
-Draw nodes and write pointer names under nodes:
-```text
-[A]→[B]→[C]→null
- ^
- curr
+```python
+# Python - Weaving L1 and L2
+# 1. p1 anchors the first half, p2 anchors the reversed second half
+p1, p2 = head, reversed_l2_head
+# 2. Iterate while the second half still has nodes
+while p2: 
+    # 3. Save the next nodes for both halves
+    nxt1, nxt2 = p1.next, p2.next
+    
+    # 4. Rewire: insert p2 between p1 and p1's original next node
+    p1.next = p2
+    p2.next = nxt1
+    
+    # 5. Advance both pointers to the saved next nodes
+    p1, p2 = nxt1, nxt2
 ```
-After each line of code, update the drawing.
 
-## B) 🧠 Invariant library
-- Reverse: “prev is reversed prefix; curr is next to reverse.”
-- Merge: “dummy.next..tail is sorted and final.”
-- Dummy delete: “prev always points to node before candidate.”
-- Cycle: “fast=2x slow; meet implies a cycle.” [web:84]
+```csharp
+// C# - Weaving L1 and L2
+// 1. p1 anchors the first half, p2 anchors the reversed second half
+ListNode p1 = head, p2 = reversedL2Head;
+// 2. Iterate while the second half still has nodes
+while (p2 != null) {
+    // 3. Save the next nodes for both halves
+    ListNode nxt1 = p1.next;
+    ListNode nxt2 = p2.next;
+    
+    // 4. Rewire: insert p2 between p1 and p1's original next node
+    p1.next = p2;
+    p2.next = nxt1;
+    
+    // 5. Advance both pointers to the saved next nodes
+    p1 = nxt1;
+    p2 = nxt2;
+}
+```
 
-## C) ✅ Safety checklist
-- Did I save nxt before rewiring?
-- If head can change, did I use dummy?
-- Did I terminate the final tail with null?
-- Am I comparing node identity (same node) vs node value?
+### ⚠️ Gotchas & Pitfalls
+* **Unterminated Halves:** When splitting a list (e.g., for merge sort or reordering), forgetting to set the `next` pointer of the first half's tail to `null`, causing the two halves to still be connected in a cycle or memory leak.
+* **Mismatched Lengths in Weaving:** Not safely handling odd vs. even length lists during weaving; `p2` might run out of nodes before `p1` or vice-versa.
+* **Over-Complexity:** Trying to do everything in one pass. It's often much safer and cleaner to do multiple independent passes (find mid, then reverse, then merge).
+
+**Drill Problems (L5):**
+* **Medium:** [LeetCode 143: Reorder List], [LeetCode 148: Sort List]
+* **Easy/Medium:** [LeetCode 234: Palindrome Linked List]
 
 ---
 
-# 🎯 Timed Practice Ladder (Merged)
-
-Use this as the single follow-up practice route after reading the mastery guide.
-
-## Must
-- `206` Reverse Linked List
-- `21` Merge Two Sorted Lists
-- `19` Remove Nth Node From End
-- `141` Linked List Cycle
-- `876` Middle of the Linked List
-
-## Should
-- `82` Remove Duplicates from Sorted List II
-- `92` Reverse Linked List II
-- `160` Intersection of Two Linked Lists
-- `234` Palindrome Linked List
-- `143` Reorder List
-- `148` Sort List
-
-## Optional stretch
-- `25` Reverse Nodes in k-Group
-- `1669` Merge In Between Linked Lists
-- `287` Find the Duplicate Number (array-as-linked-list cycle logic)
-
-Timebox rule:
-- Easy: 15-35 min
-- Medium: 35-60 min
-- Hard / composition-heavy: 60-95 min
-
-This file now serves as the merged source for explanations, visual intuition, invariants, and practice sequencing.
+## ✅ Safety Rules Checklist
+- [ ] **Did I save `nxt` before modifying `curr.next`?**
+- [ ] **Did I use a `dummy` node if the `head` might change or be deleted?**
+- [ ] **Did I explicitly set my final node's `.next` to `null` to prevent cycles?**
+- [ ] **Are my `while` boundaries safe?** (`while curr` vs `while curr and curr.next`)

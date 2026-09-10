@@ -1,453 +1,208 @@
-# 🔀 Quicksort & Mergesort Mastery (Traversal-First)
+# 🔀 Quicksort & Mergesort Mastery (Curriculum 2.0)
 
-> 🎯 Goal: Learn **Quicksort** and **Mergesort** by focusing on the *traversal patterns* they are built from (your Levels model), then cement intuition via walkthrough traces.
+## 🗺️ Summary Table
 
----
+| Level | Mental Model | Pointer State / Invariant | Drill Problems |
+| :--- | :--- | :--- | :--- |
+| **Level 8: In-place Partition (Quicksort)** | Array is split into processed regions (`< pivot` and `>= pivot`) and an unknown region. | `[lo..store-1]` are `< pivot`. `[store..j-1]` are `>= pivot`. `[j..hi-1]` is unknown. `pivot = a[hi]`. | 🟢 [LeetCode 283: Move Zeroes]<br>🟡 [LeetCode 215: Kth Largest Element in an Array]<br>🟡 [LeetCode 75: Sort Colors] (3-Way) |
+| **Level 4/5: Range Recursion (Quicksort)** | Divide array around pivot index `p`. Base case: `lo >= hi`. | Function `sort(lo, hi)` recursively calls `sort(lo, p-1)` and `sort(p+1, hi)`. | 🟡 [LeetCode 912: Sort an Array] |
+| **Level 3: Two-Cursor Merge (Mergesort)** | Two input cursors, one output cursor. Always pick the smaller element to maintain sorted order. | `a[i]` and `a[j]` compared. Output filled up to `k-1`. `<` or `<=` logic dictates stability. | 🟢 [LeetCode 88: Merge Sorted Array]<br>🟡 [LeetCode 56: Merge Intervals] |
+| **Level 4/5: Divide & Conquer (Mergesort)** | Split exactly in half, recursively sort, then merge. | `mid = lo + (hi - lo) / 2`. `sort(lo, mid)` and `sort(mid+1, hi)`. | 🟡 [LeetCode 148: Sort List]<br>🔴 [LeetCode 23: Merge k Sorted Lists] |
 
-## ✅ Summary list
-- ⚡ **Quicksort** = divide-and-conquer + **in-place partition traversal**.
-- 🧬 **Mergesort** = divide-and-conquer + **merge traversal** using two cursors.
-- 🧭 You’ll master both by mastering 3 primitives:
-  - 🧩 **Partition boundaries** (Levels 3 & 8)
-  - 🔀 **Two-list merge traversal** (Level 3)
-  - 🪟 **Range recursion over subarrays** (Levels 4 & 5)
+## ⚡ 1. Quicksort: Partitioning & Recursion
 
----
+**Mental Model:** Quicksort is fundamentally a **Level 8 In-place Partition** traversal. The recursion just drives this process on smaller and smaller subarrays.
 
-# 0) Traversal patterns map 🗺️
+### 🧹 Level 8: In-place Partition (Lomuto)
 
-## Which traversal level shows up where?
+**What does the index mean?**
+*   `j`: The scanning cursor exploring the "unknown" region.
+*   `store`: The boundary cursor separating elements `< pivot` from elements `>= pivot`.
 
-### Quicksort
-- 🪟 **Level 4 (Range traversal):** each recursive call works on a subarray `[lo..hi]`.
-- 🧭 **Level 5 (Recursion / call stack mental model):** divide-and-conquer recursion over ranges.
-- 👀 **Level 3 (Multi-cursor):** partition schemes use multiple indices (e.g., `i`, `j`, `L`, `R`).
-- 🧹 **Level 8 (In-place partition boundaries):** the heart of quicksort.
+**The Invariant:**
+At the start of step `j`:
+1.  `[lo .. store-1]` contain elements strictly `< pivot`.
+2.  `[store .. j-1]` contain elements `>= pivot`.
+3.  `[j .. hi-1]` are unexplored.
+4.  `a[hi]` is the fixed `pivot`.
 
-### Mergesort
-- 🪟 **Level 4 (Range traversal):** divide into `[lo..mid]` and `[mid+1..hi]`.
-- 🧭 **Level 5 (Recursion):** recursively sort ranges.
-- 🔀 **Level 3 (Merge traversal):** merge two sorted halves with two cursors.
-- ⚙️ **Level 9 (Performance mindset):** minimize allocations by reusing temp buffers.
+**State Transitions (Visualized):**
+Array: `a = [9, 3, 7, 1, 8, 2, 5]`, `pivot = 5` (at `hi=6`), `store = 0`.
 
----
+| Step | Scan `j` | Val `a[j]` | Action/Invariant Maintained | Array State | Boundary `store` |
+| :---: | :---: | :---: | :--- | :--- | :---: |
+| Init | - | - | Unexplored: `[0..5]` | `[9, 3, 7, 1, 8, 2, 5]` | `0` |
+| 0 | `0` | `9` | `9 >= 5`. Expand `>=` region. `j++`. | `[9, 3, 7, 1, 8, 2, 5]` | `0` |
+| 1 | `1` | `3` | `3 < 5`. Swap `a[j]` with `a[store]`. `store++`. | `[3, 9, 7, 1, 8, 2, 5]` | `1` |
+| 2 | `2` | `7` | `7 >= 5`. Expand `>=` region. `j++`. | `[3, 9, 7, 1, 8, 2, 5]` | `1` |
+| 3 | `3` | `1` | `1 < 5`. Swap `a[j]` with `a[store]`. `store++`. | `[3, 1, 7, 9, 8, 2, 5]` | `2` |
+| 4 | `4` | `8` | `8 >= 5`. Expand `>=` region. `j++`. | `[3, 1, 7, 9, 8, 2, 5]` | `2` |
+| 5 | `5` | `2` | `2 < 5`. Swap `a[j]` with `a[store]`. `store++`. | `[3, 1, 2, 9, 8, 7, 5]` | `3` |
+| Final| - | - | Swap `pivot` at `hi` with `a[store]`. | **`[3, 1, 2, 5, 8, 7, 9]`** | `3` |
 
-# ⚡ 1) Quicksort
+### ⚠️ Gotchas & Pitfalls
+* **Off-by-one error when R=N-1:** Iterating the scanning cursor `j` all the way to `hi` instead of `hi - 1`, which incorrectly includes the pivot in the comparison loop.
+* **Missing the final swap:** Forgetting to swap the `pivot` at `a[hi]` with `a[store]` after the loop, leaving the pivot in the wrong place.
+* **Empty input crashes:** Accessing `a[hi]` when the array is empty or `lo >= hi`, resulting in an index out of bounds error.
 
-## Why
-Quicksort is fast in practice because it partitions in place and reduces the problem recursively.
+### 💻 Code Implementation
 
-## What
-Pick a **pivot**, partition the array into `< pivot` and `>= pivot` (or 3-way), then quicksort the left and right partitions.
+<details>
+<summary><b>Python Implementation</b></summary>
 
-## How (step/flow)
+Problem: Sort an array of integers in-place using the quicksort algorithm (Lomuto partition scheme).
+```python
+def quicksort(a, lo, hi):
+    # 1. Base case: if range is 1 or empty, it's already sorted
+    if lo >= hi:
+        return
+    
+    # 2. Partition the array into '< pivot' and '>= pivot' regions
+    p = partition(a, lo, hi)
+    
+    # 3. Recursively sort the left and right subarrays
+    quicksort(a, lo, p - 1)
+    quicksort(a, p + 1, hi)
+
+def partition(a, lo, hi):
+    # 1. Choose the rightmost element as the pivot
+    pivot = a[hi]
+    # 2. Initialize the boundary pointer for elements < pivot
+    store = lo
+    
+    # 3. Scan through the unknown region with pointer j
+    for j in range(lo, hi): 
+        # 4. If current element belongs in the '< pivot' region
+        if a[j] < pivot:
+            # Swap it into the '< pivot' region and expand the boundary
+            a[store], a[j] = a[j], a[store]
+            store += 1
+            
+    # 5. Move pivot into its correct, finalized position
+    a[store], a[hi] = a[hi], a[store]
+    return store
 ```
-QuickSort(lo, hi):
-  if lo >= hi: return
-  p = Partition(lo, hi)
-  QuickSort(lo, p-1)
-  QuickSort(p+1, hi)
-```
+</details>
 
-### Partition is the traversal ⭐
-Partition is a **single pass** over the range `[lo..hi]` where boundaries move and invariants must remain true.
+<details>
+<summary><b>C# Implementation</b></summary>
 
-## Where and When (use cases)
-- In-memory sorting when average-case speed and in-place operation matter.
-
-## Common pitfalls
-- ❌ Partition invariants not maintained → array ends up “almost partitioned” but incorrect.
-- ❌ Pivot choice can cause worst-case recursion depth on already sorted/reverse-sorted arrays.
-- ❌ Confusing partition scheme (Lomuto vs Hoare) and using wrong recursion bounds.
-
-## Tips and tricks
-- ✅ Master partition first. Quicksort is “partition + recursion driver.”
-- ✅ Choose a safer pivot (random pivot, median-of-three) to reduce worst-case frequency.
-- ✅ Prefer **3-way partition** when duplicates are common.
-
----
-
-## 1.1 Partition scheme A: Lomuto (simple boundary walk) 🧹
-
-### Why
-Easier to implement and reason about at first.
-
-### What
-- Pivot = last element
-- `store` boundary: next position for `< pivot`
-- One scan index `j` moves through the range
-
-### Invariant (say it before coding)
-At any time:
-- `[lo .. store-1]` are `< pivot`
-- `[store .. j-1]` are `>= pivot`
-- `[j .. hi-1]` are unknown
-- `pivot` at `hi`
-
-### C# (Lomuto partition)
+Problem: Sort an array of integers in-place using the quicksort algorithm (Lomuto partition scheme).
 ```csharp
-static int PartitionLomuto(int[] a, int lo, int hi)
-{
-    if (a == null || a.Length == 0) return lo; // lenient
-    if (lo < 0) lo = 0;
-    if (hi >= a.Length) hi = a.Length - 1;
-    if (lo >= hi) return lo;
+public static void QuickSort(int[] a, int lo, int hi) {
+    // 1. Base case: if range is 1 or empty, it's already sorted
+    if (lo >= hi) return;
+    
+    // 2. Partition the array into '< pivot' and '>= pivot' regions
+    int p = Partition(a, lo, hi);
+    
+    // 3. Recursively sort the left and right subarrays
+    QuickSort(a, lo, p - 1);
+    QuickSort(a, p + 1, hi);
+}
 
+private static int Partition(int[] a, int lo, int hi) {
+    // 1. Choose the rightmost element as the pivot
     int pivot = a[hi];
+    // 2. Initialize the boundary pointer for elements < pivot
     int store = lo;
-
-    for (int j = lo; j < hi; j++)
-    {
-        if (a[j] < pivot)
-        {
+    
+    // 3. Scan through the unknown region with pointer j
+    for (int j = lo; j < hi; j++) { 
+        // 4. If current element belongs in the '< pivot' region
+        if (a[j] < pivot) {
+            // Swap it into the '< pivot' region and expand the boundary
             (a[store], a[j]) = (a[j], a[store]);
             store++;
         }
     }
-
+    // 5. Move pivot into its correct, finalized position
     (a[store], a[hi]) = (a[hi], a[store]);
     return store;
 }
 ```
+</details>
 
-### Python (Lomuto partition)
+### 🇳🇱 Extended Mental Model: 3-Way Partition
+When dealing with duplicates, use a 3-way partition (Dutch National Flag).
+**Invariant:**
+*   `[0..lt-1]` are `< pivot`
+*   `[lt..i-1]` are `== pivot`
+*   `[i..gt]` is unknown
+*   `[gt+1..N-1]` are `> pivot`
+
+**Level 8 Drills:**
+*   🟢 [LeetCode 283: Move Zeroes]
+*   🟡 [LeetCode 75: Sort Colors]
+*   🟡 [LeetCode 215: Kth Largest Element in an Array]
+*   🟡 [LeetCode 912: Sort an Array]
+
+---
+
+## 🧬 2. Mergesort: Two-Cursor Merge & Divide
+
+**Mental Model:** Mergesort is a **Level 3 Two-Cursor Traversal** combined with a **Level 4/5 Divide & Conquer** structure. 
+
+### 🔀 Level 3: Merge Traversal
+
+**What does the index mean?**
+*   `i`: Cursor for the remaining unexplored region in the sorted Left half.
+*   `j`: Cursor for the remaining unexplored region in the sorted Right half.
+*   `k`: Cursor for writing the next element into the output buffer.
+
+**The Invariant:**
+At any step:
+1.  The output buffer `temp[lo..k-1]` contains the sorted combination of elements drawn from `Left[lo..i-1]` and `Right[mid+1..j-1]`.
+2.  `Left[i..mid]` and `Right[j..hi]` remain unexplored.
+3.  Stability dictates: if `a[i] == a[j]`, pick `a[i]` to preserve relative order.
+
+**State Transitions (Visualized):**
+Left: `[1, 4, 9]`, Right: `[2, 3, 10]`
+
+| Step | `i` (Left) | `j` (Right) | Action/Invariant Maintained | Output `temp[lo..k]` Buffer |
+| :---: | :---: | :---: | :--- | :--- |
+| 1 | `0` (val `1`) | `0` (val `2`) | `1 <= 2`. Pick Left. `i++`, `k++`. | `[1]` |
+| 2 | `1` (val `4`) | `0` (val `2`) | `2 < 4`. Pick Right. `j++`, `k++`. | `[1, 2]` |
+| 3 | `1` (val `4`) | `1` (val `3`) | `3 < 4`. Pick Right. `j++`, `k++`. | `[1, 2, 3]` |
+| 4 | `1` (val `4`) | `2` (val `10`) | `4 <= 10`. Pick Left. `i++`, `k++`. | `[1, 2, 3, 4]` |
+| 5 | `2` (val `9`) | `2` (val `10`) | `9 <= 10`. Pick Left. `i++`, `k++`. | `[1, 2, 3, 4, 9]` |
+| 6 | Exhausted | `2` (val `10`) | Left exhausted. Drain Right. | `[1, 2, 3, 4, 9, 10]` |
+
+### ⚠️ Gotchas & Pitfalls
+* **Integer overflow on L+R/2:** Calculating `mid = (lo + hi) / 2` can overflow if the array is massive. Always use `lo + (hi - lo) / 2`.
+* **Breaking Stability:** Using `a[i] < a[j]` instead of `a[i] <= a[j]`. If you pick the right side on equality, you lose the stable sorting property!
+* **Writeback Misalignment:** Forgetting that `temp` needs to be copied back to `a` exactly from `lo` to `hi`, not `0` to `len`.
+
+### 💻 Code Implementation
+
+<details>
+<summary><b>Python Implementation</b></summary>
+
+Problem: Sort an array of integers by dividing it in half, sorting the halves recursively, and merging them using a temporary buffer.
 ```python
-def partition_lomuto(a, lo, hi):
-    if not a:
-        return lo
-    lo = max(lo, 0)
-    hi = min(hi, len(a) - 1)
-    if lo >= hi:
-        return lo
-
-    pivot = a[hi]
-    store = lo
-    for j in range(lo, hi):
-        if a[j] < pivot:
-            a[store], a[j] = a[j], a[store]
-            store += 1
-    a[store], a[hi] = a[hi], a[store]
-    return store
-```
-
----
-
-## 1.2 Lomuto partition walkthrough (index-by-index) 🧪
-
-### Example
-Array:
-```
-a = [9, 3, 7, 1, 8, 2, 5]
-lo=0, hi=6, pivot=5
-```
-
-We track: `j`, `store`, and the array.
-
-Initial:
-- pivot = 5
-- store = 0
-
-| Step | j | a[j] | Condition | Action | store after | Array |
-|---:|---:|---:|:---|:---|---:|:---|
-| 0 | - | - | init | - | 0 | [9,3,7,1,8,2,5] |
-| 1 | 0 | 9 | 9 < 5? no | none | 0 | [9,3,7,1,8,2,5] |
-| 2 | 1 | 3 | 3 < 5? yes | swap a[store]↔a[j] (0↔1) | 1 | [3,9,7,1,8,2,5] |
-| 3 | 2 | 7 | 7 < 5? no | none | 1 | [3,9,7,1,8,2,5] |
-| 4 | 3 | 1 | 1 < 5? yes | swap (1↔3) | 2 | [3,1,7,9,8,2,5] |
-| 5 | 4 | 8 | 8 < 5? no | none | 2 | [3,1,7,9,8,2,5] |
-| 6 | 5 | 2 | 2 < 5? yes | swap (2↔5) | 3 | [3,1,2,9,8,7,5] |
-| end | - | - | finish | swap pivot into store (3↔6) | 3 | [3,1,2,5,8,7,9] |
-
-Result:
-- pivot index `p = 3`
-- left `[0..2]` is `< 5`
-- right `[4..6]` is `>= 5`
-
----
-
-## 1.3 Quicksort driver (C# + Python)
-
-### C#
-```csharp
-static void QuickSort(int[] a, int lo, int hi)
-{
-    if (a == null || a.Length <= 1) return;
-
-    lo = Math.Max(lo, 0);
-    hi = Math.Min(hi, a.Length - 1);
-    if (lo >= hi) return;
-
-    int p = PartitionLomuto(a, lo, hi);
-    QuickSort(a, lo, p - 1);
-    QuickSort(a, p + 1, hi);
-}
-```
-
-### Python
-```python
-def quicksort(a, lo, hi):
-    if not a or len(a) <= 1:
-        return
-    lo = max(lo, 0)
-    hi = min(hi, len(a) - 1)
-    if lo >= hi:
-        return
-
-    p = partition_lomuto(a, lo, hi)
-    quicksort(a, lo, p - 1)
-    quicksort(a, p + 1, hi)
-```
-
----
-
-## 1.4 Advanced quicksort: 3-way partition (duplicates-friendly) 🇳🇱
-
-### Why
-If many elements equal pivot, 2-way partition keeps recursing on equals and slows down.
-
-### What
-Maintain regions:
-- `< pivot`
-- `== pivot`
-- `> pivot`
-
-### How (step/flow)
-```
-| < pivot | == pivot | unknown........ | > pivot |
- 0       lt        i            gt       n-1
-
-if a[i] < pivot: swap(i, lt), lt++, i++
-if a[i] == pivot: i++
-if a[i] > pivot: swap(i, gt), gt-- (i stays)
-```
-
-### C# snippet
-```csharp
-static (int ltEnd, int gtStart) Partition3Way(int[] a, int lo, int hi)
-{
-    if (a == null || a.Length == 0) return (lo, hi);
-    lo = Math.Max(lo, 0);
-    hi = Math.Min(hi, a.Length - 1);
-    if (lo >= hi) return (lo, hi);
-
-    int pivot = a[lo];
-    int lt = lo;
-    int i = lo;
-    int gt = hi;
-
-    while (i <= gt)
-    {
-        if (a[i] < pivot)
-        {
-            (a[lt], a[i]) = (a[i], a[lt]);
-            lt++; i++;
-        }
-        else if (a[i] > pivot)
-        {
-            (a[i], a[gt]) = (a[gt], a[i]);
-            gt--; // i stays
-        }
-        else
-        {
-            i++;
-        }
-    }
-
-    // equal region is [lt..gt]
-    return (lt - 1, gt + 1);
-}
-```
-
----
-
-# 🧬 2) Mergesort
-
-## Why
-Mergesort guarantees O(n log n) time by dividing into halves and merging sorted results.
-
-## What
-Recursively split the array into halves until size 1, then **merge** two sorted halves into one sorted range.
-
-## How (step/flow)
-```
-MergeSort(lo, hi):
-  if lo >= hi: return
-  mid = (lo+hi)/2
-  MergeSort(lo, mid)
-  MergeSort(mid+1, hi)
-  Merge(lo, mid, hi)
-```
-
-### Merge is the traversal ⭐
-Merge is a classic **Level 3 merge traversal**:
-- pointer `i` walks left half
-- pointer `j` walks right half
-- pointer `k` writes into temp/output
-
-## Where and When (use cases)
-- Stable sorting (conceptually), linked-list sorting, external sorting, guaranteed performance.
-
-## Common pitfalls
-- ❌ Off-by-one boundaries: mixing inclusive vs exclusive ranges.
-- ❌ Copying back incorrectly after merge.
-- ❌ Allocating a new temp array at each recursion level (slow); reuse a shared temp.
-
-## Tips and tricks
-- Use a single `temp[]` buffer reused across merges.
-- Be explicit about your range convention (here we use inclusive `[lo..hi]`).
-
----
-
-## 2.1 Merge walkthrough (index-by-index) 🔀
-
-### Example merge
-Merge left and right halves:
-```
-Left  = [1, 4, 9]
-Right = [2, 3, 10]
-```
-
-Pointers:
-- i for left, j for right, k for output
-
-| Step | i | Left[i] | j | Right[j] | Pick | Output |
-|---:|---:|---:|---:|---:|:---|:---|
-| 0 | 0 | 1 | 0 | 2 | 1 | [1] |
-| 1 | 1 | 4 | 0 | 2 | 2 | [1,2] |
-| 2 | 1 | 4 | 1 | 3 | 3 | [1,2,3] |
-| 3 | 1 | 4 | 2 | 10 | 4 | [1,2,3,4] |
-| 4 | 2 | 9 | 2 | 10 | 9 | [1,2,3,4,9] |
-| end | - | - | - | - | append remaining (10) | [1,2,3,4,9,10] |
-
----
-
-# Merge-Family Extensions (Merged)
-
-These are the important merge-like traversal applications folded into the sorting mastery file.
-
-## Union and difference of sorted arrays
-- Same primitive as merge: compare fronts, emit, and advance at least one cursor.
-- Add duplicate-handling rules explicitly.
-
-## Merge intervals
-- Sort by start time, then scan with an anchor interval.
-- Invariant: the current merged interval is the correct collapse of everything processed so far.
-
-## Merge join (database-style)
-- Traverse two sorted relations by key.
-- On equal keys, emit matching pairs; otherwise advance the smaller key.
-
-## K-way merge
-- Generalize two-way merge with a priority queue of current heads.
-- Invariant: the heap frontier always exposes the next globally smallest candidate.
-
-## Timed practice ladder (merged)
-
-### Must
-- Merge two sorted arrays/lists
-- Merge sort implementation and trace
-- Quicksort partition trace
-- Sort colors / Dutch National Flag
-
-### Should
-- Merge intervals
-- Union/intersection/difference of sorted arrays
-- K-way merge
-
-### Optional advanced
-- Merge join interpretation
-- Interval-style merge variants with database or streaming framing
-
-This file is now the merged source for quicksort, mergesort, merge-family techniques, and sorting traversal practice.
-
-This is pure “two sorted arrays” traversal (Level 3 merge traversal).
-
----
-
-## 2.2 Full mergesort walkthrough (small array) 🧪
-
-### Example
-```
-a = [4, 1, 3, 2]
-```
-
-Split phase (ranges):
-```
-[4,1,3,2]
- -> [4,1] and [3,2]
- -> [4] [1] [3] [2]
-```
-
-Merge phase:
-- merge [4] and [1] => [1,4]
-- merge [3] and [2] => [2,3]
-- merge [1,4] and [2,3] => [1,2,3,4]
-
-This is Level 5 recursion over Level 4 ranges, plus Level 3 merge traversal.
-
----
-
-## 2.3 C# mergesort (reuses temp) 💻
-
-```csharp
-static void MergeSort(int[] a)
-{
-    if (a == null || a.Length <= 1) return;
-    int[] temp = new int[a.Length];
-    MergeSortRange(a, temp, 0, a.Length - 1);
-}
-
-static void MergeSortRange(int[] a, int[] temp, int lo, int hi)
-{
-    if (lo >= hi) return;
-
-    int mid = lo + (hi - lo) / 2;
-    MergeSortRange(a, temp, lo, mid);
-    MergeSortRange(a, temp, mid + 1, hi);
-    Merge(a, temp, lo, mid, hi);
-}
-
-static void Merge(int[] a, int[] temp, int lo, int mid, int hi)
-{
-    int i = lo;
-    int j = mid + 1;
-    int k = lo;
-
-    while (i <= mid && j <= hi)
-    {
-        if (a[i] <= a[j]) temp[k++] = a[i++];
-        else temp[k++] = a[j++];
-    }
-
-    while (i <= mid) temp[k++] = a[i++];
-    while (j <= hi) temp[k++] = a[j++];
-
-    for (int t = lo; t <= hi; t++) a[t] = temp[t];
-}
-```
-
----
-
-## 2.4 Python mergesort (teaching version)
-
-```python
-def merge_sort(a):
-    if a is None or len(a) <= 1:
-        return a if a is not None else []
-
+def mergesort(a):
+    # 1. Single buffer allocated once for O(N) space
     temp = [0] * len(a)
-
+    
     def sort(lo, hi):
-        if lo >= hi:
-            return
-        mid = (lo + hi) // 2
+        # 2. Base Case: if range has 1 or fewer elements, it's sorted
+        if lo >= hi: return
+        
+        # 3. Divide: find the midpoint without overflow
+        mid = lo + (hi - lo) // 2
+        # 4. Conquer: recursively sort left and right halves
         sort(lo, mid)
         sort(mid + 1, hi)
+        # 5. Combine: merge the two sorted halves back together
         merge(lo, mid, hi)
-
+        
     def merge(lo, mid, hi):
+        # 1. Initialize cursors for left half (i), right half (j), and output buffer (k)
         i, j, k = lo, mid + 1, lo
+        
+        # 2. Compare elements from both halves while neither is exhausted
         while i <= mid and j <= hi:
+            # 3. Maintain stability: if equal, pick from the left half
             if a[i] <= a[j]:
                 temp[k] = a[i]
                 i += 1
@@ -455,58 +210,86 @@ def merge_sort(a):
                 temp[k] = a[j]
                 j += 1
             k += 1
-        while i <= mid:
+            
+        # 4. Drain remaining unexplored elements from the left half (if any)
+        while i <= mid: 
             temp[k] = a[i]
-            i += 1
-            k += 1
-        while j <= hi:
+            i, k = i + 1, k + 1
+            
+        # 5. Drain remaining unexplored elements from the right half (if any)
+        while j <= hi: 
             temp[k] = a[j]
-            j += 1
-            k += 1
+            j, k = j + 1, k + 1
+            
+        # 6. Writeback phase: copy sorted elements from buffer back to original array
         for t in range(lo, hi + 1):
             a[t] = temp[t]
-
+            
     sort(0, len(a) - 1)
-    return a
 ```
+</details>
+
+<details>
+<summary><b>C# Implementation</b></summary>
+
+Problem: Sort an array of integers by dividing it in half, sorting the halves recursively, and merging them using a temporary buffer.
+```csharp
+public static void MergeSort(int[] a) {
+    // 1. Single buffer allocated once for O(N) space
+    int[] temp = new int[a.Length];
+    Sort(a, temp, 0, a.Length - 1);
+}
+
+private static void Sort(int[] a, int[] temp, int lo, int hi) {
+    // 2. Base Case: if range has 1 or fewer elements, it's sorted
+    if (lo >= hi) return;
+    
+    // 3. Divide: find the midpoint without overflow
+    int mid = lo + (hi - lo) / 2;
+    // 4. Conquer: recursively sort left and right halves
+    Sort(a, temp, lo, mid);
+    Sort(a, temp, mid + 1, hi);
+    // 5. Combine: merge the two sorted halves back together
+    Merge(a, temp, lo, mid, hi);
+}
+
+private static void Merge(int[] a, int[] temp, int lo, int mid, int hi) {
+    // 1. Initialize cursors for left half (i), right half (j), and output buffer (k)
+    int i = lo, j = mid + 1, k = lo;
+    
+    // 2. Compare elements from both halves while neither is exhausted
+    while (i <= mid && j <= hi) {
+        // 3. Maintain stability: if equal, pick from the left half
+        if (a[i] <= a[j]) temp[k++] = a[i++];
+        else temp[k++] = a[j++];
+    }
+    
+    // 4. Drain remaining unexplored elements from the left half (if any)
+    while (i <= mid) temp[k++] = a[i++];
+    // 5. Drain remaining unexplored elements from the right half (if any)
+    while (j <= hi) temp[k++] = a[j++];
+    
+    // 6. Writeback phase: copy sorted elements from buffer back to original array
+    for (int t = lo; t <= hi; t++) {
+        a[t] = temp[t];
+    }
+}
+```
+</details>
+
+**Level 3 & 4/5 Drills:**
+*   🟢 [LeetCode 88: Merge Sorted Array]
+*   🟡 [LeetCode 148: Sort List]
+*   🟡 [LeetCode 56: Merge Intervals]
+*   🔴 [LeetCode 23: Merge k Sorted Lists]
 
 ---
 
-# 🧭 Route to master both (traversal-first) 
+## 🧠 Quick Comparison & Tradeoffs
 
-## Step 1: Master the primitives (fastest ROI)
-- 🧹 Partition boundaries
-  - Start with **2-region** partition (< pivot | >= pivot)
-  - Then **3-region** partition (< | == | >)
-  - Practice the invariant drawing: regions + unknown
-- 🔀 Merge traversal
-  - Two pointers + output pointer; prove “always progress”
-  - Learn stability implications (`<=` vs `<`)
-- 🪟 Range recursion
-  - Always define range convention: inclusive `[lo..hi]` or half-open `[lo..hi)`
-
-## Step 2: Master quicksort
-1) Implement + trace partition only (no recursion).
-2) Add recursion and trace subarray ranges.
-3) Add pivot strategy (random/median-of-three).
-4) Add 3-way partition for duplicates.
-
-## Step 3: Master mergesort
-1) Implement merge for two sorted arrays.
-2) Implement range mergesort with a reusable temp buffer.
-3) Trace every merge with `(i,j,k)` pointers.
-
-## Step 4: Compare tradeoffs
-- Quicksort: in-place, usually fast, but can degrade on bad pivots.
-- Mergesort: predictable performance, uses extra memory for merging.
-
----
-
-## ✅ Debugging checklist (both)
-- Always log indices and boundaries:
-  - Quicksort: `(lo, hi, pivot, store/lt/i/gt)`
-  - Mergesort: `(lo, mid, hi, i, j, k)`
-- Typical symptoms:
-  - Infinite loop → a pointer not moving.
-  - Slightly unsorted output → merge/partition invariant broken.
-  - Stack overflow → recursion too deep (quicksort pivot issue) or very large input.
+| Feature | ⚡ Quicksort | 🧬 Mergesort |
+| :--- | :--- | :--- |
+| **Time Complexity** | `O(N log N)` avg, `O(N²)` worst | `O(N log N)` guaranteed |
+| **Space Complexity** | `O(log N)` recursion stack | `O(N)` auxiliary buffer array |
+| **Stability** | ❌ Not stable (equal elements mix) | ✅ Stable (preserves equal order) |
+| **Best Used For...** | In-memory general purpose sorting | Linked lists, external sorting, guaranteed bounds |

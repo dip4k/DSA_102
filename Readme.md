@@ -777,6 +777,9 @@ dsa-master-curriculum-v13/
 📁 week_18_probabilistic_ds_systems/
 📁 week_19_mock_interviews_mastery/
 
+
+📁 traversal guides/
+   ├── README.md (Master Index for Curriculum 2.0 Traversal Guides)
 📁 assets/
    ├── diagrams/
    ├── flowcharts/
