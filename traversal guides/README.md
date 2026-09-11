@@ -46,6 +46,8 @@ Every guide follows the same structure:
 | **Sorting** | [quicksort_mergesort_traversal_mastery.md](sorting/quicksort_mergesort_traversal_mastery.md) | Partition logic, merge logic, divide & conquer |
 | **Intervals** | [Intervals_Mastery_Curriculum_v1.md](intervals/Intervals_Mastery_Curriculum_v1.md) | Merge, insert, sweep line, min arrows |
 | **Union-Find** | [Union_Find_Mastery_Curriculum_v1.md](union_find/Union_Find_Mastery_Curriculum_v1.md) | Path compression, union by rank, cycle detection, MST |
+| **Bit Manipulation** | [Bit_Manipulation_Mastery_Curriculum_v1.md](bit_manipulation/Bit_Manipulation_Mastery_Curriculum_v1.md) | XOR tricks, bit masking, subsets via bitmask, bitwise DP |
+| **Matrix Traversal** | [Matrix_Traversal_Mastery_Curriculum_v1.md](matrix_traversal/Matrix_Traversal_Mastery_Curriculum_v1.md) | Spiral order, rotate image, grid BFS/DFS, flood fill |
 
 ### 📋 Quick Reference
 - [String ↔ Array Traversal Cheatsheet](String%20Array%20Traversal%20Cheatsheet.md)
@@ -60,9 +62,9 @@ Phase 2 (Core Patterns)  → Two Pointers → Sliding Window → Binary Search �
 Phase 3 (Stack & Queue)  → Stacks → Monotonic Stack → Queues
 Phase 4 (Trees & Graphs) → Trees → Graphs → Union-Find → Heaps → Tries
 Phase 5 (Paradigms)      → Sorting → Greedy → Dynamic Programming → Backtracking
-Phase 6 (Integration)    → Intervals → Mixed pattern problems
+Phase 6 (Integration)    → Intervals → Matrix Traversal → Bit Manipulation → Mixed pattern problems
 ```
 
 ---
 
-## 📊 Coverage: 21 Guides · 80+ Levels · 300+ Drill Problems
+## 📊 Coverage: 23 Guides · 85+ Levels · 350+ Drill Problems
