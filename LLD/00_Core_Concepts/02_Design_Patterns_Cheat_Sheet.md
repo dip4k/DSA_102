@@ -215,7 +215,7 @@ public class SendGridEmailAdapter : IEmailSender
 * **When to use:** Hierarchical tree structures (File systems, Epic/Story/Task trees, Organisation charts) where clients must treat individual objects and compositions uniformly.
 * **When to avoid:** Flat collections or non-recursive relationships.
 * **📚 Learn:** [AlgoMaster: Composite Pattern](https://algomaster.io/learn/lld/composite)
-* **Flagship Problems in Repo:** [In-Memory File System](../02_Tier2_Classic_LLD/24_In_Memory_File_System.md), [Task Management System](../02_Tier2_Classic_LLD/18_Task_Management_System.md).
+* **Flagship Problems in Repo:** [In-Memory File System](../02_Tier2_Classic_LLD/17_In_Memory_File_System.md), [Task Management System](../02_Tier2_Classic_LLD/14_Task_Management_System.md).
 
 ---
 
@@ -223,7 +223,7 @@ public class SendGridEmailAdapter : IEmailSender
 * **When to use:** Encapsulating requests as standalone invokable objects to support Undo/Redo, queuing, logging, or delayed execution.
 * **When to avoid:** Direct synchronous execution where no history or rollback is needed.
 * **📚 Learn:** [AlgoMaster: Command Pattern](https://algomaster.io/learn/lld/command)
-* **Flagship Problems in Repo:** [Board Game Engine](../02_Tier2_Classic_LLD/25_Board_Game_Engine.md), [Task Management System](../02_Tier2_Classic_LLD/18_Task_Management_System.md).
+* **Flagship Problems in Repo:** [Board Game Engine](../02_Tier2_Classic_LLD/18_Board_Game_Engine.md), [Task Management System](../02_Tier2_Classic_LLD/14_Task_Management_System.md).
 
 ---
 

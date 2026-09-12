@@ -1,4 +1,4 @@
-# 09. Rate Limiter (Strategy + Concurrency)
+# 31. Rate Limiter (Strategy + Concurrency)
 
 ## 📌 Context
 Rate Limiting tests your understanding of **Algorithms (Strategy Pattern)** and **Thread Safety**. You must be able to switch between Token Bucket, Sliding Window, or Fixed Window based on requirements.

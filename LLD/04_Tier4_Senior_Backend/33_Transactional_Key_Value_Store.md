@@ -1,4 +1,4 @@
-# 19. In-Memory Transactional Key-Value Store (Redis-Lite)
+# 33. In-Memory Transactional Key-Value Store (Redis-Lite)
 
 ## 📌 Context
 The In-Memory Transactional Key-Value Store is one of the most famous machine coding and LLD questions asked by top tech firms (**Atlassian, Uber, Stripe, PhonePe, Grab**).

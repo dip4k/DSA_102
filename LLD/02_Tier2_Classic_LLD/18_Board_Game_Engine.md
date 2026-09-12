@@ -1,4 +1,4 @@
-# 25. Extensible Board Game Engine (Tic-Tac-Toe & Chess Lite)
+# 18. Extensible Board Game Engine (Tic-Tac-Toe & Chess Lite)
 
 ## 📌 Context
 Board Game Engines (Tic-Tac-Toe $N \times N$, Chess Lite, Connect Four) are staple Object-Oriented Design (OOD) interview problems at **Amazon, Google, and Microsoft**. They test your ability to implement the **Command Pattern** (for Undo/Redo moves), the **Strategy Pattern** (for move validation and win conditions), and optimize performance to **$O(1)$ win checking** without scanning the board.

@@ -1,4 +1,4 @@
-# 08. Movie Ticket Booking (Concurrency + State + TTL)
+# 09. Movie Ticket Booking (Concurrency + State + TTL)
 
 ## 📌 Context
 Movie Ticket Booking (like BookMyShow or Ticketmaster) is the ultimate test of **State Management** and **High Concurrency**. Unlike a meeting room where you just block time, here you have thousands of users trying to click the exact same seat ("Seat 10") at the exact same millisecond. 

@@ -1,4 +1,4 @@
-# 14. Pub/Sub Message Queue (Observer + Concurrency)
+# 32. Pub/Sub Message Queue (Observer + Concurrency)
 
 ## 📌 Context
 Building an in-memory Pub/Sub system tests your ability to implement the **Observer Pattern** safely in a **multi-threaded environment**.

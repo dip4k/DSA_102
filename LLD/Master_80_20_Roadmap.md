@@ -18,20 +18,20 @@ Instead of a giant "LLD topics + 30 random problems" list, this roadmap builds a
 | **5. C# LLD & DI** | 🔴 Critical | Interfaces, generics, DI, lifetimes, collections, immutability | [04. C# DI & Concurrency](./00_Core_Concepts/04_CSharp_DI_and_Concurrency.md) |
 | **6. Concurrency & Synchronization** | 🔴 Critical for Senior | Locks, thread safety, race conditions, atomicity, concurrent collections | [07. Concurrency Patterns](./00_Core_Concepts/07_Concurrency_and_Synchronization_Patterns.md) |
 | **7. Backend Architecture** | 🔴 Critical for Senior | Repository, transactions, CQRS, messaging, idempotency, Outbox | [05. Backend Architecture](./00_Core_Concepts/05_Backend_Architecture.md) |
-| **8. Interview Execution & Taxonomy** | 🔴 Critical for Success | 45m OOD vs 90m Machine Coding, 6 Problem Families, V1 $\rightarrow$ V4 Evolution | [06. Interview Framework](./00_Core_Concepts/06_Interview_Execution_Framework.md) · [08. Problem Families](./00_Core_Concepts/08_LLD_Problem_Families_and_Evolution.md) |
+| **8. Interview Execution & Taxonomy** | 🔴 Critical for Success | 45m OOD vs 90m Machine Coding, 6 Problem Families, V1 $\rightarrow$ V4 Evolution | [06. Interview Framework](./00_Core_Concepts/06_Interview_Execution_Framework.md) · [08. Problem Families](./00_Core_Concepts/08_LLD_Problem_Families_and_Evolution.md) · [10. Quick Reference & Checklists](./00_Core_Concepts/10_Interview_Quick_Reference_and_Checklists.md) |
 
 ---
 
 ## 🧭 The 6 Reusable Problem Archetypes (Mental Models)
-When given any interview problem, immediately map it to one of these 6 families:
+Every single LLD interview problem at FAANG, Uber, Stripe, and Microsoft boils down to one of six core architectural archetypes:
 
-| Problem Family | Core Architectural Challenge | GoF Patterns Applied | Flagship Problems in Repo |
+| Problem Family | Core Mechanical Challenge | Primary Patterns | Target Interview Problems |
 | :--- | :--- | :--- | :--- |
-| **1. Allocation & Concurrency Conflicts** | Preventing double-allocation of shared finite resources under race conditions. | Strategy, Factory, State | [Parking Lot](./01_Tier1_Highest_Priority/06_Parking_Lot.md), [Meeting Room](./01_Tier1_Highest_Priority/01_Meeting_Room_Booking.md), [Movie Booking](./02_Tier2_Classic_LLD/08_Movie_Booking.md), [Amazon Locker](./02_Tier2_Classic_LLD/26_Amazon_Locker_System.md), [Hotel Management](./02_Tier2_Classic_LLD/29_Hotel_Management_System.md), [Library Management](./02_Tier2_Classic_LLD/27_Library_Management_System.md) |
-| **2. Financial & Immutable Ledgers** | Double-entry accounting, auditability, precision (`decimal`), deadlock avoidance. | Command, Strategy, State | [Digital Wallet](./04_Tier4_Senior_Backend/22_Digital_Wallet_Ledger.md), [Online Auction](./04_Tier4_Senior_Backend/26_Online_Auction_System.md), [Splitwise](./02_Tier2_Classic_LLD/11_Splitwise.md), [Transactional KV](./04_Tier4_Senior_Backend/19_Transactional_Key_Value_Store.md) |
-| **3. Stateful Workflow Engines** | Entity moves through rigid phases; invalid transitions strictly rejected. | State, Observer, Command | [Elevator](./02_Tier2_Classic_LLD/10_Elevator.md), [Vending Machine](./02_Tier2_Classic_LLD/12_Vending_Machine.md), [ATM System](./02_Tier2_Classic_LLD/28_ATM_System.md), [Task Management](./02_Tier2_Classic_LLD/18_Task_Management_System.md), [Ride Hailing](./02_Tier2_Classic_LLD/20_Ride_Hailing_System.md), [Food Delivery](./02_Tier2_Classic_LLD/21_Food_Delivery_System.md), [Board Game Engine](./02_Tier2_Classic_LLD/25_Board_Game_Engine.md) |
-| **4. Event-Driven & Buffering** | Decoupled async producers/consumers, guaranteed delivery, backpressure. | Observer, Chain of Resp | [Azure Service Bus Outbox](./01_Tier1_Highest_Priority/04_DDD_CQRS_AzureServiceBus.md), [Pub/Sub](./04_Tier4_Senior_Backend/14_Pub_Sub.md), [Message Processor](./01_Tier1_Highest_Priority/02_Generic_Message_Processor.md), [Logger](./02_Tier2_Classic_LLD/13_Logger.md) |
-| **5. In-Memory Data Structures** | Sub-millisecond latency, multi-key lookups, composite tree hierarchies. | Composite, Iterator | [LRU Cache](./03_Tier3_DSA_Screening/15_LRU_Cache.md), [File System](./02_Tier2_Classic_LLD/24_In_Memory_File_System.md), [Task Management Hierarchy](./02_Tier2_Classic_LLD/18_Task_Management_System.md), [Stock Matching Engine](./04_Tier4_Senior_Backend/23_Stock_Exchange_Matching_Engine.md), [Rate Limiter](./04_Tier4_Senior_Backend/09_Rate_Limiter.md) |
+| **1. Allocation & Concurrency Conflicts** | Preventing double-allocation of shared finite resources under race conditions. | Strategy, Factory, State | [Parking Lot](./01_Tier1_Highest_Priority/06_Parking_Lot.md), [Meeting Room](./01_Tier1_Highest_Priority/01_Meeting_Room_Booking.md), [Movie Booking](./02_Tier2_Classic_LLD/09_Movie_Booking.md), [Amazon Locker](./02_Tier2_Classic_LLD/19_Amazon_Locker_System.md), [Hotel Management](./02_Tier2_Classic_LLD/22_Hotel_Management_System.md), [Library Management](./02_Tier2_Classic_LLD/20_Library_Management_System.md) |
+| **2. Financial & Immutable Ledgers** | Double-entry accounting, auditability, precision (`decimal`), deadlock avoidance. | Command, Strategy, State | [Digital Wallet](./04_Tier4_Senior_Backend/34_Digital_Wallet_Ledger.md), [Online Auction](./04_Tier4_Senior_Backend/36_Online_Auction_System.md), [Splitwise](./02_Tier2_Classic_LLD/11_Splitwise.md), [Transactional KV](./04_Tier4_Senior_Backend/33_Transactional_Key_Value_Store.md) |
+| **3. Stateful Workflow Engines** | Entity moves through rigid phases; invalid transitions strictly rejected. | State, Observer, Command | [Elevator](./02_Tier2_Classic_LLD/10_Elevator.md), [Vending Machine](./02_Tier2_Classic_LLD/12_Vending_Machine.md), [ATM System](./02_Tier2_Classic_LLD/21_ATM_System.md), [Task Management](./02_Tier2_Classic_LLD/14_Task_Management_System.md), [Ride Hailing](./02_Tier2_Classic_LLD/15_Ride_Hailing_System.md), [Food Delivery](./02_Tier2_Classic_LLD/16_Food_Delivery_System.md), [Board Game Engine](./02_Tier2_Classic_LLD/18_Board_Game_Engine.md) |
+| **4. Event-Driven & Buffering** | Decoupled async producers/consumers, guaranteed delivery, backpressure. | Observer, Chain of Resp | [Azure Service Bus Outbox](./01_Tier1_Highest_Priority/04_DDD_CQRS_AzureServiceBus.md), [Pub/Sub](./04_Tier4_Senior_Backend/32_Pub_Sub.md), [Message Processor](./01_Tier1_Highest_Priority/02_Generic_Message_Processor.md), [Logger](./02_Tier2_Classic_LLD/13_Logger.md) |
+| **5. In-Memory Data Structures** | Sub-millisecond latency, multi-key lookups, composite tree hierarchies. | Composite, Iterator | [LRU & LFU Cache](./03_Tier3_DSA_Screening/26_LRU_and_LFU_Cache.md), [File System](./02_Tier2_Classic_LLD/17_In_Memory_File_System.md), [Task Management Hierarchy](./02_Tier2_Classic_LLD/14_Task_Management_System.md), [Stock Matching Engine](./04_Tier4_Senior_Backend/35_Stock_Exchange_Matching_Engine.md), [Rate Limiter](./04_Tier4_Senior_Backend/31_Rate_Limiter.md) |
 | **6. Gateway & Resilience** | Isolating flaky third-party APIs, circuit breaking, multi-channel dispatch. | Adapter, Decorator, Strategy | [Resilient API Aggregator](./01_Tier1_Highest_Priority/05_Resilient_API_Aggregator.md), [Notification System](./01_Tier1_Highest_Priority/08_Notification_System.md) |
 
 ---
@@ -59,33 +59,39 @@ Mastering these 31 problems exercises every core pattern across production scena
 8. **[Notification System](./01_Tier1_Highest_Priority/08_Notification_System.md)** (Strategy, Factory, Messaging)
 
 ### 🟡 Tier 2: Classic LLD (State & Strategy Mastery)
-9. **[Movie Ticket Booking](./02_Tier2_Classic_LLD/08_Movie_Booking.md)** (Concurrency, State, Redis TTL vs SQL Lock)
+9. **[Movie Ticket Booking](./02_Tier2_Classic_LLD/09_Movie_Booking.md)** (Concurrency, State, Redis TTL vs SQL Lock)
 10. **[Elevator System](./02_Tier2_Classic_LLD/10_Elevator.md)** (SCAN Algorithm, State, Strategy)
 11. **[Splitwise](./02_Tier2_Classic_LLD/11_Splitwise.md)** (Strategy, Graph Simplification, Monetary Precision)
 12. **[Vending Machine](./02_Tier2_Classic_LLD/12_Vending_Machine.md)** (State Pattern, Invariant Checking)
 13. **[Logger](./02_Tier2_Classic_LLD/13_Logger.md)** (Chain of Responsibility, Async Buffering)
-14. **[Task Management System (Jira Lite)](./02_Tier2_Classic_LLD/18_Task_Management_System.md)** (Composite, Command, Observer, State, Undo/Redo)
-15. **[Ride-Hailing System (Uber / Ola)](./02_Tier2_Classic_LLD/20_Ride_Hailing_System.md)** (Strategy, State Machine, Driver Matching)
-16. **[Food Delivery System (Swiggy / Zomato)](./02_Tier2_Classic_LLD/21_Food_Delivery_System.md)** (Strategy, Observer, Invariant Protection)
-17. **[In-Memory File System](./02_Tier2_Classic_LLD/24_In_Memory_File_System.md)** (Composite Pattern, Trie, ReaderWriterLockSlim)
-18. **[Board Game Engine (Tic-Tac-Toe & Chess Lite)](./02_Tier2_Classic_LLD/25_Board_Game_Engine.md)** (Command Pattern, Undo/Redo, Strategy, O(1) Win Checking)
-19. **[Amazon Locker Delivery System](./02_Tier2_Classic_LLD/26_Amazon_Locker_System.md)** (Best-Fit Strategy, Compartment State Machine, OTP Verification, Concurrency)
-20. **[Library Management System](./02_Tier2_Classic_LLD/27_Library_Management_System.md)** (Catalog Search, Pluggable Fine Strategy, Waitlist Queue, State Pattern)
-21. **[ATM System](./02_Tier2_Classic_LLD/28_ATM_System.md)** (State Machine, Command Pattern, Thread-Safe Cash Dispenser)
-22. **[Hotel Management System](./02_Tier2_Classic_LLD/29_Hotel_Management_System.md)** (Interval Collision Detection, Seasonal Pricing Strategy, Room State Machine)
+14. **[Task Management System (Jira Lite)](./02_Tier2_Classic_LLD/14_Task_Management_System.md)** (Composite, Command, Observer, State, Undo/Redo)
+15. **[Ride-Hailing System (Uber / Ola)](./02_Tier2_Classic_LLD/15_Ride_Hailing_System.md)** (Strategy, State Machine, Driver Matching)
+16. **[Food Delivery System (Swiggy / Zomato)](./02_Tier2_Classic_LLD/16_Food_Delivery_System.md)** (Strategy, Observer, Invariant Protection)
+17. **[In-Memory File System](./02_Tier2_Classic_LLD/17_In_Memory_File_System.md)** (Composite Pattern, Trie, ReaderWriterLockSlim)
+18. **[Board Game Engine (Tic-Tac-Toe & Chess Lite)](./02_Tier2_Classic_LLD/18_Board_Game_Engine.md)** (Command Pattern, Undo/Redo, Strategy, O(1) Win Checking)
+19. **[Amazon Locker Delivery System](./02_Tier2_Classic_LLD/19_Amazon_Locker_System.md)** (Best-Fit Strategy, Compartment State Machine, OTP Verification, Concurrency)
+20. **[Library Management System](./02_Tier2_Classic_LLD/20_Library_Management_System.md)** (Catalog Search, Pluggable Fine Strategy, Waitlist Queue, State Pattern)
+21. **[ATM System](./02_Tier2_Classic_LLD/21_ATM_System.md)** (State Machine, Command Pattern, Thread-Safe Cash Dispenser)
+22. **[Hotel Management System](./02_Tier2_Classic_LLD/22_Hotel_Management_System.md)** (Interval Collision Detection, Seasonal Pricing Strategy, Room State Machine)
+23. **[Snake and Ladder Game](./02_Tier2_Classic_LLD/23_Snake_and_Ladder.md)** (Dice Strategy + Cycle Detection)
+24. **[Cricbuzz / Cricket Scoreboard](./02_Tier2_Classic_LLD/24_Cricbuzz_Cricket_Scoreboard.md)** (Strike Rotator + Match Observers)
+25. **[Coupon & Discount Engine](./02_Tier2_Classic_LLD/25_Coupon_and_Discount_Engine.md)** (Composite Specification + Pipeline)
 
-### 🟢 Tier 3: DSA + LLD Hybrids
-23. **[LRU Cache (Pure DSA)](./03_Tier3_DSA_Screening/15_LRU_Cache.md)** (HashMap + Doubly Linked List)
-24. **[Merge Intervals](./03_Tier3_DSA_Screening/16_Merge_Intervals.md)** (Calendar Algorithm)
-25. **[Invalid Transactions](./03_Tier3_DSA_Screening/17_Invalid_Transactions.md)** (Validation + Sliding Windows)
+### 🟢 Tier 3: DSA + LLD Hybrids (Optimal Lookups & Top-K Engines)
+26. **[LRU & LFU Cache Mastery (Pure DSA)](./03_Tier3_DSA_Screening/26_LRU_and_LFU_Cache.md)** (LeetCode 146 & 460 — O(1) HashMaps + Doubly Linked Lists)
+27. **[Merge Intervals](./03_Tier3_DSA_Screening/27_Merge_Intervals.md)** (Calendar Algorithm)
+28. **[Invalid Transactions](./03_Tier3_DSA_Screening/28_Invalid_Transactions.md)** (Validation + Sliding Windows)
+29. **[Search Autocomplete System](./03_Tier3_DSA_Screening/29_Search_Autocomplete_System.md)** (Trie + Top-K PriorityQueue)
+30. **[Social Media News Feed / Twitter Lite](./03_Tier3_DSA_Screening/30_Social_Media_Feed_Twitter.md)** (K-Way PriorityQueue Merge)
 
 ### 🟣 Tier 4: Senior Backend (Distributed & Financial Systems)
-26. **[Rate Limiter](./04_Tier4_Senior_Backend/09_Rate_Limiter.md)** (Token Bucket, Leaky Bucket, Sliding Window Log)
-27. **[Pub/Sub Message Queue](./04_Tier4_Senior_Backend/14_Pub_Sub.md)** (Observer, Async Channels, Backpressure)
-28. **[In-Memory Transactional Key-Value Store](./04_Tier4_Senior_Backend/19_Transactional_Key_Value_Store.md)** (Stack of Scopes, ACID, Concurrency)
-29. **[Digital Wallet & Double-Entry Ledger](./04_Tier4_Senior_Backend/22_Digital_Wallet_Ledger.md)** (Double-Entry Bookkeeping, Deadlock-Free Transfer, Idempotency)
-30. **[Stock Exchange Matching Engine](./04_Tier4_Senior_Backend/23_Stock_Exchange_Matching_Engine.md)** (Price-Time Priority, Order Book, SortedSet, Partial Fills)
-31. **[Online Auction & Real-Time Bidding System](./04_Tier4_Senior_Backend/26_Online_Auction_System.md)** (Anti-Sniping Dynamic Extension, Escrow Hold, Atomic Bid Ranking, Concurrency)
+31. **[Rate Limiter](./04_Tier4_Senior_Backend/31_Rate_Limiter.md)** (Token Bucket, Leaky Bucket, Sliding Window Log)
+32. **[Pub/Sub Message Queue](./04_Tier4_Senior_Backend/32_Pub_Sub.md)** (Observer, Async Channels, Backpressure)
+33. **[In-Memory Transactional Key-Value Store](./04_Tier4_Senior_Backend/33_Transactional_Key_Value_Store.md)** (Stack of Scopes, ACID, Concurrency)
+34. **[Digital Wallet & Double-Entry Ledger](./04_Tier4_Senior_Backend/34_Digital_Wallet_Ledger.md)** (Double-Entry Bookkeeping, Deadlock-Free Transfer, Idempotency)
+35. **[Stock Exchange Matching Engine](./04_Tier4_Senior_Backend/35_Stock_Exchange_Matching_Engine.md)** (Price-Time Priority, Order Book, SortedSet, Partial Fills)
+36. **[Online Auction & Real-Time Bidding System](./04_Tier4_Senior_Backend/36_Online_Auction_System.md)** (Anti-Sniping Dynamic Extension, Escrow Hold, Atomic Bid Ranking, Concurrency)
+37. **[URL Shortener (TinyURL)](./04_Tier4_Senior_Backend/37_URL_Shortener.md)** (Base62 + Distributed Range Lease Allocation)
 
 ---
 

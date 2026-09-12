@@ -1,4 +1,4 @@
-# 01. Parking Lot (OOP, SOLID, Strategy, Factory)
+# 06. Parking Lot (OOP, SOLID, Strategy, Factory)
 
 ## 📌 Context
 The Parking Lot is the quintessential OOP problem. However, for a Senior .NET role, interviewers don't just want a bunch of classes; they want to see **Composition over Inheritance**, the **Strategy Pattern** (for pricing and slot allocation), and **Thread Safety** (when multiple cars enter simultaneously).

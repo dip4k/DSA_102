@@ -1,4 +1,4 @@
-# LLD Problem #28: ATM System
+# 21. ATM System
 
 **Tier:** 🟡 Tier 2 (Classic LLD — State & Strategy Mastery)
 **Problem Family:** 🟡 Family 3 — Stateful Workflow Engine
@@ -313,4 +313,4 @@ public sealed class DispensingState : IAtmState
 
 ---
 
-*Cross-references: [Vending Machine](./12_Vending_Machine.md) · [Digital Wallet](../04_Tier4_Senior_Backend/22_Digital_Wallet_Ledger.md) · [awesome-lld ATM](https://github.com/ashishps1/awesome-low-level-design/blob/main/problems/atm.md)*
+*Cross-references: [Vending Machine](./12_Vending_Machine.md) · [Digital Wallet](../04_Tier4_Senior_Backend/34_Digital_Wallet_Ledger.md) · [awesome-lld ATM](https://github.com/ashishps1/awesome-low-level-design/blob/main/problems/atm.md)*

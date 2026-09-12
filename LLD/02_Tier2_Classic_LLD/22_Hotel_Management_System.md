@@ -1,4 +1,4 @@
-# LLD Problem #29: Hotel Management System
+# 22. Hotel Management System
 
 **Tier:** 🟡 Tier 2 (Classic LLD — State & Strategy Mastery)
 **Problem Family:** 🔴 Family 1 — Allocation & Concurrency Conflicts / 🟡 Family 3 — Stateful Workflow Engine
@@ -372,4 +372,4 @@ public sealed class Hotel
 
 ---
 
-*Cross-references: [Meeting Room Booking](../01_Tier1_Highest_Priority/01_Meeting_Room_Booking.md) (intervals) · [Movie Booking](../02_Tier2_Classic_LLD/08_Movie_Booking.md) · [awesome-lld Hotel](https://github.com/ashishps1/awesome-low-level-design/blob/main/problems/hotel-management-system.md)*
+*Cross-references: [Meeting Room Booking](../01_Tier1_Highest_Priority/01_Meeting_Room_Booking.md) (intervals) · [Movie Booking](../02_Tier2_Classic_LLD/09_Movie_Booking.md) · [awesome-lld Hotel](https://github.com/ashishps1/awesome-low-level-design/blob/main/problems/hotel-management-system.md)*

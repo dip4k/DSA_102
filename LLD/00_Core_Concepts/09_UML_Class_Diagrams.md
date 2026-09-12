@@ -134,14 +134,14 @@ Study these problems to see each UML concept in real production context:
 |---|---|---|
 | **Interface Realization** | [Parking Lot](../01_Tier1_Highest_Priority/06_Parking_Lot.md) | `IParkingSpot <|.. HandicappedSpot` |
 | **Composition** | [Order Management](../01_Tier1_Highest_Priority/03_DDD_Order_Management.md) | `Order *-- OrderItem` |
-| **Aggregation** | [Ride Hailing System](../02_Tier2_Classic_LLD/20_Ride_Hailing_System.md) | `Driver o-- Vehicle` |
+| **Aggregation** | [Ride Hailing System](../02_Tier2_Classic_LLD/15_Ride_Hailing_System.md) | `Driver o-- Vehicle` |
 | **State Machine** | [Vending Machine](../02_Tier2_Classic_LLD/12_Vending_Machine.md) | State objects within context |
 | **Decorator Chain** | [Notification System](../01_Tier1_Highest_Priority/08_Notification_System.md) | Wrapped `INotificationSender` |
-| **Composite** | [In-Memory File System](../02_Tier2_Classic_LLD/24_In_Memory_File_System.md) | `INode <|-- DirectoryNode, FileNode` |
-| **Multiplicity Labels** | [Hotel Management](../02_Tier2_Classic_LLD/29_Hotel_Management_System.md) | `Hotel 1 *-- 1..* Room` |
-| **ATM / State + Command** | [ATM System](../02_Tier2_Classic_LLD/28_ATM_System.md) | Full State Machine diagram |
-| **Observer / Waitlist** | [Library Management](../02_Tier2_Classic_LLD/27_Library_Management_System.md) | `BookCopy o-- Member : waitlist` |
-| **Composite Task Tree** | [Task Management](../02_Tier2_Classic_LLD/18_Task_Management_System.md) | `Epic *-- Story *-- Task` |
+| **Composite** | [In-Memory File System](../02_Tier2_Classic_LLD/17_In_Memory_File_System.md) | `INode <|-- DirectoryNode, FileNode` |
+| **Multiplicity Labels** | [Hotel Management](../02_Tier2_Classic_LLD/22_Hotel_Management_System.md) | `Hotel 1 *-- 1..* Room` |
+| **ATM / State + Command** | [ATM System](../02_Tier2_Classic_LLD/21_ATM_System.md) | Full State Machine diagram |
+| **Observer / Waitlist** | [Library Management](../02_Tier2_Classic_LLD/20_Library_Management_System.md) | `BookCopy o-- Member : waitlist` |
+| **Composite Task Tree** | [Task Management](../02_Tier2_Classic_LLD/14_Task_Management_System.md) | `Epic *-- Story *-- Task` |
 
 ---
 

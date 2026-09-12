@@ -1,4 +1,4 @@
-# 24. In-Memory File System (Composite Pattern + Trie)
+# 17. In-Memory File System (Composite Pattern + Trie)
 
 ## 📌 Context
 The In-Memory File System (LeetCode 588 & 1166) is an all-time classic interview challenge at **Amazon, Google, Apple, and Uber**. It evaluates your ability to apply the **Composite Pattern** to hierarchical tree structures, handle complex path parsing (`/a/b/c`), and optimize for **multi-reader single-writer concurrency** using `ReaderWriterLockSlim`.

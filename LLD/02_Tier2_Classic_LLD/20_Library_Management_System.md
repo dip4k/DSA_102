@@ -1,4 +1,4 @@
-# LLD Problem #27: Library Management System
+# 20. Library Management System
 
 **Tier:** 🟡 Tier 2 (Classic LLD — State & Strategy Mastery)
 **Problem Family:** 🟡 Family 3 — Stateful Workflow Engine / 🔴 Family 1 — Allocation & Concurrency
@@ -522,4 +522,4 @@ public sealed class Library
 
 ---
 
-*Cross-references: [Amazon Locker System](./26_Amazon_Locker_System.md) · [Notification System](../01_Tier1_Highest_Priority/08_Notification_System.md) · [awesome-lld Library](https://github.com/ashishps1/awesome-low-level-design/blob/main/problems/library-management-system.md)*
+*Cross-references: [Amazon Locker System](./19_Amazon_Locker_System.md) · [Notification System](../01_Tier1_Highest_Priority/08_Notification_System.md) · [awesome-lld Library](https://github.com/ashishps1/awesome-low-level-design/blob/main/problems/library-management-system.md)*

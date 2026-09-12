@@ -53,11 +53,11 @@ mindmap
 ---
 
 ### Family 1: Allocation & Concurrency Conflicts
-* **The Core Tension**: Multiple concurrent users competing for a limited pool of resources (spots, rooms, seats, items).
+* **The Core Tension**: Multiple concurrent users competing for a limited pool of resources (spots, rooms, seats, items, lockers).
 * **Key Invariants**: No double-booking; atomic slot reservation with time-to-live (TTL).
 * **GoF Patterns**: Strategy (Allocation algorithm: Nearest vs Best-Fit), Factory (Resource creation).
 * **Senior Concurrency**: Pessimistic Locking (`SELECT ... FOR UPDATE`), Optimistic Concurrency (`RowVersion`), or Distributed Lock (Redis RedLock).
-* **Representative Problems**: [Parking Lot](../01_Tier1_Highest_Priority/06_Parking_Lot.md), [Meeting Room Booking](../01_Tier1_Highest_Priority/01_Meeting_Room_Booking.md), [Movie Ticket Booking](../02_Tier2_Classic_LLD/08_Movie_Booking.md).
+* **Representative Problems**: [Parking Lot](../01_Tier1_Highest_Priority/06_Parking_Lot.md), [Meeting Room Booking](../01_Tier1_Highest_Priority/01_Meeting_Room_Booking.md), [Movie Ticket Booking](../02_Tier2_Classic_LLD/09_Movie_Booking.md), [Amazon Locker](../02_Tier2_Classic_LLD/19_Amazon_Locker_System.md), [Hotel Management](../02_Tier2_Classic_LLD/22_Hotel_Management_System.md), [Library Management](../02_Tier2_Classic_LLD/20_Library_Management_System.md).
 
 ---
 
@@ -66,16 +66,16 @@ mindmap
 * **Key Invariants**: Double-entry bookkeeping (Debits = Credits); no floating-point arithmetic (`decimal` only); immutable audit logs.
 * **GoF Patterns**: Command (Atomic transactions), Strategy (Split calculations: Equal, Exact, Percent).
 * **Senior Concurrency**: Consistent lock ordering (sorting Account IDs to prevent circular deadlocks), Idempotency Keys.
-* **Representative Problems**: [Digital Wallet & Ledger](../04_Tier4_Senior_Backend/22_Digital_Wallet_Ledger.md), [Splitwise](../02_Tier2_Classic_LLD/11_Splitwise.md), [Transactional KV Store](../04_Tier4_Senior_Backend/19_Transactional_Key_Value_Store.md).
+* **Representative Problems**: [Digital Wallet & Ledger](../04_Tier4_Senior_Backend/34_Digital_Wallet_Ledger.md), [Online Auction Engine](../04_Tier4_Senior_Backend/36_Online_Auction_System.md), [Splitwise](../02_Tier2_Classic_LLD/11_Splitwise.md), [Transactional KV Store](../04_Tier4_Senior_Backend/33_Transactional_Key_Value_Store.md).
 
 ---
 
 ### Family 3: Stateful Workflow & Transit Engines
 * **The Core Tension**: An entity moves through rigid lifecycle states where valid actions depend strictly on the current state.
 * **Key Invariants**: Invalid transitions rejected; side-effects emitted on state entry/exit.
-* **GoF Patterns**: **State Pattern** (encapsulating state-specific behavior), Observer (notifying interested parties on state change).
+* **GoF Patterns**: **State Pattern** (encapsulating state-specific behavior), Observer (notifying interested parties on state change), Composite (rule specifications).
 * **Senior Concurrency**: State validation atomic compare-and-swap, state transition idempotency.
-* **Representative Problems**: [Elevator System](../02_Tier2_Classic_LLD/10_Elevator.md), [Vending Machine](../02_Tier2_Classic_LLD/12_Vending_Machine.md), [Ride-Hailing System](../02_Tier2_Classic_LLD/20_Ride_Hailing_System.md), [Food Delivery](../02_Tier2_Classic_LLD/21_Food_Delivery_System.md).
+* **Representative Problems**: [Elevator System](../02_Tier2_Classic_LLD/10_Elevator.md), [Vending Machine](../02_Tier2_Classic_LLD/12_Vending_Machine.md), [ATM System](../02_Tier2_Classic_LLD/21_ATM_System.md), [Task Management System](../02_Tier2_Classic_LLD/14_Task_Management_System.md), [Ride-Hailing System](../02_Tier2_Classic_LLD/15_Ride_Hailing_System.md), [Food Delivery](../02_Tier2_Classic_LLD/16_Food_Delivery_System.md), [Board Game Engine](../02_Tier2_Classic_LLD/18_Board_Game_Engine.md), [Snake and Ladder](../02_Tier2_Classic_LLD/23_Snake_and_Ladder.md), [Cricbuzz Scoreboard](../02_Tier2_Classic_LLD/24_Cricbuzz_Cricket_Scoreboard.md), [Coupon & Discount Engine](../02_Tier2_Classic_LLD/25_Coupon_and_Discount_Engine.md).
 
 ---
 
@@ -84,16 +84,16 @@ mindmap
 * **Key Invariants**: Guaranteed at-least-once or exactly-once delivery; no message loss during process restart.
 * **GoF Patterns**: Observer, Factory, Chain of Responsibility.
 * **Senior Concurrency**: Lock-free producer-consumer via `System.Threading.Channels`, Transactional Outbox Pattern with DB transactions.
-* **Representative Problems**: [Pub/Sub Message Queue](../04_Tier4_Senior_Backend/14_Pub_Sub.md), [Generic Message Processor](../01_Tier1_Highest_Priority/02_Generic_Message_Processor.md), [DDD + Outbox Pattern](../01_Tier1_Highest_Priority/04_DDD_CQRS_AzureServiceBus.md), [Logger](../02_Tier2_Classic_LLD/13_Logger.md).
+* **Representative Problems**: [Pub/Sub Message Queue](../04_Tier4_Senior_Backend/32_Pub_Sub.md), [Generic Message Processor](../01_Tier1_Highest_Priority/02_Generic_Message_Processor.md), [DDD + Outbox Pattern](../01_Tier1_Highest_Priority/04_DDD_CQRS_AzureServiceBus.md), [Logger](../02_Tier2_Classic_LLD/13_Logger.md).
 
 ---
 
 ### Family 5: High-Performance In-Memory Data Structures
 * **The Core Tension**: Sub-millisecond read/write latency under heavy multi-threading.
 * **Key Invariants**: $O(1)$ or $O(\log N)$ algorithmic operations; clean composite hierarchy.
-* **GoF Patterns**: Composite, Iterator, Decorator.
+* **GoF Patterns**: Composite, Iterator, Decorator, Trie, PriorityQueue.
 * **Senior Concurrency**: `ReaderWriterLockSlim` (multi-reader single-writer), `ConcurrentDictionary`, custom `IComparer` on Red-Black trees (`SortedSet`).
-* **Representative Problems**: [LRU Cache](../03_Tier3_DSA_Screening/15_LRU_Cache.md), [In-Memory File System](../02_Tier2_Classic_LLD/24_In_Memory_File_System.md), [Stock Matching Engine](../04_Tier4_Senior_Backend/23_Stock_Exchange_Matching_Engine.md), [Rate Limiter](../04_Tier4_Senior_Backend/09_Rate_Limiter.md).
+* **Representative Problems**: [LRU & LFU Cache Mastery](../03_Tier3_DSA_Screening/26_LRU_and_LFU_Cache.md), [In-Memory File System](../02_Tier2_Classic_LLD/17_In_Memory_File_System.md), [Stock Matching Engine](../04_Tier4_Senior_Backend/35_Stock_Exchange_Matching_Engine.md), [Rate Limiter](../04_Tier4_Senior_Backend/31_Rate_Limiter.md), [Search Autocomplete System](../03_Tier3_DSA_Screening/29_Search_Autocomplete_System.md), [Social Media News Feed](../03_Tier3_DSA_Screening/30_Social_Media_Feed_Twitter.md).
 
 ---
 
@@ -101,8 +101,9 @@ mindmap
 * **The Core Tension**: Handling slow or failing third-party dependencies without cascading outages.
 * **Key Invariants**: Circuit breakers prevent hammering dead services; timeouts protect thread pools.
 * **GoF Patterns**: Adapter (normalizing external APIs), Decorator (transparently adding Retry/Logging/Cache), Strategy (Channel dispatch).
-* **Senior Concurrency**: `Task.WhenAll`, `HttpClientFactory`, Polly Policies.
-* **Representative Problems**: [Resilient API Aggregator](../01_Tier1_Highest_Priority/05_Resilient_API_Aggregator.md), [Notification System](../01_Tier1_Highest_Priority/08_Notification_System.md).
+* **Senior Concurrency**: `Task.WhenAll`, `HttpClientFactory`, Polly Policies, Base62 ID token leasing.
+* **Representative Problems**: [Resilient API Aggregator](../01_Tier1_Highest_Priority/05_Resilient_API_Aggregator.md), [Notification System](../01_Tier1_Highest_Priority/08_Notification_System.md), [URL Shortener (TinyURL)](../04_Tier4_Senior_Backend/37_URL_Shortener.md).
+
 
 ---
 

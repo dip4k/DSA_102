@@ -1,4 +1,4 @@
-# 26. Amazon Locker Management System (Allocation, State Machine, Concurrency)
+# 19. Amazon Locker Management System (Allocation, State Machine, Concurrency)
 
 ## 📌 Problem Context & Motivation
 The **Amazon Hub Locker** (or Smart Delivery Kiosk) is a quintessential Tier-1 (Amazon, Flipkart, Google) Low-Level Design question. It evaluates:

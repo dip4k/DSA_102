@@ -1,4 +1,4 @@
-# LLD Problem #18: Task Management System (Jira Lite)
+# 14. Task Management System (Jira Lite)
 
 **Tier:** 🟡 Tier 2 (Classic LLD — State & Strategy Mastery)
 **Problem Family:** 🟡 Family 3 — Stateful Workflow Engine / 🔵 Family 5 — In-Memory Hierarchy
@@ -431,5 +431,5 @@ public sealed class TaskManager
 
 ---
 
-*Cross-references: [In-Memory File System](./24_In_Memory_File_System.md) (Composite) · [Board Game Engine](./25_Board_Game_Engine.md) (Command + Undo) · [awesome-lld Task Management](https://github.com/ashishps1/awesome-low-level-design/blob/main/problems/task-management-system.md)*
+*Cross-references: [In-Memory File System](./17_In_Memory_File_System.md) (Composite) · [Board Game Engine](./18_Board_Game_Engine.md) (Command + Undo) · [awesome-lld Task Management](https://github.com/ashishps1/awesome-low-level-design/blob/main/problems/task-management-system.md)*
 

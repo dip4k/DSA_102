@@ -1,4 +1,4 @@
-# 16. Merge Intervals (DSA + Booking)
+# 27. Merge Intervals (DSA + Booking)
 
 ## 📌 Context
 Merge Intervals is the algorithmic heart of the **Meeting Room Booking** and **Calendar** LLD problems. You must know how to sort and greedy-merge time blocks.

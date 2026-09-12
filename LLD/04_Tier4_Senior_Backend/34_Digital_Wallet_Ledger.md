@@ -1,4 +1,4 @@
-# 22. Digital Wallet & Double-Entry Ledger System (Fintech LLD)
+# 34. Digital Wallet & Double-Entry Ledger System (Fintech LLD)
 
 ## 📌 Context
 Designing a digital wallet (like Stripe, Razorpay, or PhonePe) is the single most popular financial LLD problem in senior backend interviews. It evaluates your mastery of **Double-Entry Bookkeeping**, **Deadlock Avoidance**, **Idempotency**, and **Atomic Money Transfers** without floating-point inaccuracies.
