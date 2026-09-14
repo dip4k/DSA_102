@@ -36,16 +36,16 @@ public class TreeNode
 ### 1. Problem Detail & Constraints
 - **Formal Statement:** Given the `root` of a binary tree, return its maximum depth. Maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.
 - **Key Constraints:**
-  - Number of nodes in range $[0, 10^4]$.
-  - Node values in range $[-100, 100]$.
+  - Number of nodes in range [0, 10^4].
+  - Node values in range [-100, 100].
 - **Senior Edge Cases to Defend:**
-  - Empty tree (`root == null` $\implies 0$).
-  - Degenerate single-line skewed tree (height equals $N$; risks call stack overflow in recursive DFS without deep stack capacity).
-  - Single-node tree (`root.left == null && root.right == null` $\implies 1$).
-  - Completely balanced full binary tree of height $H = \log_2 N$.
+  - Empty tree (`root == null` => 0).
+  - Degenerate single-line skewed tree (height equals N; risks call stack overflow in recursive DFS without deep stack capacity).
+  - Single-node tree (`root.left == null && root.right == null` => 1).
+  - Completely balanced full binary tree of height H = log_2 N.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** The height of any node is $1 + \max(\text{Height}(left), \text{Height}(right))$. Equivalently, depth is the count of BFS concentric levels until the queue empties.
+- **Conceptual Essence:** The height of any node is 1 + max(Height(left), Height(right)). Equivalently, depth is the count of BFS concentric levels until the queue empties.
 - **Sample 1:**
   - **Input:** `root = [3, 9, 20, null, null, 15, 7]`
   - **Output:** `3`
@@ -55,14 +55,15 @@ public class TreeNode
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 - **3.1 The Intuitive Spark & Conceptual Metaphor:**
-  - *Subtree Bubble-Up vs Concentric Ripple Expansion:* A parent node cannot determine its own height in isolation; it must wait for the acoustic echoes from its left and right subtrees. The left child returns the maximum depth of its territory, the right child returns the maximum depth of its territory, and the parent aggregates: $1 + \max(h_L, h_R)$.
+  - *Subtree Bubble-Up vs Concentric Ripple Expansion:* A parent node cannot determine its own height in isolation; it must wait for the acoustic echoes from its left and right subtrees. The left child returns the maximum depth of its territory, the right child returns the maximum depth of its territory, and the parent aggregates: 1 + max(h_L, h_R).
   - *Concentric Wavefront:* In BFS, depth is measured like water ripples expanding from the epicenter (root). Each discrete wave consumes an entire generation before advancing to the next layer.
 - **3.2 The Naive Bottleneck & Redundant Computation:**
-  - A naive top-down path enumeration approach traverses from root to every leaf individually, repeatedly visiting ancestor nodes $O(H)$ times, yielding $O(N \cdot H)$ work.
+  - A naive top-down path enumeration approach traverses from root to every leaf individually, repeatedly visiting ancestor nodes O(H) times, yielding O(N * H) work.
   - By shifting to bottom-up post-order DP or level-order batching, each node and edge is traversed exactly once, eliminating redundant ancestor re-scans.
 - **3.3 The Breakthrough Insight & Mathematical Invariant:**
-  - **Recurrence Relation:** For any subtree rooted at $u$:
-    $$\text{Depth}(u) = \begin{cases} 0 & \text{if } u = \text{null} \\ 1 + \max(\text{Depth}(u.left), \text{Depth}(u.right)) & \text{otherwise} \end{cases}$$
+  - **Recurrence Relation:** For any subtree rooted at u:
+    Depth(u) = 0 if u = null
+1 + max(Depth(u.left), Depth(u.right)) otherwise
   - **Correctness Guarantee:** Optimal substructure holds unconditionally because the maximum path down a tree cannot loop or cross subtrees without passing through the local root.
 - **3.4 Cursor Semantics & Invariant Partition Architecture:**
   ```text
@@ -78,8 +79,8 @@ public class TreeNode
   +-----------------------------------+-----------------------------------+
   ```
 - **3.5 State Transition Triggers & Decision Gates:**
-  - **Base Gate:** `node == null` $\implies$ return `0`.
-  - **Post-Order Merge Gate:** Both children evaluated $\implies$ return `1 + Math.Max(leftDepth, rightDepth)`.
+  - **Base Gate:** `node == null` => return `0`.
+  - **Post-Order Merge Gate:** Both children evaluated => return `1 + Math.Max(leftDepth, rightDepth)`.
   - **BFS Queue Snapshot Gate:** Outer loop records `levelSize = queue.Count`. Drain exactly `levelSize` elements before incrementing `depth`.
 - **3.6 Concrete Step-by-Step State Trace:**
   - Input: `[3, 9, 20, null, null, 15, 7]`
@@ -87,17 +88,17 @@ public class TreeNode
   | Step | Event / Node | Call Stack / Queue State | Computed Left / Right | Returned Depth |
   | :--- | :--- | :--- | :--- | :--- |
   | 1 | Visit 3 | Call `MaxDepth(3)` | Waiting... | Pending |
-  | 2 | Visit 9 | Call `MaxDepth(9)` | Left = 0, Right = 0 | $1 + \max(0,0) = 1$ |
+  | 2 | Visit 9 | Call `MaxDepth(9)` | Left = 0, Right = 0 | 1 + max(0,0) = 1 |
   | 3 | Visit 20 | Call `MaxDepth(20)` | Waiting on 15, 7 | Pending |
-  | 4 | Visit 15 | Call `MaxDepth(15)` | Left = 0, Right = 0 | $1 + \max(0,0) = 1$ |
-  | 5 | Visit 7 | Call `MaxDepth(7)` | Left = 0, Right = 0 | $1 + \max(0,0) = 1$ |
-  | 6 | Unwind 20 | Both children resolved | Left = 1, Right = 1 | $1 + \max(1,1) = 2$ |
-  | 7 | Unwind 3 | Both children resolved | Left = 1, Right = 2 | $1 + \max(1,2) = 3$ |
+  | 4 | Visit 15 | Call `MaxDepth(15)` | Left = 0, Right = 0 | 1 + max(0,0) = 1 |
+  | 5 | Visit 7 | Call `MaxDepth(7)` | Left = 0, Right = 0 | 1 + max(0,0) = 1 |
+  | 6 | Unwind 20 | Both children resolved | Left = 1, Right = 1 | 1 + max(1,1) = 2 |
+  | 7 | Unwind 3 | Both children resolved | Left = 1, Right = 2 | 1 + max(1,2) = 3 |
 
 ### 4. Approach & Complexity Deconstruction
 - **4.1 Anchor Points & Approach Selection Criteria:**
-  - **Approach 1 (Recursive Post-Order DFS):** Ideal for general interview scenarios due to concise 4-line implementation. Trade-off: Vulnerable to `StackOverflowException` if the tree degrades into an unbranched linked list of depth $N = 10^4$.
-  - **Approach 2 (Iterative BFS Queue):** Preferred in production systems processing untrusted, potentially highly unbalanced topologies. Heap-allocated queue memory is bounded by tree width ($W \le \lceil N/2 \rceil$).
+  - **Approach 1 (Recursive Post-Order DFS):** Ideal for general interview scenarios due to concise 4-line implementation. Trade-off: Vulnerable to `StackOverflowException` if the tree degrades into an unbranched linked list of depth N = 10^4.
+  - **Approach 2 (Iterative BFS Queue):** Preferred in production systems processing untrusted, potentially highly unbalanced topologies. Heap-allocated queue memory is bounded by tree width (W <= ceil(N/2)).
   - **Approach 3 (Iterative DFS with Stack):** Emulates recursion stack on the managed heap using a explicit `Stack<(TreeNode, int)>`.
 - **4.2 Step-by-Step Natural Progression Flow:**
   - *Step 1: Setup & Boundaries:* Handle empty root base case returning 0.
@@ -105,14 +106,14 @@ public class TreeNode
   - *Step 3: Invariant Maintenance & Condition Gates:* Enqueue non-null children; avoid enqueuing null pointers to prevent queue pollution.
   - *Step 4: Resolution & Return:* Aggregate depth bottom-up (DFS) or return accumulated level counter (BFS).
 - **4.3 Alternative Approaches Analysis:**
-  - Morris Traversal computes depth in $O(1)$ auxiliary space by modifying tree pointers, but adds substantial pointer mutation complexity with two traversals per edge.
+  - Morris Traversal computes depth in O(1) auxiliary space by modifying tree pointers, but adds substantial pointer mutation complexity with two traversals per edge.
 - **4.4 Multi-Dimensional Complexity & Trade-Off Matrix:**
 
 | Approach | Time (Best) | Time (Avg) | Time (Worst) | Aux Space (Avg) | Aux Space (Worst) | Cache Locality | Streaming Suitability |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Recursive Post-Order DFS** | $O(N)$ | $O(N)$ | $O(N)$ | $O(\log N)$ stack | $O(N)$ stack | High (call stack) | Low (requires full tree) |
-| **Iterative BFS Queue** | $O(N)$ | $O(N)$ | $O(N)$ | $O(W) \approx O(N/2)$ | $O(N/2)$ | Medium (Queue heap) | High (Level streaming) |
-| **Iterative DFS Stack** | $O(N)$ | $O(N)$ | $O(N)$ | $O(\log N)$ heap | $O(N)$ heap | Medium | Low |
+| **Recursive Post-Order DFS** | O(N) | O(N) | O(N) | O(log N) stack | O(N) stack | High (call stack) | Low (requires full tree) |
+| **Iterative BFS Queue** | O(N) | O(N) | O(N) | O(W) ~ O(N/2) | O(N/2) | Medium (Queue heap) | High (Level streaming) |
+| **Iterative DFS Stack** | O(N) | O(N) | O(N) | O(log N) heap | O(N) heap | Medium | Low |
 
 ### 5. Production C# Implementations
 
@@ -208,20 +209,20 @@ public class SolutionBfs
 ### 1. Problem Detail & Constraints
 - **Formal Statement:** Given the roots of two binary trees `p` and `q`, determine if they are structurally identical and have the exact same node values.
 - **Key Constraints:**
-  - Number of nodes in both trees in $[0, 100]$.
-  - Node values in range $[-10^4, 10^4]$.
+  - Number of nodes in both trees in [0, 100].
+  - Node values in range [-10^4, 10^4].
 - **Senior Edge Cases to Defend:**
-  - Both trees empty (`p == null && q == null` $\implies \text{true}$).
-  - Asymmetric structure (`p == null ^ q == null` $\implies \text{false}$).
-  - Matching topologies with mismatched node values (`p.val != q.val` $\implies \text{false}$).
-  - Mirrored structures (left/right children transposed $\implies \text{false}$).
+  - Both trees empty (`p == null && q == null` => true).
+  - Asymmetric structure (`p == null ^ q == null` => false).
+  - Matching topologies with mismatched node values (`p.val != q.val` => false).
+  - Mirrored structures (left/right children transposed => false).
 
 ### 2. Summary & Sample Input / Output
 - **Conceptual Essence:** Simultaneous synchronized lockstep traversal over two tree topologies. Early short-circuiting on the first structural or value divergence.
 - **Sample 1:**
-  - **Input:** `p = [1, 2, 3]`, `q = [1, 2, 3]` $\implies$ `true`
+  - **Input:** `p = [1, 2, 3]`, `q = [1, 2, 3]` => `true`
 - **Sample 2:**
-  - **Input:** `p = [1, 2]`, `q = [1, null, 2]` $\implies$ `false`
+  - **Input:** `p = [1, 2]`, `q = [1, null, 2]` => `false`
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 - **3.1 The Intuitive Spark & Conceptual Metaphor:**
@@ -231,11 +232,11 @@ public class SolutionBfs
     3. Do the values on their ground match? If not, value breach.
     4. Both step left simultaneously, then both step right simultaneously.
 - **3.2 The Naive Bottleneck & Redundant Computation:**
-  - Serializing both trees into pre-order strings with null markers and comparing strings allocates $O(N)$ string memory and cannot short-circuit on root mismatch.
-  - Direct paired traversal terminates at the exact first point of divergence in $O(1)$ best-case time.
+  - Serializing both trees into pre-order strings with null markers and comparing strings allocates O(N) string memory and cannot short-circuit on root mismatch.
+  - Direct paired traversal terminates at the exact first point of divergence in O(1) best-case time.
 - **3.3 The Breakthrough Insight & Mathematical Invariant:**
   - **Inductive Isomorphism:**
-    $$T_1 \cong T_2 \iff (T_1 = \emptyset \land T_2 = \emptyset) \lor \Big( T_1 \neq \emptyset \land T_2 \neq \emptyset \land T_1.val = T_2.val \land (T_1.left \cong T_2.left) \land (T_1.right \cong T_2.right) \Big)$$
+    T_1 == T_2 <=> (T_1 = empty set AND T_2 = empty set) OR ( T_1 != empty set AND T_2 != empty set AND T_1.val = T_2.val AND (T_1.left == T_2.left) AND (T_1.right == T_2.right) )
   - Short-circuit `&&` ensures that if the left subtrees differ, the right subtrees are never traversed.
 - **3.4 Cursor Semantics & Invariant Partition Architecture:**
   ```text
@@ -250,13 +251,13 @@ public class SolutionBfs
   +---------------------------------+---------------------------------------+
   ```
 - **3.5 State Transition Triggers & Decision Gates:**
-  - Truth-table evaluation sequence: Both null? $\to$ One null? $\to$ Values equal? $\to$ Branch both sides.
+  - Truth-table evaluation sequence: Both null? -> One null? -> Values equal? -> Branch both sides.
 - **3.6 Concrete Step-by-Step State Trace:**
   - Input: `p = [1, 2]`, `q = [1, null, 2]`
 
   | Step | Node Pair `(p, q)` | Nullity Check | Value Check | Outcome / Action |
   | :--- | :--- | :--- | :--- | :--- |
-  | 1 | `(1, 1)` | Both non-null | $1 == 1$ (Pass) | Recurse left `(p.left, q.left)` |
+  | 1 | `(1, 1)` | Both non-null | 1 == 1 (Pass) | Recurse left `(p.left, q.left)` |
   | 2 | `(2, null)` | `p != null, q == null` | N/A | **FAIL**: Structural divergence detected. Return `false` immediately. |
 
 ### 4. Approach & Complexity Deconstruction
@@ -274,8 +275,8 @@ public class SolutionBfs
 
 | Approach | Time (Best) | Time (Avg) | Time (Worst) | Aux Space (Avg) | Aux Space (Worst) | Cache Locality |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Recursive DFS** | $O(1)$ | $O(\min(N, M))$ | $O(\min(N, M))$ | $O(\log(\min(N, M)))$ | $O(\min(N, M))$ | High |
-| **Iterative Paired BFS**| $O(1)$ | $O(\min(N, M))$ | $O(\min(N, M))$ | $O(\min(W_1, W_2))$ | $O(\min(N, M))$ | Medium |
+| **Recursive DFS** | O(1) | O(min(N, M)) | O(min(N, M)) | O(log(min(N, M))) | O(min(N, M)) | High |
+| **Iterative Paired BFS**| O(1) | O(min(N, M)) | O(min(N, M)) | O(min(W_1, W_2)) | O(min(N, M)) | Medium |
 
 ### 5. Production C# Implementations
 
@@ -374,11 +375,11 @@ public class SolutionIterative
 ### 1. Problem Detail & Constraints
 - **Formal Statement:** Given the `root` of a binary tree, invert the tree (produce its mirror reflection) and return its root.
 - **Key Constraints:**
-  - Number of nodes in $[0, 100]$.
-  - Node values in $[-100, 100]$.
+  - Number of nodes in [0, 100].
+  - Node values in [-100, 100].
 - **Senior Edge Cases to Defend:**
-  - Empty tree (`root == null` $\implies \text{null}$).
-  - Single node tree $\implies$ return unchanged.
+  - Empty tree (`root == null` => null).
+  - Single node tree => return unchanged.
   - Skewed tree (all left children become all right children).
 
 ### 2. Summary & Sample Input / Output
@@ -391,10 +392,10 @@ public class SolutionIterative
 - **3.1 The Intuitive Spark & Conceptual Metaphor:**
   - *Bilateral Joint Reflection:* Imagine each node is a swivel joint connecting two mechanical arms. Inverting the tree simply means visiting every joint and flipping the left and right arms across the vertical midline.
 - **3.2 The Naive Bottleneck & Redundant Computation:**
-  - Constructing a new tree allocates $O(N)$ extra heap nodes and triggers GC pressure. In-place pointer rewiring transforms the tree with zero heap allocation.
+  - Constructing a new tree allocates O(N) extra heap nodes and triggers GC pressure. In-place pointer rewiring transforms the tree with zero heap allocation.
 - **3.3 The Breakthrough Insight & Mathematical Invariant:**
-  - **Pointer Inversion Invariant:** For any node $u$:
-    $$u.left \leftarrow \text{Invert}(u.right_{\text{original}}), \quad u.right \leftarrow \text{Invert}(u.left_{\text{original}})$$
+  - **Pointer Inversion Invariant:** For any node u:
+    u.left <- Invert(u.right_original), u.right <- Invert(u.left_original)
   - Works identically whether executed pre-order (swap then recurse) or post-order (recurse then swap). However, executing purely in-order requires care because swapping before recursing right causes the newly swapped left branch to be visited twice!
 - **3.4 Cursor Semantics & Invariant Partition Architecture:**
   ```text
@@ -406,16 +407,16 @@ public class SolutionIterative
     (Invert) (Invert)               (Invert) (Invert)
   ```
 - **3.5 State Transition Triggers & Decision Gates:**
-  - Base Gate: `root == null` $\implies$ return `null`.
+  - Base Gate: `root == null` => return `null`.
   - Swap Action: `temp = root.left; root.left = root.right; root.right = temp;`.
 - **3.6 Concrete Step-by-Step State Trace:**
   - Input: `[4, 2, 7]`
 
   | Step | Active Node | Pre-Swap Left / Right | Post-Swap Left / Right | Recursive Status |
   | :--- | :--- | :--- | :--- | :--- |
-  | 1 | 4 | Left: 2, Right: 7 | Temp swap: Left $\to$ 7, Right $\to$ 2 | Drill into Left (7) |
-  | 2 | 7 | Left: null, Right: null | Left $\to$ null, Right $\to$ null | Return 7 |
-  | 3 | 2 | Left: null, Right: null | Left $\to$ null, Right $\to$ null | Return 2 |
+  | 1 | 4 | Left: 2, Right: 7 | Temp swap: Left -> 7, Right -> 2 | Drill into Left (7) |
+  | 2 | 7 | Left: null, Right: null | Left -> null, Right -> null | Return 7 |
+  | 3 | 2 | Left: null, Right: null | Left -> null, Right -> null | Return 2 |
   | 4 | 4 | Subtrees inverted | Left: 7, Right: 2 | Complete. Return 4 |
 
 ### 4. Approach & Complexity Deconstruction
@@ -433,8 +434,8 @@ public class SolutionIterative
 
 | Approach | Time (Best/Avg/Worst) | Aux Space (Avg) | Aux Space (Worst) | In-Place Mutability |
 | :--- | :--- | :--- | :--- | :--- |
-| **Recursive DFS** | $O(N)$ | $O(\log N)$ stack | $O(N)$ stack | Yes (Mutates input) |
-| **Iterative BFS** | $O(N)$ | $O(W) \approx O(N/2)$ | $O(N/2)$ | Yes (Mutates input) |
+| **Recursive DFS** | O(N) | O(log N) stack | O(N) stack | Yes (Mutates input) |
+| **Iterative BFS** | O(N) | O(W) ~ O(N/2) | O(N/2) | Yes (Mutates input) |
 
 ### 5. Production C# Implementations
 
@@ -526,11 +527,11 @@ public class SolutionBfs
 ### 1. Problem Detail & Constraints
 - **Formal Statement:** Given the `root` of a binary tree, return the level order traversal of its nodes' values (i.e., from left to right, level by level as a list of lists).
 - **Key Constraints:**
-  - Number of nodes in $[0, 2000]$.
-  - Node values in $[-1000, 1000]$.
+  - Number of nodes in [0, 2000].
+  - Node values in [-1000, 1000].
 - **Senior Edge Cases to Defend:**
-  - Empty tree (`root == null` $\implies$ return empty list `[]`, not `[[]]`).
-  - Skewed tree (each level contains exactly one element; list of $N$ singleton lists).
+  - Empty tree (`root == null` => return empty list `[]`, not `[[]]`).
+  - Skewed tree (each level contains exactly one element; list of N singleton lists).
   - Unbalanced tree with unequal branch depths.
 
 ### 2. Summary & Sample Input / Output
@@ -541,12 +542,12 @@ public class SolutionBfs
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 - **3.1 The Intuitive Spark & Conceptual Metaphor:**
-  - *Generational Staging Area:* Think of a FIFO queue as an airport terminal boarding lounge. Before boarding starts for Flight $d$, we count how many passengers are currently seated (`levelSize = queue.Count`). We process exactly that many passengers onto the plane. Any companions or children they bring are escorted to the seating area for Flight $d+1$.
+  - *Generational Staging Area:* Think of a FIFO queue as an airport terminal boarding lounge. Before boarding starts for Flight d, we count how many passengers are currently seated (`levelSize = queue.Count`). We process exactly that many passengers onto the plane. Any companions or children they bring are escorted to the seating area for Flight d+1.
 - **3.2 The Naive Bottleneck & Redundant Computation:**
-  - Running $K$ separate depth-targeted DFS traversals (e.g. `PrintLevel(d)`) recalculates ancestor paths repeatedly, taking $O(N \cdot H) = O(N^2)$ time.
-  - A single-pass BFS with queue snapshotting achieves guaranteed $O(N)$ linear time.
+  - Running K separate depth-targeted DFS traversals (e.g. `PrintLevel(d)`) recalculates ancestor paths repeatedly, taking O(N * H) = O(N^2) time.
+  - A single-pass BFS with queue snapshotting achieves guaranteed O(N) linear time.
 - **3.3 The Breakthrough Insight & Mathematical Invariant:**
-  - **Queue Horizon Freezing:** In a standard queue, nodes of level $d$ and level $d+1$ mix. By capturing `levelSize = queue.Count` at the start of each outer iteration, the inner loop processes exactly generation $d$, while all enqueued children are guaranteed to belong to generation $d+1$.
+  - **Queue Horizon Freezing:** In a standard queue, nodes of level d and level d+1 mix. By capturing `levelSize = queue.Count` at the start of each outer iteration, the inner loop processes exactly generation d, while all enqueued children are guaranteed to belong to generation d+1.
 - **3.4 Cursor Semantics & Invariant Partition Architecture:**
   ```text
   Queue State Transition:
@@ -584,8 +585,8 @@ public class SolutionBfs
 
 | Approach | Time (Best/Avg/Worst) | Aux Space (Avg) | Aux Space (Worst) | Output Space | Cache Locality |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Iterative BFS Queue** | $O(N)$ | $O(W) \approx O(N/2)$ | $O(N/2)$ | $O(N)$ | Medium |
-| **Recursive DFS with Level** | $O(N)$ | $O(\log N)$ stack | $O(N)$ stack | $O(N)$ | High |
+| **Iterative BFS Queue** | O(N) | O(W) ~ O(N/2) | O(N/2) | O(N) | Medium |
+| **Recursive DFS with Level** | O(N) | O(log N) stack | O(N) stack | O(N) | High |
 
 ### 5. Production C# Implementations
 
@@ -691,32 +692,32 @@ public class SolutionDfs
 ### 1. Problem Detail & Constraints
 - **Formal Statement:** Return the length of the diameter of the tree. The diameter is the length of the longest path between any two nodes in a tree (measured in number of edges). The path does not necessarily need to pass through the root.
 - **Key Constraints:**
-  - Number of nodes in $[1, 10^4]$.
-  - Node values in $[-100, 100]$.
+  - Number of nodes in [1, 10^4].
+  - Node values in [-100, 100].
 - **Senior Edge Cases to Defend:**
   - Diameter path does NOT pass through root (e.g. concentrated in an unbalanced, deep left branch).
-  - Single node tree $\implies$ diameter is $0$ edges (path between a node and itself has 0 edges).
+  - Single node tree => diameter is 0 edges (path between a node and itself has 0 edges).
   - Star tree where root connects to two deep leaf paths.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Tree DP with Dual Responsibility: At every node, compute its subtree height $1 + \max(h_L, h_R)$ to return upwards to its parent, while simultaneously testing the candidate diameter passing through itself ($h_L + h_R$) against the global maximum.
+- **Conceptual Essence:** Tree DP with Dual Responsibility: At every node, compute its subtree height 1 + max(h_L, h_R) to return upwards to its parent, while simultaneously testing the candidate diameter passing through itself (h_L + h_R) against the global maximum.
 - **Sample 1:**
   - **Input:** `root = [1, 2, 3, 4, 5]`
-  - **Output:** `3` (path length between nodes 4 and 3: $4 \to 2 \to 1 \to 3$, containing 3 edges).
+  - **Output:** `3` (path length between nodes 4 and 3: 4 -> 2 -> 1 -> 3, containing 3 edges).
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 - **3.1 The Intuitive Spark & Conceptual Metaphor:**
-  - *The Inverted Pendulum / Longest Arm Junction:* Every valid path between two nodes in a tree reaches a unique highest point: its lowest common turning ancestor. At that turning point $u$, the path consists of two downward arms: the longest downward branch into the left subtree, and the longest downward branch into the right subtree. The total edge count through $u$ is simply $\text{Height}(u.left) + \text{Height}(u.right)$.
+  - *The Inverted Pendulum / Longest Arm Junction:* Every valid path between two nodes in a tree reaches a unique highest point: its lowest common turning ancestor. At that turning point u, the path consists of two downward arms: the longest downward branch into the left subtree, and the longest downward branch into the right subtree. The total edge count through u is simply Height(u.left) + Height(u.right).
 - **3.2 The Naive Bottleneck & Redundant Computation:**
-  - A brute-force approach calls `MaxDepth(node.left)` and `MaxDepth(node.right)` at every node, recalculating heights of subtrees over and over $\implies O(N^2)$ time.
-  - Post-order DP computes height bottom-up in a single pass $\implies O(N)$ time.
+  - A brute-force approach calls `MaxDepth(node.left)` and `MaxDepth(node.right)` at every node, recalculating heights of subtrees over and over => O(N^2) time.
+  - Post-order DP computes height bottom-up in a single pass => O(N) time.
 - **3.3 The Breakthrough Insight & Mathematical Invariant:**
   - **Subtree Height Recurrence:**
-    $$h(u) = 1 + \max(h(u.left), h(u.right)), \quad \text{with } h(\text{null}) = 0$$
-  - **Diameter Candidate at Turning Point $u$:**
-    $$\text{Diameter}(u) = h(u.left) + h(u.right)$$
+    h(u) = 1 + max(h(u.left), h(u.right)), with h(null) = 0
+  - **Diameter Candidate at Turning Point u:**
+    Diameter(u) = h(u.left) + h(u.right)
   - **Global Optimal Invariant:**
-    $$\text{MaxDiameter} = \max_{u \in T} \Big( h(u.left) + h(u.right) \Big)$$
+    MaxDiameter = max_u in T ( h(u.left) + h(u.right) )
 - **3.4 Cursor Semantics & Invariant Partition Architecture:**
   ```text
                 (u)  <--- Turning Point
@@ -735,7 +736,7 @@ public class SolutionDfs
 - **3.6 Concrete Step-by-Step State Trace:**
   - Input: `[1, 2, 3, 4, 5]`
 
-  | Step | Node | Left Height | Right Height | Turning Diameter ($h_L + h_R$) | Global `maxDiameter` | Returned Height |
+  | Step | Node | Left Height | Right Height | Turning Diameter (h_L + h_R) | Global `maxDiameter` | Returned Height |
   | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
   | 1 | 4 | 0 | 0 | 0 | 0 | 1 |
   | 2 | 5 | 0 | 0 | 0 | 0 | 1 |
@@ -758,8 +759,8 @@ public class SolutionDfs
 
 | Approach | Time (Best/Avg/Worst) | Aux Space (Avg) | Aux Space (Worst) | Thread-Safety | Cache Locality |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Post-Order with Ref** | $O(N)$ | $O(\log N)$ stack | $O(N)$ stack | Requires local state | High |
-| **Functional Tuple Return** | $O(N)$ | $O(\log N)$ stack | $O(N)$ stack | Fully Thread-Safe | High |
+| **Post-Order with Ref** | O(N) | O(log N) stack | O(N) stack | Requires local state | High |
+| **Functional Tuple Return** | O(N) | O(log N) stack | O(N) stack | Fully Thread-Safe | High |
 
 ### 5. Production C# Implementations
 
@@ -851,31 +852,31 @@ public class SolutionFunctional
   - The right subtree of a node contains only nodes with keys strictly greater than the node's key.
   - Both left and right subtrees must also be valid binary search trees.
 - **Key Constraints:**
-  - Number of nodes in $[1, 10^4]$.
-  - Node values in range $[-2^{31}, 2^{31} - 1]$ (`int.MinValue` to `int.MaxValue`).
+  - Number of nodes in [1, 10^4].
+  - Node values in range [-2^31, 2^31 - 1] (`int.MinValue` to `int.MaxValue`).
 - **Senior Edge Cases to Defend:**
   - Nodes with values equal to `int.MinValue` or `int.MaxValue`. Initializing bounds to `int.MinValue` or `int.MaxValue` leads to false negatives. Must widen bounds to 64-bit `long` or use nullable `int?`.
   - Duplicate keys (`node.val == child.val` is invalid in strict BST definition).
   - Ancestor violations deep in subtrees (e.g. a node in the right subtree of the root whose value is smaller than the root).
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Either propagate permissible open intervals $(low, high)$ top-down, or verify that an in-order traversal produces a strictly monotonically increasing sequence.
+- **Conceptual Essence:** Either propagate permissible open intervals (low, high) top-down, or verify that an in-order traversal produces a strictly monotonically increasing sequence.
 - **Sample 1:**
-  - **Input:** `root = [2, 1, 3]` $\implies$ `true`
+  - **Input:** `root = [2, 1, 3]` => `true`
 - **Sample 2:**
-  - **Input:** `root = [5, 1, 4, null, null, 3, 6]` $\implies$ `false` (node 4 is in the right subtree of 5, but $4 < 5$).
+  - **Input:** `root = [5, 1, 4, null, null, 3, 6]` => `false` (node 4 is in the right subtree of 5, but 4 < 5).
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 - **3.1 The Intuitive Spark & Conceptual Metaphor:**
-  - *The Narrowing Corridor:* Imagine walking down a tunnel where the left and right walls close in on you. At the root, the walls are at $(-\infty, +\infty)$. When you take a left turn at a node $u$, the right wall snaps inward to $u.val$. When you take a right turn at node $v$, the left wall snaps inward to $v.val$. Every node must fit comfortably inside its corridor: $low < node.val < high$.
+  - *The Narrowing Corridor:* Imagine walking down a tunnel where the left and right walls close in on you. At the root, the walls are at (-infinity, +infinity). When you take a left turn at a node u, the right wall snaps inward to u.val. When you take a right turn at node v, the left wall snaps inward to v.val. Every node must fit comfortably inside its corridor: low < node.val < high.
 - **3.2 The Naive Bottleneck & Redundant Computation:**
-  - Checking only local child relationships ($node.left.val < node.val < node.right.val$) is a classic trap: it fails to catch global ancestor violations (e.g. $[5, 4, 6, null, null, 3, 7]$ where 3 is in 5's right subtree).
-  - Computing subtree max and min for every node takes $O(N^2)$ unless done bottom-up or via top-down range restriction.
+  - Checking only local child relationships (node.left.val < node.val < node.right.val) is a classic trap: it fails to catch global ancestor violations (e.g. [5, 4, 6, null, null, 3, 7] where 3 is in 5's right subtree).
+  - Computing subtree max and min for every node takes O(N^2) unless done bottom-up or via top-down range restriction.
 - **3.3 The Breakthrough Insight & Mathematical Invariant:**
-  - **Top-Down Range Invariant:** For node $u$ with valid interval $(L, R)$:
-    $$u.val \in (L, R) \implies u.left \in (L, u.val) \quad \land \quad u.right \in (u.val, R)$$
+  - **Top-Down Range Invariant:** For node u with valid interval (L, R):
+    u.val in (L, R) => u.left in (L, u.val) AND u.right in (u.val, R)
   - **In-Order Monotonicity Invariant:**
-    $$\text{InOrder}(T) = [v_1, v_2, \dots, v_N] \implies v_1 < v_2 < \dots < v_N \quad (\text{strictly increasing})$$
+    InOrder(T) = [v_1, v_2, ..., v_N] => v_1 < v_2 < ... < v_N (strictly increasing)
 - **3.4 Cursor Semantics & Invariant Partition Architecture:**
   ```text
   Corridor Narrowing Tree:
@@ -893,9 +894,9 @@ public class SolutionFunctional
 
   | Step | Node | Permissible Range `(minBound, maxBound)` | In-Range Check | Decision / Next Action |
   | :--- | :--- | :--- | :--- | :--- |
-  | 1 | 5 | $(-\infty, +\infty)$ | $-\infty < 5 < +\infty$ (Pass) | Recurse left with $(-\infty, 5)$ |
-  | 2 | 1 | $(-\infty, 5)$ | $-\infty < 1 < 5$ (Pass) | Left/Right null $\implies$ True |
-  | 3 | 4 | $(5, +\infty)$ | $4 \le 5$ (**FAIL**) | **VIOLATION**: Node 4 violates lower bound 5. Return `false` immediately. |
+  | 1 | 5 | (-infinity, +infinity) | -infinity < 5 < +infinity (Pass) | Recurse left with (-infinity, 5) |
+  | 2 | 1 | (-infinity, 5) | -infinity < 1 < 5 (Pass) | Left/Right null => True |
+  | 3 | 4 | (5, +infinity) | 4 <= 5 (**FAIL**) | **VIOLATION**: Node 4 violates lower bound 5. Return `false` immediately. |
 
 ### 4. Approach & Complexity Deconstruction
 - **4.1 Anchor Points & Approach Selection Criteria:**
@@ -912,8 +913,8 @@ public class SolutionFunctional
 
 | Approach | Time (Best) | Time (Avg/Worst) | Aux Space (Avg) | Aux Space (Worst) | Integer Overflow Risk |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Top-Down Range DFS (long)** | $O(1)$ | $O(N)$ | $O(\log N)$ stack | $O(N)$ stack | None (widened to 64-bit) |
-| **Iterative In-Order Stack** | $O(1)$ | $O(N)$ | $O(\log N)$ stack | $O(N)$ stack | None (direct comparison) |
+| **Top-Down Range DFS (long)** | O(1) | O(N) | O(log N) stack | O(N) stack | None (widened to 64-bit) |
+| **Iterative In-Order Stack** | O(1) | O(N) | O(log N) stack | O(N) stack | None (direct comparison) |
 
 ### 5. Production C# Implementations
 
@@ -1008,13 +1009,13 @@ public class SolutionInOrder
 | **LeetCode Link** | [Lowest Common Ancestor of a Binary Tree](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** Given a binary tree, find the lowest common ancestor (LCA) of two given nodes `p` and `q`. The LCA is defined between two nodes $p$ and $q$ as the lowest node $T$ that has both $p$ and $q$ as descendants (where a node can be a descendant of itself).
+- **Formal Statement:** Given a binary tree, find the lowest common ancestor (LCA) of two given nodes `p` and `q`. The LCA is defined between two nodes p and q as the lowest node T that has both p and q as descendants (where a node can be a descendant of itself).
 - **Key Constraints:**
-  - Number of nodes in $[2, 10^5]$.
+  - Number of nodes in [2, 10^5].
   - All `Node.val` are unique.
-  - $p \neq q$, and both $p$ and $q$ are guaranteed to exist in the tree.
+  - p != q, and both p and q are guaranteed to exist in the tree.
 - **Senior Edge Cases to Defend:**
-  - Direct ancestor-descendant relationship ($p$ is the direct parent or ancestor of $q$; LCA is $p$).
+  - Direct ancestor-descendant relationship (p is the direct parent or ancestor of q; LCA is p).
   - Target nodes reside in opposite subtrees of the root (LCA is `root`).
   - Skewed tree where targets are at the bottom of a deep linked-list chain.
 
@@ -1029,17 +1030,20 @@ public class SolutionInOrder
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 - **3.1 The Intuitive Spark & Conceptual Metaphor:**
-  - *Rescue Flares at River Confluence:* Two search targets $p$ and $q$ launch distress flares upward. The signals travel up the branches toward the root.
-    - If a junction receives a flare from its left branch AND a flare from its right branch, it is the lowest confluence where both paths converge $\implies$ It is the LCA!
+  - *Rescue Flares at River Confluence:* Two search targets p and q launch distress flares upward. The signals travel up the branches toward the root.
+    - If a junction receives a flare from its left branch AND a flare from its right branch, it is the lowest confluence where both paths converge => It is the LCA!
     - If a junction receives only one flare, it forwards that flare upward to its parent.
-    - If a node is itself $p$ or $q$, it starts the flare signal immediately and returns itself upward.
+    - If a node is itself p or q, it starts the flare signal immediately and returns itself upward.
 - **3.2 The Naive Bottleneck & Redundant Computation:**
-  - Finding paths from root to $p$ and root to $q$, storing them in lists, and finding the last common element requires $O(N)$ extra memory for path storage and multiple traversals.
+  - Finding paths from root to p and root to q, storing them in lists, and finding the last common element requires O(N) extra memory for path storage and multiple traversals.
   - Post-order propagation requires zero auxiliary collections and identifies the LCA in a single pass.
 - **3.3 The Breakthrough Insight & Mathematical Invariant:**
   - **Post-Order Return Semantics:**
-    $$\text{LCA}(u, p, q) = \begin{cases} u & \text{if } u \in \{p, q, \text{null}\} \\ u & \text{if } \text{LCA}(u.left) \neq \text{null} \land \text{LCA}(u.right) \neq \text{null} \\ \text{LCA}(u.left) & \text{if } \text{LCA}(u.right) = \text{null} \\ \text{LCA}(u.right) & \text{if } \text{LCA}(u.left) = \text{null} \end{cases}$$
-  - **Why Discarding Further Search Below $p$ or $q$ is Safe:** If we hit $p$ first, we do not need to search below $p$. Why? If $q$ is in $p$'s subtree, $p$ is the LCA; returning $p$ upward is correct. If $q$ is NOT in $p$'s subtree, $p$ must bubble up to meet $q$'s signal at their true common ancestor; returning $p$ upward is still correct!
+    LCA(u, p, q) = u if u in {p, q, null}
+u if LCA(u.left) != null AND LCA(u.right) != null
+LCA(u.left) if LCA(u.right) = null
+LCA(u.right) if LCA(u.left) = null
+  - **Why Discarding Further Search Below p or q is Safe:** If we hit p first, we do not need to search below p. Why? If q is in p's subtree, p is the LCA; returning p upward is correct. If q is NOT in p's subtree, p must bubble up to meet q's signal at their true common ancestor; returning p upward is still correct!
 - **3.4 Cursor Semantics & Invariant Partition Architecture:**
   ```text
                (LCA Candidate: u)
@@ -1061,27 +1065,27 @@ public class SolutionInOrder
 
   | Step | Node | Event / Condition | Returned Value Upward |
   | :--- | :--- | :--- | :--- |
-  | 1 | 5 | Matches target $p$ | Return node `5` |
-  | 2 | 1 | Matches target $q$ | Return node `1` |
+  | 1 | 5 | Matches target p | Return node `5` |
+  | 2 | 1 | Matches target q | Return node `1` |
   | 3 | 3 | `left = 5`, `right = 1` (Both non-null!) | Fork detected! Return node `3` (LCA) |
 
 ### 4. Approach & Complexity Deconstruction
 - **4.1 Anchor Points & Approach Selection Criteria:**
-  - **Approach 1 (Post-Order Recursive DFS):** The gold standard for LCA in arbitrary binary trees. $O(N)$ time, $O(H)$ stack, zero heap allocation.
+  - **Approach 1 (Post-Order Recursive DFS):** The gold standard for LCA in arbitrary binary trees. O(N) time, O(H) stack, zero heap allocation.
   - **Approach 2 (Parent Map with Ancestor HashSet):** Used when nodes have `parent` pointers or when multiple online LCA queries must be answered over a static tree.
 - **4.2 Step-by-Step Natural Progression Flow:**
-  - *Step 1:* Base case: return root if null or matches $p$ or $q$.
+  - *Step 1:* Base case: return root if null or matches p or q.
   - *Step 2:* Recurse on left and right subtrees.
   - *Step 3:* If both branches return non-null, return root.
   - *Step 4:* Otherwise return the non-null branch.
 - **4.3 Alternative Approaches Analysis:**
-  - Parent pointer dictionary: Traverse with BFS/DFS recording parent pointers until both $p$ and $q$ are visited. Walk $p$ up to root populating `HashSet<TreeNode>`. Walk $q$ up until hitting the first node in the set.
+  - Parent pointer dictionary: Traverse with BFS/DFS recording parent pointers until both p and q are visited. Walk p up to root populating `HashSet<TreeNode>`. Walk q up until hitting the first node in the set.
 - **4.4 Multi-Dimensional Complexity & Trade-Off Matrix:**
 
 | Approach | Time (Best) | Time (Avg/Worst) | Aux Space (Avg) | Aux Space (Worst) | Allocations |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Recursive DFS** | $O(1)$ | $O(N)$ | $O(\log N)$ stack | $O(N)$ stack | Zero heap |
-| **Parent Pointer Map**| $O(\text{depth})$ | $O(N)$ | $O(N)$ heap | $O(N)$ heap | Dictionary + HashSet |
+| **Recursive DFS** | O(1) | O(N) | O(log N) stack | O(N) stack | Zero heap |
+| **Parent Pointer Map**| O(depth) | O(N) | O(N) heap | O(N) heap | Dictionary + HashSet |
 
 ### 5. Production C# Implementations
 
@@ -1186,19 +1190,19 @@ public class SolutionParentMap
 | **LeetCode Link** | [Kth Smallest Element in a BST](https://leetcode.com/problems/kth-smallest-element-in-a-bst/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** Given the `root` of a binary search tree, and an integer `k`, return the $k$-th smallest value (1-indexed) of all node values in the tree.
+- **Formal Statement:** Given the `root` of a binary search tree, and an integer `k`, return the k-th smallest value (1-indexed) of all node values in the tree.
 - **Key Constraints:**
-  - Number of nodes in range $[1, 10^4]$.
-  - $1 \le k \le n \le 10^4$.
-  - Node values in range $[0, 10^4]$.
+  - Number of nodes in range [1, 10^4].
+  - 1 <= k <= n <= 10^4.
+  - Node values in range [0, 10^4].
 - **Senior Edge Cases to Defend:**
-  - $k = 1$ (minimum element in BST $\implies$ leftmost descendant; should stop immediately without visiting remainder of tree).
-  - $k = N$ (maximum element $\implies$ rightmost leaf).
-  - Completely unbalanced linear tree (height $H = N$).
-  - Frequent follow-up: Tree is modified often and $k$-th smallest queries are frequent $\implies$ Augment tree nodes with `subtreeSize` for $O(H)$ order-statistic lookups.
+  - k = 1 (minimum element in BST => leftmost descendant; should stop immediately without visiting remainder of tree).
+  - k = N (maximum element => rightmost leaf).
+  - Completely unbalanced linear tree (height H = N).
+  - Frequent follow-up: Tree is modified often and k-th smallest queries are frequent => Augment tree nodes with `subtreeSize` for O(H) order-statistic lookups.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** In-order traversal of a BST visits nodes in strictly increasing order. Simulate in-order traversal using an explicit stack and terminate the exact instant the $k$-th node is popped.
+- **Conceptual Essence:** In-order traversal of a BST visits nodes in strictly increasing order. Simulate in-order traversal using an explicit stack and terminate the exact instant the k-th node is popped.
 - **Sample 1:**
   - **Input:** `root = [3, 1, 4, null, 2]`, `k = 1`
   - **Output:** `1`
@@ -1208,14 +1212,14 @@ public class SolutionParentMap
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 - **3.1 The Intuitive Spark & Conceptual Metaphor:**
-  - *The Sorted Conveyor Belt:* An in-order traversal turns a BST into a sorted conveyor belt rolling elements off one by one in ascending order. Instead of letting all $N$ items roll off into an array, stand beside the belt with a counter initialized to $k$. As each element rolls past, decrement $k$. When $k$ reaches 0, snatch the element and shut down the factory.
+  - *The Sorted Conveyor Belt:* An in-order traversal turns a BST into a sorted conveyor belt rolling elements off one by one in ascending order. Instead of letting all N items roll off into an array, stand beside the belt with a counter initialized to k. As each element rolls past, decrement k. When k reaches 0, snatch the element and shut down the factory.
 - **3.2 The Naive Bottleneck & Redundant Computation:**
-  - Traversing the entire tree to collect all $N$ nodes into a list and returning `list[k - 1]` wastes $O(N)$ memory and spends $O(N)$ time even when $k = 1$.
-  - An iterative stack traversal visits only $H + k$ nodes, terminating in $O(H + k)$ time.
+  - Traversing the entire tree to collect all N nodes into a list and returning `list[k - 1]` wastes O(N) memory and spends O(N) time even when k = 1.
+  - An iterative stack traversal visits only H + k nodes, terminating in O(H + k) time.
 - **3.3 The Breakthrough Insight & Mathematical Invariant:**
   - **Left-Spine Invariant:** Pushing all left descendants onto a stack maintains the invariant that the top of the stack is always the global minimum among all unexplored nodes in the tree.
   - **Early Termination Invariant:**
-    $$\text{VisitCount} = k \implies \text{Current Node} = \text{k-th Smallest Element}$$
+    VisitCount = k => Current Node = k-th Smallest Element
 - **3.4 Cursor Semantics & Invariant Partition Architecture:**
   ```text
   In-Order Stack Progression:
@@ -1236,16 +1240,16 @@ public class SolutionParentMap
   | :--- | :--- | :--- | :--- | :--- | :--- |
   | 1 | 3 | `[3]` | Push 3, drill left | 1 | Pending |
   | 2 | 1 | `[3, 1]` | Push 1, drill left (hits null) | 1 | Pending |
-  | 3 | Pop `1` | `[3]` | Decrement $k \implies 0$ | 0 | **Return 1 immediately** |
+  | 3 | Pop `1` | `[3]` | Decrement k => 0 | 0 | **Return 1 immediately** |
 
 ### 4. Approach & Complexity Deconstruction
 - **4.1 Anchor Points & Approach Selection Criteria:**
-  - **Approach 1 (Iterative Stack with Early Stopping):** Optimal standard approach. Halts after visiting $O(H + k)$ nodes; auxiliary space $O(H)$.
-  - **Approach 2 (Morris In-Order Traversal):** Uses temporary threaded pointers to achieve $O(1)$ auxiliary space. Temporarily mutates tree, but restores original structure before completing.
+  - **Approach 1 (Iterative Stack with Early Stopping):** Optimal standard approach. Halts after visiting O(H + k) nodes; auxiliary space O(H).
+  - **Approach 2 (Morris In-Order Traversal):** Uses temporary threaded pointers to achieve O(1) auxiliary space. Temporarily mutates tree, but restores original structure before completing.
 - **4.2 Step-by-Step Natural Progression Flow:**
   - *Step 1:* Initialize empty stack and set `current = root`.
   - *Step 2:* Drill left down the left spine, pushing nodes.
-  - *Step 3:* Pop node, decrement $k$. If $k == 0$, return value.
+  - *Step 3:* Pop node, decrement k. If k == 0, return value.
   - *Step 4:* Move to right child and resume.
 - **4.3 Alternative Approaches Analysis:**
   - Morris Traversal finds the in-order predecessor of `current`. If `pred.right == null`, creates a temporary thread `pred.right = current` and moves left. If thread exists, removes thread, visits `current`, and moves right.
@@ -1253,8 +1257,8 @@ public class SolutionParentMap
 
 | Approach | Time (Best) | Time (Avg) | Time (Worst) | Aux Space | Tree Mutability |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Iterative Stack DFS** | $O(H)$ (when $k=1$) | $O(H + k)$ | $O(N)$ | $O(H)$ | Read-Only |
-| **Morris Traversal** | $O(N)$ | $O(N)$ | $O(N)$ | $O(1)$ | Temporary mutation |
+| **Iterative Stack DFS** | O(H) (when k=1) | O(H + k) | O(N) | O(H) | Read-Only |
+| **Morris Traversal** | O(N) | O(N) | O(N) | O(1) | Temporary mutation |
 
 ### 5. Production C# Implementations
 

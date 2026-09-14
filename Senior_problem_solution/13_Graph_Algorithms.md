@@ -15,39 +15,39 @@
 | **LeetCode Link** | [Network Delay Time](https://leetcode.com/problems/network-delay-time/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** You are given a network of $n$ nodes labeled from $1$ to $n$. You are given `times`, a list of travel times as directed edges $times[i] = [u_i, v_i, w_i]$, where $u_i$ is the source node, $v_i$ is the target node, and $w_i$ is the signal travel time. A signal is sent from node $k$. Return the minimum time it takes for all $n$ nodes to receive the signal. If it is impossible for all nodes to receive the signal, return `-1`.
+- **Formal Statement:** You are given a network of n nodes labeled from 1 to n. You are given `times`, a list of travel times as directed edges times[i] = [u_i, v_i, w_i], where u_i is the source node, v_i is the target node, and w_i is the signal travel time. A signal is sent from node k. Return the minimum time it takes for all n nodes to receive the signal. If it is impossible for all nodes to receive the signal, return `-1`.
 - **Key Constraints:**
-  - $1 \le k \le n \le 100$.
-  - $1 \le \text{times.Length} \le 6000$.
-  - $times[i] = [u_i, v_i, w_i]$ where $1 \le u_i, v_i \le n$ and $u_i \ne v_i$.
-  - $0 \le w_i \le 100$.
-  - All pairs $(u_i, v_i)$ are unique (directed edges).
+  - 1 <= k <= n <= 100.
+  - 1 <= times.Length <= 6000.
+  - times[i] = [u_i, v_i, w_i] where 1 <= u_i, v_i <= n and u_i != v_i.
+  - 0 <= w_i <= 100.
+  - All pairs (u_i, v_i) are unique (directed edges).
 - **Senior Edge Cases to Defend:**
-  - Graph is disconnected: Certain nodes remain at distance $\infty \implies$ must detect and return `-1`.
-  - Signal originates at $k$ where $k$ has no outgoing edges: If $n > 1$, returns `-1`; if $n == 1$, returns `0`.
-  - Zero-weight edges: Non-negative weights $w_i \ge 0$ guarantee Dijkstra's invariant holds; no negative cycle handling is required.
+  - Graph is disconnected: Certain nodes remain at distance infinity => must detect and return `-1`.
+  - Signal originates at k where k has no outgoing edges: If n > 1, returns `-1`; if n == 1, returns `0`.
+  - Zero-weight edges: Non-negative weights w_i >= 0 guarantee Dijkstra's invariant holds; no negative cycle handling is required.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Single-Source Shortest Path (SSSP) on a directed graph with non-negative edge weights. All signals propagate concurrently; hence, the total time until all nodes receive the signal equals the maximum of the shortest path distances from source $k$ across all nodes:
-  $$\text{Delay} = \max_{1 \le i \le n} \text{dist}[i]$$
+- **Conceptual Essence:** Single-Source Shortest Path (SSSP) on a directed graph with non-negative edge weights. All signals propagate concurrently; hence, the total time until all nodes receive the signal equals the maximum of the shortest path distances from source k across all nodes:
+  Delay = max_1 <= i <= n dist[i]
 - **Sample 1:**
   - **Input:** `times = [[2,1,1],[2,3,1],[3,4,1]], n = 4, k = 2`
-  - **Output:** `2` (Signal reaches node 1 at $t=1$, node 3 at $t=1$, node 4 at $t=2$).
+  - **Output:** `2` (Signal reaches node 1 at t=1, node 3 at t=1, node 4 at t=2).
 
 ---
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine dropping a pebble into a calm pond at node $k$. A circular ripple of water expands outward at a constant velocity. Every node in the network is a floating buoy connected by underwater channels of specified lengths. The wavefront expands continuously in all directions. The first buoy struck by the expanding wave is the one closest to $k$. When the wave hits buoy $u$, that buoy immediately generates its own secondary ripples along all channels extending out of $u$. Because all channel lengths are non-negative, once a wavefront reaches buoy $u$, no later ripple can ever overtake the front to reach $u$ sooner. Therefore, the arrival time at $u$ is permanently finalized the moment it is reached by the earliest wavefront.
+Imagine dropping a pebble into a calm pond at node k. A circular ripple of water expands outward at a constant velocity. Every node in the network is a floating buoy connected by underwater channels of specified lengths. The wavefront expands continuously in all directions. The first buoy struck by the expanding wave is the one closest to k. When the wave hits buoy u, that buoy immediately generates its own secondary ripples along all channels extending out of u. Because all channel lengths are non-negative, once a wavefront reaches buoy u, no later ripple can ever overtake the front to reach u sooner. Therefore, the arrival time at u is permanently finalized the moment it is reached by the earliest wavefront.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A naive algorithm might explore all simple paths from $k$ to every node using unguided DFS, which exhibits factorial complexity $O(V!)$. Even standard BFS fails because edge weights are heterogeneous ($w_i \in [0, 100]$); a path with more hops can have a lower total latency than a single high-latency edge. Bellman-Ford could be applied in $O(V \cdot E)$ time ($100 \times 6000 = 600,000$ operations), but Dijkstra's greedy min-heap approach finalizes each vertex in order of increasing distance, visiting each edge at most once ($O((V + E) \log V)$).
+A naive algorithm might explore all simple paths from k to every node using unguided DFS, which exhibits factorial complexity O(V!). Even standard BFS fails because edge weights are heterogeneous (w_i in [0, 100]); a path with more hops can have a lower total latency than a single high-latency edge. Bellman-Ford could be applied in O(V * E) time (100 x 6000 = 600,000 operations), but Dijkstra's greedy min-heap approach finalizes each vertex in order of increasing distance, visiting each edge at most once (O((V + E) log V)).
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
-- **Dijkstra's Greedy Choice Property:** Vertices are partitioned into two sets: $S$ (finalized shortest paths) and $V \setminus S$ (unfinalized frontier). Let $u = \arg\min_{v \in V \setminus S} \text{dist}[v]$. Because all edge weights are non-negative ($w \ge 0$), any alternative path from $k$ to $u$ must exit $S$ through some unfinalized node $x \in V \setminus S$. Since $\text{dist}[x] \ge \text{dist}[u]$ and edge weights are $\ge 0$, the length of that alternative path must be $\ge \text{dist}[u]$. Thus, $\text{dist}[u]$ cannot be improved, and $u$ can be safely moved into $S$.
-- **Edge Relaxation Invariant:** For each outgoing edge $(u, v, w)$, if $\text{dist}[u] + w < \text{dist}[v]$, update $\text{dist}[v] = \text{dist}[u] + w$ and push $(v, \text{dist}[v])$ into the priority queue.
-- **Stale Entry Invariant:** In standard priority queue implementations without an `UpdatePriority` operation, older, suboptimal distance entries remain in the heap. If a dequeued tuple $(u, d)$ satisfies $d > \text{dist}[u]$, it is recognized as a stale duplicate and skipped in $O(1)$.
+- **Dijkstra's Greedy Choice Property:** Vertices are partitioned into two sets: S (finalized shortest paths) and V \ S (unfinalized frontier). Let u = argmin_v in V \ S dist[v]. Because all edge weights are non-negative (w >= 0), any alternative path from k to u must exit S through some unfinalized node x in V \ S. Since dist[x] >= dist[u] and edge weights are >= 0, the length of that alternative path must be >= dist[u]. Thus, dist[u] cannot be improved, and u can be safely moved into S.
+- **Edge Relaxation Invariant:** For each outgoing edge (u, v, w), if dist[u] + w < dist[v], update dist[v] = dist[u] + w and push (v, dist[v]) into the priority queue.
+- **Stale Entry Invariant:** In standard priority queue implementations without an `UpdatePriority` operation, older, suboptimal distance entries remain in the heap. If a dequeued tuple (u, d) satisfies d > dist[u], it is recognized as a stale duplicate and skipped in O(1).
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -67,60 +67,60 @@ Dijkstra Partition Architecture:
 ```
 
 #### 3.5 State Transition Triggers & Decision Gates
-- **Initialization:** Set $\text{dist}[k] = 0$, all other $\text{dist}[i] = \infty$. Enqueue $(k, 0)$.
+- **Initialization:** Set dist[k] = 0, all other dist[i] = infinity. Enqueue (k, 0).
 - **Dequeue Gate (Stale Entry Check):**
-  - Extract $(u, \text{currentDist})$.
-  - If $\text{currentDist} > \text{dist}[u]$, discard and `continue`.
-- **Relaxation Gate:** For each neighbor $v$ with weight $w$ from $u$:
-  - Condition: $\text{dist}[u] + w < \text{dist}[v]$.
-  - Transition: $\text{dist}[v] = \text{dist}[u] + w$, enqueue $(v, \text{dist}[v])$.
+  - Extract (u, currentDist).
+  - If currentDist > dist[u], discard and `continue`.
+- **Relaxation Gate:** For each neighbor v with weight w from u:
+  - Condition: dist[u] + w < dist[v].
+  - Transition: dist[v] = dist[u] + w, enqueue (v, dist[v]).
 
 #### 3.6 Concrete Step-by-Step State Trace
 Input: `times = [[2,1,1],[2,3,1],[3,4,1]], n = 4, k = 2`.
 - Initial: `dist = [inf, inf, 0, inf, inf]` (1-indexed). Heap: `[(2, 0)]`.
-- **Iteration 1:** Dequeue `(2, 0)`. $\text{dist}[2] = 0$ is finalized.
-  - Neighbor 1: $\text{dist}[2] + 1 = 1 < \infty \implies \text{dist}[1] = 1$. Enqueue `(1, 1)`.
-  - Neighbor 3: $\text{dist}[2] + 1 = 1 < \infty \implies \text{dist}[3] = 1$. Enqueue `(3, 1)`.
+- **Iteration 1:** Dequeue `(2, 0)`. dist[2] = 0 is finalized.
+  - Neighbor 1: dist[2] + 1 = 1 < infinity => dist[1] = 1. Enqueue `(1, 1)`.
+  - Neighbor 3: dist[2] + 1 = 1 < infinity => dist[3] = 1. Enqueue `(3, 1)`.
   - Heap: `[(1, 1), (3, 1)]`.
-- **Iteration 2:** Dequeue `(1, 1)`. $\text{dist}[1] = 1$ is finalized.
+- **Iteration 2:** Dequeue `(1, 1)`. dist[1] = 1 is finalized.
   - Node 1 has no outgoing edges.
   - Heap: `[(3, 1)]`.
-- **Iteration 3:** Dequeue `(3, 1)`. $\text{dist}[3] = 1$ is finalized.
-  - Neighbor 4: $\text{dist}[3] + 1 = 2 < \infty \implies \text{dist}[4] = 2$. Enqueue `(4, 2)`.
+- **Iteration 3:** Dequeue `(3, 1)`. dist[3] = 1 is finalized.
+  - Neighbor 4: dist[3] + 1 = 2 < infinity => dist[4] = 2. Enqueue `(4, 2)`.
   - Heap: `[(4, 2)]`.
-- **Iteration 4:** Dequeue `(4, 2)`. $\text{dist}[4] = 2$ is finalized.
+- **Iteration 4:** Dequeue `(4, 2)`. dist[4] = 2 is finalized.
   - Node 4 has no outgoing edges.
   - Heap empty.
 - Final Distances: `dist[1]=1, dist[2]=0, dist[3]=1, dist[4]=2`.
-- Max Delay: $\max(1, 0, 1, 2) = 2$. No nodes at $\infty \implies$ Return `2`.
+- Max Delay: max(1, 0, 1, 2) = 2. No nodes at infinity => Return `2`.
 
 ---
 
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **When to choose Approach 1 (Min-Heap / `PriorityQueue`):** The universal industry standard for sparse graphs ($E \ll V^2$). Runs in $O((V + E) \log V)$ time. C# .NET 6+ provides a high-performance native `PriorityQueue<TElement, TPriority>`.
-- **When to choose Approach 2 (Flat Array Dijkstra):** Optimal for dense graphs where $E \approx V^2$. Runs in $O(V^2 + E)$ time and avoids all priority queue node allocations and pointer overhead.
-- **Cache Locality:** Flat array Dijkstra performs sequential scans over contiguous memory, delivering superior cache hit rates when $V$ is small ($V \le 100$).
+- **When to choose Approach 1 (Min-Heap / `PriorityQueue`):** The universal industry standard for sparse graphs (E << V^2). Runs in O((V + E) log V) time. C# .NET 6+ provides a high-performance native `PriorityQueue<TElement, TPriority>`.
+- **When to choose Approach 2 (Flat Array Dijkstra):** Optimal for dense graphs where E ~ V^2. Runs in O(V^2 + E) time and avoids all priority queue node allocations and pointer overhead.
+- **Cache Locality:** Flat array Dijkstra performs sequential scans over contiguous memory, delivering superior cache hit rates when V is small (V <= 100).
 
 #### 4.2 Step-by-Step Natural Progression Flow
-1. **Setup & Boundaries:** Construct directed adjacency list `adj[u]` storing `(neighbor, weight)`. Initialize `dist[]` to $\infty$, `dist[k] = 0`.
-2. **Main Exploration Loop:** Dequeue min-distance node $u$ from the priority queue.
-3. **Invariant Maintenance & Condition Gates:** Skip stale distance pairs. Relax each outgoing edge $(u, v, w)$ and push improvements.
-4. **Resolution & Return:** Find $\max_{1 \le i \le n} \text{dist}[i]$. If any $\text{dist}[i] == \infty$, return `-1`; otherwise return the max delay.
+1. **Setup & Boundaries:** Construct directed adjacency list `adj[u]` storing `(neighbor, weight)`. Initialize `dist[]` to infinity, `dist[k] = 0`.
+2. **Main Exploration Loop:** Dequeue min-distance node u from the priority queue.
+3. **Invariant Maintenance & Condition Gates:** Skip stale distance pairs. Relax each outgoing edge (u, v, w) and push improvements.
+4. **Resolution & Return:** Find max_1 <= i <= n dist[i]. If any dist[i] == infinity, return `-1`; otherwise return the max delay.
 
 #### 4.3 Alternative Approaches Analysis
-- **Bellman-Ford Algorithm:** Runs in $O(V \cdot E)$. While resilient to negative edge weights, it performs unnecessary edge sweeps on graphs with strictly non-negative weights where Dijkstra is guaranteed optimal.
-- **Floyd-Warshall All-Pairs Shortest Path:** Runs in $O(V^3)$. Computes all pairs when only a single source $k$ is required; excessive for SSSP.
+- **Bellman-Ford Algorithm:** Runs in O(V * E). While resilient to negative edge weights, it performs unnecessary edge sweeps on graphs with strictly non-negative weights where Dijkstra is guaranteed optimal.
+- **Floyd-Warshall All-Pairs Shortest Path:** Runs in O(V^3). Computes all pairs when only a single source k is required; excessive for SSSP.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Metric | Approach 1: Dijkstra with Min-Heap | Approach 2: Dijkstra with Flat Array | Approach 3: Bellman-Ford |
 | :--- | :--- | :--- | :--- |
-| **Time Complexity (Sparse)** | $O((V + E) \log V)$ | $O(V^2)$ | $O(V \cdot E)$ |
-| **Time Complexity (Dense)** | $O(V^2 \log V)$ | $O(V^2)$ | $O(V^3)$ |
-| **Auxiliary Space** | $O(V + E)$ (graph + heap) | $O(V + E)$ (graph + dist) | $O(V)$ dist array |
-| **Edge Weight Restriction** | Non-negative ($w \ge 0$) | Non-negative ($w \ge 0$) | Allows negative weights |
+| **Time Complexity (Sparse)** | O((V + E) log V) | O(V^2) | O(V * E) |
+| **Time Complexity (Dense)** | O(V^2 log V) | O(V^2) | O(V^3) |
+| **Auxiliary Space** | O(V + E) (graph + heap) | O(V + E) (graph + dist) | O(V) dist array |
+| **Edge Weight Restriction** | Non-negative (w >= 0) | Non-negative (w >= 0) | Allows negative weights |
 | **Implementation Overhead** | PriorityQueue management | Simple array loop | Simple double loop |
 
 ---
@@ -197,7 +197,7 @@ public class Solution
 }
 ```
 
-#### Approach 2: Dijkstra with Flat Array ($O(V^2)$ Dense Optimal)
+#### Approach 2: Dijkstra with Flat Array (O(V^2) Dense Optimal)
 ```csharp
 public class SolutionDense
 {
@@ -278,36 +278,36 @@ public class SolutionDense
 | **LeetCode Link** | [Redundant Connection](https://leetcode.com/problems/redundant-connection/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** Given an undirected graph that started as a tree with $n$ nodes labeled from $1$ to $n$, with one additional edge added, return an edge that can be removed so that the resulting graph is a tree. If there are multiple answers, return the edge that occurs last in the input.
+- **Formal Statement:** Given an undirected graph that started as a tree with n nodes labeled from 1 to n, with one additional edge added, return an edge that can be removed so that the resulting graph is a tree. If there are multiple answers, return the edge that occurs last in the input.
 - **Key Constraints:**
-  - $n == \text{edges.Length} \in [3, 1000]$.
-  - $\text{edges}[i] = [u_i, v_i]$ where $1 \le u_i < v_i \le n$.
+  - n == edges.Length in [3, 1000].
+  - edges[i] = [u_i, v_i] where 1 <= u_i < v_i <= n.
   - No duplicate edges; the given graph is fully connected.
 - **Senior Edge Cases to Defend:**
   - Cycle closed on the very last edge of the input vs cycle closed early.
-  - Linear chain closed into a cycle: $1-2-3-4-1$.
+  - Linear chain closed into a cycle: 1-2-3-4-1.
   - Triangle component attached to a long acyclic tail: The edge inside the triangle must be identified, not the tail edges.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Cycle Detection via Equivalence Classes in an Undirected Spanning Tree. A tree of $n$ vertices has exactly $n - 1$ edges. An $n$-th edge creates exactly one fundamental cycle. Processing edges chronologically with Disjoint Set Union (DSU) reveals the cycle on the first edge whose endpoints already share a common root.
+- **Conceptual Essence:** Cycle Detection via Equivalence Classes in an Undirected Spanning Tree. A tree of n vertices has exactly n - 1 edges. An n-th edge creates exactly one fundamental cycle. Processing edges chronologically with Disjoint Set Union (DSU) reveals the cycle on the first edge whose endpoints already share a common root.
 - **Sample 1:**
   - **Input:** `edges = [[1, 2], [1, 3], [2, 3]]`
-  - **Output:** `[2, 3]` (Edge `[2, 3]` closes the cycle $1-2-3-1$).
+  - **Output:** `[2, 3]` (Edge `[2, 3]` closes the cycle 1-2-3-1).
 
 ---
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Think of an electrical wiring diagram. You are connecting $n$ light fixtures with wire segments one by one. Initially, every fixture is on its own isolated island circuit. Each wire segment connects two previously disconnected circuits, joining them into a larger single circuit. However, if you attempt to string a wire between fixture $u$ and fixture $v$, and a test meter reveals that current can already flow between $u$ and $v$ through existing wires, this new wire creates a closed loop (a short-circuit cycle). This wire is redundant, and because it appeared at this chronological point, it is the exact edge to remove.
+Think of an electrical wiring diagram. You are connecting n light fixtures with wire segments one by one. Initially, every fixture is on its own isolated island circuit. Each wire segment connects two previously disconnected circuits, joining them into a larger single circuit. However, if you attempt to string a wire between fixture u and fixture v, and a test meter reveals that current can already flow between u and v through existing wires, this new wire creates a closed loop (a short-circuit cycle). This wire is redundant, and because it appeared at this chronological point, it is the exact edge to remove.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A brute-force solution might iterate through the edges in reverse order, remove edge $e_i$, and run a full BFS or DFS across the remaining $n - 1$ edges to check if the graph remains connected ($O(N^2)$ time). Alternatively, running a DFS cycle check from scratch after adding each edge takes $O(N)$ per edge, leading to $O(N^2)$ total operations. Disjoint Set Union answers connectivity queries in near $O(1)$ amortized time, solving the problem in a single linear pass.
+A brute-force solution might iterate through the edges in reverse order, remove edge e_i, and run a full BFS or DFS across the remaining n - 1 edges to check if the graph remains connected (O(N^2) time). Alternatively, running a DFS cycle check from scratch after adding each edge takes O(N) per edge, leading to O(N^2) total operations. Disjoint Set Union answers connectivity queries in near O(1) amortized time, solving the problem in a single linear pass.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
-- **Tree Invariant:** An undirected connected graph with $n$ nodes and $n - 1$ edges is a tree (contains zero cycles).
-- **Fundamental Cycle Property:** Adding an edge $(u, v)$ to a tree creates exactly one unique simple cycle consisting of $(u, v)$ and the unique path between $u$ and $v$ in the tree.
-- **DSU Root Equality Invariant:** In DSU, $\text{Find}(u)$ returns the canonical representative of the component containing $u$. If $\text{Find}(u) \ne \text{Find}(v)$, no path connects $u$ and $v$; adding the edge is safe and merges their components. If $\text{Find}(u) == \text{Find}(v)$, a path already connects $u$ and $v$; this edge closes the cycle and is the answer.
+- **Tree Invariant:** An undirected connected graph with n nodes and n - 1 edges is a tree (contains zero cycles).
+- **Fundamental Cycle Property:** Adding an edge (u, v) to a tree creates exactly one unique simple cycle consisting of (u, v) and the unique path between u and v in the tree.
+- **DSU Root Equality Invariant:** In DSU, Find(u) returns the canonical representative of the component containing u. If Find(u) != Find(v), no path connects u and v; adding the edge is safe and merges their components. If Find(u) == Find(v), a path already connects u and v; this edge closes the cycle and is the answer.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -335,11 +335,11 @@ Input: `edges = [[1, 2], [1, 3], [2, 3]]`.
   - `Union(1, 2)`: `parent[2] = 1, rank[1] = 1`.
 - **Edge 2 `[1, 3]`:**
   - `Find(1) = 1`, `Find(3) = 3`. Roots differ.
-  - `Union(1, 3)`: `rank[1] > rank[3] \implies parent[3] = 1`.
+  - `Union(1, 3)`: `rank[1] > rank[3] => parent[3] = 1`.
 - **Edge 3 `[2, 3]`:**
-  - `Find(2)`: `parent[2] = 1 \implies root = 1`.
-  - `Find(3)`: `parent[3] = 1 \implies root = 1`.
-  - `Find(2) == Find(3) == 1` $\implies$ Cycle detected!
+  - `Find(2)`: `parent[2] = 1 => root = 1`.
+  - `Find(3)`: `parent[3] = 1 => root = 1`.
+  - `Find(2) == Find(3) == 1` => Cycle detected!
 - Return `[2, 3]`.
 
 ---
@@ -347,24 +347,24 @@ Input: `edges = [[1, 2], [1, 3], [2, 3]]`.
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **When to choose Approach 1 (DSU with Path Compression & Rank):** The textbook optimal solution. Near-linear $O(N \cdot \alpha(N))$ time and $O(N)$ space. Minimal code, highly defensible in senior interviews.
-- **When to choose Approach 2 (DFS Path Finding per Edge):** Feasible if DSU is forbidden by an interviewer, but strictly sub-optimal ($O(N^2)$ time).
+- **When to choose Approach 1 (DSU with Path Compression & Rank):** The textbook optimal solution. Near-linear O(N * alpha(N)) time and O(N) space. Minimal code, highly defensible in senior interviews.
+- **When to choose Approach 2 (DFS Path Finding per Edge):** Feasible if DSU is forbidden by an interviewer, but strictly sub-optimal (O(N^2) time).
 
 #### 4.2 Step-by-Step Natural Progression Flow
-1. **Setup & Boundaries:** Allocate `parent` and `rank` arrays of size $n + 1$ (1-indexed). Set `parent[i] = i`.
+1. **Setup & Boundaries:** Allocate `parent` and `rank` arrays of size n + 1 (1-indexed). Set `parent[i] = i`.
 2. **Main Exploration Loop:** Iterate sequentially through `edges`.
 3. **Invariant Maintenance & Condition Gates:** Compute `Find(u)` and `Find(v)`. If equal, return `edge`. Else, `Union(u, v)`.
 4. **Resolution & Return:** The loop is guaranteed to return the closing edge.
 
 #### 4.3 Alternative Approaches Analysis
-- **DFS Reachability:** Build an adjacency list incrementally. For each edge `(u, v)`, check if `DFS(u, v)` can reach $v$ via existing edges. If yes, return `(u, v)`. If no, add the edge to the adjacency list. Time: $O(N^2)$.
+- **DFS Reachability:** Build an adjacency list incrementally. For each edge `(u, v)`, check if `DFS(u, v)` can reach v via existing edges. If yes, return `(u, v)`. If no, add the edge to the adjacency list. Time: O(N^2).
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Metric | Approach 1: Disjoint Set Union (DSU) | Approach 2: Incremental DFS Cycle Search |
 | :--- | :--- | :--- |
-| **Time Complexity** | $O(N \cdot \alpha(N)) \approx O(N)$ | $O(N^2)$ |
-| **Auxiliary Space** | $O(N)$ (parent + rank) | $O(N)$ (adjacency list + visited) |
+| **Time Complexity** | O(N * alpha(N)) ~ O(N) | O(N^2) |
+| **Auxiliary Space** | O(N) (parent + rank) | O(N) (adjacency list + visited) |
 | **Edge Processing** | Single streaming pass | Repeated DFS searches |
 | **Cache Locality** | Excellent (flat primitive arrays) | Poor (pointer indirection in adjacency list) |
 
@@ -448,38 +448,38 @@ public class Solution
 | **LeetCode Link** | [Cheapest Flights Within K Stops](https://leetcode.com/problems/cheapest-flights-within-k-stops/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** There are $n$ cities connected by flights given as $flights[i] = [from_i, to_i, price_i]$. Given `src`, `dst`, and `k`, return the cheapest price from `src` to `dst` with at most `k` stops. If no such route exists, return `-1`.
+- **Formal Statement:** There are n cities connected by flights given as flights[i] = [from_i, to_i, price_i]. Given `src`, `dst`, and `k`, return the cheapest price from `src` to `dst` with at most `k` stops. If no such route exists, return `-1`.
 - **Key Constraints:**
-  - $1 \le n \le 100$.
-  - $0 \le flights.Length \le (n \times (n - 1) / 2)$.
-  - $flights[i].Length == 3, 0 \le from_i, to_i < n, from_i \ne to_i$.
-  - $1 \le price_i \le 10^4$.
-  - $0 \le k \le n - 1$.
+  - 1 <= n <= 100.
+  - 0 <= flights.Length <= (n * (n - 1) / 2).
+  - flights[i].Length == 3, 0 <= from_i, to_i < n, from_i != to_i.
+  - 1 <= price_i <= 10^4.
+  - 0 <= k <= n - 1.
 - **Senior Edge Cases to Defend:**
-  - $k = 0$: Direct flights only (path length strictly $\le 1$ edge).
-  - Cascading Updates Bug: In a single Bellman-Ford round, relaxing edge $A \to B$ followed immediately by $B \to C$ allows distance improvements to propagate 2 edges in 1 iteration, violating the stop limit.
-  - Cycle with cheaper total cost that exceeds $k$ stops: Must reject in favor of a higher-cost route satisfying the $\le k$ constraint.
+  - k = 0: Direct flights only (path length strictly <= 1 edge).
+  - Cascading Updates Bug: In a single Bellman-Ford round, relaxing edge A -> B followed immediately by B -> C allows distance improvements to propagate 2 edges in 1 iteration, violating the stop limit.
+  - Cycle with cheaper total cost that exceeds k stops: Must reject in favor of a higher-cost route satisfying the <= k constraint.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Step-Bounded Shortest Path. At most $k$ stops is mathematically equivalent to paths containing at most $k + 1$ edges. Solved via $k + 1$ rounds of Bellman-Ford edge relaxation with distance snapshotting, or level-order BFS.
+- **Conceptual Essence:** Step-Bounded Shortest Path. At most k stops is mathematically equivalent to paths containing at most k + 1 edges. Solved via k + 1 rounds of Bellman-Ford edge relaxation with distance snapshotting, or level-order BFS.
 - **Sample 1:**
   - **Input:** `n = 4, flights = [[0,1,100],[1,2,100],[2,0,100],[1,3,600],[2,3,200]], src = 0, dst = 3, k = 1`
-  - **Output:** `700` (Route $0 \to 1 \to 3$ with cost $100 + 600 = 700$. Route $0 \to 1 \to 2 \to 3$ costs $400$ but requires 2 stops).
+  - **Output:** `700` (Route 0 -> 1 -> 3 with cost 100 + 600 = 700. Route 0 -> 1 -> 2 -> 3 costs 400 but requires 2 stops).
 
 ---
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine booking airline tickets under a strict maximum layover policy ($k$ stops $\implies k + 1$ flight legs). You have a calendar. On Day 0, you are at `src` with $\$0$ spent. On Day 1, you can only board direct flights departing from your Day 0 position. On Day 2, you can only board flights departing from cities you could reach by Day 1, and so on. You never allow a traveler to board two consecutive connecting flights on the same day. By taking an exact snapshot of your ledger at the end of each day, you ensure that Day $r$ only computes routes utilizing at most $r$ flight segments.
+Imagine booking airline tickets under a strict maximum layover policy (k stops => k + 1 flight legs). You have a calendar. On Day 0, you are at `src` with 0 dollars spent. On Day 1, you can only board direct flights departing from your Day 0 position. On Day 2, you can only board flights departing from cities you could reach by Day 1, and so on. You never allow a traveler to board two consecutive connecting flights on the same day. By taking an exact snapshot of your ledger at the end of each day, you ensure that Day r only computes routes utilizing at most r flight segments.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-Standard Dijkstra fails because it greedily finalizes the global shortest distance regardless of step count. A cheaper route with 5 stops could overwrite the tentative distance to a city and prevent a valid 2-stop route from ever reaching the destination. Conversely, a naive DFS with backtracking exploring all step-bounded paths takes $O(V^k)$ exponential time without memoization.
+Standard Dijkstra fails because it greedily finalizes the global shortest distance regardless of step count. A cheaper route with 5 stops could overwrite the tentative distance to a city and prevent a valid 2-stop route from ever reaching the destination. Conversely, a naive DFS with backtracking exploring all step-bounded paths takes O(V^k) exponential time without memoization.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
-- **Edge-Step Equivalence:** A path with $\le k$ stops contains $\le k + 1$ directed edges.
-- **Bellman-Ford Step Invariant:** In round $r$ (for $r = 1 \dots k + 1$), $\text{dist}[v]$ computes the minimum cost to reach node $v$ from `src` using **at most $r$ edges**.
-- **Snapshot Isolation Invariant:** To prevent intra-round cascading (relaxing $u \to v$ and immediately using the updated $v$ to relax $v \to w$ within round $r$), we clone $\text{dist}$ into $\text{tempDist}$ at the start of each round. All relaxations read strictly from $\text{dist}$ and write into $\text{tempDist}$.
+- **Edge-Step Equivalence:** A path with <= k stops contains <= k + 1 directed edges.
+- **Bellman-Ford Step Invariant:** In round r (for r = 1 ... k + 1), dist[v] computes the minimum cost to reach node v from `src` using **at most r edges**.
+- **Snapshot Isolation Invariant:** To prevent intra-round cascading (relaxing u -> v and immediately using the updated v to relax v -> w within round r), we clone dist into tempDist at the start of each round. All relaxations read strictly from dist and write into tempDist.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -498,7 +498,7 @@ At end of round: dist = tempDist
 ```
 
 #### 3.5 State Transition Triggers & Decision Gates
-- Loop $r$ from $0$ to $k$:
+- Loop r from 0 to k:
   - `tempDist = (int[])dist.Clone()`
   - For each `[u, v, price]` in `flights`:
     - Gate: If `dist[u] != int.MaxValue`:
@@ -508,18 +508,18 @@ At end of round: dist = tempDist
 
 #### 3.6 Concrete Step-by-Step State Trace
 Input: `n = 4, flights = [[0,1,100],[1,2,100],[2,0,100],[1,3,600],[2,3,200]], src = 0, dst = 3, k = 1`.
-- Max edges allowed: $k + 1 = 2$.
+- Max edges allowed: k + 1 = 2.
 - Initial: `dist = [0, inf, inf, inf]`.
 - **Round 0 (1 edge max):**
   - `tempDist = [0, inf, inf, inf]`.
-  - Relax `[0, 1, 100]`: `dist[0] + 100 = 100 < tempDist[1] \implies tempDist[1] = 100`.
+  - Relax `[0, 1, 100]`: `dist[0] + 100 = 100 < tempDist[1] => tempDist[1] = 100`.
   - All other edges have `dist[u] == inf`.
   - `dist = [0, 100, inf, inf]`.
 - **Round 1 (2 edges max):**
   - `tempDist = [0, 100, inf, inf]`.
   - Relax `[0, 1, 100]`: `dist[0] + 100 = 100`.
-  - Relax `[1, 2, 100]`: `dist[1] + 100 = 200 < tempDist[2] \implies tempDist[2] = 200`.
-  - Relax `[1, 3, 600]`: `dist[1] + 600 = 700 < tempDist[3] \implies tempDist[3] = 700`.
+  - Relax `[1, 2, 100]`: `dist[1] + 100 = 200 < tempDist[2] => tempDist[2] = 200`.
+  - Relax `[1, 3, 600]`: `dist[1] + 600 = 700 < tempDist[3] => tempDist[3] = 700`.
   - Note: `[2, 3, 200]` reads `dist[2]` (which was `inf` in previous round snapshot), so it does NOT trigger!
   - `dist = [0, 100, 200, 700]`.
 - Loop finishes after 2 rounds.
@@ -531,11 +531,11 @@ Input: `n = 4, flights = [[0,1,100],[1,2,100],[2,0,100],[1,3,600],[2,3,200]], sr
 
 #### 4.1 Anchor Points & Approach Selection Criteria
 - **When to choose Approach 1 (Bellman-Ford with Snapshotting):** Recommended default. Extremely concise, impossible to get wrong in an interview once snapshotting is understood, and requires zero complex queue data structures.
-- **When to choose Approach 2 (Level-Order BFS):** Preferred when the graph is sparse and only a small subset of nodes are reachable within $k$ stops. Skips edges incident to unreachable vertices.
+- **When to choose Approach 2 (Level-Order BFS):** Preferred when the graph is sparse and only a small subset of nodes are reachable within k stops. Skips edges incident to unreachable vertices.
 
 #### 4.2 Step-by-Step Natural Progression Flow
-1. **Setup & Boundaries:** Initialize `dist` of size $n$ to $\infty$, `dist[src] = 0`.
-2. **Main Exploration Loop:** Run outer loop exactly $k + 1$ times.
+1. **Setup & Boundaries:** Initialize `dist` of size n to infinity, `dist[src] = 0`.
+2. **Main Exploration Loop:** Run outer loop exactly k + 1 times.
 3. **Invariant Maintenance & Condition Gates:** Clone `dist` to `tempDist`. Relax all edges from `dist[u]` into `tempDist[v]`. Reassign `dist = tempDist`.
 4. **Resolution & Return:** Return `dist[dst] == inf ? -1 : dist[dst]`.
 
@@ -546,8 +546,8 @@ Input: `n = 4, flights = [[0,1,100],[1,2,100],[2,0,100],[1,3,600],[2,3,200]], sr
 
 | Metric | Approach 1: Bellman-Ford (Snapshotting) | Approach 2: Level-Order BFS | Approach 3: Modified Dijkstra |
 | :--- | :--- | :--- | :--- |
-| **Time Complexity** | $O((k + 1) \cdot E)$ | $O((k + 1) \cdot E)$ | $O(E \log(V \cdot k))$ |
-| **Auxiliary Space** | $O(V)$ (two arrays) | $O(V + E)$ (graph + queue) | $O(V \cdot k)$ |
+| **Time Complexity** | O((k + 1) * E) | O((k + 1) * E) | O(E log(V * k)) |
+| **Auxiliary Space** | O(V) (two arrays) | O(V + E) (graph + queue) | O(V * k) |
 | **Implementation Complexity** | Very Low (20 lines) | Medium (queue level loop) | High (state tuple + pruning logic) |
 | **Cascading Bug Immunity** | Fully immune via snapshot | Fully immune via level size | N/A |
 
@@ -667,18 +667,18 @@ public class SolutionBfs
 | **LeetCode Link** | [Min Cost to Connect All Points](https://leetcode.com/problems/min-cost-to-connect-all-points/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** You are given an array `points` representing integer coordinates of points on a 2D plane, where $points[i] = [x_i, y_i]$. The cost of connecting two points is the Manhattan distance: $|x_i - x_j| + |y_i - y_j|$. Return the minimum cost to make all points connected (Minimum Spanning Tree).
+- **Formal Statement:** You are given an array `points` representing integer coordinates of points on a 2D plane, where points[i] = [x_i, y_i]. The cost of connecting two points is the Manhattan distance: |x_i - x_j| + |y_i - y_j|. Return the minimum cost to make all points connected (Minimum Spanning Tree).
 - **Key Constraints:**
-  - $1 \le points.Length \le 1000$.
-  - $-10^6 \le x_i, y_i \le 10^6$.
-  - All pairs $(x_i, y_i)$ are distinct.
-  - The implicit graph is a complete graph with $V = 1000$ and $E = \frac{V(V-1)}{2} \approx 500,000$ edges.
+  - 1 <= points.Length <= 1000.
+  - -10^6 <= x_i, y_i <= 10^6.
+  - All pairs (x_i, y_i) are distinct.
+  - The implicit graph is a complete graph with V = 1000 and E = (V(V-1)) / (2) ~ 500,000 edges.
 - **Senior Edge Cases to Defend:**
-  - Complete graph scale ($E \approx 5 \times 10^5$): Kruskal's algorithm allocating and sorting $500,000$ edge objects causes severe memory churn and GC pressure. Prim's algorithm with a flat array avoids edge allocation entirely ($O(V)$ auxiliary space).
-  - Single point ($n = 1$): Return `0` immediately.
+  - Complete graph scale (E ~ 5 x 10^5): Kruskal's algorithm allocating and sorting 500,000 edge objects causes severe memory churn and GC pressure. Prim's algorithm with a flat array avoids edge allocation entirely (O(V) auxiliary space).
+  - Single point (n = 1): Return `0` immediately.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Minimum Spanning Tree (MST) on a dense Euclidean complete graph. Prim's algorithm with a flat array runs in $O(V^2)$ time and $O(V)$ space, outperforming Kruskal's $O(E \log E)$ on dense topologies.
+- **Conceptual Essence:** Minimum Spanning Tree (MST) on a dense Euclidean complete graph. Prim's algorithm with a flat array runs in O(V^2) time and O(V) space, outperforming Kruskal's O(E log E) on dense topologies.
 - **Sample 1:**
   - **Input:** `points = [[0,0],[2,2],[3,10],[5,2],[7,0]]`
   - **Output:** `20`
@@ -688,18 +688,18 @@ public class SolutionBfs
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine wiring a power grid across $n$ remote villages. Initially, Village 0 is powered by a central generator. The remaining $n - 1$ villages are unpowered in the dark. At every step, you find the shortest power cable capable of connecting any unpowered village to the already-electrified grid. You string that cable, bringing that village into the energized network. You then update the minimum cable length required for each remaining unpowered village to tap into the newly energized neighbor. Repeat until all villages have electricity.
+Imagine wiring a power grid across n remote villages. Initially, Village 0 is powered by a central generator. The remaining n - 1 villages are unpowered in the dark. At every step, you find the shortest power cable capable of connecting any unpowered village to the already-electrified grid. You string that cable, bringing that village into the energized network. You then update the minimum cable length required for each remaining unpowered village to tap into the newly energized neighbor. Repeat until all villages have electricity.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-Kruskal's algorithm computes all pairwise Manhattan distances, instantiates $500,000$ `(u, v, cost)` edge tuples, and sorts them ($O(E \log E)$). In high-throughput backend services, allocating half a million heap objects causes GC pauses. Prim's algorithm with a flat array computes edge weights on-the-fly and operates strictly over $O(V)$ primitive arrays, achieving zero heap allocations.
+Kruskal's algorithm computes all pairwise Manhattan distances, instantiates 500,000 `(u, v, cost)` edge tuples, and sorts them (O(E log E)). In high-throughput backend services, allocating half a million heap objects causes GC pauses. Prim's algorithm with a flat array computes edge weights on-the-fly and operates strictly over O(V) primitive arrays, achieving zero heap allocations.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
-- **MST Cut Property:** Let $S \subset V$ be the subset of vertices currently included in the MST. In the cut $(S, V \setminus S)$, the edge with minimum weight crossing the cut **must belong to the Minimum Spanning Tree**.
-- **Dense Prim's Invariant:** Maintain `minDist[v]`, the minimum distance from vertex $v \in V \setminus S$ to any vertex in $S$. In each step:
-  1. Pick $u = \arg\min_{v \in V \setminus S} \text{minDist}[v]$.
-  2. Mark $u \in S$, add $\text{minDist}[u]$ to `totalCost`.
-  3. For all $v \in V \setminus S$, update $\text{minDist}[v] = \min(\text{minDist}[v], \text{dist}(u, v))$.
-- Since $|S|$ increases by 1 each iteration, exactly $V$ steps are required, resulting in $O(V^2)$ operations.
+- **MST Cut Property:** Let S subset of V be the subset of vertices currently included in the MST. In the cut (S, V \ S), the edge with minimum weight crossing the cut **must belong to the Minimum Spanning Tree**.
+- **Dense Prim's Invariant:** Maintain `minDist[v]`, the minimum distance from vertex v in V \ S to any vertex in S. In each step:
+  1. Pick u = argmin_v in V \ S minDist[v].
+  2. Mark u in S, add minDist[u] to `totalCost`.
+  3. For all v in V \ S, update minDist[v] = min(minDist[v], dist(u, v)).
+- Since |S| increases by 1 each iteration, exactly V steps are required, resulting in O(V^2) operations.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -715,27 +715,27 @@ Prim's Cut Evolution:
 ```
 
 #### 3.5 State Transition Triggers & Decision Gates
-- Loop `step` from $0$ to $n - 1$:
-  - Search unvisited $i \in [0, n - 1]$ with minimal `minDist[i]`. Let this be $u$.
+- Loop `step` from 0 to n - 1:
+  - Search unvisited i in [0, n - 1] with minimal `minDist[i]`. Let this be u.
   - Set `inMst[u] = true`, `totalCost += minDist[u]`.
-  - For each unvisited $v \in [0, n - 1]$:
+  - For each unvisited v in [0, n - 1]:
     - Compute `manhattanDist = |x_u - x_v| + |y_u - y_v|`.
     - Gate: If `manhattanDist < minDist[v]`, set `minDist[v] = manhattanDist`.
 
 #### 3.6 Concrete Step-by-Step State Trace
-Input: `points = [[0,0], [2,2], [3,10]]` ($n = 3$).
+Input: `points = [[0,0], [2,2], [3,10]]` (n = 3).
 - `minDist = [0, inf, inf]`, `inMst = [F, F, F]`, `totalCost = 0`.
 - **Step 0:**
   - Min unvisited is node 0 (`minDist[0] = 0`).
   - `inMst[0] = true`, `totalCost += 0`.
   - Update neighbors from 0:
-    - Node 1: $\text{dist}(0, 1) = |0-2| + |0-2| = 4 < \infty \implies \text{minDist}[1] = 4$.
-    - Node 2: $\text{dist}(0, 2) = |0-3| + |0-10| = 13 < \infty \implies \text{minDist}[2] = 13$.
+    - Node 1: dist(0, 1) = |0-2| + |0-2| = 4 < infinity => minDist[1] = 4.
+    - Node 2: dist(0, 2) = |0-3| + |0-10| = 13 < infinity => minDist[2] = 13.
 - **Step 1:**
   - Min unvisited is node 1 (`minDist[1] = 4`).
   - `inMst[1] = true`, `totalCost += 4 = 4`.
   - Update neighbors from 1:
-    - Node 2: $\text{dist}(1, 2) = |2-3| + |2-10| = 1 + 8 = 9 < 13 \implies \text{minDist}[2] = 9$.
+    - Node 2: dist(1, 2) = |2-3| + |2-10| = 1 + 8 = 9 < 13 => minDist[2] = 9.
 - **Step 2:**
   - Min unvisited is node 2 (`minDist[2] = 9`).
   - `inMst[2] = true`, `totalCost += 9 = 13`.
@@ -746,24 +746,24 @@ Input: `points = [[0,0], [2,2], [3,10]]` ($n = 3$).
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **When to choose Approach 1 (Prim's with Flat Array):** Optimal for dense complete graphs ($E = V(V-1)/2$). Runs in $O(V^2)$ time with strictly $O(V)$ space. Eliminates $500,000$ object allocations and sorting overhead.
-- **When to choose Approach 2 (Kruskal's with DSU):** Optimal for sparse graphs where $E \ll V^2$. On complete graphs, sorting $E$ edges incurs $O(E \log E) \approx O(V^2 \log V)$ time and heavy memory allocation.
+- **When to choose Approach 1 (Prim's with Flat Array):** Optimal for dense complete graphs (E = V(V-1)/2). Runs in O(V^2) time with strictly O(V) space. Eliminates 500,000 object allocations and sorting overhead.
+- **When to choose Approach 2 (Kruskal's with DSU):** Optimal for sparse graphs where E << V^2. On complete graphs, sorting E edges incurs O(E log E) ~ O(V^2 log V) time and heavy memory allocation.
 
 #### 4.2 Step-by-Step Natural Progression Flow
-1. **Setup & Boundaries:** Allocate `minDist` array of size $n$, initialize to $\infty$, `minDist[0] = 0`. Allocate `inMst = new bool[n]`.
-2. **Main Exploration Loop:** Run outer loop $n$ times.
-3. **Invariant Maintenance & Condition Gates:** Greedily select unvisited node $u$ with min distance. Mark $u$ as settled. Relax all unvisited nodes $v$ using Manhattan distance from $u$.
+1. **Setup & Boundaries:** Allocate `minDist` array of size n, initialize to infinity, `minDist[0] = 0`. Allocate `inMst = new bool[n]`.
+2. **Main Exploration Loop:** Run outer loop n times.
+3. **Invariant Maintenance & Condition Gates:** Greedily select unvisited node u with min distance. Mark u as settled. Relax all unvisited nodes v using Manhattan distance from u.
 4. **Resolution & Return:** Return accumulated `totalCost`.
 
 #### 4.3 Alternative Approaches Analysis
-- **Prim's with PriorityQueue:** Storing $(v, \text{dist})$ in a min-heap runs in $O(E \log V)$. For a dense graph where $E \approx V^2$, this yields $O(V^2 \log V)$, which is slower than flat array Prim's $O(V^2)$ due to heap push/pop overhead.
+- **Prim's with PriorityQueue:** Storing (v, dist) in a min-heap runs in O(E log V). For a dense graph where E ~ V^2, this yields O(V^2 log V), which is slower than flat array Prim's O(V^2) due to heap push/pop overhead.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Metric | Approach 1: Prim's (Flat Array) | Approach 2: Kruskal's (DSU) | Approach 3: Prim's (Min-Heap) |
 | :--- | :--- | :--- | :--- |
-| **Time Complexity** | $O(V^2)$ strictly | $O(E \log E) = O(V^2 \log V)$ | $O(E \log V) = O(V^2 \log V)$ |
-| **Auxiliary Space** | $O(V)$ strictly | $O(E) \approx 500,000$ objects | $O(E)$ heap nodes |
+| **Time Complexity** | O(V^2) strictly | O(E log E) = O(V^2 log V) | O(E log V) = O(V^2 log V) |
+| **Auxiliary Space** | O(V) strictly | O(E) ~ 500,000 objects | O(E) heap nodes |
 | **Heap Allocations** | 2 primitive arrays | 500,000 tuple objects | 500,000 heap items |
 | **Cache Locality** | Sequential array scan | Array sorting & pointer hops | Tree-based heap pointer jumps |
 | **Suitability for this LC** | Highest (Winner) | Lower | Moderate |
@@ -782,7 +782,7 @@ Input: `points = [[0,0], [2,2], [3,10]]` ($n = 3$).
 // ============================================================================
 ```
 
-#### Approach 1: Prim's Algorithm with Flat Array ($O(V^2)$ Optimal Dense)
+#### Approach 1: Prim's Algorithm with Flat Array (O(V^2) Optimal Dense)
 ```csharp
 public class Solution
 {
@@ -838,7 +838,7 @@ public class Solution
 }
 ```
 
-#### Approach 2: Kruskal's Algorithm with DSU ($O(E \log E)$)
+#### Approach 2: Kruskal's Algorithm with DSU (O(E log E))
 ```csharp
 public class SolutionKruskal
 {
@@ -907,19 +907,19 @@ public class SolutionKruskal
 | **LeetCode Link** | [Critical Connections in a Network](https://leetcode.com/problems/critical-connections-in-a-network/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** There are $n$ servers numbered $0$ to $n - 1$ connected by undirected connections forming a network. A critical connection is an edge that, if removed, disconnects the servers. Return all critical connections (bridges) in the network in any order.
+- **Formal Statement:** There are n servers numbered 0 to n - 1 connected by undirected connections forming a network. A critical connection is an edge that, if removed, disconnects the servers. Return all critical connections (bridges) in the network in any order.
 - **Key Constraints:**
-  - $2 \le n \le 10^5$.
-  - $n - 1 \le connections.Length \le 10^5$.
-  - All connections are unique and undirected ($u \leftrightarrow v$).
+  - 2 <= n <= 10^5.
+  - n - 1 <= connections.Length <= 10^5.
+  - All connections are unique and undirected (u <-> v).
   - The network is guaranteed to be fully connected.
 - **Senior Edge Cases to Defend:**
-  - Direct Parent Edge Ambiguity: In an undirected DFS, edge $(u, v)$ means $v$ has an edge $(v, u)$ back to its immediate parent. This must NOT be counted as a cycle back-edge.
+  - Direct Parent Edge Ambiguity: In an undirected DFS, edge (u, v) means v has an edge (v, u) back to its immediate parent. This must NOT be counted as a cycle back-edge.
   - Cycle with sub-trees: Edges inside a simple cycle are never bridges; edges connecting cycles to peripheral subtrees are bridges.
   - Linear tree graph: In a tree, every single edge is a critical bridge!
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Bridge Detection via Tarjan's Low-Link DFS Algorithm. An undirected edge $(u, v)$ is a critical bridge if and only if no back-edge exists from $v$ or its DFS subtree that reaches $u$ or any ancestor of $u$.
+- **Conceptual Essence:** Bridge Detection via Tarjan's Low-Link DFS Algorithm. An undirected edge (u, v) is a critical bridge if and only if no back-edge exists from v or its DFS subtree that reaches u or any ancestor of u.
 - **Sample 1:**
   - **Input:** `n = 4, connections = [[0,1],[1,2],[2,0],[1,3]]`
   - **Output:** `[[1,3]]` (Servers 0, 1, 2 form a redundant cycle; edge `[1, 3]` is the sole bridge).
@@ -929,18 +929,20 @@ public class SolutionKruskal
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine a mountain-climbing expedition establishing camps and safety ropes. As the team ascends, each camp is numbered in order of discovery time `disc[u]`. Climbers leave primary ascent ropes (DFS tree edges). Occasionally, a climber discovers an old secondary safety cable (a back-edge) hooking directly into an earlier camp far below. The `lowLink[u]` value represents the absolute highest camp (lowest discovery time number) that anyone in camp $u$'s team can escape to without using the primary rope that brought them to $u$. If the team below camp $u$ at camp $v$ has `lowLink[v] > disc[u]`, it means the team at $v$ has **no way to climb back up or around** camp $u$ except through rope $(u, v)$. Cutting rope $(u, v)$ leaves camp $v$ permanently stranded! Rope $(u, v)$ is therefore a critical bridge.
+Imagine a mountain-climbing expedition establishing camps and safety ropes. As the team ascends, each camp is numbered in order of discovery time `disc[u]`. Climbers leave primary ascent ropes (DFS tree edges). Occasionally, a climber discovers an old secondary safety cable (a back-edge) hooking directly into an earlier camp far below. The `lowLink[u]` value represents the absolute highest camp (lowest discovery time number) that anyone in camp u's team can escape to without using the primary rope that brought them to u. If the team below camp u at camp v has `lowLink[v] > disc[u]`, it means the team at v has **no way to climb back up or around** camp u except through rope (u, v). Cutting rope (u, v) leaves camp v permanently stranded! Rope (u, v) is therefore a critical bridge.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A brute-force bridge finder removes edge $e_i = (u, v)$ and runs BFS/DFS across the remaining $E - 1$ edges to verify if the graph remains connected. Doing this for all $E$ edges requires $O(E \cdot (V + E))$ time. For $V, E = 10^5$, this requires $10^{10}$ operations, resulting in a severe Time Limit Exceeded (TLE). Tarjan's algorithm discovers all bridges in a single, linear $O(V + E)$ DFS pass.
+A brute-force bridge finder removes edge e_i = (u, v) and runs BFS/DFS across the remaining E - 1 edges to verify if the graph remains connected. Doing this for all E edges requires O(E * (V + E)) time. For V, E = 10^5, this requires 10^10 operations, resulting in a severe Time Limit Exceeded (TLE). Tarjan's algorithm discovers all bridges in a single, linear O(V + E) DFS pass.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
-- **Discovery Time (`disc[u]`):** Monotonically increasing counter assigned when node $u$ is first entered during DFS.
-- **Low-Link Value (`low[u]`):** The smallest discovery time reachable from $u$'s DFS subtree using tree edges and at most one back-edge. Formally:
-  $$\text{low}[u] = \min \begin{cases} \text{disc}[u] \\ \text{disc}[w] & \text{for any back-edge } (u, w) \text{ with } w \ne \text{parent} \\ \text{low}[v] & \text{for any tree-edge } (u, v) \end{cases}$$
-- **Tarjan's Bridge Invariant:** An undirected tree-edge $(u, v)$ (where $u$ is parent of $v$) is a bridge **if and only if**:
-  $$\text{low}[v] > \text{disc}[u]$$
-  If $\text{low}[v] \le \text{disc}[u]$, there exists an alternate route from $v$ or its descendants back to $u$ or an ancestor of $u$, meaning $(u, v)$ lies on a cycle and is not critical.
+- **Discovery Time (`disc[u]`):** Monotonically increasing counter assigned when node u is first entered during DFS.
+- **Low-Link Value (`low[u]`):** The smallest discovery time reachable from u's DFS subtree using tree edges and at most one back-edge. Formally:
+  low[u] = min disc[u]
+disc[w] for any back-edge (u, w) with w != parent
+low[v] for any tree-edge (u, v)
+- **Tarjan's Bridge Invariant:** An undirected tree-edge (u, v) (where u is parent of v) is a bridge **if and only if**:
+  low[v] > disc[u]
+  If low[v] <= disc[u], there exists an alternate route from v or its descendants back to u or an ancestor of u, meaning (u, v) lies on a cycle and is not critical.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -964,10 +966,10 @@ Case 2: Critical Bridge
 ```
 
 #### 3.5 State Transition Triggers & Decision Gates
-- When visiting node $u$ with parent $p$:
+- When visiting node u with parent p:
   - Initialize `disc[u] = low[u] = ++timer`.
-  - For each neighbor $v$ of $u$:
-    - **Gate 1 (Parent Edge):** If $v == p$, skip (immediate reverse edge in undirected graph).
+  - For each neighbor v of u:
+    - **Gate 1 (Parent Edge):** If v == p, skip (immediate reverse edge in undirected graph).
     - **Gate 2 (Back-Edge):** If `disc[v] != -1` (already visited):
       - Update `low[u] = Math.Min(low[u], disc[v])`.
     - **Gate 3 (Tree-Edge):** If `disc[v] == -1` (unvisited):
@@ -1006,8 +1008,8 @@ Input: `n = 4, connections = [[0,1],[1,2],[2,0],[1,3]]`.
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **When to choose Approach 1 (Tarjan's Low-Link DFS):** Mandatory for large-scale bridge finding ($N, E \le 10^5$). Achieves optimal $O(V + E)$ linear time and space.
-- **Why Brute Force Fails:** Removing each edge and checking reachability takes $O(E \cdot (V + E)) = 10^{10}$ operations, guaranteed TLE.
+- **When to choose Approach 1 (Tarjan's Low-Link DFS):** Mandatory for large-scale bridge finding (N, E <= 10^5). Achieves optimal O(V + E) linear time and space.
+- **Why Brute Force Fails:** Removing each edge and checking reachability takes O(E * (V + E)) = 10^10 operations, guaranteed TLE.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 1. **Setup & Boundaries:** Construct undirected adjacency list `adj`. Initialize `disc` array with `-1`, `low` array with `0`, `timer = 0`.
@@ -1022,10 +1024,10 @@ Input: `n = 4, connections = [[0,1],[1,2],[2,0],[1,3]]`.
 
 | Metric | Approach 1: Tarjan's Low-Link DFS | Approach 2: Brute-Force Edge Removal |
 | :--- | :--- | :--- |
-| **Time Complexity** | $O(V + E)$ strictly | $O(E \cdot (V + E))$ |
-| **Auxiliary Space** | $O(V + E)$ (graph + disc + low + stack) | $O(V + E)$ |
-| **DFS Passes** | Exactly 1 pass | $E$ passes |
-| **Scalability ($N = 10^5$)** | Instant (< 50 ms) | Complete timeout (> 30 minutes) |
+| **Time Complexity** | O(V + E) strictly | O(E * (V + E)) |
+| **Auxiliary Space** | O(V + E) (graph + disc + low + stack) | O(V + E) |
+| **DFS Passes** | Exactly 1 pass | E passes |
+| **Scalability (N = 10^5)** | Instant (< 50 ms) | Complete timeout (> 30 minutes) |
 
 ---
 

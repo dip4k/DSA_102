@@ -15,26 +15,26 @@
 | **LeetCode Link** | [Rotting Oranges](https://leetcode.com/problems/rotting-oranges/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** You are given an $m \times n$ grid where each cell has one of three values:
+- **Formal Statement:** You are given an m x n grid where each cell has one of three values:
   - `0` representing an empty cell,
   - `1` representing a fresh orange, or
   - `2` representing a rotten orange.
   Every minute, any fresh orange that is 4-directionally adjacent to a rotten orange becomes rotten. Return the minimum number of minutes that must elapse until no cell has a fresh orange. If this is impossible, return `-1`.
 - **Assumptions & Contracts:**
   - Adjacency is strictly 4-directional (North, South, East, West); diagonals do not transmit rot.
-  - All initially rotten oranges begin spreading rot simultaneously at $t = 0$.
+  - All initially rotten oranges begin spreading rot simultaneously at t = 0.
   - Cells labeled `0` are inert obstacles that do not rot and block rot propagation.
 - **Key Constraints:**
-  - $m == grid.Length$
-  - $n == grid[i].Length$
-  - $1 \le m, n \le 10$
-  - $grid[i][j]$ is `0`, `1`, or `2`.
+  - m == grid.Length
+  - n == grid[i].Length
+  - 1 <= m, n <= 10
+  - grid[i][j] is `0`, `1`, or `2`.
 - **Senior Edge Cases to Defend:**
-  - **Zero Fresh Oranges Initially:** $grid$ contains only `0`s and `2`s. Rot propagation terminates at $t = 0$; return `0` immediately.
+  - **Zero Fresh Oranges Initially:** grid contains only `0`s and `2`s. Rot propagation terminates at t = 0; return `0` immediately.
   - **No Rotten Oranges with Fresh Present:** Fresh oranges exist, but zero rotten oranges exist. Spread cannot initiate; return `-1`.
   - **Unreachable Fresh Orange (Isolated Island):** A fresh orange is bounded entirely by `0`s or edges such that rot cannot reach it; return `-1`.
   - **Simultaneous Wavefront Collision:** Two distinct rotten oranges reach the same fresh orange at the same minute layer. Must be enqueued only once to avoid duplicate queue saturation.
-  - **Single Cell Matrix ($1 \times 1$):** `[[0]]` $\implies 0$, `[[1]]` $\implies -1$, `[[2]]` $\implies 0$.
+  - **Single Cell Matrix (1 x 1):** `[[0]]` => 0, `[[1]]` => -1, `[[2]]` => 0.
 
 ---
 
@@ -63,13 +63,13 @@ Imagine forest fires ignited at multiple points simultaneously in a dense grid f
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
 A naive approach might run an independent single-source BFS from each rotten orange to find the shortest distance to every fresh orange, then compute the minimum distance for each fresh orange, and finally take the maximum over all fresh oranges:
-$$\text{Time} = O(R \times (M \times N))$$
-where $R$ is the count of rotten oranges. When $R = O(M \times N)$, this degrades to $O((M \times N)^2)$. Moreover, tracking per-cell minimum distances across multiple passes introduces unnecessary auxiliary storage and complex book-keeping.
+Time = O(R * (M x N))
+where R is the count of rotten oranges. When R = O(M x N), this degrades to O((M x N)^2). Moreover, tracking per-cell minimum distances across multiple passes introduces unnecessary auxiliary storage and complex book-keeping.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 By enqueuing **all initial rotten oranges simultaneously** into the BFS queue prior to advancing the clock, we establish the **Equidistant Wavefront Invariant**:
-$$\forall u \in \text{Queue at level } k: \text{dist}(\text{Sources}, u) = k$$
-Because BFS explores nodes in non-decreasing order of distance from the source set, the first time any fresh orange is visited by the wavefront is guaranteed to be its globally earliest infection timestamp. Each cell is touched at most once, reducing the runtime from $O((M \times N)^2)$ to strictly $O(M \times N)$.
+for all u in Queue at level k: dist(Sources, u) = k
+Because BFS explores nodes in non-decreasing order of distance from the source set, the first time any fresh orange is visited by the wavefront is guaranteed to be its globally earliest infection timestamp. Each cell is touched at most once, reducing the runtime from O((M x N)^2) to strictly O(M x N).
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -89,8 +89,8 @@ Invariant          : freshCount decremented immediately upon enqueue
 
 #### 3.5 State Transition Triggers & Decision Gates
 1. **Initialization Gate:** Scan grid once. For every cell:
-   - If $grid[r][c] == 2$: `queue.Enqueue((r, c))`
-   - If $grid[r][c] == 1$: `freshCount++`
+   - If grid[r][c] == 2: `queue.Enqueue((r, c))`
+   - If grid[r][c] == 1: `freshCount++`
 2. **Pre-Flight Short Circuit:** If `freshCount == 0`, return `0` immediately.
 3. **Wavefront Loop:** While `queue.Count > 0 && freshCount > 0`:
    - Let `levelSize = queue.Count`.
@@ -105,10 +105,10 @@ Invariant          : freshCount decremented immediately upon enqueue
 4. **Terminal Evaluation:** Return `freshCount == 0 ? minutesElapsed : -1`.
 
 #### 3.6 Concrete Step-by-Step State Trace
-Input: `grid = [[2,1,1],[1,1,0],[0,1,1]]`, $m=3, n=3$.
+Input: `grid = [[2,1,1],[1,1,0],[0,1,1]]`, m=3, n=3.
 - Initial Scan: Rotten queue: `[(0,0)]`, `freshCount = 6`, `minutesElapsed = 0`.
 
-| Minute ($t$) | Nodes Processed this Layer | Infected Neighbors Enqueued | Grid State After Step | Remaining `freshCount` | Queue State for Next Layer |
+| Minute (t) | Nodes Processed this Layer | Infected Neighbors Enqueued | Grid State After Step | Remaining `freshCount` | Queue State for Next Layer |
 | :---: | :--- | :--- | :--- | :---: | :--- |
 | **0** | `(0, 0)` | `(0, 1)`, `(1, 0)` | `[[2,2,1],[2,1,0],[0,1,1]]` | 4 | `[(0,1), (1,0)]` |
 | **1** | `(0, 1)`, `(1, 0)` | From (0,1): `(0,2)`, `(1,1)`<br>From (1,0): none (1,1 already infected) | `[[2,2,2],[2,2,0],[0,1,1]]` | 2 | `[(0,2), (1,1)]` |
@@ -116,14 +116,14 @@ Input: `grid = [[2,1,1],[1,1,0],[0,1,1]]`, $m=3, n=3$.
 | **3** | `(2, 1)` | From (2,1): `(2,2)` | `[[2,2,2],[2,2,0],[0,2,2]]` | 0 | `[(2,2)]` |
 | **4** | Loop terminates (`freshCount == 0`) | None | Unchanged | 0 | Empty |
 
-Final result: `freshCount == 0` $\implies$ return `4`.
+Final result: `freshCount == 0` => return `4`.
 
 ---
 
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Multi-Source BFS with In-Place Grid Modification:** We use the input matrix itself as the visited set by overwriting `1` with `2`. This achieves optimal $O(1)$ extra spatial overhead beyond the BFS queue.
+- **Multi-Source BFS with In-Place Grid Modification:** We use the input matrix itself as the visited set by overwriting `1` with `2`. This achieves optimal O(1) extra spatial overhead beyond the BFS queue.
 - **Why BFS over DFS:** DFS explores deep single branches, which fails to capture the simultaneous, uniform physical time expansion of the rot. Finding minimum time via DFS requires calculating all-pairs shortest paths or tracking minimal global timestamps per cell, causing redundant work.
 
 #### 4.2 Step-by-Step Natural Progression Flow
@@ -133,16 +133,16 @@ Final result: `freshCount == 0` $\implies$ return `4`.
 4. Return time if all fresh oranges rotted; otherwise return -1.
 
 #### 4.3 Alternative Approaches Analysis
-- **Independent Single-Source BFS:** Run BFS from each rotten orange, taking cell-wise minimum over all sources. Runtime $O(R \cdot M \cdot N)$, Space $O(M \cdot N)$. Strictly inferior to multi-source BFS.
-- **Cell-by-Cell Simulation (Brute Force):** In each minute, scan all $M \times N$ cells to find fresh oranges adjacent to rotten ones, marking them with temporary state `3`, then convert `3` to `2`. Repeat until no new oranges rot. Time: $O(K \cdot M \cdot N)$ where $K \le M \cdot N$, yielding $O((M \cdot N)^2)$.
+- **Independent Single-Source BFS:** Run BFS from each rotten orange, taking cell-wise minimum over all sources. Runtime O(R * M * N), Space O(M * N). Strictly inferior to multi-source BFS.
+- **Cell-by-Cell Simulation (Brute Force):** In each minute, scan all M x N cells to find fresh oranges adjacent to rotten ones, marking them with temporary state `3`, then convert `3` to `2`. Repeat until no new oranges rot. Time: O(K * M * N) where K <= M * N, yielding O((M * N)^2).
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Approach | Time (Best) | Time (Avg) | Time (Worst) | Aux Space | Output Space | Cache Locality | In-Place Mutability | Streaming Suitability |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Multi-Source BFS (Optimal)** | $O(M \cdot N)$ | $O(M \cdot N)$ | $O(M \cdot N)$ | $O(M \cdot N)$ (Queue) | $O(1)$ | High | Mutates $grid$ to mark visited | Low (requires full matrix) |
-| **Simulation by Passes** | $O(M \cdot N)$ | $O(M^2 \cdot N^2)$ | $O(M^2 \cdot N^2)$ | $O(1)$ | $O(1)$ | Moderate | Mutates $grid$ | Low |
-| **All-Pairs Shortest Path** | $O((MN)^2)$ | $O((MN)^2)$ | $O((MN)^2)$ | $O(M \cdot N)$ | $O(1)$ | Low | Non-mutating | Low |
+| **Multi-Source BFS (Optimal)** | O(M * N) | O(M * N) | O(M * N) | O(M * N) (Queue) | O(1) | High | Mutates grid to mark visited | Low (requires full matrix) |
+| **Simulation by Passes** | O(M * N) | O(M^2 * N^2) | O(M^2 * N^2) | O(1) | O(1) | Moderate | Mutates grid | Low |
+| **All-Pairs Shortest Path** | O((MN)^2) | O((MN)^2) | O((MN)^2) | O(M * N) | O(1) | Low | Non-mutating | Low |
 
 ---
 
@@ -255,7 +255,7 @@ public class Solution
 
 ### 6. Senior Pitfalls & Defensive Traps
 1. **The Trailing Minute Bug:** Incrementing `minutesElapsed` blindly at the end of every while loop iteration. If the queue finishes processing the last infected orange, a naive condition `while (queue.Count > 0)` will execute one extra iteration where no fresh oranges are infected, inflating the answer by +1. Defensive fix: Either guard with `while (queue.Count > 0 && freshCount > 0)` or use a flag `bool infectedAny = false` per level.
-2. **Duplicate Enqueueing Vulnerability:** Delaying the state mutation (`grid[nr][nc] = 2`) until dequeueing. If multiple rotten oranges share a fresh neighbor, that neighbor will be added to the queue multiple times, ballooning memory to $O((M \cdot N)^2)$ and skewing time complexity. **Rule:** Mutate state *at the point of enqueueing*.
+2. **Duplicate Enqueueing Vulnerability:** Delaying the state mutation (`grid[nr][nc] = 2`) until dequeueing. If multiple rotten oranges share a fresh neighbor, that neighbor will be added to the queue multiple times, ballooning memory to O((M * N)^2) and skewing time complexity. **Rule:** Mutate state *at the point of enqueueing*.
 3. **Empty / Non-Uniform Jagged Arrays:** Defensive validation must verify `grid[0] != null` and consistent column lengths in production code.
 
 ---
@@ -272,23 +272,23 @@ public class Solution
 ### 1. Problem Detail & Constraints
 - **Formal Statement:** Given an integer array `nums` and an integer `k`, split `nums` into `k` non-empty subarrays such that the largest sum of any subarray is minimized. Return the minimized largest sum of the split. A subarray is a contiguous part of the array.
 - **Assumptions & Contracts:**
-  - $k$ is always $\le nums.Length$.
-  - All elements $nums[i] \ge 0$.
+  - k is always <= nums.Length.
+  - All elements nums[i] >= 0.
   - Subarrays must be contiguous; reordering elements is strictly forbidden.
 - **Key Constraints:**
-  - $1 \le nums.Length \le 1000$
-  - $0 \le nums[i] \le 10^6$
-  - $1 \le k \le \min(50, nums.Length)$
+  - 1 <= nums.Length <= 1000
+  - 0 <= nums[i] <= 10^6
+  - 1 <= k <= min(50, nums.Length)
 - **Senior Edge Cases to Defend:**
-  - **$k == nums.Length$:** Each element forms its own subarray; the answer is strictly $\max(nums)$.
-  - **$k == 1$:** The entire array is a single subarray; the answer is $\sum nums$.
-  - **Large Sums Causing 32-bit Integer Overflow:** $1000 \times 10^6 = 10^9$, which fits in signed 32-bit int, but intermediate binary search sums (`left + right`) can reach $2 \times 10^9 \approx 2^{31}-1$. Must use 64-bit `long` for binary search boundaries.
-  - **All Zeros:** `nums = [0, 0, 0], k = 2` $\implies$ answer is `0`.
+  - **k == nums.Length:** Each element forms its own subarray; the answer is strictly max(nums).
+  - **k == 1:** The entire array is a single subarray; the answer is Sum nums.
+  - **Large Sums Causing 32-bit Integer Overflow:** 1000 x 10^6 = 10^9, which fits in signed 32-bit int, but intermediate binary search sums (`left + right`) can reach 2 x 10^9 ~ 2^31-1. Must use 64-bit `long` for binary search boundaries.
+  - **All Zeros:** `nums = [0, 0, 0], k = 2` => answer is `0`.
 
 ---
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Binary Search over the monotonic answer space combined with a greedy feasibility check. Instead of determining *how* to split, we guess a candidate maximum subarray sum $S$ and test if the array can be partitioned into $\le k$ subarrays where no subarray exceeds sum $S$.
+- **Conceptual Essence:** Binary Search over the monotonic answer space combined with a greedy feasibility check. Instead of determining *how* to split, we guess a candidate maximum subarray sum S and test if the array can be partitioned into <= k subarrays where no subarray exceeds sum S.
 - **Sample 1:**
   - **Input:** `nums = [7,2,5,10,8], k = 2`
   - **Output:** `18`
@@ -308,24 +308,24 @@ public class Solution
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine packing items into $k$ shipping containers. Each container has a weight limit $S$. You cannot reorder items; they must roll into containers in order off a conveyor belt. If you choose a tiny weight limit $S = 5$, you need 20 containers (fails the $\le k$ limit). If you choose a massive limit $S = 1,000,000$, all items fit into 1 container (feasible, but not minimal). As container capacity $S$ increases, the required container count decreases monotonically. This monotonic relationship allows binary search to pinpoint the exact smallest capacity that requires $\le k$ containers.
+Imagine packing items into k shipping containers. Each container has a weight limit S. You cannot reorder items; they must roll into containers in order off a conveyor belt. If you choose a tiny weight limit S = 5, you need 20 containers (fails the <= k limit). If you choose a massive limit S = 1,000,000, all items fit into 1 container (feasible, but not minimal). As container capacity S increases, the required container count decreases monotonically. This monotonic relationship allows binary search to pinpoint the exact smallest capacity that requires <= k containers.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
 Dynamic Programming formulation:
-$$DP[i][j] = \min_{p < i} \max(DP[p][j-1], \sum_{m=p+1}^i nums[m])$$
-- State Space: $N \times k$
-- Transition Cost: $O(N)$ to evaluate all possible split points $p$.
-- Total Time: $O(k \cdot N^2)$. For $N = 1000, k = 50$, $k \cdot N^2 = 5 \times 10^7$ operations. While it passes, it uses $O(k \cdot N)$ memory and is far slower than binary search.
+DP[i][j] = min_p < i max(DP[p][j-1], Sum(m=p+1..i) nums[m])
+- State Space: N x k
+- Transition Cost: O(N) to evaluate all possible split points p.
+- Total Time: O(k * N^2). For N = 1000, k = 50, k * N^2 = 5 x 10^7 operations. While it passes, it uses O(k * N) memory and is far slower than binary search.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
-- **Monotonicity of Predicate $P(S)$:**
-  Let $P(S)$ be the boolean predicate: *"Can `nums` be split into $\le k$ contiguous subarrays, each with sum $\le S$?"*
-  $$\text{If } P(S) \text{ is True, then } \forall S' > S, P(S') \text{ is True.}$$
-  $$\text{If } P(S) \text{ is False, then } \forall S' < S, P(S') \text{ is False.}$$
+- **Monotonicity of Predicate P(S):**
+  Let P(S) be the boolean predicate: *"Can `nums` be split into <= k contiguous subarrays, each with sum <= S?"*
+  If P(S) is True, then for all S' > S, P(S') is True.
+  If P(S) is False, then for all S' < S, P(S') is False.
 - **Exact Search Range:**
-  $$low = \max_{i}(nums[i]) \quad \text{(no subarray can have sum less than its largest element)}$$
-  $$high = \sum_{i} nums[i] \quad \text{(all elements in 1 subarray)}$$
-- The answer space is partitioned into $[False, False, \dots, False, True, True, \dots, True]$. We seek the **first True index**.
+  low = max_i(nums[i]) (no subarray can have sum less than its largest element)
+  high = Sum(i) nums[i] (all elements in 1 subarray)
+- The answer space is partitioned into [False, False, ..., False, True, True, ..., True]. We seek the **first True index**.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -351,50 +351,50 @@ P : [  F        F            T            T        T  ]
 2. **Binary Search Loop (`low < high`):**
    - `mid = low + (high - low) / 2`.
    - If `CanSplit(nums, k, mid)` is True:
-     - Feasible! Target could be `mid` or smaller $\implies high = mid$.
+     - Feasible! Target could be `mid` or smaller => high = mid.
    - Else:
-     - Infeasible! Target must be strictly larger than `mid` $\implies low = mid + 1$.
-3. **Termination:** When $low == high$, return $low$.
+     - Infeasible! Target must be strictly larger than `mid` => low = mid + 1.
+3. **Termination:** When low == high, return low.
 
 #### 3.6 Concrete Step-by-Step State Trace
-Input: `nums = [7, 2, 5, 10, 8]`, $k = 2$.
-- $low = \max(7,2,5,10,8) = 10$.
-- $high = 7 + 2 + 5 + 10 + 8 = 32$.
+Input: `nums = [7, 2, 5, 10, 8]`, k = 2.
+- low = max(7,2,5,10,8) = 10.
+- high = 7 + 2 + 5 + 10 + 8 = 32.
 
-| Iteration | $low$ | $high$ | $mid$ | Greedy Split Simulation for Limit = $mid$ | Subarrays Needed | Feasible ($\le 2$)? | Boundary Update |
+| Iteration | low | high | mid | Greedy Split Simulation for Limit = mid | Subarrays Needed | Feasible (<= 2)? | Boundary Update |
 | :---: | :---: | :---: | :---: | :--- | :---: | :---: | :--- |
-| **1** | 10 | 32 | 21 | `[7,2,5] (14)`, `[10,8] (18)` | 2 | **True** | $high = 21$ |
-| **2** | 10 | 21 | 15 | `[7,2,5] (14)`, `[10] (10)`, `[8] (8)` | 3 | **False** | $low = 16$ |
-| **3** | 16 | 21 | 18 | `[7,2,5] (14)`, `[10,8] (18)` | 2 | **True** | $high = 18$ |
-| **4** | 16 | 18 | 17 | `[7,2,5] (14)`, `[10] (10)`, `[8] (8)` | 3 | **False** | $low = 18$ |
-| **End** | 18 | 18 | - | Terminated ($low == high$) | - | - | Return `18` |
+| **1** | 10 | 32 | 21 | `[7,2,5] (14)`, `[10,8] (18)` | 2 | **True** | high = 21 |
+| **2** | 10 | 21 | 15 | `[7,2,5] (14)`, `[10] (10)`, `[8] (8)` | 3 | **False** | low = 16 |
+| **3** | 16 | 21 | 18 | `[7,2,5] (14)`, `[10,8] (18)` | 2 | **True** | high = 18 |
+| **4** | 16 | 18 | 17 | `[7,2,5] (14)`, `[10] (10)`, `[8] (8)` | 3 | **False** | low = 18 |
+| **End** | 18 | 18 | - | Terminated (low == high) | - | - | Return `18` |
 
 ---
 
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Binary Search on Answer (Optimal):** Time complexity is $O(N \log(\sum nums - \max nums))$. For $N = 1000$ and sum $10^9$, $\log_2(10^9) \approx 30$, yielding $\approx 30 \times 1000 = 3 \times 10^4$ operations. Space is strictly $O(1)$.
+- **Binary Search on Answer (Optimal):** Time complexity is O(N log(Sum nums - max nums)). For N = 1000 and sum 10^9, log_2(10^9) ~ 30, yielding ~ 30 x 1000 = 3 x 10^4 operations. Space is strictly O(1).
 - **Dynamic Programming (Suboptimal):** Useful only if required to output all split indices or when arbitrary non-contiguous partitions are permitted.
 
 #### 4.2 Step-by-Step Natural Progression Flow
-1. Compute $low = \max(nums)$ and $high = \sum nums$.
-2. While $low < high$, calculate midpoint.
-3. Test feasibility in linear time $O(N)$ using greedy accumulation.
+1. Compute low = max(nums) and high = Sum nums.
+2. While low < high, calculate midpoint.
+3. Test feasibility in linear time O(N) using greedy accumulation.
 4. Adjust binary search boundaries according to predicate outcome.
-5. Return $low$.
+5. Return low.
 
 #### 4.3 Alternative Approaches Analysis
-- **Top-Down Memoized DP:** $DP(index, splitsLeft)$. Memoization table of size $1000 \times 50$. Evaluates splits recursively. Memory overhead $O(N \cdot k)$ and high recursion call stack overhead.
-- **Bottom-Up Tabulation with Prefix Sums:** Tabulates $DP[i][j]$ with monotonic queue optimization. Complex to implement without bugs in an interview setting.
+- **Top-Down Memoized DP:** DP(index, splitsLeft). Memoization table of size 1000 x 50. Evaluates splits recursively. Memory overhead O(N * k) and high recursion call stack overhead.
+- **Bottom-Up Tabulation with Prefix Sums:** Tabulates DP[i][j] with monotonic queue optimization. Complex to implement without bugs in an interview setting.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Approach | Time (Best) | Time (Avg) | Time (Worst) | Aux Space | Output Space | Cache Locality | In-Place Mutability | Streaming Suitability |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Binary Search on Answer** | $O(N)$ | $O(N \log S)$ | $O(N \log S)$ | $O(1)$ | $O(1)$ | Optimal | Non-mutating | High |
-| **DP (Tabulation)** | $O(k \cdot N^2)$ | $O(k \cdot N^2)$ | $O(k \cdot N^2)$ | $O(k \cdot N)$ | $O(1)$ | High | Non-mutating | Low |
-| **DP + Monotonic Queue** | $O(k \cdot N)$ | $O(k \cdot N)$ | $O(k \cdot N)$ | $O(N)$ | $O(1)$ | Moderate | Non-mutating | Low |
+| **Binary Search on Answer** | O(N) | O(N log S) | O(N log S) | O(1) | O(1) | Optimal | Non-mutating | High |
+| **DP (Tabulation)** | O(k * N^2) | O(k * N^2) | O(k * N^2) | O(k * N) | O(1) | High | Non-mutating | Low |
+| **DP + Monotonic Queue** | O(k * N) | O(k * N) | O(k * N) | O(N) | O(1) | Moderate | Non-mutating | Low |
 
 ---
 
@@ -510,7 +510,7 @@ public class Solution
 ---
 
 ### 6. Senior Pitfalls & Defensive Traps
-1. **The $low = 0$ Initialization Error:** Setting $low = 0$ or $low = \text{average}(nums)$. If $low < \max(nums)$, the predicate `CanSplit` will encounter an element that individually exceeds `maxSubarraySum`. If not defensively guarded, `currentSubarraySum = num` will start a subarray whose sum immediately exceeds `maxSubarraySum`, triggering an infinite split loop.
+1. **The low = 0 Initialization Error:** Setting low = 0 or low = average(nums). If low < max(nums), the predicate `CanSplit` will encounter an element that individually exceeds `maxSubarraySum`. If not defensively guarded, `currentSubarraySum = num` will start a subarray whose sum immediately exceeds `maxSubarraySum`, triggering an infinite split loop.
 2. **Binary Search Boundary Off-By-One:** Using `while (low <= high)` and `high = mid - 1`. If `mid` is feasible, discarding `mid` (`high = mid - 1`) can throw away the optimal answer. The invariant pattern for finding the first `True` in a `[False...True]` monotonic sequence requires:
    - When feasible: `high = mid` (preserve candidate).
    - When infeasible: `low = mid + 1` (discard infeasible).
@@ -532,17 +532,17 @@ public class Solution
 - **Formal Statement:** Given an encoded string, return its decoded string. The encoding rule is: `k[encoded_string]`, where the `encoded_string` inside the square brackets is being repeated exactly `k` times. `k` is guaranteed to be a positive integer. You may assume that the input string is always valid; there are no extra white spaces, square brackets are well-formed, etc.
 - **Assumptions & Contracts:**
   - Digits are only for repeat numbers `k`. That is, digits do not appear inside the string content itself (e.g., `3[a]` is valid, `3[a2]` is invalid input).
-  - Nesting can be arbitrarily deep: `3[a2[c]]` $\implies$ `accaccacc`.
+  - Nesting can be arbitrarily deep: `3[a2[c]]` => `accaccacc`.
   - Non-bracketed characters may appear at any position: `2[abc]3[cd]ef`.
 - **Key Constraints:**
-  - $1 \le s.Length \le 30$
+  - 1 <= s.Length <= 30
   - `s` consists of lowercase English letters, digits, and square brackets `'['`, `']'`.
-  - All integers in `s` are in the range $[1, 300]$.
+  - All integers in `s` are in the range [1, 300].
 - **Senior Edge Cases to Defend:**
   - **Multi-Digit Repeat Counts:** E.g., `100[leetcode]`. The parser must accumulate digits iteratively (`k = k * 10 + digit`).
   - **Deep Nesting:** E.g., `2[a3[b2[c]]]`. Stacks must correctly maintain outer prefix strings during inner evaluations.
   - **Bare Characters Outside Brackets:** E.g., `abc3[cd]xyz`. Characters before and after bracket blocks must append seamlessly to the active builder.
-  - **Single Repeat ($k = 1$):** `1[a]` $\implies$ `a`.
+  - **Single Repeat (k = 1):** `1[a]` => `a`.
 
 ---
 
@@ -568,14 +568,14 @@ Think of an operating system's process thread executing nested subroutine calls.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
 Attempting to evaluate inner brackets using repeated regex replacements or substring searches (`IndexOf('[')` and `LastIndexOf(']')`):
-$$\text{Scan string} \to \text{Locate innermost brackets} \to \text{Replace} \to \text{Repeat}$$
-Each replacement re-allocates strings and scans the entire string from scratch, resulting in $O(D \cdot L^2)$ time where $D$ is nesting depth and $L$ is string length. In contrast, a stack processes the token stream in a single linear pass $O(N + \text{OutputLength})$.
+Scan string -> Locate innermost brackets -> Replace -> Repeat
+Each replacement re-allocates strings and scans the entire string from scratch, resulting in O(D * L^2) time where D is nesting depth and L is string length. In contrast, a stack processes the token stream in a single linear pass O(N + OutputLength).
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Grammar Definition:**
-  $$\text{String} \to (\text{Char} \mid \text{Count} \text{ '[' String ']' })^*$$
+  String -> (Char | Count '[' String ']' )^*
 - **Dual Stack Invariant:**
-  At any cursor index $i$, `countStack` holds the repetition factors for all enclosing parent scopes, and `stringStack` holds the partial strings accumulated in those scopes prior to opening their corresponding `[` bracket.
+  At any cursor index i, `countStack` holds the repetition factors for all enclosing parent scopes, and `stringStack` holds the partial strings accumulated in those scopes prior to opening their corresponding `[` bracket.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -605,7 +605,7 @@ flowchart TD
 #### 3.6 Concrete Step-by-Step State Trace
 Input: `s = "3[a2[c]]"`
 
-| Step ($i$) | Token | `currK` | `currString` | `countStack` | `stringStack` | Action Taken |
+| Step (i) | Token | `currK` | `currString` | `countStack` | `stringStack` | Action Taken |
 | :---: | :---: | :---: | :--- | :--- | :--- | :--- |
 | **0** | `'3'` | 3 | `""` | `[]` | `[]` | Accumulate multiplier |
 | **1** | `'['` | 0 | `""` | `[3]` | `[""]` | Context push: save count 3 and empty prefix |
@@ -635,15 +635,15 @@ Final Output: `"accaccacc"`.
 3. Upon loop completion, `currString.ToString()` contains the decoded text.
 
 #### 4.3 Alternative Approaches Analysis
-- **Regex Expansion:** Repeatedly find `(\d+)\[([a-z]+)\]` and replace with repeated string. Highly inefficient ($O(N^2)$ string copy operations) and fragile under complex recursion.
+- **Regex Expansion:** Repeatedly find `(\d+)\[([a-z]+)\]` and replace with repeated string. Highly inefficient (O(N^2) string copy operations) and fragile under complex recursion.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Approach | Time Complexity | Aux Space | Output Space | Call-Stack Risk | String Copy Overhead |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Dual Stack (Iterative)** | $O(\text{MaxK} \cdot N)$ | $O(N)$ | $O(\text{Output})$ | None | Minimal (amortized `StringBuilder`) |
-| **Recursive Descent** | $O(\text{MaxK} \cdot N)$ | $O(N)$ | $O(\text{Output})$ | $O(\text{Depth})$ | Moderate |
-| **Regex Iterative Search** | $O(D \cdot \text{Output}^2)$ | $O(\text{Output})$ | $O(\text{Output})$ | None | Catastrophic (multiple copies) |
+| **Dual Stack (Iterative)** | O(MaxK * N) | O(N) | O(Output) | None | Minimal (amortized `StringBuilder`) |
+| **Recursive Descent** | O(MaxK * N) | O(N) | O(Output) | O(Depth) | Moderate |
+| **Regex Iterative Search** | O(D * Output^2) | O(Output) | O(Output) | None | Catastrophic (multiple copies) |
 
 ---
 
@@ -732,8 +732,8 @@ public class Solution
 ---
 
 ### 6. Senior Pitfalls & Defensive Traps
-1. **The Multi-Digit Number Bug:** Writing `currentK = c - '0'` instead of `currentK = currentK * 10 + (c - '0')`. When $k \ge 10$, this records only the last digit.
-2. **String Allocation Bomb:** Using C# string concatenation (`prev += curr`) inside the repetition loop. This generates $O(k)$ intermediate string heap objects, causing severe garbage collector pressure. Always mutate via `StringBuilder.Append()`.
+1. **The Multi-Digit Number Bug:** Writing `currentK = c - '0'` instead of `currentK = currentK * 10 + (c - '0')`. When k >= 10, this records only the last digit.
+2. **String Allocation Bomb:** Using C# string concatenation (`prev += curr`) inside the repetition loop. This generates O(k) intermediate string heap objects, causing severe garbage collector pressure. Always mutate via `StringBuilder.Append()`.
 3. **Loss of Outer Plaintext:** Forgetting that letters can precede or succeed brackets (`3[a]b`). Resetting `currentString` to empty rather than continuing from `stringStack.Pop()` will drop intervening letters.
 
 ---
@@ -748,27 +748,27 @@ public class Solution
 | **LeetCode Link** | [Bus Routes](https://leetcode.com/problems/bus-routes/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** You are given an array `routes` representing bus routes where `routes[i]` is a bus route that the $i$-th bus repeats forever. For example, if `routes[0] = [1, 5, 7]`, this means that the 0-th bus travels in the sequence $1 \to 5 \to 7 \to 1 \to 5 \to 7 \dots$ forever. You start at bus stop `source` and want to go to bus stop `target`. You cannot travel between stops outside of buses. Return the least number of buses you must take to travel from `source` to `target`. If it is impossible, return `-1`.
+- **Formal Statement:** You are given an array `routes` representing bus routes where `routes[i]` is a bus route that the i-th bus repeats forever. For example, if `routes[0] = [1, 5, 7]`, this means that the 0-th bus travels in the sequence 1 -> 5 -> 7 -> 1 -> 5 -> 7 ... forever. You start at bus stop `source` and want to go to bus stop `target`. You cannot travel between stops outside of buses. Return the least number of buses you must take to travel from `source` to `target`. If it is impossible, return `-1`.
 - **Assumptions & Contracts:**
   - Boarding a bus counts as taking 1 bus. Moving between stops on the *same* bus does NOT cost additional transfers.
-  - A transfer occurs when switching from bus $A$ to bus $B$ at any common stop.
+  - A transfer occurs when switching from bus A to bus B at any common stop.
   - If `source == target`, you are already at your destination: cost is `0`.
 - **Key Constraints:**
-  - $1 \le routes.Length \le 500$ (Maximum 500 distinct buses)
-  - $1 \le routes[i].Length \le 10^5$
-  - Total stops across all routes $\sum routes[i].Length \le 10^5$
-  - $0 \le routes[i][j] < 10^6$
-  - $0 \le source, target < 10^6$
+  - 1 <= routes.Length <= 500 (Maximum 500 distinct buses)
+  - 1 <= routes[i].Length <= 10^5
+  - Total stops across all routes Sum routes[i].Length <= 10^5
+  - 0 <= routes[i][j] < 10^6
+  - 0 <= source, target < 10^6
 - **Senior Edge Cases to Defend:**
   - **`source == target`:** Return `0` immediately without searching.
   - **Source or Target Not in Any Route:** Return `-1` immediately.
-  - **Disconnected Route Islands:** No overlapping transfer stops between source component and target component $\implies -1$.
+  - **Disconnected Route Islands:** No overlapping transfer stops between source component and target component => -1.
   - **Routes with Duplicate Stops:** A route array might contain duplicates; deduplicate using sets if needed.
 
 ---
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Breadth-First Search on a **Dual Graph (Route Graph)**. Standard BFS on stops has up to $10^6$ vertices and dense clique edges ($O(L^2)$ per route), triggering TLE/MLE. Transforming the problem so that **buses are the graph nodes** reduces the state space to at most 500 nodes.
+- **Conceptual Essence:** Breadth-First Search on a **Dual Graph (Route Graph)**. Standard BFS on stops has up to 10^6 vertices and dense clique edges (O(L^2) per route), triggering TLE/MLE. Transforming the problem so that **buses are the graph nodes** reduces the state space to at most 500 nodes.
 - **Sample 1:**
   - **Input:** `routes = [[1,2,7],[3,6,7]], source = 1, target = 6`
   - **Output:** `2`
@@ -787,18 +787,18 @@ Imagine a traveler holding a transit pass. You do not care about walking between
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
 - **Naive Formulation (Stop Graph):**
-  Treat each stop as a node. For a route with $K$ stops, add an edge between all $O(K^2)$ pairs of stops.
-  - For $K = 10^5$, $K^2 = 10^{10}$ edges $\implies$ instant Memory Limit Exceeded and Time Limit Exceeded.
+  Treat each stop as a node. For a route with K stops, add an edge between all O(K^2) pairs of stops.
+  - For K = 10^5, K^2 = 10^10 edges => instant Memory Limit Exceeded and Time Limit Exceeded.
 - **Dual Graph Formulation (Bus Graph):**
-  Treat each **bus route** as a node ($N \le 500$). An undirected edge connects Bus $i$ and Bus $j$ if they share at least one stop.
-  - Maximum vertices = 500. Maximum edges = $\binom{500}{2} \approx 125,000$. Search completes in under 15ms.
+  Treat each **bus route** as a node (N <= 500). An undirected edge connects Bus i and Bus j if they share at least one stop.
+  - Maximum vertices = 500. Maximum edges = C(500, 2) ~ 125,000. Search completes in under 15ms.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Inverted Stop Index:**
   Construct a mapping:
-  $$\text{stopToBuses} : \text{StopID} \to \text{List of Bus IDs passing through this stop}$$
+  stopToBuses : StopID -> List of Bus IDs passing through this stop
 - **Bipartite Level BFS Invariant:**
-  BFS depth $d$ represents taking exactly $d$ buses. When visiting Bus $i$, we inspect all its stops. For each unvisited stop, we expand to all unvisited buses servicing that stop.
+  BFS depth d represents taking exactly d buses. When visiting Bus i, we inspect all its stops. For each unvisited stop, we expand to all unvisited buses servicing that stop.
 - **Dual Visited Sets:**
   1. `visitedBuses` (`bool[]` of size 500): Prevents re-evaluating the same bus route.
   2. `visitedStops` (`HashSet<int>`): Prevents iterating through the same stop's bus list multiple times.
@@ -835,7 +835,7 @@ Dual Graph Bipartite BFS Expansion:
              - `visitedBuses[nextBus] = true`
              - `queue.Enqueue(nextBus)`
    - `busesTaken++`
-5. **Queue Exhaustion:** Target was unreachable $\implies$ return `-1`.
+5. **Queue Exhaustion:** Target was unreachable => return `-1`.
 
 #### 3.6 Concrete Step-by-Step State Trace
 Input: `routes = [[1, 2, 7], [3, 6, 7]]`, `source = 1`, `target = 6`.
@@ -852,7 +852,7 @@ Input: `routes = [[1, 2, 7], [3, 6, 7]]`, `source = 1`, `target = 6`.
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Dual BFS (Bus-Level State Space):** Because $N \le 500$, tracking visited buses with a flat boolean array `bool[500]` gives $O(1)$ visited lookups and zero hash-collision overhead.
+- **Dual BFS (Bus-Level State Space):** Because N <= 500, tracking visited buses with a flat boolean array `bool[500]` gives O(1) visited lookups and zero hash-collision overhead.
 - **Why not Stop-Level BFS:** As demonstrated in section 3.2, building edges between stops is quadratic in the route size, which is completely intractable.
 
 #### 4.2 Step-by-Step Natural Progression Flow
@@ -863,15 +863,15 @@ Input: `routes = [[1, 2, 7], [3, 6, 7]]`, `source = 1`, `target = 6`.
 5. Return depth if target reached; `-1` if queue empties.
 
 #### 4.3 Alternative Approaches Analysis
-- **Explicit Route-to-Route Adjacency Graph:** Pre-build an adjacency matrix `bool[500, 500]` where `adj[i, j] = true` if routes $i$ and $j$ share a stop. Then run standard BFS from source-buses to target-buses. Valid and clean, but computing the intersection takes $O(N^2 \cdot L)$ upfront. The bipartite on-the-fly expansion avoids checking pairs that are never reached.
+- **Explicit Route-to-Route Adjacency Graph:** Pre-build an adjacency matrix `bool[500, 500]` where `adj[i, j] = true` if routes i and j share a stop. Then run standard BFS from source-buses to target-buses. Valid and clean, but computing the intersection takes O(N^2 * L) upfront. The bipartite on-the-fly expansion avoids checking pairs that are never reached.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Approach | Time Complexity | Aux Space | Bus Limit Scalability | Stop Limit Scalability |
 | :--- | :--- | :--- | :--- | :--- |
-| **Dual BFS (On-the-Fly)** | $O(\sum |routes[i]|)$ | $O(\sum |routes[i]|)$ | Up to $10^4$ buses | Up to $10^6$ stops |
-| **Precomputed Bus Adjacency**| $O(N^2 \cdot L)$ | $O(N^2 + \sum L)$ | $N \le 1000$ | Up to $10^6$ stops |
-| **Stop-Level Graph BFS** | $O(\sum |routes[i]|^2)$ | $O(\sum |routes[i]|^2)$ | Fails ($> 10^9$ edges) | Fails |
+| **Dual BFS (On-the-Fly)** | O(Sum |routes[i]|) | O(Sum |routes[i]|) | Up to 10^4 buses | Up to 10^6 stops |
+| **Precomputed Bus Adjacency**| O(N^2 * L) | O(N^2 + Sum L) | N <= 1000 | Up to 10^6 stops |
+| **Stop-Level Graph BFS** | O(Sum |routes[i]|^2) | O(Sum |routes[i]|^2) | Fails (> 10^9 edges) | Fails |
 
 ---
 
@@ -997,7 +997,7 @@ public class Solution
 
 ### 6. Senior Pitfalls & Defensive Traps
 1. **The Missing `source == target` Check:** If `source == target`, the algorithm might seed the queue with buses passing through `source` and return `1` instead of `0`. Always guard with an upfront short circuit.
-2. **Missing `visitedStops` Pruning:** Tracking only `visitedBuses` and failing to track `visitedStops`. If a major transit hub (e.g., Central Station) is shared by 200 buses, every time a new bus visits Central Station it iterates through all 200 buses again, turning linear traversal into $O(N \cdot \text{Stops})$. Tracking `visitedStops` guarantees each stop is expanded into its bus list exactly once.
+2. **Missing `visitedStops` Pruning:** Tracking only `visitedBuses` and failing to track `visitedStops`. If a major transit hub (e.g., Central Station) is shared by 200 buses, every time a new bus visits Central Station it iterates through all 200 buses again, turning linear traversal into O(N * Stops). Tracking `visitedStops` guarantees each stop is expanded into its bus list exactly once.
 3. **Queueing Stops Instead of Buses:** Falling back into stop-level queueing causes memory explosion. The queue must hold **bus indices**.
 
 ---
@@ -1018,21 +1018,21 @@ public class Solution
   - `'R'`: Go from a node to its right child node.
   Return the step-by-step directions of the shortest path from node `s` to node `t`.
 - **Assumptions & Contracts:**
-  - All $n$ node values are unique.
+  - All n node values are unique.
   - Both `startValue` and `destValue` exist in the tree.
   - `startValue != destValue`.
   - In a tree, the shortest path between any two nodes is unique and passes through their Lowest Common Ancestor (LCA).
 - **Key Constraints:**
-  - The number of nodes in the tree is $n$.
-  - $2 \le n \le 10^5$
-  - $1 \le Node.val \le n$
-  - All $Node.val$ are unique.
-  - $1 \le startValue, destValue \le n$
+  - The number of nodes in the tree is n.
+  - 2 <= n <= 10^5
+  - 1 <= Node.val <= n
+  - All Node.val are unique.
+  - 1 <= startValue, destValue <= n
 - **Senior Edge Cases to Defend:**
   - **Start is Ancestor of Dest:** Path consists entirely of `'L'` and `'R'` moves (zero `'U'`s).
   - **Dest is Ancestor of Start:** Path consists entirely of `'U'` moves (zero `'L'`/`'R'`s).
-  - **Skewed Trees (Linked List Topology):** Height $O(N)$ could trigger recursion stack overflow if not careful with recursion depth.
-  - **Large Output Strings:** For $N = 10^5$, paths can be $10^5$ characters long. Must avoid repeated string concatenations during backtracking.
+  - **Skewed Trees (Linked List Topology):** Height O(N) could trigger recursion stack overflow if not careful with recursion depth.
+  - **Large Output Strings:** For N = 10^5, paths can be 10^5 characters long. Must avoid repeated string concatenations during backtracking.
 
 ---
 
@@ -1065,18 +1065,18 @@ A common naive approach:
 1. Run a DFS pass to find the Lowest Common Ancestor node.
 2. Run a second DFS pass from the LCA to find `startValue`, reversing the path to make `'U'`.
 3. Run a third DFS pass from the LCA to find `destValue`.
-This requires 3 distinct tree traversals, complex tree node references, and building node-parent pointer maps with $O(N)$ hash tables.
+This requires 3 distinct tree traversals, complex tree node references, and building node-parent pointer maps with O(N) hash tables.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Root-to-Node Path Duality:**
   Any node's location in a binary tree is uniquely identified by its string of left/right branch decisions from the root:
-  $$P_{\text{start}} = \text{Path}(\text{Root} \to \text{startValue})$$
-  $$P_{\text{dest}} = \text{Path}(\text{Root} \to \text{destValue})$$
+  P_start = Path(Root -> startValue)
+  P_dest = Path(Root -> destValue)
 - **LCA as Common Prefix:**
-  The path from the root to $\text{LCA}(\text{start}, \text{dest})$ is precisely the longest common prefix of $P_{\text{start}}$ and $P_{\text{dest}}$:
-  $$L = \max \{ k \mid P_{\text{start}}[0 \dots k-1] == P_{\text{dest}}[0 \dots k-1] \}$$
+  The path from the root to LCA(start, dest) is precisely the longest common prefix of P_start and P_dest:
+  L = max { k | P_start[0 ... k-1] == P_dest[0 ... k-1] }
 - **Exact Path Formula:**
-  $$\text{Final Path} = \underbrace{\text{'U'} \times (|P_{\text{start}}| - L)}_{\text{Ascend to LCA}} + \underbrace{P_{\text{dest}}[L \dots |P_{\text{dest}}|-1]}_{\text{Descend to Dest}}$$
+  Final Path = underbrace{'U' * (|P_start| - L)}_Ascend to LCA + underbrace{P_dest[L ... |P_dest|-1]}_Descend to Dest
   This requires only **two root-to-node path searches** (which can be done concurrently or sequentially in a single pass), completely eliminating the need for an explicit LCA subroutine!
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
@@ -1107,20 +1107,20 @@ Result        : "UU" + "RL" = "UURL"
      - If `FindPath(node.right, target, pathBuilder)` is true, return `true`.
      - `pathBuilder.Length--` (Backtrack)
    - Return `false`.
-2. **Prefix Comparison:** Find first index $i$ where $startPath[i] \neq destPath[i]$.
-3. **Assembly:** Construct string with $(startPath.Length - i)$ `'U'`s followed by $destPath.Substring(i)$.
+2. **Prefix Comparison:** Find first index i where startPath[i] != destPath[i].
+3. **Assembly:** Construct string with (startPath.Length - i) `'U'`s followed by destPath.Substring(i).
 
 #### 3.6 Concrete Step-by-Step State Trace
 Tree: `5` with left `1 (left: 3)`, right `2 (left: 6, right: 4)`. `start = 3`, `dest = 6`.
-- $P_{\text{start}} = \text{Root(5)} \to \text{Left(1)} \to \text{Left(3)} \implies \text{"LL"}$.
-- $P_{\text{dest}} = \text{Root(5)} \to \text{Right(2)} \to \text{Left(6)} \implies \text{"RL"}$.
+- P_start = Root(5) -> Left(1) -> Left(3) => "LL".
+- P_dest = Root(5) -> Right(2) -> Left(6) => "RL".
 
-| Index $i$ | $P_{\text{start}}[i]$ | $P_{\text{dest}}[i]$ | Match? | Common Prefix Length $L$ |
+| Index i | P_start[i] | P_dest[i] | Match? | Common Prefix Length L |
 | :---: | :---: | :---: | :---: | :---: |
 | 0 | `'L'` | `'R'` | **Mismatch!** | 0 |
 
-- Number of `'U'`s: $|P_{\text{start}}| - L = 2 - 0 = 2 \implies \text{"UU"}$.
-- Suffix of $P_{\text{dest}}$ from index 0: `"RL"`.
+- Number of `'U'`s: |P_start| - L = 2 - 0 = 2 => "UU".
+- Suffix of P_dest from index 0: `"RL"`.
 - Final Path: `"UU" + "RL" = "UURL"`.
 
 ---
@@ -1128,25 +1128,25 @@ Tree: `5` with left `1 (left: 3)`, right `2 (left: 6, right: 4)`. `start = 3`, `
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **DFS Backtracking with Reusable `StringBuilder`:** Allocates a single mutable builder per path, appending and popping characters with $O(1)$ amortized cost. Total auxiliary space is bounded by tree height $O(H)$.
-- **Avoid string concatenation during DFS:** Passing immutable strings `path + "L"` creates $O(H^2)$ garbage string allocations during deep recursion.
+- **DFS Backtracking with Reusable `StringBuilder`:** Allocates a single mutable builder per path, appending and popping characters with O(1) amortized cost. Total auxiliary space is bounded by tree height O(H).
+- **Avoid string concatenation during DFS:** Passing immutable strings `path + "L"` creates O(H^2) garbage string allocations during deep recursion.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 1. Run `FindPath(root, startValue, startPath)`.
 2. Run `FindPath(root, destValue, destPath)`.
-3. Compare both paths character by character from the beginning to compute common prefix length $L$.
-4. Allocate output string of exact length $(startPath.Length - L) + (destPath.Length - L)$ using string constructor and slice.
+3. Compare both paths character by character from the beginning to compute common prefix length L.
+4. Allocate output string of exact length (startPath.Length - L) + (destPath.Length - L) using string constructor and slice.
 
 #### 4.3 Alternative Approaches Analysis
-- **Graph Transformation + BFS:** Convert binary tree into an undirected graph by adding parent pointers, then run standard BFS from `startValue` to `destValue`. Time: $O(N)$, but memory is $O(N)$ for graph edges, node lookups, and visited sets. Far more complex and high constant factor overhead.
+- **Graph Transformation + BFS:** Convert binary tree into an undirected graph by adding parent pointers, then run standard BFS from `startValue` to `destValue`. Time: O(N), but memory is O(N) for graph edges, node lookups, and visited sets. Far more complex and high constant factor overhead.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Approach | Time Complexity | Aux Space | GC Allocations | Tree Mutability |
 | :--- | :--- | :--- | :--- | :--- |
-| **DFS Path + Prefix Cancellation** | $O(N)$ | $O(H)$ | Minimal (2 builders) | Non-mutating |
-| **Tree to Graph + BFS** | $O(N)$ | $O(N)$ (High) | Heavy (nodes/lists) | Non-mutating |
-| **Explicit LCA + Dual DFS** | $O(N)$ | $O(H)$ | Moderate | Non-mutating |
+| **DFS Path + Prefix Cancellation** | O(N) | O(H) | Minimal (2 builders) | Non-mutating |
+| **Tree to Graph + BFS** | O(N) | O(N) (High) | Heavy (nodes/lists) | Non-mutating |
+| **Explicit LCA + Dual DFS** | O(N) | O(H) | Moderate | Non-mutating |
 
 ---
 
@@ -1275,7 +1275,7 @@ public class Solution
 ---
 
 ### 6. Senior Pitfalls & Defensive Traps
-1. **String Concatenation Garbage Heap Storm:** Writing `FindPath(node.left, target, path + "L")`. For a tree with depth $10^4$, this generates $10^4$ intermediate strings, easily triggering OutOfMemoryException or severe GC pauses. Always pass a single `StringBuilder` and backtrack using `path.Length--`.
+1. **String Concatenation Garbage Heap Storm:** Writing `FindPath(node.left, target, path + "L")`. For a tree with depth 10^4, this generates 10^4 intermediate strings, easily triggering OutOfMemoryException or severe GC pauses. Always pass a single `StringBuilder` and backtrack using `path.Length--`.
 2. **Reverse Traversal Mistake:** Forgetting that steps from `startValue` to `LCA` are strictly `'U'`, regardless of whether the original edge was `'L'` or `'R'`. Do NOT invert the characters (e.g., turning `'L'` into `'R'`); every upward step is universally `'U'`.
 3. **Prefix Index Out of Bounds:** Forgetting to bound the common prefix loop with `Math.Min(startPath.Length, destPath.Length)`. If one node is a direct ancestor of the other, the loop will crash if not bounded.
 
@@ -1285,7 +1285,7 @@ public class Solution
 
 | Attribute | Specification |
 | :--- | :--- |
-| **Difficulty** | 🟡 Medium (Optimal $O(N)$ is 🔴 Hard level) |
+| **Difficulty** | 🟡 Medium (Optimal O(N) is 🔴 Hard level) |
 | **Priority** | ⭐ Core (Amazon flagship monotonic stack / Uber) |
 | **Pattern Tags** | `#monotonic-stack` `#contribution-technique` `#subarray-calculus` `#linear-sweep` |
 | **LeetCode Link** | [Sum of Subarray Ranges](https://leetcode.com/problems/sum-of-subarray-ranges/) |
@@ -1293,23 +1293,23 @@ public class Solution
 ### 1. Problem Detail & Constraints
 - **Formal Statement:** You are given an integer array `nums`. The range of a subarray of `nums` is the difference between the largest and smallest element in the subarray. Return the sum of all subarray ranges of `nums`. A subarray is a contiguous non-empty sequence of elements within an array.
 - **Assumptions & Contracts:**
-  - Subarrays of length 1 have range $nums[i] - nums[i] = 0$.
-  - Range is defined as $\max(nums[i \dots j]) - \min(nums[i \dots j])$.
+  - Subarrays of length 1 have range nums[i] - nums[i] = 0.
+  - Range is defined as max(nums[i ... j]) - min(nums[i ... j]).
 - **Key Constraints:**
-  - $1 \le nums.Length \le 1000$ (LeetCode limits permit $O(N^2)$, but Senior FAANG bar requires strictly $O(N)$ time).
-  - $-10^9 \le nums[i] \le 10^9$
+  - 1 <= nums.Length <= 1000 (LeetCode limits permit O(N^2), but Senior FAANG bar requires strictly O(N) time).
+  - -10^9 <= nums[i] <= 10^9
 - **Senior Edge Cases to Defend:**
-  - **64-bit Integer Overflow:** With $N = 1000$ and $nums[i] = 10^9$, range sum can reach $\approx 1000^2 \times 10^9 = 10^{15}$, overflowing signed 32-bit `int` ($2 \times 10^9$). Return type and intermediate accumulators must strictly be `long`.
+  - **64-bit Integer Overflow:** With N = 1000 and nums[i] = 10^9, range sum can reach ~ 1000^2 x 10^9 = 10^15, overflowing signed 32-bit `int` (2 x 10^9). Return type and intermediate accumulators must strictly be `long`.
   - **Duplicate Values in Subarray:** E.g., `nums = [1, 3, 3, 1]`. Must use strict inequality on one side and non-strict inequality on the other side in the monotonic stack to prevent duplicate counting.
-  - **All Elements Identical:** `nums = [2, 2, 2]` $\implies$ every range is 0; total sum is 0.
-  - **Single Element Array:** `nums = [5]` $\implies$ 0.
+  - **All Elements Identical:** `nums = [2, 2, 2]` => every range is 0; total sum is 0.
+  - **Single Element Array:** `nums = [5]` => 0.
 
 ---
 
 ### 2. Summary & Sample Input / Output
 - **Conceptual Essence:** By linearity of summation, the sum of ranges decomposes into:
-  $$\sum \text{Range} = \sum_{\text{all subarrays}} \max(sub) - \sum_{\text{all subarrays}} \min(sub)$$
-  Instead of evaluating each subarray, we evaluate the **contribution** of each element $nums[i]$ as the maximum across all subarrays containing it, and subtract its contribution as the minimum across all subarrays containing it.
+  Sum Range = Sum(all subarrays) max(sub) - Sum(all subarrays) min(sub)
+  Instead of evaluating each subarray, we evaluate the **contribution** of each element nums[i] as the maximum across all subarrays containing it, and subtract its contribution as the minimum across all subarrays containing it.
 - **Sample 1:**
   - **Input:** `nums = [1, 2, 3]`
   - **Output:** `4`
@@ -1333,20 +1333,20 @@ public class Solution
 Imagine a marketplace where every possible group of people compares the tallest person and the shortest person. Calculating this by gathering every possible combination of people is chaos. Instead, ask each individual person: *"In how many distinct groups are you the undisputed tallest person?"* That person calculates their span of dominance to their left and right. Multiply their height by that count. Sum this for everyone to get the total max contribution. Do the same for the shortest person. The difference gives the exact total without ever creating a single group.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-- **Brute Force ($O(N^2)$):**
-  Fix start index $i$, iterate end index $j$ from $i$ to $N-1$, maintaining running `min` and `max`.
-  - Operations: $\frac{N(N-1)}{2}$. For $N = 1000$, $\approx 5 \times 10^5$ operations.
-  - While acceptable for $N = 1000$, if $N = 10^5$ (as in LeetCode #907), $O(N^2)$ takes hours and triggers TLE. The senior standard demands the optimal $O(N)$ Monotonic Stack approach.
+- **Brute Force (O(N^2)):**
+  Fix start index i, iterate end index j from i to N-1, maintaining running `min` and `max`.
+  - Operations: (N(N-1)) / (2). For N = 1000, ~ 5 x 10^5 operations.
+  - While acceptable for N = 1000, if N = 10^5 (as in LeetCode #907), O(N^2) takes hours and triggers TLE. The senior standard demands the optimal O(N) Monotonic Stack approach.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Linearity of Summation:**
-  $$\sum_{i \le j} (\max(nums[i \dots j]) - \min(nums[i \dots j])) = \sum_{k=0}^{N-1} nums[k] \cdot C_{\max}(k) - \sum_{k=0}^{N-1} nums[k] \cdot C_{\min}(k)$$
-  where $C_{\max}(k)$ is the number of subarrays in which $nums[k]$ is the maximum element.
+  Sum(i <= j) (max(nums[i ... j]) - min(nums[i ... j])) = Sum(k=0..N-1) nums[k] * C_max(k) - Sum(k=0..N-1) nums[k] * C_min(k)
+  where C_max(k) is the number of subarrays in which nums[k] is the maximum element.
 - **Span Calculation (Combinatorial Product):**
-  For index $k$:
-  - Let $L$ be the distance to the **Previous Greater Element (PGE)**.
-  - Let $R$ be the distance to the **Next Greater or Equal Element (NGEE)**.
-  $$C_{\max}(k) = L \times R = (k - \text{PGE}[k]) \times (\text{NGEE}[k] - k)$$
+  For index k:
+  - Let L be the distance to the **Previous Greater Element (PGE)**.
+  - Let R be the distance to the **Next Greater or Equal Element (NGEE)**.
+  C_max(k) = L x R = (k - PGE[k]) * (NGEE[k] - k)
 - **Defensive Duplicate Invariant (Strict vs Non-Strict):**
   To ensure a subarray with duplicate maximums (e.g., `[3, 3]`) attributes its maximum to **exactly one** instance:
   - Left boundary: Strictly greater (`>`)
@@ -1363,32 +1363,32 @@ Indices:  ...  [ PGE ]  ...  ...  [ k ]  ...  ...  [ NGEE ]  ...
 ```
 
 #### 3.5 State Transition Triggers & Decision Gates
-To compute $\sum \max$ in $O(N)$:
+To compute Sum max in O(N):
 1. Use a monotonic decreasing stack of indices.
-2. For each element $nums[i]$ from $0$ to $N$:
-   - While stack is not empty and $(i == N \text{ or } nums[stack.Peek()] < nums[i])$:
+2. For each element nums[i] from 0 to N:
+   - While stack is not empty and (i == N or nums[stack.Peek()] < nums[i]):
      - `mid = stack.Pop()`
      - `leftBound = stack.Count == 0 ? -1 : stack.Peek()`
      - `rightBound = i`
      - `count = (long)(mid - leftBound) * (rightBound - mid)`
      - `totalMax += nums[mid] * count`
    - `stack.Push(i)`
-3. Mirror the exact same logic with monotonic increasing stack for $\sum \min$.
+3. Mirror the exact same logic with monotonic increasing stack for Sum min.
 4. Return `totalMax - totalMin`.
 
 #### 3.6 Concrete Step-by-Step State Trace
-Input: `nums = [1, 2, 3]`, $N = 3$. Computing $\sum \max$:
+Input: `nums = [1, 2, 3]`, N = 3. Computing Sum max:
 
-| $i$ | `nums[i]` | Stack Before | Action / Popped Elements | Contribution Calculation | Stack After |
+| i | `nums[i]` | Stack Before | Action / Popped Elements | Contribution Calculation | Stack After |
 | :---: | :---: | :--- | :--- | :--- | :--- |
 | **0** | 1 | `[]` | None | None | `[0]` |
-| **1** | 2 | `[0]` | $nums[0] < 2 \implies$ Pop 0 | `mid=0`, $L=(0-(-1))=1, R=(1-0)=1 \implies 1 \times 1 \times nums[0] = 1$ | `[1]` |
-| **2** | 3 | `[1]` | $nums[1] < 3 \implies$ Pop 1 | `mid=1`, $L=(1-(-1))=2, R=(2-1)=1 \implies 2 \times 1 \times nums[1] = 4$ | `[2]` |
-| **3** | $\infty$ (Virtual) | `[2]` | Pop 2 | `mid=2`, $L=(2-(-1))=3, R=(3-2)=1 \implies 3 \times 1 \times nums[2] = 9$ | `[]` |
+| **1** | 2 | `[0]` | nums[0] < 2 => Pop 0 | `mid=0`, L=(0-(-1))=1, R=(1-0)=1 => 1 x 1 * nums[0] = 1 | `[1]` |
+| **2** | 3 | `[1]` | nums[1] < 3 => Pop 1 | `mid=1`, L=(1-(-1))=2, R=(2-1)=1 => 2 x 1 * nums[1] = 4 | `[2]` |
+| **3** | infinity (Virtual) | `[2]` | Pop 2 | `mid=2`, L=(2-(-1))=3, R=(3-2)=1 => 3 x 1 * nums[2] = 9 | `[]` |
 
-Total Max = $1 + 4 + 9 = 14$.
-Mirror for Min gives Total Min = $1 \times 3 \times 1 + 1 \times 2 \times 2 + 1 \times 1 \times 3 = 3 + 4 + 3 = 10$.
-Total Range Sum = $14 - 10 = 4$.
+Total Max = 1 + 4 + 9 = 14.
+Mirror for Min gives Total Min = 1 x 3 * 1 + 1 x 2 * 2 + 1 x 1 * 3 = 3 + 4 + 3 = 10.
+Total Range Sum = 14 - 10 = 4.
 
 ---
 
@@ -1396,10 +1396,10 @@ Total Range Sum = $14 - 10 = 4$.
 
 #### 4.1 Anchor Points & Approach Selection Criteria
 - **Optimal: Monotonic Stack (Single-Pass Contribution Method):**
-  - Runs in strictly $O(N)$ time and $O(N)$ space.
+  - Runs in strictly O(N) time and O(N) space.
   - Demonstrates mastery of contribution counting and monotonic boundary conditions.
 - **Baseline: Quadratic Brute Force:**
-  - $O(N^2)$ time and $O(1)$ space. Simple, but fails Senior expectations if scale increases to $N = 10^5$.
+  - O(N^2) time and O(1) space. Simple, but fails Senior expectations if scale increases to N = 10^5.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 1. Compute total max contributions using monotonic stack.
@@ -1407,15 +1407,15 @@ Total Range Sum = $14 - 10 = 4$.
 3. Return `totalMax - totalMin`.
 
 #### 4.3 Alternative Approaches Analysis
-- **Segment Tree / Sparse Table:** Query range minimum and maximum for all $\frac{N(N+1)}{2}$ pairs in $O(1)$ per query after $O(N \log N)$ preprocessing. Total time remains $O(N^2)$. Strictly inferior to Monotonic Stack.
+- **Segment Tree / Sparse Table:** Query range minimum and maximum for all (N(N+1)) / (2) pairs in O(1) per query after O(N log N) preprocessing. Total time remains O(N^2). Strictly inferior to Monotonic Stack.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
-| Approach | Time Complexity | Aux Space | 64-bit Overflow Safe | Scale $N = 10^5$ Ready |
+| Approach | Time Complexity | Aux Space | 64-bit Overflow Safe | Scale N = 10^5 Ready |
 | :--- | :--- | :--- | :--- | :--- |
-| **Monotonic Stack (Optimal)** | $O(N)$ | $O(N)$ | Yes (explicit `long`) | Yes ($\approx 20\text{ms}$) |
-| **Running Min/Max Scan** | $O(N^2)$ | $O(1)$ | Yes | TLE ($> 10\text{s}$) |
-| **Sparse Table RMQ** | $O(N^2)$ | $O(N \log N)$ | Yes | TLE |
+| **Monotonic Stack (Optimal)** | O(N) | O(N) | Yes (explicit `long`) | Yes (~ 20ms) |
+| **Running Min/Max Scan** | O(N^2) | O(1) | Yes | TLE (> 10s) |
+| **Sparse Table RMQ** | O(N^2) | O(N log N) | Yes | TLE |
 
 ---
 
@@ -1513,9 +1513,9 @@ public class Solution
 ---
 
 ### 6. Senior Pitfalls & Defensive Traps
-1. **The 32-Bit Multiplication Overflow Trap:** Writing `count = (mid - leftBound) * (rightBound - mid)`. If both spans are $5 \times 10^4$, their product is $2.5 \times 10^9$, which overflows signed 32-bit `int` into negative numbers before being assigned to `long`. Always cast the first term to `(long)` explicitly: `(long)(mid - leftBound) * (rightBound - mid)`.
+1. **The 32-Bit Multiplication Overflow Trap:** Writing `count = (mid - leftBound) * (rightBound - mid)`. If both spans are 5 x 10^4, their product is 2.5 x 10^9, which overflows signed 32-bit `int` into negative numbers before being assigned to `long`. Always cast the first term to `(long)` explicitly: `(long)(mid - leftBound) * (rightBound - mid)`.
 2. **Double-Counting Duplicate Elements:** Using strict inequality (`>`) or non-strict (`>=`) on *both* sides. If `nums = [3, 3]`, both `3`s will claim to be the maximum for the full subarray `[3, 3]`, counting its contribution twice. The invariant rule: **Strict inequality on one side, non-strict on the other.**
-3. **Missing Remaining Stack Flush:** Forgetting that elements remaining on the stack after the array iteration ends still have valid spans extending all the way to index $N$. Processing up to $i = N$ as a virtual sentinel guarantees complete evaluation.
+3. **Missing Remaining Stack Flush:** Forgetting that elements remaining on the stack after the array iteration ends still have valid spans extending all the way to index N. Processing up to i = N as a virtual sentinel guarantees complete evaluation.
 
 ---
 
@@ -1535,12 +1535,12 @@ public class Solution
   - Exactly 3 suggestions must be returned, or fewer if fewer than 3 matches exist.
   - Suggestions must be sorted in ascending lexicographical order.
 - **Key Constraints:**
-  - $1 \le products.Length \le 1000$
-  - $1 \le products[i].Length \le 3000$
-  - $1 \le \sum products[i].Length \le 2 \times 10^4$
+  - 1 <= products.Length <= 1000
+  - 1 <= products[i].Length <= 3000
+  - 1 <= Sum products[i].Length <= 2 x 10^4
   - All strings in `products` are distinct.
   - `products[i]` and `searchWord` consist of lowercase English letters.
-  - $1 \le searchWord.Length \le 1000$
+  - 1 <= searchWord.Length <= 1000
 - **Senior Edge Cases to Defend:**
   - **No Matching Prefix:** As soon as a prefix has 0 matches, all subsequent longer prefixes typed will also have 0 matches; return empty lists.
   - **Fewer Than 3 Matches:** Prefix matches only 1 or 2 products; return exactly those available.
@@ -1549,7 +1549,7 @@ public class Solution
 ---
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Sort `products` lexicographically once. As each character of `searchWord` is typed, maintain a contracting window $[left, right]$ using two pointers. Because products are sorted, all valid prefix matches form a contiguous subarray. The first $\min(3, right - left + 1)$ elements starting at $left$ are guaranteed to be the lexicographically smallest.
+- **Conceptual Essence:** Sort `products` lexicographically once. As each character of `searchWord` is typed, maintain a contracting window [left, right] using two pointers. Because products are sorted, all valid prefix matches form a contiguous subarray. The first min(3, right - left + 1) elements starting at left are guaranteed to be the lexicographically smallest.
 - **Sample 1:**
   - **Input:** `products = ["mobile","mouse","moneypot","monitor","mousepad"], searchWord = "mouse"`
   - **Output:**
@@ -1571,24 +1571,24 @@ public class Solution
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine flipping through a physical Oxford English Dictionary. The entire dictionary is sorted alphabetically. When you type `'m'`, you open the book to the `'m'` section, establishing a start page ($left$) and end page ($right$). When you type `'o'`, you narrow your view to words starting with `"mo"`. As you type more letters, the window $[left, right]$ never expands; it strictly shrinks. To show the user the top 3 results, you simply read the first 3 words on page $left$.
+Imagine flipping through a physical Oxford English Dictionary. The entire dictionary is sorted alphabetically. When you type `'m'`, you open the book to the `'m'` section, establishing a start page (left) and end page (right). When you type `'o'`, you narrow your view to words starting with `"mo"`. As you type more letters, the window [left, right] never expands; it strictly shrinks. To show the user the top 3 results, you simply read the first 3 words on page left.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-Filtering all $N$ products from scratch for every character prefix:
-- For a query of length $M$, doing a full scan across $N$ strings takes $O(M \cdot N \cdot L)$ time.
-- If $N = 1000, M = 1000$, this performs $10^6$ string comparisons and repeated sorting operations.
+Filtering all N products from scratch for every character prefix:
+- For a query of length M, doing a full scan across N strings takes O(M * N * L) time.
+- If N = 1000, M = 1000, this performs 10^6 string comparisons and repeated sorting operations.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Contiguous Window Invariant:**
   Because `products` is sorted lexicographically:
-  $$\forall i \le j \le k: \text{If } products[i] \text{ and } products[k] \text{ share prefix } P, \text{ then } products[j] \text{ shares prefix } P.$$
-  Therefore, all words matching prefix $searchWord[0 \dots t]$ form a **contiguous range** $[left_t, right_t]$.
+  for all i <= j <= k: If products[i] and products[k] share prefix P, then products[j] shares prefix P.
+  Therefore, all words matching prefix searchWord[0 ... t] form a **contiguous range** [left_t, right_t].
 - **Monotonic Window Shrinking:**
-  $$left_0 \le left_1 \le left_2 \dots \le right_2 \le right_1 \le right_0$$
-  As $t$ increases from $0$ to $M-1$:
-  - Advance $left$ while $products[left]$ does not match $searchWord[t]$ at index $t$.
-  - Decrement $right$ while $products[right]$ does not match $searchWord[t]$ at index $t$.
-  - The suggestions are simply elements at indices $left, left+1, left+2$ (up to $right$).
+  left_0 <= left_1 <= left_2 ... <= right_2 <= right_1 <= right_0
+  As t increases from 0 to M-1:
+  - Advance left while products[left] does not match searchWord[t] at index t.
+  - Decrement right while products[right] does not match searchWord[t] at index t.
+  - The suggestions are simply elements at indices left, left+1, left+2 (up to right).
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -1603,25 +1603,25 @@ Sorted Products Array:
 #### 3.5 State Transition Triggers & Decision Gates
 1. **Sort:** `Array.Sort(products, StringComparer.Ordinal)`.
 2. **Initialize Cursors:** `left = 0`, `right = products.Length - 1`.
-3. **Prefix Loop ($i = 0 \dots searchWord.Length - 1$):**
-   - Char $c = searchWord[i]$.
-   - While $left \le right$ and $(products[left].Length \le i \text{ or } products[left][i] \neq c)$:
+3. **Prefix Loop (i = 0 ... searchWord.Length - 1):**
+   - Char c = searchWord[i].
+   - While left <= right and (products[left].Length <= i or products[left][i] != c):
      - `left++`
-   - While $left \le right$ and $(products[right].Length \le i \text{ or } products[right][i] \neq c)$:
+   - While left <= right and (products[right].Length <= i or products[right][i] != c):
      - `right--`
-   - Collect up to 3 elements from $left$ to $\min(left + 2, right)$.
+   - Collect up to 3 elements from left to min(left + 2, right).
    - Add list to result.
 
 #### 3.6 Concrete Step-by-Step State Trace
 Input: `products = ["mobile","moneypot","monitor","mouse","mousepad"]` (Sorted), `searchWord = "mouse"`.
 
-| Char Typed ($i$) | Prefix | Valid Range $[left, right]$ | Matching Products in Range | Suggestions Picked |
+| Char Typed (i) | Prefix | Valid Range [left, right] | Matching Products in Range | Suggestions Picked |
 | :---: | :---: | :---: | :--- | :--- |
-| **0** (`'m'`) | `"m"` | $[0, 4]$ | All 5 words | `["mobile", "moneypot", "monitor"]` |
-| **1** (`'o'`) | `"mo"` | $[0, 4]$ | All 5 words | `["mobile", "moneypot", "monitor"]` |
-| **2** (`'u'`) | `"mou"` | $[3, 4]$ (`left` shifted past `mobile`, `moneypot`, `monitor`) | `["mouse", "mousepad"]` | `["mouse", "mousepad"]` |
-| **3** (`'s'`) | `"mous"` | $[3, 4]$ | `["mouse", "mousepad"]` | `["mouse", "mousepad"]` |
-| **4** (`'e'`) | `"mouse"` | $[3, 4]$ | `["mouse", "mousepad"]` | `["mouse", "mousepad"]` |
+| **0** (`'m'`) | `"m"` | [0, 4] | All 5 words | `["mobile", "moneypot", "monitor"]` |
+| **1** (`'o'`) | `"mo"` | [0, 4] | All 5 words | `["mobile", "moneypot", "monitor"]` |
+| **2** (`'u'`) | `"mou"` | [3, 4] (`left` shifted past `mobile`, `moneypot`, `monitor`) | `["mouse", "mousepad"]` | `["mouse", "mousepad"]` |
+| **3** (`'s'`) | `"mous"` | [3, 4] | `["mouse", "mousepad"]` | `["mouse", "mousepad"]` |
+| **4** (`'e'`) | `"mouse"` | [3, 4] | `["mouse", "mousepad"]` | `["mouse", "mousepad"]` |
 
 ---
 
@@ -1629,30 +1629,30 @@ Input: `products = ["mobile","moneypot","monitor","mouse","mousepad"]` (Sorted),
 
 #### 4.1 Anchor Points & Approach Selection Criteria
 - **Approach 1: Two Pointers on Sorted Array (Optimal Space & Minimal Code):**
-  - Sorts in $O(N \log N \cdot L)$.
-  - Two-pointer shrinking runs in $O(N + M)$ total character comparisons.
-  - Auxiliary memory is strictly $O(1)$ beyond the output list.
+  - Sorts in O(N log N * L).
+  - Two-pointer shrinking runs in O(N + M) total character comparisons.
+  - Auxiliary memory is strictly O(1) beyond the output list.
 - **Approach 2: Trie with Top-3 Caching (Optimal Query Time):**
   - Construct a Trie where each node stores a list of up to 3 product names.
-  - Query time is $O(M)$ flat.
+  - Query time is O(M) flat.
   - Better for streaming / real-time search backends serving millions of queries over static catalogs.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 1. Sort `products` array lexicographically.
 2. Initialize `left = 0, right = products.Length - 1`.
-3. Iterate $i$ through $searchWord$; shrink $left$ and $right$.
+3. Iterate i through searchWord; shrink left and right.
 4. Take slice of up to 3 items and append to result list.
 
 #### 4.3 Alternative Approaches Analysis
-- **Binary Search Per Prefix:** For each prefix, run `BinarySearch` to find lower bound of prefix, then check next 3 items. Time $O(M \cdot L \log N)$. Excellent, but Two Pointers achieves $O(N)$ total amortized checks without re-searching from index 0.
+- **Binary Search Per Prefix:** For each prefix, run `BinarySearch` to find lower bound of prefix, then check next 3 items. Time O(M * L log N). Excellent, but Two Pointers achieves O(N) total amortized checks without re-searching from index 0.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Approach | Preprocessing Time | Query Time | Auxiliary Space | Read/Write Flexibility |
 | :--- | :--- | :--- | :--- | :--- |
-| **Two Pointers (Approach 1)** | $O(N \log N \cdot L)$ | $O(N + M)$ | $O(1)$ | Optimal for single user session |
-| **Trie with Top-3 (Approach 2)** | $O(N \cdot L)$ | $O(M)$ | $O(N \cdot L)$ | Optimal for multi-query service |
-| **Full Scan Filter** | $0$ | $O(M \cdot N \cdot L)$ | $O(1)$ | Poor |
+| **Two Pointers (Approach 1)** | O(N log N * L) | O(N + M) | O(1) | Optimal for single user session |
+| **Trie with Top-3 (Approach 2)** | O(N * L) | O(M) | O(N * L) | Optimal for multi-query service |
+| **Full Scan Filter** | 0 | O(M * N * L) | O(1) | Poor |
 
 ---
 
@@ -1749,16 +1749,16 @@ public class Solution
 
 ### 1. Problem Detail & Constraints
 - **Formal Statement:** You are given two string arrays `username` and `website` and an integer array `timestamp`. All the given arrays are of the same length and the tuple `[username[i], timestamp[i], website[i]]` indicates that the user `username[i]` visited the website `website[i]` at time `timestamp[i]`.
-  A **3-sequence** is a list of three websites (not necessarily distinct) visited by the same user in increasing order of time: `(w1, w2, w3)` where $t_1 < t_2 < t_3$.
+  A **3-sequence** is a list of three websites (not necessarily distinct) visited by the same user in increasing order of time: `(w1, w2, w3)` where t_1 < t_2 < t_3.
   The **score** of a 3-sequence is the number of **distinct users** that visited that 3-sequence.
   Return the 3-sequence with the largest score. If there is more than one 3-sequence with the same maximum score, return the **lexicographically smallest** one.
 - **Assumptions & Contracts:**
   - A user visiting the same 3-sequence multiple times contributes **only 1** to that 3-sequence's score.
   - Within a single user's 3-sequence, websites do NOT need to be distinct (e.g., `["home", "home", "home"]` is valid if that user visited "home" at three different timestamps).
 - **Key Constraints:**
-  - $3 \le username.Length \le 50$
-  - $1 \le username[i].Length, website[i].Length \le 10$
-  - $1 \le timestamp[i] \le 10^9$
+  - 3 <= username.Length <= 50
+  - 1 <= username[i].Length, website[i].Length <= 10
+  - 1 <= timestamp[i] <= 10^9
   - All tuples `[username[i], timestamp[i], website[i]]` are distinct.
   - At least one 3-sequence exists.
 - **Senior Edge Cases to Defend:**
@@ -1780,9 +1780,9 @@ public class Solution
     ```
   - **Output:** `["home","about","career"]`
   - **Explanation:**
-    - Joe visited: `["home","about","career"]` $\implies$ `(home, about, career)`
-    - James visited: `["home","cart","maps","home"]` $\implies$ `(home, cart, maps)`, `(home, cart, home)`, `(home, maps, home)`, `(cart, maps, home)`
-    - Mary visited: `["home","about","career"]` $\implies$ `(home, about, career)`
+    - Joe visited: `["home","about","career"]` => `(home, about, career)`
+    - James visited: `["home","cart","maps","home"]` => `(home, cart, maps)`, `(home, cart, home)`, `(home, maps, home)`, `(cart, maps, home)`
+    - Mary visited: `["home","about","career"]` => `(home, about, career)`
     - `(home, about, career)` was visited by Joe and Mary (Score = 2). All other patterns have Score = 1.
 - **Sample 2:**
   - **Input:**
@@ -1799,19 +1799,19 @@ public class Solution
 Think of an analytics dashboard for an e-commerce platform tracking customer journeys. Each user leaves a chronological breadcrumb trail of page visits. You want to find the single 3-step navigation flow that the highest number of unique customers shared. If Alice browses `Cart -> Checkout -> Success` five times in a week, she is still just one customer who completed that journey. Thus, each user casts at most one vote for each distinct 3-page journey they took.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-- Without sorting chronologically first, verifying $t_1 < t_2 < t_3$ requires checking all $O(N^3)$ triples with manual timestamp comparisons.
+- Without sorting chronologically first, verifying t_1 < t_2 < t_3 requires checking all O(N^3) triples with manual timestamp comparisons.
 - Without user-level deduplication sets, tracking scores requires a matrix of user-to-sequence maps.
-- Because $N \le 50$, total combinations per user with $K$ visits is $\binom{K}{3} \le \binom{50}{3} = 19,600$, easily executable in milliseconds.
+- Because N <= 50, total combinations per user with K visits is C(K, 3) <= C(50, 3) = 19,600, easily executable in milliseconds.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Chronological Linearization:**
-  Sorting by `timestamp` once upfront guarantees that for any user's website list, any index triple $i < j < k$ automatically satisfies $timestamp_i < timestamp_j < timestamp_k$.
+  Sorting by `timestamp` once upfront guarantees that for any user's website list, any index triple i < j < k automatically satisfies timestamp_i < timestamp_j < timestamp_k.
 - **Per-User Set Invariant:**
-  For user $u$, generate all combinations:
-  $$\text{UserPatterns}_u = \{ (W_i, W_j, W_k) \mid 0 \le i < j < k < \text{Visits}_u.Count \}$$
-  Using a `HashSet<(string, string, string)>` ensures $|W|$ counts each distinct pattern at most once per user.
+  For user u, generate all combinations:
+  UserPatterns_u = { (W_i, W_j, W_k) | 0 <= i < j < k < Visits_u.Count }
+  Using a `HashSet<(string, string, string)>` ensures |W| counts each distinct pattern at most once per user.
 - **Global Histogram:**
-  $$\text{GlobalScore}[P] = \sum_{u} \mathbf{1}_{\{P \in \text{UserPatterns}_u\}}$$
+  GlobalScore[P] = Sum(u) 1_{P in UserPatterns_u}
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -1841,7 +1841,7 @@ Optimal 3-Sequence
 3. **Combinatorial Generation:**
    - For each user with `sites.Count >= 3`:
      - Initialize `userPatterns = new HashSet<(string, string, string)>()`.
-     - 3 nested loops: $i$ from $0$ to $len - 3$, $j$ from $i + 1$ to $len - 2$, $k$ from $j + 1$ to $len - 1$.
+     - 3 nested loops: i from 0 to len - 3, j from i + 1 to len - 2, k from j + 1 to len - 1.
      - `userPatterns.Add((sites[i], sites[j], sites[k]))`.
      - For each pattern in `userPatterns`: `patternCounts[p] = patternCounts.GetValueOrDefault(p) + 1`.
 4. **ArgMax Extraction:**
@@ -1851,8 +1851,8 @@ Optimal 3-Sequence
        - `maxScore = score; bestPattern = pattern;`
 
 #### 3.6 Concrete Step-by-Step State Trace
-User "joe": `["home", "about", "career"]` $\implies \binom{3}{3} = 1$ combination: `("home", "about", "career")`.
-User "mary": `["home", "about", "career"]` $\implies \binom{3}{3} = 1$ combination: `("home", "about", "career")`.
+User "joe": `["home", "about", "career"]` => C(3, 3) = 1 combination: `("home", "about", "career")`.
+User "mary": `["home", "about", "career"]` => C(3, 3) = 1 combination: `("home", "about", "career")`.
 
 | User | Combinations Generated | Unique Set for User | Global Pattern Counts | Current Best Pattern |
 | :--- | :--- | :--- | :--- | :--- |
@@ -1881,8 +1881,8 @@ User "mary": `["home", "about", "career"]` $\implies \binom{3}{3} = 1$ combinati
 
 | Approach | Time Complexity | Aux Space | Type Safety | Delimiter Collision Risk |
 | :--- | :--- | :--- | :--- | :--- |
-| **ValueTuple Grouping (Optimal)** | $O(N \log N + U \cdot K^3)$ | $O(N + U \cdot K^3)$ | Strong | None |
-| **String Delimited Key Map** | $O(N \log N + U \cdot K^3)$ | $O(N + U \cdot K^3 \cdot L)$ | Weak | High |
+| **ValueTuple Grouping (Optimal)** | O(N log N + U * K^3) | O(N + U * K^3) | Strong | None |
+| **String Delimited Key Map** | O(N log N + U * K^3) | O(N + U * K^3 * L) | Weak | High |
 
 ---
 
@@ -2038,17 +2038,17 @@ public class Solution
 | **LeetCode Link** | [Copy List with Random Pointer](https://leetcode.com/problems/copy-list-with-random-pointer/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** A linked list of length $n$ is given such that each node contains an additional random pointer, which could point to any node in the list, or `null`. Construct a **deep copy** of the list. The deep copy should consist of exactly $n$ brand new nodes, where each new node has its value set to the value of its corresponding original node. Both the `next` and `random` pointer of the new nodes should point to new nodes in the copied list such that the pointers in the original list and copied list represent the same list state. None of the pointers in the new list should point to nodes in the original list. Return the head of the copied linked list.
+- **Formal Statement:** A linked list of length n is given such that each node contains an additional random pointer, which could point to any node in the list, or `null`. Construct a **deep copy** of the list. The deep copy should consist of exactly n brand new nodes, where each new node has its value set to the value of its corresponding original node. Both the `next` and `random` pointer of the new nodes should point to new nodes in the copied list such that the pointers in the original list and copied list represent the same list state. None of the pointers in the new list should point to nodes in the original list. Return the head of the copied linked list.
 - **Assumptions & Contracts:**
   - Original list must remain completely intact and unmodified upon return.
   - The `random` pointer may point to any node in the list, to itself (cycle), or to `null`.
   - Deep copy requirement: No node in the cloned list may reference any node in the original list.
 - **Key Constraints:**
-  - $0 \le n \le 1000$
-  - $-10^4 \le Node.val \le 10^4$
+  - 0 <= n <= 1000
+  - -10^4 <= Node.val <= 10^4
   - `Node.random` is `null` or is pointing to some node in the linked list.
 - **Senior Edge Cases to Defend:**
-  - **`head == null`:** Empty list $\implies$ return `null`.
+  - **`head == null`:** Empty list => return `null`.
   - **Self-Referential Random Pointers:** A node whose random pointer points to itself (`curr.random == curr`).
   - **All Random Pointers Null:** Valid list with zero random references.
   - **Two Nodes Pointing to the Same Random Target:** Cloned references must converge on the same cloned target, not instantiate duplicate copies.
@@ -2057,8 +2057,8 @@ public class Solution
 
 ### 2. Summary & Sample Input / Output
 - **Conceptual Essence:** Clone a graph/list structure with arbitrary cross-edges.
-  - Approach 1 (Hash Map): Map original nodes to cloned nodes $O(N)$ space.
-  - Approach 2 (Interweaving): Weave clone nodes directly between original nodes ($A \to A' \to B \to B'$), assign random pointers via `curr.next.random = curr.random.next`, and decouple the lists in $O(1)$ auxiliary space.
+  - Approach 1 (Hash Map): Map original nodes to cloned nodes O(N) space.
+  - Approach 2 (Interweaving): Weave clone nodes directly between original nodes (A -> A' -> B -> B'), assign random pointers via `curr.next.random = curr.random.next`, and decouple the lists in O(1) auxiliary space.
 - **Sample 1:**
   - **Input:** `head = [[7,null],[13,0],[11,4],[10,2],[1,0]]`
   - **Output:** `[[7,null],[13,0],[11,4],[10,2],[1,0]]`
@@ -2073,20 +2073,20 @@ public class Solution
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
 Imagine a paper document where various paragraphs have sticky arrows pointing to other paragraphs. You want to make an identical replica on a fresh sheet of paper.
 - *The Hash Map Method:* You copy each paragraph onto a new sheet, and write down an index translation table in your ledger: *"Old Paragraph 3 corresponds to New Paragraph 3"*.
-- *The Interweaving Method ($O(1)$ Space):* Instead of a ledger, you staple the replica paragraph immediately below each original paragraph on the same page. When you see an arrow from Original Paragraph 1 to Original Paragraph 4, you instantly know where the replica arrow goes: it points to the paragraph stapled immediately behind Original Paragraph 4 (`curr.random.next`). Once all arrows are wired, you unstaple the replica pages to form the new document.
+- *The Interweaving Method (O(1) Space):* Instead of a ledger, you staple the replica paragraph immediately below each original paragraph on the same page. When you see an arrow from Original Paragraph 1 to Original Paragraph 4, you instantly know where the replica arrow goes: it points to the paragraph stapled immediately behind Original Paragraph 4 (`curr.random.next`). Once all arrows are wired, you unstaple the replica pages to form the new document.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
 - A naive clone that traverses `random` pointers recursively without a visited registry will cycle infinitely on cyclic pointer graphs.
-- While the $O(N)$ hash table solution is standard, in memory-constrained systems (e.g., embedded firmware, Linux kernel memory managers), allocating an $O(N)$ hash table with node reference hashes and GC overhead is unacceptable. The interweaving algorithm achieves $O(1)$ extra space.
+- While the O(N) hash table solution is standard, in memory-constrained systems (e.g., embedded firmware, Linux kernel memory managers), allocating an O(N) hash table with node reference hashes and GC overhead is unacceptable. The interweaving algorithm achieves O(1) extra space.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **The Interweaving Association Invariant:**
   By mutating the original list such that:
-  $$\forall u: u.next = u' \quad \text{and} \quad u'.next = \text{originalNext}(u)$$
-  the copy of any node $u$ is physically stored at $u.next$.
+  for all u: u.next = u' and u'.next = originalNext(u)
+  the copy of any node u is physically stored at u.next.
 - **Zero-Lookup Random Pointer Wiring:**
-  $$u'.random = (u.random \neq \text{null}) \ ? \ u.random.next : \text{null}$$
-  Because $u.random$ is an original node, $u.random.next$ is guaranteed to be its exact clone! This eliminates the hash map entirely.
+  u'.random = (u.random != null) \ ? \ u.random.next : null
+  Because u.random is an original node, u.random.next is guaranteed to be its exact clone! This eliminates the hash map entirely.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -2136,8 +2136,8 @@ Input: `A(1, random: B) -> B(2, random: B) -> null`
 | :--- | :--- | :--- | :--- |
 | **Pass 1** | `curr = A` | `A -> A' -> B -> null` | Interweave `A'` after `A` |
 | | `curr = B` | `A -> A' -> B -> B' -> null` | Interweave `B'` after `B` |
-| **Pass 2** | `curr = A` | `A.random = B` $\implies A'.random = B.next = B'$ | Wire $A'.random \to B'$ |
-| | `curr = B` | `B.random = B` $\implies B'.random = B.next = B'$ | Wire $B'.random \to B'$ (Self-loop) |
+| **Pass 2** | `curr = A` | `A.random = B` => A'.random = B.next = B' | Wire A'.random -> B' |
+| | `curr = B` | `B.random = B` => B'.random = B.next = B' | Wire B'.random -> B' (Self-loop) |
 | **Pass 3** | Unweaving | Original: `A -> B -> null`<br>Clone: `A' -> B' -> null` | Restores original pointers and detaches clone |
 
 ---
@@ -2145,10 +2145,10 @@ Input: `A(1, random: B) -> B(2, random: B) -> null`
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1: In-Place Interweaving ($O(1)$ Aux Space - Senior Bar):**
+- **Approach 1: In-Place Interweaving (O(1) Aux Space - Senior Bar):**
   - Preferred in senior / lead interviews because it proves deep pointer manipulation skills without relying on associative data structures.
-- **Approach 2: Hash Map ($O(N)$ Aux Space):**
-  - Practical, clean, easier to debug, but consumes $O(N)$ heap memory for dictionary buckets.
+- **Approach 2: Hash Map (O(N) Aux Space):**
+  - Practical, clean, easier to debug, but consumes O(N) heap memory for dictionary buckets.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 1. Interweave cloned nodes into original list.
@@ -2157,15 +2157,15 @@ Input: `A(1, random: B) -> B(2, random: B) -> null`
 4. Return cloned head.
 
 #### 4.3 Alternative Approaches Analysis
-- **Recursive DFS with Visited Map:** Treats linked list as a general directed graph. Works, but uses $O(N)$ stack frames and $O(N)$ hash table storage.
+- **Recursive DFS with Visited Map:** Treats linked list as a general directed graph. Works, but uses O(N) stack frames and O(N) hash table storage.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Approach | Time Complexity | Aux Space | Mutates Original Temporarily | GC Allocation Pressure |
 | :--- | :--- | :--- | :--- | :--- |
-| **In-Place Interweaving** | $O(N)$ | $O(1)$ | Yes (Restored at exit) | Zero (only clone nodes) |
-| **Hash Map Iterative** | $O(N)$ | $O(N)$ | No | Moderate (hash table) |
-| **Recursive Graph DFS** | $O(N)$ | $O(N)$ | No | High (stack + table) |
+| **In-Place Interweaving** | O(N) | O(1) | Yes (Restored at exit) | Zero (only clone nodes) |
+| **Hash Map Iterative** | O(N) | O(N) | No | Moderate (hash table) |
+| **Recursive Graph DFS** | O(N) | O(N) | No | High (stack + table) |
 
 ---
 

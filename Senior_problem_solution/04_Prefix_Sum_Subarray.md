@@ -21,11 +21,11 @@
   - `-10^6 <= nums[i] <= 10^6`
 - **Senior Edge Cases to Defend:**
   - `nums.Length == 1`: Loop does not execute; immediately returns `[nums[0]]`.
-  - Integer overflow: While $1000 \times 10^6 = 10^9$ safely fits within a standard 32-bit signed integer (`int.MaxValue` $\approx 2.14 \times 10^9$), production streaming systems must defend against wider ranges using 64-bit accumulators if bounds expand.
+  - Integer overflow: While 1000 x 10^6 = 10^9 safely fits within a standard 32-bit signed integer (`int.MaxValue` ~ 2.14 x 10^9), production streaming systems must defend against wider ranges using 64-bit accumulators if bounds expand.
   - Caller Side-Effects: Mutating `nums` in-place alters caller memory, which violates functional purity and thread safety in multi-threaded environments. Always clarify whether in-place mutation or immutable output allocation is desired.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Accumulate running prefix sums such that each element stores the cumulative sum from the origin up to its position: $P[i] = P[i-1] + nums[i]$.
+- **Conceptual Essence:** Accumulate running prefix sums such that each element stores the cumulative sum from the origin up to its position: P[i] = P[i-1] + nums[i].
 - **Sample 1:**
   - **Input:** `nums = [1, 2, 3, 4]`
   - **Running Calculations:** `[1, 1+2, 1+2+3, 1+2+3+4]`
@@ -38,20 +38,20 @@ Imagine an odometer in a vehicle traveling along a highway. As the car completes
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
 A brute-force calculation computes each prefix sum independently:
-$$\text{runningSum}[i] = \sum_{j=0}^{i} \text{nums}[j]$$
-- For index $0$: $1$ operation.
-- For index $1$: $2$ operations.
-- For index $N-1$: $N$ operations.
-- Total Additions: $\sum_{i=1}^{N} i = \frac{N(N+1)}{2} = O(N^2)$ additions.
-- Redundancy: The sub-prefix $\text{nums}[0 \dots i-1]$ is summed over and over again $N - i$ times across subsequent iterations.
+runningSum[i] = Sum(j=0..i) nums[j]
+- For index 0: 1 operation.
+- For index 1: 2 operations.
+- For index N-1: N operations.
+- Total Additions: Sum(i=1..N) i = (N(N+1)) / (2) = O(N^2) additions.
+- Redundancy: The sub-prefix nums[0 ... i-1] is summed over and over again N - i times across subsequent iterations.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **The Dynamic Prefix Recurrence:**
 Every prefix sum satisfies an exact first-order recurrence relation:
-$$\text{runningSum}[i] = \text{runningSum}[i - 1] + \text{nums}[i] \quad (\forall i \ge 1)$$
+runningSum[i] = runningSum[i - 1] + nums[i] (for all i >= 1)
 With base case:
-$$\text{runningSum}[0] = \text{nums}[0]$$
-By caching the immediate predecessor's accumulated sum, each new prefix sum is derived in strictly **$1$ addition**, reducing overall runtime from $O(N^2)$ to $O(N)$.
+runningSum[0] = nums[0]
+By caching the immediate predecessor's accumulated sum, each new prefix sum is derived in strictly **1 addition**, reducing overall runtime from O(N^2) to O(N).
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 ```text
@@ -60,26 +60,26 @@ By caching the immediate predecessor's accumulated sum, each new prefix sum is d
      Settled Prefix States          Active          Unprocessed Raw Elements
     result[j] = sum(0..j)          Element             (Future Stream)
 ```
-- Cursor `i`: Sweeps linearly from $1$ to $N - 1$.
+- Cursor `i`: Sweeps linearly from 1 to N - 1.
 - Region `0 .. i - 1`: Completely evaluated and immutable running sums.
 - Cell `i`: Transformed using `result[i - 1] + nums[i]`.
 
 #### 3.5 State Transition Triggers & Decision Gates
 1. **Base Ingestion:** `result[0] = nums[0]`.
-2. **Inductive Transfer Gate ($1 \le i < N$):**
+2. **Inductive Transfer Gate (1 <= i < N):**
    - Read settled predecessor: `prev = result[i - 1]`.
    - Add current element: `result[i] = prev + nums[i]`.
-3. **Completion Gate:** When $i = N$, emit `result`.
+3. **Completion Gate:** When i = N, emit `result`.
 
 #### 3.6 Concrete Step-by-Step State Trace
 Input: `nums = [1, 2, 3, 4]`.
 
-| Step $i$ | Raw Element `nums[i]` | Prior Settled `result[i-1]` | Computation | Stored `result[i]` | Invariant State |
+| Step i | Raw Element `nums[i]` | Prior Settled `result[i-1]` | Computation | Stored `result[i]` | Invariant State |
 | :---: | :---: | :---: | :---: | :---: | :---: |
-| **0** | `1` | — | Base assignment | `1` | $\sum_{0}^{0} = 1$ |
-| **1** | `2` | `1` | $1 + 2$ | `3` | $\sum_{0}^{1} = 3$ |
-| **2** | `3` | `3` | $3 + 3$ | `6` | $\sum_{0}^{2} = 6$ |
-| **3** | `4` | `6` | $6 + 4$ | `10` | $\sum_{0}^{3} = 10$ |
+| **0** | `1` | — | Base assignment | `1` | Sum(0..0) = 1 |
+| **1** | `2` | `1` | 1 + 2 | `3` | Sum(0..1) = 3 |
+| **2** | `3` | `3` | 3 + 3 | `6` | Sum(0..2) = 6 |
+| **3** | `4` | `6` | 6 + 4 | `10` | Sum(0..3) = 10 |
 
 Final Output: `[1, 3, 6, 10]`.
 
@@ -89,17 +89,17 @@ Final Output: `[1, 3, 6, 10]`.
 
 #### 4.1 Anchor Points & Approach Selection Criteria
 - **Approach 1 (New Array Allocation - Optimal for API Safety):** Allocates a fresh `int[N]` result array. Leaves the input buffer completely untouched. This is the required pattern in production microservices where parameters may be passed by reference or shared across async tasks.
-- **Approach 2 (In-Place Mutation - Optimal for Memory Constraints):** Directly overwrites `nums[i] += nums[i-1]`. Zero additional allocations; $O(1)$ auxiliary space. Use when embedded systems or high-frequency loops demand absolute zero GC pressure.
+- **Approach 2 (In-Place Mutation - Optimal for Memory Constraints):** Directly overwrites `nums[i] += nums[i-1]`. Zero additional allocations; O(1) auxiliary space. Use when embedded systems or high-frequency loops demand absolute zero GC pressure.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 - **Step 1: Edge Validation:** If `nums` is null or empty, return empty array.
 - **Step 2: Buffer Allocation:** Allocate `int[] result = new int[nums.Length]`.
 - **Step 3: Base Initialization:** `result[0] = nums[0]`.
-- **Step 4: Accumulation Loop:** Iterate $i = 1 \dots nums.Length - 1$, setting `result[i] = result[i - 1] + nums[i]`.
+- **Step 4: Accumulation Loop:** Iterate i = 1 ... nums.Length - 1, setting `result[i] = result[i - 1] + nums[i]`.
 - **Step 5: Return:** Return `result`.
 
 #### 4.3 Alternative Approaches Analysis
-- **SIMD / Vectorized Prefix Sum (Hillis-Steele):** Using SIMD vector instructions (`Vector<int>`), parallel prefix scans can achieve $O(\log N)$ parallel depth on GPU architectures. For standard sequential CPU execution ($N \le 1000$), standard linear scan is far simpler, perfectly cache-friendly, and outperforms vectorization setup overhead.
+- **SIMD / Vectorized Prefix Sum (Hillis-Steele):** Using SIMD vector instructions (`Vector<int>`), parallel prefix scans can achieve O(log N) parallel depth on GPU architectures. For standard sequential CPU execution (N <= 1000), standard linear scan is far simpler, perfectly cache-friendly, and outperforms vectorization setup overhead.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
@@ -193,41 +193,41 @@ public class SolutionInPlace
   - `1 <= nums.Length <= 10^4`
   - `-1000 <= nums[i] <= 1000`
 - **Senior Edge Cases to Defend:**
-  - Pivot at boundary index $0$: Left sum is $0$ by definition. If elements at $1 \dots N-1$ sum to $0$, index $0$ is a valid pivot.
-  - Pivot at boundary index $N - 1$: Right sum is $0$ by definition. If elements at $0 \dots N-2$ sum to $0$, index $N - 1$ is a valid pivot.
+  - Pivot at boundary index 0: Left sum is 0 by definition. If elements at 1 ... N-1 sum to 0, index 0 is a valid pivot.
+  - Pivot at boundary index N - 1: Right sum is 0 by definition. If elements at 0 ... N-2 sum to 0, index N - 1 is a valid pivot.
   - Negative numbers: The presence of negative numbers means running sums do not increase monotonically. A binary search or two-pointer approach will fail; exact algebraic prefix balance is required.
   - Multiple valid pivot indices: Must return the first (leftmost) index encountered.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Exploit the conservation of total sum: $\text{rightSum} = \text{totalSum} - \text{leftSum} - nums[i]$. A pivot occurs when $\text{leftSum} == \text{rightSum}$.
+- **Conceptual Essence:** Exploit the conservation of total sum: rightSum = totalSum - leftSum - nums[i]. A pivot occurs when leftSum == rightSum.
 - **Sample 1:**
   - **Input:** `nums = [1, 7, 3, 6, 5, 6]`
   - **Calculations:**
-    - At index $3$ (`nums[3] = 6`): $\text{leftSum} = 1 + 7 + 3 = 11$.
-    - $\text{rightSum} = 5 + 6 = 11$.
+    - At index 3 (`nums[3] = 6`): leftSum = 1 + 7 + 3 = 11.
+    - rightSum = 5 + 6 = 11.
   - **Output:** `3`
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Picture a balanced seesaw. You have a long beam supporting an array of weights. You are looking for an index to position the fulcrum so that the beam balances horizontally. Any weight placed directly atop the fulcrum sits on the pivot point and exerts zero torque on either side. Instead of weighing both sides separately at every candidate position, you pre-weigh the entire beam once. At any candidate position $i$, you know that whatever weight is not on the left and not on the fulcrum must reside on the right.
+Picture a balanced seesaw. You have a long beam supporting an array of weights. You are looking for an index to position the fulcrum so that the beam balances horizontally. Any weight placed directly atop the fulcrum sits on the pivot point and exerts zero torque on either side. Instead of weighing both sides separately at every candidate position, you pre-weigh the entire beam once. At any candidate position i, you know that whatever weight is not on the left and not on the fulcrum must reside on the right.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A brute-force scan tests each candidate index $i \in [0, N - 1]$:
-- Sum left slice $\sum_{j=0}^{i-1} \text{nums}[j]$ in $O(i)$.
-- Sum right slice $\sum_{j=i+1}^{N-1} \text{nums}[j]$ in $O(N - i)$.
+A brute-force scan tests each candidate index i in [0, N - 1]:
+- Sum left slice Sum(j=0..i-1) nums[j] in O(i).
+- Sum right slice Sum(j=i+1..N-1) nums[j] in O(N - i).
 - Compare left and right sums.
-- Overall complexity: $\sum_{i=0}^{N-1} (N - 1) = O(N^2)$ operations. For $N = 10^4$, this wastes $\approx 10^8$ operations recalculating identical sub-slices.
+- Overall complexity: Sum(i=0..N-1) (N - 1) = O(N^2) operations. For N = 10^4, this wastes ~ 10^8 operations recalculating identical sub-slices.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **Conservation of Total Sum:**
-Let $\text{totalSum} = \sum_{j=0}^{N-1} \text{nums}[j]$. For any candidate index $i$:
-$$\text{totalSum} = \text{leftSum}_i + \text{nums}[i] + \text{rightSum}_i$$
+Let totalSum = Sum(j=0..N-1) nums[j]. For any candidate index i:
+totalSum = leftSum_i + nums[i] + rightSum_i
 Rearranging algebraically:
-$$\text{rightSum}_i = \text{totalSum} - \text{leftSum}_i - \text{nums}[i]$$
-The pivot condition $\text{leftSum}_i == \text{rightSum}_i$ reduces directly to:
-$$\text{leftSum}_i == \text{totalSum} - \text{leftSum}_i - \text{nums}[i] \iff 2 \cdot \text{leftSum}_i + \text{nums}[i] == \text{totalSum}$$
-With $\text{totalSum}$ computed in an initial pass, we evaluate $\text{rightSum}_i$ in strictly **$O(1)$ time** during the second pass.
+rightSum_i = totalSum - leftSum_i - nums[i]
+The pivot condition leftSum_i == rightSum_i reduces directly to:
+leftSum_i == totalSum - leftSum_i - nums[i] <=> 2 * leftSum_i + nums[i] == totalSum
+With totalSum computed in an initial pass, we evaluate rightSum_i in strictly **O(1) time** during the second pass.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 ```text
@@ -237,53 +237,53 @@ With $\text{totalSum}$ computed in an initial pass, we evaluate $\text{rightSum}
  (Explicit Scalar)               Candidate            (Derived in O(1))
 ```
 - Pass 1: Computes scalar `totalSum`.
-- Pass 2: Pointer $i$ advances from $0$ to $N - 1$.
-- Scalar `leftSum`: Holds $\sum_{j=0}^{i-1} \text{nums}[j]$ before examining index $i$.
+- Pass 2: Pointer i advances from 0 to N - 1.
+- Scalar `leftSum`: Holds Sum(j=0..i-1) nums[j] before examining index i.
 
 #### 3.5 State Transition Triggers & Decision Gates
 1. **Pass 1:** `totalSum = sum(nums)`.
-2. **Pass 2 (Evaluation at index $i$):**
+2. **Pass 2 (Evaluation at index i):**
    - **Balance Check Gate:** Does `leftSum == totalSum - leftSum - nums[i]`?
-     - If **True**: Return $i$ immediately (guarantees leftmost match).
+     - If **True**: Return i immediately (guarantees leftmost match).
    - **Accumulation Gate:** `leftSum += nums[i]`.
 3. **Exhaustion Gate:** If loop finishes without triggering balance, return `-1`.
 
 #### 3.6 Concrete Step-by-Step State Trace
-Input: `nums = [1, 7, 3, 6, 5, 6]`. $\text{totalSum} = 1 + 7 + 3 + 6 + 5 + 6 = 28$.
+Input: `nums = [1, 7, 3, 6, 5, 6]`. totalSum = 1 + 7 + 3 + 6 + 5 + 6 = 28.
 
-| Index $i$ | Element `nums[i]` | `leftSum` | Derived `rightSum` ($28 - \text{left} - \text{nums}[i]$) | Balance Check (`left == right`) | Next `leftSum` |
+| Index i | Element `nums[i]` | `leftSum` | Derived `rightSum` (28 - left - nums[i]) | Balance Check (`left == right`) | Next `leftSum` |
 | :---: | :---: | :---: | :---: | :---: | :---: |
-| **0** | `1` | `0` | $28 - 0 - 1 = 27$ | $0 \ne 27$ | $0 + 1 = 1$ |
-| **1** | `7` | `1` | $28 - 1 - 7 = 20$ | $1 \ne 20$ | $1 + 7 = 8$ |
-| **2** | `3` | `8` | $28 - 8 - 3 = 17$ | $8 \ne 17$ | $8 + 3 = 11$ |
-| **3** | `6` | `11` | $28 - 11 - 6 = 11$ | **$11 == 11$ (MATCH!)** | **Return 3** |
+| **0** | `1` | `0` | 28 - 0 - 1 = 27 | 0 != 27 | 0 + 1 = 1 |
+| **1** | `7` | `1` | 28 - 1 - 7 = 20 | 1 != 20 | 1 + 7 = 8 |
+| **2** | `3` | `8` | 28 - 8 - 3 = 17 | 8 != 17 | 8 + 3 = 11 |
+| **3** | `6` | `11` | 28 - 11 - 6 = 11 | **11 == 11 (MATCH!)** | **Return 3** |
 
 ---
 
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Two-Pass Constant-Space Scan - Optimal):** The industry-standard approach. Pass 1 aggregates `totalSum`; Pass 2 identifies the balance point. $O(N)$ time, $O(1)$ space.
-- **Approach 2 (Prefix and Suffix Arrays):** Allocates `prefix[N]` and `suffix[N]`. While conceptually straightforward, it consumes $2N$ extra heap memory with zero performance gain over Approach 1.
+- **Approach 1 (Two-Pass Constant-Space Scan - Optimal):** The industry-standard approach. Pass 1 aggregates `totalSum`; Pass 2 identifies the balance point. O(N) time, O(1) space.
+- **Approach 2 (Prefix and Suffix Arrays):** Allocates `prefix[N]` and `suffix[N]`. While conceptually straightforward, it consumes 2N extra heap memory with zero performance gain over Approach 1.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 - **Step 1: Input Validation:** Return `-1` if array is empty.
 - **Step 2: Aggregate Total:** Sum all elements in `nums` into `totalSum`.
-- **Step 3: Linear Balance Scan:** Initialize `leftSum = 0`. Iterate $i = 0 \dots N - 1$.
+- **Step 3: Linear Balance Scan:** Initialize `leftSum = 0`. Iterate i = 0 ... N - 1.
   - Evaluate algebraic balance condition.
-  - If equal, return $i$.
+  - If equal, return i.
   - Add `nums[i]` to `leftSum`.
 - **Step 4: Default Exit:** If no index satisfies the equation, return `-1`.
 
 #### 4.3 Alternative Approaches Analysis
-- **Two Pointers Inward:** An opposing two-pointer technique ($L=0, R=N-1$) moving toward each other fails because negative numbers destroy monotonicity (moving a pointer inward might increase or decrease the sum arbitrarily).
+- **Two Pointers Inward:** An opposing two-pointer technique (L=0, R=N-1) moving toward each other fails because negative numbers destroy monotonicity (moving a pointer inward might increase or decrease the sum arbitrarily).
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Dimension | Approach 1: Two-Pass Scalar Balance (Optimal) | Approach 2: Prefix & Suffix Arrays |
 | :--- | :--- | :--- |
-| **Time Complexity** | `O(N)` (Pass 1: $N$, Pass 2: $\le N$) | `O(N)` (3 linear passes) |
-| **Auxiliary Space** | `O(1)` (scalars on stack) | `O(N)` (two length-$N$ arrays) |
+| **Time Complexity** | `O(N)` (Pass 1: N, Pass 2: <= N) | `O(N)` (3 linear passes) |
+| **Auxiliary Space** | `O(1)` (scalars on stack) | `O(N)` (two length-N arrays) |
 | **Memory Access Pattern** | Sequential cache-line read | Multiple array passes, higher cache churn |
 | **Negative Numbers Support** | Fully supported | Fully supported |
 | **Streaming Suitability** | Requires 2 passes (bounded stream) | Requires 3 passes (bounded stream) |
@@ -365,42 +365,42 @@ public class Solution
   - `-1000 <= nums[i] <= 1000`
   - `-10^7 <= k <= 10^7`
 - **Senior Edge Cases & Critical Defenses:**
-  - **Negative Numbers Invalidate Sliding Window:** A sliding window *cannot* solve this problem. In a sliding window, expanding $right$ must monotonically increase the sum, and advancing $left$ must monotonically decrease it. Negative values destroy this monotonicity completely: expanding can reduce the sum, and shrinking can increase it. A hash map of prefix sums is strictly necessary.
-  - Subarrays starting at index $0$: Subarrays of the form `nums[0..j]` have sum equal to $P[j]$. When $P[j] = k$, we need $P[j] - k = 0$. Hence, the prefix sum $0$ must have an initial frequency of $1$ (`prefixCounts[0] = 1`).
-  - Target $k = 0$: Valid subarrays can cancel out internally (e.g. `[1, -1, 1, -1]`).
+  - **Negative Numbers Invalidate Sliding Window:** A sliding window *cannot* solve this problem. In a sliding window, expanding right must monotonically increase the sum, and advancing left must monotonically decrease it. Negative values destroy this monotonicity completely: expanding can reduce the sum, and shrinking can increase it. A hash map of prefix sums is strictly necessary.
+  - Subarrays starting at index 0: Subarrays of the form `nums[0..j]` have sum equal to P[j]. When P[j] = k, we need P[j] - k = 0. Hence, the prefix sum 0 must have an initial frequency of 1 (`prefixCounts[0] = 1`).
+  - Target k = 0: Valid subarrays can cancel out internally (e.g. `[1, -1, 1, -1]`).
   - Hash map capacity pre-allocation: Allocating initial capacity `nums.Length + 1` prevents costly internal dictionary rehashing.
 
 ### 2. Summary & Sample Input / Output
 - **Conceptual Essence:** Use the prefix difference identity:
-  $$\sum_{m=i}^{j} \text{nums}[m] = P[j] - P[i-1] = k \iff P[i-1] = P[j] - k$$
+  Sum(m=i..j) nums[m] = P[j] - P[i-1] = k <=> P[i-1] = P[j] - k
 - **Sample 1:**
-  - **Input:** `nums = [1, 1, 1]`, `k = 2` $\implies$ `2` (`[1, 1]` at indices `0..1` and `1..2`)
+  - **Input:** `nums = [1, 1, 1]`, `k = 2` => `2` (`[1, 1]` at indices `0..1` and `1..2`)
 - **Sample 2 (Negative Numbers):**
-  - **Input:** `nums = [1, -1, 1, -1]`, `k = 0` $\implies$ `4`
+  - **Input:** `nums = [1, -1, 1, -1]`, `k = 0` => `4`
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine hiking along an undulating mountain trail. At every milestone $j$, your altimeter reads your cumulative altitude $P[j]$. You want to discover how many earlier viewpoints $i-1$ you passed that were at an altitude exactly $k$ meters below your current altitude:
-$$P[i-1] = P[j] - k$$
-Instead of turning around and hiking backward to re-check all previous milestones, you carry a ledger. Whenever you stand at altitude $P[j]$, you consult your ledger: *"How many times in the past have I stood at altitude $P[j] - k$?"* If the ledger says 3 times, then exactly 3 distinct trails ending at your current position have an altitude gain of $k$. You then record your current altitude into the ledger and continue forward.
+Imagine hiking along an undulating mountain trail. At every milestone j, your altimeter reads your cumulative altitude P[j]. You want to discover how many earlier viewpoints i-1 you passed that were at an altitude exactly k meters below your current altitude:
+P[i-1] = P[j] - k
+Instead of turning around and hiking backward to re-check all previous milestones, you carry a ledger. Whenever you stand at altitude P[j], you consult your ledger: *"How many times in the past have I stood at altitude P[j] - k?"* If the ledger says 3 times, then exactly 3 distinct trails ending at your current position have an altitude gain of k. You then record your current altitude into the ledger and continue forward.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A brute-force scan enumerates all pairs $(i, j)$ with $0 \le i \le j < N$:
-- Summing `nums[i..j]` takes $O(N)$ without prefix arrays $\implies O(N^3)$ total time.
-- Even with a precomputed prefix array $P$, evaluating all $\frac{N(N+1)}{2}$ pairs takes $O(N^2)$ time.
-- For $N = 2 \times 10^4$, $N^2 = 4 \times 10^8$ iterations, which triggers a TLE in competitive and production SLA environments.
+A brute-force scan enumerates all pairs (i, j) with 0 <= i <= j < N:
+- Summing `nums[i..j]` takes O(N) without prefix arrays => O(N^3) total time.
+- Even with a precomputed prefix array P, evaluating all (N(N+1)) / (2) pairs takes O(N^2) time.
+- For N = 2 x 10^4, N^2 = 4 x 10^8 iterations, which triggers a TLE in competitive and production SLA environments.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **The Prefix Sum Complement Identity:**
 Any contiguous subarray sum can be expressed as the difference of two prefix sums:
-$$\text{Sum}(nums[i \dots j]) = P[j] - P[i - 1]$$
+Sum(nums[i ... j]) = P[j] - P[i - 1]
 We require:
-$$P[j] - P[i - 1] = k \iff P[i - 1] = P[j] - k$$
-At current index $j$ with running sum $P[j]$, any historical index $i - 1$ whose prefix sum was $P[j] - k$ forms a valid subarray ending at $j$.
+P[j] - P[i - 1] = k <=> P[i - 1] = P[j] - k
+At current index j with running sum P[j], any historical index i - 1 whose prefix sum was P[j] - k forms a valid subarray ending at j.
 By maintaining a frequency map of seen prefix sums:
-- Looking up `prefixCounts[P[j] - k]` provides the exact count of valid subarrays ending at index $j$ in **$O(1)$ amortized time**.
-- **Base Case Invariant:** `prefixCounts[0] = 1`. This accounts for valid subarrays that start at index $0$ (where $i - 1 = -1$ corresponds to an empty prefix with sum $0$).
+- Looking up `prefixCounts[P[j] - k]` provides the exact count of valid subarrays ending at index j in **O(1) amortized time**.
+- **Base Case Invariant:** `prefixCounts[0] = 1`. This accounts for valid subarrays that start at index 0 (where i - 1 = -1 corresponds to an empty prefix with sum 0).
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 ```text
@@ -409,14 +409,14 @@ By maintaining a frequency map of seen prefix sums:
         Prefix P[i-1]                 Valid Subarray                  Unexplored
       Stored in HashMap             Sum = P[j]-P[i-1] = k               Future
 ```
-- Cursor $j$: Current element being processed.
-- `currentSum`: Cumulative prefix sum $P[j]$.
-- `targetPrefix = currentSum - k`: The exact historical prefix sum required to form sum $k$.
+- Cursor j: Current element being processed.
+- `currentSum`: Cumulative prefix sum P[j].
+- `targetPrefix = currentSum - k`: The exact historical prefix sum required to form sum k.
 - `prefixCounts`: Map storing `{ prefixSum : occurrenceFrequency }`.
 
 #### 3.5 State Transition Triggers & Decision Gates
 1. **Bootstrap Gate:** Initialize `prefixCounts[0] = 1`. Set `currentSum = 0`, `totalSubarrays = 0`.
-2. **Iteration Step ($j \in [0, N - 1]$):**
+2. **Iteration Step (j in [0, N - 1]):**
    - Accumulate: `currentSum += nums[j]`.
    - Calculate complement: `targetPrefix = currentSum - k`.
    - **Lookup Gate:** If `prefixCounts.TryGetValue(targetPrefix, out int count)`:
@@ -428,20 +428,20 @@ By maintaining a frequency map of seen prefix sums:
 Input: `nums = [1, -1, 1, 1, 1]`, `k = 2`.
 Initial State: `prefixCounts = { 0: 1 }`, `totalSubarrays = 0`.
 
-| Step $j$ | Element `nums[j]` | `currentSum` | `targetPrefix` ($curr - 2$) | Matches in Map? | Count Added | `totalSubarrays` | Updated `prefixCounts` |
+| Step j | Element `nums[j]` | `currentSum` | `targetPrefix` (curr - 2) | Matches in Map? | Count Added | `totalSubarrays` | Updated `prefixCounts` |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
 | **Init** | — | `0` | — | — | — | `0` | `{ 0:1 }` |
-| **0** | `1` | `1` | $1 - 2 = -1$ | No | 0 | 0 | `{ 0:1, 1:1 }` |
-| **1** | `-1` | `0` | $0 - 2 = -2$ | No | 0 | 0 | `{ 0:2, 1:1 }` |
-| **2** | `1` | `1` | $1 - 2 = -1$ | No | 0 | 0 | `{ 0:2, 1:2 }` |
-| **3** | `1` | `2` | $2 - 2 = 0$ | **Yes (`0` has count 2)** | +2 | **2** | `{ 0:2, 1:2, 2:1 }` |
-| **4** | `1` | `3` | $3 - 2 = 1$ | **Yes (`1` has count 2)** | +2 | **4** | `{ 0:2, 1:2, 2:1, 3:1 }` |
+| **0** | `1` | `1` | 1 - 2 = -1 | No | 0 | 0 | `{ 0:1, 1:1 }` |
+| **1** | `-1` | `0` | 0 - 2 = -2 | No | 0 | 0 | `{ 0:2, 1:1 }` |
+| **2** | `1` | `1` | 1 - 2 = -1 | No | 0 | 0 | `{ 0:2, 1:2 }` |
+| **3** | `1` | `2` | 2 - 2 = 0 | **Yes (`0` has count 2)** | +2 | **2** | `{ 0:2, 1:2, 2:1 }` |
+| **4** | `1` | `3` | 3 - 2 = 1 | **Yes (`1` has count 2)** | +2 | **4** | `{ 0:2, 1:2, 2:1, 3:1 }` |
 
 Subarrays found:
-- At $j=3$ (`curr=2`):
+- At j=3 (`curr=2`):
   1. From empty prefix (idx 0..3: `[1, -1, 1, 1]`, sum = 2)
   2. From prefix at idx 1 (idx 2..3: `[1, 1]`, sum = 2)
-- At $j=4$ (`curr=3`):
+- At j=4 (`curr=3`):
   1. From prefix at idx 0 (idx 1..4: `[-1, 1, 1, 1]`, sum = 2)
   2. From prefix at idx 2 (idx 3..4: `[1, 1]`, sum = 2)
 
@@ -452,7 +452,7 @@ Final Result: `4`.
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Prefix Sum + HashMap - Optimal):** The only viable linear solution for arrays with arbitrary (positive, zero, and negative) numbers. $O(N)$ time, $O(N)$ space.
+- **Approach 1 (Prefix Sum + HashMap - Optimal):** The only viable linear solution for arrays with arbitrary (positive, zero, and negative) numbers. O(N) time, O(N) space.
 - **Why Not Sliding Window?** Monotonicity is violated. Mentioning this distinction in senior engineering interviews proves deep structural mastery.
 
 #### 4.2 Step-by-Step Natural Progression Flow
@@ -465,14 +465,14 @@ Final Result: `4`.
 - **Step 4: Return:** Return `totalSubarrays`.
 
 #### 4.3 Alternative Approaches Analysis
-- **Cumulative Prefix Array with Double Loop:** Build prefix array `P` of length $N + 1$. Iterate all $i < j$, checking if $P[j] - P[i] == k$. Time: $O(N^2)$, Space: $O(N)$. Useful only if memory is extremely constrained and hashing overhead cannot be tolerated, but unacceptable for large inputs.
+- **Cumulative Prefix Array with Double Loop:** Build prefix array `P` of length N + 1. Iterate all i < j, checking if P[j] - P[i] == k. Time: O(N^2), Space: O(N). Useful only if memory is extremely constrained and hashing overhead cannot be tolerated, but unacceptable for large inputs.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Dimension | Approach 1: Prefix Sum + HashMap (Optimal) | Approach 2: Prefix Array Brute-Force |
 | :--- | :--- | :--- |
 | **Time Complexity** | `O(N)` average, `O(N^2)` worst-case hash collisions | `O(N^2)` deterministic |
-| **Auxiliary Space** | `O(N)` (stores up to $N + 1$ unique prefix sums) | `O(N)` (stores $N + 1$ integers) |
+| **Auxiliary Space** | `O(N)` (stores up to N + 1 unique prefix sums) | `O(N)` (stores N + 1 integers) |
 | **Dictionary Overhead** | Boxing-free primitive types (`<int, int>`) | Zero hashing overhead |
 | **Negative Value Handling**| Fully supported | Fully supported |
 | **Streaming Suitability** | Yes (can run continuously on unbounded streams) | No |
@@ -563,10 +563,10 @@ public class Solution
 - **Senior Edge Cases to Defend:**
   - All negative numbers (e.g. `nums = [-5, -2, -8, -1]`): Returning `0` is a catastrophic failure. The answer must be `-1` (the single maximum negative element). `currentMax` and `globalMax` must be initialized strictly to `nums[0]`.
   - Single element array (e.g. `nums = [-10]`): Loop should not iterate; return `nums[0]`.
-  - Very large sums: Max sum could reach $10^5 \times 10^4 = 10^9$, which safely fits within a 32-bit signed integer (`int`), but accumulators should be tracked cleanly without overflow risk.
+  - Very large sums: Max sum could reach 10^5 x 10^4 = 10^9, which safely fits within a 32-bit signed integer (`int`), but accumulators should be tracked cleanly without overflow risk.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** At each element, decide whether to extend the previous running subarray or discard it and start fresh, capturing the maximum contiguous sum in $O(N)$ time.
+- **Conceptual Essence:** At each element, decide whether to extend the previous running subarray or discard it and start fresh, capturing the maximum contiguous sum in O(N) time.
 - **Sample 1:**
   - **Input:** `nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4]`
   - **Optimal Subarray:** `[4, -1, 2, 1]`
@@ -578,22 +578,22 @@ public class Solution
 Think of financial risk management. You are managing an investment portfolio day by day. Every day brings a gain or a loss. If the cumulative balance of your current portfolio ever drops below zero, that portfolio has become a toxic liability. Carrying negative equity forward into tomorrow will strictly reduce whatever gains tomorrow might bring. The mathematically optimal decision is to declare bankruptcy on the past, wipe the slate clean, and start a brand-new fund beginning today.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A brute-force scan enumerates all $O(N^2)$ subarrays and computes their sums:
-$$\text{MaxSum} = \max_{0 \le i \le j < N} \sum_{k=i}^{j} \text{nums}[k]$$
-- Total Time: $O(N^2)$ with running accumulation, or $O(N^3)$ with naive re-summing.
-- For $N = 10^5$, $N^2 = 10^{10}$ operations, causing an immediate TLE.
+A brute-force scan enumerates all O(N^2) subarrays and computes their sums:
+MaxSum = max_0 <= i <= j < N Sum(k=i..j) nums[k]
+- Total Time: O(N^2) with running accumulation, or O(N^3) with naive re-summing.
+- For N = 10^5, N^2 = 10^10 operations, causing an immediate TLE.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **Kadane's Dynamic Recurrence (Greedy State Reset):**
-Let $dp[i]$ be the maximum subarray sum that **must end at index $i$**.
-At index $i$, we face a binary choice:
-1. Extend the best subarray ending at $i - 1$: $dp[i - 1] + nums[i]$
-2. Start a fresh subarray consisting solely of $nums[i]$: $nums[i]$
-$$\therefore dp[i] = \max(nums[i], dp[i - 1] + nums[i])$$
-Notice that $nums[i]$ is common to both terms:
-$$dp[i] = nums[i] + \max(0, dp[i - 1])$$
-If $dp[i - 1] < 0$, it is a net deficit; we discard it ($0$). If $dp[i - 1] \ge 0$, it is an asset; we retain it.
-Because $dp[i]$ depends only on $dp[i - 1]$, we reduce the $O(N)$ DP table to a single scalar `currentMax`, achieving **$O(1)$ auxiliary space**.
+Let dp[i] be the maximum subarray sum that **must end at index i**.
+At index i, we face a binary choice:
+1. Extend the best subarray ending at i - 1: dp[i - 1] + nums[i]
+2. Start a fresh subarray consisting solely of nums[i]: nums[i]
+therefore dp[i] = max(nums[i], dp[i - 1] + nums[i])
+Notice that nums[i] is common to both terms:
+dp[i] = nums[i] + max(0, dp[i - 1])
+If dp[i - 1] < 0, it is a net deficit; we discard it (0). If dp[i - 1] >= 0, it is an asset; we retain it.
+Because dp[i] depends only on dp[i - 1], we reduce the O(N) DP table to a single scalar `currentMax`, achieving **O(1) auxiliary space**.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 ```text
@@ -607,7 +607,7 @@ Because $dp[i]$ depends only on $dp[i - 1]$, we reduce the $O(N)$ DP table to a 
 
 #### 3.5 State Transition Triggers & Decision Gates
 1. **Bootstrap:** `currentMax = nums[0]`, `globalMax = nums[0]`.
-2. **Step ($i = 1 \dots N - 1$):**
+2. **Step (i = 1 ... N - 1):**
    - **Reset / Extend Gate:** `currentMax = Math.Max(nums[i], currentMax + nums[i])`.
    - **Global Extremum Gate:** `globalMax = Math.Max(globalMax, currentMax)`.
 3. **Termination:** Return `globalMax`.
@@ -615,17 +615,17 @@ Because $dp[i]$ depends only on $dp[i - 1]$, we reduce the $O(N)$ DP table to a 
 #### 3.6 Concrete Step-by-Step State Trace
 Input: `nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4]`.
 
-| $i$ | `nums[i]` | Choice 1: Start Fresh (`nums[i]`) | Choice 2: Extend (`curr + nums[i]`) | `currentMax` Result | `globalMax` | Decision Rationale |
+| i | `nums[i]` | Choice 1: Start Fresh (`nums[i]`) | Choice 2: Extend (`curr + nums[i]`) | `currentMax` Result | `globalMax` | Decision Rationale |
 | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
 | **0** | `-2` | `-2` | — | `-2` | `-2` | Base element |
-| **1** | `1` | `1` | $-2 + 1 = -1$ | **1** | **1** | Discard negative debt ($-2$); start fresh |
-| **2** | `-3` | `-3` | $1 + (-3) = -2$ | **-2** | 1 | Extend ($-2 > -3$) |
-| **3** | `4` | `4` | $-2 + 4 = 2$ | **4** | **4** | Discard negative debt ($-2$); start fresh |
-| **4** | `-1` | `-1` | $4 + (-1) = 3$ | **3** | 4 | Extend ($3 > -1$) |
-| **5** | `2` | `2` | $3 + 2 = 5$ | **5** | **5** | Extend ($5 > 2$) |
-| **6** | `1` | `1` | $5 + 1 = 6$ | **6** | **6** | Extend ($6 > 1$) |
-| **7** | `-5` | `-5` | $6 + (-5) = 1$ | **1** | 6 | Extend ($1 > -5$) |
-| **8** | `4` | `4` | $1 + 4 = 5$ | **5** | 6 | Extend ($5 > 4$) |
+| **1** | `1` | `1` | -2 + 1 = -1 | **1** | **1** | Discard negative debt (-2); start fresh |
+| **2** | `-3` | `-3` | 1 + (-3) = -2 | **-2** | 1 | Extend (-2 > -3) |
+| **3** | `4` | `4` | -2 + 4 = 2 | **4** | **4** | Discard negative debt (-2); start fresh |
+| **4** | `-1` | `-1` | 4 + (-1) = 3 | **3** | 4 | Extend (3 > -1) |
+| **5** | `2` | `2` | 3 + 2 = 5 | **5** | **5** | Extend (5 > 2) |
+| **6** | `1` | `1` | 5 + 1 = 6 | **6** | **6** | Extend (6 > 1) |
+| **7** | `-5` | `-5` | 6 + (-5) = 1 | **1** | 6 | Extend (1 > -5) |
+| **8** | `4` | `4` | 1 + 4 = 5 | **5** | 6 | Extend (5 > 4) |
 
 Final Maximum Subarray Sum: `6` (subarray `[4, -1, 2, 1]`).
 
@@ -634,30 +634,30 @@ Final Maximum Subarray Sum: `6` (subarray `[4, -1, 2, 1]`).
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Kadane's Algorithm - Optimal for Single-Core):** $O(N)$ time, $O(1)$ space. Strict sequential traversal with optimal CPU cache utilization.
+- **Approach 1 (Kadane's Algorithm - Optimal for Single-Core):** O(N) time, O(1) space. Strict sequential traversal with optimal CPU cache utilization.
 - **Approach 2 (Divide & Conquer - Segment Tree Merge):** Recursively splits the array into halves. Merges segments by computing 4 attributes: `TotalSum`, `LeftMax`, `RightMax`, and `MaxSubSum`.
-  - **Why Learn Divide & Conquer?** Kadane's algorithm is fundamentally sequential and cannot be parallelized easily across a cluster of 1,000 machines. The Divide and Conquer approach allows MapReduce and GPU architectures to compute maximum subarrays across massive distributed datasets in parallel $O(\log N)$ time.
+  - **Why Learn Divide & Conquer?** Kadane's algorithm is fundamentally sequential and cannot be parallelized easily across a cluster of 1,000 machines. The Divide and Conquer approach allows MapReduce and GPU architectures to compute maximum subarrays across massive distributed datasets in parallel O(log N) time.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 - **Step 1: Input Validation:** Guard against empty array.
 - **Step 2: Initialize States:** Set `currentMax` and `globalMax` to `nums[0]`.
-- **Step 3: Exploration Loop:** Iterate $i = 1 \dots N - 1$.
+- **Step 3: Exploration Loop:** Iterate i = 1 ... N - 1.
   - Update `currentMax = Math.Max(nums[i], currentMax + nums[i])`.
   - Update `globalMax = Math.Max(globalMax, currentMax)`.
 - **Step 4: Return:** Return `globalMax`.
 
 #### 4.3 Alternative Approaches Analysis
 - **Divide and Conquer Segment Tree Formulation:**
-  For any segment $[L, R]$ with midpoint $M$:
-  $$\text{MaxSubSum} = \max(\text{LeftSubSum}, \text{RightSubSum}, \text{Left.RightMax} + \text{Right.LeftMax})$$
-  Recurrence: $T(N) = 2T(N/2) + O(1) \implies O(N)$ time by Master Theorem. Stack space: $O(\log N)$.
+  For any segment [L, R] with midpoint M:
+  MaxSubSum = max(LeftSubSum, RightSubSum, Left.RightMax + Right.LeftMax)
+  Recurrence: T(N) = 2T(N/2) + O(1) => O(N) time by Master Theorem. Stack space: O(log N).
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Dimension | Approach 1: Kadane's Algorithm (Optimal) | Approach 2: Divide & Conquer (Parallelizable) |
 | :--- | :--- | :--- |
-| **Time Complexity** | `O(N)` strictly linear | `O(N)` sequential ($O(\log N)$ parallel depth) |
-| **Auxiliary Space** | `O(1)` strictly scalar | `O(\log N)` recursion stack |
+| **Time Complexity** | `O(N)` strictly linear | `O(N)` sequential (O(log N) parallel depth) |
+| **Auxiliary Space** | `O(1)` strictly scalar | `O(log N)` recursion stack |
 | **Distributed / Parallel** | No (inherently sequential state) | Yes (ideal for multi-threaded / MapReduce) |
 | **Cache Locality** | Sequential memory stream | Tree-based memory access |
 | **In-Place Mutability** | Read-only | Read-only |
@@ -790,42 +790,42 @@ public class SolutionDivideAndConquer
   - `1 <= nums.Length <= 10^4`
   - `-10^5 <= nums[i] <= 10^5`
   - `0 <= left <= right < nums.Length`
-  - At most $10^4$ calls will be made to `SumRange`.
+  - At most 10^4 calls will be made to `SumRange`.
 - **Senior Edge Cases to Defend:**
-  - $left = 0$: Query spans from the very beginning of the array. Without a 1-indexed sentinel, this requires a branch (`if (left == 0) return prefix[right];`).
-  - $left = right$: Single-element range query; must return `nums[left]`.
-  - Repeated high-throughput queries: $10^4$ queries against $10^4$ elements must execute in microseconds, forbidding any per-query looping.
+  - left = 0: Query spans from the very beginning of the array. Without a 1-indexed sentinel, this requires a branch (`if (left == 0) return prefix[right];`).
+  - left = right: Single-element range query; must return `nums[left]`.
+  - Repeated high-throughput queries: 10^4 queries against 10^4 elements must execute in microseconds, forbidding any per-query looping.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Precompute a 1-indexed prefix sum array of size $N + 1$. Any range query $[left, right]$ evaluates in strictly $O(1)$ arithmetic via `prefix[right + 1] - prefix[left]`.
+- **Conceptual Essence:** Precompute a 1-indexed prefix sum array of size N + 1. Any range query [left, right] evaluates in strictly O(1) arithmetic via `prefix[right + 1] - prefix[left]`.
 - **Sample 1:**
   - `nums = [-2, 0, 3, -5, 2, -1]`
-  - `SumRange(0, 2)`: $(-2) + 0 + 3 = 1$
-  - `SumRange(2, 5)`: $3 + (-5) + 2 + (-1) = -1$
-  - `SumRange(0, 5)`: $(-2) + 0 + 3 + (-5) + 2 + (-1) = -3$
+  - `SumRange(0, 2)`: (-2) + 0 + 3 = 1
+  - `SumRange(2, 5)`: 3 + (-5) + 2 + (-1) = -1
+  - `SumRange(0, 5)`: (-2) + 0 + 3 + (-5) + 2 + (-1) = -3
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
 Picture mile markers along a national highway. Marker 0 is at the state border (Mile 0). Marker 5 is at Mile 50. Marker 12 is at Mile 140. If a motorist asks, *"How long is the stretch of highway between Marker 5 and Marker 12?"*, the highway patrol does not dispatch a cruiser to drive and measure the asphalt between Marker 5 and Marker 12. They simply calculate:
-$$140 - 50 = 90 \text{ miles}$$
+140 - 50 = 90 miles
 By front-loading the measurement cost into milestone signposts during highway construction, every subsequent travel query is answered instantly.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
 Without precomputation, each call to `SumRange(left, right)` iterates through the array from `left` to `right`:
-- Query Time: $O(R - L + 1) = O(N)$.
-- Total Cost for $Q$ queries: $O(Q \cdot N)$.
-- With $Q = 10^4$ and $N = 10^4$, total operations reach $10^8$. In server applications handling millions of user requests, this creates unacceptable request latency.
+- Query Time: O(R - L + 1) = O(N).
+- Total Cost for Q queries: O(Q * N).
+- With Q = 10^4 and N = 10^4, total operations reach 10^8. In server applications handling millions of user requests, this creates unacceptable request latency.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **The 1-Indexed Sentinel Trick (Branchless Invariant):**
-Define prefix array $P$ of size $N + 1$ such that:
-$$P[k] = \sum_{j=0}^{k - 1} \text{nums}[j] \quad (k \ge 1), \quad \text{with } P[0] = 0$$
-For any range query $[L, R]$:
-$$\sum_{j=L}^{R} \text{nums}[j] = \sum_{j=0}^{R} \text{nums}[j] - \sum_{j=0}^{L-1} \text{nums}[j] = P[R + 1] - P[L]$$
-Notice the beauty of $P[0] = 0$:
-When $L = 0$, the query becomes:
-$$P[R + 1] - P[0] = P[R + 1] - 0 = P[R + 1]$$
+Define prefix array P of size N + 1 such that:
+P[k] = Sum(j=0..k - 1) nums[j] (k >= 1), with P[0] = 0
+For any range query [L, R]:
+Sum(j=L..R) nums[j] = Sum(j=0..R) nums[j] - Sum(j=0..L-1) nums[j] = P[R + 1] - P[L]
+Notice the beauty of P[0] = 0:
+When L = 0, the query becomes:
+P[R + 1] - P[0] = P[R + 1] - 0 = P[R + 1]
 This completely eliminates the need for an `if (left == 0)` conditional check inside `SumRange`. The code becomes strictly branchless, allowing CPU instruction pipelines to execute without branch misprediction penalties.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
@@ -837,14 +837,14 @@ Prefix Array P (Length N + 1):
   ( = 0 )          Index L                [ L ... R ]              Elements
 ```
 - `_prefix[0] = 0`: Dummy identity element.
-- `_prefix[k]`: Stores sum of first $k$ elements ($nums[0 \dots k - 1]$).
-- Query $[L, R]$ maps directly to `_prefix[R + 1] - _prefix[L]`.
+- `_prefix[k]`: Stores sum of first k elements (nums[0 ... k - 1]).
+- Query [L, R] maps directly to `_prefix[R + 1] - _prefix[L]`.
 
 #### 3.5 State Transition Triggers & Decision Gates
 1. **Construction Phase:**
    - Allocate `_prefix = new int[nums.Length + 1]`.
    - Set `_prefix[0] = 0`.
-   - Loop $i = 0 \dots N - 1$: `_prefix[i + 1] = _prefix[i] + nums[i]`.
+   - Loop i = 0 ... N - 1: `_prefix[i + 1] = _prefix[i] + nums[i]`.
 2. **Query Phase (`SumRange(left, right)`):**
    - Strictly evaluate: `return _prefix[right + 1] - _prefix[left]`.
 
@@ -853,28 +853,28 @@ Input: `nums = [-2, 0, 3, -5, 2, -1]`.
 
 Prefix Array Construction:
 
-| Index $k$ | Corresponding Slice | Formula | Value `_prefix[k]` |
+| Index k | Corresponding Slice | Formula | Value `_prefix[k]` |
 | :---: | :---: | :---: | :---: |
 | **0** | Empty Prefix | Sentinel | `0` |
-| **1** | `nums[0]` | $0 + (-2)$ | `-2` |
-| **2** | `nums[0..1]` | $-2 + 0$ | `-2` |
-| **3** | `nums[0..2]` | $-2 + 3$ | `1` |
-| **4** | `nums[0..3]` | $1 + (-5)$ | `-4` |
-| **5** | `nums[0..4]` | $-4 + 2$ | `-2` |
-| **6** | `nums[0..5]` | $-2 + (-1)$ | `-3` |
+| **1** | `nums[0]` | 0 + (-2) | `-2` |
+| **2** | `nums[0..1]` | -2 + 0 | `-2` |
+| **3** | `nums[0..2]` | -2 + 3 | `1` |
+| **4** | `nums[0..3]` | 1 + (-5) | `-4` |
+| **5** | `nums[0..4]` | -4 + 2 | `-2` |
+| **6** | `nums[0..5]` | -2 + (-1) | `-3` |
 
 Executing Queries:
-- `SumRange(0, 2)`: `_prefix[3] - _prefix[0]` $= 1 - 0 = \mathbf{1}$.
-- `SumRange(2, 5)`: `_prefix[6] - _prefix[2]` $= -3 - (-2) = \mathbf{-1}$.
-- `SumRange(0, 5)`: `_prefix[6] - _prefix[0]` $= -3 - 0 = \mathbf{-3}$.
+- `SumRange(0, 2)`: `_prefix[3] - _prefix[0]` = 1 - 0 = 1.
+- `SumRange(2, 5)`: `_prefix[6] - _prefix[2]` = -3 - (-2) = -1.
+- `SumRange(0, 5)`: `_prefix[6] - _prefix[0]` = -3 - 0 = -3.
 
 ---
 
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Prefix Sum Precomputation (Optimal):** Construction $O(N)$, Query $O(1)$, Auxiliary Space $O(N)$. When data is static (immutable) and queries are frequent, this is the globally optimal data structure.
-- **Fenwick Tree (Binary Indexed Tree) or Segment Tree:** Used only when the underlying array is *mutable* (frequent point updates mixed with range queries). For immutable arrays, Fenwick/Segment trees add $O(\log N)$ query latency and unnecessary structural complexity.
+- **Prefix Sum Precomputation (Optimal):** Construction O(N), Query O(1), Auxiliary Space O(N). When data is static (immutable) and queries are frequent, this is the globally optimal data structure.
+- **Fenwick Tree (Binary Indexed Tree) or Segment Tree:** Used only when the underlying array is *mutable* (frequent point updates mixed with range queries). For immutable arrays, Fenwick/Segment trees add O(log N) query latency and unnecessary structural complexity.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 - **Step 1: Constructor Validation:** Verify `nums` is not null.
@@ -883,7 +883,7 @@ Executing Queries:
 - **Step 4: Branchless Query:** Implement `SumRange` returning `_prefix[right + 1] - _prefix[left]`.
 
 #### 4.3 Alternative Approaches Analysis
-- **0-Indexed Prefix Array:** Size $N$, where `prefix[i] = sum(0..i)`. Query requires an explicit branch: `left == 0 ? prefix[right] : prefix[right] - prefix[left - 1]`. The 1-indexed sentinel approach is universally preferred in production because it avoids branch misprediction on CPUs.
+- **0-Indexed Prefix Array:** Size N, where `prefix[i] = sum(0..i)`. Query requires an explicit branch: `left == 0 ? prefix[right] : prefix[right] - prefix[left - 1]`. The 1-indexed sentinel approach is universally preferred in production because it avoids branch misprediction on CPUs.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
@@ -891,10 +891,10 @@ Executing Queries:
 | :--- | :--- | :--- |
 | **Precomputation Time** | `O(N)` | `O(1)` (zero setup) |
 | **Query Time** | `O(1)` strictly branchless | `O(N)` linear search |
-| **Total Time ($Q$ Queries)** | `O(N + Q)` | `O(Q \cdot N)` |
-| **Auxiliary Space** | `O(N)` (array of size $N + 1$) | `O(1)` |
+| **Total Time (Q Queries)** | `O(N + Q)` | `O(Q * N)` |
+| **Auxiliary Space** | `O(N)` (array of size N + 1) | `O(1)` |
 | **Branch Predictability** | 100% branch-free query execution | Dependent on loop count |
-| **Cache Behavior** | 2 memory reads per query | Sequential read of $(R - L + 1)$ elements |
+| **Cache Behavior** | 2 memory reads per query | Sequential read of (R - L + 1) elements |
 
 ---
 

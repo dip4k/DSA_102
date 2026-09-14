@@ -19,24 +19,24 @@
 | **LeetCode Link** | [Spiral Matrix](https://leetcode.com/problems/spiral-matrix/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** Given an $m \times n$ matrix `matrix`, return all elements of the matrix in spiral order (clockwise progression starting at top-left $(0, 0)$ moving right, down, left, up, and contracting inward).
+- **Formal Statement:** Given an m x n matrix `matrix`, return all elements of the matrix in spiral order (clockwise progression starting at top-left (0, 0) moving right, down, left, up, and contracting inward).
 - **Assumptions & Contracts:**
-  - The input is a rectangular 2D array of integers $matrix[m][n]$.
-  - The output must be an ordered sequence (`IList<int>` / `List<int>`) containing exactly $m \times n$ values representing the clockwise spiral traversal.
+  - The input is a rectangular 2D array of integers matrix[m][n].
+  - The output must be an ordered sequence (`IList<int>` / `List<int>`) containing exactly m x n values representing the clockwise spiral traversal.
   - An empty matrix or matrix with zero columns must return an empty list immediately without exception.
 - **Key Constraints:**
-  - $m == matrix.Length$
-  - $n == matrix[i].Length$
-  - $1 \le m, n \le 10$ (standard LeetCode), generalizes to arbitrary $m, n \le 10^4$ subject to total elements $m \times n \le 10^6$.
-  - $-100 \le matrix[i][j] \le 100$.
+  - m == matrix.Length
+  - n == matrix[i].Length
+  - 1 <= m, n <= 10 (standard LeetCode), generalizes to arbitrary m, n <= 10^4 subject to total elements m x n <= 10^6.
+  - -100 <= matrix[i][j] <= 100.
 - **Senior Edge Cases to Defend:**
-  - **Single Element ($1 \times 1$):** `[[1]]` must yield `[1]` without boundary crossing errors.
-  - **Single Row ($1 \times N$):** `[[1, 2, 3, 4]]` must traverse right and immediately terminate; scanning left or up must be guarded against.
-  - **Single Column ($M \times 1$):** `[[1], [2], [3], [4]]` must traverse down and immediately terminate without redundant backward column sweeps.
-  - **Non-Square Rectangular ($M \ne N$):** Matrices such as $3 \times 4$ or $4 \times 3$ where row or column boundaries exhaust before the other dimension.
+  - **Single Element (1 x 1):** `[[1]]` must yield `[1]` without boundary crossing errors.
+  - **Single Row (1 x N):** `[[1, 2, 3, 4]]` must traverse right and immediately terminate; scanning left or up must be guarded against.
+  - **Single Column (M x 1):** `[[1], [2], [3], [4]]` must traverse down and immediately terminate without redundant backward column sweeps.
+  - **Non-Square Rectangular (M != N):** Matrices such as 3 x 4 or 4 x 3 where row or column boundaries exhaust before the other dimension.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Maintain 4 dynamic perimeter limits: `top`, `bottom`, `left`, `right`. Traverse along the active perimeter in clockwise cycle (Right $\to$ Down $\to$ Left $\to$ Up). After traversing a boundary line, immediately contract that boundary inward. Before performing the reverse directions (Left and Up), verify that the opposing boundaries have not crossed (`top <= bottom` and `left <= right`) to eliminate duplicate element ingestion.
+- **Conceptual Essence:** Maintain 4 dynamic perimeter limits: `top`, `bottom`, `left`, `right`. Traverse along the active perimeter in clockwise cycle (Right -> Down -> Left -> Up). After traversing a boundary line, immediately contract that boundary inward. Before performing the reverse directions (Left and Up), verify that the opposing boundaries have not crossed (`top <= bottom` and `left <= right`) to eliminate duplicate element ingestion.
 - **Sample 1:**
   - **Input:** `matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]`
   - **Output:** `[1, 2, 3, 6, 9, 8, 7, 4, 5]`
@@ -50,20 +50,20 @@
 Imagine peeling an onion or unrolling tape along the outer perimeter of a rectangular field. You walk along the outermost northern boundary, then pave it over (shrink `top` down). You then walk along the eastern boundary and pave it over (shrink `right` left). If the northern and southern fences have not collided, you walk west along the southern fence and pave it over (shrink `bottom` up). If the western and eastern fences have not collided, you walk north along the western fence and pave it over (shrink `left` right). You repeat this contraction until all concentric layers have been completely visited.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A naive approach uses an auxiliary $M \times N$ `visited[m, n]` boolean matrix and advances a direction vector $(dr, dc)$ switching when encountering a visited cell or border. While asymptotically $O(M \times N)$, allocating and maintaining an auxiliary visited matrix incurs $O(M \times N)$ extra heap allocation, degrades cache locality through pointer indirections, and risks off-by-one infinite turning loops. Boundary shrinkage eliminates the visited ledger entirely by representing visited state as 4 scalar integers.
+A naive approach uses an auxiliary M x N `visited[m, n]` boolean matrix and advances a direction vector (dr, dc) switching when encountering a visited cell or border. While asymptotically O(M x N), allocating and maintaining an auxiliary visited matrix incurs O(M x N) extra heap allocation, degrades cache locality through pointer indirections, and risks off-by-one infinite turning loops. Boundary shrinkage eliminates the visited ledger entirely by representing visited state as 4 scalar integers.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Shrinking Box Invariant:**
   At any point in time, the unvisited elements reside strictly within the closed bounding box:
-  $$\Omega = \{ (r, c) \mid \text{top} \le r \le \text{bottom} \land \text{left} \le c \le \text{right} \}$$
+  Omega = { (r, c) | top <= r <= bottom AND left <= c <= right }
   Each of the 4 directional sweeps consumes exactly one full segment of the bounding box and strictly contracts one boundary:
-  - Sweep 1 (East): visits $(top, c)$ for $c \in [left, right]$; contracts $top \leftarrow top + 1$.
-  - Sweep 2 (South): visits $(r, right)$ for $r \in [top, bottom]$; contracts $right \leftarrow right - 1$.
-  - Sweep 3 (West): guarded by $top \le bottom$; visits $(bottom, c)$ for $c \in [right, left]$ step $-1$; contracts $bottom \leftarrow bottom - 1$.
-  - Sweep 4 (North): guarded by $left \le right$; visits $(r, left)$ for $r \in [bottom, top]$ step $-1$; contracts $left \leftarrow left + 1$.
+  - Sweep 1 (East): visits (top, c) for c in [left, right]; contracts top <- top + 1.
+  - Sweep 2 (South): visits (r, right) for r in [top, bottom]; contracts right <- right - 1.
+  - Sweep 3 (West): guarded by top <= bottom; visits (bottom, c) for c in [right, left] step -1; contracts bottom <- bottom - 1.
+  - Sweep 4 (North): guarded by left <= right; visits (r, left) for r in [bottom, top] step -1; contracts left <- left + 1.
 - **Termination Guarantee:**
-  $$(bottom - top + 1) + (right - left + 1)$$
-  decreases by at least 2 in each complete outer cycle. The algorithm terminates deterministically when $top > bottom$ or $left > right$.
+  (bottom - top + 1) + (right - left + 1)
+  decreases by at least 2 in each complete outer cycle. The algorithm terminates deterministically when top > bottom or left > right.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -85,51 +85,51 @@ bottom -> [13 ]   [14 ]   [15 ]   [16 ]
 
 #### 3.5 State Transition Triggers & Decision Gates
 1. **Loop Invariant Gate:** While `top <= bottom && left <= right`, enter layer traversal.
-2. **East Sweep:** Iterate $c$ from `left` to `right`. Add $matrix[top][c]$. Then `top++`.
-3. **South Sweep:** Iterate $r$ from `top` to `bottom`. Add $matrix[r][right]$. Then `right--`.
-4. **West Sweep Gate (Crucial Defense):** Check `if (top <= bottom)`. If true, iterate $c$ from `right` down to `left`. Add $matrix[bottom][c]$. Then `bottom--`. If false, row space is exhausted; skip to avoid re-reading the row just processed in East sweep!
-5. **North Sweep Gate (Crucial Defense):** Check `if (left <= right)`. If true, iterate $r$ from `bottom` down to `top`. Add $matrix[r][left]$. Then `left++`. If false, column space is exhausted; skip to avoid re-reading the column just processed in South sweep!
+2. **East Sweep:** Iterate c from `left` to `right`. Add matrix[top][c]. Then `top++`.
+3. **South Sweep:** Iterate r from `top` to `bottom`. Add matrix[r][right]. Then `right--`.
+4. **West Sweep Gate (Crucial Defense):** Check `if (top <= bottom)`. If true, iterate c from `right` down to `left`. Add matrix[bottom][c]. Then `bottom--`. If false, row space is exhausted; skip to avoid re-reading the row just processed in East sweep!
+5. **North Sweep Gate (Crucial Defense):** Check `if (left <= right)`. If true, iterate r from `bottom` down to `top`. Add matrix[r][left]. Then `left++`. If false, column space is exhausted; skip to avoid re-reading the column just processed in South sweep!
 
 #### 3.6 Concrete Step-by-Step State Trace
-Input: `matrix = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]]` ($M = 3, N = 4$).
+Input: `matrix = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]]` (M = 3, N = 4).
 
 | Cycle / Sweep | Active Boundaries Before | Traversed Coordinates & Values | Boundary Mutation | Output State |
 | :--- | :--- | :--- | :--- | :--- |
-| **C1: East** | $T=0, B=2, L=0, R=3$ | $(0,0)\to(0,3)$: `[1, 2, 3, 4]` | $T \leftarrow 1$ | `[1, 2, 3, 4]` |
-| **C1: South** | $T=1, B=2, L=0, R=3$ | $(1,3)\to(2,3)$: `[8, 12]` | $R \leftarrow 2$ | `[1, 2, 3, 4, 8, 12]` |
-| **C1: West** | $T=1 \le B=2 \implies$ Pass | $(2,2)\to(2,0)$: `[11, 10, 9]` | $B \leftarrow 1$ | `[..., 11, 10, 9]` |
-| **C1: North** | $L=0 \le R=2 \implies$ Pass | $(1,0)$: `[5]` | $L \leftarrow 1$ | `[..., 9, 5]` |
-| **C2: East** | $T=1, B=1, L=1, R=2$ | $(1,1)\to(1,2)$: `[6, 7]` | $T \leftarrow 2$ | `[..., 5, 6, 7]` |
-| **C2: South** | $T=2, B=1, L=1, R=2$ | Loop condition $r \in [2, 1]$ empty | $R \leftarrow 1$ | `[..., 6, 7]` |
-| **C2: West** | $T=2 > B=1 \implies$ **Blocked** | None (Gate defends against duplicate) | Unchanged | `[..., 6, 7]` |
-| **C2: North** | $L=1 \le R=1$, but $T=2 > B=1$ | None (Outer loop terminates) | Exit | Final `Count = 12` |
+| **C1: East** | T=0, B=2, L=0, R=3 | (0,0)->(0,3): `[1, 2, 3, 4]` | T <- 1 | `[1, 2, 3, 4]` |
+| **C1: South** | T=1, B=2, L=0, R=3 | (1,3)->(2,3): `[8, 12]` | R <- 2 | `[1, 2, 3, 4, 8, 12]` |
+| **C1: West** | T=1 <= B=2 => Pass | (2,2)->(2,0): `[11, 10, 9]` | B <- 1 | `[..., 11, 10, 9]` |
+| **C1: North** | L=0 <= R=2 => Pass | (1,0): `[5]` | L <- 1 | `[..., 9, 5]` |
+| **C2: East** | T=1, B=1, L=1, R=2 | (1,1)->(1,2): `[6, 7]` | T <- 2 | `[..., 5, 6, 7]` |
+| **C2: South** | T=2, B=1, L=1, R=2 | Loop condition r in [2, 1] empty | R <- 1 | `[..., 6, 7]` |
+| **C2: West** | T=2 > B=1 => **Blocked** | None (Gate defends against duplicate) | Unchanged | `[..., 6, 7]` |
+| **C2: North** | L=1 <= R=1, but T=2 > B=1 | None (Outer loop terminates) | Exit | Final `Count = 12` |
 
 ---
 
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1: Four-Boundary Shrinkage (Optimal & Industry Standard):** Tracks `top`, `bottom`, `left`, `right`. Operates in $O(1)$ auxiliary space, pre-allocates the exact capacity $m \times n$, and provides zero branching penalty.
-- **Approach 2: Direction Vectors + In-Place Sentinel Mutation:** Uses directions `dr = [0, 1, 0, -1]`, `dc = [1, 0, -1, 0]` and marks visited cells with `101` (since elements are within $[-100, 100]$). Destructive to input data; rejected in immutable API contracts.
+- **Approach 1: Four-Boundary Shrinkage (Optimal & Industry Standard):** Tracks `top`, `bottom`, `left`, `right`. Operates in O(1) auxiliary space, pre-allocates the exact capacity m x n, and provides zero branching penalty.
+- **Approach 2: Direction Vectors + In-Place Sentinel Mutation:** Uses directions `dr = [0, 1, 0, -1]`, `dc = [1, 0, -1, 0]` and marks visited cells with `101` (since elements are within [-100, 100]). Destructive to input data; rejected in immutable API contracts.
 
 #### 4.2 Step-by-Step Natural Progression Flow
-1. **Setup & Bounds:** Verify $matrix \ne null$ and dimensions $m, n > 0$. Instantiate `List<int>` with capacity $m \times n$ to prevent list re-allocations.
+1. **Setup & Bounds:** Verify matrix != null and dimensions m, n > 0. Instantiate `List<int>` with capacity m x n to prevent list re-allocations.
 2. **Boundary Initialization:** Set `top = 0`, `bottom = m - 1`, `left = 0`, `right = n - 1`.
 3. **Execution Loop:** Run while `top <= bottom && left <= right`.
 4. **Perimeter Sweeps with Defensive Gates:** Execute East, South, West (guarded), North (guarded).
 5. **Return:** Return populated list.
 
 #### 4.3 Alternative Approaches Analysis
-- **Simulation with Visited Array:** Requires an $m \times n$ bool array. Increases space to $O(M \times N)$ without any performance benefit.
-- **Recursive Peeling:** Peels the outer ring and recurses on submatrix $(top+1, bottom-1, left+1, right-1)$. Incurs $O(\min(M, N))$ stack frames, which risks stack overflow for extreme matrix dimensions.
+- **Simulation with Visited Array:** Requires an m x n bool array. Increases space to O(M x N) without any performance benefit.
+- **Recursive Peeling:** Peels the outer ring and recurses on submatrix (top+1, bottom-1, left+1, right-1). Incurs O(min(M, N)) stack frames, which risks stack overflow for extreme matrix dimensions.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Approach | Time (Best) | Time (Avg) | Time (Worst) | Auxiliary Space | Output Space | Cache Locality | In-Place Mutability | Streaming Suitability |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. Boundary Shrink (Selected)** | $O(M \times N)$ | $O(M \times N)$ | $O(M \times N)$ | $O(1)$ | $O(M \times N)$ | High (row scans) | Non-destructive | Offline |
-| **2. Visited Grid Simulation** | $O(M \times N)$ | $O(M \times N)$ | $O(M \times N)$ | $O(M \times N)$ | $O(M \times N)$ | Moderate | Non-destructive | Offline |
-| **3. In-Place Sentinel** | $O(M \times N)$ | $O(M \times N)$ | $O(M \times N)$ | $O(1)$ | $O(M \times N)$ | Moderate | Mutates input | Offline |
+| **1. Boundary Shrink (Selected)** | O(M x N) | O(M x N) | O(M x N) | O(1) | O(M x N) | High (row scans) | Non-destructive | Offline |
+| **2. Visited Grid Simulation** | O(M x N) | O(M x N) | O(M x N) | O(M x N) | O(M x N) | Moderate | Non-destructive | Offline |
+| **3. In-Place Sentinel** | O(M x N) | O(M x N) | O(M x N) | O(1) | O(M x N) | Moderate | Mutates input | Offline |
 
 ---
 
@@ -225,7 +225,7 @@ public class Solution
 ---
 
 ### 6. Senior Pitfalls & Defensive Traps
-- **The Single-Row / Single-Column Duplicate Ingestion Trap:** The most frequent bug in Spiral Matrix occurs when $M = 1$ or $N = 1$ (or during the final pass of an odd-dimension rectangular matrix). After the East sweep increments `top`, if you do not check `if (top <= bottom)` before executing the West sweep, the algorithm will re-traverse the same single row in reverse, creating duplicates. The exact symmetric risk applies to the North sweep if `left <= right` is not verified.
+- **The Single-Row / Single-Column Duplicate Ingestion Trap:** The most frequent bug in Spiral Matrix occurs when M = 1 or N = 1 (or during the final pass of an odd-dimension rectangular matrix). After the East sweep increments `top`, if you do not check `if (top <= bottom)` before executing the West sweep, the algorithm will re-traverse the same single row in reverse, creating duplicates. The exact symmetric risk applies to the North sweep if `left <= right` is not verified.
 - **Dynamic List Reallocation Churn:** In high-throughput backend services, returning a `List<int>` that expands dynamically via default growth (`capacity 4 -> 8 -> 16...`) creates unnecessary GC generational churn. Always initialize `new List<int>(rows * cols)`.
 - **Jagged Array Invariants:** In C#, `int[][]` is an array of arrays, not a true 2D contiguous block `int[,]`. Defend against non-rectangular rows by verifying `matrix[i].Length == cols` if inputs come from untrusted external sources.
 
@@ -241,25 +241,25 @@ public class Solution
 | **LeetCode Link** | [Rotate Image](https://leetcode.com/problems/rotate-image/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** You are given an $n \times n$ 2D `matrix` representing an image. Rotate the image by 90 degrees clockwise in-place. You must rotate the image directly without allocating another 2D matrix.
+- **Formal Statement:** You are given an n x n 2D `matrix` representing an image. Rotate the image by 90 degrees clockwise in-place. You must rotate the image directly without allocating another 2D matrix.
 - **Assumptions & Contracts:**
-  - The input matrix is strictly square ($n \times n$).
-  - Transformation must be completely in-place: $O(1)$ auxiliary memory.
+  - The input matrix is strictly square (n x n).
+  - Transformation must be completely in-place: O(1) auxiliary memory.
   - Return type is `void`; matrix is mutated directly.
 - **Key Constraints:**
-  - $n == matrix.Length == matrix[i].Length$
-  - $1 \le n \le 20$ (generalizes to arbitrary $n \le 10^4$)
-  - $-1000 \le matrix[i][j] \le 1000$
+  - n == matrix.Length == matrix[i].Length
+  - 1 <= n <= 20 (generalizes to arbitrary n <= 10^4)
+  - -1000 <= matrix[i][j] <= 1000
 - **Senior Edge Cases to Defend:**
-  - **$1 \times 1$ Matrix:** `[[1]]` requires zero operations; should exit gracefully.
-  - **$2 \times 2$ Matrix:** Smallest non-trivial rotation testing boundary corner swaps.
-  - **Odd $N$ ($3 \times 3, 5 \times 5$):** The center coordinate $((n-1)/2, (n-1)/2)$ must remain strictly unmoved.
-  - **Even $N$ ($4 \times 4$):** No central fixed point; all cells participate in 4-cycle orbits.
+  - **1 x 1 Matrix:** `[[1]]` requires zero operations; should exit gracefully.
+  - **2 x 2 Matrix:** Smallest non-trivial rotation testing boundary corner swaps.
+  - **Odd N (3 x 3, 5 x 5):** The center coordinate ((n-1)/2, (n-1)/2) must remain strictly unmoved.
+  - **Even N (4 x 4):** No central fixed point; all cells participate in 4-cycle orbits.
 
 ### 2. Summary & Sample Input / Output
 - **Conceptual Essence:** Decompose a 90° clockwise geometric rotation into two elementary linear algebra operations:
-  $$\text{Rotate}_{90^{\circ}}(\mathbf{M}) = \text{Reflect}_{\text{horizontal}}(\mathbf{M}^T)$$
-  First, transpose the matrix across its main diagonal ($swap(matrix[i][j], matrix[j][i])$ for $j > i$). Second, reverse each row horizontally ($swap(matrix[i][c], matrix[i][n - 1 - c])$).
+  Rotate_90^o(M) = Reflect_horizontal(M^T)
+  First, transpose the matrix across its main diagonal (swap(matrix[i][j], matrix[j][i]) for j > i). Second, reverse each row horizontally (swap(matrix[i][c], matrix[i][n - 1 - c])).
 - **Sample 1:**
   - **Input:** `matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]`
   - **Output:** `[[7, 4, 1], [8, 5, 2], [9, 6, 3]]`
@@ -274,17 +274,17 @@ public class Solution
 Rotating a sheet of graph paper clockwise by 90 degrees can be executed cleanly in two folds. First, flip the paper across its top-left to bottom-right diagonal: rows turn into columns (Transpose). Then, flip the paper over vertically from left to right along its vertical centerline (Horizontal Reflection). The combined result is mathematically identical to a pure rigid 90° clockwise rotation.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-Allocating an auxiliary $N \times N$ matrix allows a straightforward mapping: $rotated[c][n - 1 - r] = matrix[r][c]$. However, this requires $O(N^2)$ auxiliary heap space. Attempting direct in-place cyclic replacement of 4-tuples $(r, c) \to (c, n-1-r) \to (n-1-r, n-1-c) \to (n-1-c, r)$ is $O(1)$ space, but requires complicated nested offset math that is exceptionally prone to off-by-one index corruption. Transpose + Reflect achieves $O(1)$ auxiliary space with simple, clean, linear cache-line traversals.
+Allocating an auxiliary N x N matrix allows a straightforward mapping: rotated[c][n - 1 - r] = matrix[r][c]. However, this requires O(N^2) auxiliary heap space. Attempting direct in-place cyclic replacement of 4-tuples (r, c) -> (c, n-1-r) -> (n-1-r, n-1-c) -> (n-1-c, r) is O(1) space, but requires complicated nested offset math that is exceptionally prone to off-by-one index corruption. Transpose + Reflect achieves O(1) auxiliary space with simple, clean, linear cache-line traversals.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Coordinate Mapping Proof:**
-  Let $(r, c)$ be the row and column indices of any cell in an $N \times N$ matrix.
+  Let (r, c) be the row and column indices of any cell in an N x N matrix.
   1. **Transpose Step:**
-     $$(r, c) \mapsto (c, r)$$
+     (r, c) -> (c, r)
   2. **Horizontal Row Reflection Step:**
-     $$(c, r) \mapsto (c, n - 1 - r)$$
-  Observe that any cell originally at $(r, c)$ ends up at $(c, n - 1 - r)$, which is the exact definition of a 90° clockwise rotation!
-  $$\begin{bmatrix} r_{\text{new}} \\ c_{\text{new}} \end{bmatrix} = \begin{bmatrix} 0 & 1 \\ -1 & 0 \end{bmatrix} \begin{bmatrix} r \\ c \end{bmatrix} + \begin{bmatrix} 0 \\ n-1 \end{bmatrix} = \begin{bmatrix} c \\ n - 1 - r \end{bmatrix}$$
+     (c, r) -> (c, n - 1 - r)
+  Observe that any cell originally at (r, c) ends up at (c, n - 1 - r), which is the exact definition of a 90° clockwise rotation!
+  [ r_new ] [ c_new ] = [ 0, 1 ] [ -1, 0 ] [ r ] [ c ] + [ 0 ] [ n-1 ] = [ c ] [ n - 1 - r ]
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -306,21 +306,21 @@ Final Rotated Grid:
 ```
 
 #### 3.5 State Transition Triggers & Decision Gates
-1. **Transpose Gate:** For each row $i \in [0, n - 1]$, iterate $j \in [i + 1, n - 1]$. Note that $j$ starts strictly at $i + 1$. If $j$ starts at $0$, cells are swapped twice, neutralizing the transpose.
-2. **Reflection Gate:** For each row $i \in [0, n - 1]$, iterate column cursor $c \in [0, \lfloor n / 2 \rfloor - 1]$. Swap $matrix[i][c]$ with $matrix[i][n - 1 - c]$.
+1. **Transpose Gate:** For each row i in [0, n - 1], iterate j in [i + 1, n - 1]. Note that j starts strictly at i + 1. If j starts at 0, cells are swapped twice, neutralizing the transpose.
+2. **Reflection Gate:** For each row i in [0, n - 1], iterate column cursor c in [0, floor(n / 2) - 1]. Swap matrix[i][c] with matrix[i][n - 1 - c].
 
 #### 3.6 Concrete Step-by-Step State Trace
-Input: `matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]` ($N = 3$).
+Input: `matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]` (N = 3).
 
 | Step | Operation Target | Action / Swap | Matrix State After Operation |
 | :--- | :--- | :--- | :--- |
 | **Init** | Input Matrix | None | `[[1,2,3],[4,5,6],[7,8,9]]` |
-| **T1** | $(i=0, j=1)$ | Swap `matrix[0][1]` (2) with `matrix[1][0]` (4) | `[[1,4,3],[2,5,6],[7,8,9]]` |
-| **T2** | $(i=0, j=2)$ | Swap `matrix[0][2]` (3) with `matrix[2][0]` (7) | `[[1,4,7],[2,5,6],[3,8,9]]` |
-| **T3** | $(i=1, j=2)$ | Swap `matrix[1][2]` (6) with `matrix[2][1]` (8) | `[[1,4,7],[2,5,8],[3,6,9]]` (Transpose Complete) |
-| **R1** | Row 0 ($c=0$) | Swap `matrix[0][0]` (1) with `matrix[0][2]` (7) | `[[7,4,1],[2,5,8],[3,6,9]]` |
-| **R2** | Row 1 ($c=0$) | Swap `matrix[1][0]` (2) with `matrix[1][2]` (8) | `[[7,4,1],[8,5,2],[3,6,9]]` |
-| **R3** | Row 2 ($c=0$) | Swap `matrix[2][0]` (3) with `matrix[2][2]` (9) | `[[7,4,1],[8,5,2],[9,6,3]]` (Reflection Complete) |
+| **T1** | (i=0, j=1) | Swap `matrix[0][1]` (2) with `matrix[1][0]` (4) | `[[1,4,3],[2,5,6],[7,8,9]]` |
+| **T2** | (i=0, j=2) | Swap `matrix[0][2]` (3) with `matrix[2][0]` (7) | `[[1,4,7],[2,5,6],[3,8,9]]` |
+| **T3** | (i=1, j=2) | Swap `matrix[1][2]` (6) with `matrix[2][1]` (8) | `[[1,4,7],[2,5,8],[3,6,9]]` (Transpose Complete) |
+| **R1** | Row 0 (c=0) | Swap `matrix[0][0]` (1) with `matrix[0][2]` (7) | `[[7,4,1],[2,5,8],[3,6,9]]` |
+| **R2** | Row 1 (c=0) | Swap `matrix[1][0]` (2) with `matrix[1][2]` (8) | `[[7,4,1],[8,5,2],[3,6,9]]` |
+| **R3** | Row 2 (c=0) | Swap `matrix[2][0]` (3) with `matrix[2][2]` (9) | `[[7,4,1],[8,5,2],[9,6,3]]` (Reflection Complete) |
 
 ---
 
@@ -328,12 +328,12 @@ Input: `matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]` ($N = 3$).
 
 #### 4.1 Anchor Points & Approach Selection Criteria
 - **Approach 1: Transpose + Row Reversal (Optimal & Recommended):** High cache locality during the horizontal reversal phase, clean modular code, impossible to introduce index inversion defects.
-- **Approach 2: Four-Way Ring Cyclic Shift ($O(1)$ Space):** Traverses concentric square shells from outside to inside. Rotates 4 items at a time: `temp = top; top = left; left = bottom; bottom = right; right = temp`. Mathematically minimal operations ($N^2 / 4$ iterations), but complex 4-way indexing.
+- **Approach 2: Four-Way Ring Cyclic Shift (O(1) Space):** Traverses concentric square shells from outside to inside. Rotates 4 items at a time: `temp = top; top = left; left = bottom; bottom = right; right = temp`. Mathematically minimal operations (N^2 / 4 iterations), but complex 4-way indexing.
 
 #### 4.2 Step-by-Step Natural Progression Flow
-1. **Guard Clause:** If $matrix == null$ or $matrix.Length \le 1$, return immediately.
-2. **Phase 1 (Transpose):** Dual loop $i \in [0, n - 2]$, $j \in [i + 1, n - 1]$. Swap in-place via tuple `(matrix[i][j], matrix[j][i]) = (matrix[j][i], matrix[i][j])`.
-3. **Phase 2 (Row Reversal):** For each row $i$, invoke `Array.Reverse(matrix[i])` or use two pointers $left = 0, right = n - 1$ to swap across the center.
+1. **Guard Clause:** If matrix == null or matrix.Length <= 1, return immediately.
+2. **Phase 1 (Transpose):** Dual loop i in [0, n - 2], j in [i + 1, n - 1]. Swap in-place via tuple `(matrix[i][j], matrix[j][i]) = (matrix[j][i], matrix[i][j])`.
+3. **Phase 2 (Row Reversal):** For each row i, invoke `Array.Reverse(matrix[i])` or use two pointers left = 0, right = n - 1 to swap across the center.
 
 #### 4.3 Alternative Approaches Analysis
 - **Counter-Clockwise Rotation:** If the requirement were 90° counter-clockwise rotation, the sequence would invert: Transpose then Vertical Column Reversal (or Row Reversal then Transpose).
@@ -342,9 +342,9 @@ Input: `matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]` ($N = 3$).
 
 | Approach | Time (Best) | Time (Avg) | Time (Worst) | Auxiliary Space | Output Space | Cache Locality | In-Place Mutability | Streaming Suitability |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. Transpose + Reflect** | $O(N^2)$ | $O(N^2)$ | $O(N^2)$ | $O(1)$ | $O(1)$ | High (row scans) | Yes (In-place) | Offline |
-| **2. 4-Way Concentric Shell** | $O(N^2)$ | $O(N^2)$ | $O(N^2)$ | $O(1)$ | $O(1)$ | Moderate (4 jumps) | Yes (In-place) | Offline |
-| **3. Auxiliary Buffer** | $O(N^2)$ | $O(N^2)$ | $O(N^2)$ | $O(N^2)$ | $O(N^2)$ | High | Non-mutating | Offline |
+| **1. Transpose + Reflect** | O(N^2) | O(N^2) | O(N^2) | O(1) | O(1) | High (row scans) | Yes (In-place) | Offline |
+| **2. 4-Way Concentric Shell** | O(N^2) | O(N^2) | O(N^2) | O(1) | O(1) | Moderate (4 jumps) | Yes (In-place) | Offline |
+| **3. Auxiliary Buffer** | O(N^2) | O(N^2) | O(N^2) | O(N^2) | O(N^2) | High | Non-mutating | Offline |
 
 ---
 
@@ -463,9 +463,9 @@ public class SolutionConcentricShell
 ---
 
 ### 6. Senior Pitfalls & Defensive Traps
-- **The Transpose Double-Swap Regression:** If the inner loop of the transpose is written as `for (int j = 0; j < n; j++)`, every pair is swapped when $(i, j)$ is visited, and then swapped back when $(j, i)$ is visited! The entire matrix ends up completely unchanged. Always ensure `j = i + 1`.
-- **False Assumption of Rectangular Inputs:** The Transpose + Reflect algorithm mathematically requires a square matrix ($M = N$). In interview scenarios, clarify immediately whether rectangular rotations are possible. If $M \ne N$, an in-place rotation is mathematically impossible without re-allocating a new $N \times M$ matrix because the shape of the array memory buffer itself must transform.
-- **Cache-Line Inefficiencies in Column Sweeps:** Notice that Transposition reads across row $i$ and column $j$. In modern CPUs, column traversal causes cache line misses on large matrices. In performance-critical engines, cache-blocking (tiling) transpositions into $32 \times 32$ or $64 \times 64$ sub-blocks optimizes L1/L2 cache residency.
+- **The Transpose Double-Swap Regression:** If the inner loop of the transpose is written as `for (int j = 0; j < n; j++)`, every pair is swapped when (i, j) is visited, and then swapped back when (j, i) is visited! The entire matrix ends up completely unchanged. Always ensure `j = i + 1`.
+- **False Assumption of Rectangular Inputs:** The Transpose + Reflect algorithm mathematically requires a square matrix (M = N). In interview scenarios, clarify immediately whether rectangular rotations are possible. If M != N, an in-place rotation is mathematically impossible without re-allocating a new N x M matrix because the shape of the array memory buffer itself must transform.
+- **Cache-Line Inefficiencies in Column Sweeps:** Notice that Transposition reads across row i and column j. In modern CPUs, column traversal causes cache line misses on large matrices. In performance-critical engines, cache-blocking (tiling) transpositions into 32 x 32 or 64 x 64 sub-blocks optimizes L1/L2 cache residency.
 
 ---
 
@@ -481,25 +481,25 @@ public class SolutionConcentricShell
 | **LeetCode Link** | [Set Matrix Zeroes](https://leetcode.com/problems/set-matrix-zeroes/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** Given an $m \times n$ integer matrix `matrix`, if an element is 0, set its entire row and column to 0's in-place.
+- **Formal Statement:** Given an m x n integer matrix `matrix`, if an element is 0, set its entire row and column to 0's in-place.
 - **Assumptions & Contracts:**
   - The modification must occur strictly in-place.
-  - While an $O(m \times n)$ or $O(m + n)$ space solution is trivial, the senior expectation is an optimal $O(1)$ auxiliary space solution.
+  - While an O(m x n) or O(m + n) space solution is trivial, the senior expectation is an optimal O(1) auxiliary space solution.
   - Return type is `void`; matrix is mutated directly.
 - **Key Constraints:**
-  - $m == matrix.Length$
-  - $n == matrix[0].Length$
-  - $1 \le m, n \le 200$
-  - $-2^{31} \le matrix[i][j] \le 2^{31} - 1$ (cells can take any 32-bit integer value, precluding magic-number sentinel values like `-1` or `int.MaxValue`).
+  - m == matrix.Length
+  - n == matrix[0].Length
+  - 1 <= m, n <= 200
+  - -2^31 <= matrix[i][j] <= 2^31 - 1 (cells can take any 32-bit integer value, precluding magic-number sentinel values like `-1` or `int.MaxValue`).
 - **Senior Edge Cases to Defend:**
-  - **Zero at Origin $(0, 0)$:** Both Row 0 and Column 0 must be zeroed out; the indicator at $(0, 0)$ must not cross-contaminate.
+  - **Zero at Origin (0, 0):** Both Row 0 and Column 0 must be zeroed out; the indicator at (0, 0) must not cross-contaminate.
   - **Zero in Row 0 but not Col 0 (and vice versa):** Setting Row 0 to zero prematurely could cause the entire matrix to become zeroes.
   - **No Zeroes:** Matrix must remain completely unaltered.
   - **All Zeroes:** Matrix remains all zeroes with minimal branch overhead.
-  - **Single Row ($1 \times N$) or Single Column ($M \times 1$):** Boundary flags must resolve correctly without out-of-bounds indexing.
+  - **Single Row (1 x N) or Single Column (M x 1):** Boundary flags must resolve correctly without out-of-bounds indexing.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Use the matrix's own first row ($matrix[0][j]$) and first column ($matrix[i][0]$) as the ledger arrays to record which rows and columns must be zeroed. Because cell $matrix[0][0]$ overlaps both the first row and first column, disambiguate them using a single scalar variable `col0HasZero` (tracking column 0) while letting $matrix[0][0]$ track row 0.
+- **Conceptual Essence:** Use the matrix's own first row (matrix[0][j]) and first column (matrix[i][0]) as the ledger arrays to record which rows and columns must be zeroed. Because cell matrix[0][0] overlaps both the first row and first column, disambiguate them using a single scalar variable `col0HasZero` (tracking column 0) while letting matrix[0][0] track row 0.
 - **Sample 1:**
   - **Input:** `matrix = [[1, 1, 1], [1, 0, 1], [1, 1, 1]]`
   - **Output:** `[[1, 0, 1], [0, 0, 0], [1, 0, 1]]`
@@ -510,17 +510,17 @@ public class SolutionConcentricShell
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine a massive spreadsheet where certain cells contain a critical error (zero). When an error occurs, the entire row and column must be crossed out. Instead of buying a fresh notepad (allocating auxiliary memory $O(M+N)$), you use the top row and left-most margin of the existing sheet to make tally marks. A mark in the top margin of column $j$ means "cross out column $j$". A mark in the left margin of row $i$ means "cross out row $i$". The only collision is the top-left corner cell $(0, 0)$, which belongs to both margins. You solve this by holding a small post-it note in your hand (`col0HasZero`) exclusively for the first column.
+Imagine a massive spreadsheet where certain cells contain a critical error (zero). When an error occurs, the entire row and column must be crossed out. Instead of buying a fresh notepad (allocating auxiliary memory O(M+N)), you use the top row and left-most margin of the existing sheet to make tally marks. A mark in the top margin of column j means "cross out column j". A mark in the left margin of row i means "cross out row i". The only collision is the top-left corner cell (0, 0), which belongs to both margins. You solve this by holding a small post-it note in your hand (`col0HasZero`) exclusively for the first column.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-If you immediately overwrite rows and columns with 0 as soon as you find a 0, you create a catastrophic cascade: a newly written 0 will be mistaken for an original 0 in subsequent iterations, eventually turning the entire matrix into 0s! The naive fix allocates an $M \times N$ clone ($O(M \times N)$ space), or allocates two boolean arrays `row[m]` and `col[n]` ($O(M + N)$ space). The breakthrough senior optimization reuses existing matrix memory for these vectors.
+If you immediately overwrite rows and columns with 0 as soon as you find a 0, you create a catastrophic cascade: a newly written 0 will be mistaken for an original 0 in subsequent iterations, eventually turning the entire matrix into 0s! The naive fix allocates an M x N clone (O(M x N) space), or allocates two boolean arrays `row[m]` and `col[n]` (O(M + N) space). The breakthrough senior optimization reuses existing matrix memory for these vectors.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **In-Place Header Encoding Invariant:**
-  For any cell $(i, j)$ with $i \ge 1$ and $j \ge 1$:
-  $$matrix[i][j] = 0 \implies matrix[i][0] = 0 \land matrix[0][j] = 0$$
+  For any cell (i, j) with i >= 1 and j >= 1:
+  matrix[i][j] = 0 => matrix[i][0] = 0 AND matrix[0][j] = 0
 - **Bottom-Up / Reverse Propagation Invariant:**
-  When writing zeroes back to the matrix, we must update the inner matrix $(1 \dots m-1, 1 \dots n-1)$ first. If we update the first row or first column first, we overwrite the ledgers and lose the record of which downstream rows and columns were originally marked!
+  When writing zeroes back to the matrix, we must update the inner matrix (1 ... m-1, 1 ... n-1) first. If we update the first row or first column first, we overwrite the ledgers and lose the record of which downstream rows and columns were originally marked!
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -542,55 +542,55 @@ row 2: [ M[2,0] ]  [ M[2,1] ]  [ M[2,2] ]  [ M[2,3] ]
 
 #### 3.5 State Transition Triggers & Decision Gates
 1. **Ledger Scan (Forward Pass):**
-   - For $i \in [0, m-1]$:
-     - If $matrix[i][0] == 0$, set `col0HasZero = true`.
-     - For $j \in [1, n-1]$:
-       - If $matrix[i][j] == 0$, set $matrix[i][0] = 0$ and $matrix[0][j] = 0$.
+   - For i in [0, m-1]:
+     - If matrix[i][0] == 0, set `col0HasZero = true`.
+     - For j in [1, n-1]:
+       - If matrix[i][j] == 0, set matrix[i][0] = 0 and matrix[0][j] = 0.
 2. **Inner Body Zeroing (Reverse / Downstream Pass):**
-   - For $i \in [1, m-1]$ and $j \in [1, n-1]$:
-     - If $matrix[i][0] == 0 \lor matrix[0][j] == 0$, set $matrix[i][j] = 0$.
+   - For i in [1, m-1] and j in [1, n-1]:
+     - If matrix[i][0] == 0 OR matrix[0][j] == 0, set matrix[i][j] = 0.
 3. **Row 0 Zeroing:**
-   - If $matrix[0][0] == 0$, set all cells in row 0 to 0 ($matrix[0][j] = 0$ for $j \in [0, n-1]$).
+   - If matrix[0][0] == 0, set all cells in row 0 to 0 (matrix[0][j] = 0 for j in [0, n-1]).
 4. **Col 0 Zeroing:**
-   - If `col0HasZero == true`, set all cells in col 0 to 0 ($matrix[i][0] = 0$ for $i \in [0, m-1]$).
+   - If `col0HasZero == true`, set all cells in col 0 to 0 (matrix[i][0] = 0 for i in [0, m-1]).
 
 #### 3.6 Concrete Step-by-Step State Trace
-Input: `matrix = [[0, 1, 2, 0], [3, 4, 5, 2], [1, 3, 1, 5]]` ($M=3, N=4$).
+Input: `matrix = [[0, 1, 2, 0], [3, 4, 5, 2], [1, 3, 1, 5]]` (M=3, N=4).
 
 | Phase | Cell / Action | Ledger Mutation | Matrix State |
 | :--- | :--- | :--- | :--- |
 | **Init** | Input | `col0HasZero = false` | `[[0, 1, 2, 0], [3, 4, 5, 2], [1, 3, 1, 5]]` |
-| **P1: Scan $i=0$** | $matrix[0][0] == 0 \implies col0=T$<br>$matrix[0][3] == 0 \implies M[0][3]=0, M[0][0]=0$ | `col0 = true`<br>`M[0][0]=0, M[0][3]=0` | `[[0, 1, 2, 0], [3, 4, 5, 2], [1, 3, 1, 5]]` |
-| **P1: Scan $i=1, 2$**| No zeroes in inner cells | No change | Same |
-| **P2: Inner Zero**| For $i \in [1..2], j \in [1..3]$:<br>Check $M[i][0]$ or $M[0][j]$ | $M[0][3] == 0 \implies$ col 3 zeroes! | `M[1][3] = 0`, `M[2][3] = 0` |
-| **P3: Row 0 Zero**| $M[0][0] == 0 \implies$ Entire Row 0 zeroes | All $M[0][j] = 0$ | `[[0, 0, 0, 0], [3, 4, 5, 0], [1, 3, 1, 0]]` |
-| **P4: Col 0 Zero**| `col0 == true` $\implies$ Entire Col 0 zeroes | All $M[i][0] = 0$ | `[[0, 0, 0, 0], [0, 4, 5, 0], [0, 3, 1, 0]]` |
+| **P1: Scan i=0** | matrix[0][0] == 0 => col0=T<br>matrix[0][3] == 0 => M[0][3]=0, M[0][0]=0 | `col0 = true`<br>`M[0][0]=0, M[0][3]=0` | `[[0, 1, 2, 0], [3, 4, 5, 2], [1, 3, 1, 5]]` |
+| **P1: Scan i=1, 2**| No zeroes in inner cells | No change | Same |
+| **P2: Inner Zero**| For i in [1..2], j in [1..3]:<br>Check M[i][0] or M[0][j] | M[0][3] == 0 => col 3 zeroes! | `M[1][3] = 0`, `M[2][3] = 0` |
+| **P3: Row 0 Zero**| M[0][0] == 0 => Entire Row 0 zeroes | All M[0][j] = 0 | `[[0, 0, 0, 0], [3, 4, 5, 0], [1, 3, 1, 0]]` |
+| **P4: Col 0 Zero**| `col0 == true` => Entire Col 0 zeroes | All M[i][0] = 0 | `[[0, 0, 0, 0], [0, 4, 5, 0], [0, 3, 1, 0]]` |
 
 ---
 
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1: First Row & Column Sentinel Ledger ($O(1)$ Extra Space - Optimal):** Uses in-situ header elements as markers plus one boolean scalar. Meets Senior/Principal bar for embedded and cache-conscious engineering.
-- **Approach 2: Auxiliary $O(M + N)$ BitSets / Boolean Arrays:** Simple to code, but uses heap allocations proportional to matrix perimeter. Acceptable only as a preliminary baseline.
+- **Approach 1: First Row & Column Sentinel Ledger (O(1) Extra Space - Optimal):** Uses in-situ header elements as markers plus one boolean scalar. Meets Senior/Principal bar for embedded and cache-conscious engineering.
+- **Approach 2: Auxiliary O(M + N) BitSets / Boolean Arrays:** Simple to code, but uses heap allocations proportional to matrix perimeter. Acceptable only as a preliminary baseline.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 1. **Inspect Dimensions:** Handle trivial null/empty matrices.
 2. **First Col Check:** Inspect column 0 independently to initialize `col0HasZero`.
-3. **Record Marks:** Traverse the rest of the matrix. For every cell with value 0, set its row header $matrix[i][0] = 0$ and column header $matrix[0][j] = 0$.
-4. **Populate Inner Body:** Iterate backwards from $(m-1, n-1)$ down to $(1, 1)$ to avoid corrupting header flags before reading them.
-5. **Populate Headers:** Finally apply row 0 and column 0 zeroing based on $matrix[0][0]$ and `col0HasZero`.
+3. **Record Marks:** Traverse the rest of the matrix. For every cell with value 0, set its row header matrix[i][0] = 0 and column header matrix[0][j] = 0.
+4. **Populate Inner Body:** Iterate backwards from (m-1, n-1) down to (1, 1) to avoid corrupting header flags before reading them.
+5. **Populate Headers:** Finally apply row 0 and column 0 zeroing based on matrix[0][0] and `col0HasZero`.
 
 #### 4.3 Alternative Approaches Analysis
-- **Magic Number Sentinels:** Replacing zeroes with an unused number (e.g., `int.MinValue + 7`) during pass 1 and resolving in pass 2. Defective because the constraints state elements span the full range $[-2^{31}, 2^{31} - 1]$; no magic value is guaranteed unused.
+- **Magic Number Sentinels:** Replacing zeroes with an unused number (e.g., `int.MinValue + 7`) during pass 1 and resolving in pass 2. Defective because the constraints state elements span the full range [-2^31, 2^31 - 1]; no magic value is guaranteed unused.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Approach | Time (Best) | Time (Avg) | Time (Worst) | Auxiliary Space | Output Space | Cache Locality | In-Place Mutability | Streaming Suitability |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. Header Sentinels** | $O(M \times N)$ | $O(M \times N)$ | $O(M \times N)$ | $O(1)$ | $O(1)$ | High (row-major) | Yes (In-place) | Offline |
-| **2. O(M+N) Vectors** | $O(M \times N)$ | $O(M \times N)$ | $O(M \times N)$ | $O(M + N)$ | $O(1)$ | High | Yes (In-place) | Offline |
-| **3. Matrix Clone** | $O(M \times N)$ | $O(M \times N)$ | $O(M \times N)$ | $O(M \times N)$ | $O(1)$ | Moderate | Non-destructive | Offline |
+| **1. Header Sentinels** | O(M x N) | O(M x N) | O(M x N) | O(1) | O(1) | High (row-major) | Yes (In-place) | Offline |
+| **2. O(M+N) Vectors** | O(M x N) | O(M x N) | O(M x N) | O(M + N) | O(1) | High | Yes (In-place) | Offline |
+| **3. Matrix Clone** | O(M x N) | O(M x N) | O(M x N) | O(M x N) | O(1) | Moderate | Non-destructive | Offline |
 
 ---
 
@@ -690,8 +690,8 @@ public class Solution
 ---
 
 ### 6. Senior Pitfalls & Defensive Traps
-- **The Header Premature Zeroing Hazard:** If row 0 or column 0 is zeroed out before the inner cells $(1 \dots m-1, 1 \dots n-1)$ are evaluated, all header markers are wiped out. The entire remainder of the matrix would then erroneously turn to zeroes. Bottom-up or inner-first updates are strictly mandatory.
-- **The Origin Collision Bug:** Trying to let $matrix[0][0]$ represent both row 0 and column 0 causes mutual corruption. If row 0 has a zero, $matrix[0][0]$ becomes 0, which would trick the algorithm into thinking column 0 must also be zeroed out. A distinct scalar (`col0HasZero`) is required.
+- **The Header Premature Zeroing Hazard:** If row 0 or column 0 is zeroed out before the inner cells (1 ... m-1, 1 ... n-1) are evaluated, all header markers are wiped out. The entire remainder of the matrix would then erroneously turn to zeroes. Bottom-up or inner-first updates are strictly mandatory.
+- **The Origin Collision Bug:** Trying to let matrix[0][0] represent both row 0 and column 0 causes mutual corruption. If row 0 has a zero, matrix[0][0] becomes 0, which would trick the algorithm into thinking column 0 must also be zeroed out. A distinct scalar (`col0HasZero`) is required.
 - **Sentinel Overflow Invalidation:** Never use out-of-band values like `int.MaxValue` or negative sentinels unless the problem constraints explicitly forbid them. In LeetCode #73, values span all 32-bit signed integers.
 
 ---
@@ -712,7 +712,7 @@ public class Solution
   - Multiple consecutive spaces between words must be reduced to a single space.
   - Words themselves must retain their original internal character order (only the sequence of words is reversed).
 - **Key Constraints:**
-  - $1 \le s.Length \le 10^4$
+  - 1 <= s.Length <= 10^4
   - `s` contains English letters (upper-case and lower-case), digits, and spaces `' '`.
   - There is at least one word in `s`.
 - **Senior Edge Cases to Defend:**
@@ -723,8 +723,8 @@ public class Solution
 
 ### 2. Summary & Sample Input / Output
 - **Conceptual Essence:** The in-place canonical algorithm operates in 3 distinct steps on a mutable character array:
-  1. **Clean & Compact Spaces:** Use a fast/slow two-pointer write cursor to strip leading, trailing, and duplicate spaces, producing a normalized character span of length $K$.
-  2. **Global Array Reversal:** Reverse the entire compacted character span $[0 \dots K - 1]$. Words are now in correct reverse order, but each individual word is backwards.
+  1. **Clean & Compact Spaces:** Use a fast/slow two-pointer write cursor to strip leading, trailing, and duplicate spaces, producing a normalized character span of length K.
+  2. **Global Array Reversal:** Reverse the entire compacted character span [0 ... K - 1]. Words are now in correct reverse order, but each individual word is backwards.
   3. **Local Word Reversal:** Traverse the span and reverse the characters of each word individually back to their natural order.
 - **Sample 1:**
   - **Input:** `s = "the sky is blue"`
@@ -746,12 +746,12 @@ Using `s.Split(' ', StringSplitOptions.RemoveEmptyEntries)` followed by `Array.R
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Inversion Duality Invariant:**
-  Let word $W_i$ be a string of characters $c_{i,1} c_{i,2} \dots c_{i,k}$. The sentence is:
-  $$S = W_1 \circ W_2 \circ \dots \circ W_m$$
-  Reversing the entire string $S^R$ yields:
-  $$S^R = W_m^R \circ W_{m-1}^R \circ \dots \circ W_1^R$$
-  Applying reversal to each word block individually $(W_i^R)^R = W_i$ yields:
-  $$(S^R)_{\text{words restored}} = W_m \circ W_{m-1} \circ \dots \circ W_1$$
+  Let word W_i be a string of characters c_i,1 c_i,2 ... c_i,k. The sentence is:
+  S = W_1 o W_2 o ... o W_m
+  Reversing the entire string S^R yields:
+  S^R = W_m^R o W_m-1^R o ... o W_1^R
+  Applying reversal to each word block individually (W_i^R)^R = W_i yields:
+  (S^R)_words restored = W_m o W_m-1 o ... o W_1
   which is precisely the required reversed word order with zero extra auxiliary word storage!
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
@@ -778,7 +778,7 @@ Final Result: "blue is sky the"
 
 #### 3.5 State Transition Triggers & Decision Gates
 1. **Compaction Cursor Gate:**
-   - Scan `read` from 0 to $N - 1$. Skip leading spaces.
+   - Scan `read` from 0 to N - 1. Skip leading spaces.
    - When non-space is encountered, if `write > 0`, insert a single space separator: `chars[write++] = ' '`.
    - Copy word characters: `while (read < N && chars[read] != ' ') chars[write++] = chars[read++]`.
 2. **Global Reverse:**
@@ -794,22 +794,22 @@ Input: `s = "  Bob    Loves  Alice  "`
 
 | Phase | Read Cursor | Write Cursor / Action | Compacted Array Content |
 | :--- | :--- | :--- | :--- |
-| **P1: Compaction** | Skips `[0..1]` | Read `[2..4]` ("Bob") $\implies$ copy | `['B','o','b']` (`write=3`) |
-| **P1: Compaction** | Skips `[5..8]` | `write > 0 \implies` append `' '` | `['B','o','b',' ']` (`write=4`) |
+| **P1: Compaction** | Skips `[0..1]` | Read `[2..4]` ("Bob") => copy | `['B','o','b']` (`write=3`) |
+| **P1: Compaction** | Skips `[5..8]` | `write > 0 =>` append `' '` | `['B','o','b',' ']` (`write=4`) |
 | **P1: Compaction** | Read `[9..13]` ("Loves") | Copy "Loves" | `['B','o','b',' ','L','o','v','e','s']` (`write=9`) |
 | **P1: Compaction** | Skips `[14..15]` | Append `' '` + copy "Alice" | `[...,' ','A','l','i','c','e']` (`write=15`) |
-| **P2: Global Rev** | $0 \to 14$ | Reverse entire span $[0 \dots 14]$ | `"ecilA sevoL boB"` |
-| **P3: Local Rev** | Word 1 $[0 \dots 4]$ | Reverse `"ecilA"` $\to$ `"Alice"` | `"Alice sevoL boB"` |
-| **P3: Local Rev** | Word 2 $[6 \dots 10]$| Reverse `"sevoL"` $\to$ `"Loves"` | `"Alice Loves boB"` |
-| **P3: Local Rev** | Word 3 $[12 \dots 14]$| Reverse `"boB"` $\to$ `"Bob"` | `"Alice Loves Bob"` |
+| **P2: Global Rev** | 0 -> 14 | Reverse entire span [0 ... 14] | `"ecilA sevoL boB"` |
+| **P3: Local Rev** | Word 1 [0 ... 4] | Reverse `"ecilA"` -> `"Alice"` | `"Alice sevoL boB"` |
+| **P3: Local Rev** | Word 2 [6 ... 10]| Reverse `"sevoL"` -> `"Loves"` | `"Alice Loves boB"` |
+| **P3: Local Rev** | Word 3 [12 ... 14]| Reverse `"boB"` -> `"Bob"` | `"Alice Loves Bob"` |
 
 ---
 
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1: Three-Pass In-Place Array Reversal (Optimal System Standard):** Operates directly on a mutable `char[]` or `Span<char>`. Demonstrates mastery of two-pointer cursor management, zero intermediate string allocation, and strictly $O(N)$ execution.
-- **Approach 2: Right-to-Left Extraction with StringBuilder:** Traverses string backwards from index $N-1$ down to 0, identifying word tokens and appending to a `StringBuilder`. Highly readable and allocates only the builder capacity $N$.
+- **Approach 1: Three-Pass In-Place Array Reversal (Optimal System Standard):** Operates directly on a mutable `char[]` or `Span<char>`. Demonstrates mastery of two-pointer cursor management, zero intermediate string allocation, and strictly O(N) execution.
+- **Approach 2: Right-to-Left Extraction with StringBuilder:** Traverses string backwards from index N-1 down to 0, identifying word tokens and appending to a `StringBuilder`. Highly readable and allocates only the builder capacity N.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 1. Convert string `s` to `char[] chars`.
@@ -825,9 +825,9 @@ Input: `s = "  Bob    Loves  Alice  "`
 
 | Approach | Time (Best) | Time (Avg) | Time (Worst) | Auxiliary Space | Output Space | Cache Locality | In-Place Mutability | Streaming Suitability |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. In-Place 3-Pass** | $O(N)$ | $O(N)$ | $O(N)$ | $O(N)$ (C# char[]) | $O(N)$ | Optimal | Mutable buffer | Offline |
-| **2. Backward StringBuilder**| $O(N)$ | $O(N)$ | $O(N)$ | $O(N)$ | $O(N)$ | High | Non-mutating | Offline |
-| **3. String.Split + LINQ** | $O(N)$ | $O(N)$ | $O(N)$ | $O(N)$ (multiple heap) | $O(N)$ | Poor (GC churn) | Non-mutating | Offline |
+| **1. In-Place 3-Pass** | O(N) | O(N) | O(N) | O(N) (C# char[]) | O(N) | Optimal | Mutable buffer | Offline |
+| **2. Backward StringBuilder**| O(N) | O(N) | O(N) | O(N) | O(N) | High | Non-mutating | Offline |
+| **3. String.Split + LINQ** | O(N) | O(N) | O(N) | O(N) (multiple heap) | O(N) | Poor (GC churn) | Non-mutating | Offline |
 
 ---
 
@@ -975,7 +975,7 @@ public class SolutionStringBuilder
 ---
 
 ### 6. Senior Pitfalls & Defensive Traps
-- **String Immutability in Managed Runtimes (.NET / Java):** In C#, `System.String` is immutable. True zero-allocation in-place reversal can only be executed on a `char[]` or `Span<char>`. In interview settings, explicitly state: *"In C#, because strings are immutable, we convert to a char array ($O(N)$ space), but the algorithmic transformation on the character buffer operates in $O(1)$ auxiliary space."*
+- **String Immutability in Managed Runtimes (.NET / Java):** In C#, `System.String` is immutable. True zero-allocation in-place reversal can only be executed on a `char[]` or `Span<char>`. In interview settings, explicitly state: *"In C#, because strings are immutable, we convert to a char array (O(N) space), but the algorithmic transformation on the character buffer operates in O(1) auxiliary space."*
 - **The Trailing Word Off-by-One:** When reversing individual words in Step 3, the loop must check up to `i <= write` (not `i < write`). If checked only up to `i < write`, the very last word does not encounter a trailing space and will remain unreversed unless flushed explicitly after the loop.
 - **Buffer Garbage Exposure:** When constructing `new string(chars, 0, write)`, always pass the compacted length `write`. Passing `new string(chars)` will include stale trailing characters left over from the uncompacted original string.
 
@@ -1002,14 +1002,14 @@ public class SolutionStringBuilder
   - Revisions fit within a standard 32-bit signed integer.
   - Comparison proceeds strictly from left-to-right revision index.
 - **Key Constraints:**
-  - $1 \le version1.Length, version2.Length \le 500$
+  - 1 <= version1.Length, version2.Length <= 500
   - `version1` and `version2` only contain digits and `'.'`.
   - Revisions do not have leading `'.'` or trailing `'.'`.
   - No consecutive dots: `..`.
 - **Senior Edge Cases to Defend:**
-  - **Asymmetric Revision Counts:** `"1.0"` vs `"1.0.0.0"` must evaluate as equal ($0$).
-  - **Leading Zeros within Revision:** `"1.01"` vs `"1.001"` must evaluate as equal ($0$).
-  - **Trailing Non-Zero Revision:** `"1.0.1"` vs `"1"` must evaluate to $1$.
+  - **Asymmetric Revision Counts:** `"1.0"` vs `"1.0.0.0"` must evaluate as equal (0).
+  - **Leading Zeros within Revision:** `"1.01"` vs `"1.001"` must evaluate as equal (0).
+  - **Trailing Non-Zero Revision:** `"1.0.1"` vs `"1"` must evaluate to 1.
   - **Extreme Values:** Revision values like `2147483647` or versions with dozens of revision levels.
 
 ### 2. Summary & Sample Input / Output
@@ -1017,7 +1017,7 @@ public class SolutionStringBuilder
 - **Sample 1:**
   - **Input:** `version1 = "1.2", version2 = "1.10"`
   - **Output:** `-1`
-  - **Explanation:** Revision 0 is 1 for both. Revision 1 is 2 vs 10; $2 < 10$, so return -1.
+  - **Explanation:** Revision 0 is 1 for both. Revision 1 is 2 vs 10; 2 < 10, so return -1.
 - **Sample 2:**
   - **Input:** `version1 = "1.01", version2 = "1.001"`
   - **Output:** `0`
@@ -1033,16 +1033,16 @@ public class SolutionStringBuilder
 Imagine comparing two odometer readouts or software semantic versions. You line them up side-by-side. You read the first section between dots, convert it to a pure integer, and compare. If they are equal, you jump over the dot and read the next section. If one version string ends while the other continues, the missing vehicle simply has 0 mileage in that tier. You never need to allocate memory for the entire odometer; you only read the active digits between punctuation marks.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-The naive approach calls `string.Split('.')` on both inputs and parses every string chunk with `int.Parse()`. This allocates two string arrays and numerous heap-allocated substring objects. If `version1` has 100 revisions and differs on the very first revision, the split-based approach wasted time and memory tokenizing 99 irrelevant chunks. The streaming two-pointer approach parses characters sequentially, allocating $0$ auxiliary heap memory and terminating on the very first mismatch.
+The naive approach calls `string.Split('.')` on both inputs and parses every string chunk with `int.Parse()`. This allocates two string arrays and numerous heap-allocated substring objects. If `version1` has 100 revisions and differs on the very first revision, the split-based approach wasted time and memory tokenizing 99 irrelevant chunks. The streaming two-pointer approach parses characters sequentially, allocating 0 auxiliary heap memory and terminating on the very first mismatch.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Streaming Revision Accumulation Invariant:**
-  At revision chunk $k$:
-  $$v_1^{(k)} = \sum_{p = start}^{end} (version1[p] - '0') \times 10^{(end - p)}$$
-  If cursor $i \ge len_1$, then $v_1^{(k)} = 0$.
+  At revision chunk k:
+  v_1^(k) = Sum(p = start..end) (version1[p] - '0') * 10^(end - p)
+  If cursor i >= len_1, then v_1^(k) = 0.
 - **Early-Termination Invariant:**
   Because version levels possess strict lexicographical priority:
-  $$v_1^{(k)} \ne v_2^{(k)} \implies \text{Sign}(v_1^{(k)} - v_2^{(k)}) \text{ is final for the entire version}$$
+  v_1^(k) != v_2^(k) => Sign(v_1^(k) - v_2^(k)) is final for the entire version
   No downstream revision can ever alter the outcome.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
@@ -1076,12 +1076,12 @@ Chunk 3: i at end -> num1 = 0; j parses 4 -> num2 = 4 ===> 0 < 4 ===> Return -1
 #### 3.6 Concrete Step-by-Step State Trace
 Input: `version1 = "1.0", version2 = "1.0.0.0"`
 
-| Step | Cursor $i$ | Cursor $j$ | Parsed $num_1$ | Parsed $num_2$ | Comparison | Action |
+| Step | Cursor i | Cursor j | Parsed num_1 | Parsed num_2 | Comparison | Action |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **0** | $0 \to 1$ | $0 \to 1$ | `1` | `1` | $1 == 1$ | Skip '.', advance cursors |
-| **1** | $2 \to 3$ | $2 \to 3$ | `0` | `0` | $0 == 0$ | Skip '.', advance cursors |
-| **2** | $3 \ge n_1$| $4 \to 5$ | `0` (default) | `0` | $0 == 0$ | $i$ exhausted; skip '.', advance $j$ |
-| **3** | $3 \ge n_1$| $6 \to 7$ | `0` (default) | `0` | $0 == 0$ | $j$ exhausted; loop ends |
+| **0** | 0 -> 1 | 0 -> 1 | `1` | `1` | 1 == 1 | Skip '.', advance cursors |
+| **1** | 2 -> 3 | 2 -> 3 | `0` | `0` | 0 == 0 | Skip '.', advance cursors |
+| **2** | 3 >= n_1| 4 -> 5 | `0` (default) | `0` | 0 == 0 | i exhausted; skip '.', advance j |
+| **3** | 3 >= n_1| 6 -> 7 | `0` (default) | `0` | 0 == 0 | j exhausted; loop ends |
 | **End**| — | — | — | — | All equal | Return `0` |
 
 ---
@@ -1089,7 +1089,7 @@ Input: `version1 = "1.0", version2 = "1.0.0.0"`
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1: Zero-Allocation Streaming Two-Pointer Parser (Optimal):** Operates directly over the raw string characters. $O(N_1 + N_2)$ time and $O(1)$ auxiliary space. Zero heap garbage generation.
+- **Approach 1: Zero-Allocation Streaming Two-Pointer Parser (Optimal):** Operates directly over the raw string characters. O(N_1 + N_2) time and O(1) auxiliary space. Zero heap garbage generation.
 - **Approach 2: String.Split with Array Padding:** Splits both strings into `string[]`, pads the shorter array with zeroes, and compares. Simpler syntax but creates garbage-collected arrays.
 
 #### 4.2 Step-by-Step Natural Progression Flow
@@ -1109,8 +1109,8 @@ Input: `version1 = "1.0", version2 = "1.0.0.0"`
 
 | Approach | Time (Best) | Time (Avg) | Time (Worst) | Auxiliary Space | Output Space | Cache Locality | In-Place Mutability | Streaming Suitability |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. Streaming Two-Pointer** | $O(1)$ | $O(N_1 + N_2)$ | $O(N_1 + N_2)$ | $O(1)$ | $O(1)$ | Optimal | Non-mutating | Excellent (online) |
-| **2. String.Split** | $O(N_1 + N_2)$ | $O(N_1 + N_2)$ | $O(N_1 + N_2)$ | $O(N_1 + N_2)$ | $O(1)$ | Moderate | Non-mutating | Poor (offline) |
+| **1. Streaming Two-Pointer** | O(1) | O(N_1 + N_2) | O(N_1 + N_2) | O(1) | O(1) | Optimal | Non-mutating | Excellent (online) |
+| **2. String.Split** | O(N_1 + N_2) | O(N_1 + N_2) | O(N_1 + N_2) | O(N_1 + N_2) | O(1) | Moderate | Non-mutating | Poor (offline) |
 
 ---
 
@@ -1219,20 +1219,20 @@ public class Solution
   - The "linked list" should be in the same order as a pre-order traversal of the binary tree.
 - **Assumptions & Contracts:**
   - Mutation must occur strictly in-place; do not instantiate new `TreeNode` objects.
-  - Pre-order traversal order: $\text{Node} \to \text{Left Subtree} \to \text{Right Subtree}$.
+  - Pre-order traversal order: Node -> Left Subtree -> Right Subtree.
   - The flattened list is rooted at the original `root`.
 - **Key Constraints:**
-  - The number of nodes in the tree is in the range $[0, 2000]$.
-  - $-100 \le Node.val \le 100$.
+  - The number of nodes in the tree is in the range [0, 2000].
+  - -100 <= Node.val <= 100.
 - **Senior Edge Cases to Defend:**
   - **Null Tree (`root == null`):** Immediate no-op return.
   - **Single Node:** No changes; left child is already null.
   - **Left-Skewed Tree:** Every node has only a left child; must flip all left children to right without losing connections.
-  - **Right-Skewed Tree:** Already flattened; algorithm must detect and complete with $O(N)$ minimal work.
+  - **Right-Skewed Tree:** Already flattened; algorithm must detect and complete with O(N) minimal work.
   - **Full Binary Tree:** Complex splicing where left subtree tails must attach to right subtree heads.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Pre-order traversal visits the current node, then its entire left subtree, then its right subtree. This means the *last* node visited in the left subtree (the rightmost node of `curr.left`) must immediately precede `curr.right`! By splicing `curr.right` onto the rightmost node of `curr.left`, moving `curr.left` to `curr.right`, and setting `curr.left = null`, we flatten the tree in $O(1)$ auxiliary memory without recursion or an auxiliary stack (Morris-style splicing).
+- **Conceptual Essence:** Pre-order traversal visits the current node, then its entire left subtree, then its right subtree. This means the *last* node visited in the left subtree (the rightmost node of `curr.left`) must immediately precede `curr.right`! By splicing `curr.right` onto the rightmost node of `curr.left`, moving `curr.left` to `curr.right`, and setting `curr.left = null`, we flatten the tree in O(1) auxiliary memory without recursion or an auxiliary stack (Morris-style splicing).
 - **Sample 1:**
   - **Input:** `root = [1, 2, 5, 3, 4, null, 6]`
   - **Output:** `[1, null, 2, null, 3, null, 4, null, 5, null, 6]`
@@ -1249,16 +1249,16 @@ public class Solution
 Imagine hanging a folded paper mobile into a single straight vertical string. Whenever you encounter a left branch hanging from the current joint, you look down to the very lowest tip of that left branch. You detach the right branch from the current joint and tape it to the tip of that left branch. Then you swing the entire left branch over to hang straight down from the right joint, making sure the left side is now empty. Now you step down to the next node on the right and repeat.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A naive approach performs a standard pre-order DFS, collects all nodes into a `List<TreeNode>`, and then iterates through the list re-wiring pointers (`list[i].left = null; list[i].right = list[i + 1]`). This uses $O(N)$ extra heap memory. A recursive reverse pre-order DFS (Right $\to$ Left $\to$ Root) uses $O(H)$ stack frames. The Morris-style threading approach achieves strictly $O(1)$ auxiliary memory by utilizing the tree's own null pointers to establish connections.
+A naive approach performs a standard pre-order DFS, collects all nodes into a `List<TreeNode>`, and then iterates through the list re-wiring pointers (`list[i].left = null; list[i].right = list[i + 1]`). This uses O(N) extra heap memory. A recursive reverse pre-order DFS (Right -> Left -> Root) uses O(H) stack frames. The Morris-style threading approach achieves strictly O(1) auxiliary memory by utilizing the tree's own null pointers to establish connections.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Pre-Order Tail Predecessor Invariant:**
   In a pre-order traversal:
-  $$\text{Traversal}(curr) = [curr] \circ \text{Traversal}(curr.left) \circ \text{Traversal}(curr.right)$$
-  The very first node of $\text{Traversal}(curr.right)$ must be visited immediately after the *final* node of $\text{Traversal}(curr.left)$.
+  Traversal(curr) = [curr] o Traversal(curr.left) o Traversal(curr.right)
+  The very first node of Traversal(curr.right) must be visited immediately after the *final* node of Traversal(curr.left).
   In any binary tree, the final node of the left subtree visited in pre-order is its **rightmost descendant**:
-  $$\text{tail}(curr.left) = \text{node } p \text{ reached by } p = curr.left \text{ then } p = p.right \text{ while } p.right \ne \text{null}$$
-  Therefore, setting $\text{tail}(curr.left).right \leftarrow curr.right$ guarantees pre-order continuity!
+  tail(curr.left) = node p reached by p = curr.left then p = p.right while p.right != null
+  Therefore, setting tail(curr.left).right <- curr.right guarantees pre-order continuity!
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -1295,11 +1295,11 @@ Input: `root = [1, 2, 5, 3, 4, null, 6]`
 
 | Step | `curr.val` | `curr.left != null` | Rightmost Predecessor of `curr.left` | Action Taken | Resulting Right Spine from `curr` |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1** | `1` | Yes (`2`) | Node `4` | `4.right = 5; 1.right = 2; 1.left = null` | $1 \to 2 \dots$ |
-| **2** | `2` | Yes (`3`) | Node `3` | `3.right = 4; 2.right = 3; 2.left = null` | $1 \to 2 \to 3 \dots$ |
-| **3** | `3` | No | None | Advance `curr = curr.right` (Node `4`) | $1 \to 2 \to 3 \to 4 \dots$ |
-| **4** | `4` | No | None | Advance `curr = curr.right` (Node `5`) | $1 \to 2 \to 3 \to 4 \to 5 \dots$ |
-| **5** | `5` | No | None | Advance `curr = curr.right` (Node `6`) | $1 \to 2 \to 3 \to 4 \to 5 \to 6$ |
+| **1** | `1` | Yes (`2`) | Node `4` | `4.right = 5; 1.right = 2; 1.left = null` | 1 -> 2 ... |
+| **2** | `2` | Yes (`3`) | Node `3` | `3.right = 4; 2.right = 3; 2.left = null` | 1 -> 2 -> 3 ... |
+| **3** | `3` | No | None | Advance `curr = curr.right` (Node `4`) | 1 -> 2 -> 3 -> 4 ... |
+| **4** | `4` | No | None | Advance `curr = curr.right` (Node `5`) | 1 -> 2 -> 3 -> 4 -> 5 ... |
+| **5** | `5` | No | None | Advance `curr = curr.right` (Node `6`) | 1 -> 2 -> 3 -> 4 -> 5 -> 6 |
 | **6** | `6` | No | None | Advance `curr = curr.right` (`null`) | Terminate |
 
 ---
@@ -1307,8 +1307,8 @@ Input: `root = [1, 2, 5, 3, 4, null, 6]`
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1: Morris In-Place Splicing (Optimal $O(1)$ Space):** Restructures pointers iteratively without allocating stack frames or collections. Ideal for systems with restricted stack memory.
-- **Approach 2: Reverse Pre-Order Recursive DFS ($O(H)$ Stack):** Traverses `Right -> Left -> Root` maintaining a `prev` pointer. Beautifully concise, but consumes $O(H)$ stack space ($O(N)$ worst case for skewed trees).
+- **Approach 1: Morris In-Place Splicing (Optimal O(1) Space):** Restructures pointers iteratively without allocating stack frames or collections. Ideal for systems with restricted stack memory.
+- **Approach 2: Reverse Pre-Order Recursive DFS (O(H) Stack):** Traverses `Right -> Left -> Root` maintaining a `prev` pointer. Beautifully concise, but consumes O(H) stack space (O(N) worst case for skewed trees).
 
 #### 4.2 Step-by-Step Natural Progression Flow
 1. Handle base case `root == null`.
@@ -1325,9 +1325,9 @@ Input: `root = [1, 2, 5, 3, 4, null, 6]`
 
 | Approach | Time (Best) | Time (Avg) | Time (Worst) | Auxiliary Space | Output Space | Cache Locality | In-Place Mutability | Streaming Suitability |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. Morris Splicing** | $O(N)$ | $O(N)$ | $O(N)$ | $O(1)$ | $O(1)$ | High | Yes (In-place) | Offline |
-| **2. Reverse DFS** | $O(N)$ | $O(N)$ | $O(N)$ | $O(H)$ | $O(1)$ | Moderate | Yes (In-place) | Offline |
-| **3. List Extraction** | $O(N)$ | $O(N)$ | $O(N)$ | $O(N)$ | $O(1)$ | High | Creates List | Offline |
+| **1. Morris Splicing** | O(N) | O(N) | O(N) | O(1) | O(1) | High | Yes (In-place) | Offline |
+| **2. Reverse DFS** | O(N) | O(N) | O(N) | O(H) | O(1) | Moderate | Yes (In-place) | Offline |
+| **3. List Extraction** | O(N) | O(N) | O(N) | O(N) | O(1) | High | Creates List | Offline |
 
 ---
 
@@ -1431,7 +1431,7 @@ public class SolutionRecursiveDFS
 ### 6. Senior Pitfalls & Defensive Traps
 - **Forgetting to Nullify `curr.left`:** The problem contract explicitly dictates: *"the left child pointer is always null."* Failing to set `curr.left = null` leaves dangling left branches, violating the definition of the resulting linked list and causing LeetCode or consumers to fail validation.
 - **Predecessor Search Loop Condition:** In Morris Traversal for in-order printing, the loop checks `while (predecessor.right != null && predecessor.right != curr)` to break temporary threads. But here, we are *permanently restructuring* the tree; the loop must simply check `while (predecessor.right != null)`. Adding the `!= curr` check is unnecessary and demonstrates a lack of conceptual clarity regarding permanent restructuring vs temporary traversal threading.
-- **Stack Overflow in Deep Skewed Trees:** The recursive reverse DFS solution has $O(H)$ space complexity. For a degenerate linked-list tree with $N = 2000$ nodes, a recursive method pushes 2000 stack frames. The iterative Morris splicing approach operates with strictly $O(1)$ stack space.
+- **Stack Overflow in Deep Skewed Trees:** The recursive reverse DFS solution has O(H) space complexity. For a degenerate linked-list tree with N = 2000 nodes, a recursive method pushes 2000 stack frames. The iterative Morris splicing approach operates with strictly O(1) stack space.
 
 ---
 
@@ -1447,14 +1447,14 @@ public class SolutionRecursiveDFS
 | **LeetCode Link** | [Best Time to Buy and Sell Stock](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** You are given an array `prices` where `prices[i]` is the price of a given stock on the $i$-th day. You want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock. Return the maximum profit you can achieve. If you cannot achieve any profit, return 0.
+- **Formal Statement:** You are given an array `prices` where `prices[i]` is the price of a given stock on the i-th day. You want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock. Return the maximum profit you can achieve. If you cannot achieve any profit, return 0.
 - **Assumptions & Contracts:**
   - Transaction constraint: Exactly at most 1 buy transaction followed chronologically by 1 sell transaction.
-  - Causality constraint: Selling on day $j$ requires buying on day $i$ where $i < j$.
+  - Causality constraint: Selling on day j requires buying on day i where i < j.
   - Negative profits are not allowed; if all prices drop monotonically, return 0.
 - **Key Constraints:**
-  - $1 \le prices.Length \le 10^5$
-  - $0 \le prices[i] \le 10^4$
+  - 1 <= prices.Length <= 10^5
+  - 0 <= prices[i] <= 10^4
 - **Senior Edge Cases to Defend:**
   - **Monotonically Decreasing:** `[7, 6, 4, 3, 1]` must yield `0`.
   - **Monotonically Increasing:** `[1, 2, 3, 4, 5]` must yield `4` (buy day 0, sell day 4).
@@ -1463,11 +1463,11 @@ public class SolutionRecursiveDFS
   - **Singleton Array:** `[5]` must yield `0` without out-of-bounds access.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** At any given day $i$, the maximum profit attainable by selling on day $i$ is $prices[i] - \min_{0 \le j < i}(prices[j])$. By keeping a running prefix minimum `minPrice`, we can evaluate every possible selling day in a single $O(N)$ pass, updating `maxProfit` monotonically.
+- **Conceptual Essence:** At any given day i, the maximum profit attainable by selling on day i is prices[i] - min_0 <= j < i(prices[j]). By keeping a running prefix minimum `minPrice`, we can evaluate every possible selling day in a single O(N) pass, updating `maxProfit` monotonically.
 - **Sample 1:**
   - **Input:** `prices = [7, 1, 5, 3, 6, 4]`
   - **Output:** `5`
-  - **Explanation:** Buy on day 1 (price = 1) and sell on day 4 (price = 6), profit = $6 - 1 = 5$.
+  - **Explanation:** Buy on day 1 (price = 1) and sell on day 4 (price = 6), profit = 6 - 1 = 5.
 - **Sample 2:**
   - **Input:** `prices = [7, 6, 4, 3, 1]`
   - **Output:** `0`
@@ -1479,16 +1479,16 @@ public class SolutionRecursiveDFS
 Imagine surfing down a price chart. To make the most money when selling today, you wish you had bought at the deepest valley you passed earlier on your journey. As you walk forward day by day, you record the lowest valley you have ever seen (`minPrice`). At every new day, you calculate the elevation gain from that lowest valley to your current height. If today's height beats your historical highest gain, you update your record (`maxProfit`). If today's price is even lower than your lowest valley, you update the valley for all future days.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A brute-force solution checks all pairs $(i, j)$ with $0 \le i < j < N$ and computes $prices[j] - prices[i]$, requiring $O(N^2)$ comparisons. This re-evaluates previously visited minimums repeatedly. Because the optimal buy point for any sell day $j$ is strictly independent of future days, the minimum can be tracked incrementally in $O(1)$ amortized time per step, collapsing $O(N^2)$ to $O(N)$.
+A brute-force solution checks all pairs (i, j) with 0 <= i < j < N and computes prices[j] - prices[i], requiring O(N^2) comparisons. This re-evaluates previously visited minimums repeatedly. Because the optimal buy point for any sell day j is strictly independent of future days, the minimum can be tracked incrementally in O(1) amortized time per step, collapsing O(N^2) to O(N).
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Prefix Minimum Decomposition Invariant:**
-  $$\text{maxProfit} = \max_{0 \le j < N} \left( prices[j] - \min_{0 \le i \le j}(prices[i]) \right)$$
+  maxProfit = max_0 <= j < N ( prices[j] - min_0 <= i <= j(prices[i]) )
 - **Online State Machine Invariant:**
-  Let state at step $k$ be $S_k = (\mu_k, \pi_k)$ where:
-  $$\mu_k = \min(\mu_{k-1}, prices[k])$$
-  $$\pi_k = \max(\pi_{k-1}, prices[k] - \mu_k)$$
-  This state transitions in $O(1)$ time per day, maintains causality naturally, and requires only two scalar registers.
+  Let state at step k be S_k = (mu_k, pi_k) where:
+  mu_k = min(mu_k-1, prices[k])
+  pi_k = max(pi_k-1, prices[k] - mu_k)
+  This state transitions in O(1) time per day, maintains causality naturally, and requires only two scalar registers.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -1510,47 +1510,47 @@ Final Output: 5
 ```
 
 #### 3.5 State Transition Triggers & Decision Gates
-1. **Valley Update Gate:** If $prices[i] < minPrice$, update $minPrice = prices[i]$.
-2. **Profit Update Gate:** Else if $prices[i] - minPrice > maxProfit$, update $maxProfit = prices[i] - minPrice$.
-3. **Loop Boundary:** Iterate $i$ from 0 to $N - 1$.
+1. **Valley Update Gate:** If prices[i] < minPrice, update minPrice = prices[i].
+2. **Profit Update Gate:** Else if prices[i] - minPrice > maxProfit, update maxProfit = prices[i] - minPrice.
+3. **Loop Boundary:** Iterate i from 0 to N - 1.
 
 #### 3.6 Concrete Step-by-Step State Trace
 Input: `prices = [7, 1, 5, 3, 6, 4]`
 
-| Day ($i$) | Price (`prices[i]`) | `minPrice` Before | Decision / Branch | `minPrice` After | Current Potential Profit | `maxProfit` After |
+| Day (i) | Price (`prices[i]`) | `minPrice` Before | Decision / Branch | `minPrice` After | Current Potential Profit | `maxProfit` After |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **0** | `7` | $\infty$ | $7 < \infty \implies$ New Min | `7` | $7 - 7 = 0$ | `0` |
-| **1** | `1` | `7` | $1 < 7 \implies$ New Min | `1` | $1 - 1 = 0$ | `0` |
-| **2** | `5` | `1` | $5 > 1 \implies$ Check Profit | `1` | $5 - 1 = 4$ | `4` |
-| **3** | `3` | `1` | $3 > 1 \implies$ Check Profit | `1` | $3 - 1 = 2$ | `4` |
-| **4** | `6` | `1` | $6 > 1 \implies$ Check Profit | `1` | $6 - 1 = 5$ | `5` |
-| **5** | `4` | `1` | $4 > 1 \implies$ Check Profit | `1` | $4 - 1 = 3$ | `5` |
+| **0** | `7` | infinity | 7 < infinity => New Min | `7` | 7 - 7 = 0 | `0` |
+| **1** | `1` | `7` | 1 < 7 => New Min | `1` | 1 - 1 = 0 | `0` |
+| **2** | `5` | `1` | 5 > 1 => Check Profit | `1` | 5 - 1 = 4 | `4` |
+| **3** | `3` | `1` | 3 > 1 => Check Profit | `1` | 3 - 1 = 2 | `4` |
+| **4** | `6` | `1` | 6 > 1 => Check Profit | `1` | 6 - 1 = 5 | `5` |
+| **5** | `4` | `1` | 4 > 1 => Check Profit | `1` | 4 - 1 = 3 | `5` |
 
 ---
 
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1: One-Pass Prefix Minimum (Optimal & Standard):** Single pass, $O(N)$ time, $O(1)$ space, zero heap allocation, cache-friendly contiguous memory scanning.
-- **Approach 2: Kadane's Maximum Subarray Transformation:** Transform `prices` into daily deltas $\Delta_i = prices[i] - prices[i-1]$. The maximum profit corresponds exactly to the maximum contiguous subarray sum of deltas. Insightful for interviews to connect greedy buy/sell logic to Kadane's DP.
+- **Approach 1: One-Pass Prefix Minimum (Optimal & Standard):** Single pass, O(N) time, O(1) space, zero heap allocation, cache-friendly contiguous memory scanning.
+- **Approach 2: Kadane's Maximum Subarray Transformation:** Transform `prices` into daily deltas Delta_i = prices[i] - prices[i-1]. The maximum profit corresponds exactly to the maximum contiguous subarray sum of deltas. Insightful for interviews to connect greedy buy/sell logic to Kadane's DP.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 1. Handle null or single-element arrays (return 0).
 2. Initialize `minPrice = prices[0]` and `maxProfit = 0`.
-3. Loop through prices from index 1 to $N - 1$.
+3. Loop through prices from index 1 to N - 1.
 4. At each price, update `minPrice` if current price is lower; otherwise evaluate profit and update `maxProfit`.
 5. Return `maxProfit`.
 
 #### 4.3 Alternative Approaches Analysis
-- **Brute Force Pairs:** $O(N^2)$ time. For $N = 10^5$, $N^2 = 10^{10}$ operations, causing Time Limit Exceeded (TLE).
+- **Brute Force Pairs:** O(N^2) time. For N = 10^5, N^2 = 10^10 operations, causing Time Limit Exceeded (TLE).
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Approach | Time (Best) | Time (Avg) | Time (Worst) | Auxiliary Space | Output Space | Cache Locality | In-Place Mutability | Streaming Suitability |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. Prefix Minimum** | $O(N)$ | $O(N)$ | $O(N)$ | $O(1)$ | $O(1)$ | Optimal (L1 cache) | Non-mutating | Excellent (online) |
-| **2. Kadane's Delta** | $O(N)$ | $O(N)$ | $O(N)$ | $O(1)$ | $O(1)$ | Optimal | Non-mutating | Excellent (online) |
-| **3. Brute Force Pairs**| $O(N^2)$ | $O(N^2)$ | $O(N^2)$ | $O(1)$ | $O(1)$ | Moderate | Non-mutating | Poor |
+| **1. Prefix Minimum** | O(N) | O(N) | O(N) | O(1) | O(1) | Optimal (L1 cache) | Non-mutating | Excellent (online) |
+| **2. Kadane's Delta** | O(N) | O(N) | O(N) | O(1) | O(1) | Optimal | Non-mutating | Excellent (online) |
+| **3. Brute Force Pairs**| O(N^2) | O(N^2) | O(N^2) | O(1) | O(1) | Moderate | Non-mutating | Poor |
 
 ---
 
@@ -1664,8 +1664,8 @@ public class SolutionKadaneDuality
   - No leading zeros in numbers except the number 0 itself.
   - Follow-up Contract: **Do not reverse the input lists** (immutable input requirement).
 - **Key Constraints:**
-  - The number of nodes in each linked list is in the range $[1, 100]$.
-  - $0 \le Node.val \le 9$.
+  - The number of nodes in each linked list is in the range [1, 100].
+  - 0 <= Node.val <= 9.
 - **Senior Edge Cases to Defend:**
   - **Asymmetric List Lengths:** `[7, 2, 4, 3]` + `[5, 6, 4]` = `[7, 8, 0, 7]`.
   - **Cascading Carry Ripple Across All Digits:** `[9, 9, 9]` + `[1]` = `[1, 0, 0, 0]` (creates a new MSD head node).
@@ -1690,19 +1690,19 @@ public class SolutionKadaneDuality
 Imagine two stacks of plates, each with a digit written on it, where the top plate is the highest power of 10 (thousands, hundreds, etc.). You cannot reverse the stacks because they are glued down. To add them like elementary school addition, you pick up the plates from each stack one-by-one and place them into two fresh bins. Now, the ones-place digits are resting right on top of both bins! You pop digits from the top of the bins, add them with any carry, and construct the answer chain from the bottom up by prepending newly minted answer nodes.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-Converting the linked lists into integers (`long` or `BigInteger`) and adding them fails when the list length exceeds primitive integer capacity (e.g., 100 digits exceeds 64-bit `ulong` by 80 orders of magnitude). Reversing the input lists in-place is fast ($O(1)$ space), but mutates caller data, violating thread safety and API immutability contracts. Dual explicit stacks provide an $O(N_1 + N_2)$ non-destructive solution.
+Converting the linked lists into integers (`long` or `BigInteger`) and adding them fails when the list length exceeds primitive integer capacity (e.g., 100 digits exceeds 64-bit `ulong` by 80 orders of magnitude). Reversing the input lists in-place is fast (O(1) space), but mutates caller data, violating thread safety and API immutability contracts. Dual explicit stacks provide an O(N_1 + N_2) non-destructive solution.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **LIFO Decimal Positional Invariant:**
-  By pushing all nodes from $L_1$ and $L_2$ onto stacks $S_1$ and $S_2$:
-  $$\text{Top}(S_1) = \text{LSD}(L_1), \quad \text{Top}(S_2) = \text{LSD}(L_2)$$
+  By pushing all nodes from L_1 and L_2 onto stacks S_1 and S_2:
+  Top(S_1) = LSD(L_1), Top(S_2) = LSD(L_2)
 - **Carry Propagation Invariant:**
-  At step $k$ from right to left:
-  $$\text{sum}_k = d_1^{(k)} + d_2^{(k)} + \text{carry}_{k-1}$$
-  $$\text{digit}_k = \text{sum}_k \pmod{10}$$
-  $$\text{carry}_k = \lfloor \text{sum}_k / 10 \rfloor$$
-  Prepending $\text{digit}_k$ to the result head builds the output in correct MSD-first order:
-  $$\text{head}_{\text{new}} = \text{new ListNode}(\text{digit}_k, \text{head}_{\text{prev}})$$
+  At step k from right to left:
+  sum_k = d_1^(k) + d_2^(k) + carry_k-1
+  digit_k = sum_k mod 10
+  carry_k = floor(sum_k / 10)
+  Prepending digit_k to the result head builds the output in correct MSD-first order:
+  head_new = new ListNode(digit_k, head_prev)
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -1726,13 +1726,13 @@ Result Head: [ 7 ] -> [ 8 ] -> [ 0 ] -> [ 7 ]
 ```
 
 #### 3.5 State Transition Triggers & Decision Gates
-1. **Ingestion:** Push all nodes of $l_1$ onto `s1`; push all nodes of $l_2$ onto `s2`.
+1. **Ingestion:** Push all nodes of l_1 onto `s1`; push all nodes of l_2 onto `s2`.
 2. **Summation Gate:** Loop while `s1.Count > 0 || s2.Count > 0 || carry != 0`.
 3. **Digit Extraction:**
-   - $d_1 = s_1.\text{Count} > 0 \ ? \ s_1.\text{Pop}() : 0$
-   - $d_2 = s_2.\text{Count} > 0 \ ? \ s_2.\text{Pop}() : 0$
+   - d_1 = s_1.Count > 0 \ ? \ s_1.Pop() : 0
+   - d_2 = s_2.Count > 0 \ ? \ s_2.Pop() : 0
 4. **Prepend Node:**
-   - Create node with value $(d_1 + d_2 + carry) \% 10$.
+   - Create node with value (d_1 + d_2 + carry) \% 10.
    - Point `newNode.next = head`.
    - Set `head = newNode`.
    - Update `carry = (d1 + d2 + carry) / 10`.
@@ -1740,12 +1740,12 @@ Result Head: [ 7 ] -> [ 8 ] -> [ 0 ] -> [ 7 ]
 #### 3.6 Concrete Step-by-Step State Trace
 Input: `l1 = [9, 9]`, `l2 = [1]`
 
-| Step | Stack 1 Top | Stack 2 Top | Carry In | Total Sum | New Digit ($sum \% 10$) | Carry Out | Result Head Chain |
+| Step | Stack 1 Top | Stack 2 Top | Carry In | Total Sum | New Digit (sum \% 10) | Carry Out | Result Head Chain |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **0** | `[9, 9]` | `[1]` | `0` | — | — | — | `null` |
-| **1** | Pop `9` | Pop `1` | `0` | $9 + 1 + 0 = 10$ | `0` | `1` | `[0] -> null` |
-| **2** | Pop `9` | Empty (`0`) | `1` | $9 + 0 + 1 = 10$ | `0` | `1` | `[0] -> [0] -> null` |
-| **3** | Empty | Empty | `1` | $0 + 0 + 1 = 1$ | `1` | `0` | `[1] -> [0] -> [0] -> null` |
+| **1** | Pop `9` | Pop `1` | `0` | 9 + 1 + 0 = 10 | `0` | `1` | `[0] -> null` |
+| **2** | Pop `9` | Empty (`0`) | `1` | 9 + 0 + 1 = 10 | `0` | `1` | `[0] -> [0] -> null` |
+| **3** | Empty | Empty | `1` | 0 + 0 + 1 = 1 | `1` | `0` | `[1] -> [0] -> [0] -> null` |
 | **End**| Empty | Empty | `0` | Terminate | — | — | Return `[1, 0, 0]` |
 
 ---
@@ -1753,28 +1753,28 @@ Input: `l1 = [9, 9]`, `l2 = [1]`
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1: Dual Explicit Stacks (Optimal Non-Destructive):** Reverses digit processing order without mutating the input linked lists. Simple to reason about, eliminates recursion stack limits, and operates in $O(N_1 + N_2)$ time and space.
-- **Approach 2: Length Counting + Recursive Digit Alignment:** Count lengths $N_1$ and $N_2$. Recursively traverse both lists, skipping $N_1 - N_2$ nodes in the longer list, adding corresponding digits on unwind, and bubbling carry up the call stack. Achieves $O(1)$ auxiliary heap space, but consumes $O(\max(N_1, N_2))$ call stack memory.
+- **Approach 1: Dual Explicit Stacks (Optimal Non-Destructive):** Reverses digit processing order without mutating the input linked lists. Simple to reason about, eliminates recursion stack limits, and operates in O(N_1 + N_2) time and space.
+- **Approach 2: Length Counting + Recursive Digit Alignment:** Count lengths N_1 and N_2. Recursively traverse both lists, skipping N_1 - N_2 nodes in the longer list, adding corresponding digits on unwind, and bubbling carry up the call stack. Achieves O(1) auxiliary heap space, but consumes O(max(N_1, N_2)) call stack memory.
 
 #### 4.2 Step-by-Step Natural Progression Flow
-1. Handle null cases (if $l_1 == null$ return $l_2$; if $l_2 == null$ return $l_1$).
-2. Push all values of $l_1$ into `Stack<int> s1`.
-3. Push all values of $l_2$ into `Stack<int> s2`.
+1. Handle null cases (if l_1 == null return l_2; if l_2 == null return l_1).
+2. Push all values of l_1 into `Stack<int> s1`.
+3. Push all values of l_2 into `Stack<int> s2`.
 4. Initialize `carry = 0`, `ListNode head = null`.
 5. Enter loop while `s1.Count > 0 || s2.Count > 0 || carry != 0`.
 6. Compute sum, create new node, prepend to `head`.
 7. Return `head`.
 
 #### 4.3 Alternative Approaches Analysis
-- **Destructive List Reversal:** Inverting $l_1$ and $l_2$ using standard 3-pointer reversal, adding via LeetCode #2 logic, and reversing the result list. While $O(1)$ auxiliary space, it violates the non-destructive contract of production libraries where inputs may be shared across threads.
+- **Destructive List Reversal:** Inverting l_1 and l_2 using standard 3-pointer reversal, adding via LeetCode #2 logic, and reversing the result list. While O(1) auxiliary space, it violates the non-destructive contract of production libraries where inputs may be shared across threads.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Approach | Time (Best) | Time (Avg) | Time (Worst) | Auxiliary Space | Output Space | Cache Locality | In-Place Mutability | Streaming Suitability |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. Dual Stacks** | $O(N_1 + N_2)$ | $O(N_1 + N_2)$ | $O(N_1 + N_2)$ | $O(N_1 + N_2)$ | $O(\max(N_1, N_2))$ | Moderate | Non-destructive | Offline |
-| **2. Recursive Alignment** | $O(N_1 + N_2)$ | $O(N_1 + N_2)$ | $O(N_1 + N_2)$ | $O(\max(N_1, N_2))$ stack | $O(\max(N_1, N_2))$ | Moderate | Non-destructive | Offline |
-| **3. In-Place Reversal** | $O(N_1 + N_2)$ | $O(N_1 + N_2)$ | $O(N_1 + N_2)$ | $O(1)$ | $O(\max(N_1, N_2))$ | High | Destructive | Offline |
+| **1. Dual Stacks** | O(N_1 + N_2) | O(N_1 + N_2) | O(N_1 + N_2) | O(N_1 + N_2) | O(max(N_1, N_2)) | Moderate | Non-destructive | Offline |
+| **2. Recursive Alignment** | O(N_1 + N_2) | O(N_1 + N_2) | O(N_1 + N_2) | O(max(N_1, N_2)) stack | O(max(N_1, N_2)) | Moderate | Non-destructive | Offline |
+| **3. In-Place Reversal** | O(N_1 + N_2) | O(N_1 + N_2) | O(N_1 + N_2) | O(1) | O(max(N_1, N_2)) | High | Destructive | Offline |
 
 ---
 
@@ -1873,9 +1873,9 @@ public class Solution
 ---
 
 ### 6. Senior Pitfalls & Defensive Traps
-- **The Residual Carry Drop:** The most frequent trap is writing the while loop condition as `while (stack1.Count > 0 || stack2.Count > 0)`. If $99 + 1 = 100$, both stacks become empty while `carry == 1`. If the carry is not checked in the loop condition, the leading `1` digit is dropped, producing `00` instead of `100`!
+- **The Residual Carry Drop:** The most frequent trap is writing the while loop condition as `while (stack1.Count > 0 || stack2.Count > 0)`. If 99 + 1 = 100, both stacks become empty while `carry == 1`. If the carry is not checked in the loop condition, the leading `1` digit is dropped, producing `00` instead of `100`!
 - **Data Mutation Violation:** In production systems, reversing input linked lists (`l1 = Reverse(l1)`) creates subtle race conditions if other threads or services are currently reading from those shared nodes. Always honor non-destructive API contracts unless explicitly authorized to mutate.
-- **Recursion Depth Limits on Large Numbers:** While recursive length-alignment approaches avoid explicit stack allocations, an input list with $10^5$ digits will cause a fatal `StackOverflowException`. Explicit heap-based stacks (`Stack<int>`) scale safely across arbitrarily long digit sequences.
+- **Recursion Depth Limits on Large Numbers:** While recursive length-alignment approaches avoid explicit stack allocations, an input list with 10^5 digits will cause a fatal `StackOverflowException`. Explicit heap-based stacks (`Stack<int>`) scale safely across arbitrarily long digit sequences.
 
 ---
 
@@ -1904,7 +1904,7 @@ public class Solution
   - Input is always an absolute path (starts with `/`).
   - Traversing above the root directory via `..` is a no-op; root remains root.
 - **Key Constraints:**
-  - $1 \le path.Length \le 3000$
+  - 1 <= path.Length <= 3000
   - `path` consists of English letters, digits, period `'.'`, slash `'/'`, and underscore `'_'`.
   - `path` is a valid absolute Unix path.
 - **Senior Edge Cases to Defend:**
@@ -1939,17 +1939,17 @@ public class Solution
 Imagine a hiker navigating a trail system with a GPS breadcrumb log. Every time the hiker enters a new canyon (`"foo"`), the GPS appends that canyon name to the trail log. If the hiker consults their compass and rests (`"."`), the log doesn't change. If the hiker retraces their steps back to the previous fork (`".."`), the GPS removes the most recent canyon from the log. If the hiker is already at base camp (root) and tries to retrace further back (`".."`), they simply stay at base camp. At the end of the day, the active breadcrumb trail is the canonical path.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-Attempting string search-and-replace (`path.Replace("//", "/")` or regex replacement) is flawed and slow: replacing `"//"` in a loop takes $O(N^2)$ time due to repeated string scans and allocations, and it fails to properly account for tricky cases like `"/a/b/../../"`. Using a token stream evaluated via a stack achieves strictly $O(N)$ linear time and linear space.
+Attempting string search-and-replace (`path.Replace("//", "/")` or regex replacement) is flawed and slow: replacing `"//"` in a loop takes O(N^2) time due to repeated string scans and allocations, and it fails to properly account for tricky cases like `"/a/b/../../"`. Using a token stream evaluated via a stack achieves strictly O(N) linear time and linear space.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Stack Invariant of Directory Depth:**
-  At any token $k$, the stack contents $[d_0, d_1, \dots, d_{m-1}]$ represent the exact valid ancestral descent from root to the current active directory.
+  At any token k, the stack contents [d_0, d_1, ..., d_m-1] represent the exact valid ancestral descent from root to the current active directory.
   - `token == ".."`:
-    $$\text{Stack} \leftarrow \text{Stack}[0 \dots m - 2] \quad (\text{if } m > 0)$$
+    Stack <- Stack[0 ... m - 2] (if m > 0)
   - `token == "."` or `token == ""`:
-    $$\text{Stack} \leftarrow \text{Stack} \quad (\text{no-op})$$
+    Stack <- Stack (no-op)
   - `token == name`:
-    $$\text{Stack} \leftarrow \text{Stack} \cup \{ name \}$$
+    Stack <- Stack union { name }
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -1976,9 +1976,9 @@ Reconstruction:
 #### 3.5 State Transition Triggers & Decision Gates
 1. **Token Splitting:** Tokenize by `'/'` (or use streaming span slice without allocation).
 2. **Token Classification Gate:**
-   - Case 1: `string.IsNullOrEmpty(token) || token == "."` $\implies$ Continue (no-op).
-   - Case 2: `token == ".."` $\implies$ If `stack.Count > 0`, pop top directory.
-   - Case 3: Default $\implies$ Push `token`.
+   - Case 1: `string.IsNullOrEmpty(token) || token == "."` => Continue (no-op).
+   - Case 2: `token == ".."` => If `stack.Count > 0`, pop top directory.
+   - Case 3: Default => Push `token`.
 3. **Reconstruction Gate:**
    - Prepend `'/'`.
    - Append stack tokens joined by `'/'`. If stack is empty, canonical path is `"/"`.
@@ -1989,7 +1989,7 @@ Input: `path = "/.../a/../b/c/../d/./"`
 | Token Index | Token | Action | Stack State (Bottom -> Top) |
 | :--- | :--- | :--- | :--- |
 | **0** | `""` | Skip empty | `[]` |
-| **1** | `"..."` | Valid dir name $\implies$ Push | `["..."]` |
+| **1** | `"..."` | Valid dir name => Push | `["..."]` |
 | **2** | `"a"` | Push | `["...", "a"]` |
 | **3** | `".."` | Pop `"a"` | `["..."]` |
 | **4** | `"b"` | Push | `["...", "b"]` |
@@ -2023,9 +2023,9 @@ Input: `path = "/.../a/../b/c/../d/./"`
 
 | Approach | Time (Best) | Time (Avg) | Time (Worst) | Auxiliary Space | Output Space | Cache Locality | In-Place Mutability | Streaming Suitability |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. List Stack** | $O(N)$ | $O(N)$ | $O(N)$ | $O(N)$ | $O(N)$ | High | Non-mutating | Offline |
-| **2. Span<char> Parser** | $O(N)$ | $O(N)$ | $O(N)$ | $O(N)$ tokens | $O(N)$ | Optimal | Non-mutating | Excellent |
-| **3. Regex Iteration** | $O(N^2)$ | $O(N^2)$ | $O(N^2)$ | $O(N)$ | $O(N)$ | Poor | Non-mutating | Poor |
+| **1. List Stack** | O(N) | O(N) | O(N) | O(N) | O(N) | High | Non-mutating | Offline |
+| **2. Span<char> Parser** | O(N) | O(N) | O(N) | O(N) tokens | O(N) | Optimal | Non-mutating | Excellent |
+| **3. Regex Iteration** | O(N^2) | O(N^2) | O(N^2) | O(N) | O(N) | Poor | Non-mutating | Poor |
 
 ---
 
@@ -2138,26 +2138,26 @@ public class Solution
   - For the last line of text, it should be left-justified, and no extra space is inserted between words (single spaces between words, remaining spaces padded at the end).
   - A line containing only one word must also be left-justified (word followed by spaces).
 - **Assumptions & Contracts:**
-  - Each word's length is guaranteed to be $\le maxWidth$.
+  - Each word's length is guaranteed to be <= maxWidth.
   - Words contain only non-space characters.
   - Output is a list of justified line strings where every string has length exactly `maxWidth`.
 - **Key Constraints:**
-  - $1 \le words.Length \le 300$
-  - $1 \le words[i].Length \le 20$
-  - $words[i].Length \le maxWidth \le 100$
+  - 1 <= words.Length <= 300
+  - 1 <= words[i].Length <= 20
+  - words[i].Length <= maxWidth <= 100
 - **Senior Edge Cases to Defend:**
   - **Single Word Line:** A line containing only one word must place all padding spaces to the right of the word.
   - **Last Line of Text:** Words separated by exactly 1 space, remainder padded to the right up to `maxWidth`.
-  - **Uneven Space Distribution:** E.g., 8 total spaces across 3 word gaps $\implies$ gaps receive 3, 3, 2 spaces.
+  - **Uneven Space Distribution:** E.g., 8 total spaces across 3 word gaps => gaps receive 3, 3, 2 spaces.
   - **Exact Fit:** Total word characters plus minimum 1-space gaps equals `maxWidth` exactly.
   - **Single Character Words:** Words of length 1 packed with tight spacing.
 
 ### 2. Summary & Sample Input / Output
 - **Conceptual Essence:** Use two pointers `left` and `right` to greedily identify the maximal contiguous slice of words `words[left .. right - 1]` that fit on a line with at least 1 space between words:
-  $$\sum_{k = left}^{right - 1} \text{len}(words[k]) + (right - 1 - left) \le maxWidth$$
+  Sum(k = left..right - 1) len(words[k]) + (right - 1 - left) <= maxWidth
   Once the slice is determined:
   - If `right == words.Length` (last line) OR `right - left == 1` (single word): Left-justify with single spaces and pad remainder to the right.
-  - Otherwise: Distribute $(maxWidth - \sum \text{len})$ spaces across the $G = right - left - 1$ gaps using quotient $base = spaces / G$ and remainder $extra = spaces \% G$. The first $extra$ gaps receive $base + 1$ spaces, while the rest receive $base$ spaces.
+  - Otherwise: Distribute (maxWidth - Sum len) spaces across the G = right - left - 1 gaps using quotient base = spaces / G and remainder extra = spaces \% G. The first extra gaps receive base + 1 spaces, while the rest receive base spaces.
 - **Sample 1:**
   - **Input:** `words = ["This", "is", "an", "example", "of", "text", "justification."], maxWidth = 16`
   - **Output:**
@@ -2189,14 +2189,15 @@ Naive code often handles word collection, space counting, gap distribution, and 
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Greedy Word Range Packing:**
-  Line $L$ contains $words[left \dots right - 1]$ maximizing $right$ subject to:
-  $$\text{totalWordLen}(left, right) + (right - left - 1) \le maxWidth$$
+  Line L contains words[left ... right - 1] maximizing right subject to:
+  totalWordLen(left, right) + (right - left - 1) <= maxWidth
 - **Space Balancing Arithmetic:**
-  Let $W = \text{totalWordLen}(left, right)$ and $G = right - left - 1$ (number of gaps).
-  Total spaces to distribute: $S = maxWidth - W$.
-  Each gap $g \in [0, G - 1]$ receives:
-  $$\text{spaces}(g) = \left\lfloor \frac{S}{G} \right\rfloor + \begin{cases} 1 & \text{if } g < (S \pmod G) \\ 0 & \text{otherwise} \end{cases}$$
-  This distributes extra spaces strictly to the leftmost gaps and satisfies $\sum \text{spaces}(g) = S$.
+  Let W = totalWordLen(left, right) and G = right - left - 1 (number of gaps).
+  Total spaces to distribute: S = maxWidth - W.
+  Each gap g in [0, G - 1] receives:
+  spaces(g) = <=ftfloor((S) / (G) ) + 1 if g < (S mod G)
+0 otherwise
+  This distributes extra spaces strictly to the leftmost gaps and satisfies Sum spaces(g) = S.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -2225,8 +2226,8 @@ Line 1: "This" + "    " + "is" + "    " + "an" ===> Length 16!
    - While `right < words.Length && len + 1 + words[right].Length <= maxWidth`:
      `len += 1 + words[right].Length; right++;`
    - **Line Formatting Gate:**
-     - Case A: `right == words.Length || right - left == 1` (Last line OR single word) $\implies$ Left-justify.
-     - Case B: Fully justified $\implies$ Calculate `baseSpace = spaces / gaps` and `extraSpace = spaces % gaps`.
+     - Case A: `right == words.Length || right - left == 1` (Last line OR single word) => Left-justify.
+     - Case B: Fully justified => Calculate `baseSpace = spaces / gaps` and `extraSpace = spaces % gaps`.
    - Advance: `left = right`.
 
 #### 3.6 Concrete Step-by-Step State Trace
@@ -2234,7 +2235,7 @@ Input: `words = ["What","must","be","acknowledgment","shall","be"], maxWidth = 1
 
 | Line # | `left` | `right` | Selected Words | Mode | Spaces Math | Formatted Output Line |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **L1** | 0 | 3 | `["What", "must", "be"]` | Full Justify | Words=10, Spaces=6, Gaps=2 $\implies 3, 3$ | `"What   must   be"` |
+| **L1** | 0 | 3 | `["What", "must", "be"]` | Full Justify | Words=10, Spaces=6, Gaps=2 => 3, 3 | `"What   must   be"` |
 | **L2** | 3 | 4 | `["acknowledgment"]` | Single Word | Words=14, Spaces=2, Pad right | `"acknowledgment  "` |
 | **L3** | 4 | 6 | `["shall", "be"]` | Last Line | Words=7, 1 space between, Pad right 7 | `"shall be        "` |
 
@@ -2243,7 +2244,7 @@ Input: `words = ["What","must","be","acknowledgment","shall","be"], maxWidth = 1
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1: Greedy Two-Pointer + StringBuilder Formatting (Optimal Standard):** $O(N)$ linear time over characters, minimal allocations, pre-allocated `StringBuilder` of capacity `maxWidth`.
+- **Approach 1: Greedy Two-Pointer + StringBuilder Formatting (Optimal Standard):** O(N) linear time over characters, minimal allocations, pre-allocated `StringBuilder` of capacity `maxWidth`.
 - **Approach 2: High-Performance Span-Based Formatting:** Formats directly into a `string.Create` buffer. Zero intermediate string allocation per line.
 
 #### 4.2 Step-by-Step Natural Progression Flow
@@ -2260,8 +2261,8 @@ Input: `words = ["What","must","be","acknowledgment","shall","be"], maxWidth = 1
 
 | Approach | Time (Best) | Time (Avg) | Time (Worst) | Auxiliary Space | Output Space | Cache Locality | In-Place Mutability | Streaming Suitability |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. Greedy Window (Selected)**| $O(N)$ | $O(N)$ | $O(N)$ | $O(maxWidth)$ | $O(N)$ | High | Non-mutating | Semi-streaming |
-| **2. String.Create Span** | $O(N)$ | $O(N)$ | $O(N)$ | $O(1)$ heap | $O(N)$ | Optimal | Non-mutating | Semi-streaming |
+| **1. Greedy Window (Selected)**| O(N) | O(N) | O(N) | O(maxWidth) | O(N) | High | Non-mutating | Semi-streaming |
+| **2. String.Create Span** | O(N) | O(N) | O(N) | O(1) heap | O(N) | Optimal | Non-mutating | Semi-streaming |
 
 ---
 
@@ -2375,9 +2376,9 @@ public class Solution
 ---
 
 ### 6. Senior Pitfalls & Defensive Traps
-- **Division by Zero on Single-Word Lines:** If a line contains only 1 word, the number of gaps is $numWords - 1 = 0$. Executing `totalSpaces / numGaps` triggers a catastrophic `DivideByZeroException`! Single-word lines must be explicitly routed to the left-justification branch.
+- **Division by Zero on Single-Word Lines:** If a line contains only 1 word, the number of gaps is numWords - 1 = 0. Executing `totalSpaces / numGaps` triggers a catastrophic `DivideByZeroException`! Single-word lines must be explicitly routed to the left-justification branch.
 - **The Last Line Trap:** In the last line, even if multiple words and gaps exist, the words must *never* be stretched across the line! They must be separated by single spaces, and all remaining padding must be dumped at the end.
-- **Leftmost Bias for Extra Spaces:** When extra spaces cannot be distributed evenly ($extraSpaces = totalSpaces \% numGaps > 0$), they must be awarded to the leftmost gaps first (e.g. `gapIndex < extraSpaces ? base + 1 : base`), not distributed randomly or right-aligned.
+- **Leftmost Bias for Extra Spaces:** When extra spaces cannot be distributed evenly (extraSpaces = totalSpaces \% numGaps > 0), they must be awarded to the leftmost gaps first (e.g. `gapIndex < extraSpaces ? base + 1 : base`), not distributed randomly or right-aligned.
 
 ---
 
@@ -2396,22 +2397,22 @@ public class Solution
 - **Formal Statement:** Given a string `s` which represents an arithmetic expression containing non-negative integers and operators `'+'`, `'-'`, `'*'`, `'/'`, evaluate this expression and return its integer value. Integer division should truncate toward zero.
 - **Assumptions & Contracts:**
   - The expression is always valid.
-  - Intermediate evaluation results fit within a 32-bit signed integer $[-2^{31}, 2^{31} - 1]$.
+  - Intermediate evaluation results fit within a 32-bit signed integer [-2^31, 2^31 - 1].
   - No parentheses `()` are present in this expression variant.
   - You are not allowed to use any built-in library function (such as `DataTable.Compute` or `eval()`).
 - **Key Constraints:**
-  - $1 \le s.Length \le 3 \times 10^5$
+  - 1 <= s.Length <= 3 x 10^5
   - `s` consists of integers, operators `'+'`, `'-'`, `'*'`, `'/'`, and spaces `' '`.
   - Division by zero never occurs.
 - **Senior Edge Cases to Defend:**
   - **Whitespace Inundation:** `" 3 +  5 / 2 "` contains leading, trailing, and arbitrarily interspersed spaces.
-  - **Precedence Order Reversal:** `"3 + 2 * 2"` must evaluate to $7$, NOT $10$ (multiplication must execute before addition).
-  - **Consecutive High-Precedence Operations:** `"14 - 3 / 2"` must evaluate to $13$ (integer division $3 / 2 = 1$, then $14 - 1 = 13$).
+  - **Precedence Order Reversal:** `"3 + 2 * 2"` must evaluate to 7, NOT 10 (multiplication must execute before addition).
+  - **Consecutive High-Precedence Operations:** `"14 - 3 / 2"` must evaluate to 13 (integer division 3 / 2 = 1, then 14 - 1 = 13).
   - **Multi-Digit Numbers:** `"100000000 / 10 / 10"` with chained divisions.
   - **Unary Sign Non-Existence:** Problem specifies non-negative integers, but subtractions produce negative intermediate terms.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Multiplication and division bind tighter than addition and subtraction. We can delay addition and subtraction by maintaining a running sum `totalSum` and an active term register `lastNumber`. When encountering high-precedence operators (`*`, `/`), we immediately fold the incoming number into `lastNumber`. When encountering low-precedence operators (`+`, `-`), the previous `lastNumber` is settled and committed into `totalSum`. This collapses a 2-pass stack algorithm into an optimal $O(1)$ auxiliary memory single pass.
+- **Conceptual Essence:** Multiplication and division bind tighter than addition and subtraction. We can delay addition and subtraction by maintaining a running sum `totalSum` and an active term register `lastNumber`. When encountering high-precedence operators (`*`, `/`), we immediately fold the incoming number into `lastNumber`. When encountering low-precedence operators (`+`, `-`), the previous `lastNumber` is settled and committed into `totalSum`. This collapses a 2-pass stack algorithm into an optimal O(1) auxiliary memory single pass.
 - **Sample 1:**
   - **Input:** `s = "3+2*2"`
   - **Output:** `7`
@@ -2428,17 +2429,17 @@ public class Solution
 Think of an accounting ledger. Every time someone says "add \$5" or "subtract \$3", you write down the signed item on a draft line. But if someone says "multiply that by 4", you cannot write a new line—you must immediately multiply the number currently sitting on your draft line. When the entire calculation ends, you simply sum up all the finalized draft lines. To do this without a stack of paper, you keep only one finalized total in your ledger (`totalSum`) and the one draft number you are currently multiplying or dividing (`lastNumber`).
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A classic compiler parser uses Dijkstra's Shunting-Yard algorithm to convert infix expressions to Reverse Polish Notation (RPN) using two stacks (operators and operands) and then evaluates the RPN queue. While necessary for arbitrary expressions with parentheses, for simple expressions with only $\{+, -, *, /\}$, this allocates two stacks of size $O(N)$, causing high memory footprint when $N = 3 \times 10^5$. Even a single operand stack allocates $O(N)$ memory. A stackless streaming state machine solves it in $O(1)$ auxiliary memory.
+A classic compiler parser uses Dijkstra's Shunting-Yard algorithm to convert infix expressions to Reverse Polish Notation (RPN) using two stacks (operators and operands) and then evaluates the RPN queue. While necessary for arbitrary expressions with parentheses, for simple expressions with only {+, -, *, /}, this allocates two stacks of size O(N), causing high memory footprint when N = 3 x 10^5. Even a single operand stack allocates O(N) memory. A stackless streaming state machine solves it in O(1) auxiliary memory.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Algebraic Additive Normalization:**
   Any valid expression can be expressed as a linear summation of multiplicative terms:
-  $$E = \sum_{k=1}^m T_k, \quad \text{where each } T_k = \pm \prod c_j^{\pm 1}$$
-  - When operator is `+` or `-`: $T_{k-1}$ is sealed and added to $\text{totalSum}$; a new term $T_k = \pm \text{currentNumber}$ begins.
-  - When operator is `*`: $T_k \leftarrow T_k \times \text{currentNumber}$.
-  - When operator is `/`: $T_k \leftarrow \lfloor T_k / \text{currentNumber} \rfloor$.
+  E = Sum(k=1..m) T_k, where each T_k = +/- Product c_j^+/- 1
+  - When operator is `+` or `-`: T_k-1 is sealed and added to totalSum; a new term T_k = +/- currentNumber begins.
+  - When operator is `*`: T_k <- T_k x currentNumber.
+  - When operator is `/`: T_k <- floor(T_k / currentNumber).
 - **Terminal Sentinel Guarantee:**
-  By treating the virtual end of the string ($i == n - 1$) as a synthetic operator trigger, the trailing number is guaranteed to be folded and committed into the running state.
+  By treating the virtual end of the string (i == n - 1) as a synthetic operator trigger, the trailing number is guaranteed to be folded and committed into the running state.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -2467,9 +2468,9 @@ Final Return: totalSum + lastNumber = 3 + 4 = 7!
 ```
 
 #### 3.5 State Transition Triggers & Decision Gates
-For each character $c$ at index $i \in [0, n - 1]$:
-1. **Digit Ingestion:** If $c$ is a digit, `currentNumber = currentNumber * 10 + (c - '0')`.
-2. **Operator / Terminal Gate:** If $c$ is non-whitespace and not a digit, OR $i == n - 1$:
+For each character c at index i in [0, n - 1]:
+1. **Digit Ingestion:** If c is a digit, `currentNumber = currentNumber * 10 + (c - '0')`.
+2. **Operator / Terminal Gate:** If c is non-whitespace and not a digit, OR i == n - 1:
    - Branch on `lastOperator`:
      - Case `'+'`: `totalSum += lastNumber; lastNumber = currentNumber;`
      - Case `'-'`: `totalSum += lastNumber; lastNumber = -currentNumber;`
@@ -2478,15 +2479,15 @@ For each character $c$ at index $i \in [0, n - 1]$:
    - Reset: `currentNumber = 0`, `lastOperator = c`.
 
 #### 3.6 Concrete Step-by-Step State Trace
-Input: `s = "14 - 3 / 2"` ($n = 10$).
+Input: `s = "14 - 3 / 2"` (n = 10).
 
-| Char Index ($i$) | Char (`s[i]`) | `currentNum` | `totalSum` | `lastNumber` | `lastOp` | Action Triggered |
+| Char Index (i) | Char (`s[i]`) | `currentNum` | `totalSum` | `lastNumber` | `lastOp` | Action Triggered |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **0, 1** | `'1', '4'` | `14` | `0` | `0` | `'+'` | Accumulate digits |
-| **3** | `'-'` | `14` | `0` | `14` | `'-'` | `lastOp=='+' \implies` `last=14`, `op='-'`, `curr=0` |
+| **3** | `'-'` | `14` | `0` | `14` | `'-'` | `lastOp=='+' =>` `last=14`, `op='-'`, `curr=0` |
 | **5** | `'3'` | `3` | `0` | `14` | `'-'` | Accumulate digit |
-| **7** | `'/'` | `3` | `14` | `-3` | `'/'` | `lastOp=='-' \implies` `total+=14`, `last=-3`, `op='/'` |
-| **9** | `'2'` (End) | `2` | `14` | `-1` | `'/'` | `lastOp=='/' \implies` `last = -3 / 2 = -1` |
+| **7** | `'/'` | `3` | `14` | `-3` | `'/'` | `lastOp=='-' =>` `total+=14`, `last=-3`, `op='/'` |
+| **9** | `'2'` (End) | `2` | `14` | `-1` | `'/'` | `lastOp=='/' =>` `last = -3 / 2 = -1` |
 | **Final** | — | — | `14` | `-1` | — | Return `totalSum + lastNumber = 14 + (-1) = 13` |
 
 ---
@@ -2494,15 +2495,15 @@ Input: `s = "14 - 3 / 2"` ($n = 10$).
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1: Stackless Constant-Space State Machine (Optimal Principal Standard):** Tracks `totalSum` and `lastNumber`. Achieves $O(N)$ time and strictly $O(1)$ auxiliary space. Zero heap memory allocation. Handles large strings ($N = 3 \times 10^5$) with optimal CPU instruction pipelining.
-- **Approach 2: Explicit Operand Stack ($O(N)$ Memory):** Pushes signed numbers onto `Stack<int>`. On `*` and `/`, pops, executes, and pushes back. Sums stack at termination. Classic compiler design model, very intuitive, but allocates $O(N)$ extra memory on the managed heap.
+- **Approach 1: Stackless Constant-Space State Machine (Optimal Principal Standard):** Tracks `totalSum` and `lastNumber`. Achieves O(N) time and strictly O(1) auxiliary space. Zero heap memory allocation. Handles large strings (N = 3 x 10^5) with optimal CPU instruction pipelining.
+- **Approach 2: Explicit Operand Stack (O(N) Memory):** Pushes signed numbers onto `Stack<int>`. On `*` and `/`, pops, executes, and pushes back. Sums stack at termination. Classic compiler design model, very intuitive, but allocates O(N) extra memory on the managed heap.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 1. Validate non-empty string.
 2. Initialize `totalSum = 0`, `lastNumber = 0`, `currentNumber = 0`, `lastOperator = '+'`.
-3. Loop through indices $i = 0 \dots n - 1$.
+3. Loop through indices i = 0 ... n - 1.
 4. Check digit vs operator.
-5. On operator or index $n - 1$, execute precedence transition.
+5. On operator or index n - 1, execute precedence transition.
 6. Return `totalSum + lastNumber`.
 
 #### 4.3 Alternative Approaches Analysis
@@ -2512,9 +2513,9 @@ Input: `s = "14 - 3 / 2"` ($n = 10$).
 
 | Approach | Time (Best) | Time (Avg) | Time (Worst) | Auxiliary Space | Output Space | Cache Locality | In-Place Mutability | Streaming Suitability |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. Stackless State Machine**| $O(N)$ | $O(N)$ | $O(N)$ | $O(1)$ | $O(1)$ | Optimal | Non-mutating | Excellent (online) |
-| **2. Explicit Stack** | $O(N)$ | $O(N)$ | $O(N)$ | $O(N)$ | $O(1)$ | Moderate | Non-mutating | Semi-streaming |
-| **3. Shunting-Yard RPN** | $O(N)$ | $O(N)$ | $O(N)$ | $O(N)$ | $O(1)$ | Poor | Non-mutating | Offline |
+| **1. Stackless State Machine**| O(N) | O(N) | O(N) | O(1) | O(1) | Optimal | Non-mutating | Excellent (online) |
+| **2. Explicit Stack** | O(N) | O(N) | O(N) | O(N) | O(1) | Moderate | Non-mutating | Semi-streaming |
+| **3. Shunting-Yard RPN** | O(N) | O(N) | O(N) | O(N) | O(1) | Poor | Non-mutating | Offline |
 
 ---
 
@@ -2672,7 +2673,7 @@ public class SolutionStackApproach
 ### 6. Senior Pitfalls & Defensive Traps
 - **The End-of-String Flush Drop:** The most common parsing defect is writing `if (!char.IsDigit(c) && c != ' ')` without the `|| i == n - 1` condition. In `"3 + 2 * 2"`, when index reaches the final `'2'`, the digit is accumulated into `currentNumber`, but loop terminates without ever applying the `'*'` operator to that final number! Always ensure terminal indices flush the trailing token.
 - **Whitespace False-Triggering:** If whitespace `' '` is mistakenly treated as an operator, `currentNumber` will be flushed prematurely, turning multi-digit numbers into garbage or triggering duplicate operator evaluation.
-- **Integer Division Truncation in C#:** C# integer division `/` truncates toward zero by default for both positive and negative numbers (`-3 / 2 == -1`, `3 / 2 == 1`), which perfectly adheres to the problem requirement. In languages like Python (`//` floors toward $-\infty$), one must explicitly use `int(a / b)`.
+- **Integer Division Truncation in C#:** C# integer division `/` truncates toward zero by default for both positive and negative numbers (`-3 / 2 == -1`, `3 / 2 == 1`), which perfectly adheres to the problem requirement. In languages like Python (`//` floors toward -infinity), one must explicitly use `int(a / b)`.
 
 ---
 
@@ -2692,45 +2693,45 @@ public class SolutionStackApproach
   - Node values can be negative, zero, or positive.
   - A path can branch at at most ONE node (the highest ancestor/apex node of the path). When returning gain to a parent, the path cannot fork.
 - **Key Constraints:**
-  - The number of nodes in the tree is in the range $[1, 3 \times 10^4]$.
-  - $-1000 \le Node.val \le 1000$.
+  - The number of nodes in the tree is in the range [1, 3 x 10^4].
+  - -1000 <= Node.val <= 1000.
 - **Senior Edge Cases to Defend:**
   - **All Negative Node Values:** `[-3]`, or `[-2, -1]`. The maximum path is the single least negative node (e.g., `-1`), NOT 0. The global maximum tracker must be initialized to `int.MinValue`, not `0`.
   - **Negative Gain Subtrees:** A subtree whose total gain is negative should be clamped to `0` via `Math.Max(0, gain)` to indicate that the path chooses to exclude that branch entirely.
   - **Single Node Tree:** Tree with exactly 1 node returns that node's value.
-  - **Linear Skewed Tree (Linked List shape):** Deep trees ($H = 3 \times 10^4$) must avoid stack overflow in deep recursion.
+  - **Linear Skewed Tree (Linked List shape):** Deep trees (H = 3 x 10^4) must avoid stack overflow in deep recursion.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** At each node $u$, we compute two distinct mathematical quantities:
-  1. **Global Turnaround Path Sum (In-Node Apex):** $u.val + \max(0, \text{leftGain}) + \max(0, \text{rightGain})$. This path turns around at node $u$ as its peak apex, utilizing both children. This value cannot be extended higher to $u$'s parent.
-  2. **Max Gain to Propagate to Parent (Exportable Path):** $u.val + \max(0, \max(\text{leftGain}, \text{rightGain}))$. The parent can only choose at most ONE branch from $u$.
+- **Conceptual Essence:** At each node u, we compute two distinct mathematical quantities:
+  1. **Global Turnaround Path Sum (In-Node Apex):** u.val + max(0, leftGain) + max(0, rightGain). This path turns around at node u as its peak apex, utilizing both children. This value cannot be extended higher to u's parent.
+  2. **Max Gain to Propagate to Parent (Exportable Path):** u.val + max(0, max(leftGain, rightGain)). The parent can only choose at most ONE branch from u.
 - **Sample 1:**
   - **Input:** `root = [1, 2, 3]`
-  - **Output:** `6` (Path: $2 \to 1 \to 3$)
+  - **Output:** `6` (Path: 2 -> 1 -> 3)
 - **Sample 2:**
   - **Input:** `root = [-10, 9, 20, null, null, 15, 7]`
-  - **Output:** `42` (Path: $15 \to 20 \to 7$)
+  - **Output:** `42` (Path: 15 -> 20 -> 7)
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine a mountain range where every peak and pass has an elevation or toll (which can be positive or negative). You want to hike a continuous trail with the highest net scenic score. When you stand on a mountain ridge (node $u$), you ask your scouts on the left and right slopes: *"What is the best scenic trail you can form starting from me and heading straight down your ridge?"* If a ridge has only treacherous bogs that lower your score (negative gain), you prune it: take 0. You have two options:
+Imagine a mountain range where every peak and pass has an elevation or toll (which can be positive or negative). You want to hike a continuous trail with the highest net scenic score. When you stand on a mountain ridge (node u), you ask your scouts on the left and right slopes: *"What is the best scenic trail you can form starting from me and heading straight down your ridge?"* If a ridge has only treacherous bogs that lower your score (negative gain), you prune it: take 0. You have two options:
 1. **Camp at the Apex:** You combine the best descent on the left with the best descent on the right and yourself. This forms a complete peak-to-peak ridge hike. You radio this total to the global record book.
 2. **Report to HQ (Parent):** You cannot tell HQ to visit both left and right valleys because a hiker cannot be in two places at once without retracing their steps (which violates the contract). You can only report: *"If you come down to me, the best continuation is either my left slope or my right slope, whichever is higher."*
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A brute-force solution picks all pairs of nodes $(u, v)$ in the tree ($O(N^2)$ pairs), finds the unique simple path between them via LCA in $O(N)$ time, and sums their node values in $O(N)$ time.
-- **Total Naive Time:** $O(N^3)$.
-- **Redundancy:** Every subtree is traversed millions of times to recompute identical segment sums. A bottom-up post-order DFS visits every node exactly once, updating the global maximum path in $O(N)$ total time.
+A brute-force solution picks all pairs of nodes (u, v) in the tree (O(N^2) pairs), finds the unique simple path between them via LCA in O(N) time, and sums their node values in O(N) time.
+- **Total Naive Time:** O(N^3).
+- **Redundancy:** Every subtree is traversed millions of times to recompute identical segment sums. A bottom-up post-order DFS visits every node exactly once, updating the global maximum path in O(N) total time.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Post-Order Subproblem Recurrence:**
-  $$\text{Gain}(node) = node.val + \max(0, \max(\text{Gain}(node.left), \text{Gain}(node.right)))$$
+  Gain(node) = node.val + max(0, max(Gain(node.left), Gain(node.right)))
 - **Apex Turning Path Update:**
-  $$\text{ApexPath}(node) = node.val + \max(0, \text{Gain}(node.left)) + \max(0, \text{Gain}(node.right))$$
-  $$\text{GlobalMax} = \max(\text{GlobalMax}, \text{ApexPath}(node))$$
+  ApexPath(node) = node.val + max(0, Gain(node.left)) + max(0, Gain(node.right))
+  GlobalMax = max(GlobalMax, ApexPath(node))
 - **Pruning Invariant:**
-  If $\text{Gain}(child) < 0$, clamping to $0$ guarantees that negative subtrees never drag down the optimal path.
+  If Gain(child) < 0, clamping to 0 guarantees that negative subtrees never drag down the optimal path.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -2746,7 +2747,7 @@ A brute-force solution picks all pairs of nodes $(u, v)$ in the tree ($O(N^2)$ p
      (Clamped to 0)  (Clamped to 0)
 ```
 
-- Every node $u$ is processed strictly after its left and right subtrees have settled (Post-Order DFS).
+- Every node u is processed strictly after its left and right subtrees have settled (Post-Order DFS).
 - The returned value is strictly the **unbranched straight-line gain** that can be extended by the parent.
 
 #### 3.5 State Transition Triggers & Decision Gates
@@ -2759,15 +2760,15 @@ A brute-force solution picks all pairs of nodes $(u, v)$ in the tree ($O(N^2)$ p
 #### 3.6 Concrete Step-by-Step State Trace
 Tree: `[-10, 9, 20, null, null, 15, 7]`
 
-| Step | Current Node | `leftGain` (clamped) | `rightGain` (clamped) | `currentApex` | Global Max Path Before $\to$ After | Return Value to Parent |
+| Step | Current Node | `leftGain` (clamped) | `rightGain` (clamped) | `currentApex` | Global Max Path Before -> After | Return Value to Parent |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| 1 | `9` (leaf) | `0` | `0` | $9 + 0 + 0 = 9$ | $-\infty \to 9$ | $9 + 0 = 9$ |
-| 2 | `15` (leaf) | `0` | `0` | $15 + 0 + 0 = 15$ | $9 \to 15$ | $15 + 0 = 15$ |
-| 3 | `7` (leaf) | `0` | `0` | $7 + 0 + 0 = 7$ | $15 \to 15$ | $7 + 0 = 7$ |
-| 4 | `20` | $\max(0, 15) = 15$ | $\max(0, 7) = 7$ | $20 + 15 + 7 = 42$ | $15 \to \mathbf{42}$ | $20 + \max(15, 7) = 35$ |
-| 5 | `-10` (root) | $\max(0, 9) = 9$ | $\max(0, 35) = 35$ | $-10 + 9 + 35 = 34$ | $42 \to \mathbf{42}$ | $-10 + 35 = 25$ |
+| 1 | `9` (leaf) | `0` | `0` | 9 + 0 + 0 = 9 | -infinity -> 9 | 9 + 0 = 9 |
+| 2 | `15` (leaf) | `0` | `0` | 15 + 0 + 0 = 15 | 9 -> 15 | 15 + 0 = 15 |
+| 3 | `7` (leaf) | `0` | `0` | 7 + 0 + 0 = 7 | 15 -> 15 | 7 + 0 = 7 |
+| 4 | `20` | max(0, 15) = 15 | max(0, 7) = 7 | 20 + 15 + 7 = 42 | 15 -> 42 | 20 + max(15, 7) = 35 |
+| 5 | `-10` (root) | max(0, 9) = 9 | max(0, 35) = 35 | -10 + 9 + 35 = 34 | 42 -> 42 | -10 + 35 = 25 |
 
-**Final Maximum Path Sum:** `42` (Nodes: $15 \to 20 \to 7$).
+**Final Maximum Path Sum:** `42` (Nodes: 15 -> 20 -> 7).
 
 ---
 
@@ -2775,7 +2776,7 @@ Tree: `[-10, 9, 20, null, null, 15, 7]`
 
 #### 4.1 Anchor Points & Approach Selection Criteria
 - **Bottom-Up Post-Order DFS (Optimal):**
-  - Linear single-pass $O(N)$ time.
+  - Linear single-pass O(N) time.
   - Subtrees report single-branch gain upwards while updating global apex in-place.
 - **Tree DP with State Memoization:**
   - On generic trees/DAGs, DP states `dp[node][0]` (pass through) and `dp[node][1]` (endpoint) formalize this exact logic.
@@ -2797,8 +2798,8 @@ Tree: `[-10, 9, 20, null, null, 15, 7]`
 
 | Approach | Time Complexity | Auxiliary Space | Output Space | Mutates Tree | Stack Overhead |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Post-Order Bottom-Up DFS** | $O(N)$ | $O(H)$ | $O(1)$ | No | Recursion Call Stack |
-| **All-Pairs LCA Path Sum** | $O(N^3)$ | $O(N)$ | $O(1)$ | No | Quadratic Pair Graph |
+| **Post-Order Bottom-Up DFS** | O(N) | O(H) | O(1) | No | Recursion Call Stack |
+| **All-Pairs LCA Path Sum** | O(N^3) | O(N) | O(1) | No | Quadratic Pair Graph |
 
 ---
 

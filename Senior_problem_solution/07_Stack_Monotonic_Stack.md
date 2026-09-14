@@ -52,9 +52,9 @@ while (s.Contains("()") || s.Contains("[]") || s.Contains("{}"))
 }
 return s.Length == 0;
 ```
-This naive reduction scans and copies the string up to $N/2$ times. Each scan and reallocation takes $O(N)$ time, causing quadratic complexity:
-$$T(N) = O(N^2)$$
-For $N = 10^4$, $N^2 = 10^8$ operations, causing excessive GC allocations and potential timeouts.
+This naive reduction scans and copies the string up to N/2 times. Each scan and reallocation takes O(N) time, causing quadratic complexity:
+T(N) = O(N^2)
+For N = 10^4, N^2 = 10^8 operations, causing excessive GC allocations and potential timeouts.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **The Expected-Closer Invariant:**
@@ -66,8 +66,8 @@ Instead of pushing the opening bracket onto the stack and later using a hash map
 When a closing bracket arrives:
 1. The stack must not be empty (otherwise there is an orphaned closer without an opener).
 2. The popped character must match the incoming character exactly:
-   $$\text{stack.Pop()} == c$$
-This collapses the lookup gate into a single $O(1)$ equality check with zero branching.
+   stack.Pop() == c
+This collapses the lookup gate into a single O(1) equality check with zero branching.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -95,20 +95,20 @@ New Stack Top -> [ ']' ]
 #### 3.5 State Transition Triggers & Decision Gates
 1. **Odd Parity Check:** If `s.Length % 2 != 0`, return `false`.
 2. **Opening Gate:**
-   - If `c == '('` $\implies$ `Push(')')`
-   - Else if `c == '{'` $\implies$ `Push('}')`
-   - Else if `c == '['` $\implies$ `Push(']')`
+   - If `c == '('` => `Push(')')`
+   - Else if `c == '{'` => `Push('}')`
+   - Else if `c == '['` => `Push(']')`
 3. **Closing Gate:**
-   - If `stack.Count == 0 || stack.Pop() != c` $\implies$ return `false`.
+   - If `stack.Count == 0 || stack.Pop() != c` => return `false`.
 4. **Final Scoping Check:**
-   - At end of string, return `stack.Count == 0`. (If unclosed openers remain, count $> 0$).
+   - At end of string, return `stack.Count == 0`. (If unclosed openers remain, count > 0).
 
 #### 3.6 Concrete Step-by-Step State Trace
 Trace input: `s = "([{}])"`
 
 | Step | Token `c` | Category | Action | Stack State (Top to Bottom) | Invariant Status |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **0** | — | — | Pre-allocate capacity $N/2$ | `[ ]` | Parity $6 \% 2 == 0$ |
+| **0** | — | — | Pre-allocate capacity N/2 | `[ ]` | Parity 6 \% 2 == 0 |
 | **1** | `'('` | Opener | Push expected `')'` | `[ ')' ]` | Valid prefix |
 | **2** | `'['` | Opener | Push expected `']'` | `[ ']', ')' ]` | Valid prefix |
 | **3** | `'{'` | Opener | Push expected `'}'` | `[ '}', ']', ')' ]` | Valid prefix |
@@ -122,7 +122,7 @@ Trace input: `s = "([{}])"`
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Expected Closers Push):** The optimal production implementation. Eliminates dictionary lookups, reduces branching, and allows pre-sizing the stack capacity to $N/2$ elements.
+- **Approach 1 (Expected Closers Push):** The optimal production implementation. Eliminates dictionary lookups, reduces branching, and allows pre-sizing the stack capacity to N/2 elements.
 - **Approach 2 (Standard Stack with Dictionary Lookup):** Idiomatic and flexible when bracket rules are dynamic or extensible via configuration files.
 
 #### 4.2 Step-by-Step Natural Progression Flow
@@ -142,7 +142,7 @@ Trace input: `s = "([{}])"`
 | Metric | Approach 1: Expected Closers Push (Optimal) | Approach 2: Dictionary Matching |
 | :--- | :--- | :--- |
 | **Time Complexity (Best / Avg / Worst)** | `O(1)` (odd length) / `O(N)` / `O(N)` | `O(1)` / `O(N)` / `O(N)` |
-| **Auxiliary Space** | `O(N)` (at most $N/2$ stack entries) | `O(N)` stack + $O(1)$ dictionary |
+| **Auxiliary Space** | `O(N)` (at most N/2 stack entries) | `O(N)` stack + O(1) dictionary |
 | **Output Space** | `O(1)` boolean | `O(1)` boolean |
 | **Cache Locality** | High (contiguous stack buffer) | High |
 | **In-Place Mutability** | Non-destructive read-only | Non-destructive read-only |
@@ -269,10 +269,10 @@ public class SolutionDictionary
 - **Key Constraints:**
   - `-2^31 <= val <= 2^31 - 1`
   - Methods `pop`, `top` and `getMin` operations will always be called on non-empty stacks.
-  - At most $3 \times 10^4$ calls will be made to `push`, `pop`, `top`, and `getMin`.
+  - At most 3 x 10^4 calls will be made to `push`, `pop`, `top`, and `getMin`.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Track the historical prefix minimum alongside each stack frame so that popping naturally restores the previous minimum in $O(1)$ time.
+- **Conceptual Essence:** Track the historical prefix minimum alongside each stack frame so that popping naturally restores the previous minimum in O(1) time.
 - **Sample 1:**
   - `MinStack minStack = new MinStack();`
   - `minStack.Push(-2);`
@@ -286,20 +286,21 @@ public class SolutionDictionary
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine climbing a mountain trail and carrying a diary. At every step you take, you write down your current elevation and the lowest point you have encountered on the trail up to that moment. If you take a step backward (pop), you simply cross out your last journal entry. The elevation of the lowest valley you saw prior to that step is right there, preserved on the previous line. Because a stack enforces strict LIFO ordering, the minimum of the stack at depth $k$ is an **immutable property of that prefix**!
+Imagine climbing a mountain trail and carrying a diary. At every step you take, you write down your current elevation and the lowest point you have encountered on the trail up to that moment. If you take a step backward (pop), you simply cross out your last journal entry. The elevation of the lowest valley you saw prior to that step is right there, preserved on the previous line. Because a stack enforces strict LIFO ordering, the minimum of the stack at depth k is an **immutable property of that prefix**!
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A standard stack stores values alone. Calling `GetMin()` requires a linear search through all $N$ elements in the stack:
-$$T(\text{GetMin}) = O(N)$$
-Across $Q$ operations, total runtime balloons to $O(Q \cdot N) \approx 3 \times 10^4 \times 3 \times 10^4 \approx 9 \times 10^8$ operations, causing TLE. Trying to maintain a sorted data structure (like a `PriorityQueue` or Red-Black Tree) degrades `push` and `pop` to $O(\log N)$ time and does not support efficient arbitrary-element removal in $O(1)$.
+A standard stack stores values alone. Calling `GetMin()` requires a linear search through all N elements in the stack:
+T(GetMin) = O(N)
+Across Q operations, total runtime balloons to O(Q * N) ~ 3 x 10^4 x 3 * 10^4 ~ 9 x 10^8 operations, causing TLE. Trying to maintain a sorted data structure (like a `PriorityQueue` or Red-Black Tree) degrades `push` and `pop` to O(log N) time and does not support efficient arbitrary-element removal in O(1).
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **Prefix Minimum Monotonicity:**
-Let the stack contents from bottom to top be $[v_0, v_1, \dots, v_k]$.
-Define the prefix minimum $m_k$ at depth $k$:
-$$m_k = \begin{cases} v_0 & \text{if } k = 0 \\ \min(v_k, m_{k-1}) & \text{if } k > 0 \end{cases}$$
-Because elements are removed in exact reverse order of insertion, when $v_k$ is popped, the minimum of the remaining stack is guaranteed to be $m_{k-1}$.
-By storing each entry as a tuple `(Value: val, Min: currentMin)`, `GetMin()` is a simple $O(1)$ stack peek.
+Let the stack contents from bottom to top be [v_0, v_1, ..., v_k].
+Define the prefix minimum m_k at depth k:
+m_k = v_0 if k = 0
+min(v_k, m_k-1) if k > 0
+Because elements are removed in exact reverse order of insertion, when v_k is popped, the minimum of the remaining stack is guaranteed to be m_k-1.
+By storing each entry as a tuple `(Value: val, Min: currentMin)`, `GetMin()` is a simple O(1) stack peek.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -353,7 +354,7 @@ New GetMin() immediately reads Depth 1's Min (-2) in O(1)!
 - **Step 3: Pop & Peek:** Expose standard LIFO operations with constant time lookups.
 
 #### 4.3 Alternative Approaches Analysis
-- **Difference Encoding ($O(1)$ space without tuples):**
+- **Difference Encoding (O(1) space without tuples):**
   Store `diff = val - min` on stack and update `min`.
   *Drawback:* Requires 64-bit integer casting to prevent 32-bit arithmetic overflow on `val = int.MinValue`. Adds arithmetic instruction overhead on every call.
 
@@ -499,20 +500,20 @@ Picture a compiler's bytecode execution engine (such as the .NET CLR or JVM) or 
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
 Attempting to convert RPN back into standard infix notation (with parentheses) to evaluate it via an expression tree or string parsing engine introduces massive overhead:
-- Tree building: $O(N)$ node allocations
+- Tree building: O(N) node allocations
 - Parsing: Recursive evaluation or backtracking
-RPN was designed specifically to be evaluated in a **single forward linear pass** in $O(N)$ time with zero backtracking.
+RPN was designed specifically to be evaluated in a **single forward linear pass** in O(N) time with zero backtracking.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **The Non-Commutative Operand Order Invariant:**
-Addition and multiplication are commutative ($a + b = b + a, a \times b = b \times a$).
+Addition and multiplication are commutative (a + b = b + a, a x b = b x a).
 However, subtraction and division are strictly non-commutative:
-$$a - b \neq b - a, \quad a / b \neq b / a$$
+a - b != b - a, a / b != b / a
 In postfix expression `[ "a", "b", "-" ]`, operand `a` was pushed first, followed by operand `b`.
 When popping from the LIFO stack:
-1. `right = stack.Pop()` $\implies$ First popped element is the **right-hand operand** ($b$).
-2. `left = stack.Pop()` $\implies$ Second popped element is the **left-hand operand** ($a$).
-3. Result $= left - right$ (or $left / right$).
+1. `right = stack.Pop()` => First popped element is the **right-hand operand** (b).
+2. `left = stack.Pop()` => Second popped element is the **left-hand operand** (a).
+3. Result = left - right (or left / right).
 Reversing this order is the single most common bug in evaluation stack implementations.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
@@ -554,8 +555,8 @@ Trace input: `tokens = ["4", "13", "5", "/", "+"]`
 | **1** | `"4"` | Number | — | — | `[ 4 ]` |
 | **2** | `"13"` | Number | — | — | `[ 4, 13 ]` |
 | **3** | `"5"` | Number | — | — | `[ 4, 13, 5 ]` |
-| **4** | `"/"` | Operator | `right=5, left=13` | $13 / 5 = 2$ | `[ 4, 2 ]` |
-| **5** | `"+"` | Operator | `right=2, left=4` | $4 + 2 = 6$ | `[ 6 ]` |
+| **4** | `"/"` | Operator | `right=5, left=13` | 13 / 5 = 2 | `[ 4, 2 ]` |
+| **5** | `"+"` | Operator | `right=2, left=4` | 4 + 2 = 6 | `[ 6 ]` |
 | **End**| — | — | Pop final result | — | Return `6` |
 
 ---
@@ -696,13 +697,13 @@ public class SolutionArrayStack
 | **LeetCode Link** | [Daily Temperatures](https://leetcode.com/problems/daily-temperatures/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** Given an array of integers `temperatures` represents the daily temperatures, return an array `answer` such that `answer[i]` is the number of days you have to wait after the $i$-th day to get a warmer temperature. If there is no future day for which this is possible, keep `answer[i] == 0` instead.
+- **Formal Statement:** Given an array of integers `temperatures` represents the daily temperatures, return an array `answer` such that `answer[i]` is the number of days you have to wait after the i-th day to get a warmer temperature. If there is no future day for which this is possible, keep `answer[i] == 0` instead.
 - **Key Constraints:**
   - `1 <= temperatures.Length <= 10^5`
   - `30 <= temperatures[i] <= 100`
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Find the Next Greater Element (NGE) for every array position in amortized $O(N)$ time using a monotonic decreasing stack of unresolved indices.
+- **Conceptual Essence:** Find the Next Greater Element (NGE) for every array position in amortized O(N) time using a monotonic decreasing stack of unresolved indices.
 - **Sample 1:**
   - **Input:** `temperatures = [73, 74, 75, 71, 69, 72, 76, 73]`
   - **Output:** `[1, 1, 4, 2, 1, 1, 0, 0]`
@@ -719,29 +720,29 @@ public class SolutionArrayStack
 Picture standing on a ridge looking across a sequence of mountain peaks. Every day you look forward waiting for a higher peak that catches the morning sunlight. When a taller peak appears, it immediately resolves the view for every shorter peak you were previously standing on that was waiting for a warmer day. A **Monotonic Decreasing Stack** acts as a "waiting room" for all prior days that have not yet seen a warmer day. The moment a day arrives that is warmer than the top of the waiting room, that top day has found its answer and leaves the room.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A brute-force solution uses nested loops: for each day $i$, scan days $j = i + 1 \dots N - 1$ until finding $T[j] > T[i]$.
-In the worst-case scenario of strictly descending temperatures (e.g. `[100, 99, 98, ..., 31, 30]`), no future day is warmer. For each day $i$, the inner loop scans all the way to the end of the array:
-$$T(N) = \sum_{i=0}^{N-1} (N - 1 - i) = \frac{N(N-1)}{2} \implies O(N^2)$$
-For $N = 10^5$, $N^2 = 10^{10}$ operations, exceeding standard time limits by two orders of magnitude ($> 10$ seconds).
+A brute-force solution uses nested loops: for each day i, scan days j = i + 1 ... N - 1 until finding T[j] > T[i].
+In the worst-case scenario of strictly descending temperatures (e.g. `[100, 99, 98, ..., 31, 30]`), no future day is warmer. For each day i, the inner loop scans all the way to the end of the array:
+T(N) = Sum(i=0..N-1) (N - 1 - i) = (N(N-1)) / (2) => O(N^2)
+For N = 10^5, N^2 = 10^10 operations, exceeding standard time limits by two orders of magnitude (> 10 seconds).
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **The Monotonic Decreasing Stack Invariant:**
 Store the **indices** of days whose next warmer day has not yet been discovered.
 The temperatures at the indices currently in the stack are strictly monotonically non-increasing (decreasing) from bottom to top:
-$$temperatures[stack[0]] \ge temperatures[stack[1]] \ge \dots \ge temperatures[stack[top]]$$
+temperatures[stack[0]] >= temperatures[stack[1]] >= ... >= temperatures[stack[top]]
 
-When day $i$ with temperature $T[i]$ arrives:
-- If $T[i] > temperatures[stack.Peek()]$:
-  - Day $i$ is the **earliest and nearest warmer day** for the index at the stack top!
+When day i with temperature T[i] arrives:
+- If T[i] > temperatures[stack.Peek()]:
+  - Day i is the **earliest and nearest warmer day** for the index at the stack top!
   - Pop `prevIndex = stack.Pop()`.
   - Calculate its waiting span:
-    $$answer[prevIndex] = i - prevIndex$$
-  - Continue popping and resolving earlier days as long as $T[i] > temperatures[stack.Peek()]$.
-- Once all colder days are evicted and resolved, push index $i$ onto the stack.
+    answer[prevIndex] = i - prevIndex
+  - Continue popping and resolving earlier days as long as T[i] > temperatures[stack.Peek()].
+- Once all colder days are evicted and resolved, push index i onto the stack.
 
 **Amortized Complexity Proof:**
-Every index $i \in [0, N-1]$ is pushed onto the stack exactly once. Every index is popped from the stack at most once. Therefore, the inner `while` loop executes at most $N$ times across the *entire* lifecycle of the algorithm.
-Total operations $\le 2N \implies O(N)$ linear time.
+Every index i in [0, N-1] is pushed onto the stack exactly once. Every index is popped from the stack at most once. Therefore, the inner `while` loop executes at most N times across the *entire* lifecycle of the algorithm.
+Total operations <= 2N => O(N) linear time.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -760,12 +761,12 @@ Base ---------------------------------------
 After resolving all colder days: Push idx 6 (Temp: 76).
 ```
 
-- `i`: Current day scanner advancing from $0$ to $N - 1$.
+- `i`: Current day scanner advancing from 0 to N - 1.
 - `stack`: Contains indices of days waiting for a warmer day.
-- `answer[k]`: Final recorded distance for day $k$. Initialized to $0$ by default.
+- `answer[k]`: Final recorded distance for day k. Initialized to 0 by default.
 
 #### 3.5 State Transition Triggers & Decision Gates
-At each day $i$:
+At each day i:
 1. **Eviction / Resolution Gate:**
    - While `stack.Count > 0 && temperatures[i] > temperatures[stack.Peek()]`:
      - `int prev = stack.Pop()`
@@ -773,21 +774,21 @@ At each day $i$:
 2. **Registration Gate:**
    - `stack.Push(i)`
 3. **Termination:**
-   - Any indices remaining in the stack have no future warmer day; their `answer` values remain $0$.
+   - Any indices remaining in the stack have no future warmer day; their `answer` values remain 0.
 
 #### 3.6 Concrete Step-by-Step State Trace
 Trace input: `temperatures = [73, 74, 75, 71, 69, 72, 76, 73]`
 
-| Day $i$ | Temp $T[i]$ | Stack Before | Action / Popped Indices | Resolved `answer` Entry | Stack After |
+| Day i | Temp T[i] | Stack Before | Action / Popped Indices | Resolved `answer` Entry | Stack After |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **0** | 73 | `[]` | Push 0 | — | `[0(73)]` |
-| **1** | 74 | `[0(73)]` | 74 > 73 $\implies$ Pop 0 | `answer[0] = 1 - 0 = 1` | `[1(74)]` |
-| **2** | 75 | `[1(74)]` | 75 > 74 $\implies$ Pop 1 | `answer[1] = 2 - 1 = 1` | `[2(75)]` |
-| **3** | 71 | `[2(75)]` | 71 <= 75 $\implies$ Push 3 | — | `[2(75), 3(71)]` |
-| **4** | 69 | `[2, 3]` | 69 <= 71 $\implies$ Push 4 | — | `[2(75), 3(71), 4(69)]` |
-| **5** | 72 | `[2, 3, 4]` | 72 > 69 $\implies$ Pop 4; 72 > 71 $\implies$ Pop 3 | `answer[4]=1, answer[3]=2` | `[2(75), 5(72)]` |
-| **6** | 76 | `[2, 5]` | 76 > 72 $\implies$ Pop 5; 76 > 75 $\implies$ Pop 2 | `answer[5]=1, answer[2]=4` | `[6(76)]` |
-| **7** | 73 | `[6(76)]` | 73 <= 76 $\implies$ Push 7 | — | `[6(76), 7(73)]` |
+| **1** | 74 | `[0(73)]` | 74 > 73 => Pop 0 | `answer[0] = 1 - 0 = 1` | `[1(74)]` |
+| **2** | 75 | `[1(74)]` | 75 > 74 => Pop 1 | `answer[1] = 2 - 1 = 1` | `[2(75)]` |
+| **3** | 71 | `[2(75)]` | 71 <= 75 => Push 3 | — | `[2(75), 3(71)]` |
+| **4** | 69 | `[2, 3]` | 69 <= 71 => Push 4 | — | `[2(75), 3(71), 4(69)]` |
+| **5** | 72 | `[2, 3, 4]` | 72 > 69 => Pop 4; 72 > 71 => Pop 3 | `answer[4]=1, answer[3]=2` | `[2(75), 5(72)]` |
+| **6** | 76 | `[2, 5]` | 76 > 72 => Pop 5; 76 > 75 => Pop 2 | `answer[5]=1, answer[2]=4` | `[6(76)]` |
+| **7** | 73 | `[6(76)]` | 73 <= 76 => Push 7 | — | `[6(76), 7(73)]` |
 
 Final `answer`: `[1, 1, 4, 2, 1, 1, 0, 0]`
 
@@ -797,21 +798,21 @@ Final `answer`: `[1, 1, 4, 2, 1, 1, 0, 0]`
 
 #### 4.1 Anchor Points & Approach Selection Criteria
 - **Approach 1 (Left-to-Right Online Processing):** The standard intuitive model. Processes days as an incoming event stream, immediately resolving waiting tasks as soon as the warmer event occurs.
-- **Approach 2 (Right-to-Left Monotonic Stack):** Traverses from future to past. When examining day $i$, already possesses the full future horizon on the stack, resolving day $i$'s answer before pushing it.
+- **Approach 2 (Right-to-Left Monotonic Stack):** Traverses from future to past. When examining day i, already possesses the full future horizon on the stack, resolving day i's answer before pushing it.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 - **Step 1: Setup & Boundaries:** Instantiate `int[] answer = new int[n]`. Initialize `Stack<int>`.
-- **Step 2: Linear Exploration Loop:** Iterate index $i$ from $0$ to $n - 1$.
+- **Step 2: Linear Exploration Loop:** Iterate index i from 0 to n - 1.
 - **Step 3: Monotonic Eviction Gate:** While current temperature exceeds stack top, pop and compute span.
-- **Step 4: Push & Repeat:** Push $i$. Return `answer`.
+- **Step 4: Push & Repeat:** Push i. Return `answer`.
 
 #### 4.3 Alternative Approaches Analysis
 - **Right-to-Left Traversal:**
-  - Loop $i = n - 1$ down to $0$.
-  - Pop all elements where $temperatures[stack.Peek()] \le temperatures[i]$ (since they can never serve as next warmer day for any day to the left of $i$).
+  - Loop i = n - 1 down to 0.
+  - Pop all elements where temperatures[stack.Peek()] <= temperatures[i] (since they can never serve as next warmer day for any day to the left of i).
   - `answer[i] = stack.Count == 0 ? 0 : stack.Peek() - i`.
-  - Push $i$.
-  - *Trade-off:* Symmetrical $O(N)$ complexity, but requires full offline array access.
+  - Push i.
+  - *Trade-off:* Symmetrical O(N) complexity, but requires full offline array access.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
@@ -820,7 +821,7 @@ Final `answer`: `[1, 1, 4, 2, 1, 1, 0, 0]`
 | **Time Complexity (Best / Avg / Worst)** | `O(N)` / `O(N)` / `O(N)` | `O(N)` / `O(N)` / `O(N)` |
 | **Auxiliary Space** | `O(N)` (stack holds unresolved indices) | `O(N)` (stack holds candidate horizons) |
 | **Output Space** | `O(N)` result array | `O(N)` result array |
-| **Amortized Ops per Element** | $\le 2$ operations per index | $\le 2$ operations per index |
+| **Amortized Ops per Element** | <= 2 operations per index | <= 2 operations per index |
 | **Streaming Suitability** | High (handles continuous data feeds) | Low (requires knowing array end) |
 
 ---
@@ -925,7 +926,7 @@ public class SolutionRightToLeft
   - `0 <= heights[i] <= 10^4`
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** For every bar of height $H$, compute the widest horizontal span $[L+1, R-1]$ it can extend across without encountering a strictly shorter bar. Resolve all boundaries simultaneously in $O(N)$ time using a monotonic increasing stack.
+- **Conceptual Essence:** For every bar of height H, compute the widest horizontal span [L+1, R-1] it can extend across without encountering a strictly shorter bar. Resolve all boundaries simultaneously in O(N) time using a monotonic increasing stack.
 - **Sample 1:**
   - **Input:** `heights = [2, 1, 5, 6, 2, 3]`
   - **Output:** `10` (Explanation: Bars at index 2 and 3 have heights 5 and 6; rectangle of height 5 and width 2 has area 10)
@@ -936,32 +937,32 @@ public class SolutionRightToLeft
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine a row of buildings of different heights. If you are standing on top of building $i$ of height $H$, you want to stretch a horizontal steel beam as far left and as far right as possible. Your beam extends unimpeded until it collides with a building strictly shorter than $H$.
+Imagine a row of buildings of different heights. If you are standing on top of building i of height H, you want to stretch a horizontal steel beam as far left and as far right as possible. Your beam extends unimpeded until it collides with a building strictly shorter than H.
 - The **Left Limiting Wall** is the nearest strictly shorter bar to the left.
 - The **Right Limiting Wall** is the nearest strictly shorter bar to the right.
 Finding the largest rectangle in the histogram is equivalent to finding the left and right limiting walls for **every single bar**, multiplying height by width, and taking the global maximum.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-1. **All Subarrays:** Inspecting all pairs $(i, j)$ and finding the minimum height in range takes $O(N^3)$ or $O(N^2)$ time.
-2. **Independent Boundary Scans:** For each bar $i$, run two `while` loops extending left and right. In the worst case of monotonically ascending bars (e.g. `[1, 2, 3, 4, ..., N]`), the left scan walks back to index 0 on every step:
-   $$T(N) = \sum_{i=1}^N i = \frac{N(N+1)}{2} \implies O(N^2)$$
-   For $N = 10^5$, $N^2 = 10^{10}$ operations, resulting in immediate TLE.
+1. **All Subarrays:** Inspecting all pairs (i, j) and finding the minimum height in range takes O(N^3) or O(N^2) time.
+2. **Independent Boundary Scans:** For each bar i, run two `while` loops extending left and right. In the worst case of monotonically ascending bars (e.g. `[1, 2, 3, 4, ..., N]`), the left scan walks back to index 0 on every step:
+   T(N) = Sum(i=1..N) i = (N(N+1)) / (2) => O(N^2)
+   For N = 10^5, N^2 = 10^10 operations, resulting in immediate TLE.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **Dual-Boundary Resolution via Monotonic Increasing Stack:**
 Maintain a stack of bar indices whose heights are strictly monotonically increasing:
-$$heights[stack[0]] < heights[stack[1]] < \dots < heights[stack[top]]$$
+heights[stack[0]] < heights[stack[1]] < ... < heights[stack[top]]
 
-When bar $i$ arrives with $heights[i] < heights[stack.Peek()]$:
-1. The bar at the top of the stack, `poppedIdx = stack.Pop()`, has met its **Right Limiting Wall**: it is index $i$!
+When bar i arrives with heights[i] < heights[stack.Peek()]:
+1. The bar at the top of the stack, `poppedIdx = stack.Pop()`, has met its **Right Limiting Wall**: it is index i!
 2. The new stack top, `stack.Peek()`, is the nearest strictly smaller bar on the left, which is its **Left Limiting Wall**!
-3. The span width is calculated in $O(1)$ directly:
-   $$\text{width} = (stack.Count == 0) \ ? \ i \ : \ (i - stack.Peek() - 1)$$
+3. The span width is calculated in O(1) directly:
+   width = (stack.Count == 0) \ ? \ i \ : \ (i - stack.Peek() - 1)
 4. The area bounded by `heights[poppedIdx]` is:
-   $$\text{area} = heights[poppedIdx] \times \text{width}$$
+   area = heights[poppedIdx] * width
 
 **The Virtual Sentinel Zero Invariant:**
-If we append a virtual bar of height `0` at index $N$, it will be strictly smaller than any valid histogram bar ($heights[j] \ge 0$). This forces the stack to flush and resolve every remaining bar, completely eliminating any post-loop cleanup code.
+If we append a virtual bar of height `0` at index N, it will be strictly smaller than any valid histogram bar (heights[j] >= 0). This forces the stack to flush and resolve every remaining bar, completely eliminating any post-loop cleanup code.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -986,12 +987,12 @@ Right Wall: i = 4. Left Wall: stack top = 1.
 Width = i - stack.Peek() - 1 = 4 - 1 - 1 = 2. Area = 5 * 2 = 10. (Max Area!)
 ```
 
-- `i`: Active cursor scanning from $0$ to $N$ (where index $N$ has virtual height 0).
+- `i`: Active cursor scanning from 0 to N (where index N has virtual height 0).
 - `stack`: Monotonic increasing stack of bar indices.
 - `poppedIdx`: Bar whose maximum expansion rectangle is currently being evaluated.
 
 #### 3.5 State Transition Triggers & Decision Gates
-For $i = 0$ to $N$:
+For i = 0 to N:
 1. `currentHeight = (i == n) ? 0 : heights[i]`
 2. **Eviction / Calculation Gate:**
    - While `stack.Count > 0 && currentHeight < heights[stack.Peek()]`:
@@ -1003,22 +1004,22 @@ For $i = 0$ to $N$:
 4. **Return:** `maxArea`
 
 #### 3.6 Concrete Step-by-Step State Trace
-Trace input: `heights = [2, 1, 5, 6, 2, 3]` ($N=6$, with virtual sentinel at $i=6$)
+Trace input: `heights = [2, 1, 5, 6, 2, 3]` (N=6, with virtual sentinel at i=6)
 
-| $i$ | $H[i]$ | Stack Action | Popped Bar ($H$) | Left Wall | Width ($w$) | Area ($H \times w$) | `maxArea` |
+| i | H[i] | Stack Action | Popped Bar (H) | Left Wall | Width (w) | Area (H x w) | `maxArea` |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **0** | 2 | Push 0 | — | — | — | — | 0 |
-| **1** | 1 | 1 < 2 $\implies$ Pop 0 | 0 ($H=2$) | None (empty) | $1$ | $2 \times 1 = 2$ | 2 |
+| **1** | 1 | 1 < 2 => Pop 0 | 0 (H=2) | None (empty) | 1 | 2 x 1 = 2 | 2 |
 | | | Push 1 | — | — | — | — | 2 |
 | **2** | 5 | Push 2 | — | — | — | — | 2 |
 | **3** | 6 | Push 3 | — | — | — | — | 2 |
-| **4** | 2 | 2 < 6 $\implies$ Pop 3 | 3 ($H=6$) | idx 2 | $4 - 2 - 1 = 1$ | $6 \times 1 = 6$ | 6 |
-| | | 2 < 5 $\implies$ Pop 2 | 2 ($H=5$) | idx 1 | $4 - 1 - 1 = 2$ | $5 \times 2 = 10$ | **10** |
+| **4** | 2 | 2 < 6 => Pop 3 | 3 (H=6) | idx 2 | 4 - 2 - 1 = 1 | 6 x 1 = 6 | 6 |
+| | | 2 < 5 => Pop 2 | 2 (H=5) | idx 1 | 4 - 1 - 1 = 2 | 5 x 2 = 10 | **10** |
 | | | Push 4 | — | — | — | — | 10 |
 | **5** | 3 | Push 5 | — | — | — | — | 10 |
-| **6** | 0 | 0 < 3 $\implies$ Pop 5 | 5 ($H=3$) | idx 4 | $6 - 4 - 1 = 1$ | $3 \times 1 = 3$ | 10 |
-| | | 0 < 2 $\implies$ Pop 4 | 4 ($H=2$) | idx 1 | $6 - 1 - 1 = 4$ | $2 \times 4 = 8$ | 10 |
-| | | 0 < 1 $\implies$ Pop 1 | 1 ($H=1$) | None (empty) | $6$ | $1 \times 6 = 6$ | 10 |
+| **6** | 0 | 0 < 3 => Pop 5 | 5 (H=3) | idx 4 | 6 - 4 - 1 = 1 | 3 x 1 = 3 | 10 |
+| | | 0 < 2 => Pop 4 | 4 (H=2) | idx 1 | 6 - 1 - 1 = 4 | 2 x 4 = 8 | 10 |
+| | | 0 < 1 => Pop 1 | 1 (H=1) | None (empty) | 6 | 1 x 6 = 6 | 10 |
 | | | Push 6 | — | — | — | — | 10 |
 
 ---
@@ -1026,19 +1027,19 @@ Trace input: `heights = [2, 1, 5, 6, 2, 3]` ($N=6$, with virtual sentinel at $i=
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Single-Pass Monotonic Stack with Sentinel 0):** The definitive optimal algorithm. 25 lines of code, strictly $O(N)$ single pass, resolves both boundaries concurrently with zero code duplication.
-- **Approach 2 (Precomputed Left and Right Smaller Arrays):** Uses two independent passes to populate `leftSmaller[]` and `rightSmaller[]` arrays. Helpful for pedagogical clarity, but uses $3 \times O(N)$ passes and $3 \times O(N)$ auxiliary memory.
+- **Approach 1 (Single-Pass Monotonic Stack with Sentinel 0):** The definitive optimal algorithm. 25 lines of code, strictly O(N) single pass, resolves both boundaries concurrently with zero code duplication.
+- **Approach 2 (Precomputed Left and Right Smaller Arrays):** Uses two independent passes to populate `leftSmaller[]` and `rightSmaller[]` arrays. Helpful for pedagogical clarity, but uses 3 x O(N) passes and 3 x O(N) auxiliary memory.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 - **Step 1: Setup & Boundaries:** Check if array is null or empty. Initialize `stack` and `maxArea = 0`.
-- **Step 2: Traverse with Virtual Sentinel:** Loop $i$ from $0$ to $N$. If $i == N$, set height to $0$.
-- **Step 3: Invariant Maintenance & Area Resolution:** While stack top is taller than current bar, pop it, determine width from new top to $i$, compute area, update `maxArea`.
-- **Step 4: Push & Return:** Push $i$. When loop terminates, return `maxArea`.
+- **Step 2: Traverse with Virtual Sentinel:** Loop i from 0 to N. If i == N, set height to 0.
+- **Step 3: Invariant Maintenance & Area Resolution:** While stack top is taller than current bar, pop it, determine width from new top to i, compute area, update `maxArea`.
+- **Step 4: Push & Return:** Push i. When loop terminates, return `maxArea`.
 
 #### 4.3 Alternative Approaches Analysis
 - **Divide and Conquer (Segment Tree):**
-  Find the index of the minimum bar in the current range $[L, R]$, compute `height[min] * (R - L + 1)`, and recurse on left and right subranges.
-  *Complexity:* $O(N \log N)$ average, but degrades to $O(N^2)$ in skewed histograms unless an expensive Range Minimum Query (RMQ) Segment Tree is constructed ($O(N)$ build, $O(\log N)$ query).
+  Find the index of the minimum bar in the current range [L, R], compute `height[min] * (R - L + 1)`, and recurse on left and right subranges.
+  *Complexity:* O(N log N) average, but degrades to O(N^2) in skewed histograms unless an expensive Range Minimum Query (RMQ) Segment Tree is constructed (O(N) build, O(log N) query).
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 

@@ -26,13 +26,13 @@
   - When two nodes share both the identical `row` and `col`, tie-breaking is strictly **left-to-right insertion order** (the node encountered earlier in horizontal level scan takes precedence).
   - An empty tree (`root == null`) returns an empty list `[]`.
 - **Key Constraints:**
-  - The number of nodes in the tree is in the range $[0, 100]$ (LeetCode standard), scaling to $N \le 10^5$ in production systems.
-  - $-100 \le Node.val \le 100$.
+  - The number of nodes in the tree is in the range [0, 100] (LeetCode standard), scaling to N <= 10^5 in production systems.
+  - -100 <= Node.val <= 100.
 - **Senior Edge Cases to Defend:**
   - `root == null`: Guard clause must return an empty list immediately without instantiating queue buffers.
   - Single node tree: Returns a single list containing only `[root.val]`.
-  - Strictly left-skewed tree: Every node decrements column index; $col \in [-(N - 1), 0]$.
-  - Strictly right-skewed tree: Every node increments column index; $col \in [0, N - 1]$.
+  - Strictly left-skewed tree: Every node decrements column index; col in [-(N - 1), 0].
+  - Strictly right-skewed tree: Every node increments column index; col in [0, N - 1].
   - Complete coordinate collisions: Multiple nodes converging at identical `(row, col)` coordinates (e.g., node A's right child and node B's left child). Left-to-right parent visitation must guarantee left node appears first.
 
 ### 2. Summary & Sample Input / Output
@@ -41,17 +41,17 @@
   - **Input:** `root = [3, 9, 20, null, null, 15, 7]`
   - **Output:** `[[9], [3, 15], [20], [7]]`
   - **Explanation:**
-    - Node 9: `col = -1` $\implies$ `[9]`
-    - Node 3: `col = 0`, Node 15: `col = 0` $\implies$ `[3, 15]`
-    - Node 20: `col = 1` $\implies$ `[20]`
-    - Node 7: `col = 2` $\implies$ `[7]`
+    - Node 9: `col = -1` => `[9]`
+    - Node 3: `col = 0`, Node 15: `col = 0` => `[3, 15]`
+    - Node 20: `col = 1` => `[20]`
+    - Node 7: `col = 2` => `[7]`
 - **Sample 2:**
   - **Input:** `root = [3, 9, 8, 4, 0, 1, 7]`
   - **Output:** `[[4], [9], [3, 0, 1], [8], [7]]`
   - **Explanation:**
     - `col = -2`: `[4]`
     - `col = -1`: `[9]`
-    - `col = 0`: Node 3 (`row 0`), Node 0 (`row 2`, left of 8), Node 1 (`row 2`, right of 9) $\implies$ `[3, 0, 1]`
+    - `col = 0`: Node 3 (`row 0`), Node 0 (`row 2`, left of 8), Node 1 (`row 2`, right of 9) => `[3, 0, 1]`
     - `col = 1`: `[8]`
     - `col = 2`: `[7]`
 
@@ -63,18 +63,18 @@ Imagine shining a directional spotlight from directly above a physical mobile sc
 #### 3.2 The Naive Bottleneck & Redundant Computation
 A naive attempt employs Depth-First Search (DFS):
 1. Traverse recursively, collecting a tuple `(col, row, val)` for every node.
-2. Sort all $N$ tuples using a composite comparator: primary key `col` ascending, secondary key `row` ascending.
-- **Computational Bottleneck:** Sorting $N$ elements incurs $O(N \log N)$ time complexity.
-- **Subtle Bug in DFS:** In DFS, a left branch explores deep rows before a shallower right branch. If node $X$ is at `(row 2, col 0)` in the left subtree and node $Y$ is at `(row 2, col 0)` in the right subtree, DFS might visit them out of horizontal order unless an additional global timestamp or traversal sequence index is tracked.
-- **BFS Elimination:** Breadth-First Search eliminates sorting entirely. Because BFS processes nodes strictly in increasing `row` order, and within each row strictly from left to right, inserting into column buckets during BFS guarantees top-to-bottom and left-to-right order intrinsically in $O(N)$ linear time!
+2. Sort all N tuples using a composite comparator: primary key `col` ascending, secondary key `row` ascending.
+- **Computational Bottleneck:** Sorting N elements incurs O(N log N) time complexity.
+- **Subtle Bug in DFS:** In DFS, a left branch explores deep rows before a shallower right branch. If node X is at `(row 2, col 0)` in the left subtree and node Y is at `(row 2, col 0)` in the right subtree, DFS might visit them out of horizontal order unless an additional global timestamp or traversal sequence index is tracked.
+- **BFS Elimination:** Breadth-First Search eliminates sorting entirely. Because BFS processes nodes strictly in increasing `row` order, and within each row strictly from left to right, inserting into column buckets during BFS guarantees top-to-bottom and left-to-right order intrinsically in O(N) linear time!
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Dual Invariant of Level-Order Queue:**
-  1. *Row Monotonicity:* If node $u$ is dequeued before node $v$, then $row(u) \le row(v)$.
-  2. *Intra-Row Left-to-Right Preservation:* If $row(u) == row(v)$ and $u$ was dequeued before $v$, then $u$ was positioned to the left of $v$.
+  1. *Row Monotonicity:* If node u is dequeued before node v, then row(u) <= row(v).
+  2. *Intra-Row Left-to-Right Preservation:* If row(u) == row(v) and u was dequeued before v, then u was positioned to the left of v.
 - **Min/Max Column Bounding Invariant:**
-  Instead of using a `SortedDictionary<int, List<int>>` which incurs $O(\log K)$ overhead per insertion (where $K$ is the number of distinct columns), we track two scalar integer cursors: `minCol` and `maxCol`.
-  At tree completion, the range of columns is the contiguous closed interval $[\text{minCol}, \text{maxCol}]$. We iterate $c$ from $\text{minCol}$ to $\text{maxCol}$ in $O(K) \le O(N)$ time, pulling buckets directly from a standard $O(1)$ `Dictionary<int, List<int>>`.
+  Instead of using a `SortedDictionary<int, List<int>>` which incurs O(log K) overhead per insertion (where K is the number of distinct columns), we track two scalar integer cursors: `minCol` and `maxCol`.
+  At tree completion, the range of columns is the contiguous closed interval [minCol, maxCol]. We iterate c from minCol to maxCol in O(K) <= O(N) time, pulling buckets directly from a standard O(1) `Dictionary<int, List<int>>`.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -101,7 +101,7 @@ Column Buckets Projection:
 
 BFS Queue State Invariant:
 - `queue`: Holds elements as value tuples `(TreeNode Node, int Col)`.
-- At any point during BFS, the queue contains nodes from at most two consecutive rows: $R$ and $R + 1$.
+- At any point during BFS, the queue contains nodes from at most two consecutive rows: R and R + 1.
 - `columnMap`: Maps `col -> List<int>`. Appending to `columnMap[col]` preserves insertion chronology.
 
 #### 3.5 State Transition Triggers & Decision Gates
@@ -113,7 +113,7 @@ BFS Queue State Invariant:
 3. **Child Expansion Gates:**
    - If `currNode.left != null`: Enqueue `(currNode.left, col - 1)`.
    - If `currNode.right != null`: Enqueue `(currNode.right, col + 1)`.
-4. **Assembly Gate:** Iterate $c \in [\text{minCol}, \text{maxCol}]$, append `columnMap[c]` to output list.
+4. **Assembly Gate:** Iterate c in [minCol, maxCol], append `columnMap[c]` to output list.
 
 #### 3.6 Concrete Step-by-Step State Trace
 Tree: `root = [3, 9, 20, null, null, 15, 7]`
@@ -127,11 +127,11 @@ Tree: `root = [3, 9, 20, null, null, 15, 7]`
 | **4** | `(15, 0)` | `-1` | `1` | `{ 0: [3, 15], -1: [9], 1: [20] }` | None |
 | **5** | `(7, 2)` | `-1` | `2` | `{ 0: [3, 15], -1: [9], 1: [20], 2: [7] }` | None |
 
-Queue is empty. Iterate $c$ from $-1$ to $2$:
-- $c = -1 \implies [9]$
-- $c = 0 \implies [3, 15]$
-- $c = 1 \implies [20]$
-- $c = 2 \implies [7]$
+Queue is empty. Iterate c from -1 to 2:
+- c = -1 => [9]
+- c = 0 => [3, 15]
+- c = 1 => [20]
+- c = 2 => [7]
 Final Result: `[[9], [3, 15], [20], [7]]`.
 
 ---
@@ -139,8 +139,8 @@ Final Result: `[[9], [3, 15], [20], [7]]`.
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (BFS with Hash Map + Min/Max Column Tracking):** Optimal production approach. Operates in $O(N)$ time with $O(N)$ space. Eliminates all sorting and handles arbitrary tree shapes.
-- **Approach 2 (DFS with Coordinate Sorting):** Visits nodes via DFS, assigns `(col, row, val)`, and sorts. Requires $O(N \log N)$ time and requires tracking visitation index to resolve row/col collisions. Suboptimal for production.
+- **Approach 1 (BFS with Hash Map + Min/Max Column Tracking):** Optimal production approach. Operates in O(N) time with O(N) space. Eliminates all sorting and handles arbitrary tree shapes.
+- **Approach 2 (DFS with Coordinate Sorting):** Visits nodes via DFS, assigns `(col, row, val)`, and sorts. Requires O(N log N) time and requires tracking visitation index to resolve row/col collisions. Suboptimal for production.
 - **Selection Rule:** Always select Approach 1. BFS naturally aligns with the problem's vertical and horizontal ordering invariants.
 
 #### 4.2 Step-by-Step Natural Progression Flow
@@ -150,15 +150,15 @@ Final Result: `[[9], [3, 15], [20], [7]]`.
 4. **Result Materialization:** Loop from `minCol` to `maxCol`, packing buckets into `IList<IList<int>>`.
 
 #### 4.3 Alternative Approaches Analysis
-- *SortedDictionary / TreeMap:* Using `SortedDictionary<int, List<int>>` avoids manually tracking `minCol` and `maxCol`, but costs $O(N \log K)$ due to red-black tree rebalancing on each new column. Tracking min/max column bounds reduces this to $O(N)$ with zero log factors.
+- *SortedDictionary / TreeMap:* Using `SortedDictionary<int, List<int>>` avoids manually tracking `minCol` and `maxCol`, but costs O(N log K) due to red-black tree rebalancing on each new column. Tracking min/max column bounds reduces this to O(N) with zero log factors.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Approach | Time (Best/Avg/Worst) | Auxiliary Space | Output Space | Cache Locality | In-Place Mutability | Streaming Suitability |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. BFS + Min/Max Bounds** | $O(N) / O(N) / O(N)$ | $O(N)$ | $O(N)$ | High (contiguous lists) | Non-mutating | High (level-by-level) |
-| **2. BFS + SortedDictionary** | $O(N \log K)$ | $O(N)$ | $O(N)$ | Moderate (tree nodes) | Non-mutating | High |
-| **3. DFS + Multi-Key Sort** | $O(N \log N)$ | $O(N)$ | $O(N)$ | Low (sorting tuples) | Non-mutating | Poor |
+| **1. BFS + Min/Max Bounds** | O(N) / O(N) / O(N) | O(N) | O(N) | High (contiguous lists) | Non-mutating | High (level-by-level) |
+| **2. BFS + SortedDictionary** | O(N log K) | O(N) | O(N) | Moderate (tree nodes) | Non-mutating | High |
+| **3. DFS + Multi-Key Sort** | O(N log N) | O(N) | O(N) | Low (sorting tuples) | Non-mutating | Poor |
 
 ---
 
@@ -273,9 +273,9 @@ public class Solution
   - In LC #314, nodes in the same row and column MUST appear in **left-to-right insertion order**.
   - In LC #987 (Vertical Order Traversal of a Binary Tree), nodes in the same row and column MUST be sorted in **ascending numerical value order**. Applying LC #987's value sorting to LC #314 yields wrong answers on duplicate/unsorted values!
 - **Pitfall 2: DFS Ordering Trap:**
-  - Using DFS causes nodes in deeper left subtrees to be visited before shallower right subtrees that share the same column. Recovering the correct order requires tracking `(col, row, timestamp)` and sorting, degrading performance from $O(N)$ to $O(N \log N)$.
+  - Using DFS causes nodes in deeper left subtrees to be visited before shallower right subtrees that share the same column. Recovering the correct order requires tracking `(col, row, timestamp)` and sorting, degrading performance from O(N) to O(N log N).
 - **Pitfall 3: Using `SortedDictionary` unnecessarily:**
-  - In .NET, `SortedDictionary<int, List<int>>` is backed by a red-black tree ($O(\log K)$ per operation). Tracking `minCol` and `maxCol` integers during standard `Dictionary` operations is $O(1)$ and provides direct contiguous range iteration.
+  - In .NET, `SortedDictionary<int, List<int>>` is backed by a red-black tree (O(log K) per operation). Tracking `minCol` and `maxCol` integers during standard `Dictionary` operations is O(1) and provides direct contiguous range iteration.
 - **Pitfall 4: Queue Boxing Overhead:**
   - Using class tuples `Tuple<TreeNode, int>` allocates a managed object on the heap for every single node in the tree. Using C# 7+ value tuples `(TreeNode Node, int Col)` allocates zero heap memory for queue elements.
 
@@ -295,19 +295,19 @@ public class Solution
 - **Assumptions & Contracts:**
   - A parentheses string is valid if and only if:
     1. It is the empty string, or contains only lowercase characters, or
-    2. It can be written as $AB$ (concatenation of $A$ and $B$), where $A$ and $B$ are valid strings, or
-    3. It can be written as $(A)$, where $A$ is a valid string.
+    2. It can be written as AB (concatenation of A and B), where A and B are valid strings, or
+    3. It can be written as (A), where A is a valid string.
   - Return **any** valid string resulting from the minimum number of deletions.
 - **Key Constraints:**
-  - $1 \le s.Length \le 10^5$.
+  - 1 <= s.Length <= 10^5.
   - `s[i]` is either `'('`, `')'`, or lowercase English letters.
 - **Senior Edge Cases to Defend:**
-  - All closing parentheses: `s = ")))"` $\implies$ returns `""`.
-  - All opening parentheses: `s = "((("` $\implies$ returns `""`.
-  - Interleaved invalid parentheses: `s = "))(("` $\implies$ returns `""`.
-  - Balanced interior with dangling boundaries: `s = "a)b(c)d"` $\implies$ returns `"ab(c)d"`.
-  - String containing zero parentheses: `s = "code"` $\implies$ returns `"code"`.
-  - Already valid parentheses with nested structures: `s = "(a(b)c)"` $\implies$ returns `"(a(b)c)"`.
+  - All closing parentheses: `s = ")))"` => returns `""`.
+  - All opening parentheses: `s = "((("` => returns `""`.
+  - Interleaved invalid parentheses: `s = "))(("` => returns `""`.
+  - Balanced interior with dangling boundaries: `s = "a)b(c)d"` => returns `"ab(c)d"`.
+  - String containing zero parentheses: `s = "code"` => returns `"code"`.
+  - Already valid parentheses with nested structures: `s = "(a(b)c)"` => returns `"(a(b)c)"`.
 
 ### 2. Summary & Sample Input / Output
 - **Conceptual Essence:** Two-Phase Balance Sweep: A closing parenthesis `')'` is invalid if and only if there is no preceding unmatched opening parenthesis `'('`. An opening parenthesis `'('` is invalid if it remains unmatched after scanning the entire string. By storing indices of unmatched `'('` in a stack and marking illegal `')'` directly during a forward scan, we can eliminate both invalid sets in a single reconstruction pass.
@@ -332,18 +332,18 @@ Think of opening parentheses `'('` as issuing loan vouchers, and closing parenth
 - When the business day closes, if the bank holds loan vouchers `'('` that were never redeemed, those specific loans are bad debt. Crucially, the loans issued *latest in the day* (at the highest string indices) are the ones that went unfulfilled. Discarding them restores absolute balance.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-- A backtracking or recursion approach that branches on "keep or remove" explores $2^K$ combinations where $K$ is the count of parentheses. For $N = 10^5$, this results in an immediate exponential blowup.
-- Repeatedly deleting characters from strings inside a loop causes $O(N^2)$ array reallocation and copying overhead in memory.
+- A backtracking or recursion approach that branches on "keep or remove" explores 2^K combinations where K is the count of parentheses. For N = 10^5, this results in an immediate exponential blowup.
+- Repeatedly deleting characters from strings inside a loop causes O(N^2) array reallocation and copying overhead in memory.
 - The linear invariant states that invalidity is deterministic and local: invalid `')'` can be flagged immediately upon arrival, and invalid `'('` are simply whatever remains on the index stack at string termination.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Prefix Sum Invariant of Parentheses:**
-  Let $P[i]$ be the prefix balance where `'(' = +1` and `')' = -1`. A string is valid if and only if:
-  $$\forall i \in [0, N-1]: P[i] \ge 0 \quad \text{AND} \quad P[N-1] == 0$$
+  Let P[i] be the prefix balance where `'(' = +1` and `')' = -1`. A string is valid if and only if:
+  for all i in [0, N-1]: P[i] >= 0 AND P[N-1] == 0
 - **Immediate Rejection Criterion:**
-  Whenever a `')'` is encountered at index $i$ while the active balance of `'('` is 0, keeping this `')'` would cause $P[i] = -1 < 0$. No downstream `'('` can ever repair a negative prefix in the past. Therefore, this `')'` **must** be removed.
+  Whenever a `')'` is encountered at index i while the active balance of `'('` is 0, keeping this `')'` would cause P[i] = -1 < 0. No downstream `'('` can ever repair a negative prefix in the past. Therefore, this `')'` **must** be removed.
 - **Terminal Rejection Criterion:**
-  If after the entire scan, $M$ unclosed `'('` remain, exactly $M$ opening parentheses must be removed. By removing the rightmost $M$ occurrences of `'('`, all preceding valid pairings remain unperturbed.
+  If after the entire scan, M unclosed `'('` remain, exactly M opening parentheses must be removed. By removing the rightmost M occurrences of `'('`, all preceding valid pairings remain unperturbed.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -368,39 +368,39 @@ Output: "lee(t(c)o)de"
 
 #### 3.5 State Transition Triggers & Decision Gates
 1. **Character Discriminator Gate:**
-   - Case `'('`: Push current index $i$ onto `openIndicesStack`.
+   - Case `'('`: Push current index i onto `openIndicesStack`.
    - Case `')'`:
      - If `openIndicesStack.Count > 0`: Pop top index (match finalized).
-     - If `openIndicesStack.Count == 0`: Mark index $i$ as invalid (`invalidIndices[i] = true`).
+     - If `openIndicesStack.Count == 0`: Mark index i as invalid (`invalidIndices[i] = true`).
    - Case letter `[a-z]`: No-op (always valid).
 2. **End-of-String Flush Gate:**
-   - While `openIndicesStack.Count > 0`: Pop index $idx$, mark `invalidIndices[idx] = true`.
+   - While `openIndicesStack.Count > 0`: Pop index idx, mark `invalidIndices[idx] = true`.
 3. **Reconstruction Gate:**
    - Allocate `StringBuilder` (or `char[]`). Append characters where `!invalidIndices[i]`.
 
 #### 3.6 Concrete Step-by-Step State Trace
 Input: `s = "a)b(c)d"`
 
-| Index $i$ | `s[i]` | Action / Condition | `openIndicesStack` | `invalidIndices` Set |
+| Index i | `s[i]` | Action / Condition | `openIndicesStack` | `invalidIndices` Set |
 | :---: | :---: | :---: | :---: | :--- |
-| **0** | `'a'` | Letter $\implies$ keep | `[]` | `{}` |
-| **1** | `')'` | Stack empty $\implies$ Invalid! | `[]` | `{ 1 }` |
-| **2** | `'b'` | Letter $\implies$ keep | `[]` | `{ 1 }` |
-| **3** | `'('` | Open bracket $\implies$ push | `[3]` | `{ 1 }` |
-| **4** | `'c'` | Letter $\implies$ keep | `[3]` | `{ 1 }` |
-| **5** | `')'` | Match $\implies$ pop 3 | `[]` | `{ 1 }` |
-| **6** | `'d'` | Letter $\implies$ keep | `[]` | `{ 1 }` |
+| **0** | `'a'` | Letter => keep | `[]` | `{}` |
+| **1** | `')'` | Stack empty => Invalid! | `[]` | `{ 1 }` |
+| **2** | `'b'` | Letter => keep | `[]` | `{ 1 }` |
+| **3** | `'('` | Open bracket => push | `[3]` | `{ 1 }` |
+| **4** | `'c'` | Letter => keep | `[3]` | `{ 1 }` |
+| **5** | `')'` | Match => pop 3 | `[]` | `{ 1 }` |
+| **6** | `'d'` | Letter => keep | `[]` | `{ 1 }` |
 | **End** | — | Stack is empty | `[]` | `{ 1 }` |
 
-Filter pass drops index 1: `'a'`, `'b'`, `'('`, `'c'`, `')'`, `'d'` $\implies$ `"ab(c)d"`.
+Filter pass drops index 1: `'a'`, `'b'`, `'('`, `'c'`, `')'`, `'d'` => `"ab(c)d"`.
 
 ---
 
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Stack + Boolean Array / Sentinel):** Standard senior approach. Uses `char[]` and an index stack. Replaces invalid characters with a sentinel (e.g. `'\0'`) or tracks via `bool[]`. Single reconstruction pass. Optimal $O(N)$ time and $O(N)$ memory.
-- **Approach 2 (Two-Pass Balance Scan without Stack):** Pass 1 left-to-right: removes illegal `')'` using a balance counter. Pass 2 right-to-left: removes illegal `'('` from the intermediate string using a reverse balance counter. Uses $O(1)$ auxiliary memory (excluding string builder buffers).
+- **Approach 1 (Stack + Boolean Array / Sentinel):** Standard senior approach. Uses `char[]` and an index stack. Replaces invalid characters with a sentinel (e.g. `'\0'`) or tracks via `bool[]`. Single reconstruction pass. Optimal O(N) time and O(N) memory.
+- **Approach 2 (Two-Pass Balance Scan without Stack):** Pass 1 left-to-right: removes illegal `')'` using a balance counter. Pass 2 right-to-left: removes illegal `'('` from the intermediate string using a reverse balance counter. Uses O(1) auxiliary memory (excluding string builder buffers).
 - **Selection Rule:** Approach 1 with in-place sentinel replacement is the fastest in C# due to minimal GC allocations.
 
 #### 4.2 Step-by-Step Natural Progression Flow
@@ -411,15 +411,15 @@ Filter pass drops index 1: `'a'`, `'b'`, `'('`, `'c'`, `')'`, `'d'` $\implies$ `
 5. Compact non-null characters into a final string using a two-pointer write cursor or `new string(chars, 0, writeLen)`.
 
 #### 4.3 Alternative Approaches Analysis
-- *Regex / Substring replacement:* Repeatedly replacing `"()"` via regex takes $O(N^2)$ and does not handle arbitrary lowercase letter placement.
+- *Regex / Substring replacement:* Repeatedly replacing `"()"` via regex takes O(N^2) and does not handle arbitrary lowercase letter placement.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Approach | Time (Best/Avg/Worst) | Auxiliary Space | Output Space | Cache Locality | In-Place Mutability | Streaming Suitability |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. In-Place Sentinel Mutation** | $O(N) / O(N) / O(N)$ | $O(N)$ (index stack) | $O(N)$ | Optimal (contiguous array) | Yes (mutates char buffer) | Moderate |
-| **2. Two-Pass StringBuilder** | $O(N) / O(N) / O(N)$ | $O(1)$ aux | $O(N)$ | High | No (allocates new SB) | High |
-| **3. Stack + HashSet** | $O(N) / O(N) / O(N)$ | $O(N)$ (hash table) | $O(N)$ | Moderate | No | Moderate |
+| **1. In-Place Sentinel Mutation** | O(N) / O(N) / O(N) | O(N) (index stack) | O(N) | Optimal (contiguous array) | Yes (mutates char buffer) | Moderate |
+| **2. Two-Pass StringBuilder** | O(N) / O(N) / O(N) | O(1) aux | O(N) | High | No (allocates new SB) | High |
+| **3. Stack + HashSet** | O(N) / O(N) / O(N) | O(N) (hash table) | O(N) | Moderate | No | Moderate |
 
 ---
 
@@ -520,7 +520,7 @@ public class Solution
 
 ### 6. Senior Pitfalls & Defensive Traps
 - **Pitfall 1: Naive String Concatenation in Loop:**
-  - Writing `result += s[i]` inside an $N = 10^5$ loop allocates $O(N^2)$ bytes on the heap, triggering catastrophic Gen 0/1 GC pauses. Always use `char[]` compaction or `StringBuilder`.
+  - Writing `result += s[i]` inside an N = 10^5 loop allocates O(N^2) bytes on the heap, triggering catastrophic Gen 0/1 GC pauses. Always use `char[]` compaction or `StringBuilder`.
 - **Pitfall 2: Removing Leftmost `'('` Instead of Rightmost:**
   - For input `"(a(b)"`, balance is +1. Removing the first `'('` yields `"a(b)"` (valid). Removing the second yields `"(ab)"` (also valid). However, the index stack naturally pops the **rightmost** unmatched `'('` first, ensuring minimal perturbation and strictly predictable deterministic output.
 - **Pitfall 3: Array Bounds During Compaction:**
@@ -546,21 +546,21 @@ public class Solution
   - No leading zeros rule: Any numerical span starting with `'0'` (such as `"01"`, `"0"`, `"09"`) is strictly **invalid** and invalidates the entire abbreviation.
   - Character matching: Non-digit characters in `abbr` must match characters in `word` character-for-character at the corresponding aligned position.
 - **Key Constraints:**
-  - $1 \le word.Length \le 20$.
-  - $1 \le abbr.Length \le 20$.
+  - 1 <= word.Length <= 20.
+  - 1 <= abbr.Length <= 20.
   - `word` consists of only lowercase English letters.
   - `abbr` consists of lowercase English letters and digits.
 - **Senior Edge Cases to Defend:**
-  - Leading zero in skip number: `word = "a", abbr = "01"` $\implies$ `false`.
-  - Lone zero digit: `word = "a", abbr = "0"` $\implies$ `false`.
-  - Skip count exceeds remaining characters: `word = "hi", abbr = "3"` $\implies$ `false`.
-  - Multi-digit numbers: `word = "internationalization", abbr = "i12iz4n"` $\implies$ `true`.
-  - `abbr` exhausted while `word` has remaining characters: `word = "apple", abbr = "a2"` $\implies$ `false`.
-  - `word` exhausted while `abbr` has remaining characters: `word = "apple", abbr = "a5e"` $\implies$ `false`.
-  - Integer overflow: If constraints were enlarged to $N > 10^9$, `num = num * 10 + digit` could overflow standard 32-bit signed integers.
+  - Leading zero in skip number: `word = "a", abbr = "01"` => `false`.
+  - Lone zero digit: `word = "a", abbr = "0"` => `false`.
+  - Skip count exceeds remaining characters: `word = "hi", abbr = "3"` => `false`.
+  - Multi-digit numbers: `word = "internationalization", abbr = "i12iz4n"` => `true`.
+  - `abbr` exhausted while `word` has remaining characters: `word = "apple", abbr = "a2"` => `false`.
+  - `word` exhausted while `abbr` has remaining characters: `word = "apple", abbr = "a5e"` => `false`.
+  - Integer overflow: If constraints were enlarged to N > 10^9, `num = num * 10 + digit` could overflow standard 32-bit signed integers.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Coordinated Dual-Pointer Alignment. Maintain pointer `wPtr` in `word` and `aPtr` in `abbr`. At each step: if `abbr[aPtr]` is a letter, assert character equality and advance both. If `abbr[aPtr]` is a digit, guard against leading `'0'`, parse the entire multi-digit number $K$, advance `wPtr` by $K$, and continue. At termination, both cursors must have reached the exact ends of their respective strings simultaneously.
+- **Conceptual Essence:** Coordinated Dual-Pointer Alignment. Maintain pointer `wPtr` in `word` and `aPtr` in `abbr`. At each step: if `abbr[aPtr]` is a letter, assert character equality and advance both. If `abbr[aPtr]` is a digit, guard against leading `'0'`, parse the entire multi-digit number K, advance `wPtr` by K, and continue. At termination, both cursors must have reached the exact ends of their respective strings simultaneously.
 - **Sample 1:**
   - **Input:** `word = "internationalization"`, `abbr = "i12iz4n"`
   - **Output:** `true`
@@ -585,20 +585,20 @@ Imagine two reading heads advancing over parallel audio tracks.
 When Track 2 encounters an explicit sound note (letter), both heads must play identical notes. When Track 2 encounters a fast-forward directive like `"12"`, the Track 1 head must jump forward 12 notches while the Track 2 head simply finishes reading the digits of the directive. If a directive begins with a corrupted `"0"` or commands a jump past the end of the tape, the tape player aborts immediately.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-- Expanding `abbr` into a regex string (e.g. converting `"12"` into `.{12}`) and executing a regular expression engine allocates objects, compiles nondeterministic finite automata (NFA), and runs in $O(N)$ with heavy constant overhead.
+- Expanding `abbr` into a regex string (e.g. converting `"12"` into `.{12}`) and executing a regular expression engine allocates objects, compiles nondeterministic finite automata (NFA), and runs in O(N) with heavy constant overhead.
 - Generating the full uncompressed string from `abbr` allocates extra strings.
-- A dual-pointer linear sweep performs $O(1)$ auxiliary work per character and checks validity in a single pass of at most $\max(|word|, |abbr|)$ steps.
+- A dual-pointer linear sweep performs O(1) auxiliary work per character and checks validity in a single pass of at most max(|word|, |abbr|) steps.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Leading-Zero Invalidation Gate:**
   If `char.IsDigit(abbr[aPtr]) && abbr[aPtr] == '0'`, return `false` immediately. There are no exceptions in the grammar specification.
 - **Atomic Multi-Digit Ingestion Invariant:**
   Digits must be parsed as a contiguous unit:
-  $$\text{skip} = \sum_{k=0}^{M-1} d_k \cdot 10^{M - 1 - k}$$
-  Once parsed, `wPtr` jumps by $\text{skip}$.
+  skip = Sum(k=0..M-1) d_k * 10^M - 1 - k
+  Once parsed, `wPtr` jumps by skip.
 - **Simultaneous Boundary Termination:**
   Valid abbreviation holds if and only if upon loop termination:
-  $$wPtr == word.Length \quad \land \quad aPtr == abbr.Length$$
+  wPtr == word.Length AND aPtr == abbr.Length
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -647,8 +647,8 @@ Input: `word = "apple"`, `abbr = "a2e"`
 
 | Step | `wPtr` | `aPtr` | `abbr[aPtr]` | Condition / Action | Next `wPtr` | Next `aPtr` | Status |
 | :---: | :---: | :---: | :---: | :--- | :---: | :---: | :---: |
-| **0** | 0 (`'a'`) | 0 (`'a'`) | Letter | `word[0] == abbr[0]` $\implies$ match | 1 | 1 | OK |
-| **1** | 1 (`'p'`) | 1 (`'2'`) | Digit | Non-zero $\implies$ parse `"2"` | $1 + 2 = 3$ | 2 | OK |
+| **0** | 0 (`'a'`) | 0 (`'a'`) | Letter | `word[0] == abbr[0]` => match | 1 | 1 | OK |
+| **1** | 1 (`'p'`) | 1 (`'2'`) | Digit | Non-zero => parse `"2"` | 1 + 2 = 3 | 2 | OK |
 | **2** | 3 (`'l'`) | 2 (`'e'`) | Letter | `word[3] ('l') != abbr[2] ('e')` | — | — | **Mismatch! Return false** |
 
 ---
@@ -656,7 +656,7 @@ Input: `word = "apple"`, `abbr = "a2e"`
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Two-Pointer Greedy Linear Scan):** Optimal $O(N + M)$ time and $O(1)$ space. Zero heap allocations. Handles all constraints and edge cases directly.
+- **Approach 1 (Two-Pointer Greedy Linear Scan):** Optimal O(N + M) time and O(1) space. Zero heap allocations. Handles all constraints and edge cases directly.
 - **Approach 2 (Regex / Pattern Expansion):** Converts abbreviations into regex tokens and tests against word. High overhead, slow execution, poor memory profile.
 - **Selection Rule:** Always use Approach 1.
 
@@ -674,9 +674,9 @@ Input: `word = "apple"`, `abbr = "a2e"`
 
 | Approach | Time Complexity | Auxiliary Space | Output Space | Cache Locality | In-Place Mutability | Streaming Suitability |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. Dual Pointers** | $O(N + M)$ | $O(1)$ | $O(1)$ | Optimal (string chars) | Non-mutating | High |
-| **2. Regex Match** | $O(N + M)$ | $O(M)$ | $O(1)$ | Poor | Non-mutating | Low |
-| **3. String Expansion** | $O(N)$ | $O(N)$ | $O(1)$ | Moderate | Non-mutating | Low |
+| **1. Dual Pointers** | O(N + M) | O(1) | O(1) | Optimal (string chars) | Non-mutating | High |
+| **2. Regex Match** | O(N + M) | O(M) | O(1) | Poor | Non-mutating | Low |
+| **3. String Expansion** | O(N) | O(N) | O(1) | Moderate | Non-mutating | Low |
 
 ---
 
@@ -781,11 +781,11 @@ public class Solution
 - **Pitfall 1: Overlooking the Leading Zero Clause:**
   - Abbreviations like `"a01b"` or `"0"` are invalid. Forgetting `if (abbr[aPtr] == '0') return false;` is the #1 failure mode in Meta interviews for this problem.
 - **Pitfall 2: Premature Termination when `wPtr > word.Length`:**
-  - If `abbr` has a skip number that jumps beyond `word.Length` (e.g. `word = "hi", abbr = "5"`), `wPtr` becomes $0 + 5 = 5 > 2$. If you only check `wPtr == word.Length` at the end, this correctly returns `false`, BUT if there are remaining letters in `abbr`, the loop might terminate early without reading them. Checking `wPtr > wordLen` prevents unnecessary parsing.
+  - If `abbr` has a skip number that jumps beyond `word.Length` (e.g. `word = "hi", abbr = "5"`), `wPtr` becomes 0 + 5 = 5 > 2. If you only check `wPtr == word.Length` at the end, this correctly returns `false`, BUT if there are remaining letters in `abbr`, the loop might terminate early without reading them. Checking `wPtr > wordLen` prevents unnecessary parsing.
 - **Pitfall 3: Not Checking Both Pointers at End:**
   - If `word = "apple", abbr = "app"`, loop exits with `aPtr == 3 == abbrLen`, but `wPtr == 3 < 5`. Checking only one pointer causes false positives!
 - **Pitfall 4: Integer Overflow Defense:**
-  - While constraints state lengths $\le 20$, production parsers must protect against large digit sequences like `"9999999999999"` which overflow 32-bit signed integers. Using `skip > (wordLen - digit) / 10` defends against arithmetic overflow.
+  - While constraints state lengths <= 20, production parsers must protect against large digit sequences like `"9999999999999"` which overflow 32-bit signed integers. Using `skip > (wordLen - digit) / 10` defends against arithmetic overflow.
 
 ---
 
@@ -805,18 +805,18 @@ public class Solution
   - Return boolean `true` if valid, `false` otherwise.
   - The string consists solely of lowercase English letters.
 - **Key Constraints:**
-  - $1 \le s.Length \le 10^5$.
+  - 1 <= s.Length <= 10^5.
   - `s` consists of lowercase English letters.
 - **Senior Edge Cases to Defend:**
-  - Already a strict palindrome: `s = "racecar"` $\implies$ `true` (0 deletions used).
-  - Single character: `s = "a"` $\implies$ `true`.
-  - Two characters: `s = "ab"` $\implies$ `true` (delete either `'a'` or `'b'`).
-  - Deletion at the extreme boundaries: `s = "abca"` $\implies$ `true` (delete `'c'` or `'b'`); `s = "deeee"` $\implies$ `true`.
+  - Already a strict palindrome: `s = "racecar"` => `true` (0 deletions used).
+  - Single character: `s = "a"` => `true`.
+  - Two characters: `s = "ab"` => `true` (delete either `'a'` or `'b'`).
+  - Deletion at the extreme boundaries: `s = "abca"` => `true` (delete `'c'` or `'b'`); `s = "deeee"` => `true`.
   - Deletion in the exact center: `s = "abccba"` (0 deletions), `s = "abcxcba"` (0 deletions), `s = "abcyxcba"` (delete `'y'` or `'x'`).
   - Ambiguous mismatch trap: where deleting the left character matches the right, BUT leads to a dead end downstream, whereas deleting the right character leads to a full palindrome (or vice versa). Example: `s = "cupucu"`, where deleting `'p'` yields palindrome `"cucu"`? No, `"cuucu"` is palindrome! Test: at `left=1 ('u'), right=4 ('c')`, deleting `left` tests `"puc"` (false), deleting `right` tests `"upu"` (true!). Algorithm must explore both branches via logical OR!
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Converging Opposing Two Pointers with Single-Branch Disjunction. March `left` from $0$ and `right` from $N - 1$ inward. As long as `s[left] == s[right]`, advance both. Upon discovering the first mismatch `s[left] != s[right]`, at most one deletion is remaining. We greedily branch into exactly two sub-problems: check if `s[left + 1 ... right]` is a strict palindrome OR check if `s[left ... right - 1]` is a strict palindrome.
+- **Conceptual Essence:** Converging Opposing Two Pointers with Single-Branch Disjunction. March `left` from 0 and `right` from N - 1 inward. As long as `s[left] == s[right]`, advance both. Upon discovering the first mismatch `s[left] != s[right]`, at most one deletion is remaining. We greedily branch into exactly two sub-problems: check if `s[left + 1 ... right]` is a strict palindrome OR check if `s[left ... right - 1]` is a strict palindrome.
 - **Sample 1:**
   - **Input:** `s = "aba"`
   - **Output:** `true`
@@ -841,19 +841,19 @@ Because you are granted a budget of removing **at most one** irregular stone, yo
 If either alternative produces a flawless span, the bridge is saved. If both alternatives reveal another mismatch, the bridge cannot be salvaged within budget.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-- A brute-force approach iterates through every index $k \in [0, N - 1]$, constructs a new string with character $k$ removed, and checks if the new string is a palindrome.
-  - Creating $N$ strings of length $N - 1$ takes $O(N^2)$ memory and time.
-  - For $N = 10^5$, $N^2 = 10^{10}$ operations $\implies$ TLE (Time Limit Exceeded) and Out-Of-Memory.
+- A brute-force approach iterates through every index k in [0, N - 1], constructs a new string with character k removed, and checks if the new string is a palindrome.
+  - Creating N strings of length N - 1 takes O(N^2) memory and time.
+  - For N = 10^5, N^2 = 10^10 operations => TLE (Time Limit Exceeded) and Out-Of-Memory.
 - The greedy invariant recognizes that all outer matching characters `s[0...left-1]` and `s[right+1...N-1]` are already symmetrical. Deleting any character from the outer matching segments cannot fix the internal mismatch between `s[left]` and `s[right]`. Hence, the deletion MUST be either `s[left]` or `s[right]`.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Greedy Matching Invariant:**
-  If $s[0 \dots k] = \text{reverse}(s[N - 1 - k \dots N - 1])$, then in any valid single-deletion palindrome, these boundary pairs must match each other. The single permissible deletion cannot be applied to these outer matched characters, because doing so would immediately create an unmatchable deficit on the opposite flank.
+  If s[0 ... k] = reverse(s[N - 1 - k ... N - 1]), then in any valid single-deletion palindrome, these boundary pairs must match each other. The single permissible deletion cannot be applied to these outer matched characters, because doing so would immediately create an unmatchable deficit on the opposite flank.
 - **Decision Disjunction (Branching Invariant):**
-  At the very first index pair $(i, j)$ where $s[i] \neq s[j]$:
-  $$\text{Valid}(s) \iff \text{IsStrictPalindrome}(s, i + 1, j) \lor \text{IsStrictPalindrome}(s, i, j - 1)$$
+  At the very first index pair (i, j) where s[i] != s[j]:
+  Valid(s) <=> IsStrictPalindrome(s, i + 1, j) OR IsStrictPalindrome(s, i, j - 1)
   Because the budget of deletions drops from 1 to 0, both sub-checks are purely linear with zero further branching!
-  Total operations: at most $2N$ character comparisons $\implies O(N)$ time, $O(1)$ space.
+  Total operations: at most 2N character comparisons => O(N) time, O(1) space.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -885,7 +885,7 @@ Result: False (cannot form palindrome with 1 deletion)
      - Evaluate `IsPalindromeRange(s, left + 1, right)`. If true, return `true`.
      - Evaluate `IsPalindromeRange(s, left, right - 1)`. If true, return `true`.
      - If both return false, return `false`.
-2. **Exhaustion Gate:** If loop terminates without finding any mismatch, string is already a strict palindrome $\implies$ return `true`.
+2. **Exhaustion Gate:** If loop terminates without finding any mismatch, string is already a strict palindrome => return `true`.
 
 #### 3.6 Concrete Step-by-Step State Trace
 Input: `s = "cupucu"`
@@ -908,10 +908,10 @@ Overall Result: `true` (deleting `'u'` at index 5 yields `"cupuc"`, a palindrome
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Two Pointers with Branching Substring Check):** Optimal $O(N)$ time and $O(1)$ space. Checks at most $2N$ comparisons. Zero heap allocations.
-- **Approach 2 (Recursive $K$-mismatch generalization):** In an interview follow-up ("What if you can delete up to $K$ characters?"), generalize to DFS with parameter `k`:
-  `Dfs(s, left, right, k)` which branches whenever `s[left] != s[right]`. Time: $O(2^K \cdot N)$, Space: $O(K)$.
-- **Selection Rule:** Approach 1 is the definitive production solution for $K = 1$.
+- **Approach 1 (Two Pointers with Branching Substring Check):** Optimal O(N) time and O(1) space. Checks at most 2N comparisons. Zero heap allocations.
+- **Approach 2 (Recursive K-mismatch generalization):** In an interview follow-up ("What if you can delete up to K characters?"), generalize to DFS with parameter `k`:
+  `Dfs(s, left, right, k)` which branches whenever `s[left] != s[right]`. Time: O(2^K * N), Space: O(K).
+- **Selection Rule:** Approach 1 is the definitive production solution for K = 1.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 1. Set `left = 0, right = s.Length - 1`.
@@ -921,15 +921,15 @@ Overall Result: `true` (deleting `'u'` at index 5 yields `"cupuc"`, a palindrome
 3. If no mismatch encountered, return `true`.
 
 #### 4.3 Alternative Approaches Analysis
-- *Substring allocations:* Calling `s.Substring(left + 1, right - left)` creates new heap objects. Passing primitive integer indices to a helper method `IsPalindromeRange(s, l, r)` guarantees $O(1)$ auxiliary space and avoids GC churn.
+- *Substring allocations:* Calling `s.Substring(left + 1, right - left)` creates new heap objects. Passing primitive integer indices to a helper method `IsPalindromeRange(s, l, r)` guarantees O(1) auxiliary space and avoids GC churn.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Approach | Time (Best/Avg/Worst) | Auxiliary Space | Output Space | Cache Locality | In-Place Mutability | Streaming Suitability |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. Two Pointers + Range Check** | $O(N) / O(N) / O(N)$ | $O(1)$ | $O(1)$ | Optimal (string chars) | Non-mutating | Low (requires both ends) |
-| **2. Substring Allocation** | $O(N) / O(N) / O(N)$ | $O(N)$ | $O(1)$ | Moderate (heap GC) | Non-mutating | Low |
-| **3. Brute Force (Delete Each)** | $O(N^2) / O(N^2) / O(N^2)$| $O(N)$ | $O(1)$ | Poor | Non-mutating | Low |
+| **1. Two Pointers + Range Check** | O(N) / O(N) / O(N) | O(1) | O(1) | Optimal (string chars) | Non-mutating | Low (requires both ends) |
+| **2. Substring Allocation** | O(N) / O(N) / O(N) | O(N) | O(1) | Moderate (heap GC) | Non-mutating | Low |
+| **3. Brute Force (Delete Each)** | O(N^2) / O(N^2) / O(N^2)| O(N) | O(1) | Poor | Non-mutating | Low |
 
 ---
 
@@ -1019,10 +1019,10 @@ public class Solution
 - **Pitfall 1: The Greedy Asymmetry Trap (Premature Single-Branch Selection):**
   - Upon mismatch `s[left] != s[right]`, checking if `s[left + 1] == s[right]` and only advancing `left` without checking the other branch fails cases like `"cupucu"`. Both `s[left+1] == s[right]` and `s[left] == s[right-1]` can be true, but only ONE leads to a valid downstream palindrome. Always evaluate `BranchA || BranchB`!
 - **Pitfall 2: Allocating Substrings:**
-  - Writing `IsPalindrome(s.Substring(left + 1, right - left))` allocates a new string on the managed heap. For $N = 10^5$, this allocates ~100 KB and triggers garbage collection. Pass `(string s, int low, int high)` to maintain zero allocation.
-- **Pitfall 3: Senior Follow-up — Generalize to $K$ Deletions:**
-  - If the interviewer asks: *"What if you can delete up to $K$ characters?"*
-  - State the exponential complexity $O(2^K \cdot N)$. For $K = 2$, $4N$ is still linear. For large $K$, transition the interviewer to Dynamic Programming: Longest Palindromic Subsequence (LPS), where the answer is `true` if $N - \text{LPS}(s) \le K$ in $O(N^2)$ time.
+  - Writing `IsPalindrome(s.Substring(left + 1, right - left))` allocates a new string on the managed heap. For N = 10^5, this allocates ~100 KB and triggers garbage collection. Pass `(string s, int low, int high)` to maintain zero allocation.
+- **Pitfall 3: Senior Follow-up — Generalize to K Deletions:**
+  - If the interviewer asks: *"What if you can delete up to K characters?"*
+  - State the exponential complexity O(2^K * N). For K = 2, 4N is still linear. For large K, transition the interviewer to Dynamic Programming: Longest Palindromic Subsequence (LPS), where the answer is `true` if N - LPS(s) <= K in O(N^2) time.
 
 ---
 
@@ -1036,24 +1036,24 @@ public class Solution
 | **LeetCode Link** | [Buildings With an Ocean View](https://leetcode.com/problems/buildings-with-an-ocean-view/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** There are `n` buildings in a line. You are given an integer array `heights` of size `n` that represents the heights of the buildings in the line. The ocean is to the right of the buildings. A building has an ocean view if the building can see the ocean without obstruction. Formally, building `i` has an ocean view if all the buildings to its right have a smaller height: $heights[i] > heights[j]$ for all $j > i$. Return a list of indices of buildings that have an ocean view, sorted in increasing order.
+- **Formal Statement:** There are `n` buildings in a line. You are given an integer array `heights` of size `n` that represents the heights of the buildings in the line. The ocean is to the right of the buildings. A building has an ocean view if the building can see the ocean without obstruction. Formally, building `i` has an ocean view if all the buildings to its right have a smaller height: heights[i] > heights[j] for all j > i. Return a list of indices of buildings that have an ocean view, sorted in increasing order.
 - **Assumptions & Contracts:**
-  - The ocean is situated strictly to the right (beyond index $n - 1$).
-  - A view requires strict inequality: $heights[i] > heights[j]$ for all $j > i$. If an eastern building has equal height ($heights[j] == heights[i]$), building $i$'s view is completely obstructed.
-  - The rightmost building at index $n - 1$ **always** has an ocean view because there are no buildings to its right.
+  - The ocean is situated strictly to the right (beyond index n - 1).
+  - A view requires strict inequality: heights[i] > heights[j] for all j > i. If an eastern building has equal height (heights[j] == heights[i]), building i's view is completely obstructed.
+  - The rightmost building at index n - 1 **always** has an ocean view because there are no buildings to its right.
   - Output indices must be returned in strictly increasing numerical order.
 - **Key Constraints:**
-  - $1 \le heights.Length \le 10^5$.
-  - $1 \le heights[i] \le 10^9$.
+  - 1 <= heights.Length <= 10^5.
+  - 1 <= heights[i] <= 10^9.
 - **Senior Edge Cases to Defend:**
-  - Strictly increasing heights: `heights = [1, 2, 3, 4]` $\implies$ only the last building `[3]` has a view.
-  - Strictly decreasing heights: `heights = [4, 3, 2, 1]` $\implies$ every building `[0, 1, 2, 3]` has a view.
-  - All equal heights: `heights = [2, 2, 2, 2]` $\implies$ only the last building `[3]` has a view.
-  - Single building: `heights = [5]` $\implies$ `[0]`.
-  - Massive heights ($10^9$): values exceed standard display thresholds, requiring comparison via 32-bit signed integers without overflow.
+  - Strictly increasing heights: `heights = [1, 2, 3, 4]` => only the last building `[3]` has a view.
+  - Strictly decreasing heights: `heights = [4, 3, 2, 1]` => every building `[0, 1, 2, 3]` has a view.
+  - All equal heights: `heights = [2, 2, 2, 2]` => only the last building `[3]` has a view.
+  - Single building: `heights = [5]` => `[0]`.
+  - Massive heights (10^9): values exceed standard display thresholds, requiring comparison via 32-bit signed integers without overflow.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Suffix Maximum / Monotonic Filtering. A building at index $i$ has an ocean view if and only if its height is strictly greater than the maximum height of all buildings to its right: $heights[i] > \max_{j > i} heights[j]$. Scanning from right to left maintains this running maximum scalar in $O(1)$ space. Alternatively, scanning left to right with a Monotonic Decreasing Stack pops any western building that is shorter than or equal to an incoming eastern building.
+- **Conceptual Essence:** Suffix Maximum / Monotonic Filtering. A building at index i has an ocean view if and only if its height is strictly greater than the maximum height of all buildings to its right: heights[i] > max_j > i heights[j]. Scanning from right to left maintains this running maximum scalar in O(1) space. Alternatively, scanning left to right with a Monotonic Decreasing Stack pops any western building that is shorter than or equal to an incoming eastern building.
 - **Sample 1:**
   - **Input:** `heights = [4, 2, 3, 1]`
   - **Output:** `[0, 2, 3]`
@@ -1073,31 +1073,31 @@ public class Solution
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
 Imagine standing on the eastern seaboard at dusk. The ocean sends a horizontal searchlight beam westward inland across the rooftops.
-- The first building the beam strikes (building $n - 1$) is fully illuminated.
+- The first building the beam strikes (building n - 1) is fully illuminated.
 - As the light sweeps westward, any building shorter than or equal to the tallest building the light has already illuminated remains buried in deep shadow.
 - Only when the light encounters a building that towers strictly higher than the current highest rooftop does its crest catch the light. That building now becomes the new benchmark height.
 By walking backwards from the ocean towards the inland mountains, we only need to remember one single number: the maximum height seen so far.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-- A brute-force algorithm tests every building $i \in [0, n - 1]$ by running an inner loop over all $j \in [i + 1, n - 1]$.
-  - Total comparisons: $\frac{n(n - 1)}{2} = O(N^2)$.
-  - For $N = 10^5$, $10^{10}$ comparisons will time out.
-- The bottleneck is repeated recalculation of the right-side maximum. Storing or maintaining the running maximum collapses the entire check into an $O(1)$ comparison per building.
+- A brute-force algorithm tests every building i in [0, n - 1] by running an inner loop over all j in [i + 1, n - 1].
+  - Total comparisons: (n(n - 1)) / (2) = O(N^2).
+  - For N = 10^5, 10^10 comparisons will time out.
+- The bottleneck is repeated recalculation of the right-side maximum. Storing or maintaining the running maximum collapses the entire check into an O(1) comparison per building.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Suffix Maximum Invariant:**
-  $$\text{HasOceanView}(i) \iff heights[i] > \text{SuffixMax}(i + 1)$$
-  where $\text{SuffixMax}(k) = \max_{j = k}^{n-1} heights[j]$.
+  HasOceanView(i) <=> heights[i] > SuffixMax(i + 1)
+  where SuffixMax(k) = max_j = k^n-1 heights[j].
 - **Running Backward Invariant:**
-  By maintaining a scalar `maxHeightSoFar` initialized to 0 (since all heights are $\ge 1$) and iterating $i$ from $n - 1$ down to $0$:
-  1. If $heights[i] > maxHeightSoFar$:
-     - Building $i$ has an ocean view.
-     - Add index $i$ to our candidate list.
-     - Update $maxHeightSoFar = heights[i]$.
-  2. If $heights[i] \le maxHeightSoFar$:
-     - Building $i$ is completely obstructed; discard it.
+  By maintaining a scalar `maxHeightSoFar` initialized to 0 (since all heights are >= 1) and iterating i from n - 1 down to 0:
+  1. If heights[i] > maxHeightSoFar:
+     - Building i has an ocean view.
+     - Add index i to our candidate list.
+     - Update maxHeightSoFar = heights[i].
+  2. If heights[i] <= maxHeightSoFar:
+     - Building i is completely obstructed; discard it.
 - **Monotonic Decreasing Stack Equivalence (Streaming Invariant):**
-  If data arrives as an online stream from left to right, we maintain a monotonic decreasing stack of building indices. When building $i$ arrives with height $H$, any building $k$ on top of the stack with $heights[k] \le H$ is permanently blocked by building $i$ and popped!
+  If data arrives as an online stream from left to right, we maintain a monotonic decreasing stack of building indices. When building i arrives with height H, any building k on top of the stack with heights[k] <= H is permanently blocked by building i and popped!
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -1118,23 +1118,23 @@ Reverse Candidates to restore ascending order: [0, 2, 3]
 ```
 
 #### 3.5 State Transition Triggers & Decision Gates
-1. **Backward Iteration Gate:** Set `maxHeight = 0`. Iterate $i = n - 1$ down to $0$:
+1. **Backward Iteration Gate:** Set `maxHeight = 0`. Iterate i = n - 1 down to 0:
    - **View Condition Gate:** If `heights[i] > maxHeight`:
-     - Collect $i$.
+     - Collect i.
      - Set `maxHeight = heights[i]`.
    - **Obstructed Condition Gate:** If `heights[i] <= maxHeight`:
      - Skip (do not collect).
-2. **Order Rectification Gate:** Since indices were collected in reverse order ($[3, 2, 0]$), reverse the result list or populate an array backwards to output $[0, 2, 3]$.
+2. **Order Rectification Gate:** Since indices were collected in reverse order ([3, 2, 0]), reverse the result list or populate an array backwards to output [0, 2, 3].
 
 #### 3.6 Concrete Step-by-Step State Trace
 Input: `heights = [4, 2, 3, 1]`
 
-| Step | Index $i$ | `heights[i]` | `maxHeight` Before | Condition ($> \text{maxHeight}$) | Action | `maxHeight` After | Result Buffer |
+| Step | Index i | `heights[i]` | `maxHeight` Before | Condition (> maxHeight) | Action | `maxHeight` After | Result Buffer |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
-| **0** | 3 | 1 | 0 | $1 > 0$ (True) | Keep index 3 | 1 | `[3]` |
-| **1** | 2 | 3 | 1 | $3 > 1$ (True) | Keep index 2 | 3 | `[3, 2]` |
-| **2** | 1 | 2 | 3 | $2 > 3$ (False) | Obstructed; skip | 3 | `[3, 2]` |
-| **3** | 0 | 4 | 3 | $4 > 3$ (True) | Keep index 0 | 4 | `[3, 2, 0]` |
+| **0** | 3 | 1 | 0 | 1 > 0 (True) | Keep index 3 | 1 | `[3]` |
+| **1** | 2 | 3 | 1 | 3 > 1 (True) | Keep index 2 | 3 | `[3, 2]` |
+| **2** | 1 | 2 | 3 | 2 > 3 (False) | Obstructed; skip | 3 | `[3, 2]` |
+| **3** | 0 | 4 | 3 | 4 > 3 (True) | Keep index 0 | 4 | `[3, 2, 0]` |
 
 Reverse result buffer: `[0, 2, 3]`.
 
@@ -1143,27 +1143,27 @@ Reverse result buffer: `[0, 2, 3]`.
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Right-to-Left Sweep with Running Max):** Optimal batch processing algorithm. $O(N)$ time, $O(1)$ auxiliary space (excluding output array). Minimal CPU instructions, maximum cache efficiency.
-- **Approach 2 (Left-to-Right Monotonic Decreasing Stack):** Processes input from left to right. Maintains indices with strictly decreasing heights. When incoming building is $\ge$ stack top, pop stack top.
+- **Approach 1 (Right-to-Left Sweep with Running Max):** Optimal batch processing algorithm. O(N) time, O(1) auxiliary space (excluding output array). Minimal CPU instructions, maximum cache efficiency.
+- **Approach 2 (Left-to-Right Monotonic Decreasing Stack):** Processes input from left to right. Maintains indices with strictly decreasing heights. When incoming building is >= stack top, pop stack top.
   - *When to Use Approach 2:* When buildings are streaming continuously from the west and output must be updated dynamically, or when random-access reverse indexing is unavailable.
 - **Selection Rule:** Use Approach 1 for batch in-memory arrays; use Approach 2 if asked for streaming input.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 1. Check null or empty array.
 2. Initialize `maxHeight = 0` and temporary `List<int>`.
-3. Loop $i$ from $n - 1$ down to 0: if $heights[i] > maxHeight$, record $i$ and update $maxHeight$.
+3. Loop i from n - 1 down to 0: if heights[i] > maxHeight, record i and update maxHeight.
 4. Reverse the collected list and return as `int[]`.
 
 #### 4.3 Alternative Approaches Analysis
-- *Prefix Scan with Suffix Array:* Precomputing an array `suffixMax[n]` requires $O(N)$ extra space and two full array sweeps. Running scalar max achieves the same result in a single pass with $O(1)$ auxiliary memory.
+- *Prefix Scan with Suffix Array:* Precomputing an array `suffixMax[n]` requires O(N) extra space and two full array sweeps. Running scalar max achieves the same result in a single pass with O(1) auxiliary memory.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Approach | Time (Best/Avg/Worst) | Auxiliary Space | Output Space | Cache Locality | In-Place Mutability | Streaming Suitability |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. Right-to-Left Running Max**| $O(N) / O(N) / O(N)$ | $O(1)$ aux | $O(N)$ | Optimal (backward vector) | Non-mutating | Poor (requires end) |
-| **2. Monotonic Stack (L-to-R)** | $O(N) / O(N) / O(N)$ | $O(N)$ (stack) | $O(N)$ | High | Non-mutating | Optimal (streaming) |
-| **3. Brute Force Forward Scan** | $O(N^2) / O(N^2) / O(N^2)$| $O(1)$ | $O(N)$ | Moderate | Non-mutating | Poor |
+| **1. Right-to-Left Running Max**| O(N) / O(N) / O(N) | O(1) aux | O(N) | Optimal (backward vector) | Non-mutating | Poor (requires end) |
+| **2. Monotonic Stack (L-to-R)** | O(N) / O(N) / O(N) | O(N) (stack) | O(N) | High | Non-mutating | Optimal (streaming) |
+| **3. Brute Force Forward Scan** | O(N^2) / O(N^2) / O(N^2)| O(1) | O(N) | Moderate | Non-mutating | Poor |
 
 ---
 
@@ -1279,14 +1279,14 @@ public class SolutionStreaming
 ---
 
 ### 6. Senior Pitfalls & Defensive Traps
-- **Pitfall 1: Non-Strict Inequality ($>$ vs $\ge$):**
+- **Pitfall 1: Non-Strict Inequality (> vs >=):**
   - The problem states: *"all the buildings to its right have a smaller height"*. If `heights = [2, 2]`, building 0 is blocked by building 1. Writing `heights[i] >= maxHeightSoFar` mistakenly includes blocked buildings.
 - **Pitfall 2: Forgetting to Reverse the Backward Sweep:**
-  - Scanning right-to-left appends indices in descending order ($[3, 2, 0]$). The contract specifies: *"sorted in increasing order"*. Returning without inverting violates the output contract.
+  - Scanning right-to-left appends indices in descending order ([3, 2, 0]). The contract specifies: *"sorted in increasing order"*. Returning without inverting violates the output contract.
 - **Pitfall 3: In-Place Output Construction vs `Reverse()`:**
   - In high-throughput C# systems, writing directly into `result[count - 1 - i]` eliminates the extra allocation and call overhead of `viewIndices.Reverse()`.
 - **Pitfall 4: Interviewer Pivot — Streaming Input:**
-  - Always proactively mention: *"If the data arrives as a real-time stream from left to right, we cannot scan backwards. We pivot to a Monotonic Decreasing Stack that pops obstructed predecessors in $O(N)$ amortized time."* This demonstrates senior architectural agility.
+  - Always proactively mention: *"If the data arrives as a real-time stream from left to right, we cannot scan backwards. We pivot to a Monotonic Decreasing Stack that pops obstructed predecessors in O(N) amortized time."* This demonstrates senior architectural agility.
 
 ---
 
@@ -1300,26 +1300,26 @@ public class SolutionStreaming
 | **LeetCode Link** | [Random Pick with Weight](https://leetcode.com/problems/random-pick-with-weight/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** You are given a 0-indexed array of positive integers `w` where `w[i]` describes the weight of the $i$-th index. You need to implement the function `PickIndex()`, which randomly picks an index in the range $[0, w.Length - 1]$ (inclusive) and returns it. The probability of picking an index $i$ is proportional to its weight:
-  $$P(\text{index } i) = \frac{w[i]}{\sum_{j=0}^{n-1} w[j]}$$
+- **Formal Statement:** You are given a 0-indexed array of positive integers `w` where `w[i]` describes the weight of the i-th index. You need to implement the function `PickIndex()`, which randomly picks an index in the range [0, w.Length - 1] (inclusive) and returns it. The probability of picking an index i is proportional to its weight:
+  P(index i) = frac{w[i]}{Sum(j=0..n-1) w[j]}
 - **Assumptions & Contracts:**
-  - All weights are strictly positive integers: $w[i] \ge 1$.
+  - All weights are strictly positive integers: w[i] >= 1.
   - Multiple calls to `PickIndex()` must maintain the theoretical probability distribution across large sample sizes.
-  - Pre-processing time in constructor can be $O(N)$, but each query to `PickIndex()` must be highly efficient ($O(\log N)$ or $O(1)$).
+  - Pre-processing time in constructor can be O(N), but each query to `PickIndex()` must be highly efficient (O(log N) or O(1)).
 - **Key Constraints:**
-  - $1 \le w.Length \le 10^4$.
-  - $1 \le w[i] \le 10^5$.
-  - `PickIndex()` will be called at most $10^4$ times.
-  - The maximum sum of weights can reach $10^4 \times 10^5 = 10^9$, which safely fits within a 32-bit signed integer (`int.MaxValue` $\approx 2.14 \times 10^9$).
+  - 1 <= w.Length <= 10^4.
+  - 1 <= w[i] <= 10^5.
+  - `PickIndex()` will be called at most 10^4 times.
+  - The maximum sum of weights can reach 10^4 x 10^5 = 10^9, which safely fits within a 32-bit signed integer (`int.MaxValue` ~ 2.14 x 10^9).
 - **Senior Edge Cases to Defend:**
-  - Single weight: `w = [5]` $\implies$ `PickIndex()` must always return index 0 with probability $1.0$.
-  - Highly skewed distribution: `w = [1, 99999]` $\implies$ index 0 picked with $0.001\%$ chance, index 1 with $99.999\%$ chance.
-  - Identical weights: `w = [1, 1, 1, 1]` $\implies$ uniform random selection ($25\%$ each).
-  - Off-by-one errors in random number generation: selecting target in range $[1, \text{totalWeight}]$ vs $[0, \text{totalWeight} - 1]$.
+  - Single weight: `w = [5]` => `PickIndex()` must always return index 0 with probability 1.0.
+  - Highly skewed distribution: `w = [1, 99999]` => index 0 picked with 0.001\% chance, index 1 with 99.999\% chance.
+  - Identical weights: `w = [1, 1, 1, 1]` => uniform random selection (25\% each).
+  - Off-by-one errors in random number generation: selecting target in range [1, totalWeight] vs [0, totalWeight - 1].
   - Thread-safety in concurrent environments: `System.Random` is NOT thread-safe and can enter infinite zero-loops under multi-threaded contention.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Cumulative Distribution Function (CDF) + Binary Search (Bisect Left). Transform weights into a contiguous prefix sum array where each index $i$ occupies a segment of length $w[i]$. Generate a uniformly distributed random integer $T \in [1, \text{totalSum}]$. Use binary search to find the first prefix sum $\ge T$.
+- **Conceptual Essence:** Cumulative Distribution Function (CDF) + Binary Search (Bisect Left). Transform weights into a contiguous prefix sum array where each index i occupies a segment of length w[i]. Generate a uniformly distributed random integer T in [1, totalSum]. Use binary search to find the first prefix sum >= T.
 - **Sample 1:**
   - **Input:** `["Solution", "pickIndex"], [[[1]], []]`
   - **Output:** `[null, 0]`
@@ -1327,39 +1327,39 @@ public class SolutionStreaming
 - **Sample 2:**
   - **Input:** `["Solution", "pickIndex", "pickIndex", "pickIndex"], [[[1, 3]], [], [], []]`
   - **Output:** `[null, 1, 1, 0]` (probabilistic sample)
-  - **Explanation:** Total weight = 4. Target drawn uniformly from $[1, 4]$.
-    - If target $= 1 \implies$ index 0 (prob = $1/4 = 25\%$).
-    - If target $\in \{2, 3, 4\} \implies$ index 1 (prob = $3/4 = 75\%$).
+  - **Explanation:** Total weight = 4. Target drawn uniformly from [1, 4].
+    - If target = 1 => index 0 (prob = 1/4 = 25\%).
+    - If target in {2, 3, 4} => index 1 (prob = 3/4 = 75\%).
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
 Imagine a continuous meter-long ribbon.
-- If $w = [1, 3]$, you cut the ribbon into two segments:
-  - Segment 0 covers interval $(0, 1]$ (length 1).
-  - Segment 1 covers interval $(1, 4]$ (length 3).
-- You blindfold an archer and let them shoot an arrow at a random point along the total ribbon length $[1, 4]$.
-- The arrow hits a single coordinate $T$. To determine which segment the arrow pierced, you do not measure every millimeter from the start; you look at the segment boundary markers $[1, 4]$ and binary search for the first boundary that is greater than or equal to $T$.
+- If w = [1, 3], you cut the ribbon into two segments:
+  - Segment 0 covers interval (0, 1] (length 1).
+  - Segment 1 covers interval (1, 4] (length 3).
+- You blindfold an archer and let them shoot an arrow at a random point along the total ribbon length [1, 4].
+- The arrow hits a single coordinate T. To determine which segment the arrow pierced, you do not measure every millimeter from the start; you look at the segment boundary markers [1, 4] and binary search for the first boundary that is greater than or equal to T.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-- **Naive Array Expansion:** Allocate an array of size $\sum w[i]$ and populate it with $w[i]$ copies of index $i$, then pick a random index uniformly.
-  - Memory explosion: $\sum w[i]$ can reach $10^9$ integers $\approx 4 \text{ GB}$ of RAM! This triggers an `OutOfMemoryException`.
-- **Linear CDF Scan:** Compute prefix sums, draw random $T$, and iterate linearly from $i = 0$ to $N - 1$ until $prefix[i] \ge T$.
-  - Per query: $O(N)$ time.
-  - Across $Q = 10^4$ calls, total time is $O(N \cdot Q) = 10^8$ operations.
-- **Breakthrough:** Because all weights $w[i] > 0$, the prefix sum array is **strictly monotonically increasing**. Monotonicity enables binary search (lower bound) in $O(\log N)$ time per query.
+- **Naive Array Expansion:** Allocate an array of size Sum w[i] and populate it with w[i] copies of index i, then pick a random index uniformly.
+  - Memory explosion: Sum w[i] can reach 10^9 integers ~ 4 GB of RAM! This triggers an `OutOfMemoryException`.
+- **Linear CDF Scan:** Compute prefix sums, draw random T, and iterate linearly from i = 0 to N - 1 until prefix[i] >= T.
+  - Per query: O(N) time.
+  - Across Q = 10^4 calls, total time is O(N * Q) = 10^8 operations.
+- **Breakthrough:** Because all weights w[i] > 0, the prefix sum array is **strictly monotonically increasing**. Monotonicity enables binary search (lower bound) in O(log N) time per query.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Strict Monotonicity Invariant:**
-  $$\forall i \in [0, n - 2]: prefix[i] < prefix[i + 1] \quad (\because w[i+1] \ge 1)$$
+  for all i in [0, n - 2]: prefix[i] < prefix[i + 1] (because w[i+1] >= 1)
 - **Interval Partition Mapping:**
-  Index $i$ owns the semi-closed integer range:
-  $$\text{Interval}(i) = (\text{prefix}[i - 1], \text{prefix}[i]] \quad \text{with } prefix[-1] = 0$$
+  Index i owns the semi-closed integer range:
+  Interval(i) = (prefix[i - 1], prefix[i]] with prefix[-1] = 0
   The count of integers in this range is exactly:
-  $$\text{prefix}[i] - \text{prefix}[i - 1] = w[i]$$
+  prefix[i] - prefix[i - 1] = w[i]
 - **Lower Bound Search Invariant:**
-  For any random target $T \in [1, \text{totalWeight}]$, the unique index $k$ whose interval covers $T$ is the smallest index $k$ such that:
-  $$\text{prefix}[k] \ge T$$
+  For any random target T in [1, totalWeight], the unique index k whose interval covers T is the smallest index k such that:
+  prefix[k] >= T
   This is the exact definition of `lower_bound` / `bisect_left`.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
@@ -1385,13 +1385,13 @@ Interval Mapping for T in [1, 10]:
 Binary Search Invariant:
 - `low = 0, high = n - 1`
 - `mid = low + (high - low) / 2`
-- If `P[mid] >= target`: target is in `mid` or to its left $\implies high = mid$.
-- If `P[mid] < target`: target is strictly to the right $\implies low = mid + 1$.
+- If `P[mid] >= target`: target is in `mid` or to its left => high = mid.
+- If `P[mid] < target`: target is strictly to the right => low = mid + 1.
 - Loop terminates when `low == high`, pointing precisely to the target index.
 
 #### 3.5 State Transition Triggers & Decision Gates
 1. **Target Generation Gate:**
-   - Draw random integer $T \in [1, \text{totalWeight}]$.
+   - Draw random integer T in [1, totalWeight].
    - In C#: `Random.Shared.Next(1, totalWeight + 1)`.
 2. **Binary Search Search Space Partition:**
    - While `low < high`:
@@ -1405,8 +1405,8 @@ Weights: `w = [2, 5, 3]`, Prefix Sums: `P = [2, 7, 10]`. Drawn `target = 6`.
 
 | Iteration | `low` | `high` | `mid` | `P[mid]` | Evaluation (`P[mid] >= 6`) | Next Boundary |
 | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
-| **0** | 0 | 2 | 1 | 7 | $7 \ge 6$ (True) | `high = mid = 1` |
-| **1** | 0 | 1 | 0 | 2 | $2 \ge 6$ (False) | `low = mid + 1 = 1` |
+| **0** | 0 | 2 | 1 | 7 | 7 >= 6 (True) | `high = mid = 1` |
+| **1** | 0 | 1 | 0 | 2 | 2 >= 6 (False) | `low = mid + 1 = 1` |
 | **End** | 1 | 1 | — | — | `low == high` | **Return index 1** |
 
 ---
@@ -1414,20 +1414,20 @@ Weights: `w = [2, 5, 3]`, Prefix Sums: `P = [2, 7, 10]`. Drawn `target = 6`.
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Prefix Sum + Binary Search / CDF):** The industry standard for discrete weighted sampling. $O(N)$ initialization time, $O(\log N)$ sampling time, $O(N)$ auxiliary memory.
-- **Approach 2 (Walker's Alias Method):** Advanced production pattern. Uses two tables (`Prob` and `Alias`) to achieve $O(N)$ initialization and guaranteed $O(1)$ sampling time.
+- **Approach 1 (Prefix Sum + Binary Search / CDF):** The industry standard for discrete weighted sampling. O(N) initialization time, O(log N) sampling time, O(N) auxiliary memory.
+- **Approach 2 (Walker's Alias Method):** Advanced production pattern. Uses two tables (`Prob` and `Alias`) to achieve O(N) initialization and guaranteed O(1) sampling time.
   - *When to Use Alias Method:* When `PickIndex()` is called billions of times in ultra-high-throughput real-time ad selection or ML reinforcement learning environments.
 - **Selection Rule:** Approach 1 (Binary Search) is the standard expected interview solution. Discuss Approach 2 (Alias Method) for senior architect differentiation.
 
 #### 4.2 Step-by-Step Natural Progression Flow
-1. **Constructor:** Allocate `prefixSums` of length $N$.
+1. **Constructor:** Allocate `prefixSums` of length N.
 2. Compute running sum: `prefixSums[i] = prefixSums[i - 1] + w[i]`. Store `totalSum = prefixSums[n - 1]`.
-3. **PickIndex:** Draw random integer in $[1, totalSum]$.
+3. **PickIndex:** Draw random integer in [1, totalSum].
 4. Binary search for first index with `prefixSums[mid] >= target`. Return index.
 
 #### 4.3 Alternative Approaches Analysis
 - *`Array.BinarySearch`:* .NET provides `Array.BinarySearch(prefixSums, target)`.
-  - If exact match is found, returns index $\ge 0$.
+  - If exact match is found, returns index >= 0.
   - If not found, returns bitwise complement `~index` (the insertion point of the first element greater than target).
   - Both map directly to the correct index!
 
@@ -1435,10 +1435,10 @@ Weights: `w = [2, 5, 3]`, Prefix Sums: `P = [2, 7, 10]`. Drawn `target = 6`.
 
 | Approach | Init Time | Query Time | Auxiliary Space | Query Cache Locality | Streaming Friendly |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. CDF Binary Search** | $O(N)$ | $O(\log N)$ | $O(N)$ | Optimal (binary jump in array) | No (static weights) |
-| **2. Walker's Alias Method** | $O(N)$ | $O(1)$ | $O(N)$ | Optimal (table lookup) | No |
-| **3. Linear CDF Scan** | $O(N)$ | $O(N)$ | $O(N)$ | High | No |
-| **4. Expanded Array** | $O(\sum w)$ | $O(1)$ | $O(\sum w)$ (Gigabytes) | Optimal | No |
+| **1. CDF Binary Search** | O(N) | O(log N) | O(N) | Optimal (binary jump in array) | No (static weights) |
+| **2. Walker's Alias Method** | O(N) | O(1) | O(N) | Optimal (table lookup) | No |
+| **3. Linear CDF Scan** | O(N) | O(N) | O(N) | High | No |
+| **4. Expanded Array** | O(Sum w) | O(1) | O(Sum w) (Gigabytes) | Optimal | No |
 
 ---
 
@@ -1541,14 +1541,14 @@ public class Solution
 
 ### 6. Senior Pitfalls & Defensive Traps
 - **Pitfall 1: Zero-Indexed Random Range Bug:**
-  - Generating `target = Random.Next(totalWeight)` produces values in $[0, totalWeight - 1]$. If $w = [1]$, `target` could be $0$. But `prefixSums[0] = 1`. If you map ranges as $[0, prefix[0] - 1]$, index 0 is $[0, 0]$ which works, but combining 0-indexed randoms with 1-indexed prefix sums causes off-by-one errors on boundary values. Generating $T \in [1, totalWeight]$ maps cleanly to $[1, prefix[0]], [prefix[0] + 1, prefix[1]]$, etc.
+  - Generating `target = Random.Next(totalWeight)` produces values in [0, totalWeight - 1]. If w = [1], `target` could be 0. But `prefixSums[0] = 1`. If you map ranges as [0, prefix[0] - 1], index 0 is [0, 0] which works, but combining 0-indexed randoms with 1-indexed prefix sums causes off-by-one errors on boundary values. Generating T in [1, totalWeight] maps cleanly to [1, prefix[0]], [prefix[0] + 1, prefix[1]], etc.
 - **Pitfall 2: `System.Random` Multi-Threading Bug:**
   - Instantiating `private readonly Random _rand = new Random();` is dangerous in server environments (ASP.NET Core / microservices). `System.Random` is NOT thread-safe. Concurrent calls from multiple request threads corrupt its internal seed state, causing it to return `0` forever! Always use `Random.Shared` (.NET 6+) or `ThreadLocal<Random>`.
 - **Pitfall 3: Integer Overflow on Total Weight:**
-  - With $N = 10^4$ and $w[i] = 10^5$, total sum is $10^9$, which fits inside signed 32-bit `int` (max $2.14 \times 10^9$). However, if weights scale to $10^6$ or $N = 10^5$, sum reaches $10^{11}$, requiring `long[]` prefix sums. Mentioning `long` boundaries showcases senior defensiveness.
+  - With N = 10^4 and w[i] = 10^5, total sum is 10^9, which fits inside signed 32-bit `int` (max 2.14 x 10^9). However, if weights scale to 10^6 or N = 10^5, sum reaches 10^11, requiring `long[]` prefix sums. Mentioning `long` boundaries showcases senior defensiveness.
 - **Pitfall 4: Walker's Alias Method Follow-Up:**
-  - If the interviewer asks: *"How can we optimize `PickIndex()` to $O(1)$ runtime?"*
-  - Be ready to explain the Alias Method: We scale all probabilities by $N$ so the average weight is 1. We partition items into a "smaller" pile (prob $< 1$) and a "larger" pile (prob $\ge 1$), and pair them up so each bucket has exactly one primary index and at most one alias index. Sampling requires picking a uniform random bucket $k \in [0, N - 1]$ and tossing a biased coin to choose between $k$ and $alias[k]$ in guaranteed $O(1)$ time!
+  - If the interviewer asks: *"How can we optimize `PickIndex()` to O(1) runtime?"*
+  - Be ready to explain the Alias Method: We scale all probabilities by N so the average weight is 1. We partition items into a "smaller" pile (prob < 1) and a "larger" pile (prob >= 1), and pair them up so each bucket has exactly one primary index and at most one alias index. Sampling requires picking a uniform random bucket k in [0, N - 1] and tossing a biased coin to choose between k and alias[k] in guaranteed O(1) time!
 
 ---
 
@@ -1567,30 +1567,30 @@ public class Solution
   - `int DotProduct(SparseVector vec)`: Computes the dot product between two sparse vectors.
   A sparse vector is a vector that has mostly zero values. You should store the sparse vector efficiently and compute the dot product between two `SparseVector` instances.
 - **Assumptions & Contracts:**
-  - The dot product of two vectors $A$ and $B$ of length $n$ is defined as:
-    $$A \cdot B = \sum_{i=0}^{n-1} A[i] \cdot B[i]$$
-  - Any product where either $A[i] = 0$ or $B[i] = 0$ contributes $0$ to the sum and should be bypassed entirely.
-  - Both vectors are guaranteed to have identical underlying dimension $n$.
+  - The dot product of two vectors A and B of length n is defined as:
+    A * B = Sum(i=0..n-1) A[i] * B[i]
+  - Any product where either A[i] = 0 or B[i] = 0 contributes 0 to the sum and should be bypassed entirely.
+  - Both vectors are guaranteed to have identical underlying dimension n.
 - **Key Constraints:**
-  - $n = nums.Length \le 10^5$ (can scale to $n = 10^9$ in real-world ML recommendation systems).
-  - $0 \le nums[i] \le 100$.
-  - Number of non-zero elements $L \ll n$.
+  - n = nums.Length <= 10^5 (can scale to n = 10^9 in real-world ML recommendation systems).
+  - 0 <= nums[i] <= 100.
+  - Number of non-zero elements L << n.
 - **Senior Edge Cases to Defend:**
-  - Zero non-zero elements: One or both vectors consist entirely of zeros $\implies$ returns 0 immediately.
-  - Disjoint non-zero coordinates: $A$ has non-zeros at $\{1, 3, 5\}$ and $B$ has non-zeros at $\{2, 4, 6\} \implies$ returns 0.
-  - Extreme sparsity asymmetry: Vector $A$ has $L_1 = 1$ non-zero element, while Vector $B$ has $L_2 = 10^5$ non-zero elements. Linear two-pointer scan over $B$ is wasteful ($O(L_1 + L_2)$); binary searching $A$'s index in $B$ takes $O(L_1 \log L_2) = O(\log L_2)$.
-  - Large dimensional vectors: Vector dimension $10^9$, making dense array instantiation impossible.
+  - Zero non-zero elements: One or both vectors consist entirely of zeros => returns 0 immediately.
+  - Disjoint non-zero coordinates: A has non-zeros at {1, 3, 5} and B has non-zeros at {2, 4, 6} => returns 0.
+  - Extreme sparsity asymmetry: Vector A has L_1 = 1 non-zero element, while Vector B has L_2 = 10^5 non-zero elements. Linear two-pointer scan over B is wasteful (O(L_1 + L_2)); binary searching A's index in B takes O(L_1 log L_2) = O(log L_2).
+  - Large dimensional vectors: Vector dimension 10^9, making dense array instantiation impossible.
   - Arithmetic overflow on summation: Sum of products could exceed 32-bit signed integers if values scale up (use checked arithmetic or 64-bit accumulators).
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Coordinate List (COO) Sparse Encoding + Two-Pointer Intersection. Instead of storing $N$ numbers in memory, compress the vector into a sequence of sorted index-value pairs `(index, value)` containing only non-zero coordinates. Computing the dot product simplifies to finding the intersection of two sorted index lists: advance two pointers, multiply values whenever indices match, and increment the pointer with the smaller index otherwise.
+- **Conceptual Essence:** Coordinate List (COO) Sparse Encoding + Two-Pointer Intersection. Instead of storing N numbers in memory, compress the vector into a sequence of sorted index-value pairs `(index, value)` containing only non-zero coordinates. Computing the dot product simplifies to finding the intersection of two sorted index lists: advance two pointers, multiply values whenever indices match, and increment the pointer with the smaller index otherwise.
 - **Sample 1:**
   - **Input:** `nums1 = [1, 0, 0, 2, 3]`, `nums2 = [0, 3, 0, 4, 0]`
   - **Output:** `8`
   - **Explanation:**
     - `v1` non-zeros: `[(0, 1), (3, 2), (4, 3)]`
     - `v2` non-zeros: `[(1, 3), (3, 4)]`
-    - Matching index is 3: $v1[3] \times v2[3] = 2 \times 4 = 8$.
+    - Matching index is 3: v1[3] * v2[3] = 2 x 4 = 8.
 - **Sample 2:**
   - **Input:** `nums1 = [0, 1, 0, 0, 0]`, `nums2 = [0, 0, 0, 0, 0]`
   - **Output:** `0`
@@ -1599,36 +1599,36 @@ public class Solution
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
 Imagine two astronomers logging rare comet sightings across a calendar of 100,000 days.
-- Astronomer A observed comets on days $[12, 500, 91000]$.
-- Astronomer B observed comets on days $[45, 500, 80000, 91000]$.
+- Astronomer A observed comets on days [12, 500, 91000].
+- Astronomer B observed comets on days [45, 500, 80000, 91000].
 A naive clerk creates two massive 100,000-page calendars, checks each day one-by-one, and realizes 99,996 days are completely blank on both books.
-The senior engineer only looks at their pocket datebooks. Two bookmarks step through the dates. If Date A $<$ Date B, advance Bookmark A. If Date B $<$ Date A, advance Bookmark B. If Date A $==$ Date B, an overlap occurred—multiply their recorded telescope intensities and add to the running total.
+The senior engineer only looks at their pocket datebooks. Two bookmarks step through the dates. If Date A < Date B, advance Bookmark A. If Date B < Date A, advance Bookmark B. If Date A == Date B, an overlap occurred—multiply their recorded telescope intensities and add to the running total.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
 - Dense Array Representation:
-  - Space: $O(N)$ per vector.
-  - Dot Product Time: $O(N)$.
-  - Bottleneck: For $N = 10^7$ with $10$ non-zeros, dense storage requires 40 MB per vector and 10 million multiplication operations, $99.999\%$ of which multiply by zero.
+  - Space: O(N) per vector.
+  - Dot Product Time: O(N).
+  - Bottleneck: For N = 10^7 with 10 non-zeros, dense storage requires 40 MB per vector and 10 million multiplication operations, 99.999\% of which multiply by zero.
 - Hash Map Representation:
   - Store `{ index -> value }` in a `Dictionary<int, int>`.
-  - Iterate over the smaller dictionary: for each key, probe the larger dictionary in $O(1)$ amortized time.
+  - Iterate over the smaller dictionary: for each key, probe the larger dictionary in O(1) amortized time.
   - Bottleneck: High memory overhead (each dictionary entry in .NET costs ~32 bytes plus hashing overhead and GC tracking) and poor CPU cache locality due to pointer chasing across hash buckets.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Coordinate List (COO) Representation:**
   Store non-zero entries as an array of structs:
-  $$\text{Pairs} = [(idx_0, val_0), (idx_1, val_1), \dots, (idx_{L-1}, val_{L-1})]$$
-  where $idx_0 < idx_1 < \dots < idx_{L-1}$ is strictly monotonically increasing.
+  Pairs = [(idx_0, val_0), (idx_1, val_1), ..., (idx_L-1, val_L-1)]
+  where idx_0 < idx_1 < ... < idx_L-1 is strictly monotonically increasing.
 - **Cache-Optimal Two-Pointer Intersection:**
-  Because the indices are strictly sorted during construction, finding matching indices requires a single linear sweep using two cursors $p_1$ and $p_2$.
-  - If $idx_1[p_1] == idx_2[p_2]$: $\text{sum} += val_1[p_1] \cdot val_2[p_2]; \quad p_1++; \quad p_2++;$
-  - If $idx_1[p_1] < idx_2[p_2]$: $p_1++;$
-  - If $idx_1[p_1] > idx_2[p_2]$: $p_2++;$
+  Because the indices are strictly sorted during construction, finding matching indices requires a single linear sweep using two cursors p_1 and p_2.
+  - If idx_1[p_1] == idx_2[p_2]: sum += val_1[p_1] * val_2[p_2]; p_1++; p_2++;
+  - If idx_1[p_1] < idx_2[p_2]: p_1++;
+  - If idx_1[p_1] > idx_2[p_2]: p_2++;
 - **Asymmetric Sparsity Adaptive Invariant (Senior System Design):**
-  If $|L_1| \ll |L_2|$ (e.g. $L_1 = 2$, $L_2 = 100,000$):
-  Running two pointers costs $O(L_1 + L_2) \approx 100,000$ steps.
-  Instead, iterate through each of the $L_1$ elements and **binary search** its index inside $L_2$'s sorted array!
-  Time: $O(L_1 \log L_2) = 2 \times 17 \approx 34$ steps $\implies 3,000\times$ faster!
+  If |L_1| << |L_2| (e.g. L_1 = 2, L_2 = 100,000):
+  Running two pointers costs O(L_1 + L_2) ~ 100,000 steps.
+  Instead, iterate through each of the L_1 elements and **binary search** its index inside L_2's sorted array!
+  Time: O(L_1 log L_2) = 2 x 17 ~ 34 steps => 3,000* faster!
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -1653,34 +1653,34 @@ Total Result = 8.
 #### 3.5 State Transition Triggers & Decision Gates
 1. **Dimension Parity Gate:** If either vector has 0 non-zero elements, return 0 immediately.
 2. **Sparsity Optimization Selector:**
-   - If $L_1 \cdot \log_2(L_2) < L_1 + L_2$ and $L_2 > 32$: trigger Binary Search branch.
+   - If L_1 * log_2(L_2) < L_1 + L_2 and L_2 > 32: trigger Binary Search branch.
    - Else: trigger Two-Pointer Linear Merge branch.
 3. **Two-Pointer Merge Gates:**
-   - While $p_1 < L_1 \land p_2 < L_2$:
-     - If $idx_1 == idx_2$: accumulate product, advance both.
-     - Else if $idx_1 < idx_2$: advance $p_1$.
-     - Else: advance $p_2$.
+   - While p_1 < L_1 AND p_2 < L_2:
+     - If idx_1 == idx_2: accumulate product, advance both.
+     - Else if idx_1 < idx_2: advance p_1.
+     - Else: advance p_2.
 4. **Return Result:** Return accumulated sum.
 
 #### 3.6 Concrete Step-by-Step State Trace
 Vector 1: `[(0, 1), (3, 2), (4, 3)]`  
 Vector 2: `[(1, 3), (3, 4)]`
 
-| Step | $p_1$ | $p_2$ | $v_1[p_1]$ | $v_2[p_2]$ | Comparison | Action | Running Sum |
+| Step | p_1 | p_2 | v_1[p_1] | v_2[p_2] | Comparison | Action | Running Sum |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **0** | 0 | 0 | `(0, 1)` | `(1, 3)` | $0 < 1$ | $p_1 \leftarrow 1$ | 0 |
-| **1** | 1 | 0 | `(3, 2)` | `(1, 3)` | $3 > 1$ | $p_2 \leftarrow 1$ | 0 |
-| **2** | 1 | 1 | `(3, 2)` | `(3, 4)` | $3 == 3$ (Hit!) | $2 \times 4 = 8; p_1 \leftarrow 2, p_2 \leftarrow 2$ | 8 |
-| **End**| 2 | 2 | — | — | $p_2 == L_2$ | Loop terminates | **8** |
+| **0** | 0 | 0 | `(0, 1)` | `(1, 3)` | 0 < 1 | p_1 <- 1 | 0 |
+| **1** | 1 | 0 | `(3, 2)` | `(1, 3)` | 3 > 1 | p_2 <- 1 | 0 |
+| **2** | 1 | 1 | `(3, 2)` | `(3, 4)` | 3 == 3 (Hit!) | 2 x 4 = 8; p_1 <- 2, p_2 <- 2 | 8 |
+| **End**| 2 | 2 | — | — | p_2 == L_2 | Loop terminates | **8** |
 
 ---
 
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Index-Value Struct Array + Two Pointers):** The enterprise standard. Minimal memory footprint, zero GC heap fragmentation, optimal hardware L1/L2 data prefetching. Time: $O(L_1 + L_2)$, Space: $O(L)$.
-- **Approach 2 (Hash Map / Dictionary):** Store non-zero indices in a hash map. Probe smaller map against larger map. Time: $O(\min(L_1, L_2))$ average. Space: $O(L)$ with high constant factor ($4\times$ memory usage of struct array).
-- **Approach 3 (Binary Search on Asymmetric Vectors):** When $L_1 \ll L_2$, binary search each index of $L_1$ in $L_2$. Time: $O(L_1 \log L_2)$.
+- **Approach 1 (Index-Value Struct Array + Two Pointers):** The enterprise standard. Minimal memory footprint, zero GC heap fragmentation, optimal hardware L1/L2 data prefetching. Time: O(L_1 + L_2), Space: O(L).
+- **Approach 2 (Hash Map / Dictionary):** Store non-zero indices in a hash map. Probe smaller map against larger map. Time: O(min(L_1, L_2)) average. Space: O(L) with high constant factor (4* memory usage of struct array).
+- **Approach 3 (Binary Search on Asymmetric Vectors):** When L_1 << L_2, binary search each index of L_1 in L_2. Time: O(L_1 log L_2).
 
 #### 4.2 Step-by-Step Natural Progression Flow
 1. **Construction:** Count non-zero elements or scan `nums`, appending struct `(index, value)` to a packed array.
@@ -1689,16 +1689,16 @@ Vector 2: `[(1, 3), (3, 4)]`
 4. Return scalar result.
 
 #### 4.3 Alternative Approaches Analysis
-- *Direct Array Storage:* Fails instantly when $N = 10^9$ (sparse recommender systems / embedding spaces). COO representation is the exact standard utilized by SciPy (`scipy.sparse.coo_matrix`) and PyTorch Sparse.
+- *Direct Array Storage:* Fails instantly when N = 10^9 (sparse recommender systems / embedding spaces). COO representation is the exact standard utilized by SciPy (`scipy.sparse.coo_matrix`) and PyTorch Sparse.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
-| Approach | Constructor Time | Query Time | Auxiliary Memory | Cache Locality | Handles Asymmetry ($L_1 \ll L_2$) |
+| Approach | Constructor Time | Query Time | Auxiliary Memory | Cache Locality | Handles Asymmetry (L_1 << L_2) |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. Struct Array + Two Pointers** | $O(N)$ | $O(L_1 + L_2)$ | $O(L)$ (8 bytes/elem) | Optimal (contiguous RAM) | Good |
-| **2. Struct Array + Binary Search**| $O(N)$ | $O(L_1 \log L_2)$ | $O(L)$ | Optimal | Excellent ($L_1 \ll L_2$) |
-| **3. Dictionary / Hash Map** | $O(N)$ | $O(\min(L_1, L_2))$ avg | $O(L)$ (32+ bytes/elem)| Poor (pointer chasing) | Moderate |
-| **4. Dense Array** | $O(1)$ | $O(N)$ | $O(N)$ | Optimal | Catastrophic for large $N$ |
+| **1. Struct Array + Two Pointers** | O(N) | O(L_1 + L_2) | O(L) (8 bytes/elem) | Optimal (contiguous RAM) | Good |
+| **2. Struct Array + Binary Search**| O(N) | O(L_1 log L_2) | O(L) | Optimal | Excellent (L_1 << L_2) |
+| **3. Dictionary / Hash Map** | O(N) | O(min(L_1, L_2)) avg | O(L) (32+ bytes/elem)| Poor (pointer chasing) | Moderate |
+| **4. Dense Array** | O(1) | O(N) | O(N) | Optimal | Catastrophic for large N |
 
 ---
 
@@ -1883,12 +1883,12 @@ public class SparseVector
 ### 6. Senior Pitfalls & Defensive Traps
 - **Pitfall 1: Blindly Choosing `Dictionary<int, int>`:**
   - When asked how to represent sparse vectors, junior candidates immediately blurt out "Hash Map!".
-  - In a senior Meta interview, explain the memory and performance reality: A .NET `Dictionary<int, int>` incurs internal entry structs (`int hashCode, int next, int key, int value` = 16 bytes), a bucket array pointer, object overhead, and GC references $\to \approx 32\text{--}40$ bytes per non-zero entry. In contrast, an array of `readonly struct (int Index, int Value)` uses exactly 8 bytes per entry, zero GC references, and packs 8 entries per 64-byte CPU L1 cache line!
-- **Pitfall 2: Neglecting Vector Asymmetry ($L_1 \ll L_2$):**
+  - In a senior Meta interview, explain the memory and performance reality: A .NET `Dictionary<int, int>` incurs internal entry structs (`int hashCode, int next, int key, int value` = 16 bytes), a bucket array pointer, object overhead, and GC references -> ~ 32--40 bytes per non-zero entry. In contrast, an array of `readonly struct (int Index, int Value)` uses exactly 8 bytes per entry, zero GC references, and packs 8 entries per 64-byte CPU L1 cache line!
+- **Pitfall 2: Neglecting Vector Asymmetry (L_1 << L_2):**
   - If the interviewer asks: *"What if Vector A has 2 non-zeros, but Vector B has 500,000 non-zeros?"*
-  - The two-pointer approach scans all 500,000 elements of $B$. Binary searching the 2 elements of $A$ in $B$ takes $2 \times \lceil\log_2 500000\rceil \approx 38$ operations! Implementing the adaptive threshold showcases world-class systems maturity.
+  - The two-pointer approach scans all 500,000 elements of B. Binary searching the 2 elements of A in B takes 2 x ceil(log_2 500000) ~ 38 operations! Implementing the adaptive threshold showcases world-class systems maturity.
 - **Pitfall 3: Summation Overflow:**
-  - Multiplying large components $10^5 \times 10^5 = 10^{10}$ exceeds 32-bit `int`. Storing the accumulator as `long` and casting at the boundary defends against arithmetic corruption.
+  - Multiplying large components 10^5 x 10^5 = 10^10 exceeds 32-bit `int`. Storing the accumulator as `long` and casting at the boundary defends against arithmetic corruption.
 
 ---
 
@@ -1919,17 +1919,17 @@ public class SparseVector
   - The tree root has `root.parent == null`.
   - You are given direct references to `p` and `q` (the root reference is **not** provided!).
 - **Key Constraints:**
-  - The number of nodes in the tree is in the range $[2, 10^5]$.
-  - $-10^9 \le Node.val \le 10^9$.
+  - The number of nodes in the tree is in the range [2, 10^5].
+  - -10^9 <= Node.val <= 10^9.
 - **Senior Edge Cases to Defend:**
-  - One node is the direct ancestor of the other: `p` is the parent of `q` $\implies$ LCA is `p`.
-  - Sibling nodes: `p` and `q` share the same immediate parent $\implies$ LCA is `p.parent`.
-  - The LCA is the root of the tree: `p` and `q` reside in opposite main subtrees $\implies$ LCA is root.
-  - Asymmetric depths: `p` is at depth 1, `q` is at depth $10^4$.
+  - One node is the direct ancestor of the other: `p` is the parent of `q` => LCA is `p`.
+  - Sibling nodes: `p` and `q` share the same immediate parent => LCA is `p.parent`.
+  - The LCA is the root of the tree: `p` and `q` reside in opposite main subtrees => LCA is root.
+  - Asymmetric depths: `p` is at depth 1, `q` is at depth 10^4.
   - Disjoint tree trap (Defensive verification): If `p` and `q` were in separate disconnected trees, cycle-switch would loop infinitely unless guarded.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Isomorphism to Intersection of Two Linked Lists (LeetCode #160). Because each node possesses a unique `parent` reference, following the `parent` pointers from any node upwards toward the root forms a singly linked list terminating at `null`. Finding the LCA of `p` and `q` is mathematically identical to finding the intersection node of two converging linked lists. By running two pointers that switch heads upon reaching `null`, both pointers traverse identical total path lengths ($d_p + d_q$) and collide at the LCA in $O(H)$ time and $O(1)$ space.
+- **Conceptual Essence:** Isomorphism to Intersection of Two Linked Lists (LeetCode #160). Because each node possesses a unique `parent` reference, following the `parent` pointers from any node upwards toward the root forms a singly linked list terminating at `null`. Finding the LCA of `p` and `q` is mathematically identical to finding the intersection node of two converging linked lists. By running two pointers that switch heads upon reaching `null`, both pointers traverse identical total path lengths (d_p + d_q) and collide at the LCA in O(H) time and O(1) space.
 - **Sample 1:**
   - **Input:** `root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1`
   - **Output:** `3`
@@ -1943,39 +1943,39 @@ public class SparseVector
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
 Imagine two mountain climbers starting at different base camps on a mountain:
-- Climber A starts at altitude $p$.
-- Climber B starts at altitude $q$.
+- Climber A starts at altitude p.
+- Climber B starts at altitude q.
 Both climbers ascend along single-track trails marked by `parent` cairns. Eventually, their two trails merge at a ridge shelter (the LCA), and from that shelter, a single unified trail leads to the summit (the root).
 If Climber A reaches the summit, descends by helicopter to Climber B's base camp, and resumes climbing, while Climber B reaches the summit, flies to Climber A's base camp, and resumes climbing:
 Both climbers will hike the exact same total distance:
-$$\text{Trail}_A + \text{SharedTrail} + \text{Trail}_B$$
+Trail_A + SharedTrail + Trail_B
 Because their speeds are identical, they will walk into the ridge shelter at the exact same minute!
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
 - **HashSet Ancestor Logging:**
   Traverse from `p` upwards to the root, inserting every ancestor into a `HashSet<Node>`. Then traverse upwards from `q`; the first node found in the hash set is the LCA.
-  - Time: $O(H)$ where $H$ is tree height.
-  - Space: $O(H)$ heap memory.
-  - Bottleneck: For a skewed tree where $H = 10^5$, allocating a hash set of $10^5$ nodes consumes several megabytes of heap memory and incurs garbage collection churn.
+  - Time: O(H) where H is tree height.
+  - Space: O(H) heap memory.
+  - Bottleneck: For a skewed tree where H = 10^5, allocating a hash set of 10^5 nodes consumes several megabytes of heap memory and incurs garbage collection churn.
 - **Root-Finding + Standard LCA (LC #236):**
   Ascend from `p` to find `root`, then call classic recursive LCA from `root` downwards.
-  - Time: $O(N)$ because downward LCA visits every node in the tree!
-  - Degradation: Visits $N$ nodes instead of being bounded by tree height $H$.
+  - Time: O(N) because downward LCA visits every node in the tree!
+  - Degradation: Visits N nodes instead of being bounded by tree height H.
 - **Two-Pointer Constant-Space Invariant:**
-  Path length equalization achieves $O(H)$ time with guaranteed $O(1)$ auxiliary memory.
+  Path length equalization achieves O(H) time with guaranteed O(1) auxiliary memory.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Path Length Equalization Invariant:**
   Let:
-  - $a$ = distance from $p$ to LCA.
-  - $b$ = distance from $q$ to LCA.
-  - $c$ = distance from LCA to root.
+  - a = distance from p to LCA.
+  - b = distance from q to LCA.
+  - c = distance from LCA to root.
   - Distance from root to `null` = 1.
-  Path traversed by Pointer $A$:
-  $$\text{Path}_A = a + c + 1 \quad (\text{switches to } q) \quad + b = a + b + c + 1$$
-  Path traversed by Pointer $B$:
-  $$\text{Path}_B = b + c + 1 \quad (\text{switches to } p) \quad + a = a + b + c + 1$$
-  Since $\text{Path}_A = \text{Path}_B$, after traversing exactly $a + b + c$ edges, both pointers point to the exact same node: the Lowest Common Ancestor!
+  Path traversed by Pointer A:
+  Path_A = a + c + 1 (switches to q) + b = a + b + c + 1
+  Path traversed by Pointer B:
+  Path_B = b + c + 1 (switches to p) + a = a + b + c + 1
+  Since Path_A = Path_B, after traversing exactly a + b + c edges, both pointers point to the exact same node: the Lowest Common Ancestor!
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -2024,10 +2024,10 @@ Tree: `p = 4`, `q = 5`, LCA = `5`. Path from 4: `4 -> 2 -> 5 -> 3 -> null`. Path
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Two-Pointer Path Equalization):** The most elegant algorithm. $O(H)$ time, $O(1)$ auxiliary space. Zero data structure allocations.
-- **Approach 2 (Depth Alignment / Lift):** Compute depth $d_p$ and $d_q$ by counting steps to root. Lift the deeper node by $|d_p - d_q|$ steps so both nodes are at the identical depth. Then advance both upwards synchronously until they meet.
-  - *Advantage:* Highly intuitive and mirrors the Lowest Common Ancestor algorithm in Operating System process trees and Git commit DAGs. $O(H)$ time, $O(1)$ space.
-- **Approach 3 (HashSet of Ancestors):** Store ancestors of `p` in a hash set; find first hit from `q`. $O(H)$ time, $O(H)$ space.
+- **Approach 1 (Two-Pointer Path Equalization):** The most elegant algorithm. O(H) time, O(1) auxiliary space. Zero data structure allocations.
+- **Approach 2 (Depth Alignment / Lift):** Compute depth d_p and d_q by counting steps to root. Lift the deeper node by |d_p - d_q| steps so both nodes are at the identical depth. Then advance both upwards synchronously until they meet.
+  - *Advantage:* Highly intuitive and mirrors the Lowest Common Ancestor algorithm in Operating System process trees and Git commit DAGs. O(H) time, O(1) space.
+- **Approach 3 (HashSet of Ancestors):** Store ancestors of `p` in a hash set; find first hit from `q`. O(H) time, O(H) space.
 - **Selection Rule:** Present Approach 1 as primary for code elegance; implement Approach 2 as secondary to demonstrate multi-paradigm mastery.
 
 #### 4.2 Step-by-Step Natural Progression Flow
@@ -2047,9 +2047,9 @@ Tree: `p = 4`, `q = 5`, LCA = `5`. Path from 4: `4 -> 2 -> 5 -> 3 -> null`. Path
 
 | Approach | Time (Best/Avg/Worst) | Auxiliary Space | Code Footprint | Disjoint Tree Resilient | Cache Locality |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. Two-Pointer Cycle Switch**| $O(1) / O(H) / O(H)$ | $O(1)$ | 8 lines | Needs guard | High |
-| **2. Depth Normalization (Lift)**| $O(1) / O(H) / O(H)$ | $O(1)$ | 20 lines | Yes | High |
-| **3. Ancestor HashSet** | $O(1) / O(H) / O(H)$ | $O(H)$ (heap set) | 12 lines | Yes | Low |
+| **1. Two-Pointer Cycle Switch**| O(1) / O(H) / O(H) | O(1) | 8 lines | Needs guard | High |
+| **2. Depth Normalization (Lift)**| O(1) / O(H) / O(H) | O(1) | 20 lines | Yes | High |
+| **3. Ancestor HashSet** | O(1) / O(H) / O(H) | O(H) (heap set) | 12 lines | Yes | Low |
 
 ---
 
@@ -2171,8 +2171,8 @@ public class SolutionDepthNormalization
 
 ### 6. Senior Pitfalls & Defensive Traps
 - **Pitfall 1: Confusing LC #1650 with LC #236:**
-  - LC #236 gives `root`, `p`, and `q`, but **no** parent pointers $\implies$ requires recursive post-order tree traversal from root.
-  - LC #1650 provides direct node references with parent pointers, but **no** root $\implies$ starting a DFS search from root requires traversing to root first and degrades complexity to $O(N)$ instead of $O(H)$!
+  - LC #236 gives `root`, `p`, and `q`, but **no** parent pointers => requires recursive post-order tree traversal from root.
+  - LC #1650 provides direct node references with parent pointers, but **no** root => starting a DFS search from root requires traversing to root first and degrades complexity to O(N) instead of O(H)!
 - **Pitfall 2: Infinite Loop under Disjoint Forests:**
   - If `p` and `q` belong to two completely separate trees (a disconnected forest), neither pointer will ever meet, and they will cycle through `p` and `q` indefinitely. In an enterprise setting, defend by limiting head switches to at most 2, or checking `GetRoot(p) == GetRoot(q)`.
 - **Pitfall 3: Null Redirection Logic Bug:**
@@ -2213,36 +2213,36 @@ public class SolutionDepthNormalization
   }
   ```
 - **Key Constraints:**
-  - $1 \le nestedList.Count \le 50$.
-  - The values of integers in the nested list are in the range $[-100, 100]$.
-  - The maximum depth of any integer is less than or equal to $50$.
+  - 1 <= nestedList.Count <= 50.
+  - The values of integers in the nested list are in the range [-100, 100].
+  - The maximum depth of any integer is less than or equal to 50.
 - **Senior Edge Cases to Defend:**
-  - Empty top-level list: `nestedList = []` $\implies$ returns 0.
-  - Lists containing empty nested lists: `nestedList = [[]]` $\implies$ returns 0.
-  - Flat list with zero nesting: `nestedList = [1, 2, 3]` $\implies$ all at depth 1; sum = $1(1) + 2(1) + 3(1) = 6$.
-  - Single deeply nested integer: `nestedList = [[[[5]]]]` $\implies$ depth 4; sum = $5 \times 4 = 20$.
-  - Negative numbers with deep weights: negative values must subtract proportionally: $-10 \times 4 = -40$.
-  - Enterprise stack depth defense: in real-world JSON/YAML deserialization engines, depth can exceed thousands ($D > 10^4$), causing `StackOverflowException` in naive recursive DFS.
+  - Empty top-level list: `nestedList = []` => returns 0.
+  - Lists containing empty nested lists: `nestedList = [[]]` => returns 0.
+  - Flat list with zero nesting: `nestedList = [1, 2, 3]` => all at depth 1; sum = 1(1) + 2(1) + 3(1) = 6.
+  - Single deeply nested integer: `nestedList = [[[[5]]]]` => depth 4; sum = 5 x 4 = 20.
+  - Negative numbers with deep weights: negative values must subtract proportionally: -10 x 4 = -40.
+  - Enterprise stack depth defense: in real-world JSON/YAML deserialization engines, depth can exceed thousands (D > 10^4), causing `StackOverflowException` in naive recursive DFS.
 
 ### 2. Summary & Sample Input / Output
 - **Conceptual Essence:** Depth-Weighted Structural Traversal. The problem represents an arbitrary rose-tree (n-ary tree) where leaves hold integers and internal nodes represent grouping brackets.
   - In DFS: Traverse recursively, carrying an integer `depth` accumulator (initialized to 1). When encountering a leaf (`IsInteger() == true`), contribute `GetInteger() * depth` to the running sum. When encountering an internal node, recursively invoke on the sublist with `depth + 1`.
-  - In BFS: Queue elements level-by-level using queue snapshot sweeps. All integers dequeued at level $d$ are multiplied by scalar $d$, while sublists are unpacked and enqueued for level $d + 1$.
+  - In BFS: Queue elements level-by-level using queue snapshot sweeps. All integers dequeued at level d are multiplied by scalar d, while sublists are unpacked and enqueued for level d + 1.
 - **Sample 1:**
   - **Input:** `nestedList = [[1, 1], 2, [1, 1]]`
   - **Output:** `10`
   - **Explanation:**
-    - Four `1`'s at depth 2: $4 \times (1 \times 2) = 8$.
-    - One `2` at depth 1: $1 \times (2 \times 1) = 2$.
-    - Total sum = $8 + 2 = 10$.
+    - Four `1`'s at depth 2: 4 * (1 x 2) = 8.
+    - One `2` at depth 1: 1 * (2 x 1) = 2.
+    - Total sum = 8 + 2 = 10.
 - **Sample 2:**
   - **Input:** `nestedList = [1, [4, [6]]]`
   - **Output:** `27`
   - **Explanation:**
-    - `1` at depth 1 $\implies 1 \times 1 = 1$.
-    - `4` at depth 2 $\implies 4 \times 2 = 8$.
-    - `6` at depth 3 $\implies 6 \times 3 = 18$.
-    - Total sum = $1 + 8 + 18 = 27$.
+    - `1` at depth 1 => 1 x 1 = 1.
+    - `4` at depth 2 => 4 x 2 = 8.
+    - `6` at depth 3 => 6 x 3 = 18.
+    - Total sum = 1 + 8 + 18 = 27.
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
@@ -2256,17 +2256,18 @@ Whether you crack open each doll completely down to its core before touching the
 #### 3.2 The Naive Bottleneck & Redundant Computation
 - A naive attempt flattens the nested list into a 1D string or linear collection:
   - Flaw: Flattening destroys the nesting metadata. To recover depth, you must count bracket depths, which adds an unnecessary intermediate serialization pass.
-- In-place recursive traversal or queue-based level processing visits every element and list wrapper **exactly once**, achieving optimal $O(N)$ linear time where $N$ is the total count of nested elements (integers + list wrappers).
+- In-place recursive traversal or queue-based level processing visits every element and list wrapper **exactly once**, achieving optimal O(N) linear time where N is the total count of nested elements (integers + list wrappers).
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Recursive Decomposition Invariant:**
-  For any nested list $L$ at depth $d$:
-  $$\text{WeightSum}(L, d) = \sum_{x \in L} \begin{cases} x.\text{GetInteger}() \cdot d & \text{if } x.\text{IsInteger}() \\ \text{WeightSum}(x.\text{GetList}(), d + 1) & \text{otherwise} \end{cases}$$
+  For any nested list L at depth d:
+  WeightSum(L, d) = Sum(x in L) x.GetInteger() * d if x.IsInteger()
+WeightSum(x.GetList(), d + 1) otherwise
 - **Level-Order Queue Invariant (BFS):**
-  At the beginning of iteration $d$, the queue contains **only** elements that reside strictly at structural depth $d$.
-  By snapshotting `levelSize = queue.Count`, we process all depth-$d$ elements in a batch:
-  - If element is integer: $\text{totalSum} += \text{val} \cdot d$.
-  - If element is list: enqueue each child into the queue (they will be processed at depth $d + 1$).
+  At the beginning of iteration d, the queue contains **only** elements that reside strictly at structural depth d.
+  By snapshotting `levelSize = queue.Count`, we process all depth-d elements in a batch:
+  - If element is integer: totalSum += val * d.
+  - If element is list: enqueue each child into the queue (they will be processed at depth d + 1).
 - **Contrast with LeetCode #364 (Nested List Weight Sum II):**
   In LC #364, depth weight is reversed: depth is measured from the deepest leaf upwards. In LC #364, BFS maintains a cumulative running sum without knowing max depth upfront. In LC #339, standard depth weight is applied downwards, making both DFS and BFS equally straightforward.
 
@@ -2300,7 +2301,7 @@ Final Sum: 1 + 8 + 18 = 27
    - Initialize `depth = 1`, enqueue all top-level `NestedInteger` items.
    - While `queue.Count > 0`:
      - Snapshot `levelSize = queue.Count`.
-     - For $i = 0 \dots levelSize - 1$:
+     - For i = 0 ... levelSize - 1:
        - Dequeue `curr`.
        - If `curr.IsInteger()`: `totalSum += curr.GetInteger() * depth`.
        - Else: Enqueue all items in `curr.GetList()`.
@@ -2312,12 +2313,12 @@ Input: `[[1, 1], 2, [1, 1]]`
 | Level / Depth | Queue Snapshot Size | Dequeued Element | `IsInteger()` | Value / Action | Level Multiplier | Running Total Sum |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **Depth 1** | 3 items | `List [1, 1]` | False | Enqueue two `1`s | — | 0 |
-| — | — | `Integer 2` | True | $2 \times 1 = 2$ | 1 | 2 |
+| — | — | `Integer 2` | True | 2 x 1 = 2 | 1 | 2 |
 | — | — | `List [1, 1]` | False | Enqueue two `1`s | — | 2 |
-| **Depth 2** | 4 items | `Integer 1` | True | $1 \times 2 = 2$ | 2 | 4 |
-| — | — | `Integer 1` | True | $1 \times 2 = 2$ | 2 | 6 |
-| — | — | `Integer 1` | True | $1 \times 2 = 2$ | 2 | 8 |
-| — | — | `Integer 1` | True | $1 \times 2 = 2$ | 2 | **10** |
+| **Depth 2** | 4 items | `Integer 1` | True | 1 x 2 = 2 | 2 | 4 |
+| — | — | `Integer 1` | True | 1 x 2 = 2 | 2 | 6 |
+| — | — | `Integer 1` | True | 1 x 2 = 2 | 2 | 8 |
+| — | — | `Integer 1` | True | 1 x 2 = 2 | 2 | **10** |
 | **Depth 3** | 0 items | Queue empty | — | Loop terminates | — | **10** |
 
 ---
@@ -2325,8 +2326,8 @@ Input: `[[1, 1], 2, [1, 1]]`
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Depth-First Search / Recursion):** Highly compact and idiomatic. $O(N)$ time, $O(D)$ auxiliary call stack space where $D$ is maximum nesting depth.
-- **Approach 2 (Breadth-First Search / Level Queue):** Iterative and heap-safe. Eliminates recursive call stack frames, preventing stack overflow on deep inputs. $O(N)$ time, $O(W)$ auxiliary memory where $W$ is maximum level width.
+- **Approach 1 (Depth-First Search / Recursion):** Highly compact and idiomatic. O(N) time, O(D) auxiliary call stack space where D is maximum nesting depth.
+- **Approach 2 (Breadth-First Search / Level Queue):** Iterative and heap-safe. Eliminates recursive call stack frames, preventing stack overflow on deep inputs. O(N) time, O(W) auxiliary memory where W is maximum level width.
 - **Selection Rule:** DFS is preferred in live interviews for concise implementation. Mention BFS as the production-safe defense against stack overflow when maximum depth is unbounded.
 
 #### 4.2 Step-by-Step Natural Progression Flow
@@ -2346,9 +2347,9 @@ Input: `[[1, 1], 2, [1, 1]]`
 
 | Approach | Time (Best/Avg/Worst) | Auxiliary Space | Call Stack Risk | Cache Locality | Streaming Suitability |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. Recursive DFS** | $O(N) / O(N) / O(N)$ | $O(D)$ (call stack) | StackOverflow if $D > 10^4$ | High | Poor |
-| **2. Level-Order BFS** | $O(N) / O(N) / O(N)$ | $O(W)$ (heap queue) | Zero (heap allocated) | Moderate | High (level-by-level) |
-| **3. Iterative DFS Stack** | $O(N) / O(N) / O(N)$ | $O(D)$ (heap stack) | Zero (heap allocated) | High | Poor |
+| **1. Recursive DFS** | O(N) / O(N) / O(N) | O(D) (call stack) | StackOverflow if D > 10^4 | High | Poor |
+| **2. Level-Order BFS** | O(N) / O(N) / O(N) | O(W) (heap queue) | Zero (heap allocated) | Moderate | High (level-by-level) |
+| **3. Iterative DFS Stack** | O(N) / O(N) / O(N) | O(D) (heap stack) | Zero (heap allocated) | High | Poor |
 
 ---
 
@@ -2494,7 +2495,7 @@ public class SolutionBfs
   - In LC #364, computing max depth requires two passes, OR a brilliant single-pass BFS trick: at each level, add all leaf values to an `unweightedSum`, and add `unweightedSum` to `weightedSum` at every level (since earlier levels get added repeatedly, naturally weighting them by their distance to the bottom!).
   - Clearly articulating this distinction demonstrates elite mastery to a Meta interviewer.
 - **Pitfall 3: Stack Overflow on Deep Nesting:**
-  - Operating system thread stacks in .NET default to 1 MB (or 256 KB on 32-bit / musl Linux). A nested JSON payload with depth $10^4$ will trigger an unrecoverable `StackOverflowException`. Mentioning BFS or an explicit `Stack<(NestedInteger, int)>` on the heap is a standard senior engineering differentiator.
+  - Operating system thread stacks in .NET default to 1 MB (or 256 KB on 32-bit / musl Linux). A nested JSON payload with depth 10^4 will trigger an unrecoverable `StackOverflowException`. Mentioning BFS or an explicit `Stack<(NestedInteger, int)>` on the heap is a standard senior engineering differentiator.
 
 ---
 
@@ -2508,27 +2509,27 @@ public class SolutionBfs
 | **LeetCode Link** | [Merge Sorted Array](https://leetcode.com/problems/merge-sorted-array/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** You are given two integer arrays `nums1` and `nums2`, sorted in non-decreasing order, and two integers `m` and `n`, representing the number of elements in `nums1` and `nums2` respectively. Merge `nums1` and `nums2` into a single array sorted in non-decreasing order. The final sorted array should not be returned by the function, but instead be stored inside the array `nums1`. To accommodate this, `nums1` has a length of $m + n$, where the first $m$ elements denote the elements that should be merged, and the last $n$ elements are set to 0 and should be ignored. `nums2` has a length of $n$.
+- **Formal Statement:** You are given two integer arrays `nums1` and `nums2`, sorted in non-decreasing order, and two integers `m` and `n`, representing the number of elements in `nums1` and `nums2` respectively. Merge `nums1` and `nums2` into a single array sorted in non-decreasing order. The final sorted array should not be returned by the function, but instead be stored inside the array `nums1`. To accommodate this, `nums1` has a length of m + n, where the first m elements denote the elements that should be merged, and the last n elements are set to 0 and should be ignored. `nums2` has a length of n.
 - **Assumptions & Contracts:**
-  - `nums1` has allocated capacity exactly equal to $m + n$.
+  - `nums1` has allocated capacity exactly equal to m + n.
   - Both input arrays are pre-sorted in non-decreasing order.
   - The modification must occur **strictly in-place** inside `nums1`.
   - Return type is `void`.
 - **Key Constraints:**
-  - $nums1.Length == m + n$.
-  - $nums2.Length == n$.
-  - $0 \le m, n \le 200$.
-  - $1 \le m + n \le 200$.
-  - $-10^9 \le nums1[i], nums2[j] \le 10^9$.
+  - nums1.Length == m + n.
+  - nums2.Length == n.
+  - 0 <= m, n <= 200.
+  - 1 <= m + n <= 200.
+  - -10^9 <= nums1[i], nums2[j] <= 10^9.
 - **Senior Edge Cases to Defend:**
-  - $m = 0$ (`nums1` has 0 elements, only buffer space): copy all of `nums2` into `nums1`.
-  - $n = 0$ (`nums2` is empty): `nums1` is already fully merged; 0 operations required.
+  - m = 0 (`nums1` has 0 elements, only buffer space): copy all of `nums2` into `nums1`.
+  - n = 0 (`nums2` is empty): `nums1` is already fully merged; 0 operations required.
   - All elements in `nums2` strictly smaller than `nums1`: `nums1 = [4, 5, 6, 0, 0, 0], nums2 = [1, 2, 3]`. All `nums1` elements shift to the right, followed by `nums2` flushing into the front.
   - All elements in `nums2` strictly larger than `nums1`: `nums1 = [1, 2, 3, 0, 0, 0], nums2 = [4, 5, 6]`. `nums2` elements copy directly into the rear without displacing `nums1`.
   - Duplicate values across arrays: `nums1 = [2, 2, 0], nums2 = [2]`. Non-decreasing stability must be preserved.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Reverse Three-Pointer In-Place Merge. Merging from the front requires shifting elements rightward ($O(M \cdot N)$) or allocating an auxiliary array of size $M$ ($O(M)$ extra space). However, because the empty buffer of size $N$ is positioned at the very tail of `nums1`, merging **from the back** (`writeIndex = m + n - 1`) guarantees that the write cursor can NEVER overwrite an unprocessed element of `nums1`. Compare the largest remaining elements at `p1 = m - 1` and `p2 = n - 1`, write the larger to `nums1[writeIndex]`, and decrement cursors.
+- **Conceptual Essence:** Reverse Three-Pointer In-Place Merge. Merging from the front requires shifting elements rightward (O(M * N)) or allocating an auxiliary array of size M (O(M) extra space). However, because the empty buffer of size N is positioned at the very tail of `nums1`, merging **from the back** (`writeIndex = m + n - 1`) guarantees that the write cursor can NEVER overwrite an unprocessed element of `nums1`. Compare the largest remaining elements at `p1 = m - 1` and `p2 = n - 1`, write the larger to `nums1[writeIndex]`, and decrement cursors.
 - **Sample 1:**
   - **Input:** `nums1 = [1, 2, 3, 0, 0, 0], m = 3`, `nums2 = [2, 5, 6], n = 3`
   - **Output:** `nums1` mutated to `[1, 2, 2, 3, 5, 6]`
@@ -2543,38 +2544,38 @@ public class SolutionBfs
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine a parking garage with $M + N$ bays in a single line.
-- The first $M$ bays are filled with cars sorted by size.
-- The last $N$ bays are completely empty.
-A delivery flatbed arrives with $N$ new cars, also sorted by size.
+Imagine a parking garage with M + N bays in a single line.
+- The first M bays are filled with cars sorted by size.
+- The last N bays are completely empty.
+A delivery flatbed arrives with N new cars, also sorted by size.
 If you try to park the smallest new car into Bay 0, you would have to move every single existing car one bay down—a logistical nightmare.
-Instead, you look at the **largest** cars: compare the biggest car in the garage (at Bay $M - 1$) with the biggest car on the flatbed (at Bay $N - 1$). Park the absolute biggest into the very last empty bay (Bay $M + N - 1$).
+Instead, you look at the **largest** cars: compare the biggest car in the garage (at Bay M - 1) with the biggest car on the flatbed (at Bay N - 1). Park the absolute biggest into the very last empty bay (Bay M + N - 1).
 Because you are filling the garage from the back, you will never crush a car that hasn't been parked yet!
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
 - **Append & Re-Sort:** Copy `nums2` into `nums1[m ... m + n - 1]` and call `Array.Sort(nums1)`.
-  - Time: $O((M + N) \log(M + N))$.
+  - Time: O((M + N) log(M + N)).
   - Flaw: Throws away the crucial precondition that both `nums1` and `nums2` were **already sorted**.
-- **Forward Merge with Auxiliary Buffer:** Copy `nums1[0 ... m - 1]` into a temporary array `temp` of size $M$, then merge `temp` and `nums2` into `nums1`.
-  - Space: $O(M)$ auxiliary memory.
-  - Flaw: Fails the strict $O(1)$ space requirement.
-- **Backward Three Pointers:** Achieves $O(M + N)$ linear time with zero heap allocations ($O(1)$ auxiliary memory).
+- **Forward Merge with Auxiliary Buffer:** Copy `nums1[0 ... m - 1]` into a temporary array `temp` of size M, then merge `temp` and `nums2` into `nums1`.
+  - Space: O(M) auxiliary memory.
+  - Flaw: Fails the strict O(1) space requirement.
+- **Backward Three Pointers:** Achieves O(M + N) linear time with zero heap allocations (O(1) auxiliary memory).
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **The Non-Collision Invariant:**
   At any step, let:
-  - $p_1$: index of the next unread element in `nums1` (initially $m - 1$).
-  - $p_2$: index of the next unread element in `nums2` (initially $n - 1$).
-  - $w$: index of the next write target in `nums1` (initially $m + n - 1$).
+  - p_1: index of the next unread element in `nums1` (initially m - 1).
+  - p_2: index of the next unread element in `nums2` (initially n - 1).
+  - w: index of the next write target in `nums1` (initially m + n - 1).
   The number of elements written to the back of `nums1` is:
-  $$\text{written} = (m + n - 1) - w$$
-  The number of elements written that came from `nums2` is at most $n - 1 - p_2 \ge 0$.
-  Therefore, the index $w$ is strictly bounded:
-  $$w = p_1 + (p_2 + 1) \ge p_1$$
-  Because $w \ge p_1$ is an absolute mathematical invariant for all execution steps, the write cursor $w$ can **never** overtake or overwrite $p_1$!
+  written = (m + n - 1) - w
+  The number of elements written that came from `nums2` is at most n - 1 - p_2 >= 0.
+  Therefore, the index w is strictly bounded:
+  w = p_1 + (p_2 + 1) >= p_1
+  Because w >= p_1 is an absolute mathematical invariant for all execution steps, the write cursor w can **never** overtake or overwrite p_1!
   Unprocessed elements in `nums1` are 100% safe.
 - **The Early Termination Invariant:**
-  If $p_2 < 0$, all elements from `nums2` have been successfully placed into `nums1`.
+  If p_2 < 0, all elements from `nums2` have been successfully placed into `nums1`.
   Any remaining elements in `nums1[0 ... p_1]` are **already in their correct sorted positions**! The merge can terminate immediately.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
@@ -2611,20 +2612,20 @@ Input: `nums1 = [1, 2, 3, 0, 0, 0], m = 3`, `nums2 = [2, 5, 6], n = 3`
 
 | Step | `p1` | `p2` | `write` | `nums1[p1]` | `nums2[p2]` | Decision (`p1 >= 0 && nums1[p1] > nums2[p2]`) | Target Written | Mutated `nums1` |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
-| **Init**| 2 | 2 | 5 | 3 | 6 | $3 > 6$ (False) | `nums1[5] = 6`, `p2--` | `[1, 2, 3, 0, 0, 6]` |
-| **1** | 2 | 1 | 4 | 3 | 5 | $3 > 5$ (False) | `nums1[4] = 5`, `p2--` | `[1, 2, 3, 0, 5, 6]` |
-| **2** | 2 | 0 | 3 | 3 | 2 | $3 > 2$ (True) | `nums1[3] = 3`, `p1--` | `[1, 2, 3, 3, 5, 6]` |
-| **3** | 1 | 0 | 2 | 2 | 2 | $2 > 2$ (False) | `nums1[2] = 2`, `p2--` | `[1, 2, 2, 3, 5, 6]` |
-| **Exit**| 1 | -1| 1 | — | — | `p2 < 0` $\implies$ Terminate | None | `[1, 2, 2, 3, 5, 6]` |
+| **Init**| 2 | 2 | 5 | 3 | 6 | 3 > 6 (False) | `nums1[5] = 6`, `p2--` | `[1, 2, 3, 0, 0, 6]` |
+| **1** | 2 | 1 | 4 | 3 | 5 | 3 > 5 (False) | `nums1[4] = 5`, `p2--` | `[1, 2, 3, 0, 5, 6]` |
+| **2** | 2 | 0 | 3 | 3 | 2 | 3 > 2 (True) | `nums1[3] = 3`, `p1--` | `[1, 2, 3, 3, 5, 6]` |
+| **3** | 1 | 0 | 2 | 2 | 2 | 2 > 2 (False) | `nums1[2] = 2`, `p2--` | `[1, 2, 2, 3, 5, 6]` |
+| **Exit**| 1 | -1| 1 | — | — | `p2 < 0` => Terminate | None | `[1, 2, 2, 3, 5, 6]` |
 
 ---
 
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Reverse Three Pointers):** The undisputed optimal algorithm. $O(M + N)$ time, strictly $O(1)$ auxiliary space, in-place mutation.
-- **Approach 2 (Forward Merge + Auxiliary Buffer):** Allocates $O(M)$ extra array. $O(M + N)$ time, $O(M)$ space. Violates $O(1)$ space constraint.
-- **Approach 3 (Append + Sort):** Copy `nums2` and run QuickSort/IntroSort. $O((M + N) \log(M + N))$ time. Discards sorting invariant.
+- **Approach 1 (Reverse Three Pointers):** The undisputed optimal algorithm. O(M + N) time, strictly O(1) auxiliary space, in-place mutation.
+- **Approach 2 (Forward Merge + Auxiliary Buffer):** Allocates O(M) extra array. O(M + N) time, O(M) space. Violates O(1) space constraint.
+- **Approach 3 (Append + Sort):** Copy `nums2` and run QuickSort/IntroSort. O((M + N) log(M + N)) time. Discards sorting invariant.
 - **Selection Rule:** Approach 1 is the mandatory production implementation.
 
 #### 4.2 Step-by-Step Natural Progression Flow
@@ -2641,9 +2642,9 @@ Input: `nums1 = [1, 2, 3, 0, 0, 0], m = 3`, `nums2 = [2, 5, 6], n = 3`
 
 | Approach | Time Complexity | Auxiliary Space | Mutates Input | Memory Locality | Precondition Exploit |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. Reverse Three Pointers** | $O(M + N)$ | $O(1)$ | Yes (`nums1`) | Optimal (sequential back-scan) | Full |
-| **2. Forward Auxiliary Buffer** | $O(M + N)$ | $O(M)$ | Yes (`nums1`) | High | Full |
-| **3. Append & Sort** | $O((M+N) \log(M+N))$| $O(1)$ | Yes (`nums1`) | High | None (discards order)|
+| **1. Reverse Three Pointers** | O(M + N) | O(1) | Yes (`nums1`) | Optimal (sequential back-scan) | Full |
+| **2. Forward Auxiliary Buffer** | O(M + N) | O(M) | Yes (`nums1`) | High | Full |
+| **3. Append & Sort** | O((M+N) log(M+N))| O(1) | Yes (`nums1`) | High | None (discards order)|
 
 ---
 
@@ -2719,11 +2720,11 @@ public class Solution
 
 ### 6. Senior Pitfalls & Defensive Traps
 - **Pitfall 1: Driving Loop by `p1 >= 0 && p2 >= 0`:**
-  - If written as `while (p1 >= 0 && p2 >= 0)`, when `p1` hits $-1$ while `p2` still has elements (e.g. `nums1 = [0], m = 0, nums2 = [1], n = 1`), the loop exits prematurely! You must remember to write the second cleanup loop: `while (p2 >= 0) nums1[write--] = nums2[p2--];`.
+  - If written as `while (p1 >= 0 && p2 >= 0)`, when `p1` hits -1 while `p2` still has elements (e.g. `nums1 = [0], m = 0, nums2 = [1], n = 1`), the loop exits prematurely! You must remember to write the second cleanup loop: `while (p2 >= 0) nums1[write--] = nums2[p2--];`.
   - Driving the primary loop by `while (p2 >= 0)` and checking `if (p1 >= 0 && nums1[p1] > nums2[p2])` inside solves this cleanly in a single unified loop!
 - **Pitfall 2: Adding a Redundant `p1` Flush Loop:**
-  - Writing `while (p1 >= 0) nums1[write--] = nums1[p1--];` demonstrates a lack of deep invariant awareness. At that point, $write == p_1$, so every assignment does `nums1[p1] = nums1[p1]`—a completely redundant no-op.
+  - Writing `while (p1 >= 0) nums1[write--] = nums1[p1--];` demonstrates a lack of deep invariant awareness. At that point, write == p_1, so every assignment does `nums1[p1] = nums1[p1]`—a completely redundant no-op.
 - **Pitfall 3: Forward Merge Overwrite Disaster:**
-  - Trying to merge forward starting at index 0 immediately destroys the original elements of `nums1` unless shifted, turning an $O(M + N)$ algorithm into an $O(M \cdot N)$ disaster.
+  - Trying to merge forward starting at index 0 immediately destroys the original elements of `nums1` unless shifted, turning an O(M + N) algorithm into an O(M * N) disaster.
 
 ---

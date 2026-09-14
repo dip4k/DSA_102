@@ -1,6 +1,6 @@
 # Phase 17: Backtracking
 
-> **Focus:** State-Space Decision Trees, Choose $\to$ Explore $\to$ Undo Lifecycle, Unbounded Choice with Sum Pruning, In-Place Grid Backtracking, and Diagonal Constraint Propagation in N-Queens (Boolean Arrays vs Bit Manipulation).  
+> **Focus:** State-Space Decision Trees, Choose -> Explore -> Undo Lifecycle, Unbounded Choice with Sum Pruning, In-Place Grid Backtracking, and Diagonal Constraint Propagation in N-Queens (Boolean Arrays vs Bit Manipulation).  
 > **Source Curriculum:** [`Senior_dsa_question_list.md`](../Senior_dsa_question_list.md) — Phase 17 (Problems #93–#98)
 
 ---
@@ -16,19 +16,19 @@
 ### 1. Problem Detail & Constraints
 - **Formal Statement:** Given an integer array `nums` of unique elements, return all possible subsets (the power set). The solution set must not contain duplicate subsets. Return the solution in any order.
 - **Key Constraints:**
-  - $1 \le nums.Length \le 10$.
-  - $-10 \le nums[i] \le 10$.
+  - 1 <= nums.Length <= 10.
+  - -10 <= nums[i] <= 10.
   - All numbers in `nums` are unique.
 - **Senior Edge Cases to Defend:**
   - Empty subset `[]` is always a valid subset and must be included in the output.
   - Snapshotting defense: When saving `current` into `result`, allocate a new list copy (`new List<int>(current)`). Saving a reference causes all outputs to mutate to empty upon backtracking unwind.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Power Set Generation ($2^N$ total configurations). Can be explored via a DFS state-space decision tree where each node represents a valid subset, or via binary bitmasks $0 \dots 2^N - 1$.
+- **Conceptual Essence:** Power Set Generation (2^N total configurations). Can be explored via a DFS state-space decision tree where each node represents a valid subset, or via binary bitmasks 0 ... 2^N - 1.
 - **Sample 1:**
   - **Input:** `nums = [1, 2, 3]`
   - **Output:** `[[], [1], [2], [1, 2], [3], [1, 3], [2, 3], [1, 2, 3]]`
-  - **Explanation:** $2^3 = 8$ distinct subsets generated.
+  - **Explanation:** 2^3 = 8 distinct subsets generated.
 - **Sample 2:**
   - **Input:** `nums = [0]`
   - **Output:** `[[], [0]]`
@@ -36,11 +36,11 @@
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine packing a backpack for a hike from a selection of $N$ unique items. For each item $nums[i]$, you face an independent binary decision: include it or leave it out. Across $N$ items, this binary branching creates a full decision tree of $2^N$ leaves.
-Alternatively, view this as a **Prefix Expansion Tree**: Start with the empty bag `[]`. At each step, choose any item $nums[i]$ from the remaining available pool ($i \ge start$), add it to the bag, take a snapshot of the bag's current contents, and recurse with remaining pool starting at $i + 1$. Because every intermediate state is a valid subset, snapshots are taken at **every single node of the tree**, not just the leaves!
+Imagine packing a backpack for a hike from a selection of N unique items. For each item nums[i], you face an independent binary decision: include it or leave it out. Across N items, this binary branching creates a full decision tree of 2^N leaves.
+Alternatively, view this as a **Prefix Expansion Tree**: Start with the empty bag `[]`. At each step, choose any item nums[i] from the remaining available pool (i >= start), add it to the bag, take a snapshot of the bag's current contents, and recurse with remaining pool starting at i + 1. Because every intermediate state is a valid subset, snapshots are taken at **every single node of the tree**, not just the leaves!
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A naive permutation-style backtracking algorithm would explore all choices from index $0$ to $N - 1$ at every level:
+A naive permutation-style backtracking algorithm would explore all choices from index 0 to N - 1 at every level:
 ```text
                   []
            /       |       \
@@ -48,17 +48,17 @@ A naive permutation-style backtracking algorithm would explore all choices from 
         /   \    /   \    /   \
       [1,2] [1,3] [2,1] [2,3] ...
 ```
-This generates duplicate subset configurations like `[1, 2]` and `[2, 1]`, requiring an expensive `HashSet` or canonical sorting to deduplicate, blowing up complexity to $O(N! \cdot N)$.
+This generates duplicate subset configurations like `[1, 2]` and `[2, 1]`, requiring an expensive `HashSet` or canonical sorting to deduplicate, blowing up complexity to O(N! * N).
 By strictly enforcing **ascending index selection** via a `start` cursor, `[2, 1]` is never generated because 1 appears before 2 in the source array.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **Strict Index Ordering Invariant:**
-At any recursive depth, if the last chosen element was $nums[i]$, all future elements added to the subset must come from indices $j > i$:
-$$\forall k_1 < k_2, \quad \text{Index}(subset[k_1]) < \text{Index}(subset[k_2])$$
-- This guarantees a bijection between the search tree nodes and the $2^N$ subsets of `nums`. Zero duplicate subsets are explored; zero deduplication memory is wasted.
-- **Backtracking Lifecycle (Choose $\to$ Explore $\to$ Undo):**
-  1. `current.Add(nums[i])`: Choose candidate $nums[i]$.
-  2. `Backtrack(i + 1)`: Explore all subsets containing $nums[i]$.
+At any recursive depth, if the last chosen element was nums[i], all future elements added to the subset must come from indices j > i:
+for all k_1 < k_2, Index(subset[k_1]) < Index(subset[k_2])
+- This guarantees a bijection between the search tree nodes and the 2^N subsets of `nums`. Zero duplicate subsets are explored; zero deduplication memory is wasted.
+- **Backtracking Lifecycle (Choose -> Explore -> Undo):**
+  1. `current.Add(nums[i])`: Choose candidate nums[i].
+  2. `Backtrack(i + 1)`: Explore all subsets containing nums[i].
   3. `current.RemoveAt(current.Count - 1)`: Undo the choice, restoring the candidate list to explore subsequent choices.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
@@ -85,11 +85,11 @@ Candidate Pool:    i in [ start ... N - 1 ]
 #### 3.5 State Transition Triggers & Decision Gates
 At entry to `Backtrack(start)`:
 1. **Snapshot Gate:** Always execute `result.Add(new List<int>(current))` immediately.
-2. **Candidate Scan Gate:** Loop $i$ from $start$ to $N - 1$:
+2. **Candidate Scan Gate:** Loop i from start to N - 1:
    - **Choose Gate:** `current.Add(nums[i])`.
    - **Explore Gate:** Recurse `Backtrack(i + 1)`.
    - **Undo Gate:** `current.RemoveAt(current.Count - 1)`.
-3. **Termination Gate:** Loop naturally terminates when $start \ge N$.
+3. **Termination Gate:** Loop naturally terminates when start >= N.
 
 #### 3.6 Concrete Step-by-Step State Trace
 Trace input: `nums = [1, 2, 3]`.
@@ -100,12 +100,12 @@ Trace input: `nums = [1, 2, 3]`.
 | **2** | Choose 1 (`start = 1`) | `[1]` | Add `[1]` |
 | **3** | Choose 2 (`start = 2`) | `[1, 2]` | Add `[1, 2]` |
 | **4** | Choose 3 (`start = 3`) | `[1, 2, 3]` | Add `[1, 2, 3]` |
-| **5** | Undo 3 $\to$ Undo 2 | `[1]` | Backtrack |
+| **5** | Undo 3 -> Undo 2 | `[1]` | Backtrack |
 | **6** | Choose 3 (`start = 3`) | `[1, 3]` | Add `[1, 3]` |
-| **7** | Undo 3 $\to$ Undo 1 | `[]` | Backtrack to root |
+| **7** | Undo 3 -> Undo 1 | `[]` | Backtrack to root |
 | **8** | Choose 2 (`start = 2`) | `[2]` | Add `[2]` |
 | **9** | Choose 3 (`start = 3`) | `[2, 3]` | Add `[2, 3]` |
-| **10**| Undo 3 $\to$ Undo 2 | `[]` | Backtrack to root |
+| **10**| Undo 3 -> Undo 2 | `[]` | Backtrack to root |
 | **11**| Choose 3 (`start = 3`) | `[3]` | Add `[3]` |
 | **12**| Undo 3 | `[]` | Search complete! |
 
@@ -116,28 +116,28 @@ Total subsets collected: 8.
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Backtracking Choose-Explore-Undo):** Standard interview solution. Intuitive, easily extensible to problems with constraints (e.g. subset sum, combinations), and maintains $O(N)$ stack memory.
-- **Approach 2 (Bitmask Enumeration):** Iterative, non-recursive solution. Useful when $N \le 32$ and you want a non-recursive, easily parallelizable method. It directly exploits the isomorphism between binary strings of length $N$ and subsets of an $N$-element set.
+- **Approach 1 (Backtracking Choose-Explore-Undo):** Standard interview solution. Intuitive, easily extensible to problems with constraints (e.g. subset sum, combinations), and maintains O(N) stack memory.
+- **Approach 2 (Bitmask Enumeration):** Iterative, non-recursive solution. Useful when N <= 32 and you want a non-recursive, easily parallelizable method. It directly exploits the isomorphism between binary strings of length N and subsets of an N-element set.
 
 #### 4.2 Step-by-Step Natural Progression Flow
-- **Step 1: Setup & Boundaries:** Allocate `result` list with pre-calculated capacity $1 \ll N$ ($2^N$).
+- **Step 1: Setup & Boundaries:** Allocate `result` list with pre-calculated capacity 1 << N (2^N).
 - **Step 2: Initialize Recursion:** Call `Backtrack(0, current)`.
-- **Step 3: Condition Gates & Recursion:** Snapshot at every call, loop $i$ from $start$ to $N - 1$, choose, recurse with $i + 1$, undo.
+- **Step 3: Condition Gates & Recursion:** Snapshot at every call, loop i from start to N - 1, choose, recurse with i + 1, undo.
 - **Step 4: Resolution & Return:** Return `result`.
 
 #### 4.3 Alternative Approaches Analysis
-- **Approach 2: Bitmask Enumeration ($O(N \cdot 2^N)$):**
-  - Loop integer `mask` from $0$ to $(1 \ll N) - 1$.
-  - For each bit $i \in [0 \dots N - 1]$: if `(mask & (1 << i)) != 0`, include `nums[i]`.
+- **Approach 2: Bitmask Enumeration (O(N * 2^N)):**
+  - Loop integer `mask` from 0 to (1 << N) - 1.
+  - For each bit i in [0 ... N - 1]: if `(mask & (1 << i)) != 0`, include `nums[i]`.
   - Add subset to result.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Metric | Approach 1: Backtracking (Choose-Explore-Undo) | Approach 2: Bitmask Enumeration |
 | :--- | :--- | :--- |
-| **Time Complexity (Best / Avg / Worst)** | $O(N \cdot 2^N)$ | $O(N \cdot 2^N)$ |
-| **Auxiliary Space** | $O(N)$ recursion stack depth | $O(1)$ auxiliary storage |
-| **Output Space** | $O(N \cdot 2^N)$ total elements stored | $O(N \cdot 2^N)$ total elements stored |
+| **Time Complexity (Best / Avg / Worst)** | O(N * 2^N) | O(N * 2^N) |
+| **Auxiliary Space** | O(N) recursion stack depth | O(1) auxiliary storage |
+| **Output Space** | O(N * 2^N) total elements stored | O(N * 2^N) total elements stored |
 | **Cache Locality** | Moderate | High (pure sequential iteration) |
 | **In-Place Mutability** | Non-destructive | Non-destructive |
 | **Streaming Suitability** | High (yields subsets incrementally) | High |
@@ -201,7 +201,7 @@ public class Solution
 }
 ```
 
-#### Implementation 2: Bitmask Enumeration ($O(N \cdot 2^N)$ Iterative)
+#### Implementation 2: Bitmask Enumeration (O(N * 2^N) Iterative)
 ```csharp
 public class SolutionBitmask
 {
@@ -252,19 +252,19 @@ public class SolutionBitmask
 ### 1. Problem Detail & Constraints
 - **Formal Statement:** Given an array `nums` of distinct integers, return all possible permutations in any order.
 - **Key Constraints:**
-  - $1 \le nums.Length \le 6$.
-  - $-10 \le nums[i] \le 10$.
+  - 1 <= nums.Length <= 6.
+  - -10 <= nums[i] <= 10.
   - All the integers of `nums` are unique.
 - **Senior Edge Cases to Defend:**
-  - Single element array ($N = 1 \implies [[nums[0]]]$).
+  - Single element array (N = 1 => [[nums[0]]]).
   - Preserving input array state if caller expects non-destructive operations.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Generating all $N!$ distinct orderings. Can be solved with zero auxiliary memory via an in-place element swapping partition, or via a boolean `used` tracking array.
+- **Conceptual Essence:** Generating all N! distinct orderings. Can be solved with zero auxiliary memory via an in-place element swapping partition, or via a boolean `used` tracking array.
 - **Sample 1:**
   - **Input:** `nums = [1, 2, 3]`
   - **Output:** `[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]`
-  - **Explanation:** $3! = 6$ total permutations.
+  - **Explanation:** 3! = 6 total permutations.
 - **Sample 2:**
   - **Input:** `nums = [0, 1]`
   - **Output:** `[[0,1],[1,0]]`
@@ -272,28 +272,28 @@ public class SolutionBitmask
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine a row of $N$ chairs. You have $N$ people standing before you.
-For chair 0, you have $N$ choices. You invite person $i$ to sit in chair 0.
-For chair 1, you have $N - 1$ remaining choices.
-For chair 2, you have $N - 2$ remaining choices.
-Proceeding down the row until all chairs are occupied forms an arrangement of length $N$. The total number of valid permutations is $N \times (N - 1) \times (N - 2) \dots \times 1 = N!$.
-Rather than allocating a separate list of available people, you can partition the input array in-place: the people sitting in chairs $0 \dots first - 1$ are fixed, while people standing in positions $first \dots N - 1$ form the candidate pool. Swapping person $i$ into position $first$ makes the choice in $O(1)$ space!
+Imagine a row of N chairs. You have N people standing before you.
+For chair 0, you have N choices. You invite person i to sit in chair 0.
+For chair 1, you have N - 1 remaining choices.
+For chair 2, you have N - 2 remaining choices.
+Proceeding down the row until all chairs are occupied forms an arrangement of length N. The total number of valid permutations is N * (N - 1) * (N - 2) ... x 1 = N!.
+Rather than allocating a separate list of available people, you can partition the input array in-place: the people sitting in chairs 0 ... first - 1 are fixed, while people standing in positions first ... N - 1 form the candidate pool. Swapping person i into position first makes the choice in O(1) space!
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A brute-force generator generates all $N^N$ sequences of length $N$ and then checks if all elements are distinct:
-$$T(N) = O(N^N \cdot N)$$
-For $N = 6$, $6^6 = 46,656$ compared to $6! = 720$. Permutation backtracking prunes this completely by never choosing an already used element, visiting strictly $N!$ states.
+A brute-force generator generates all N^N sequences of length N and then checks if all elements are distinct:
+T(N) = O(N^N * N)
+For N = 6, 6^6 = 46,656 compared to 6! = 720. Permutation backtracking prunes this completely by never choosing an already used element, visiting strictly N! states.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **In-Place Array Swapping Partition:**
 Divide `nums` into two virtual zones:
 1. **Settled / Fixed Prefix:** `nums[0 .. first - 1]`.
 2. **Unplaced Candidate Pool:** `nums[first .. N - 1]`.
-- For each index $i \in [first \dots N - 1]$:
+- For each index i in [first ... N - 1]:
   1. `Swap(first, i)`: Elects `nums[i]` to be the occupant of position `first`.
-  2. `Backtrack(first + 1)`: Recursively fills positions $first + 1 \dots N - 1$.
-  3. `Swap(first, i)`: Restores `nums[i]` back to position $i$ so subsequent candidates can be tested cleanly.
-- **Auxiliary Space:** Strictly $O(N)$ call-stack depth. Zero auxiliary lists or boolean arrays required during traversal!
+  2. `Backtrack(first + 1)`: Recursively fills positions first + 1 ... N - 1.
+  3. `Swap(first, i)`: Restores `nums[i]` back to position i so subsequent candidates can be tested cleanly.
+- **Auxiliary Space:** Strictly O(N) call-stack depth. Zero auxiliary lists or boolean arrays required during traversal!
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -310,14 +310,14 @@ Recurse: Backtrack(first + 1)
 Undo: Swap nums[first] with nums[i]
 ```
 
-- `first`: The active slot index currently being filled ($0 \le first \le N$).
-- `i`: The candidate element cursor scanning the unplaced pool ($first \le i < N$).
-- **Base Case Invariant:** When `first == nums.Length`, all $N$ positions have been settled; snapshot `new List<int>(nums)`.
+- `first`: The active slot index currently being filled (0 <= first <= N).
+- `i`: The candidate element cursor scanning the unplaced pool (first <= i < N).
+- **Base Case Invariant:** When `first == nums.Length`, all N positions have been settled; snapshot `new List<int>(nums)`.
 
 #### 3.5 State Transition Triggers & Decision Gates
 At each recursive step:
 1. **Terminal Gate:** If `first == nums.Length`, record snapshot and return.
-2. **Candidate Sweep Gate:** Loop $i$ from $first$ to $N - 1$:
+2. **Candidate Sweep Gate:** Loop i from first to N - 1:
    - **Choose:** `(nums[first], nums[i]) = (nums[i], nums[first])`.
    - **Explore:** `Backtrack(first + 1)`.
    - **Undo:** `(nums[first], nums[i]) = (nums[i], nums[first])`.
@@ -325,22 +325,22 @@ At each recursive step:
 #### 3.6 Concrete Step-by-Step State Trace
 Trace input: `nums = [1, 2, 3]`.
 
-| Tree Depth (`first`) | Candidate $i$ | Action | Array State `nums` | Result Snapshot |
+| Tree Depth (`first`) | Candidate i | Action | Array State `nums` | Result Snapshot |
 | :---: | :---: | :--- | :--- | :--- |
 | **0** | — | Call `Backtrack(0)` | `[1, 2, 3]` | — |
-| **0** | $i = 0$ | Swap(0, 0) | `[1, 2, 3]` | — |
-| **1** | $i = 1$ | Swap(1, 1) | `[1, 2, 3]` | — |
-| **2** | $i = 2$ | Swap(2, 2) | `[1, 2, 3]` | — |
+| **0** | i = 0 | Swap(0, 0) | `[1, 2, 3]` | — |
+| **1** | i = 1 | Swap(1, 1) | `[1, 2, 3]` | — |
+| **2** | i = 2 | Swap(2, 2) | `[1, 2, 3]` | — |
 | **3** | — | `first == 3` (Base) | `[1, 2, 3]` | Add `[1, 2, 3]` |
 | **2** | Undo(2, 2) | | `[1, 2, 3]` | |
-| **1** | $i = 2$ | Swap(1, 2) | `[1, 3, 2]` | — |
-| **2** | $i = 2$ | Swap(2, 2) | `[1, 3, 2]` | — |
+| **1** | i = 2 | Swap(1, 2) | `[1, 3, 2]` | — |
+| **2** | i = 2 | Swap(2, 2) | `[1, 3, 2]` | — |
 | **3** | — | `first == 3` (Base) | `[1, 3, 2]` | Add `[1, 3, 2]` |
 | **1** | Undo(1, 2) | | `[1, 2, 3]` | |
 | **0** | Undo(0, 0) | | `[1, 2, 3]` | |
-| **0** | $i = 1$ | Swap(0, 1) | `[2, 1, 3]` | Proceeds to generate `[2, 1, 3]` and `[2, 3, 1]` |
+| **0** | i = 1 | Swap(0, 1) | `[2, 1, 3]` | Proceeds to generate `[2, 1, 3]` and `[2, 3, 1]` |
 
-Total permutations generated: $3! = 6$.
+Total permutations generated: 3! = 6.
 
 ---
 
@@ -353,22 +353,22 @@ Total permutations generated: $3! = 6$.
 #### 4.2 Step-by-Step Natural Progression Flow
 - **Step 1: Setup & Boundaries:** Handle single element array. Calculate factorial capacity for `result`.
 - **Step 2: Recursive Search:** Call `Backtrack(0)`.
-- **Step 3: Invariant Maintenance:** Swap candidate $i$ into slot `first`, recurse on `first + 1`, swap back.
+- **Step 3: Invariant Maintenance:** Swap candidate i into slot `first`, recurse on `first + 1`, swap back.
 - **Step 4: Base Case Snapshot:** When `first == N`, snapshot array into `result`. Return `result`.
 
 #### 4.3 Alternative Approaches Analysis
-- **Approach 2: Boolean Visited Array ($O(N \cdot N!)$):**
+- **Approach 2: Boolean Visited Array (O(N * N!)):**
   - Maintain `current` list and `bool[] used` array.
-  - At each step, iterate $i \in [0 \dots N - 1]$. If `!used[i]`, mark `used[i] = true`, add `nums[i]` to `current`, recurse, remove from `current`, mark `used[i] = false`.
+  - At each step, iterate i in [0 ... N - 1]. If `!used[i]`, mark `used[i] = true`, add `nums[i]` to `current`, recurse, remove from `current`, mark `used[i] = false`.
   - Guarantees permutations are generated in lexicographical order if `nums` is pre-sorted.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Metric | Approach 1: In-Place Swapping (Optimal Space) | Approach 2: Boolean Visited Array |
 | :--- | :--- | :--- |
-| **Time Complexity (Best / Avg / Worst)** | $O(N \cdot N!)$ | $O(N \cdot N!)$ |
-| **Auxiliary Space** | $O(N)$ call stack depth | $O(N)$ visited array + $O(N)$ path list |
-| **Output Space** | $O(N \cdot N!)$ permutations | $O(N \cdot N!)$ permutations |
+| **Time Complexity (Best / Avg / Worst)** | O(N * N!) | O(N * N!) |
+| **Auxiliary Space** | O(N) call stack depth | O(N) visited array + O(N) path list |
+| **Output Space** | O(N * N!) permutations | O(N * N!) permutations |
 | **Cache Locality** | High (in-place array mutations) | Moderate (list and array reads) |
 | **In-Place Mutability** | Temporary mutation (restored upon return) | Non-destructive |
 | **Streaming Suitability** | High | High |
@@ -494,20 +494,20 @@ public class SolutionVisited
 ### 1. Problem Detail & Constraints
 - **Formal Statement:** Given an array of distinct integers `candidates` and a target integer `target`, return a list of all unique combinations of candidates where chosen numbers sum to target. The same candidate may be chosen unlimited times.
 - **Key Constraints:**
-  - $1 \le candidates.Length \le 30$.
-  - $2 \le candidates[i] \le 40$.
+  - 1 <= candidates.Length <= 30.
+  - 2 <= candidates[i] <= 40.
   - All elements of `candidates` are distinct.
-  - $1 \le target \le 40$.
+  - 1 <= target <= 40.
 - **Senior Edge Cases to Defend:**
   - Target smaller than smallest candidate: Handled cleanly by early sort and loop break.
-  - Reuse of elements: Must allow taking candidate $i$ multiple times without allowing backward traversal (which would introduce duplicate permutation sets).
+  - Reuse of elements: Must allow taking candidate i multiple times without allowing backward traversal (which would introduce duplicate permutation sets).
 
 ### 2. Summary & Sample Input / Output
 - **Conceptual Essence:** Unbounded Knapsack Search Tree with Early Pruning: Sort `candidates` ascending; when candidate exceeds remaining sum, break the loop to prune the entire branch.
 - **Sample 1:**
   - **Input:** `candidates = [2, 3, 6, 7], target = 7`
   - **Output:** `[[2, 2, 3], [7]]`
-  - **Explanation:** $2 + 2 + 3 = 7$ and $7 = 7$.
+  - **Explanation:** 2 + 2 + 3 = 7 and 7 = 7.
 - **Sample 2:**
   - **Input:** `candidates = [2, 3, 5], target = 8`
   - **Output:** `[[2, 2, 2, 2], [2, 3, 3], [3, 5]]`
@@ -521,7 +521,7 @@ Furthermore, if your drawer is neatly sorted from smallest to largest, the very 
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
 Without sorting and index discipline:
-1. Exploring choices from index 0 on every step generates permutations (e.g. $[2, 3, 2], [3, 2, 2], [2, 2, 3]$), creating duplicate sets that require expensive set-based deduplication.
+1. Exploring choices from index 0 on every step generates permutations (e.g. [2, 3, 2], [3, 2, 2], [2, 2, 3]), creating duplicate sets that require expensive set-based deduplication.
 2. Continuing to loop through candidates after one has already exceeded `remaining` wastes computation on branches guaranteed to exceed the target.
 Pruning via ascending sort drops execution time by orders of magnitude.
 
@@ -529,10 +529,10 @@ Pruning via ascending sort drops execution time by orders of magnitude.
 **Unbounded Progression Invariant (`start = i`):**
 - In standard subset generation (0-1 choice), we recurse with `start = i + 1` to forbid reuse.
 - In unbounded combination sum, we recurse with `start = i`!
-- Passing `i` allows the current candidate to be selected again on the next recursive step, while simultaneously forbidding selection of any candidate at index $< i$.
+- Passing `i` allows the current candidate to be selected again on the next recursive step, while simultaneously forbidding selection of any candidate at index < i.
 - **Sorting & Early Loop Break Invariant:**
-  $$\text{candidates}[0] < \text{candidates}[1] < \dots < \text{candidates}[N - 1]$$
-  If $\text{candidates}[i] > remaining$, then $\forall j \ge i, \; \text{candidates}[j] > remaining$.
+  candidates[0] < candidates[1] < ... < candidates[N - 1]
+  If candidates[i] > remaining, then for all j >= i, candidates[j] > remaining.
   We can `break` immediately, pruning the entire remaining loop!
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
@@ -555,7 +555,7 @@ i = 2 (val 6): 6 > 4   ==> VIOLATION!
 #### 3.5 State Transition Triggers & Decision Gates
 At each call `Backtrack(remaining, start)`:
 1. **Target Hit Gate:** If `remaining == 0`, add snapshot of `current` to `result` and return.
-2. **Pruning Break Gate:** For $i = start \dots N - 1$:
+2. **Pruning Break Gate:** For i = start ... N - 1:
    - If `candidates[i] > remaining`: `break` immediately!
 3. **Choose-Explore-Undo Cycle:**
    - `current.Add(candidates[i])`.
@@ -566,17 +566,17 @@ At each call `Backtrack(remaining, start)`:
 Trace input: `candidates = [2, 3, 6, 7], target = 7`.
 Sorted: `[2, 3, 6, 7]`.
 
-| Tree Path | `remaining` | Candidate $i$ (`val`) | Condition Check | Action |
+| Tree Path | `remaining` | Candidate i (`val`) | Condition Check | Action |
 | :--- | :---: | :---: | :---: | :--- |
-| `[]` | 7 | $i=0$ (2) | $2 \le 7$ | Choose 2 |
-| `[2]` | 5 | $i=0$ (2) | $2 \le 5$ | Choose 2 |
-| `[2, 2]` | 3 | $i=0$ (2) | $2 \le 3$ | Choose 2 |
-| `[2, 2, 2]` | 1 | $i=0$ (2) | $2 > 1$ | **Break!** (Prunes 2, 3, 6, 7) |
-| `[2, 2]` | 3 | $i=1$ (3) | $3 \le 3$ | Choose 3 |
+| `[]` | 7 | i=0 (2) | 2 <= 7 | Choose 2 |
+| `[2]` | 5 | i=0 (2) | 2 <= 5 | Choose 2 |
+| `[2, 2]` | 3 | i=0 (2) | 2 <= 3 | Choose 2 |
+| `[2, 2, 2]` | 1 | i=0 (2) | 2 > 1 | **Break!** (Prunes 2, 3, 6, 7) |
+| `[2, 2]` | 3 | i=1 (3) | 3 <= 3 | Choose 3 |
 | `[2, 2, 3]` | 0 | — | `remaining == 0` | **Target Hit! Add `[2, 2, 3]`** |
-| `[2]` | 5 | $i=1$ (3) | $3 \le 5$ | Choose 3 |
-| `[2, 3]` | 2 | $i=1$ (3) | $3 > 2$ | **Break!** (Prunes 3, 6, 7) |
-| `[]` | 7 | $i=3$ (7) | $7 \le 7$ | Choose 7 |
+| `[2]` | 5 | i=1 (3) | 3 <= 5 | Choose 3 |
+| `[2, 3]` | 2 | i=1 (3) | 3 > 2 | **Break!** (Prunes 3, 6, 7) |
+| `[]` | 7 | i=3 (7) | 7 <= 7 | Choose 7 |
 | `[7]` | 0 | — | `remaining == 0` | **Target Hit! Add `[7]`** |
 
 Final result: `[[2, 2, 3], [7]]`.
@@ -586,13 +586,13 @@ Final result: `[[2, 2, 3], [7]]`.
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Sorted Backtracking with Early Break):** Universal gold standard. Sorting upfront enables aggressive branch pruning. Time is $O(N^{T / M})$ where $M = \min(candidates)$, with tree depth $T / M$.
-- **Approach 2 (DP Combinations Generation):** Bottom-up DP table where $dp[t]$ stores lists of combinations forming sum $t$. Memory-heavy, causes significant GC allocations.
+- **Approach 1 (Sorted Backtracking with Early Break):** Universal gold standard. Sorting upfront enables aggressive branch pruning. Time is O(N^T / M) where M = min(candidates), with tree depth T / M.
+- **Approach 2 (DP Combinations Generation):** Bottom-up DP table where dp[t] stores lists of combinations forming sum t. Memory-heavy, causes significant GC allocations.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 - **Step 1: Setup & Sort:** Sort `candidates` ascending (`Array.Sort`).
 - **Step 2: Initialize Recursion:** Call `Backtrack(target, 0, current, result)`.
-- **Step 3: Condition Gates:** If `remaining == 0` snapshot and return. Loop $i \ge start$: if `candidates[i] > remaining` break.
+- **Step 3: Condition Gates:** If `remaining == 0` snapshot and return. Loop i >= start: if `candidates[i] > remaining` break.
 - **Step 4: Lifecycle:** Add candidate, recurse passing `i`, remove candidate. Return `result`.
 
 #### 4.3 Alternative Approaches Analysis
@@ -605,9 +605,9 @@ Final result: `[[2, 2, 3], [7]]`.
 
 | Metric | Approach 1: Sorted Backtracking with Pruning | Approach 2: DP Combinations Generation |
 | :--- | :--- | :--- |
-| **Time Complexity (Best / Avg / Worst)** | $O(N \log N + N^{T / M})$ | $O(T \times N \times \text{combCount})$ |
-| **Auxiliary Space** | $O(T / M)$ stack depth | $O(T \times \text{combCount})$ heap objects |
-| **Output Space** | $O(\text{Valid Combinations})$ | $O(\text{Valid Combinations})$ |
+| **Time Complexity (Best / Avg / Worst)** | O(N log N + N^T / M) | O(T x N * combCount) |
+| **Auxiliary Space** | O(T / M) stack depth | O(T x combCount) heap objects |
+| **Output Space** | O(Valid Combinations) | O(Valid Combinations) |
 | **Cache Locality** | High (single path list) | Low (fragmented heap lists) |
 | **In-Place Mutability** | In-place sort on input array | Non-destructive |
 | **Streaming Suitability** | High | Low |
@@ -698,14 +698,14 @@ public class Solution
 ### 1. Problem Detail & Constraints
 - **Formal Statement:** Given a string containing digits from 2-9 inclusive, return all possible letter combinations that the number could represent. Return the answer in any order.
 - **Key Constraints:**
-  - $0 \le digits.Length \le 4$.
+  - 0 <= digits.Length <= 4.
   - `digits[i]` is a digit in the range `['2' - '9']`.
 - **Senior Edge Cases to Defend:**
   - Empty string `digits = ""` must return an empty list `[]` (not `[""]`).
-  - Maximum output size: $4^4 = 256$ combinations (fits entirely in L1 cache).
+  - Maximum output size: 4^4 = 256 combinations (fits entirely in L1 cache).
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Cartesian Product across telephone keypad character sets. Fixed-depth search tree of depth $N = digits.Length$.
+- **Conceptual Essence:** Cartesian Product across telephone keypad character sets. Fixed-depth search tree of depth N = digits.Length.
 - **Sample 1:**
   - **Input:** `digits = "23"`
   - **Output:** `["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"]`
@@ -716,10 +716,10 @@ public class Solution
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine a combination padlock with $N$ revolving dials. Turning dial 0 cycles through the letters mapped to digit 0 (`'2' -> "abc"`). Turning dial 1 cycles through the letters mapped to digit 1 (`'3' -> "def"`).
-Every distinct alignment of the $N$ dials reveals a valid letter combination. The total number of valid configurations is the Cartesian product:
-$$\prod_{i=0}^{N-1} |\text{Keypad}(digits[i])|$$
-Because the tree depth is strictly bounded by $N \le 4$, we can eliminate all dynamic heap memory churn by writing characters directly into a stack-allocated buffer (`stackalloc char[N]`).
+Imagine a combination padlock with N revolving dials. Turning dial 0 cycles through the letters mapped to digit 0 (`'2' -> "abc"`). Turning dial 1 cycles through the letters mapped to digit 1 (`'3' -> "def"`).
+Every distinct alignment of the N dials reveals a valid letter combination. The total number of valid configurations is the Cartesian product:
+Product(i=0..N-1) |Keypad(digits[i])|
+Because the tree depth is strictly bounded by N <= 4, we can eliminate all dynamic heap memory churn by writing characters directly into a stack-allocated buffer (`stackalloc char[N]`).
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
 Naive recursive string concatenation generates immutable string instances at every intermediate edge:
@@ -731,9 +731,9 @@ For deep trees or larger alphabets, creating throwaway strings generates heavy G
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **Fixed-Depth Stack-Allocated Buffer Invariant:**
-- Depth of recursion is fixed to $N = digits.Length$.
+- Depth of recursion is fixed to N = digits.Length.
 - We allocate a continuous span of memory on the thread stack:
-  $$\text{Span}<\text{char}> current = \text{stackalloc char}[digits.Length]$$
+  Span<char> current = stackalloc char[digits.Length]
 - At recursive depth `index`, we simply assign `current[index] = letter`.
 - When `index == digits.Length`, we materialize the finalized string once: `new string(current)`.
 - **Zero intermediate heap memory allocations during traversal!**
@@ -752,8 +752,8 @@ At index == digits.Length:
 Add new string(current) to result list
 ```
 
-- `index`: The active digit position being resolved ($0 \le index \le digits.Length$).
-- `current`: A mutable `Span<char>` of fixed size $N$ residing strictly on the execution stack frame.
+- `index`: The active digit position being resolved (0 <= index <= digits.Length).
+- `current`: A mutable `Span<char>` of fixed size N residing strictly on the execution stack frame.
 - `Keypad`: Constant mapping lookup table indexed by digit value.
 
 #### 3.5 State Transition Triggers & Decision Gates
@@ -797,22 +797,22 @@ Total output: 9 combinations.
 #### 4.2 Step-by-Step Natural Progression Flow
 - **Step 1: Setup & Guard Clause:** If `digits` is empty, return empty list immediately.
 - **Step 2: Stackalloc Buffer:** Allocate `Span<char> current = stackalloc char[digits.Length]`.
-- **Step 3: Recursive Cartesian DFS:** Traverse digits from index 0 to $N$.
-- **Step 4: Materialization:** Instantiate final string upon reaching base depth $N$. Return result.
+- **Step 3: Recursive Cartesian DFS:** Traverse digits from index 0 to N.
+- **Step 4: Materialization:** Instantiate final string upon reaching base depth N. Return result.
 
 #### 4.3 Alternative Approaches Analysis
 - **Approach 2: Iterative BFS (Queue Extension):**
   - Initialize queue with `[""]`.
   - For each digit, dequeue all existing strings, append each mapped letter, and enqueue the new strings.
-  - Generates $O(4^N)$ intermediate string allocations.
+  - Generates O(4^N) intermediate string allocations.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Metric | Approach 1: Stackalloc Span DFS (Optimal) | Approach 2: Iterative BFS Queue |
 | :--- | :--- | :--- |
-| **Time Complexity (Best / Avg / Worst)** | $O(4^N \cdot N)$ | $O(4^N \cdot N)$ |
-| **Auxiliary Space** | $O(N)$ thread stack frame | $O(4^N \cdot N)$ heap queue storage |
-| **Output Space** | $O(4^N \cdot N)$ final strings | $O(4^N \cdot N)$ final strings |
+| **Time Complexity (Best / Avg / Worst)** | O(4^N * N) | O(4^N * N) |
+| **Auxiliary Space** | O(N) thread stack frame | O(4^N * N) heap queue storage |
+| **Output Space** | O(4^N * N) final strings | O(4^N * N) final strings |
 | **Cache Locality** | Pure L1 stack memory | Low (garbage collected queue nodes) |
 | **In-Place Mutability** | In-place stack write | Immutable string churn |
 | **Streaming Suitability** | High | Low |
@@ -945,14 +945,14 @@ public class SolutionBfs
 | **LeetCode Link** | [Word Search](https://leetcode.com/problems/word-search/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** Given an $m \times n$ grid of characters `board` and a string `word`, return `true` if `word` exists in the grid. The word can be constructed from sequentially adjacent cells (horizontal or vertical). The same cell may not be used more than once in a path.
+- **Formal Statement:** Given an m x n grid of characters `board` and a string `word`, return `true` if `word` exists in the grid. The word can be constructed from sequentially adjacent cells (horizontal or vertical). The same cell may not be used more than once in a path.
 - **Key Constraints:**
-  - $m == board.Length, n == board[i].Length \in [1, 6]$.
-  - $1 \le word.Length \le 15$.
+  - m == board.Length, n == board[i].Length in [1, 6].
+  - 1 <= word.Length <= 15.
   - `board` and `word` consist of only lowercase and uppercase English letters.
 - **Senior Edge Cases to Defend:**
-  - Board character frequency deficit: If `word` requires 5 'A's and board only has 4, return `false` in $O(M \times N)$ before launching DFS.
-  - Directional pruning: If `word[0]` occurs 50 times in `board` but `word[^1]` occurs only once, searching `word` in reverse prunes the search tree by $50\times$!
+  - Board character frequency deficit: If `word` requires 5 'A's and board only has 4, return `false` in O(M x N) before launching DFS.
+  - Directional pruning: If `word[0]` occurs 50 times in `board` but `word[^1]` occurs only once, searching `word` in reverse prunes the search tree by 50*!
 
 ### 2. Summary & Sample Input / Output
 - **Conceptual Essence:** 2D Grid DFS Backtracking: At each matching letter, temporarily mask the cell `board[r][c] = '#'`, explore 4 directions, and restore the original character during the undo phase.
@@ -962,23 +962,23 @@ public class SolutionBfs
 - **Sample 2:**
   - **Input:** `board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCB"`
   - **Output:** `false`
-  - **Explanation:** Cannot revisit cell $(0, 1)$ ('B') along the same path.
+  - **Explanation:** Cannot revisit cell (0, 1) ('B') along the same path.
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
 Imagine crawling through a pitch-black labyrinth guided by a spellbook. Each room has an inscribed letter. To cast the spell, you must walk a continuous trail whose room inscriptions spell out `word`.
 As you step into a room matching your next needed letter, you drop a glowing breadcrumb on the floor (`board[r][c] = '#'`). This breadcrumb prevents you from wandering into your own footsteps and forming an illegal loop.
-If all 4 doorways leading out of the room fail to complete the spell, you pick up your breadcrumb (restoring `board[r][c] = originalLetter`) and retreat to the previous chamber. This in-place breadcrumb mechanism gives $O(1)$ auxiliary space without needing a separate visited matrix!
+If all 4 doorways leading out of the room fail to complete the spell, you pick up your breadcrumb (restoring `board[r][c] = originalLetter`) and retreat to the previous chamber. This in-place breadcrumb mechanism gives O(1) auxiliary space without needing a separate visited matrix!
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-Without in-place masking, a naive DFS allocates an $M \times N$ boolean `visited` matrix on every path, causing severe GC thrashing.
-Furthermore, without **frequency-based pre-filtering**, a board filled with `'A'`s searching for `"AAAAAB"` will launch thousands of futile DFS paths from every single `'A'`, only to fail on `'B'`. Checking total character counts upfront prunes impossible searches in $O(M \times N)$ time.
+Without in-place masking, a naive DFS allocates an M x N boolean `visited` matrix on every path, causing severe GC thrashing.
+Furthermore, without **frequency-based pre-filtering**, a board filled with `'A'`s searching for `"AAAAAB"` will launch thousands of futile DFS paths from every single `'A'`, only to fail on `'B'`. Checking total character counts upfront prunes impossible searches in O(M x N) time.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **In-Place Masking & Restitution Invariant:**
 - Mutate `board[r][c] = '#'` before exploring adjacent neighbors.
-- Explore 4 orthogonal directions: $(r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)$.
+- Explore 4 orthogonal directions: (r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1).
 - Restore `board[r][c] = originalChar` before returning from the function call.
 - **Search Inversion Optimization:**
   Count frequencies of `word[0]` and `word[word.Length - 1]` in `board`. If `word[^1]` has fewer occurrences than `word[0]`, reverse `word`! Starting the DFS from the rarer character dramatically reduces the branching factor of the decision tree.
@@ -999,29 +999,29 @@ Restored to original char on backtrack unwind
 ```
 
 - `r, c`: Grid row and column coordinates.
-- `charIdx`: The target character position in `word` currently being matched ($0 \le charIdx \le word.Length$).
-- **Invariant:** During exploration of cell $(r, c)$, `board[r][c]` equals `'#'`, preventing any descendant call from reusing it. Upon return, `board[r][c]` is unconditionally restored.
+- `charIdx`: The target character position in `word` currently being matched (0 <= charIdx <= word.Length).
+- **Invariant:** During exploration of cell (r, c), `board[r][c]` equals `'#'`, preventing any descendant call from reusing it. Upon return, `board[r][c]` is unconditionally restored.
 
 #### 3.5 State Transition Triggers & Decision Gates
 At each call `Dfs(r, c, charIdx)`:
 1. **Target Completed Gate:** If `charIdx == word.Length`, return `true`.
-2. **Boundary & Match Gate:** If $r, c$ out of bounds OR `board[r][c] != word[charIdx]`, return `false`.
+2. **Boundary & Match Gate:** If r, c out of bounds OR `board[r][c] != word[charIdx]`, return `false`.
 3. **Choose Gate:** Save `temp = board[r][c]`; set `board[r][c] = '#'`.
 4. **Explore Gate:** Check if any of 4 directions return `true`:
-   $$found = Dfs(r+1, c) \lor Dfs(r-1, c) \lor Dfs(r, c+1) \lor Dfs(r, c-1)$$
+   found = Dfs(r+1, c) OR Dfs(r-1, c) OR Dfs(r, c+1) OR Dfs(r, c-1)
 5. **Undo Gate:** Restore `board[r][c] = temp`.
 6. **Return Gate:** Return `found`.
 
 #### 3.6 Concrete Step-by-Step State Trace
 Trace input: `board = [["A","B"],["C","D"]], word = "ABDC"`.
 
-| Step | Cell $(r, c)$ | Expected Char | Actual Char | Action | Board State |
+| Step | Cell (r, c) | Expected Char | Actual Char | Action | Board State |
 | :---: | :---: | :---: | :---: | :--- | :--- |
-| **1** | $(0, 0)$ | `'A'` ($charIdx = 0$) | `'A'` | Match! Mask with `'#'` | `[['#','B'],['C','D']]` |
-| **2** | $(0, 1)$ | `'B'` ($charIdx = 1$) | `'B'` | Match! Mask with `'#'` | `[['#','#'],['C','D']]` |
-| **3** | $(1, 1)$ | `'D'` ($charIdx = 2$) | `'D'` | Match! Mask with `'#'` | `[['#','#'],['C','#']]` |
-| **4** | $(1, 0)$ | `'C'` ($charIdx = 3$) | `'C'` | Match! Mask with `'#'` | `[['#','#'],['#','#']]` |
-| **5** | — | $charIdx = 4 == Length$ | — | **Word Complete! Return True** | — |
+| **1** | (0, 0) | `'A'` (charIdx = 0) | `'A'` | Match! Mask with `'#'` | `[['#','B'],['C','D']]` |
+| **2** | (0, 1) | `'B'` (charIdx = 1) | `'B'` | Match! Mask with `'#'` | `[['#','#'],['C','D']]` |
+| **3** | (1, 1) | `'D'` (charIdx = 2) | `'D'` | Match! Mask with `'#'` | `[['#','#'],['C','#']]` |
+| **4** | (1, 0) | `'C'` (charIdx = 3) | `'C'` | Match! Mask with `'#'` | `[['#','#'],['#','#']]` |
+| **5** | — | charIdx = 4 == Length | — | **Word Complete! Return True** | — |
 
 ---
 
@@ -1034,22 +1034,22 @@ Trace input: `board = [["A","B"],["C","D"]], word = "ABDC"`.
 #### 4.2 Step-by-Step Natural Progression Flow
 - **Step 1: Character Frequency Defense:** Tally board characters. If any character in `word` is deficient, return `false`.
 - **Step 2: Direction Optimization:** If `word[^1]` is rarer than `word[0]`, reverse the target word.
-- **Step 3: Outer Origin Scan:** Scan cells $(r, c)$. If `board[r][c] == word[0]`, launch DFS.
+- **Step 3: Outer Origin Scan:** Scan cells (r, c). If `board[r][c] == word[0]`, launch DFS.
 - **Step 4: In-Place Backtracking:** Mask cell, probe 4 neighbors, restore cell, return result.
 
 #### 4.3 Alternative Approaches Analysis
 - **Approach 2: Boolean Visited Matrix:**
   - Allocate `bool[,] visited = new bool[m, n]`.
   - Mark `visited[r, c] = true` on enter, and `false` on exit.
-  - Safe for concurrent read-only memory, but incurs $O(M \times N)$ auxiliary heap allocation.
+  - Safe for concurrent read-only memory, but incurs O(M x N) auxiliary heap allocation.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Metric | Approach 1: In-Place Masking DFS | Approach 2: Visited Boolean Matrix |
 | :--- | :--- | :--- |
-| **Time Complexity (Best / Avg / Worst)** | $O(M \times N)$ best / $O(M \times N \times 3^L)$ worst | $O(M \times N \times 3^L)$ |
-| **Auxiliary Space** | $O(L)$ stack depth ($L = word.Length$) | $O(M \times N)$ visited matrix + $O(L)$ stack |
-| **Output Space** | $O(1)$ boolean | $O(1)$ boolean |
+| **Time Complexity (Best / Avg / Worst)** | O(M x N) best / O(M x N * 3^L) worst | O(M x N * 3^L) |
+| **Auxiliary Space** | O(L) stack depth (L = word.Length) | O(M x N) visited matrix + O(L) stack |
+| **Output Space** | O(1) boolean | O(1) boolean |
 | **Cache Locality** | Optimal (modifies contiguous grid) | Moderate |
 | **In-Place Mutability** | Temporary in-place mutation (restored) | Non-destructive |
 | **Streaming Suitability** | Low | Low |
@@ -1230,15 +1230,15 @@ public class SolutionReadOnly
 | **LeetCode Link** | [N-Queens](https://leetcode.com/problems/n-queens/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** The $n$-queens puzzle is the problem of placing $n$ queens on an $n \times n$ chessboard such that no two queens attack each other. Given an integer $n$, return all distinct solutions to the $n$-queens puzzle.
+- **Formal Statement:** The n-queens puzzle is the problem of placing n queens on an n x n chessboard such that no two queens attack each other. Given an integer n, return all distinct solutions to the n-queens puzzle.
 - **Key Constraints:**
-  - $1 \le n \le 9$.
+  - 1 <= n <= 9.
 - **Senior Edge Cases to Defend:**
-  - $n = 1 \implies [["Q"]]$.
-  - $n = 2, 3 \implies []$ (no valid configuration exists where queens cannot attack).
+  - n = 1 => [["Q"]].
+  - n = 2, 3 => [] (no valid configuration exists where queens cannot attack).
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Row-by-Row Constraint Satisfaction Problem (CSP): Exactly one queen per row. Detect collisions in $O(1)$ time across columns, main diagonals ($r - c$), and anti-diagonals ($r + c$) using boolean arrays or integer bitmasks.
+- **Conceptual Essence:** Row-by-Row Constraint Satisfaction Problem (CSP): Exactly one queen per row. Detect collisions in O(1) time across columns, main diagonals (r - c), and anti-diagonals (r + c) using boolean arrays or integer bitmasks.
 - **Sample 1:**
   - **Input:** `n = 4`
   - **Output:** `[[".Q..","...Q","Q...","..Q."],["..Q.","Q...","...Q",".Q.."]]`
@@ -1250,30 +1250,30 @@ public class SolutionReadOnly
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine a royal banquet table with $N$ rows and $N$ seats per row. You must seat $N$ rival queens such that no two queens share the same row, column, or diagonal line of sight.
-Because queens threaten along rows, **no two queens can occupy the same row**. Since there are $N$ queens and $N$ rows, **every row must contain exactly one queen**.
-This transforms the problem from placing $N$ pieces on $N^2$ squares into a row-by-row decision pipeline:
-At row $r$, choose an unoccupied column $c$ that does not intersect with any previously placed queen's column or diagonal beams.
+Imagine a royal banquet table with N rows and N seats per row. You must seat N rival queens such that no two queens share the same row, column, or diagonal line of sight.
+Because queens threaten along rows, **no two queens can occupy the same row**. Since there are N queens and N rows, **every row must contain exactly one queen**.
+This transforms the problem from placing N pieces on N^2 squares into a row-by-row decision pipeline:
+At row r, choose an unoccupied column c that does not intersect with any previously placed queen's column or diagonal beams.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A brute force placement of $N$ queens across $N^2$ squares checks $\binom{N^2}{N}$ boards. For $N = 8$, $\binom{64}{8} = 4,426,165,368$ configurations.
-Even row-by-row placement with an $O(N)$ board scan to verify safety evaluates $N^N = 8^8 \approx 1.67 \times 10^7$ calls.
-By maintaining $O(1)$ collision lookup tables (or bitmasks) for the column and both diagonal axes, we prune invalid paths immediately, evaluating only $N!$ states with zero wasted checks.
+A brute force placement of N queens across N^2 squares checks C(N^2, N) boards. For N = 8, C(64, 8) = 4,426,165,368 configurations.
+Even row-by-row placement with an O(N) board scan to verify safety evaluates N^N = 8^8 ~ 1.67 x 10^7 calls.
+By maintaining O(1) collision lookup tables (or bitmasks) for the column and both diagonal axes, we prune invalid paths immediately, evaluating only N! states with zero wasted checks.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **Diagonal Index Invariants:**
 1. **Column Collision:** Monitored directly via `col`.
-2. **Anti-Diagonal ($/$) Collision:** Along any anti-diagonal line, the sum of coordinates $r + c$ is strictly constant! Range is $[0 \dots 2n - 2]$.
-3. **Main Diagonal ($\backslash$) Collision:** Along any main diagonal line, the difference of coordinates $r - c$ is strictly constant! To prevent negative array indexing, shift by $n - 1$:
-   $$\text{diag2Index} = r - c + (n - 1) \in [0 \dots 2n - 2]$$
+2. **Anti-Diagonal (/) Collision:** Along any anti-diagonal line, the sum of coordinates r + c is strictly constant! Range is [0 ... 2n - 2].
+3. **Main Diagonal (backslash) Collision:** Along any main diagonal line, the difference of coordinates r - c is strictly constant! To prevent negative array indexing, shift by n - 1:
+   diag2Index = r - c + (n - 1) in [0 ... 2n - 2]
 
 **Bitwise Acceleration Invariant:**
 We can represent columns, anti-diagonals, and main diagonals as integer bitmasks:
-- `cols`: Bit $c$ indicates column $c$ is threatened.
-- `diag1`: Bit $(r + c)$ indicates anti-diagonal is threatened. Shifted left by 1 when advancing row ($r \to r + 1$).
-- `diag2`: Bit $(r - c)$ indicates main diagonal is threatened. Shifted right by 1 when advancing row ($r \to r + 1$).
-- Available columns in row $r$ are computed in a single bitwise CPU operation:
-  $$\text{available} = ((1 \ll n) - 1) \ \& \ \sim(\text{cols} \mid \text{diag1} \mid \text{diag2})$$
+- `cols`: Bit c indicates column c is threatened.
+- `diag1`: Bit (r + c) indicates anti-diagonal is threatened. Shifted left by 1 when advancing row (r -> r + 1).
+- `diag2`: Bit (r - c) indicates main diagonal is threatened. Shifted right by 1 when advancing row (r -> r + 1).
+- Available columns in row r are computed in a single bitwise CPU operation:
+  available = ((1 << n) - 1) \ \& \ ~(cols | diag1 | diag2)
 - Extract candidate column via lowest set bit: `bit = available & -available`.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
@@ -1291,35 +1291,35 @@ Bitwise Union: threatened = (cols | diag1 | diag2)
 Available:     available  = ((1 << n) - 1) & ~threatened
 ```
 
-- `row`: Active row cursor advancing from $0$ to $n - 1$.
+- `row`: Active row cursor advancing from 0 to n - 1.
 - `queens[row]`: Stores the column assigned to the queen at row `row`.
-- `cols, diag1, diag2`: Tracking structures (boolean arrays or bitmasks) enforcing the $O(1)$ collision checks.
+- `cols, diag1, diag2`: Tracking structures (boolean arrays or bitmasks) enforcing the O(1) collision checks.
 
 #### 3.5 State Transition Triggers & Decision Gates
 At row `row`:
-1. **Base Case Gate:** If `row == n`, all $n$ queens placed safely! Format board and add to `result`.
-2. **Column Candidate Scan:** For each `col` from $0$ to $n - 1$:
+1. **Base Case Gate:** If `row == n`, all n queens placed safely! Format board and add to `result`.
+2. **Column Candidate Scan:** For each `col` from 0 to n - 1:
    - **Conflict Gate:** Check `cols[col] || diag1[row + col] || diag2[row - col + n - 1]`. If true, skip.
    - **Choose Gate:** Set `queens[row] = col`; mark `cols, diag1, diag2` as true.
    - **Explore Gate:** Recurse `Backtrack(row + 1)`.
    - **Undo Gate:** Unmark `cols, diag1, diag2` as false.
 
 #### 3.6 Concrete Step-by-Step State Trace
-Trace input: $n = 4$.
+Trace input: n = 4.
 
 | Row | Valid Cols Evaluated | Collision Checks | Action Taken | Board State (`queens`) |
 | :---: | :---: | :---: | :--- | :--- |
-| **0** | $col = 0$ | Clear | Place at $(0, 0)$ | `[0, _, _, _]` |
-| **1** | $col = 0$ (col), $1$ (diag) | Collisions | Skip 0, 1 | |
-| **1** | $col = 2$ | Clear | Place at $(1, 2)$ | `[0, 2, _, _]` |
-| **2** | $col = 0, 1, 2, 3$ | All collide! | Backtrack to row 1 | |
-| **1** | $col = 3$ | Clear | Place at $(1, 3)$ | `[0, 3, _, _]` |
-| **2** | $col = 1$ | Clear | Place at $(2, 1)$ | `[0, 3, 1, _]` |
-| **3** | $col = 0, 1, 2, 3$ | All collide! | Backtrack to row 0 | |
-| **0** | $col = 1$ | Clear | Place at $(0, 1)$ | `[1, _, _, _]` |
-| **1** | $col = 3$ | Clear | Place at $(1, 3)$ | `[1, 3, _, _]` |
-| **2** | $col = 0$ | Clear | Place at $(2, 0)$ | `[1, 3, 0, _]` |
-| **3** | $col = 2$ | Clear | **Place at $(3, 2)$! Solution Found!** | `[1, 3, 0, 2]` |
+| **0** | col = 0 | Clear | Place at (0, 0) | `[0, _, _, _]` |
+| **1** | col = 0 (col), 1 (diag) | Collisions | Skip 0, 1 | |
+| **1** | col = 2 | Clear | Place at (1, 2) | `[0, 2, _, _]` |
+| **2** | col = 0, 1, 2, 3 | All collide! | Backtrack to row 1 | |
+| **1** | col = 3 | Clear | Place at (1, 3) | `[0, 3, _, _]` |
+| **2** | col = 1 | Clear | Place at (2, 1) | `[0, 3, 1, _]` |
+| **3** | col = 0, 1, 2, 3 | All collide! | Backtrack to row 0 | |
+| **0** | col = 1 | Clear | Place at (0, 1) | `[1, _, _, _]` |
+| **1** | col = 3 | Clear | Place at (1, 3) | `[1, 3, _, _]` |
+| **2** | col = 0 | Clear | Place at (2, 0) | `[1, 3, 0, _]` |
+| **3** | col = 2 | Clear | **Place at (3, 2)! Solution Found!** | `[1, 3, 0, 2]` |
 
 Formatted Solution 1: `[".Q..", "...Q", "Q...", "..Q."]`.
 
@@ -1328,13 +1328,13 @@ Formatted Solution 1: `[".Q..", "...Q", "Q...", "..Q."]`.
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Boolean Constraint Arrays):** Recommended for senior interviews. Extremely readable, trivial to explain, avoids bit manipulation edge cases, and executes with optimal $O(1)$ check time.
-- **Approach 2 (Bitwise Integer Masks):** World-class performance optimization. Replaces arrays with 3 integers (`cols`, `diag1`, `diag2`), utilizing CPU bitwise shifts and trailing zero counts to run $5\times$ faster.
+- **Approach 1 (Boolean Constraint Arrays):** Recommended for senior interviews. Extremely readable, trivial to explain, avoids bit manipulation edge cases, and executes with optimal O(1) check time.
+- **Approach 2 (Bitwise Integer Masks):** World-class performance optimization. Replaces arrays with 3 integers (`cols`, `diag1`, `diag2`), utilizing CPU bitwise shifts and trailing zero counts to run 5* faster.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 - **Step 1: Setup & Allocations:** Allocate boolean arrays `cols[n]`, `diag1[2n]`, `diag2[2n]`, and integer array `queens[n]`.
 - **Step 2: Recursive Backtracking:** Call `Backtrack(0)`.
-- **Step 3: Condition Check & Gates:** Test collision in $O(1)$. If safe, choose, explore `row + 1`, undo.
+- **Step 3: Condition Check & Gates:** Test collision in O(1). If safe, choose, explore `row + 1`, undo.
 - **Step 4: Board Formatting:** When `row == n`, convert `queens` array into list of strings. Return `result`.
 
 #### 4.3 Alternative Approaches Analysis
@@ -1348,9 +1348,9 @@ Formatted Solution 1: `[".Q..", "...Q", "Q...", "..Q."]`.
 
 | Metric | Approach 1: Boolean Constraint Arrays | Approach 2: Bitwise Integer Masks |
 | :--- | :--- | :--- |
-| **Time Complexity (Best / Avg / Worst)** | $O(N!)$ | $O(N!)$ (5x lower constant factor) |
-| **Auxiliary Space** | $O(N)$ tracking arrays + $O(N)$ stack | $O(N)$ stack depth only |
-| **Output Space** | $O(N^2 \cdot S)$ where $S$ = solutions | $O(N^2 \cdot S)$ where $S$ = solutions |
+| **Time Complexity (Best / Avg / Worst)** | O(N!) | O(N!) (5x lower constant factor) |
+| **Auxiliary Space** | O(N) tracking arrays + O(N) stack | O(N) stack depth only |
+| **Output Space** | O(N^2 * S) where S = solutions | O(N^2 * S) where S = solutions |
 | **Cache Locality** | High | Extreme (pure register execution) |
 | **In-Place Mutability** | Non-destructive | Non-destructive |
 | **Streaming Suitability** | High | High |

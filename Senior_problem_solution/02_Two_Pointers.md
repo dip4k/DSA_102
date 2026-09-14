@@ -24,8 +24,8 @@
   - `1 <= s.Length <= 2 * 10^5`
   - `s` consists only of printable ASCII characters.
 - **Senior Edge Cases to Defend:**
-  - Punctuation/Space only string: `s = "., "` $\implies$ `true`. Pointers must converge and cross without out-of-bounds exceptions.
-  - Single alphanumeric character: `s = "a."` $\implies$ `true`.
+  - Punctuation/Space only string: `s = "., "` => `true`. Pointers must converge and cross without out-of-bounds exceptions.
+  - Single alphanumeric character: `s = "a."` => `true`.
   - Mismatch at extremities: `s = "ab0ba"` vs `s = "ab0ca"`.
   - Case folding: `'A'` must match `'a'`.
 
@@ -56,18 +56,18 @@ If the parts match, both take one step inward. If the parts mismatch, they immed
   return filtered == reversed;
   ```
 - **Why Naive Wastes CPU Cycles & Memory:**
-  1. *Excess Heap Memory:* Allocates multiple auxiliary objects (regex match buffers, filtered string, char array, reversed string) totaling several megabytes for $N = 2 \times 10^5$.
+  1. *Excess Heap Memory:* Allocates multiple auxiliary objects (regex match buffers, filtered string, char array, reversed string) totaling several megabytes for N = 2 x 10^5.
   2. *Garbage Collection Churn:* Triggers Gen-0 / Gen-1 GC collections under high throughput.
-  3. *Unnecessary Traversals:* The naive approach processes the entire string 3 to 4 times, even if the very first and last characters mismatch (e.g., `"a... (200k chars) ...z"`), where an optimal algorithm terminates in $O(1)$ time on step 1!
+  3. *Unnecessary Traversals:* The naive approach processes the entire string 3 to 4 times, even if the very first and last characters mismatch (e.g., `"a... (200k chars) ...z"`), where an optimal algorithm terminates in O(1) time on step 1!
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
-- **In-Place Read-Only Convergence:** By maintaining two pointers `left = 0` and `right = s.Length - 1` directly over the input string, we eliminate all intermediate string allocations, achieving strictly $O(1)$ auxiliary space.
-- **Symmetric Reflection Invariant:** At any state $(left, right)$, the alphanumeric sub-sequence of the traversed prefix $s[0 \dots left - 1]$ is guaranteed to be an exact case-insensitive reverse of the traversed suffix $s[right + 1 \dots N - 1]$.
+- **In-Place Read-Only Convergence:** By maintaining two pointers `left = 0` and `right = s.Length - 1` directly over the input string, we eliminate all intermediate string allocations, achieving strictly O(1) auxiliary space.
+- **Symmetric Reflection Invariant:** At any state (left, right), the alphanumeric sub-sequence of the traversed prefix s[0 ... left - 1] is guaranteed to be an exact case-insensitive reverse of the traversed suffix s[right + 1 ... N - 1].
 - **Short-Circuit Safety:** The first mismatch encountered between valid alphanumeric characters invalidates the palindrome property across the entire phrase. Exiting immediately is 100% safe.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
-- `left`: Pointer advancing $0 \to$ center, scanning for next valid alphanumeric character.
-- `right`: Pointer advancing $N - 1 \to$ center, scanning for next valid alphanumeric character.
+- `left`: Pointer advancing 0 -> center, scanning for next valid alphanumeric character.
+- `right`: Pointer advancing N - 1 -> center, scanning for next valid alphanumeric character.
 
 ```text
 [ 0 ......... left - 1 ]   [ left ......... right ]   [ right + 1 ......... N - 1 ]
@@ -77,8 +77,8 @@ If the parts match, both take one step inward. If the parts mismatch, they immed
 ```
 
 - **Invariant:**
-  1. $0 \le left \le right + 1 \le N$.
-  2. Filtered characters in prefix $[0 \dots left - 1]$ match suffix $[right + 1 \dots N - 1]$ in reverse order.
+  1. 0 <= left <= right + 1 <= N.
+  2. Filtered characters in prefix [0 ... left - 1] match suffix [right + 1 ... N - 1] in reverse order.
 
 #### 3.5 State Transition Triggers & Decision Gates
 1. **Decision Gate 1 (Left Skip):** If `!char.IsLetterOrDigit(s[left])`, increment `left++`. (Guarded by `left < right`).
@@ -90,17 +90,17 @@ If the parts match, both take one step inward. If the parts mismatch, they immed
 4. **Resolution Gate:** If `left >= right`, return `true`.
 
 #### 3.6 Concrete Step-by-Step State Trace
-Input: `s = "A m, a: m a"` ($N = 11$).
+Input: `s = "A m, a: m a"` (N = 11).
 
 | Step | `left` | `s[left]` | `right` | `s[right]` | Action & State Transition | Invariant Check |
 | :---: | :---: | :---: | :---: | :---: | :--- | :--- |
 | 1 | 0 | `'A'` | 10 | `'a'` | Both alphanumeric. `'a' == 'a'`. | Match! `left++ (1), right-- (9)` |
-| 2 | 1 | `' '` | 9 | `'m'` | `s[left]` is space $\implies$ skip | `left++ (2)` |
+| 2 | 1 | `' '` | 9 | `'m'` | `s[left]` is space => skip | `left++ (2)` |
 | 3 | 2 | `'m'` | 9 | `'m'` | Both alphanumeric. `'m' == 'm'`. | Match! `left++ (3), right-- (8)` |
-| 4 | 3 | `','` | 8 | `' '` | `s[left]` is comma $\implies$ skip | `left++ (4)` |
-| 5 | 4 | `' '` | 8 | `' '` | `s[left]` is space $\implies$ skip | `left++ (5)` |
-| 6 | 5 | `'a'` | 8 | `' '` | `s[right]` is space $\implies$ skip | `right-- (7)` |
-| 7 | 5 | `'a'` | 7 | `':'` | `s[right]` is colon $\implies$ skip | `right-- (6)` |
+| 4 | 3 | `','` | 8 | `' '` | `s[left]` is comma => skip | `left++ (4)` |
+| 5 | 4 | `' '` | 8 | `' '` | `s[left]` is space => skip | `left++ (5)` |
+| 6 | 5 | `'a'` | 8 | `' '` | `s[right]` is space => skip | `right-- (7)` |
+| 7 | 5 | `'a'` | 7 | `':'` | `s[right]` is colon => skip | `right-- (6)` |
 | 8 | 5 | `'a'` | 6 | `'a'` | Both alphanumeric. `'a' == 'a'`. | Match! `left++ (6), right-- (5)` |
 | 9 | 6 | - | 5 | - | Loop termination: `left > right` | **Return `true`** |
 
@@ -110,7 +110,7 @@ Input: `s = "A m, a: m a"` ($N = 11$).
 
 #### 4.1 Anchor Points & Approach Selection Criteria
 - **Approach 1: In-Place Opposing Pointers (Optimal & Standard)**
-  - *When to Use:* Always. Strictly $O(N)$ runtime, strictly $O(1)$ auxiliary space, zero heap allocation.
+  - *When to Use:* Always. Strictly O(N) runtime, strictly O(1) auxiliary space, zero heap allocation.
   - *Cache Locality:* Sequential memory traversal from boundaries inward guarantees high L1 cache hit rate.
 - **Approach 2: Filtered StringBuilder (Pedagogical Alternative)**
   - *When to Use:* When input string needs to be permanently cleaned and stored for downstream processing, or when explaining baseline string manipulation.
@@ -123,15 +123,15 @@ Input: `s = "A m, a: m a"` ($N = 11$).
 5. **Step 5: Resolution:** Return `true` when pointers cross.
 
 #### 4.3 Alternative Approaches Analysis
-- **Regex Cleaning:** Using `Regex.Replace` incurs significant regex compilation and DFA state machine overhead. For $200,000$ characters, regex takes up to 50x longer than simple pointer inspection.
+- **Regex Cleaning:** Using `Regex.Replace` incurs significant regex compilation and DFA state machine overhead. For 200,000 characters, regex takes up to 50x longer than simple pointer inspection.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Approach | Time (Best) | Time (Avg) | Time (Worst) | Auxiliary Space | Output Space | Cache Locality | In-Place Mutability | Streaming Suitability |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. In-Place Pointers** | $O(1)$ | $O(N)$ | $O(N)$ | $O(1)$ | $O(1)$ | High | Non-mutating | Moderate (bidirectional) |
-| **2. StringBuilder** | $O(N)$ | $O(N)$ | $O(N)$ | $O(N)$ | $O(1)$ | Moderate | Allocates new string | Poor |
-| **3. Regex Replace** | $O(N)$ | $O(N)$ | $O(N)$ | $O(N)$ | $O(1)$ | Low | High GC pressure | Poor |
+| **1. In-Place Pointers** | O(1) | O(N) | O(N) | O(1) | O(1) | High | Non-mutating | Moderate (bidirectional) |
+| **2. StringBuilder** | O(N) | O(N) | O(N) | O(N) | O(1) | Moderate | Allocates new string | Poor |
+| **3. Regex Replace** | O(N) | O(N) | O(N) | O(N) | O(1) | Low | High GC pressure | Poor |
 
 ---
 
@@ -255,10 +255,10 @@ public class SolutionStringBuilder
 
 ### 1. Problem Detail & Constraints
 - **Formal Statement:** Given a 1-indexed array of integers `numbers` that is already sorted in non-decreasing order, find two numbers such that they add up to a specific `target` number. Return the indices of the two numbers incremented by one as `[index1, index2]`.
-- **Strict Requirement:** Your solution must use only $O(1)$ extra space.
+- **Strict Requirement:** Your solution must use only O(1) extra space.
 - **Assumptions & Contracts:**
   - Exactly one valid solution exists.
-  - You may not use the same element twice ($index1 < index2$).
+  - You may not use the same element twice (index1 < index2).
 - **Key Constraints:**
   - `2 <= numbers.Length <= 3 * 10^4`
   - `-1000 <= numbers[i] <= 1000`
@@ -270,7 +270,7 @@ public class SolutionStringBuilder
   - 1-based indexing in return value.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Exploit array sorted monotonicity to eliminate an entire row or column of impossible pairs at every step in $O(1)$ extra space.
+- **Conceptual Essence:** Exploit array sorted monotonicity to eliminate an entire row or column of impossible pairs at every step in O(1) extra space.
 - **Sample 1:**
   - **Input:** `numbers = [2, 7, 11, 15]`, `target = 9`
   - **Output:** `[1, 2]`
@@ -287,29 +287,29 @@ Imagine a two-dimensional multiplication or addition grid where rows represent `
 - Values increase as you move down across any column.
 
 If you place your pointer at the top-right corner of this matrix (`i = 0, j = N - 1`), you stand at a strategic crossroads:
-- If your current sum is **greater** than target, moving left is your *only* option to decrease the sum. Everything below you in column $j$ is even larger! You can permanently throw away the entire column $j$.
-- If your current sum is **less** than target, moving down is your *only* option to increase the sum. Everything to the left of you in row $i$ is even smaller! You can permanently throw away the entire row $i$.
+- If your current sum is **greater** than target, moving left is your *only* option to decrease the sum. Everything below you in column j is even larger! You can permanently throw away the entire column j.
+- If your current sum is **less** than target, moving down is your *only* option to increase the sum. Everything to the left of you in row i is even smaller! You can permanently throw away the entire row i.
 
 In physical terms, it is an **Opposing Vice Grip**:
-- `sum < target` $\implies$ Turn the left crank tighter to increase the number (`left++`).
-- `sum > target` $\implies$ Loosen the right crank to decrease the number (`right--`).
+- `sum < target` => Turn the left crank tighter to increase the number (`left++`).
+- `sum > target` => Loosen the right crank to decrease the number (`right--`).
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-- **Brute Force ($O(N^2)$):** Tests all $\frac{N(N - 1)}{2}$ pairs, completely ignoring the fact that the array is already sorted.
-- **Binary Search ($O(N \log N)$):** For each element $i$, binary searches for $(target - numbers[i])$ in the subarray $[i + 1 \dots N - 1]$. While $O(1)$ space, it performs $N$ separate logarithmic searches ($N \log N \approx 30,000 \times 15 \approx 4.5 \times 10^5$ operations), whereas two pointers solve it in at most $N$ total steps.
+- **Brute Force (O(N^2)):** Tests all (N(N - 1)) / (2) pairs, completely ignoring the fact that the array is already sorted.
+- **Binary Search (O(N log N)):** For each element i, binary searches for (target - numbers[i]) in the subarray [i + 1 ... N - 1]. While O(1) space, it performs N separate logarithmic searches (N log N ~ 30,000 x 15 ~ 4.5 x 10^5 operations), whereas two pointers solve it in at most N total steps.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Hyperplane Elimination Invariant:**
   - Suppose `sum = numbers[left] + numbers[right] > target`.
-  - Because `numbers` is sorted, for any index $k \in [left, right]$:
-    $$numbers[k] \ge numbers[left]$$
-    $$numbers[k] + numbers[right] \ge numbers[left] + numbers[right] > target$$
-  - **Deduction:** The element `numbers[right]` cannot pair with `numbers[left]`, nor can it pair with *any* other remaining element in the range $[left, right]$! Discarding `right` ($right \leftarrow right - 1$) permanently eliminates $right - left$ impossible pairs in a single $O(1)$ operation without any risk of missing the target.
-  - Symmetrically, if `sum < target`, `numbers[left]` cannot pair with any element in $[left, right]$. Advancing $left \leftarrow left + 1$ eliminates $right - left$ impossible pairs.
+  - Because `numbers` is sorted, for any index k in [left, right]:
+    numbers[k] >= numbers[left]
+    numbers[k] + numbers[right] >= numbers[left] + numbers[right] > target
+  - **Deduction:** The element `numbers[right]` cannot pair with `numbers[left]`, nor can it pair with *any* other remaining element in the range [left, right]! Discarding `right` (right <- right - 1) permanently eliminates right - left impossible pairs in a single O(1) operation without any risk of missing the target.
+  - Symmetrically, if `sum < target`, `numbers[left]` cannot pair with any element in [left, right]. Advancing left <- left + 1 eliminates right - left impossible pairs.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
-- `left`: Points to the smallest candidate in the active search space. Initialized to $0$.
-- `right`: Points to the largest candidate in the active search space. Initialized to $N - 1$.
+- `left`: Points to the smallest candidate in the active search space. Initialized to 0.
+- `right`: Points to the largest candidate in the active search space. Initialized to N - 1.
 
 ```text
 [ 0 ... left - 1 ]   [ left ..................... right ]   [ right + 1 ... N - 1 ]
@@ -319,8 +319,8 @@ In physical terms, it is an **Opposing Vice Grip**:
 ```
 
 - **Invariant:**
-  1. The unique solution pair $(p, q)$ satisfies $left \le p < q \le right$.
-  2. No element outside $[left, right]$ can participate in a valid pair.
+  1. The unique solution pair (p, q) satisfies left <= p < q <= right.
+  2. No element outside [left, right] can participate in a valid pair.
 
 #### 3.5 State Transition Triggers & Decision Gates
 1. **Compute Sum:** `sum = numbers[left] + numbers[right]`.
@@ -336,9 +336,9 @@ Input: `numbers = [2, 7, 11, 15]`, `target = 9`.
 
 | Step | `left` (Val) | `right` (Val) | `sum` | Comparison with Target (9) | Decision & Action | Discarded Search Space |
 | :---: | :---: | :---: | :---: | :---: | :--- | :--- |
-| 1 | 0 (`2`) | 3 (`15`) | 17 | $17 > 9$ (Overshoot) | `right--` | Discard `numbers[3] = 15` |
-| 2 | 0 (`2`) | 2 (`11`) | 13 | $13 > 9$ (Overshoot) | `right--` | Discard `numbers[2] = 11` |
-| 3 | 0 (`2`) | 1 (`7`) | 9 | $9 == 9$ (**Match!**) | **Return `[0 + 1, 1 + 1] = [1, 2]`** | - |
+| 1 | 0 (`2`) | 3 (`15`) | 17 | 17 > 9 (Overshoot) | `right--` | Discard `numbers[3] = 15` |
+| 2 | 0 (`2`) | 2 (`11`) | 13 | 13 > 9 (Overshoot) | `right--` | Discard `numbers[2] = 11` |
+| 3 | 0 (`2`) | 1 (`7`) | 9 | 9 == 9 (**Match!**) | **Return `[0 + 1, 1 + 1] = [1, 2]`** | - |
 
 Terminates in 3 iterations.
 
@@ -348,26 +348,26 @@ Terminates in 3 iterations.
 
 #### 4.1 Anchor Points & Approach Selection Criteria
 - **Approach 1: Opposing Two Pointers (Optimal)**
-  - *When to Use:* Always for sorted arrays when $O(1)$ memory is required. Strictly linear $O(N)$ time, zero heap memory allocations.
+  - *When to Use:* Always for sorted arrays when O(1) memory is required. Strictly linear O(N) time, zero heap memory allocations.
 - **Approach 2: Binary Search per Element**
   - *When to Use:* When the array is massive and stored across distributed pages on disk (external memory), where jumping via binary search reduces disk page reads if the target complement is very close or very far.
 
 #### 4.2 Step-by-Step Natural Progression Flow
-1. **Step 1: Setup:** Validate input length $\ge 2$. Initialize `left = 0`, `right = numbers.Length - 1`.
+1. **Step 1: Setup:** Validate input length >= 2. Initialize `left = 0`, `right = numbers.Length - 1`.
 2. **Step 2: Exploration Loop:** Run `while (left < right)`.
 3. **Step 3: Sum & Gate Check:** Calculate sum. If equal, format 1-based return. If less, `left++`. If greater, `right--`.
 4. **Step 4: Exception Handling:** Throw `InvalidOperationException` if array is exhausted without a solution.
 
 #### 4.3 Alternative Approaches Analysis
-- **Hash Map ($O(N)$ Space):** While LeetCode #1's hash map solution works, it uses $O(N)$ auxiliary memory and completely ignores the sorted nature of the array, violating the problem's strict $O(1)$ extra space constraint.
+- **Hash Map (O(N) Space):** While LeetCode #1's hash map solution works, it uses O(N) auxiliary memory and completely ignores the sorted nature of the array, violating the problem's strict O(1) extra space constraint.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Approach | Time (Best) | Time (Avg) | Time (Worst) | Auxiliary Space | Output Space | Cache Locality | In-Place Mutability | Streaming Suitability |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. Opposing Two Pointers** | $O(1)$ | $O(N)$ | $O(N)$ | $O(1)$ | $O(1)$ | High (sequential convergence) | Non-mutating | Moderate |
-| **2. Binary Search** | $O(\log N)$ | $O(N \log N)$ | $O(N \log N)$ | $O(1)$ | $O(1)$ | Moderate (pointer jumps) | Non-mutating | Poor |
-| **3. Hash Map** | $O(1)$ | $O(N)$ | $O(N)$ | $O(N)$ | $O(1)$ | Moderate | Non-mutating | Excellent |
+| **1. Opposing Two Pointers** | O(1) | O(N) | O(N) | O(1) | O(1) | High (sequential convergence) | Non-mutating | Moderate |
+| **2. Binary Search** | O(log N) | O(N log N) | O(N log N) | O(1) | O(1) | Moderate (pointer jumps) | Non-mutating | Poor |
+| **3. Hash Map** | O(1) | O(N) | O(N) | O(N) | O(1) | Moderate | Non-mutating | Excellent |
 
 ---
 
@@ -497,26 +497,26 @@ public class SolutionBinarySearch
 | **LeetCode Link** | [Container With Most Water](https://leetcode.com/problems/container-with-most-water/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** You are given an integer array `height` of length $n$. There are $n$ vertical lines drawn such that the two endpoints of the $i$-th line are $(i, 0)$ and $(i, height[i])$. Find two lines that together with the x-axis form a container, such that the container contains the most water. Return the maximum amount of water a container can store.
+- **Formal Statement:** You are given an integer array `height` of length n. There are n vertical lines drawn such that the two endpoints of the i-th line are (i, 0) and (i, height[i]). Find two lines that together with the x-axis form a container, such that the container contains the most water. Return the maximum amount of water a container can store.
 - **Assumptions & Contracts:**
   - You may not slant the container (water level is horizontal).
-  - Width is determined by the horizontal distance between vertical lines: $width = right - left$.
-  - Height is constrained by the shorter of the two boundary lines: $h = \min(height[left], height[right])$.
+  - Width is determined by the horizontal distance between vertical lines: width = right - left.
+  - Height is constrained by the shorter of the two boundary lines: h = min(height[left], height[right]).
 - **Key Constraints:**
   - `n == height.Length`
   - `2 <= n <= 10^5`
   - `0 <= height[i] <= 10^4`
 - **Senior Edge Cases to Defend:**
-  - Uniform heights: `height = [5, 5, 5, 5]` $\implies$ maximum width pair ($0$ and $N - 1$) is optimal.
+  - Uniform heights: `height = [5, 5, 5, 5]` => maximum width pair (0 and N - 1) is optimal.
   - Symmetrical pyramid: `height = [1, 2, 4, 3]` vs `height = [1, 8, 6, 2, 5, 4, 8, 3, 7]`.
   - Zero-height lines: `height = [0, 2]`. Area with 0 height is 0.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Maximize $\text{Area}(L, R) = \min(height[L], height[R]) \times (R - L)$ across all $0 \le L < R < N$ in $O(N)$ time by greedily eliminating the limiting boundary.
+- **Conceptual Essence:** Maximize Area(L, R) = min(height[L], height[R]) * (R - L) across all 0 <= L < R < N in O(N) time by greedily eliminating the limiting boundary.
 - **Sample 1:**
   - **Input:** `height = [1, 8, 6, 2, 5, 4, 8, 3, 7]`
   - **Output:** `49`
-  - **Explanation:** Optimal lines are at index 1 ($height = 8$) and index 8 ($height = 7$). Distance = $8 - 1 = 7$. Water volume = $\min(8, 7) \times 7 = 7 \times 7 = 49$.
+  - **Explanation:** Optimal lines are at index 1 (height = 8) and index 8 (height = 7). Distance = 8 - 1 = 7. Water volume = min(8, 7) * 7 = 7 x 7 = 49.
 - **Sample 2:**
   - **Input:** `height = [1, 1]`
   - **Output:** `1`
@@ -525,40 +525,40 @@ public class SolutionBinarySearch
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
 Imagine constructing a swimming pool between two retaining walls. The water capacity is governed by two factors: the width between the walls and the height of the **shorter** wall. Water immediately spills over the shorter wall if you try to fill it higher.
-We start by placing our walls at the absolute widest possible distance: the two extreme ends of the property ($L = 0$ and $R = N - 1$).
-As we move inward, the pool width *strictly shrinks* ($R - L$ decreases by 1 on every step).
-Now consider: If wall $L$ has height 3 and wall $R$ has height 10, what happens if we move the taller wall $R$ inward?
+We start by placing our walls at the absolute widest possible distance: the two extreme ends of the property (L = 0 and R = N - 1).
+As we move inward, the pool width *strictly shrinks* (R - L decreases by 1 on every step).
+Now consider: If wall L has height 3 and wall R has height 10, what happens if we move the taller wall R inward?
 - The width shrinks.
-- The water height is STILL trapped by wall $L$ (height 3)!
+- The water height is STILL trapped by wall L (height 3)!
 - Therefore, moving the taller wall can *only* decrease or match the area; it can NEVER increase it. It is a guaranteed losing move.
-The **only** move with any positive expected value is to tear down the shorter wall ($L$) and hunt inward for a taller pillar that might compensate for the reduced width!
+The **only** move with any positive expected value is to tear down the shorter wall (L) and hunt inward for a taller pillar that might compensate for the reduced width!
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-- **Quadratic All-Pairs Comparison ($O(N^2)$):**
+- **Quadratic All-Pairs Comparison (O(N^2)):**
   ```csharp
   int maxArea = 0;
   for (int i = 0; i < n; i++)
       for (int j = i + 1; j < n; j++)
           maxArea = Math.Max(maxArea, Math.Min(height[i], height[j]) * (j - i));
   ```
-- **Redundant Scans:** For $N = 10^5$, $\frac{N(N - 1)}{2} \approx 5 \times 10^9$ evaluations, which causes TLE. The naive approach fails to recognize that when `height[L] < height[R]`, evaluating $L$ with any intermediate wall $R' < R$ is mathematically guaranteed to produce a smaller area than $(L, R)$. The CPU wastes billions of cycles computing doomed candidate areas.
+- **Redundant Scans:** For N = 10^5, (N(N - 1)) / (2) ~ 5 x 10^9 evaluations, which causes TLE. The naive approach fails to recognize that when `height[L] < height[R]`, evaluating L with any intermediate wall R' < R is mathematically guaranteed to produce a smaller area than (L, R). The CPU wastes billions of cycles computing doomed candidate areas.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Formal Elimination Proof:**
-  - Let current boundaries be $L$ and $R$ with $height[L] < height[R]$.
-  - The current area is $\text{Area}(L, R) = height[L] \times (R - L)$.
-  - Now consider any candidate boundary $R'$ strictly between $L$ and $R$ ($L < R' < R$).
-  - The area formed by $(L, R')$ is:
-    $$\text{Area}(L, R') = \min(height[L], height[R']) \times (R' - L) \le height[L] \times (R' - L)$$
-  - Since $R' < R$, it follows that $(R' - L) < (R - L)$.
+  - Let current boundaries be L and R with height[L] < height[R].
+  - The current area is Area(L, R) = height[L] * (R - L).
+  - Now consider any candidate boundary R' strictly between L and R (L < R' < R).
+  - The area formed by (L, R') is:
+    Area(L, R') = min(height[L], height[R']) * (R' - L) <= height[L] * (R' - L)
+  - Since R' < R, it follows that (R' - L) < (R - L).
   - Thus:
-    $$\text{Area}(L, R') < height[L] \times (R - L) = \text{Area}(L, R)$$
-  - **Conclusion:** Boundary $L$ can **never** form a container with *any* other remaining right boundary $R'$ that exceeds the current area $\text{Area}(L, R)$.
-  - Discarding $L$ ($L \leftarrow L + 1$) eliminates $R - L - 1$ sub-optimal candidate pairs in a single $O(1)$ decision step!
+    Area(L, R') < height[L] * (R - L) = Area(L, R)
+  - **Conclusion:** Boundary L can **never** form a container with *any* other remaining right boundary R' that exceeds the current area Area(L, R).
+  - Discarding L (L <- L + 1) eliminates R - L - 1 sub-optimal candidate pairs in a single O(1) decision step!
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 - `left`: Pointer initialized to 0.
-- `right`: Pointer initialized to $N - 1$.
+- `right`: Pointer initialized to N - 1.
 - `maxArea`: Scalar tracking maximum water volume discovered across all tested configurations.
 
 ```text
@@ -580,18 +580,18 @@ The **only** move with any positive expected value is to tear down the shorter w
    - If `height[right] <= height[left]`: `right--`.
 
 #### 3.6 Concrete Step-by-Step State Trace
-Input: `height = [1, 8, 6, 2, 5, 4, 8, 3, 7]` ($N = 9$).
+Input: `height = [1, 8, 6, 2, 5, 4, 8, 3, 7]` (N = 9).
 
-| Step | `left` ($h_L$) | `right` ($h_R$) | Width ($R - L$) | Limiting Height | Current Area | `maxArea` | Action & Invariant Gate |
+| Step | `left` (h_L) | `right` (h_R) | Width (R - L) | Limiting Height | Current Area | `maxArea` | Action & Invariant Gate |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
-| 1 | 0 (`1`) | 8 (`7`) | 8 | $\min(1, 7) = 1$ | $1 \times 8 = 8$ | 8 | $h_L < h_R \implies$ Discard $L$ (`left++`) |
-| 2 | 1 (`8`) | 8 (`7`) | 7 | $\min(8, 7) = 7$ | $7 \times 7 = 49$ | **49** | $h_R < h_L \implies$ Discard $R$ (`right--`) |
-| 3 | 1 (`8`) | 7 (`3`) | 6 | $\min(8, 3) = 3$ | $3 \times 6 = 18$ | 49 | $h_R < h_L \implies$ Discard $R$ (`right--`) |
-| 4 | 1 (`8`) | 6 (`8`) | 5 | $\min(8, 8) = 8$ | $8 \times 5 = 40$ | 49 | Equal heights $\implies$ `right--` |
-| 5 | 1 (`8`) | 5 (`4`) | 4 | $\min(8, 4) = 4$ | $4 \times 4 = 16$ | 49 | $h_R < h_L \implies$ Discard $R$ (`right--`) |
-| 6 | 1 (`8`) | 4 (`5`) | 3 | $\min(8, 5) = 5$ | $5 \times 3 = 15$ | 49 | $h_R < h_L \implies$ Discard $R$ (`right--`) |
-| 7 | 1 (`8`) | 3 (`2`) | 2 | $\min(8, 2) = 2$ | $2 \times 2 = 4$ | 49 | $h_R < h_L \implies$ Discard $R$ (`right--`) |
-| 8 | 1 (`8`) | 2 (`6`) | 1 | $\min(8, 6) = 6$ | $6 \times 1 = 6$ | 49 | $h_R < h_L \implies$ Discard $R$ (`right--`) |
+| 1 | 0 (`1`) | 8 (`7`) | 8 | min(1, 7) = 1 | 1 x 8 = 8 | 8 | h_L < h_R => Discard L (`left++`) |
+| 2 | 1 (`8`) | 8 (`7`) | 7 | min(8, 7) = 7 | 7 x 7 = 49 | **49** | h_R < h_L => Discard R (`right--`) |
+| 3 | 1 (`8`) | 7 (`3`) | 6 | min(8, 3) = 3 | 3 x 6 = 18 | 49 | h_R < h_L => Discard R (`right--`) |
+| 4 | 1 (`8`) | 6 (`8`) | 5 | min(8, 8) = 8 | 8 x 5 = 40 | 49 | Equal heights => `right--` |
+| 5 | 1 (`8`) | 5 (`4`) | 4 | min(8, 4) = 4 | 4 x 4 = 16 | 49 | h_R < h_L => Discard R (`right--`) |
+| 6 | 1 (`8`) | 4 (`5`) | 3 | min(8, 5) = 5 | 5 x 3 = 15 | 49 | h_R < h_L => Discard R (`right--`) |
+| 7 | 1 (`8`) | 3 (`2`) | 2 | min(8, 2) = 2 | 2 x 2 = 4 | 49 | h_R < h_L => Discard R (`right--`) |
+| 8 | 1 (`8`) | 2 (`6`) | 1 | min(8, 6) = 6 | 6 x 1 = 6 | 49 | h_R < h_L => Discard R (`right--`) |
 | 9 | 1 | 1 | 0 | - | - | 49 | Pointers meet; terminate. |
 
 Final Maximum Area: `49`.
@@ -602,7 +602,7 @@ Final Maximum Area: `49`.
 
 #### 4.1 Anchor Points & Approach Selection Criteria
 - **Approach 1: Two Pointers Greedy Elimination (Optimal)**
-  - *When to Use:* Always. Strictly $O(N)$ single pass, strictly $O(1)$ auxiliary space.
+  - *When to Use:* Always. Strictly O(N) single pass, strictly O(1) auxiliary space.
 - **Approach 2: Two Pointers with Fast-Forward Skipping**
   - *When to Use:* Highly competitive programming optimization. When moving a pointer inward, if the next pillar is even shorter than the pillar just discarded, its area is guaranteed to be smaller; we can fast-forward past all shorter intermediate pillars with a `while` loop.
 
@@ -620,9 +620,9 @@ Final Maximum Area: `49`.
 
 | Approach | Time (Best) | Time (Avg) | Time (Worst) | Auxiliary Space | Output Space | Cache Locality | In-Place Mutability | Streaming Suitability |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. Two Pointers Greedy** | $O(N)$ | $O(N)$ | $O(N)$ | $O(1)$ | $O(1)$ | High | Non-mutating | Poor (needs two ends) |
-| **2. Fast-Forward Skipping**| $O(N)$ | $O(N)$ (fewer ops)| $O(N)$ | $O(1)$ | $O(1)$ | High | Non-mutating | Poor |
-| **3. Brute Force** | $O(N^2)$ | $O(N^2)$ | $O(N^2)$ | $O(1)$ | $O(1)$ | High | Non-mutating | Poor |
+| **1. Two Pointers Greedy** | O(N) | O(N) | O(N) | O(1) | O(1) | High | Non-mutating | Poor (needs two ends) |
+| **2. Fast-Forward Skipping**| O(N) | O(N) (fewer ops)| O(N) | O(1) | O(1) | High | Non-mutating | Poor |
+| **3. Brute Force** | O(N^2) | O(N^2) | O(N^2) | O(1) | O(1) | High | Non-mutating | Poor |
 
 ---
 
@@ -756,19 +756,19 @@ public class SolutionFastForward
 | **LeetCode Link** | [3Sum](https://leetcode.com/problems/3sum/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** Given an integer array `nums`, return all the unique triplets `[nums[i], nums[j], nums[k]]` such that $i \neq j, i \neq k, j \neq k$, and $nums[i] + nums[j] + nums[k] == 0$.
+- **Formal Statement:** Given an integer array `nums`, return all the unique triplets `[nums[i], nums[j], nums[k]]` such that i != j, i != k, j != k, and nums[i] + nums[j] + nums[k] == 0.
 - **Strict Contract:** The solution set must **not** contain duplicate triplets.
 - **Key Constraints:**
   - `3 <= nums.Length <= 3000`
   - `-10^5 <= nums[i] <= 10^5`
 - **Senior Edge Cases to Defend:**
-  - All zeros: `nums = [0, 0, 0, 0]` $\implies$ `[[0, 0, 0]]`. Must produce exactly one triplet without duplicate sets.
-  - Heavy duplicate clusters: E.g., `nums = [-2, 0, 0, 2, 2]` $\implies$ `[[-2, 0, 2]]`.
-  - No valid triplets: `nums = [1, 2, 3]` $\implies$ `[]`.
-  - Smallest element positive: `nums[0] > 0` $\implies$ early termination.
+  - All zeros: `nums = [0, 0, 0, 0]` => `[[0, 0, 0]]`. Must produce exactly one triplet without duplicate sets.
+  - Heavy duplicate clusters: E.g., `nums = [-2, 0, 0, 2, 2]` => `[[-2, 0, 2]]`.
+  - No valid triplets: `nums = [1, 2, 3]` => `[]`.
+  - Smallest element positive: `nums[0] > 0` => early termination.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Fix an anchor element $i$ and execute Two Sum II on the sorted remaining subarray $[i + 1 \dots N - 1]$, suppressing duplicate triplets in-place without heap HashSet allocations.
+- **Conceptual Essence:** Fix an anchor element i and execute Two Sum II on the sorted remaining subarray [i + 1 ... N - 1], suppressing duplicate triplets in-place without heap HashSet allocations.
 - **Sample 1:**
   - **Input:** `nums = [-1, 0, 1, 2, -1, -4]`
   - **Output:** `[[-1, -1, 2], [-1, 0, 1]]`
@@ -780,34 +780,34 @@ public class SolutionFastForward
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine balancing a three-legged stool where the total balance equation is $a + b + c = 0$.
-If all three legs are free to move at random, the degrees of freedom make coordinating them chaotic ($O(N^3)$).
-To bring order to the system, you bolt one leg into the floor: fix $a = nums[i]$.
+Imagine balancing a three-legged stool where the total balance equation is a + b + c = 0.
+If all three legs are free to move at random, the degrees of freedom make coordinating them chaotic (O(N^3)).
+To bring order to the system, you bolt one leg into the floor: fix a = nums[i].
 Now, the required balance point for the remaining two legs is deterministic:
-$$b + c = -nums[i]$$
+b + c = -nums[i]
 This collapses the problem into the classic **Two Sum II (Opposing Calipers)** problem!
 By sorting the array upfront, we gain two superpowers:
 1. We can use opposing two pointers (`left` and `right`) to find pairs in linear time.
 2. Identical values cluster together consecutively, allowing us to enforce zero duplicate triplets simply by skipping adjacent duplicate values.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-- **Brute Force ($O(N^3)$):** Testing all triplets takes $\frac{N(N - 1)(N - 2)}{6} \approx 4.5 \times 10^9$ operations for $N = 3000$, which times out severely.
+- **Brute Force (O(N^3)):** Testing all triplets takes (N(N - 1)(N - 2)) / (6) ~ 4.5 x 10^9 operations for N = 3000, which times out severely.
 - **HashSet Deduplication Overhead:** Naive solutions sort each valid triplet and insert into `HashSet<List<int>>` or `HashSet<(int, int, int)>`.
   - *Why this is rejected by senior interviewers:* It incurs severe memory allocation, object boxing, and hash collision overhead. Handling deduplication *algorithmically* via pointer mechanics is the hallmark of senior-level engineering.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
-- **Sorting as the Foundation:** Sorting in $O(N \log N)$ provides the monotonic structure necessary for $O(N)$ two-pointer scanning per anchor.
+- **Sorting as the Foundation:** Sorting in O(N log N) provides the monotonic structure necessary for O(N) two-pointer scanning per anchor.
 - **Three Core Pruning & Deduplication Invariants:**
-  1. *Early Positive Pruning:* If `nums[i] > 0`, since the array is sorted, $nums[i] \le nums[left] \le nums[right]$. Hence $nums[i] + nums[left] + nums[right] \ge 3 \times nums[i] > 0$. No zero-sum triplet can ever be formed. We can `break` immediately!
-  2. *Outer Anchor Deduplication:* If $i > 0$ and $nums[i] == nums[i - 1]$, skip $i$ (`continue`). All possible unique triplets starting with this value were already exhausted when $nums[i - 1]$ was the anchor.
+  1. *Early Positive Pruning:* If `nums[i] > 0`, since the array is sorted, nums[i] <= nums[left] <= nums[right]. Hence nums[i] + nums[left] + nums[right] >= 3 x nums[i] > 0. No zero-sum triplet can ever be formed. We can `break` immediately!
+  2. *Outer Anchor Deduplication:* If i > 0 and nums[i] == nums[i - 1], skip i (`continue`). All possible unique triplets starting with this value were already exhausted when nums[i - 1] was the anchor.
   3. *Inner Caliper Deduplication:* When `sum == 0`, append the triplet, advance both `left++` and `right--`, and fast-forward past duplicate adjacent values:
      `while (left < right && nums[left] == nums[left - 1]) left++;`
      `while (left < right && nums[right] == nums[right + 1]) right--;`
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
-- `i`: Outer anchor cursor iterating $0 \dots N - 3$.
-- `left`: Inner lower-bound cursor starting at $i + 1$.
-- `right`: Inner upper-bound cursor starting at $N - 1$.
+- `i`: Outer anchor cursor iterating 0 ... N - 3.
+- `left`: Inner lower-bound cursor starting at i + 1.
+- `right`: Inner upper-bound cursor starting at N - 1.
 
 ```text
 [ 0 ... i - 1 ]   [ i ]   [ i + 1 ... left - 1 ]   [ left ... right ]   [ right + 1 ... N - 1 ]
@@ -825,28 +825,28 @@ By sorting the array upfront, we gain two superpowers:
      `left++; right--;`
      Skip duplicate left: `while (left < right && nums[left] == nums[left - 1]) left++;`
      Skip duplicate right: `while (left < right && nums[right] == nums[right + 1]) right--;`
-   - **Gate B (`sum < 0`):** Sum too small $\implies left++$.
-   - **Gate C (`sum > 0`):** Sum too large $\implies right--$.
+   - **Gate B (`sum < 0`):** Sum too small => left++.
+   - **Gate C (`sum > 0`):** Sum too large => right--.
 
 #### 3.6 Concrete Step-by-Step State Trace
 Input: `nums = [-1, 0, 1, 2, -1, -4]`
-Sorted: `nums = [-4, -1, -1, 0, 1, 2]` ($N = 6$).
+Sorted: `nums = [-4, -1, -1, 0, 1, 2]` (N = 6).
 
-- **Anchor $i = 0$ (`nums[0] = -4`):** Target pair sum = $4$.
-  - `left = 1 (-1), right = 5 (2)`: sum = $-3 < 0 \implies left++$
-  - `left = 2 (-1), right = 5 (2)`: sum = $-3 < 0 \implies left++$
-  - `left = 3 (0), right = 5 (2)`: sum = $-2 < 0 \implies left++$
-  - `left = 4 (1), right = 5 (2)`: sum = $-1 < 0 \implies left++$
+- **Anchor i = 0 (`nums[0] = -4`):** Target pair sum = 4.
+  - `left = 1 (-1), right = 5 (2)`: sum = -3 < 0 => left++
+  - `left = 2 (-1), right = 5 (2)`: sum = -3 < 0 => left++
+  - `left = 3 (0), right = 5 (2)`: sum = -2 < 0 => left++
+  - `left = 4 (1), right = 5 (2)`: sum = -1 < 0 => left++
   - `left = 5, right = 5`: loop ends. No triplets.
-- **Anchor $i = 1$ (`nums[1] = -1`):** Target pair sum = $1$.
-  - `left = 2 (-1), right = 5 (2)`: sum = $-1 + (-1) + 2 = 0$. **Found `[-1, -1, 2]`!**
+- **Anchor i = 1 (`nums[1] = -1`):** Target pair sum = 1.
+  - `left = 2 (-1), right = 5 (2)`: sum = -1 + (-1) + 2 = 0. **Found `[-1, -1, 2]`!**
     `left++ (3), right-- (4)`. No duplicate skips needed.
-  - `left = 3 (0), right = 4 (1)`: sum = $-1 + 0 + 1 = 0$. **Found `[-1, 0, 1]`!**
+  - `left = 3 (0), right = 4 (1)`: sum = -1 + 0 + 1 = 0. **Found `[-1, 0, 1]`!**
     `left++ (4), right-- (3)`. Loop ends.
-- **Anchor $i = 2$ (`nums[2] = -1`):**
-  - `nums[2] == nums[1]` $\implies$ **Duplicate anchor! Skipped instantly.**
-- **Anchor $i = 3$ (`nums[3] = 0`):**
-  - `left = 4 (1), right = 5 (2)`: sum = $0 + 1 + 2 = 3 > 0 \implies right--$. Loop ends.
+- **Anchor i = 2 (`nums[2] = -1`):**
+  - `nums[2] == nums[1]` => **Duplicate anchor! Skipped instantly.**
+- **Anchor i = 3 (`nums[3] = 0`):**
+  - `left = 4 (1), right = 5 (2)`: sum = 0 + 1 + 2 = 3 > 0 => right--. Loop ends.
 
 Output: `[[-1, -1, 2], [-1, 0, 1]]`. Zero duplicate entries, zero HashSet memory.
 
@@ -856,26 +856,26 @@ Output: `[[-1, -1, 2], [-1, 0, 1]]`. Zero duplicate entries, zero HashSet memory
 
 #### 4.1 Anchor Points & Approach Selection Criteria
 - **Approach 1: Sort + Two Pointers (Optimal)**
-  - *When to Use:* Always. $O(N^2)$ time, $O(1)$ auxiliary space (sorting takes $O(\log N)$ stack space). Handles deduplication natively in-place.
+  - *When to Use:* Always. O(N^2) time, O(1) auxiliary space (sorting takes O(log N) stack space). Handles deduplication natively in-place.
 - **Approach 2: Sort + HashSet Lookup for Complement**
-  - *When to Use:* Useful when building a generalized $K$-sum solver with memoized lookup maps, but strictly inferior for 3Sum due to hash allocation and boxing costs.
+  - *When to Use:* Useful when building a generalized K-sum solver with memoized lookup maps, but strictly inferior for 3Sum due to hash allocation and boxing costs.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 1. **Step 1: Guard & Sort:** Check `nums.Length < 3`. Sort `nums` in ascending order.
-2. **Step 2: Outer Anchor Loop:** Iterate $i = 0 \dots N - 3$. Apply positive break and duplicate skipping.
+2. **Step 2: Outer Anchor Loop:** Iterate i = 0 ... N - 3. Apply positive break and duplicate skipping.
 3. **Step 3: Inner Opposing Pointers:** Set `left = i + 1`, `right = N - 1`.
 4. **Step 4: Convergence & In-Place Deduplication:** Probe sum, adjust pointers, skip consecutive identical elements.
 
 #### 4.3 Alternative Approaches Analysis
-- **No-Sort HashSet Approach:** Useful only if input cannot be mutated and copying the array is forbidden. Uses outer loop $i$, inner loop $j$, and a `HashSet<int>` to find complement $-(nums[i] + nums[j])$. However, preventing duplicate triplets without sorting requires hashing sorted 3-tuples, which causes high memory and GC pressure.
+- **No-Sort HashSet Approach:** Useful only if input cannot be mutated and copying the array is forbidden. Uses outer loop i, inner loop j, and a `HashSet<int>` to find complement -(nums[i] + nums[j]). However, preventing duplicate triplets without sorting requires hashing sorted 3-tuples, which causes high memory and GC pressure.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Approach | Time (Best) | Time (Avg) | Time (Worst) | Auxiliary Space | Output Space | Cache Locality | In-Place Mutability | Streaming Suitability |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. Sort + Two Pointers** | $O(N \log N)$ | $O(N^2)$ | $O(N^2)$ | $O(1)$ (or $O(\log N)$ stack)| $O(K)$ triplets | High | Mutates input array | Poor |
-| **2. Sort + HashSet** | $O(N \log N)$ | $O(N^2)$ | $O(N^2)$ | $O(N)$ hash table | $O(K)$ triplets | Moderate | Mutates input array | Poor |
-| **3. Brute Force** | $O(N^3)$ | $O(N^3)$ | $O(N^3)$ | $O(K)$ hash set | $O(K)$ triplets | High | Non-mutating | Poor |
+| **1. Sort + Two Pointers** | O(N log N) | O(N^2) | O(N^2) | O(1) (or O(log N) stack)| O(K) triplets | High | Mutates input array | Poor |
+| **2. Sort + HashSet** | O(N log N) | O(N^2) | O(N^2) | O(N) hash table | O(K) triplets | Moderate | Mutates input array | Poor |
+| **3. Brute Force** | O(N^3) | O(N^3) | O(N^3) | O(K) hash set | O(K) triplets | High | Non-mutating | Poor |
 
 ---
 
@@ -994,21 +994,21 @@ public class Solution
 | **LeetCode Link** | [4Sum](https://leetcode.com/problems/4sum/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** Given an array `nums` of $n$ integers, return an array of all unique quadruplets `[nums[a], nums[b], nums[c], nums[d]]` such that:
-  - $0 \le a, b, c, d < n$
-  - $a, b, c,$ and $d$ are distinct.
-  - $nums[a] + nums[b] + nums[c] + nums[d] == target$
+- **Formal Statement:** Given an array `nums` of n integers, return an array of all unique quadruplets `[nums[a], nums[b], nums[c], nums[d]]` such that:
+  - 0 <= a, b, c, d < n
+  - a, b, c, and d are distinct.
+  - nums[a] + nums[b] + nums[c] + nums[d] == target
 - **Strict Contract:** No duplicate quadruplets in output.
 - **Key Constraints:**
   - `1 <= nums.Length <= 200`
   - `-10^9 <= nums[i] <= 10^9`
   - `-10^9 <= target <= 10^9`
 - **Senior Edge Cases to Defend:**
-  - 32-bit Integer Overflow: Summing four integers up to $10^9$ can reach $4 \times 10^9$, exceeding standard 32-bit signed integer capacity (`int.MaxValue` $\approx 2.14 \times 10^9$). Must use 64-bit integer arithmetic (`long`).
-  - Target requiring 4 identical elements: E.g., `nums = [2, 2, 2, 2, 2]`, `target = 8` $\implies$ exactly one quadruplet `[[2, 2, 2, 2]]`.
+  - 32-bit Integer Overflow: Summing four integers up to 10^9 can reach 4 x 10^9, exceeding standard 32-bit signed integer capacity (`int.MaxValue` ~ 2.14 x 10^9). Must use 64-bit integer arithmetic (`long`).
+  - Target requiring 4 identical elements: E.g., `nums = [2, 2, 2, 2, 2]`, `target = 8` => exactly one quadruplet `[[2, 2, 2, 2]]`.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Generalize Two Sum II and 3Sum to $K = 4$ dimensions using nested anchors, two-level boundary pruning, 64-bit overflow prevention, and in-place deduplication.
+- **Conceptual Essence:** Generalize Two Sum II and 3Sum to K = 4 dimensions using nested anchors, two-level boundary pruning, 64-bit overflow prevention, and in-place deduplication.
 - **Sample 1:**
   - **Input:** `nums = [1, 0, -1, 0, -2, 2]`, `target = 0`
   - **Output:** `[[-2, -1, 1, 2], [-2, 0, 0, 2], [-1, 0, 0, 1]]`
@@ -1019,36 +1019,36 @@ public class Solution
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine a set of nested Russian Matryoshka dolls. Solving 4Sum directly is intimidating. So you open the outer doll: fix the first anchor element $i$.
-Now inside is a 3Sum problem! You open the second doll: fix the second anchor element $j$.
+Imagine a set of nested Russian Matryoshka dolls. Solving 4Sum directly is intimidating. So you open the outer doll: fix the first anchor element i.
+Now inside is a 3Sum problem! You open the second doll: fix the second anchor element j.
 Now inside is a 2Sum problem! You solve the 2Sum core using our trusted opposing calipers (`left`, `right`).
 However, walking all nested loops blindly is wasteful. Imagine installing an **early-warning radar** at each doll level:
 - You calculate the *minimum theoretical sum* possible from this point onward (the current anchor plus the smallest remaining elements). If even the minimum possible sum already overshoots your target, you smash the current search branch immediately (`break`)!
 - You calculate the *maximum theoretical sum* possible from this point onward (the current anchor plus the largest remaining elements). If even the maximum possible sum cannot reach your target, the current anchor is hopelessly weak; you advance to the next candidate immediately (`continue`)!
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-- **Quadratic / Quartic Loops ($O(N^4)$):** A 4-level nested loop without pruning executes $\approx \frac{N^4}{24}$ iterations. For $N = 200$, this is $\approx 6.6 \times 10^7$ loops.
+- **Quadratic / Quartic Loops (O(N^4)):** A 4-level nested loop without pruning executes ~ (N^4) / (24) iterations. For N = 200, this is ~ 6.6 x 10^7 loops.
 - Redundancy occurs when the algorithm explores iterations where numbers are far too large or far too small to ever reach `target`.
 - **The Integer Overflow Trap:**
   ```csharp
   int sum = nums[i] + nums[j] + nums[left] + nums[right]; // BUG: Overflows to negative!
   ```
-  In C#, 32-bit signed overflow wraps around into negative territory without throwing an exception by default. A quadruplet that sums to $+3 \times 10^9$ wraps to negative, corrupting the comparison with `target`.
+  In C#, 32-bit signed overflow wraps around into negative territory without throwing an exception by default. A quadruplet that sums to +3 x 10^9 wraps to negative, corrupting the comparison with `target`.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **64-bit Arithmetic Guarantee:** All sum computations are cast to `long` before addition:
-  $$\text{sum} = (long)nums[i] + nums[j] + nums[left] + nums[right]$$
+  sum = (long)nums[i] + nums[j] + nums[left] + nums[right]
 - **Multi-Level Boundary Pruning Invariants:**
-  1. *Level 1 Minimum Cutoff:* At anchor $i$, the smallest sum possible is $(long)nums[i] + nums[i + 1] + nums[i + 2] + nums[i + 3]$. If this $> target$, then because the array is sorted, no subsequent combination can be smaller. `break` immediately!
-  2. *Level 1 Maximum Cutoff:* At anchor $i$, the largest sum possible is $(long)nums[i] + nums[N - 1] + nums[N - 2] + nums[N - 3]$. If this $< target$, $nums[i]$ is too small even with the three largest numbers in the array. `continue` to $i + 1$!
-  3. Symmetrical Min/Max cutoffs applied at anchor $j$.
+  1. *Level 1 Minimum Cutoff:* At anchor i, the smallest sum possible is (long)nums[i] + nums[i + 1] + nums[i + 2] + nums[i + 3]. If this > target, then because the array is sorted, no subsequent combination can be smaller. `break` immediately!
+  2. *Level 1 Maximum Cutoff:* At anchor i, the largest sum possible is (long)nums[i] + nums[N - 1] + nums[N - 2] + nums[N - 3]. If this < target, nums[i] is too small even with the three largest numbers in the array. `continue` to i + 1!
+  3. Symmetrical Min/Max cutoffs applied at anchor j.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 - Cursor hierarchy:
-  - $i$: First anchor ($0 \dots N - 4$)
-  - $j$: Second anchor ($i + 1 \dots N - 3$)
-  - $left$: Lower caliper pointer ($j + 1$)
-  - $right$: Upper caliper pointer ($N - 1$)
+  - i: First anchor (0 ... N - 4)
+  - j: Second anchor (i + 1 ... N - 3)
+  - left: Lower caliper pointer (j + 1)
+  - right: Upper caliper pointer (N - 1)
 
 ```text
 [ 0 ... i-1 ]  [ i ]  [ i+1 ... j-1 ]  [ j ]  [ j+1 ... left-1 ]  [ left ... right ]  [ right+1 ... N-1 ]
@@ -1057,10 +1057,10 @@ However, walking all nested loops blindly is wasteful. Imagine installing an **e
 ```
 
 #### 3.5 State Transition Triggers & Decision Gates
-1. **Anchor $i$ Deduplication:** If $i > 0 && nums[i] == nums[i - 1]$, `continue`.
-2. **Anchor $i$ Pruning:** Min-sum break, Max-sum continue.
-3. **Anchor $j$ Deduplication:** If $j > i + 1 && nums[j] == nums[j - 1]$, `continue`.
-4. **Anchor $j$ Pruning:** Min-sum break, Max-sum continue.
+1. **Anchor i Deduplication:** If i > 0 && nums[i] == nums[i - 1], `continue`.
+2. **Anchor i Pruning:** Min-sum break, Max-sum continue.
+3. **Anchor j Deduplication:** If j > i + 1 && nums[j] == nums[j - 1], `continue`.
+4. **Anchor j Pruning:** Min-sum break, Max-sum continue.
 5. **Inner Caliper While Loop (`left < right`):**
    - If `sum == target`: Add quadruplet, advance both, skip duplicates.
    - If `sum < target`: `left++`.
@@ -1068,21 +1068,21 @@ However, walking all nested loops blindly is wasteful. Imagine installing an **e
 
 #### 3.6 Concrete Step-by-Step State Trace
 Input: `nums = [1, 0, -1, 0, -2, 2]`, `target = 0`
-Sorted: `nums = [-2, -1, 0, 0, 1, 2]` ($N = 6$).
+Sorted: `nums = [-2, -1, 0, 0, 1, 2]` (N = 6).
 
-- Anchor $i = 0$ (`nums[0] = -2`):
-  - Min sum: $-2 + (-1) + 0 + 0 = -3 \le 0$. Max sum: $-2 + 0 + 1 + 2 = 1 \ge 0$. Bounds valid.
-  - Anchor $j = 1$ (`nums[1] = -1`):
-    - Target for pair: $0 - (-2 + -1) = 3$.
-    - `left = 2 (0), right = 5 (2)`: sum = $-2 + -1 + 0 + 2 = -1 < 0 \implies left++$
-    - `left = 3 (0), right = 5 (2)`: sum = $-1 < 0 \implies left++$
-    - `left = 4 (1), right = 5 (2)`: sum = $-2 + -1 + 1 + 2 = 0$. **Found `[-2, -1, 1, 2]`!**
-  - Anchor $j = 2$ (`nums[2] = 0`):
-    - Target for pair: $0 - (-2 + 0) = 2$.
-    - `left = 3 (0), right = 5 (2)`: sum = $-2 + 0 + 0 + 2 = 0$. **Found `[-2, 0, 0, 2]`!**
-- Anchor $i = 1$ (`nums[1] = -1`):
-  - Anchor $j = 2$ (`nums[2] = 0`):
-    - `left = 3 (0), right = 4 (1)`: sum = $-1 + 0 + 0 + 1 = 0$. **Found `[-1, 0, 0, 1]`!**
+- Anchor i = 0 (`nums[0] = -2`):
+  - Min sum: -2 + (-1) + 0 + 0 = -3 <= 0. Max sum: -2 + 0 + 1 + 2 = 1 >= 0. Bounds valid.
+  - Anchor j = 1 (`nums[1] = -1`):
+    - Target for pair: 0 - (-2 + -1) = 3.
+    - `left = 2 (0), right = 5 (2)`: sum = -2 + -1 + 0 + 2 = -1 < 0 => left++
+    - `left = 3 (0), right = 5 (2)`: sum = -1 < 0 => left++
+    - `left = 4 (1), right = 5 (2)`: sum = -2 + -1 + 1 + 2 = 0. **Found `[-2, -1, 1, 2]`!**
+  - Anchor j = 2 (`nums[2] = 0`):
+    - Target for pair: 0 - (-2 + 0) = 2.
+    - `left = 3 (0), right = 5 (2)`: sum = -2 + 0 + 0 + 2 = 0. **Found `[-2, 0, 0, 2]`!**
+- Anchor i = 1 (`nums[1] = -1`):
+  - Anchor j = 2 (`nums[2] = 0`):
+    - `left = 3 (0), right = 4 (1)`: sum = -1 + 0 + 0 + 1 = 0. **Found `[-1, 0, 0, 1]`!**
 
 Result: 3 unique quadruplets found with extensive pruning.
 
@@ -1091,27 +1091,27 @@ Result: 3 unique quadruplets found with extensive pruning.
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1: Iterative Two Pointers with Pruning (Optimal for $K = 4$)**
-  - *When to Use:* Standard in production for fixed 4Sum. Strictly $O(N^3)$ worst-case, with practical runtime cut by up to 80% via branch pruning. $O(1)$ auxiliary space.
-- **Approach 2: Generalized Recursive $K$-Sum**
-  - *When to Use:* When the problem asks for arbitrary $K$-Sum ($K = 3, 4, 5, \dots$). Uses recursion to reduce $K$-Sum to $(K-1)$-Sum until base case $K = 2$.
+- **Approach 1: Iterative Two Pointers with Pruning (Optimal for K = 4)**
+  - *When to Use:* Standard in production for fixed 4Sum. Strictly O(N^3) worst-case, with practical runtime cut by up to 80% via branch pruning. O(1) auxiliary space.
+- **Approach 2: Generalized Recursive K-Sum**
+  - *When to Use:* When the problem asks for arbitrary K-Sum (K = 3, 4, 5, ...). Uses recursion to reduce K-Sum to (K-1)-Sum until base case K = 2.
 
 #### 4.2 Step-by-Step Natural Progression Flow
-1. **Step 1: Guard & Sort:** Check length $< 4$. Sort array.
-2. **Step 2: Loop $i$ with Pruning:** Check min-sum and max-sum, deduplicate.
-3. **Step 3: Loop $j$ with Pruning:** Check min-sum and max-sum, deduplicate.
+1. **Step 1: Guard & Sort:** Check length < 4. Sort array.
+2. **Step 2: Loop i with Pruning:** Check min-sum and max-sum, deduplicate.
+3. **Step 3: Loop j with Pruning:** Check min-sum and max-sum, deduplicate.
 4. **Step 4: Two Pointers:** Converge `left` and `right`, compute 64-bit sum, record quadruplets, skip adjacent duplicates.
 
 #### 4.3 Alternative Approaches Analysis
-- **Hash Map of Pair Sums ($O(N^2)$ Time & $O(N^2)$ Space):** Precompute sums of all pairs in `Dictionary<int, List<(int, int)>>`, then find pairs that add to target. Flaw: Handling duplicate indices and duplicate quadruplets becomes a combinatorial nightmare requiring heavy post-processing deduplication.
+- **Hash Map of Pair Sums (O(N^2) Time & O(N^2) Space):** Precompute sums of all pairs in `Dictionary<int, List<(int, int)>>`, then find pairs that add to target. Flaw: Handling duplicate indices and duplicate quadruplets becomes a combinatorial nightmare requiring heavy post-processing deduplication.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Approach | Time (Best) | Time (Avg) | Time (Worst) | Auxiliary Space | Output Space | Cache Locality | In-Place Mutability | Streaming Suitability |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. Iterative Pruned** | $O(N \log N)$ (pruned)| $O(N^3)$ | $O(N^3)$ | $O(1)$ | $O(K)$ | High | Mutates input array | Poor |
-| **2. Recursive K-Sum** | $O(N^{K-1})$ | $O(N^{K-1})$ | $O(N^{K-1})$ | $O(K)$ stack frames | $O(K)$ | High | Mutates input array | Poor |
-| **3. Pair Hash Map** | $O(N^2)$ | $O(N^2)$ | $O(N^2)$ | $O(N^2)$ pairs | $O(K)$ | Moderate | Non-mutating | Poor |
+| **1. Iterative Pruned** | O(N log N) (pruned)| O(N^3) | O(N^3) | O(1) | O(K) | High | Mutates input array | Poor |
+| **2. Recursive K-Sum** | O(N^K-1) | O(N^K-1) | O(N^K-1) | O(K) stack frames | O(K) | High | Mutates input array | Poor |
+| **3. Pair Hash Map** | O(N^2) | O(N^2) | O(N^2) | O(N^2) pairs | O(K) | Moderate | Non-mutating | Poor |
 
 ---
 
@@ -1259,23 +1259,23 @@ public class Solution
 | **LeetCode Link** | [Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** Given $n$ non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.
+- **Formal Statement:** Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.
 - **Assumptions & Contracts:**
-  - Water cannot leak from the left boundary ($< 0$) or the right boundary ($> n - 1$).
+  - Water cannot leak from the left boundary (< 0) or the right boundary (> n - 1).
   - Water is trapped vertically in columns above each pillar.
 - **Key Constraints:**
   - `n == height.Length`
   - `1 <= n <= 2 * 10^4`
   - `0 <= height[i] <= 10^5`
 - **Senior Edge Cases to Defend:**
-  - Monotonically increasing or decreasing elevation: `height = [1, 2, 3, 4]` or `[4, 3, 2, 1]` $\implies$ `0` water.
-  - Fewer than 3 bars: Cannot form a basin $\implies$ `0` water.
-  - Large flat plateaus: `height = [3, 0, 0, 0, 3]` $\implies$ $3 \times 3 = 9$ units of water.
+  - Monotonically increasing or decreasing elevation: `height = [1, 2, 3, 4]` or `[4, 3, 2, 1]` => `0` water.
+  - Fewer than 3 bars: Cannot form a basin => `0` water.
+  - Large flat plateaus: `height = [3, 0, 0, 0, 3]` => 3 x 3 = 9 units of water.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Water trapped over column $i$ is strictly governed by:
-  $$\text{Water}[i] = \max(0, \min(\text{leftMax}_i, \text{rightMax}_i) - height[i])$$
-  Achieve $O(N)$ runtime and $O(1)$ auxiliary space using the two-pointer boundary invariant.
+- **Conceptual Essence:** Water trapped over column i is strictly governed by:
+  Water[i] = max(0, min(leftMax_i, rightMax_i) - height[i])
+  Achieve O(N) runtime and O(1) auxiliary space using the two-pointer boundary invariant.
 - **Sample 1:**
   - **Input:** `height = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]`
   - **Output:** `6`
@@ -1287,43 +1287,43 @@ public class Solution
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
 Imagine a canyon formed by stone pillars after an endless monsoon. Water collects between the pillars.
-How high can water pool directly over pillar $i$?
+How high can water pool directly over pillar i?
 Water will inevitably spill over the lower of the two enclosing rim walls!
-$$\text{Water Level} = \min(\text{highest peak to the left of } i, \text{highest peak to the right of } i)$$
+Water Level = min(highest peak to the left of i, highest peak to the right of i)
 If you use two pointers `left` and `right` approaching each other from the far sides of the canyon, and keep track of the tallest peak seen so far from the left (`leftMax`) and from the right (`rightMax`), you notice a profound mathematical truth:
 **Whichever wall is shorter is the absolute ceiling for that side!**
 Suppose `leftMax <= rightMax`. We don't care if there is an Everest hidden somewhere between `left` and `right`. Any hidden peak will only make the right side even taller—it will **never** lower the left ceiling!
 Therefore, the water level at column `left` is *unquestionably* governed by `leftMax`. We can calculate its trapped water immediately and advance `left++`.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-- **Brute Force ($O(N^2)$):** For every index $i$, scan left ($0 \dots i$) to find $\max$, then scan right ($i \dots N - 1$) to find $\max$. Total scans: $O(N^2)$.
-- **Dynamic Programming ($O(N)$ Time & $O(N)$ Space):** Precompute prefix maximum array `leftMax[N]` and suffix maximum array `rightMax[N]`. While this runs in linear time, it allocates two separate integer arrays on the managed heap, creating garbage collection overhead.
-- Two pointers eliminates both arrays entirely, maintaining the maximums on CPU registers in $O(1)$ space.
+- **Brute Force (O(N^2)):** For every index i, scan left (0 ... i) to find max, then scan right (i ... N - 1) to find max. Total scans: O(N^2).
+- **Dynamic Programming (O(N) Time & O(N) Space):** Precompute prefix maximum array `leftMax[N]` and suffix maximum array `rightMax[N]`. While this runs in linear time, it allocates two separate integer arrays on the managed heap, creating garbage collection overhead.
+- Two pointers eliminates both arrays entirely, maintaining the maximums on CPU registers in O(1) space.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **The Two-Pointer Boundary Invariant:**
   - Maintain running trackers:
-    - `leftMax`: $\max(height[0 \dots left])$
-    - `rightMax`: $\max(height[right \dots N - 1])$
-  - **Case 1: $height[left] \le height[right]$:**
-    - Since $leftMax$ is the max up to $left$, we know $leftMax = \max(leftMax, height[left])$.
-    - Because $height[left] \le height[right] \le rightMax$, we have $leftMax \le rightMax$.
-    - Could the *true* global maximum to the right of $left$ be smaller than $leftMax$? **No**, because $height[right]$ is already $\ge leftMax$, guaranteeing the true right maximum is at least $rightMax \ge leftMax$.
-    - Therefore, $\min(\text{true\_leftMax}, \text{true\_rightMax}) = leftMax$ with 100% mathematical certainty!
+    - `leftMax`: max(height[0 ... left])
+    - `rightMax`: max(height[right ... N - 1])
+  - **Case 1: height[left] <= height[right]:**
+    - Since leftMax is the max up to left, we know leftMax = max(leftMax, height[left]).
+    - Because height[left] <= height[right] <= rightMax, we have leftMax <= rightMax.
+    - Could the *true* global maximum to the right of left be smaller than leftMax? **No**, because height[right] is already >= leftMax, guaranteeing the true right maximum is at least rightMax >= leftMax.
+    - Therefore, min(true\_leftMax, true\_rightMax) = leftMax with 100% mathematical certainty!
     - Water trapped at `left` is:
-      $$\text{water} = leftMax - height[left]$$
+      water = leftMax - height[left]
     - Discard column `left` and advance `left++`.
-  - **Case 2: $height[right] < height[left]$:**
-    - Symmetrically, $\min(\text{true\_leftMax}, \text{true\_rightMax}) = rightMax$.
+  - **Case 2: height[right] < height[left]:**
+    - Symmetrically, min(true\_leftMax, true\_rightMax) = rightMax.
     - Water trapped at `right` is:
-      $$\text{water} = rightMax - height[right]$$
+      water = rightMax - height[right]
     - Discard column `right` and decrement `right--`.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 - `left`: Sweeps inward from index 0.
-- `right`: Sweeps inward from index $N - 1$.
-- `leftMax`: Running maximum height seen in prefix $[0 \dots left]$.
-- `rightMax`: Running maximum height seen in suffix $[right \dots N - 1]$.
+- `right`: Sweeps inward from index N - 1.
+- `leftMax`: Running maximum height seen in prefix [0 ... left].
+- `rightMax`: Running maximum height seen in suffix [right ... N - 1].
 
 ```text
 [ 0 ... left - 1 ]   [ left ]   [ left + 1 ... right - 1 ]   [ right ]   [ right + 1 ... N - 1 ]
@@ -1343,21 +1343,21 @@ Therefore, the water level at column `left` is *unquestionably* governed by `lef
    - `right--`.
 
 #### 3.6 Concrete Step-by-Step State Trace
-Input: `height = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]` ($N = 12$).
+Input: `height = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]` (N = 12).
 
-| Step | `L` ($h_L$) | `R` ($h_R$) | Invariant Evaluation | `leftMax` | `rightMax` | Water Trapped at Column | `totalWater` | Pointer Move |
+| Step | `L` (h_L) | `R` (h_R) | Invariant Evaluation | `leftMax` | `rightMax` | Water Trapped at Column | `totalWater` | Pointer Move |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| 1 | 0 (`0`) | 11 (`1`) | $h_L \le h_R \implies$ Process L | 0 | 0 | $0 - 0 = 0$ | 0 | `L++ (1)` |
-| 2 | 1 (`1`) | 11 (`1`) | $h_L \le h_R \implies$ Process L | 1 | 0 | $1 - 1 = 0$ (Peak) | 0 | `L++ (2)` |
-| 3 | 2 (`0`) | 11 (`1`) | $h_L \le h_R \implies$ Process L | 1 | 0 | $1 - 0 = 1$ | **1** | `L++ (3)` |
-| 4 | 3 (`2`) | 11 (`1`) | $h_R < h_L \implies$ Process R | 1 | 1 | $1 - 1 = 0$ (Peak) | 1 | `R-- (10)` |
-| 5 | 3 (`2`) | 10 (`2`) | $h_L \le h_R \implies$ Process L | 2 | 1 | $2 - 2 = 0$ (Peak) | 1 | `L++ (4)` |
-| 6 | 4 (`1`) | 10 (`2`) | $h_L \le h_R \implies$ Process L | 2 | 1 | $2 - 1 = 1$ | **2** | `L++ (5)` |
-| 7 | 5 (`0`) | 10 (`2`) | $h_L \le h_R \implies$ Process L | 2 | 1 | $2 - 0 = 2$ | **4** | `L++ (6)` |
-| 8 | 6 (`1`) | 10 (`2`) | $h_L \le h_R \implies$ Process L | 2 | 1 | $2 - 1 = 1$ | **5** | `L++ (7)` |
-| 9 | 7 (`3`) | 10 (`2`) | $h_R < h_L \implies$ Process R | 2 | 2 | $2 - 2 = 0$ (Peak) | 5 | `R-- (9)` |
-| 10| 7 (`3`) | 9 (`1`) | $h_R < h_L \implies$ Process R | 2 | 2 | $2 - 1 = 1$ | **6** | `R-- (8)` |
-| 11| 7 (`3`) | 8 (`2`) | $h_R < h_L \implies$ Process R | 2 | 2 | $2 - 2 = 0$ | 6 | `R-- (7)` |
+| 1 | 0 (`0`) | 11 (`1`) | h_L <= h_R => Process L | 0 | 0 | 0 - 0 = 0 | 0 | `L++ (1)` |
+| 2 | 1 (`1`) | 11 (`1`) | h_L <= h_R => Process L | 1 | 0 | 1 - 1 = 0 (Peak) | 0 | `L++ (2)` |
+| 3 | 2 (`0`) | 11 (`1`) | h_L <= h_R => Process L | 1 | 0 | 1 - 0 = 1 | **1** | `L++ (3)` |
+| 4 | 3 (`2`) | 11 (`1`) | h_R < h_L => Process R | 1 | 1 | 1 - 1 = 0 (Peak) | 1 | `R-- (10)` |
+| 5 | 3 (`2`) | 10 (`2`) | h_L <= h_R => Process L | 2 | 1 | 2 - 2 = 0 (Peak) | 1 | `L++ (4)` |
+| 6 | 4 (`1`) | 10 (`2`) | h_L <= h_R => Process L | 2 | 1 | 2 - 1 = 1 | **2** | `L++ (5)` |
+| 7 | 5 (`0`) | 10 (`2`) | h_L <= h_R => Process L | 2 | 1 | 2 - 0 = 2 | **4** | `L++ (6)` |
+| 8 | 6 (`1`) | 10 (`2`) | h_L <= h_R => Process L | 2 | 1 | 2 - 1 = 1 | **5** | `L++ (7)` |
+| 9 | 7 (`3`) | 10 (`2`) | h_R < h_L => Process R | 2 | 2 | 2 - 2 = 0 (Peak) | 5 | `R-- (9)` |
+| 10| 7 (`3`) | 9 (`1`) | h_R < h_L => Process R | 2 | 2 | 2 - 1 = 1 | **6** | `R-- (8)` |
+| 11| 7 (`3`) | 8 (`2`) | h_R < h_L => Process R | 2 | 2 | 2 - 2 = 0 | 6 | `R-- (7)` |
 | 12| 7 | 7 | Pointers meet | - | - | - | **6** | Terminate |
 
 Total Trapped Water: `6`.
@@ -1368,9 +1368,9 @@ Total Trapped Water: `6`.
 
 #### 4.1 Anchor Points & Approach Selection Criteria
 - **Approach 1: Two Pointers (Optimal Space & Industry Standard)**
-  - *When to Use:* Always. Strictly $O(N)$ single pass, $O(1)$ auxiliary space, zero allocations. Accumulates water *vertically* column-by-column.
+  - *When to Use:* Always. Strictly O(N) single pass, O(1) auxiliary space, zero allocations. Accumulates water *vertically* column-by-column.
 - **Approach 2: Dynamic Programming Prefix/Suffix Arrays**
-  - *When to Use:* Best for explaining the foundational intuition of $\min(leftMax, rightMax)$ before introducing the space optimization.
+  - *When to Use:* Best for explaining the foundational intuition of min(leftMax, rightMax) before introducing the space optimization.
 - **Approach 3: Monotonic Stack**
   - *When to Use:* When water must be accumulated *horizontally* slice-by-slice, or when solving related geometric problems like Largest Rectangle in Histogram (LeetCode #84).
 
@@ -1382,16 +1382,16 @@ Total Trapped Water: `6`.
 
 #### 4.3 Alternative Approaches Analysis
 - **Monotonic Decreasing Stack:** Stores indices of decreasing heights. When a taller bar is found, it pops the bottom of the basin, uses the previous stack element as left boundary, and computes trapped water horizontally as:
-  $$\text{sliceWater} = (\min(height[left], height[i]) - height[bottom]) \times (i - left - 1)$$
-  Time is $O(N)$ and Space is $O(N)$ stack memory.
+  sliceWater = (min(height[left], height[i]) - height[bottom]) * (i - left - 1)
+  Time is O(N) and Space is O(N) stack memory.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Approach | Time (Best) | Time (Avg) | Time (Worst) | Auxiliary Space | Output Space | Accumulation Mode | Cache Locality | Streaming Suitability |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **1. Two Pointers** | $O(N)$ | $O(N)$ | $O(N)$ | $O(1)$ | $O(1)$ | Vertical columns | High | Moderate |
-| **2. Dynamic Programming**| $O(N)$ | $O(N)$ | $O(N)$ | $O(N)$ arrays | $O(1)$ | Vertical columns | High | Poor (3 passes) |
-| **3. Monotonic Stack** | $O(N)$ | $O(N)$ | $O(N)$ | $O(N)$ stack | $O(1)$ | Horizontal slices | Moderate | High (online stream) |
+| **1. Two Pointers** | O(N) | O(N) | O(N) | O(1) | O(1) | Vertical columns | High | Moderate |
+| **2. Dynamic Programming**| O(N) | O(N) | O(N) | O(N) arrays | O(1) | Vertical columns | High | Poor (3 passes) |
+| **3. Monotonic Stack** | O(N) | O(N) | O(N) | O(N) stack | O(1) | Horizontal slices | Moderate | High (online stream) |
 
 ---
 

@@ -34,13 +34,13 @@ flowchart LR
     S7 --> S8["8. Edge-Case Dry Run"]
 ```
 
-1. **Clarify Inputs, Boundaries & Contracts:** Establish constraints ($N$, value ranges, nullability, duplicates, overflow, concurrency requirements).
+1. **Clarify Inputs, Boundaries & Contracts:** Establish constraints (N, value ranges, nullability, duplicates, overflow, concurrency requirements).
 2. **Formulate Naive Baseline:** State the brute-force time and space complexity to anchor the discussion.
 3. **Identify Computational Bottleneck:** Point out repeated scanning, redundant subproblem recalculation, or unnecessary state exploration.
 4. **Select Governing Mathematical Invariant:** Name the exact invariant and optimal data structure (e.g., complement lookup, opposing pointer convergence, monotonic boundary, optimal substructure).
 5. **Prove Correctness & Termination Before Coding:** Explain why discarding candidates preserves the optimal solution and why the loop/recursion must terminate safely.
 6. **Explicit Complexity Deconstruction:** Always differentiate:
-   - **Time Complexity** ($O(N)$, $O(N \log N)$, etc.)
+   - **Time Complexity** (`O(N)`, `O(N log N)`, etc.)
    - **Auxiliary Space** (internal working memory: pointers, hash tables, stacks)
    - **Output Space** (returned structures, if any)
 7. **Idiomatic Code:**
@@ -64,6 +64,7 @@ flowchart LR
 ---
 
 ## ⚙️ Antigravity Operating Guidelines
+- **Strictly No LaTeX Math:** Never use LaTeX formatting (`$...$`, `$$...$$`, `\(...\)`, `\[...\]`, KaTeX, or TeX directives like `\frac`, `\to`, `\le`, `\times`, etc.) anywhere in generated responses, markdown documents, problem solutions, curriculum files, or comments. Always write mathematical formulas, complexities, bounds, and notations using standard plain text or markdown backticks (e.g., `O(N)`, `O(N log N)`, `O(1)`, `N <= 10^5`, `10^5`, `[0 ... N - 1]`, `A -> B`, `i != j`, `x * y`).
 - **No Copilot Diff Markers:** Never emit `// filepath: ...` or `// ...existing code...` comments. Antigravity uses native workspace editing tools directly.
 - **Linear & Practice-Ready:** When explaining or building exercises, present concepts sequentially. Avoid fragmented notes or circular jumps.
 - **Dual-Language Fluency:** Always provide C# as the primary, production-ready solution, and accompany it with a clean Python counterpart.

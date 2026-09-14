@@ -15,15 +15,15 @@
 | **LeetCode Link** | [Merge Intervals](https://leetcode.com/problems/merge-intervals/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** Given an array of `intervals` where $intervals[i] = [start_i, end_i]$, merge all overlapping intervals, and return an array of the non-overlapping intervals that cover all intervals in the input.
+- **Formal Statement:** Given an array of `intervals` where intervals[i] = [start_i, end_i], merge all overlapping intervals, and return an array of the non-overlapping intervals that cover all intervals in the input.
 - **Key Constraints:**
-  - $1 \le intervals.Length \le 10^4$.
-  - $intervals[i].Length == 2$.
-  - $0 \le start_i \le end_i \le 10^4$.
+  - 1 <= intervals.Length <= 10^4.
+  - intervals[i].Length == 2.
+  - 0 <= start_i <= end_i <= 10^4.
 - **Senior Edge Cases to Defend:**
-  - Fully subsumed intervals ($[1, 10]$ completely covers $[2, 5]$).
-  - Identical start times with diverging end times ($[1, 4]$ and $[1, 8]$).
-  - Zero-length / point intervals ($[1, 1]$ touching $[1, 2]$).
+  - Fully subsumed intervals ([1, 10] completely covers [2, 5]).
+  - Identical start times with diverging end times ([1, 4] and [1, 8]).
+  - Zero-length / point intervals ([1, 1] touching [1, 2]).
   - Pre-sorted vs reverse-sorted inputs.
 
 ### 2. Summary & Sample Input / Output
@@ -37,17 +37,17 @@
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 - **3.1 The Intuitive Spark & Conceptual Metaphor:**
-  - *The Rolling Snowball on a 1D Timeline:* Imagine a snowball rolling forward across a 1D timeline. By sorting intervals by start time, we ensure that as time advances, no upcoming interval can ever start behind where we currently are. As the snowball rolls forward over the interval $[start, end]$, if the next interval starts inside or at the boundary of the snowball (`next.start <= end`), the snowball absorbs it, expanding its reach to `max(end, next.end)`. If the next interval starts in empty space beyond the snowball (`next.start > end`), the current snowball freezes into an unalterable monument (committed to the result), and a brand-new snowball is initiated.
+  - *The Rolling Snowball on a 1D Timeline:* Imagine a snowball rolling forward across a 1D timeline. By sorting intervals by start time, we ensure that as time advances, no upcoming interval can ever start behind where we currently are. As the snowball rolls forward over the interval [start, end], if the next interval starts inside or at the boundary of the snowball (`next.start <= end`), the snowball absorbs it, expanding its reach to `max(end, next.end)`. If the next interval starts in empty space beyond the snowball (`next.start > end`), the current snowball freezes into an unalterable monument (committed to the result), and a brand-new snowball is initiated.
 - **3.2 The Naive Bottleneck & Redundant Computation:**
-  - In an unsorted array, any interval could potentially overlap with ANY other interval in the entire collection. Finding connected components across all intervals requires an all-pairs intersection graph with $O(N^2)$ edge checks or Disjoint-Set Union (DSU).
-  - Sorting by `start` time in $O(N \log N)$ time linearizes the timeline: each interval only needs to be compared against the immediate active predecessor, collapsing the search from $O(N^2)$ to a single $O(N)$ pass.
+  - In an unsorted array, any interval could potentially overlap with ANY other interval in the entire collection. Finding connected components across all intervals requires an all-pairs intersection graph with O(N^2) edge checks or Disjoint-Set Union (DSU).
+  - Sorting by `start` time in O(N log N) time linearizes the timeline: each interval only needs to be compared against the immediate active predecessor, collapsing the search from O(N^2) to a single O(N) pass.
 - **3.3 The Breakthrough Insight & Mathematical Invariant:**
   - **Start-Time Monotonicity Invariant:**
-    $$\forall i < j: start_i \le start_j$$
+    for all i < j: start_i <= start_j
   - **Irrevocable Sealing Principle:**
-    If $start_j > active.end$, then for all future intervals $k > j$, by transitivity:
-    $$start_k \ge start_j > active.end$$
-    Therefore, NO future interval can ever overlap with $active$. It is provably safe to seal $active$ and append it to the settled output.
+    If start_j > active.end, then for all future intervals k > j, by transitivity:
+    start_k >= start_j > active.end
+    Therefore, NO future interval can ever overlap with active. It is provably safe to seal active and append it to the settled output.
 - **3.4 Cursor Semantics & Invariant Partition Architecture:**
   ```text
   Timeline Sweep State Partition:
@@ -67,32 +67,32 @@
 - **3.6 Concrete Step-by-Step State Trace:**
   - Input: `[[1, 3], [2, 6], [8, 10], [15, 18]]` (Already sorted by start)
 
-  | Step | Candidate Interval | Active Interval Before | Overlap Check ($s_{\text{next}} \le e_{\text{act}}$) | Updated Active Interval | Settled Result List |
+  | Step | Candidate Interval | Active Interval Before | Overlap Check (s_next <= e_act) | Updated Active Interval | Settled Result List |
   | :--- | :--- | :--- | :--- | :--- | :--- |
   | Init | `[1, 3]` | `[1, 3]` | Baseline | `[1, 3]` | `[]` |
-  | 1 | `[2, 6]` | `[1, 3]` | $2 \le 3$ (Overlap!) | `[1, max(3, 6)] = [1, 6]` | `[]` |
-  | 2 | `[8, 10]` | `[1, 6]` | $8 > 6$ (Disjoint!) | Commit `[1, 6]`; New active: `[8, 10]` | `[[1, 6]]` |
-  | 3 | `[15, 18]`| `[8, 10]` | $15 > 10$ (Disjoint!) | Commit `[8, 10]`; New active: `[15, 18]`| `[[1, 6], [8, 10]]` |
+  | 1 | `[2, 6]` | `[1, 3]` | 2 <= 3 (Overlap!) | `[1, max(3, 6)] = [1, 6]` | `[]` |
+  | 2 | `[8, 10]` | `[1, 6]` | 8 > 6 (Disjoint!) | Commit `[1, 6]`; New active: `[8, 10]` | `[[1, 6]]` |
+  | 3 | `[15, 18]`| `[8, 10]` | 15 > 10 (Disjoint!) | Commit `[8, 10]`; New active: `[15, 18]`| `[[1, 6], [8, 10]]` |
   | End | None | `[15, 18]` | Loop exit | Flush final active: `[15, 18]` | `[[1, 6], [8, 10], [15, 18]]` |
 
 ### 4. Approach & Complexity Deconstruction
 - **4.1 Anchor Points & Approach Selection Criteria:**
-  - **Approach 1 (Sort + Dynamic List Sweep):** Standard idiomatic approach. Collects merged results into a `List<int[]>`. Memory footprint is $O(N)$ for the result.
-  - **Approach 2 (In-Place Output Compaction):** Operates directly on the sorted `intervals` array using a `writeIndex` pointer. Overwrites merged intervals in-place, achieving $O(1)$ auxiliary space (excluding the output array). Ideal for memory-constrained embedded environments.
+  - **Approach 1 (Sort + Dynamic List Sweep):** Standard idiomatic approach. Collects merged results into a `List<int[]>`. Memory footprint is O(N) for the result.
+  - **Approach 2 (In-Place Output Compaction):** Operates directly on the sorted `intervals` array using a `writeIndex` pointer. Overwrites merged intervals in-place, achieving O(1) auxiliary space (excluding the output array). Ideal for memory-constrained embedded environments.
 - **4.2 Step-by-Step Natural Progression Flow:**
   - *Step 1: Setup & Boundaries:* Handle empty or single-interval inputs. Sort array by `start` ascending.
-  - *Step 2: Main Exploration Loop:* Initialize `active` with first interval. Iterate from index 1 to $N - 1$.
+  - *Step 2: Main Exploration Loop:* Initialize `active` with first interval. Iterate from index 1 to N - 1.
   - *Step 3: Invariant Maintenance & Condition Gates:* Check overlap with `active`. Either expand `active.end` or commit and reassign.
   - *Step 4: Resolution & Return:* Flush the trailing `active` interval into the result list. Return `result.ToArray()`.
 - **4.3 Alternative Approaches Analysis:**
-  - Connected Components (Graph BFS/DFS): Treats each interval as a node and adds edges between overlapping pairs. Finding connected components takes $O(N^2)$ time and $O(N^2)$ space—strictly inferior to sorting.
+  - Connected Components (Graph BFS/DFS): Treats each interval as a node and adds edges between overlapping pairs. Finding connected components takes O(N^2) time and O(N^2) space—strictly inferior to sorting.
 - **4.4 Multi-Dimensional Complexity & Trade-Off Matrix:**
 
 | Approach | Time (Best/Avg/Worst) | Aux Space | Output Space | Mutates Input | Cache Locality |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Sort + List Sweep** | $O(N \log N)$ | $O(N)$ | $O(N)$ | No (clones) | High |
-| **In-Place Compaction** | $O(N \log N)$ | $O(1)$ | $O(N)$ | Yes (mutates input) | Optimal |
-| **Graph DSU / BFS** | $O(N^2)$ | $O(N^2)$ | $O(N)$ | No | Poor |
+| **Sort + List Sweep** | O(N log N) | O(N) | O(N) | No (clones) | High |
+| **In-Place Compaction** | O(N log N) | O(1) | O(N) | Yes (mutates input) | Optimal |
+| **Graph DSU / BFS** | O(N^2) | O(N^2) | O(N) | No | Poor |
 
 ### 5. Production C# Implementations
 
@@ -202,14 +202,14 @@ public class SolutionInPlace
 | **LeetCode Link** | [Insert Interval](https://leetcode.com/problems/insert-interval/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** Given an array of non-overlapping intervals `intervals` sorted in ascending order by $start_i$, insert `newInterval = [start, end]` such that `intervals` is still sorted in ascending order and has no overlapping intervals (merge overlapping intervals if necessary).
+- **Formal Statement:** Given an array of non-overlapping intervals `intervals` sorted in ascending order by start_i, insert `newInterval = [start, end]` such that `intervals` is still sorted in ascending order and has no overlapping intervals (merge overlapping intervals if necessary).
 - **Key Constraints:**
-  - $0 \le intervals.Length \le 10^4$.
-  - $intervals[i].Length == 2$, $newInterval.Length == 2$.
-  - $0 \le start_i \le end_i \le 10^5$.
-  - Existing `intervals` are sorted in ascending order by $start_i$ with NO overlaps.
+  - 0 <= intervals.Length <= 10^4.
+  - intervals[i].Length == 2, newInterval.Length == 2.
+  - 0 <= start_i <= end_i <= 10^5.
+  - Existing `intervals` are sorted in ascending order by start_i with NO overlaps.
 - **Senior Edge Cases to Defend:**
-  - Empty existing array $\implies$ return `[newInterval]`.
+  - Empty existing array => return `[newInterval]`.
   - `newInterval` is completely before all existing intervals (no overlap, inserted at head).
   - `newInterval` is completely after all existing intervals (no overlap, inserted at tail).
   - `newInterval` completely spans and swallows all existing intervals into a single super-interval.
@@ -226,17 +226,17 @@ public class SolutionInPlace
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 - **3.1 The Intuitive Spark & Conceptual Metaphor:**
   - *The 3-Zone Timeline Continent:* Inserting `newInterval` into an already-sorted disjoint timeline splits the timeline into three geographical territories:
-    1. *Zone 1 (Western Territory - Strictly Left):* Intervals that end before `newInterval` begins ($end_i < new.start$). They are completely immune to collisions. Copy them directly.
-    2. *Zone 2 (Collision Horizon - Melting Zone):* Any interval whose start is $\le new.end$. Every interval in this zone collides with `newInterval`. They melt together into one single entity: $new.start = \min(new.start, start_i)$ and $new.end = \max(new.end, end_i)$.
-    3. *Zone 3 (Eastern Territory - Strictly Right):* Intervals that start after the melted `newInterval` ends ($start_i > new.end$). Copy them directly.
+    1. *Zone 1 (Western Territory - Strictly Left):* Intervals that end before `newInterval` begins (end_i < new.start). They are completely immune to collisions. Copy them directly.
+    2. *Zone 2 (Collision Horizon - Melting Zone):* Any interval whose start is <= new.end. Every interval in this zone collides with `newInterval`. They melt together into one single entity: new.start = min(new.start, start_i) and new.end = max(new.end, end_i).
+    3. *Zone 3 (Eastern Territory - Strictly Right):* Intervals that start after the melted `newInterval` ends (start_i > new.end). Copy them directly.
 - **3.2 The Naive Bottleneck & Redundant Computation:**
-  - Appending `newInterval` to the end of the array and invoking a full `Array.Sort` costs $O(N \log N)$ and throws away the valuable precondition that `intervals` was ALREADY sorted and non-overlapping.
-  - A 3-zone linear sweep runs in guaranteed $O(N)$ time with zero comparison sorting.
+  - Appending `newInterval` to the end of the array and invoking a full `Array.Sort` costs O(N log N) and throws away the valuable precondition that `intervals` was ALREADY sorted and non-overlapping.
+  - A 3-zone linear sweep runs in guaranteed O(N) time with zero comparison sorting.
 - **3.3 The Breakthrough Insight & Mathematical Invariant:**
   - **Disjoint Partition Invariant:**
-    $$\text{Zone 1: } intervals[i].end < newInterval.start \iff \text{Interval } i \cap newInterval = \emptyset$$
-    $$\text{Zone 2: } intervals[i].start \le newInterval.end \iff \text{Interval } i \cap newInterval \neq \emptyset$$
-    $$\text{Zone 3: } intervals[i].start > newInterval.end \iff \text{All remaining intervals are disjoint and right}$$
+    Zone 1: intervals[i].end < newInterval.start <=> Interval i intersection newInterval = empty set
+    Zone 2: intervals[i].start <= newInterval.end <=> Interval i intersection newInterval != empty set
+    Zone 3: intervals[i].start > newInterval.end <=> All remaining intervals are disjoint and right
   - Because `intervals` are sorted, once Zone 2 terminates, no subsequent interval can ever overlap with `newInterval`.
 - **3.4 Cursor Semantics & Invariant Partition Architecture:**
   ```text
@@ -256,32 +256,32 @@ public class SolutionInPlace
 
   | Phase | Index `i` | Current `intervals[i]` | Condition Evaluated | Action Taken | `newInterval` State | Result Buffer |
   | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-  | Phase 1 | 0 | `[1, 2]` | $2 < 4$ (True) | Add `[1, 2]` | `[4, 8]` | `[[1, 2]]` |
-  | Phase 1 | 1 | `[3, 5]` | $5 < 4$ (False) | Exit Phase 1 | `[4, 8]` | `[[1, 2]]` |
-  | Phase 2 | 1 | `[3, 5]` | $3 \le 8$ (True) | Melt: min(4,3), max(8,5) | `[3, 8]` | `[[1, 2]]` |
-  | Phase 2 | 2 | `[6, 7]` | $6 \le 8$ (True) | Melt: min(3,6), max(8,7) | `[3, 8]` | `[[1, 2]]` |
-  | Phase 2 | 3 | `[8, 10]`| $8 \le 8$ (True) | Melt: min(3,8), max(8,10)| `[3, 10]` | `[[1, 2]]` |
-  | Phase 2 | 4 | `[12, 16]`| $12 \le 10$ (False) | Exit Phase 2; Commit melted | `[3, 10]` | `[[1, 2], [3, 10]]` |
+  | Phase 1 | 0 | `[1, 2]` | 2 < 4 (True) | Add `[1, 2]` | `[4, 8]` | `[[1, 2]]` |
+  | Phase 1 | 1 | `[3, 5]` | 5 < 4 (False) | Exit Phase 1 | `[4, 8]` | `[[1, 2]]` |
+  | Phase 2 | 1 | `[3, 5]` | 3 <= 8 (True) | Melt: min(4,3), max(8,5) | `[3, 8]` | `[[1, 2]]` |
+  | Phase 2 | 2 | `[6, 7]` | 6 <= 8 (True) | Melt: min(3,6), max(8,7) | `[3, 8]` | `[[1, 2]]` |
+  | Phase 2 | 3 | `[8, 10]`| 8 <= 8 (True) | Melt: min(3,8), max(8,10)| `[3, 10]` | `[[1, 2]]` |
+  | Phase 2 | 4 | `[12, 16]`| 12 <= 10 (False) | Exit Phase 2; Commit melted | `[3, 10]` | `[[1, 2], [3, 10]]` |
   | Phase 3 | 4 | `[12, 16]`| In bounds | Add `[12, 16]` | Done | `[[1, 2], [3, 10], [12, 16]]` |
 
 ### 4. Approach & Complexity Deconstruction
 - **4.1 Anchor Points & Approach Selection Criteria:**
-  - **Approach 1 (Three-Phase Linear Sweep):** Optimal $O(N)$ single pass, intuitive structure, zero complex edge cases.
-  - **Approach 2 (Binary Search for Overlap Boundaries):** Uses binary search to locate the start and end of Zone 2 in $O(\log N)$ time. However, slicing and splicing the resulting array in memory still requires $O(N)$ copy operations.
+  - **Approach 1 (Three-Phase Linear Sweep):** Optimal O(N) single pass, intuitive structure, zero complex edge cases.
+  - **Approach 2 (Binary Search for Overlap Boundaries):** Uses binary search to locate the start and end of Zone 2 in O(log N) time. However, slicing and splicing the resulting array in memory still requires O(N) copy operations.
 - **4.2 Step-by-Step Natural Progression Flow:**
   - *Step 1: Setup & Boundaries:* Handle empty array by returning `[newInterval]`. Initialize result list and cursor `i = 0`.
   - *Step 2: Phase 1 Loop:* While `intervals[i].end < newInterval.start`, append `intervals[i]`.
   - *Step 3: Phase 2 Loop:* While `intervals[i].start <= newInterval.end`, expand `newInterval`. Then append `newInterval`.
-  - *Step 4: Phase 3 Loop:* Append all remaining intervals from `i` to $n - 1$. Return array.
+  - *Step 4: Phase 3 Loop:* Append all remaining intervals from `i` to n - 1. Return array.
 - **4.3 Alternative Approaches Analysis:**
-  - Append & Sort: Add `newInterval` to end, call `Array.Sort`, then call `Merge`. Simpler code reuse, but degrades performance to $O(N \log N)$.
+  - Append & Sort: Add `newInterval` to end, call `Array.Sort`, then call `Merge`. Simpler code reuse, but degrades performance to O(N log N).
 - **4.4 Multi-Dimensional Complexity & Trade-Off Matrix:**
 
 | Approach | Time Complexity | Auxiliary Space | Output Space | Precondition Exploitation |
 | :--- | :--- | :--- | :--- | :--- |
-| **Three-Phase Linear Sweep** | $O(N)$ | $O(1)$ extra | $O(N)$ | Full (Exploits sorted & disjoint) |
-| **Binary Search + Slice** | $O(\log N + N)$ | $O(1)$ extra | $O(N)$ | Full |
-| **Append & Re-Sort** | $O(N \log N)$ | $O(N)$ | $O(N)$ | None (Discards sorted guarantee) |
+| **Three-Phase Linear Sweep** | O(N) | O(1) extra | O(N) | Full (Exploits sorted & disjoint) |
+| **Binary Search + Slice** | O(log N + N) | O(1) extra | O(N) | Full |
+| **Append & Re-Sort** | O(N log N) | O(N) | O(N) | None (Discards sorted guarantee) |
 
 ### 5. Production C# Implementations
 
@@ -358,15 +358,15 @@ public class Solution
 | **LeetCode Link** | [Non-overlapping Intervals](https://leetcode.com/problems/non-overlapping-intervals/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** Given an array of intervals `intervals` where $intervals[i] = [start_i, end_i]$, return the minimum number of intervals you need to remove to make the rest of the intervals non-overlapping.
+- **Formal Statement:** Given an array of intervals `intervals` where intervals[i] = [start_i, end_i], return the minimum number of intervals you need to remove to make the rest of the intervals non-overlapping.
 - **Key Constraints:**
-  - $1 \le intervals.Length \le 10^5$.
-  - $intervals[i].Length == 2$.
-  - $-5 \times 10^4 \le start_i < end_i \le 5 \times 10^4$.
+  - 1 <= intervals.Length <= 10^5.
+  - intervals[i].Length == 2.
+  - -5 x 10^4 <= start_i < end_i <= 5 x 10^4.
 - **Senior Edge Cases to Defend:**
-  - Adjacent boundary points touching: $[1, 2]$ and $[2, 3]$ are non-overlapping by definition (they touch at a single point, which does not constitute an overlap).
-  - Concentric identical intervals: $[1, 2]$ and $[1, 2]$ (must remove one).
-  - Highly nested intervals: $[1, 100], [2, 3], [3, 4], [4, 5]$ (removing $[1, 100]$ preserves 3 intervals).
+  - Adjacent boundary points touching: [1, 2] and [2, 3] are non-overlapping by definition (they touch at a single point, which does not constitute an overlap).
+  - Concentric identical intervals: [1, 2] and [1, 2] (must remove one).
+  - Highly nested intervals: [1, 100], [2, 3], [3, 4], [4, 5] (removing [1, 100] preserves 3 intervals).
 
 ### 2. Summary & Sample Input / Output
 - **Conceptual Essence:** Dual Formulation Equivalence: Minimizing intervals removed is mathematically identical to MAXIMIZING intervals retained. Classical Greedy Interval Scheduling: Sort intervals by earliest end time; greedily retain the interval that finishes earliest to leave maximal space for future intervals.
@@ -381,12 +381,12 @@ public class Solution
 - **3.1 The Intuitive Spark & Conceptual Metaphor:**
   - *The Greedy Conference Hall / Timeline Real Estate:* If you have a conference hall and want to host the greatest number of events possible, which event do you book first? You always book the event that **ends earliest**! The earlier the first event finishes, the more time remains available for subsequent events. Booking an event that finishes later can only reduce or equal your future choices.
 - **3.2 The Naive Bottleneck & Redundant Computation:**
-  - Exhaustive search (backtracking over $2^N$ subsets of intervals) takes exponential time $O(2^N)$.
-  - Dynamic Programming (LIS-style longest non-overlapping chain) takes $O(N^2)$ time.
-  - Greedy choice property allows optimal decisions in a single pass after $O(N \log N)$ sorting.
+  - Exhaustive search (backtracking over 2^N subsets of intervals) takes exponential time O(2^N).
+  - Dynamic Programming (LIS-style longest non-overlapping chain) takes O(N^2) time.
+  - Greedy choice property allows optimal decisions in a single pass after O(N log N) sorting.
 - **3.3 The Breakthrough Insight & Mathematical Invariant:**
   - **Greedy Exchange Argument Proof:**
-    Let $S$ be the interval with the earliest finish time among all available candidates. Suppose an optimal subset $OPT$ does not include $S$, but instead selects $I_1$ as its first interval. Because $S$ has the earliest finish time, $end_S \le end_{I_1}$. Replacing $I_1$ with $S$ cannot cause any conflicts with the remaining intervals in $OPT$, because $S$ finishes before or when $I_1$ finishes. Hence, $OPT' = (OPT \setminus \{I_1\}) \cup \{S\}$ is also valid and has identical size $|OPT|$. By induction, a greedy choice never sacrifices optimality.
+    Let S be the interval with the earliest finish time among all available candidates. Suppose an optimal subset OPT does not include S, but instead selects I_1 as its first interval. Because S has the earliest finish time, end_S <= end_I_1. Replacing I_1 with S cannot cause any conflicts with the remaining intervals in OPT, because S finishes before or when I_1 finishes. Hence, OPT' = (OPT \ {I_1}) union {S} is also valid and has identical size |OPT|. By induction, a greedy choice never sacrifices optimality.
 - **3.4 Cursor Semantics & Invariant Partition Architecture:**
   ```text
   Earliest Finish Timeline Sweep:
@@ -404,12 +404,12 @@ public class Solution
   - Input: `[[1, 2], [2, 3], [3, 4], [1, 3]]`
   - Sorted by End Time: `[1, 2]`, `[2, 3]`, `[1, 3]`, `[3, 4]`
 
-  | Step | Candidate Interval | `prevEnd` Before | Check ($start \ge prevEnd$) | Action | `prevEnd` After | Total Removals |
+  | Step | Candidate Interval | `prevEnd` Before | Check (start >= prevEnd) | Action | `prevEnd` After | Total Removals |
   | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-  | Init | `[1, 2]` | $-\infty$ | Baseline | Accept | 2 | 0 |
-  | 1 | `[2, 3]` | 2 | $2 \ge 2$ (Pass) | Accept | 3 | 0 |
-  | 2 | `[1, 3]` | 3 | $1 < 3$ (**Conflict**) | Remove | 3 | **1** |
-  | 3 | `[3, 4]` | 3 | $3 \ge 3$ (Pass) | Accept | 4 | 1 |
+  | Init | `[1, 2]` | -infinity | Baseline | Accept | 2 | 0 |
+  | 1 | `[2, 3]` | 2 | 2 >= 2 (Pass) | Accept | 3 | 0 |
+  | 2 | `[1, 3]` | 3 | 1 < 3 (**Conflict**) | Remove | 3 | **1** |
+  | 3 | `[3, 4]` | 3 | 3 >= 3 (Pass) | Accept | 4 | 1 |
 
   *Result:* 1 interval removed.
 
@@ -420,17 +420,17 @@ public class Solution
 - **4.2 Step-by-Step Natural Progression Flow:**
   - *Step 1:* Guard against empty/single array. Sort ascending by `end` time.
   - *Step 2:* Initialize `prevEnd = intervals[0][1]`, `removals = 0`.
-  - *Step 3:* Iterate from index 1. If start is $\ge prevEnd$, advance `prevEnd`. Else, increment `removals`.
+  - *Step 3:* Iterate from index 1. If start is >= prevEnd, advance `prevEnd`. Else, increment `removals`.
   - *Step 4:* Return `removals`.
 - **4.3 Alternative Approaches Analysis:**
-  - Sorting by start time: If $curr.start < prevEnd$, increment removals and set $prevEnd = \min(prevEnd, curr.end)$. Both approaches have $O(N \log N)$ time.
+  - Sorting by start time: If curr.start < prevEnd, increment removals and set prevEnd = min(prevEnd, curr.end). Both approaches have O(N log N) time.
 - **4.4 Multi-Dimensional Complexity & Trade-Off Matrix:**
 
 | Approach | Time Complexity | Aux Space | Code Complexity |
 | :--- | :--- | :--- | :--- |
-| **Greedy Sort by End Time** | $O(N \log N)$ | $O(1)$ or $O(\log N)$ sort | Minimal |
-| **Greedy Sort by Start Time** | $O(N \log N)$ | $O(1)$ or $O(\log N)$ sort | Requires `Math.Min` on conflict |
-| **Dynamic Programming (LIS)** | $O(N^2)$ | $O(N)$ | High |
+| **Greedy Sort by End Time** | O(N log N) | O(1) or O(log N) sort | Minimal |
+| **Greedy Sort by Start Time** | O(N log N) | O(1) or O(log N) sort | Requires `Math.Min` on conflict |
+| **Dynamic Programming (LIS)** | O(N^2) | O(N) | High |
 
 ### 5. Production C# Implementations
 
@@ -526,14 +526,14 @@ public class SolutionSortByStart
 | **LeetCode Link** | [Meeting Rooms II](https://leetcode.com/problems/meeting-rooms-ii/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** Given an array of meeting time intervals `intervals` where $intervals[i] = [start_i, end_i]$, return the minimum number of conference rooms required (equivalent to the peak number of concurrent overlapping meetings).
+- **Formal Statement:** Given an array of meeting time intervals `intervals` where intervals[i] = [start_i, end_i], return the minimum number of conference rooms required (equivalent to the peak number of concurrent overlapping meetings).
 - **Key Constraints:**
-  - $1 \le intervals.Length \le 10^4$.
-  - $0 \le start_i < end_i \le 10^6$.
+  - 1 <= intervals.Length <= 10^4.
+  - 0 <= start_i < end_i <= 10^6.
 - **Senior Edge Cases to Defend:**
-  - Meetings touching at boundaries ($[0, 10]$ and $[10, 20]$ can reuse the exact same conference room without collision).
-  - All meetings completely disjoint ($N$ meetings $\implies 1$ room).
-  - All meetings completely concurrent ($N$ identical meetings $\implies N$ rooms).
+  - Meetings touching at boundaries ([0, 10] and [10, 20] can reuse the exact same conference room without collision).
+  - All meetings completely disjoint (N meetings => 1 room).
+  - All meetings completely concurrent (N identical meetings => N rooms).
 
 ### 2. Summary & Sample Input / Output
 - **Conceptual Essence:** Track peak overlapping intervals on a continuous timeline. Can be solved either via a Min-Heap tracking active room end times, or a Chronological Event Sweep-Line comparing separate sorted start and end arrays.
@@ -548,17 +548,17 @@ public class SolutionSortByStart
 - **3.1 The Intuitive Spark & Conceptual Metaphor:**
   - *Hotel Room Key Reuse vs Airport Turnstile:*
     - *Metaphor A (Min-Heap Room Reuse):* You are a hotel manager. When a guest arrives, you look at the room whose current occupant will check out earliest (root of the min-heap). If the guest arrives at or after checkout time, you hand them that room's key (reuse room; dequeue old checkout, enqueue new checkout). If not, you must build a new room!
-    - *Metaphor B (Turnstile Chronological Sweep):* Every meeting start is a person entering a room through a turnstile ($+1$). Every meeting end is a person leaving through a turnstile ($-1$). If you decouple start times and end times into two sorted timelines, you can simulate time advancing. The maximum number of people inside the building at any instant is your answer.
+    - *Metaphor B (Turnstile Chronological Sweep):* Every meeting start is a person entering a room through a turnstile (+1). Every meeting end is a person leaving through a turnstile (-1). If you decouple start times and end times into two sorted timelines, you can simulate time advancing. The maximum number of people inside the building at any instant is your answer.
 - **3.2 The Naive Bottleneck & Redundant Computation:**
-  - Testing all pairs of intervals for concurrency takes $O(N^2)$ time.
-  - Sorting starts and ends independently reduces the problem to $O(N \log N)$ sorting and an $O(N)$ two-pointer sweep with zero heap allocations.
+  - Testing all pairs of intervals for concurrency takes O(N^2) time.
+  - Sorting starts and ends independently reduces the problem to O(N log N) sorting and an O(N) two-pointer sweep with zero heap allocations.
 - **3.3 The Breakthrough Insight & Mathematical Invariant:**
   - **Decoupled Identity Invariant:**
     A room does NOT care *which* specific meeting took place in it previously; it only cares whether *any* meeting has finished before the next one starts!
     Therefore, pairing between start and end times is completely irrelevant to room allocation:
-    $$\text{starts} = [s_1 \le s_2 \le \dots \le s_N], \quad \text{ends} = [e_1 \le e_2 \le \dots \le e_N]$$
-    If $\text{starts}[startPtr] < \text{ends}[endPtr]$, a new meeting begins before the earliest ongoing meeting concludes $\implies$ allocate a new room (`roomsNeeded++`).
-    Else, an ongoing meeting concludes $\implies$ advance `endPtr++` (existing room freed and reused).
+    starts = [s_1 <= s_2 <= ... <= s_N], ends = [e_1 <= e_2 <= ... <= e_N]
+    If starts[startPtr] < ends[endPtr], a new meeting begins before the earliest ongoing meeting concludes => allocate a new room (`roomsNeeded++`).
+    Else, an ongoing meeting concludes => advance `endPtr++` (existing room freed and reused).
 - **3.4 Cursor Semantics & Invariant Partition Architecture:**
   ```text
   Chronological Sweep-Line Dual Array State:
@@ -577,12 +577,12 @@ public class SolutionSortByStart
   - Input: `[[0, 30], [5, 10], [15, 20]]`
   - `starts = [0, 5, 15]`, `ends = [10, 20, 30]`
 
-  | Step | `startPtr` | `endPtr` | `starts[startPtr]` | `ends[endPtr]` | Check ($s < e$) | Action Taken | `roomsNeeded` |
+  | Step | `startPtr` | `endPtr` | `starts[startPtr]` | `ends[endPtr]` | Check (s < e) | Action Taken | `roomsNeeded` |
   | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-  | 1 | 0 | 0 | 0 | 10 | $0 < 10$ (True) | Meeting starts before any end $\implies$ Allocate room | 1 |
-  | 2 | 1 | 0 | 5 | 10 | $5 < 10$ (True) | Meeting starts before any end $\implies$ Allocate room | **2** |
-  | 3 | 2 | 0 | 15 | 10 | $15 \ge 10$ (False)| Meeting ended! Reuse room $\implies$ `endPtr++` | 2 |
-  | 4 | 2 | 1 | 15 | 20 | $15 < 20$ (True) | Meeting starts before next end $\implies$ Allocate room | **2** (Reused) |
+  | 1 | 0 | 0 | 0 | 10 | 0 < 10 (True) | Meeting starts before any end => Allocate room | 1 |
+  | 2 | 1 | 0 | 5 | 10 | 5 < 10 (True) | Meeting starts before any end => Allocate room | **2** |
+  | 3 | 2 | 0 | 15 | 10 | 15 >= 10 (False)| Meeting ended! Reuse room => `endPtr++` | 2 |
+  | 4 | 2 | 1 | 15 | 20 | 15 < 20 (True) | Meeting starts before next end => Allocate room | **2** (Reused) |
 
   *Result:* Maximum concurrent rooms = 2.
 
@@ -593,17 +593,17 @@ public class SolutionSortByStart
 - **4.2 Step-by-Step Natural Progression Flow:**
   - *Step 1:* Guard against empty input. Extract `startTimes` and `endTimes` arrays.
   - *Step 2:* Sort both arrays independently.
-  - *Step 3:* Iterate `startPtr` from 0 to $n - 1$. If `starts[startPtr] < ends[endPtr]`, increment rooms; else advance `endPtr`.
+  - *Step 3:* Iterate `startPtr` from 0 to n - 1. If `starts[startPtr] < ends[endPtr]`, increment rooms; else advance `endPtr`.
   - *Step 4:* Return `roomsNeeded`.
 - **4.3 Alternative Approaches Analysis:**
-  - Event Coordinate Compression with TreeMap / Dictionary: Collect events as `+1` (start) and `-1` (end). Walk keys in sorted order tracking prefix sum. $O(N \log N)$ but higher memory allocations.
+  - Event Coordinate Compression with TreeMap / Dictionary: Collect events as `+1` (start) and `-1` (end). Walk keys in sorted order tracking prefix sum. O(N log N) but higher memory allocations.
 - **4.4 Multi-Dimensional Complexity & Trade-Off Matrix:**
 
 | Approach | Time Complexity | Auxiliary Space | Cache Locality | Streaming Friendly |
 | :--- | :--- | :--- | :--- | :--- |
-| **Chronological Sweep (Two Pointers)**| $O(N \log N)$ | $O(N)$ (1D arrays) | Optimal (contiguous RAM) | No |
-| **Min-Heap Allocator** | $O(N \log N)$ | $O(N)$ (heap nodes) | Moderate | Yes (streaming) |
-| **Event Map / Prefix Sum** | $O(N \log N)$ | $O(N)$ (map entries) | Low | Yes |
+| **Chronological Sweep (Two Pointers)**| O(N log N) | O(N) (1D arrays) | Optimal (contiguous RAM) | No |
+| **Min-Heap Allocator** | O(N log N) | O(N) (heap nodes) | Moderate | Yes (streaming) |
+| **Event Map / Prefix Sum** | O(N log N) | O(N) (map entries) | Low | Yes |
 
 ### 5. Production C# Implementations
 

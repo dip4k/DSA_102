@@ -15,15 +15,15 @@
 | **LeetCode Link** | [Number of Islands](https://leetcode.com/problems/number-of-islands/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** Given an $m \times n$ 2D binary grid `grid` representing a map of `'1'`s (land) and `'0'`s (water), return the number of islands. An island is formed by connecting adjacent lands horizontally or vertically and is surrounded by water. Assume all four edges of the grid are surrounded by water.
+- **Formal Statement:** Given an m x n 2D binary grid `grid` representing a map of `'1'`s (land) and `'0'`s (water), return the number of islands. An island is formed by connecting adjacent lands horizontally or vertically and is surrounded by water. Assume all four edges of the grid are surrounded by water.
 - **Key Constraints:**
-  - $m == \text{grid.Length}, n == \text{grid}[i]\text{.Length} \in [1, 300]$.
-  - $\text{grid}[i][j]$ is strictly `'0'` or `'1'`.
-  - Total grid cells $V = m \times n \le 90,000$.
+  - m == grid.Length, n == grid[i].Length in [1, 300].
+  - grid[i][j] is strictly `'0'` or `'1'`.
+  - Total grid cells V = m x n <= 90,000.
 - **Senior Edge Cases to Defend:**
-  - Entire grid filled with land ($300 \times 300 = 90,000$ cells): Recursive DFS depth can reach $90,000$, causing a stack overflow exception if thread stack limits ($1\text{ MB}$) are exceeded.
+  - Entire grid filled with land (300 x 300 = 90,000 cells): Recursive DFS depth can reach 90,000, causing a stack overflow exception if thread stack limits (1 MB) are exceeded.
   - Grid contains zero land cells (all `'0'`): Must return `0` without queue or stack allocations.
-  - Alternating checkerboard pattern: Maximizes the number of single-cell components ($\lceil (m \times n) / 2 \rceil$).
+  - Alternating checkerboard pattern: Maximizes the number of single-cell components (ceil((m x n) / 2)).
 
 ### 2. Summary & Sample Input / Output
 - **Conceptual Essence:** Connected Component Counting on an implicit 4-directional planar grid graph. We scan row-by-row; each unvisited `'1'` triggers an island discovery, after which the entire landmass is "sunk" (mutated to `'0'`) to eliminate re-traversal.
@@ -42,18 +42,18 @@
 Imagine the grid as an archipelago viewed from a satellite. Water is `'0'`, and land is `'1'`. When an explorer lands on an unmapped island cell, they immediately release a controlled flood (or dye) that spreads across every contiguous land cell. By mutating each visited land cell from `'1'` to `'0'` ("sinking the island"), the entire landmass is submerged into the sea. Once the flood subsides, the explorer resumes scanning from the next coordinate. Because the previously explored island is now indistinguishable from water, it can never trigger a redundant count or recursive cycle.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A brute-force approach without in-place mutation or visited tracking might attempt pairwise pathfinding between every pair of `'1'` cells ($O((M \times N)^2)$) to identify equivalence classes. Alternatively, maintaining an external `bool[M, N]` visited matrix incurs $O(M \times N)$ extra heap memory and poor CPU cache locality due to multi-dimensional pointer indirection. Without immediate marking upon discovery, a naive BFS pushes the same neighbor into the queue from multiple adjacent cells, leading to exponential queue explosion ($O(4^K)$ queue bloat).
+A brute-force approach without in-place mutation or visited tracking might attempt pairwise pathfinding between every pair of `'1'` cells (O((M x N)^2)) to identify equivalence classes. Alternatively, maintaining an external `bool[M, N]` visited matrix incurs O(M x N) extra heap memory and poor CPU cache locality due to multi-dimensional pointer indirection. Without immediate marking upon discovery, a naive BFS pushes the same neighbor into the queue from multiple adjacent cells, leading to exponential queue explosion (O(4^K) queue bloat).
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
-- **Component Counting Equivalence:** The grid defines an undirected graph $G = (V, E)$ where $V = \{(r, c) \mid \text{grid}[r][c] = \text{'1'}\}$ and $E = \{((r_1, c_1), (r_2, c_2)) \mid |r_1 - r_2| + |c_1 - c_2| = 1\}$. The number of islands equals the number of connected components in $G$.
-- **Destructive Marking Invariant:** Mutating $\text{grid}[r][c] = \text{'0'}$ preserves the global topological count: every land cell belongs to exactly one connected component and is submerged into water at most once.
-- **Root Trigger Invariant:** An increment of `islandCount` occurs if and only if $\text{grid}[r][c] == \text{'1'}$ during the outer linear raster scan. The subsequent traversal guarantees that when the traversal terminates, every node in that component satisfies $\text{grid}[r'][c'] == \text{'0'}$.
+- **Component Counting Equivalence:** The grid defines an undirected graph G = (V, E) where V = {(r, c) | grid[r][c] = '1'} and E = {((r_1, c_1), (r_2, c_2)) | |r_1 - r_2| + |c_1 - c_2| = 1}. The number of islands equals the number of connected components in G.
+- **Destructive Marking Invariant:** Mutating grid[r][c] = '0' preserves the global topological count: every land cell belongs to exactly one connected component and is submerged into water at most once.
+- **Root Trigger Invariant:** An increment of `islandCount` occurs if and only if grid[r][c] == '1' during the outer linear raster scan. The subsequent traversal guarantees that when the traversal terminates, every node in that component satisfies grid[r'][c'] == '0'.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
-The algorithm uses an outer raster scan $(r, c)$ and an inner exploration frontier (call stack for DFS or FIFO queue for BFS):
-- **Settled Region:** Coordinates $(i, j)$ where $i < r$ or ($i == r$ and $j < c$) that were originally `'1'` are now submerged to `'0'`.
+The algorithm uses an outer raster scan (r, c) and an inner exploration frontier (call stack for DFS or FIFO queue for BFS):
+- **Settled Region:** Coordinates (i, j) where i < r or (i == r and j < c) that were originally `'1'` are now submerged to `'0'`.
 - **Active Frontier:** Cells currently being traversed by the inner DFS stack or BFS queue.
-- **Unexplored Region:** Cells ahead of the raster scan $(r, c)$ that have not yet been reached.
+- **Unexplored Region:** Cells ahead of the raster scan (r, c) that have not yet been reached.
 
 ```text
 Raster Scan (r, c) Progression:
@@ -71,66 +71,66 @@ Raster Scan (r, c) Progression:
 ```
 
 #### 3.5 State Transition Triggers & Decision Gates
-- **Outer Loop Gate:** For each cell $(r, c) \in [0, M-1] \times [0, N-1]$:
-  - If $\text{grid}[r][c] == \text{'1'}$, execute `islandCount++` and invoke `Sink(r, c)`.
-  - If $\text{grid}[r][c] == \text{'0'}$, advance cursor $c++$.
-- **Inner Traversal Gate (Boundary & Water Guard):** For any neighbor $(nr, nc)$:
-  - Condition 1: $0 \le nr < M$ and $0 \le nc < N$ (In-bounds check).
-  - Condition 2: $\text{grid}[nr][nc] == \text{'1'}$ (Land check).
-  - Transition: Mutate $\text{grid}[nr][nc] = \text{'0'}$ **immediately before or upon** enqueuing/recursing to prevent duplicate visits.
+- **Outer Loop Gate:** For each cell (r, c) in [0, M-1] * [0, N-1]:
+  - If grid[r][c] == '1', execute `islandCount++` and invoke `Sink(r, c)`.
+  - If grid[r][c] == '0', advance cursor c++.
+- **Inner Traversal Gate (Boundary & Water Guard):** For any neighbor (nr, nc):
+  - Condition 1: 0 <= nr < M and 0 <= nc < N (In-bounds check).
+  - Condition 2: grid[nr][nc] == '1' (Land check).
+  - Transition: Mutate grid[nr][nc] = '0' **immediately before or upon** enqueuing/recursing to prevent duplicate visits.
 
 #### 3.6 Concrete Step-by-Step State Trace
-Consider input grid ($3 \times 3$):
+Consider input grid (3 x 3):
 ```text
 Row 0: 1  1  0
 Row 1: 1  1  0
 Row 2: 0  0  1
 ```
-- **Step 1:** Outer scan arrives at $(0, 0) == \text{'1'}$. Increment `islandCount = 1`. Trigger `Sink(0, 0)`.
+- **Step 1:** Outer scan arrives at (0, 0) == '1'. Increment `islandCount = 1`. Trigger `Sink(0, 0)`.
 - **Step 2 (Sink Component 1):**
-  - Mutate $(0, 0) \to \text{'0'}$.
-  - Explore neighbors of $(0, 0)$: $(1, 0)$ is `'1'`, $(0, 1)$ is `'1'`.
-  - Mutate $(1, 0) \to \text{'0'}$, explore its neighbor $(1, 1)$ which is `'1'`.
-  - Mutate $(1, 1) \to \text{'0'}$.
-  - Mutate $(0, 1) \to \text{'0'}$.
+  - Mutate (0, 0) -> '0'.
+  - Explore neighbors of (0, 0): (1, 0) is `'1'`, (0, 1) is `'1'`.
+  - Mutate (1, 0) -> '0', explore its neighbor (1, 1) which is `'1'`.
+  - Mutate (1, 1) -> '0'.
+  - Mutate (0, 1) -> '0'.
   - Grid state after Component 1 sink:
     ```text
     0  0  0
     0  0  0
     0  0  1
     ```
-- **Step 3:** Outer scan proceeds through $(0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 0), (2, 1)$. All are `'0'`, so loop continues without action.
-- **Step 4:** Outer scan arrives at $(2, 2) == \text{'1'}$. Increment `islandCount = 2`. Trigger `Sink(2, 2)`.
-  - Mutate $(2, 2) \to \text{'0'}$. All neighbors are either out-of-bounds or `'0'`.
-- **Step 5:** Scan terminates at $(2, 2)$. Return `islandCount = 2`.
+- **Step 3:** Outer scan proceeds through (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 0), (2, 1). All are `'0'`, so loop continues without action.
+- **Step 4:** Outer scan arrives at (2, 2) == '1'. Increment `islandCount = 2`. Trigger `Sink(2, 2)`.
+  - Mutate (2, 2) -> '0'. All neighbors are either out-of-bounds or `'0'`.
+- **Step 5:** Scan terminates at (2, 2). Return `islandCount = 2`.
 
 ---
 
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **When to choose Approach 1 (In-Place DFS):** Standard interviews, clean and concise code, small to medium grids ($M \times N \le 10,000$). Best when code brevity is prized and stack depth is safely bounded.
-- **When to choose Approach 2 (Queue-Based BFS):** Production enterprise environments, massive grid dimensions ($M \times N \ge 90,000$), or environments with strict stack memory limits (e.g., embedded systems or default $1\text{ MB}$ Windows CLR thread stacks). BFS guarantees zero risk of `StackOverflowException`.
-- **Cache Locality & Memory Budget:** DFS achieves excellent spatial locality when traversing rows sequentially, but recursive call frames carry register overhead. BFS uses a flat FIFO queue with lower per-element overhead, and its maximum queue size is bounded by the perimeter of the component ($O(\min(M, N))$), which is strictly superior to DFS worst-case stack depth ($O(M \times N)$).
+- **When to choose Approach 1 (In-Place DFS):** Standard interviews, clean and concise code, small to medium grids (M x N <= 10,000). Best when code brevity is prized and stack depth is safely bounded.
+- **When to choose Approach 2 (Queue-Based BFS):** Production enterprise environments, massive grid dimensions (M x N >= 90,000), or environments with strict stack memory limits (e.g., embedded systems or default 1 MB Windows CLR thread stacks). BFS guarantees zero risk of `StackOverflowException`.
+- **Cache Locality & Memory Budget:** DFS achieves excellent spatial locality when traversing rows sequentially, but recursive call frames carry register overhead. BFS uses a flat FIFO queue with lower per-element overhead, and its maximum queue size is bounded by the perimeter of the component (O(min(M, N))), which is strictly superior to DFS worst-case stack depth (O(M x N)).
 
 #### 4.2 Step-by-Step Natural Progression Flow
 1. **Setup & Boundaries:** Validate input dimensions. Return `0` immediately if `grid == null` or length is `0`.
-2. **Main Exploration Loop:** Iterate $(r, c)$ across $[0, M-1] \times [0, N-1]$.
-3. **Invariant Maintenance & Condition Gates:** When $\text{grid}[r][c] == \text{'1'}$, increment `islandCount` and dispatch the sinking procedure.
+2. **Main Exploration Loop:** Iterate (r, c) across [0, M-1] * [0, N-1].
+3. **Invariant Maintenance & Condition Gates:** When grid[r][c] == '1', increment `islandCount` and dispatch the sinking procedure.
 4. **Resolution & Return:** When the raster scan completes, all land cells are guaranteed to be `'0'`, and `islandCount` contains the exact component count.
 
 #### 4.3 Alternative Approaches Analysis
-- **Disjoint Set Union (DSU):** Can map each 2D cell $(r, c)$ to 1D index $r \times N + c$. Union adjacent land cells. While mathematically elegant and suitable for dynamic streaming grids (e.g., LC #305 Number of Islands II), DSU incurs $O(M \times N \cdot \alpha(M \times N))$ time and $O(M \times N)$ auxiliary parent arrays, making it strictly inferior to in-place DFS/BFS for static grids.
+- **Disjoint Set Union (DSU):** Can map each 2D cell (r, c) to 1D index r x N + c. Union adjacent land cells. While mathematically elegant and suitable for dynamic streaming grids (e.g., LC #305 Number of Islands II), DSU incurs O(M x N * alpha(M x N)) time and O(M x N) auxiliary parent arrays, making it strictly inferior to in-place DFS/BFS for static grids.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Metric | Approach 1: In-Place DFS | Approach 2: Queue-Based BFS | Approach 3: Disjoint Set Union (DSU) |
 | :--- | :--- | :--- | :--- |
-| **Time Complexity (Best)** | $O(M \times N)$ | $O(M \times N)$ | $O(M \times N)$ |
-| **Time Complexity (Avg)** | $O(M \times N)$ | $O(M \times N)$ | $O(M \times N \cdot \alpha(M \cdot N))$ |
-| **Time Complexity (Worst)** | $O(M \times N)$ | $O(M \times N)$ | $O(M \times N \cdot \alpha(M \cdot N))$ |
-| **Auxiliary Space** | $O(M \times N)$ call stack | $O(\min(M, N))$ queue | $O(M \times N)$ parent array |
-| **Output Space** | $O(1)$ scalar count | $O(1)$ scalar count | $O(1)$ scalar count |
+| **Time Complexity (Best)** | O(M x N) | O(M x N) | O(M x N) |
+| **Time Complexity (Avg)** | O(M x N) | O(M x N) | O(M x N * alpha(M * N)) |
+| **Time Complexity (Worst)** | O(M x N) | O(M x N) | O(M x N * alpha(M * N)) |
+| **Auxiliary Space** | O(M x N) call stack | O(min(M, N)) queue | O(M x N) parent array |
+| **Output Space** | O(1) scalar count | O(1) scalar count | O(1) scalar count |
 | **Cache Locality** | High (localized recursion) | Moderate (FIFO queue pointers) | Poor (pointer chasing in trees) |
 | **In-Place Mutability** | Yes (sinks to `'0'`) | Yes (sinks to `'0'`) | No (requires external parent table) |
 | **Streaming Suitability** | Poor (requires static access) | Poor (requires full grid access) | High (handles dynamic cell additions) |
@@ -289,13 +289,13 @@ public class SolutionBfs
   }
   ```
 - **Key Constraints:**
-  - Number of nodes $V \in [0, 100]$.
-  - Node values $1 \le \text{node.val} \le 100$, all values are distinct.
+  - Number of nodes V in [0, 100].
+  - Node values 1 <= node.val <= 100, all values are distinct.
   - Graph is connected and undirected. Cycles and self-loops are permissible.
 - **Senior Edge Cases to Defend:**
   - Input `node == null`: Must immediately return `null` without throwing `NullReferenceException`.
   - Single node with empty `neighbors` list: Return a cloned node with identical value and an empty list.
-  - Cyclic topologies (e.g., triangle $1-2-3-1$): Traversal must not enter an infinite loop.
+  - Cyclic topologies (e.g., triangle 1-2-3-1): Traversal must not enter an infinite loop.
 
 ### 2. Summary & Sample Input / Output
 - **Conceptual Essence:** Graph Deep Copy with Memoized Bijection. Construct a one-to-one mapping from original `Node` references to freshly instantiated cloned `Node` references, replicating topology while preventing cycle-induced infinite recursion.
@@ -308,17 +308,17 @@ public class SolutionBfs
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine an architect reproducing a complex network of interconnected rooms. As the architect walks through Room $u$, they immediately construct a replica Room $u'$ in a new warehouse and record the pairing $(u \leftrightarrow u')$ in an index registry. When exploring hallways leading out of Room $u$, if a hallway leads to a room that has already been built (found in the registry), the architect simply builds a corridor to the existing replica rather than duplicating the room. If it leads to an unbuilt room, the architect builds it and continues walking.
+Imagine an architect reproducing a complex network of interconnected rooms. As the architect walks through Room u, they immediately construct a replica Room u' in a new warehouse and record the pairing (u <-> u') in an index registry. When exploring hallways leading out of Room u, if a hallway leads to a room that has already been built (found in the registry), the architect simply builds a corridor to the existing replica rather than duplicating the room. If it leads to an unbuilt room, the architect builds it and continues walking.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
 A naive tree-copy algorithm recursively instantiates new nodes for every neighbor. In a cyclic graph, this leads to infinite recursion and `StackOverflowException`. In a graph with multiple paths to the same node (e.g., a diamond graph), without memoization, the algorithm duplicates nodes exponentially, resulting in an invalid graph topology where multiple distinct nodes share the same value instead of forming a single merged vertex.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
-- **Bijection Invariant:** There exists a strict bijection $f: V_{\text{orig}} \to V_{\text{clone}}$. For every original node $u \in V_{\text{orig}}$, there is exactly one cloned node $u' \in V_{\text{clone}}$ such that $u' = f(u)$.
-- **Memoization Timing Invariant:** Cloned node $u'$ must be registered in the dictionary `visited[u] = u'` **before** recursing or iterating over $u$'s neighbors. This breaks directed and undirected cycles: when neighbor $v$ attempts to traverse back to $u$, `visited.TryGetValue(u, out var clone)` succeeds in $O(1)$, returning the pre-existing clone and closing the loop.
+- **Bijection Invariant:** There exists a strict bijection f: V_orig -> V_clone. For every original node u in V_orig, there is exactly one cloned node u' in V_clone such that u' = f(u).
+- **Memoization Timing Invariant:** Cloned node u' must be registered in the dictionary `visited[u] = u'` **before** recursing or iterating over u's neighbors. This breaks directed and undirected cycles: when neighbor v attempts to traverse back to u, `visited.TryGetValue(u, out var clone)` succeeds in O(1), returning the pre-existing clone and closing the loop.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
-- **Settled Nodes:** Vertices $u$ present in `visited` dictionary whose clone $u'$ has been instantiated and whose neighbors are either currently being wired or fully wired.
+- **Settled Nodes:** Vertices u present in `visited` dictionary whose clone u' has been instantiated and whose neighbors are either currently being wired or fully wired.
 - **Frontier:** Recursion stack frames (DFS) or FIFO queue elements (BFS) actively processing neighbor adjacency lists.
 - **Unexplored:** Nodes reachable in the original graph that have not yet been placed in the dictionary.
 
@@ -340,14 +340,14 @@ Graph Cloning State Partition:
 
 #### 3.5 State Transition Triggers & Decision Gates
 - **Initial Guard:** If `node == null`, return `null`.
-- **Lookup Gate:** When inspecting neighbor $v$ of current node $u$:
+- **Lookup Gate:** When inspecting neighbor v of current node u:
   - Gate 1: If `visited.ContainsKey(v)` is true:
     - Action: Directly append `visited[v]` to `visited[u].neighbors`.
   - Gate 2: If `visited.ContainsKey(v)` is false:
-    - Action: Instantiate `v' = new Node(v.val)`. Store `visited[v] = v'`. Push $v$ to frontier. Append $v'$ to `visited[u].neighbors`.
+    - Action: Instantiate `v' = new Node(v.val)`. Store `visited[v] = v'`. Push v to frontier. Append v' to `visited[u].neighbors`.
 
 #### 3.6 Concrete Step-by-Step State Trace
-Consider graph with 2 nodes mutually connected: $1 \leftrightarrow 2$.
+Consider graph with 2 nodes mutually connected: 1 <-> 2.
 - **Step 1:** Call `CloneGraph(1)`.
   - `visited` is empty. Instantiate `clone1 = new Node(1)`.
   - Register `visited[1] = clone1`.
@@ -370,9 +370,9 @@ Consider graph with 2 nodes mutually connected: $1 \leftrightarrow 2$.
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **When to choose Approach 1 (Recursive DFS):** Extremely clean, functional, and idiomatic in interviews. Ideal when graph size is small ($V \le 100$).
+- **When to choose Approach 1 (Recursive DFS):** Extremely clean, functional, and idiomatic in interviews. Ideal when graph size is small (V <= 100).
 - **When to choose Approach 2 (Iterative BFS):** Production systems with arbitrary or unknown graph depths where recursion depth could overflow. Guarantees deterministic heap memory management.
-- **Cache Locality & Overhead:** BFS allocates a queue alongside the dictionary. DFS uses call stack frames. Both have $O(V)$ auxiliary space and $O(V + E)$ time complexity.
+- **Cache Locality & Overhead:** BFS allocates a queue alongside the dictionary. DFS uses call stack frames. Both have O(V) auxiliary space and O(V + E) time complexity.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 1. **Setup & Boundaries:** Check for `node == null`. Initialize `Dictionary<Node, Node>`.
@@ -381,18 +381,18 @@ Consider graph with 2 nodes mutually connected: $1 \leftrightarrow 2$.
 4. **Resolution & Return:** Return the cloned node corresponding to the input root.
 
 #### 4.3 Alternative Approaches Analysis
-- **Array-based Indexing:** Since $1 \le \text{node.val} \le 100$, an array `Node[101]` can replace the dictionary. This eliminates hashing collisions and achieves $O(1)$ direct array indexing with near-zero overhead.
+- **Array-based Indexing:** Since 1 <= node.val <= 100, an array `Node[101]` can replace the dictionary. This eliminates hashing collisions and achieves O(1) direct array indexing with near-zero overhead.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Metric | Approach 1: Recursive DFS | Approach 2: Iterative BFS | Approach 3: Array Indexed Map |
 | :--- | :--- | :--- | :--- |
-| **Time Complexity (Best/Avg/Worst)** | $O(V + E)$ | $O(V + E)$ | $O(V + E)$ |
-| **Auxiliary Space** | $O(V)$ map + $O(V)$ stack | $O(V)$ map + $O(V)$ queue | $O(V)$ array + $O(V)$ queue |
-| **Output Space** | $O(V + E)$ cloned graph | $O(V + E)$ cloned graph | $O(V + E)$ cloned graph |
+| **Time Complexity (Best/Avg/Worst)** | O(V + E) | O(V + E) | O(V + E) |
+| **Auxiliary Space** | O(V) map + O(V) stack | O(V) map + O(V) queue | O(V) array + O(V) queue |
+| **Output Space** | O(V + E) cloned graph | O(V + E) cloned graph | O(V + E) cloned graph |
 | **Cache Locality** | Moderate | High | Excellent (contiguous array) |
 | **In-Place Mutability** | No (pure deep copy) | No (pure deep copy) | No (pure deep copy) |
-| **Stack Overflow Risk** | Low for $V \le 100$, High for large $V$ | Zero | Zero |
+| **Stack Overflow Risk** | Low for V <= 100, High for large V | Zero | Zero |
 
 ---
 
@@ -491,15 +491,15 @@ public class SolutionBfs
 | **LeetCode Link** | [Number of Provinces](https://leetcode.com/problems/number-of-provinces/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** There are $n$ cities. You are given an $n \times n$ matrix `isConnected` where `isConnected[i][j] = 1` if city $i$ and city $j$ are directly connected, and `0` otherwise. Return the total number of provinces (connected components).
+- **Formal Statement:** There are n cities. You are given an n x n matrix `isConnected` where `isConnected[i][j] = 1` if city i and city j are directly connected, and `0` otherwise. Return the total number of provinces (connected components).
 - **Key Constraints:**
-  - $1 \le n \le 200$.
-  - $\text{isConnected}[i][i] == 1$.
-  - $\text{isConnected}[i][j] == \text{isConnected}[j][i]$.
+  - 1 <= n <= 200.
+  - isConnected[i][i] == 1.
+  - isConnected[i][j] == isConnected[j][i].
 - **Senior Edge Cases to Defend:**
-  - Fully disconnected graph: Identity matrix $\implies n$ provinces.
-  - Fully connected complete graph ($K_n$): All entries are $1 \implies 1$ province.
-  - Linear chain: City 0 connected to 1, 1 to 2, ..., $n-2$ to $n-1 \implies 1$ province.
+  - Fully disconnected graph: Identity matrix => n provinces.
+  - Fully connected complete graph (K_n): All entries are 1 => 1 province.
+  - Linear chain: City 0 connected to 1, 1 to 2, ..., n-2 to n-1 => 1 province.
 
 ### 2. Summary & Sample Input / Output
 - **Conceptual Essence:** Count connected components in an undirected adjacency matrix graph. Traverse each unvisited vertex using DFS/BFS to mark its entire transitive closure, or merge disjoint sets dynamically.
@@ -512,19 +512,19 @@ public class SolutionBfs
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Think of $n$ cities on a map. Some are linked by highways. A province is a political territory where every city in it can reach every other city by highway (directly or indirectly). We walk through cities $0$ to $n - 1$. When we step into an unvisited city, we declare a new province and hoist a flag. We then send messengers along every connecting highway, marking all reached cities as claimed by this province. When the messengers return, we continue looking for the next unclaimed city.
+Think of n cities on a map. Some are linked by highways. A province is a political territory where every city in it can reach every other city by highway (directly or indirectly). We walk through cities 0 to n - 1. When we step into an unvisited city, we declare a new province and hoist a flag. We then send messengers along every connecting highway, marking all reached cities as claimed by this province. When the messengers return, we continue looking for the next unclaimed city.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A brute-force approach might compute the transitive closure matrix using the Floyd-Warshall algorithm in $O(N^3)$ time, checking reachability between all city pairs. Scanning the entire adjacency matrix repeatedly without a `visited` array would cause infinite loops between mutually connected cities $i$ and $j$.
+A brute-force approach might compute the transitive closure matrix using the Floyd-Warshall algorithm in O(N^3) time, checking reachability between all city pairs. Scanning the entire adjacency matrix repeatedly without a `visited` array would cause infinite loops between mutually connected cities i and j.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **Component Partition Invariant:** Connectedness is an equivalence relation (reflexive, symmetric, transitive). The graph vertices are partitioned into disjoint equivalence classes.
-- **Single Discovery Invariant:** A boolean array `visited[i]` of length $n$ tracks claimed cities. When scanning index $i$ from $0$ to $n - 1$, if `visited[i] == false`, city $i$ must belong to an undiscovered equivalence class. Incrementing `provinces++` and launching a DFS from $i$ marks all nodes in that equivalence class in $O(N)$ operations per vertex, totaling $O(N^2)$ time to scan the matrix.
+- **Single Discovery Invariant:** A boolean array `visited[i]` of length n tracks claimed cities. When scanning index i from 0 to n - 1, if `visited[i] == false`, city i must belong to an undiscovered equivalence class. Incrementing `provinces++` and launching a DFS from i marks all nodes in that equivalence class in O(N) operations per vertex, totaling O(N^2) time to scan the matrix.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
-- **Raster Cursor $i \in [0, n - 1]$:** Iterates through all vertices.
-- **`visited` Bitset/Array:** Marks whether city $k$ has been absorbed into an identified province.
-- **Inner Traversal Cursor:** Traverses row $u$ of the matrix, checking all potential neighbors $v \in [0, n - 1]$.
+- **Raster Cursor i in [0, n - 1]:** Iterates through all vertices.
+- **`visited` Bitset/Array:** Marks whether city k has been absorbed into an identified province.
+- **Inner Traversal Cursor:** Traverses row u of the matrix, checking all potential neighbors v in [0, n - 1].
 
 ```text
 City State Partition During Outer Scan:
@@ -539,36 +539,36 @@ City i:
 
 #### 3.5 State Transition Triggers & Decision Gates
 - **Outer Scan Gate:** If `!visited[i]`, increment `provinceCount` and invoke `Dfs(i)`.
-- **DFS Transition Gate:** For current city $u$, iterate $v \in [0, n - 1]$:
+- **DFS Transition Gate:** For current city u, iterate v in [0, n - 1]:
   - Condition: `isConnected[u][v] == 1 && !visited[v]`.
   - Action: Mark `visited[v] = true` and recurse `Dfs(v)`.
 
 #### 3.6 Concrete Step-by-Step State Trace
-Input `isConnected` ($3 \times 3$):
+Input `isConnected` (3 x 3):
 ```text
 Row 0: [1, 1, 0]
 Row 1: [1, 1, 0]
 Row 2: [0, 0, 1]
 ```
 - Initialize `visited = [F, F, F]`, `provinces = 0`.
-- **Outer $i = 0$:** `visited[0]` is `false`.
+- **Outer i = 0:** `visited[0]` is `false`.
   - `provinces = 1`. Launch `Dfs(0)`.
   - `visited[0] = true`.
   - Check neighbors of 0:
-    - $v = 0$: `visited[0]` is true, skip.
-    - $v = 1$: `isConnected[0][1] == 1` and `!visited[1]`. Recurse `Dfs(1)`.
+    - v = 0: `visited[0]` is true, skip.
+    - v = 1: `isConnected[0][1] == 1` and `!visited[1]`. Recurse `Dfs(1)`.
       - In `Dfs(1)`: `visited[1] = true`.
       - Check neighbors of 1:
-        - $v = 0$: `visited[0]` true, skip.
-        - $v = 1$: `visited[1]` true, skip.
-        - $v = 2$: `isConnected[1][2] == 0`, skip.
+        - v = 0: `visited[0]` true, skip.
+        - v = 1: `visited[1]` true, skip.
+        - v = 2: `isConnected[1][2] == 0`, skip.
       - Return from `Dfs(1)`.
-    - $v = 2$: `isConnected[0][2] == 0`, skip.
+    - v = 2: `isConnected[0][2] == 0`, skip.
   - Return from `Dfs(0)`. `visited` is now `[T, T, F]`.
-- **Outer $i = 1$:** `visited[1]` is `true`. Skip.
-- **Outer $i = 2$:** `visited[2]` is `false`.
+- **Outer i = 1:** `visited[1]` is `true`. Skip.
+- **Outer i = 2:** `visited[2]` is `false`.
   - `provinces = 2`. Launch `Dfs(2)`.
-  - `visited[2] = true`. Check neighbors of 2: only self-loop $v = 2$ is 1.
+  - `visited[2] = true`. Check neighbors of 2: only self-loop v = 2 is 1.
   - Return from `Dfs(2)`. `visited` is `[T, T, T]`.
 - Loop finishes. Return `provinces = 2`.
 
@@ -577,26 +577,26 @@ Row 2: [0, 0, 1]
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **When to choose Approach 1 (DFS Matrix Traversal):** Optimal for dense or fixed adjacency matrices. Requires zero auxiliary data structures beyond a boolean array of size $N$. Minimal code complexity.
+- **When to choose Approach 1 (DFS Matrix Traversal):** Optimal for dense or fixed adjacency matrices. Requires zero auxiliary data structures beyond a boolean array of size N. Minimal code complexity.
 - **When to choose Approach 2 (Disjoint Set Union):** Preferred when connections are streaming or arrive dynamically as an edge list. DSU allows online query capability.
-- **Complexity Trade-Off:** In an adjacency matrix of size $N \times N$, any algorithm must read $O(N^2)$ entries. DFS achieves $O(N^2)$ time with strictly $O(N)$ space. DSU achieves $O(N^2 \cdot \alpha(N))$ time with $O(N)$ space.
+- **Complexity Trade-Off:** In an adjacency matrix of size N x N, any algorithm must read O(N^2) entries. DFS achieves O(N^2) time with strictly O(N) space. DSU achieves O(N^2 * alpha(N)) time with O(N) space.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 1. **Setup & Boundaries:** Initialize `visited = new bool[n]`, `provinces = 0`.
-2. **Main Exploration Loop:** Iterate $i$ from $0$ to $n - 1$.
-3. **Invariant Maintenance & Condition Gates:** If $i$ is unvisited, increment count and run DFS across row $i$ to exhaustively mark reachable vertices.
+2. **Main Exploration Loop:** Iterate i from 0 to n - 1.
+3. **Invariant Maintenance & Condition Gates:** If i is unvisited, increment count and run DFS across row i to exhaustively mark reachable vertices.
 4. **Resolution & Return:** Return final province count.
 
 #### 4.3 Alternative Approaches Analysis
-- **BFS with Queue:** Replace DFS call stack with a FIFO queue. Achieves identical $O(N^2)$ time and $O(N)$ space, offering stack safety if $N$ is very large (though for $N \le 200$, stack overflow is impossible).
+- **BFS with Queue:** Replace DFS call stack with a FIFO queue. Achieves identical O(N^2) time and O(N) space, offering stack safety if N is very large (though for N <= 200, stack overflow is impossible).
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Metric | Approach 1: DFS Traversal | Approach 2: Disjoint Set Union (DSU) | Approach 3: BFS Traversal |
 | :--- | :--- | :--- | :--- |
-| **Time Complexity (All Cases)** | $O(N^2)$ | $O(N^2 \cdot \alpha(N))$ | $O(N^2)$ |
-| **Auxiliary Space** | $O(N)$ visited array | $O(N)$ parent/rank arrays | $O(N)$ visited + queue |
-| **Output Space** | $O(1)$ | $O(1)$ | $O(1)$ |
+| **Time Complexity (All Cases)** | O(N^2) | O(N^2 * alpha(N)) | O(N^2) |
+| **Auxiliary Space** | O(N) visited array | O(N) parent/rank arrays | O(N) visited + queue |
+| **Output Space** | O(1) | O(1) | O(1) |
 | **Cache Locality** | High (row-major matrix scans) | Moderate | High |
 | **Streaming Suitability** | Poor (static matrix required) | High (handles dynamic edges) | Poor |
 
@@ -737,41 +737,41 @@ public class SolutionDsu
 | **LeetCode Link** | [Number of Connected Components](https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** Given an integer $n$ and an array of edges where `edges[i] = [a_i, b_i]` indicates an edge between $a_i$ and $b_i$ in an undirected graph, return the number of connected components in the graph.
+- **Formal Statement:** Given an integer n and an array of edges where `edges[i] = [a_i, b_i]` indicates an edge between a_i and b_i in an undirected graph, return the number of connected components in the graph.
 - **Key Constraints:**
-  - $1 \le n \le 2000$.
-  - $1 \le \text{edges.Length} \le 5000$.
-  - $0 \le a_i, b_i < n$, $a_i \ne b_i$.
+  - 1 <= n <= 2000.
+  - 1 <= edges.Length <= 5000.
+  - 0 <= a_i, b_i < n, a_i != b_i.
   - No duplicate edges.
 - **Senior Edge Cases to Defend:**
-  - `edges` is empty: Graph consists of $n$ completely isolated single-node components $\implies$ return $n$.
+  - `edges` is empty: Graph consists of n completely isolated single-node components => return n.
   - Forest with multiple trees and disconnected isolated nodes.
   - Complete dense subgraph alongside completely isolated vertices.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Component Counting on a Sparse Edge List. Start with $n$ disjoint singletons. Each edge between distinct components merges them, decrementing component count.
+- **Conceptual Essence:** Component Counting on a Sparse Edge List. Start with n disjoint singletons. Each edge between distinct components merges them, decrementing component count.
 - **Sample 1:**
   - **Input:** `n = 5`, `edges = [[0, 1], [1, 2], [3, 4]]`
-  - **Output:** `2` (Components are $\{0, 1, 2\}$ and $\{3, 4\}$)
+  - **Output:** `2` (Components are {0, 1, 2} and {3, 4})
 
 ---
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine $n$ isolated islands in an ocean, each with count $1$ (total components = $n$). Construction crews lay bridges one by one from the given edge list. Before building a bridge between island $u$ and island $v$, the surveyor checks if $u$ and $v$ are already connected by some sequence of existing bridges. If they are already in the same archipelago, the new bridge adds redundant connectivity (a cycle) and changes nothing. If they are in different archipelagos, building the bridge unifies two separate landmasses into one, decreasing the total count of isolated archipelagos by exactly $1$.
+Imagine n isolated islands in an ocean, each with count 1 (total components = n). Construction crews lay bridges one by one from the given edge list. Before building a bridge between island u and island v, the surveyor checks if u and v are already connected by some sequence of existing bridges. If they are already in the same archipelago, the new bridge adds redundant connectivity (a cycle) and changes nothing. If they are in different archipelagos, building the bridge unifies two separate landmasses into one, decreasing the total count of isolated archipelagos by exactly 1.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-Building an $N \times N$ adjacency matrix for sparse graphs wastes $O(N^2)$ memory ($2000 \times 2000 = 4 \times 10^6$ ints) when there are only $5000$ edges. Building an adjacency list and running DFS/BFS requires allocating list arrays and node references ($O(V + E)$), followed by traversing all edges twice. Disjoint Set Union (DSU) avoids building any adjacency structure entirely, streaming the edges directly.
+Building an N x N adjacency matrix for sparse graphs wastes O(N^2) memory (2000 x 2000 = 4 x 10^6 ints) when there are only 5000 edges. Building an adjacency list and running DFS/BFS requires allocating list arrays and node references (O(V + E)), followed by traversing all edges twice. Disjoint Set Union (DSU) avoids building any adjacency structure entirely, streaming the edges directly.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
-- **Spanning Forest Invariant:** In any undirected graph with $V$ vertices, an acyclic subgraph (forest) with $E_{\text{tree}}$ edges partitions the graph into exactly $C = V - E_{\text{tree}}$ connected components.
-- **Cycle Invariance:** An edge $(u, v)$ reduces the component count if and only if $\text{Find}(u) \ne \text{Find}(v)$. If $\text{Find}(u) == \text{Find}(v)$, the edge is a back-edge within an existing component and does not alter the count.
+- **Spanning Forest Invariant:** In any undirected graph with V vertices, an acyclic subgraph (forest) with E_tree edges partitions the graph into exactly C = V - E_tree connected components.
+- **Cycle Invariance:** An edge (u, v) reduces the component count if and only if Find(u) != Find(v). If Find(u) == Find(v), the edge is a back-edge within an existing component and does not alter the count.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
-- **DSU Parent Array (`parent[x]`):** Stores the parent pointer of node $x$, initially pointing to itself.
+- **DSU Parent Array (`parent[x]`):** Stores the parent pointer of node x, initially pointing to itself.
 - **Rank Array (`rank[x]`):** Stores tree height bound to balance unions.
-- **Component Counter (`Count`):** Initialized to $n$. Decremented on each successful merge.
+- **Component Counter (`Count`):** Initialized to n. Decremented on each successful merge.
 
 ```text
 DSU Evolution on edges [[0, 1], [1, 2], [3, 4]]:
@@ -800,15 +800,15 @@ Input: `n = 5`, `edges = [[0, 1], [1, 2], [3, 4]]`.
 - `parent = [0, 1, 2, 3, 4]`, `rank = [0, 0, 0, 0, 0]`, `Count = 5`.
 - **Process Edge `[0, 1]`:**
   - `Find(0) = 0`, `Find(1) = 1`. Different roots.
-  - `rank[0] == rank[1] \implies parent[1] = 0, rank[0] = 1`.
+  - `rank[0] == rank[1] => parent[1] = 0, rank[0] = 1`.
   - `Count = 4`.
 - **Process Edge `[1, 2]`:**
   - `Find(1) = 0`, `Find(2) = 2`. Different roots.
-  - `rank[0] (1) > rank[2] (0) \implies parent[2] = 0`.
+  - `rank[0] (1) > rank[2] (0) => parent[2] = 0`.
   - `Count = 3`.
 - **Process Edge `[3, 4]`:**
   - `Find(3) = 3`, `Find(4) = 4`. Different roots.
-  - `rank[3] == rank[4] \implies parent[4] = 3, rank[3] = 1`.
+  - `rank[3] == rank[4] => parent[4] = 3, rank[3] = 1`.
   - `Count = 2`.
 - End of edges. Return `Count = 2`.
 
@@ -821,20 +821,20 @@ Input: `n = 5`, `edges = [[0, 1], [1, 2], [3, 4]]`.
 - **When to choose Approach 2 (Adjacency List + BFS/DFS):** When the problem requires returning the actual vertices belonging to each component (not just the count), or when graph traversal paths must be inspected.
 
 #### 4.2 Step-by-Step Natural Progression Flow
-1. **Setup & Boundaries:** Initialize `DisjointSet` with $n$ elements.
+1. **Setup & Boundaries:** Initialize `DisjointSet` with n elements.
 2. **Main Exploration Loop:** Iterate over each edge `[u, v]`.
 3. **Invariant Maintenance & Condition Gates:** Apply `Union(u, v)`. If roots differ, decrement counter.
 4. **Resolution & Return:** Return `dsu.ComponentCount`.
 
 #### 4.3 Alternative Approaches Analysis
-- **Adjacency List BFS:** Construct `List<int>[n]`. Populate with bidirectional edges. Run BFS using `visited[n]`. Increment count on each BFS trigger from unvisited nodes. Complexity: $O(V + E)$ time and space.
+- **Adjacency List BFS:** Construct `List<int>[n]`. Populate with bidirectional edges. Run BFS using `visited[n]`. Increment count on each BFS trigger from unvisited nodes. Complexity: O(V + E) time and space.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Metric | Approach 1: Disjoint Set Union (DSU) | Approach 2: Adjacency List + BFS/DFS |
 | :--- | :--- | :--- |
-| **Time Complexity** | $O(V + E \cdot \alpha(V))$ | $O(V + E)$ |
-| **Auxiliary Space** | $O(V)$ (parent + rank arrays) | $O(V + E)$ (graph adjacency list + visited + queue) |
+| **Time Complexity** | O(V + E * alpha(V)) | O(V + E) |
+| **Auxiliary Space** | O(V) (parent + rank arrays) | O(V + E) (graph adjacency list + visited + queue) |
 | **Edge Processing** | Single-pass streaming | Two-pass (build graph then traverse) |
 | **Memory Allocation** | Strictly 2 flat integer arrays | Multiple `List<int>` object allocations |
 | **Cache Locality** | High (flat contiguous memory) | Moderate (pointer indirection in adjacency lists) |
@@ -988,23 +988,23 @@ public class SolutionBfs
 | **LeetCode Link** | [Course Schedule](https://leetcode.com/problems/course-schedule/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** There are `numCourses` courses labeled from $0$ to `numCourses - 1`. You are given an array `prerequisites` where `prerequisites[i] = [a_i, b_i]` indicates that you must take course $b_i$ first before course $a_i$ ($b_i \to a_i$). Return `true` if you can finish all courses, or `false` otherwise (i.e. detect if a directed cycle exists).
+- **Formal Statement:** There are `numCourses` courses labeled from 0 to `numCourses - 1`. You are given an array `prerequisites` where `prerequisites[i] = [a_i, b_i]` indicates that you must take course b_i first before course a_i (b_i -> a_i). Return `true` if you can finish all courses, or `false` otherwise (i.e. detect if a directed cycle exists).
 - **Key Constraints:**
-  - $1 \le \text{numCourses} \le 2000$.
-  - $0 \le \text{prerequisites.Length} \le 5000$.
-  - All pairs $[a_i, b_i]$ are unique.
+  - 1 <= numCourses <= 2000.
+  - 0 <= prerequisites.Length <= 5000.
+  - All pairs [a_i, b_i] are unique.
 - **Senior Edge Cases to Defend:**
-  - Direct 2-node cycle: $[[1, 0], [0, 1]] \implies \text{false}$.
-  - Self-loop: $[[0, 0]] \implies \text{false}$ (course requires itself).
-  - Disconnected Directed Acyclic Graph (DAG): Multiple independent dependency trees $\implies \text{true}$.
+  - Direct 2-node cycle: [[1, 0], [0, 1]] => false.
+  - Self-loop: [[0, 0]] => false (course requires itself).
+  - Disconnected Directed Acyclic Graph (DAG): Multiple independent dependency trees => true.
   - Large cycle embedded within a larger DAG: Must detect the cycle even if peripheral nodes are acyclic.
 
 ### 2. Summary & Sample Input / Output
 - **Conceptual Essence:** Directed Cycle Detection in a Dependency Graph. A valid completion order exists if and only if the graph is a Directed Acyclic Graph (DAG). Solved via Kahn's In-Degree BFS or 3-State DFS Back-Edge Coloring.
 - **Sample 1:**
-  - **Input:** `numCourses = 2, prerequisites = [[1, 0]]` $\implies$ `true` (Take 0 then 1).
+  - **Input:** `numCourses = 2, prerequisites = [[1, 0]]` => `true` (Take 0 then 1).
 - **Sample 2:**
-  - **Input:** `numCourses = 2, prerequisites = [[1, 0], [0, 1]]` $\implies$ `false` (Deadlock cycle).
+  - **Input:** `numCourses = 2, prerequisites = [[1, 0], [0, 1]]` => `false` (Deadlock cycle).
 
 ---
 
@@ -1012,10 +1012,10 @@ public class SolutionBfs
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
 - **Kahn's Onion Peeling:** Think of courses as layers of an onion. A course with in-degree 0 has zero remaining prerequisites and sits on the outermost surface. You can safely peel (take) this course. When peeled, its outgoing prerequisite edges disappear, possibly exposing new courses with in-degree 0 on the next layer. If the entire graph is peeled away, all courses can be finished. If a cycle exists, the courses inside the cycle form a locked circle of mutual dependencies; none can ever reach in-degree 0, and peeling grinds to a premature halt.
-- **3-State DFS Recursion Path (Call-Stack Tracing):** Think of traversing a maze. Unvisited rooms are White. When entering a room, you leave a live flashlight on (Gray). When leaving the room after all forward paths have been checked, you turn off the flashlight and paint the room Black (safe). If you step into a room that already has a live flashlight shining (Gray), you have walked in a circle and hit your own footprints on the active path (a back-edge) $\implies$ deadlock!
+- **3-State DFS Recursion Path (Call-Stack Tracing):** Think of traversing a maze. Unvisited rooms are White. When entering a room, you leave a live flashlight on (Gray). When leaving the room after all forward paths have been checked, you turn off the flashlight and paint the room Black (safe). If you step into a room that already has a live flashlight shining (Gray), you have walked in a circle and hit your own footprints on the active path (a back-edge) => deadlock!
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A brute-force cycle detection searches for all simple paths starting from each node $u$ to determine if any path loops back to $u$. For dense graphs or complex DAGs, path enumeration runs in $O(V!)$ time. Even maintaining a simple `visited` boolean set fails because in a DAG, multiple valid paths can converge on the same shared prerequisite (diamond graph: $A \to B \to D$ and $A \to C \to D$). Marking $D$ as "visited" prematurely without distinguishing between *nodes on the current recursion stack* versus *nodes already verified cycle-free* causes false-positive cycle reports.
+A brute-force cycle detection searches for all simple paths starting from each node u to determine if any path loops back to u. For dense graphs or complex DAGs, path enumeration runs in O(V!) time. Even maintaining a simple `visited` boolean set fails because in a DAG, multiple valid paths can converge on the same shared prerequisite (diamond graph: A -> B -> D and A -> C -> D). Marking D as "visited" prematurely without distinguishing between *nodes on the current recursion stack* versus *nodes already verified cycle-free* causes false-positive cycle reports.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 - **DAG Topological Invariant:** A directed graph has a topological ordering if and only if it contains no directed cycles.
@@ -1051,34 +1051,34 @@ State 2 (Visited / Black):   Subtree rooted at node is completely explored and a
 #### 3.5 State Transition Triggers & Decision Gates
 - **Kahn's BFS Gate:**
   - Enqueue condition: `inDegree[course] == 0`.
-  - Edge relaxation: When course $u$ is dequeued, for each neighbor $v$ in `adj[u]`:
+  - Edge relaxation: When course u is dequeued, for each neighbor v in `adj[u]`:
     - Decrement `inDegree[v]--`.
     - Gate: If `inDegree[v] == 0`, `queue.Enqueue(v)`.
 - **3-State DFS Gate:**
-  - For node $u$: Set `state[u] = Visiting`.
-  - For each neighbor $v$:
+  - For node u: Set `state[u] = Visiting`.
+  - For each neighbor v:
     - If `state[v] == Visiting`: **Return `true` (Cycle detected).**
     - If `state[v] == Unvisited`: Recurse `HasCycle(v)`. If it returns `true`, propagate `true`.
   - Post-order: Set `state[u] = Visited` (Black). Return `false`.
 
 #### 3.6 Concrete Step-by-Step State Trace
-Input: `numCourses = 4`, `prerequisites = [[1, 0], [2, 0], [3, 1], [3, 2]]` (Edges: $0 \to 1, 0 \to 2, 1 \to 3, 2 \to 3$).
-- In-degrees: $0: 0, 1: 1, 2: 1, 3: 2$.
+Input: `numCourses = 4`, `prerequisites = [[1, 0], [2, 0], [3, 1], [3, 2]]` (Edges: 0 -> 1, 0 -> 2, 1 -> 3, 2 -> 3).
+- In-degrees: 0: 0, 1: 1, 2: 1, 3: 2.
 - Initial Queue with in-degree 0: `[0]`. `processedCount = 0`.
 - **Iteration 1:** Dequeue `0`. `processedCount = 1`.
   - Decrement neighbors of 0:
-    - $1$: in-degree becomes $0 \implies$ Enqueue `1`.
-    - $2$: in-degree becomes $0 \implies$ Enqueue `2`.
+    - 1: in-degree becomes 0 => Enqueue `1`.
+    - 2: in-degree becomes 0 => Enqueue `2`.
   - Queue: `[1, 2]`.
 - **Iteration 2:** Dequeue `1`. `processedCount = 2`.
-  - Decrement neighbor $3$: in-degree becomes $2 - 1 = 1$.
+  - Decrement neighbor 3: in-degree becomes 2 - 1 = 1.
   - Queue: `[2]`.
 - **Iteration 3:** Dequeue `2`. `processedCount = 3`.
-  - Decrement neighbor $3$: in-degree becomes $1 - 1 = 0 \implies$ Enqueue `3`.
+  - Decrement neighbor 3: in-degree becomes 1 - 1 = 0 => Enqueue `3`.
   - Queue: `[3]`.
 - **Iteration 4:** Dequeue `3`. `processedCount = 4`.
   - No neighbors. Queue empty.
-- Loop terminates. `processedCount == 4 == numCourses` $\implies$ Return `true`.
+- Loop terminates. `processedCount == 4 == numCourses` => Return `true`.
 
 ---
 
@@ -1087,26 +1087,26 @@ Input: `numCourses = 4`, `prerequisites = [[1, 0], [2, 0], [3, 1], [3, 2]]` (Edg
 #### 4.1 Anchor Points & Approach Selection Criteria
 - **When to choose Approach 1 (Kahn's BFS):** Top recommendation for interviews. Directly answers "can we schedule" and seamlessly generalizes to Course Schedule II (generating the topological order). No risk of stack overflow.
 - **When to choose Approach 2 (3-State DFS):** Exceptional when you need to detect cycles early on massive sparse graphs without building in-degree arrays. Stops immediately upon encountering the first back-edge.
-- **Memory & Cache:** Kahn's allocates an in-degree array ($O(V)$) and a queue ($O(V)$). DFS uses a state array ($O(V)$) and the program call stack ($O(V)$).
+- **Memory & Cache:** Kahn's allocates an in-degree array (O(V)) and a queue (O(V)). DFS uses a state array (O(V)) and the program call stack (O(V)).
 
 #### 4.2 Step-by-Step Natural Progression Flow
 1. **Setup & Boundaries:** Construct adjacency list. For Kahn's, compute in-degrees.
-2. **Main Exploration Loop:** Enqueue in-degree 0 nodes (or loop $0 \dots V-1$ for DFS).
+2. **Main Exploration Loop:** Enqueue in-degree 0 nodes (or loop 0 ... V-1 for DFS).
 3. **Invariant Maintenance & Condition Gates:** Decrement in-degrees and enqueue on 0 (or check White/Gray/Black states).
 4. **Resolution & Return:** Check `processedCount == numCourses` (or absence of back-edges).
 
 #### 4.3 Alternative Approaches Analysis
-- **Tarjan's Strongly Connected Components (SCC):** Finds cycles by identifying maximal strongly connected subgraphs with size $> 1$. Correct, but massive overkill ($2\times$ more lines of code) compared to Kahn's or 3-state DFS.
+- **Tarjan's Strongly Connected Components (SCC):** Finds cycles by identifying maximal strongly connected subgraphs with size > 1. Correct, but massive overkill (2* more lines of code) compared to Kahn's or 3-state DFS.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Metric | Approach 1: Kahn's Algorithm (BFS) | Approach 2: 3-State DFS Coloring |
 | :--- | :--- | :--- |
-| **Time Complexity (All Cases)** | $O(V + E)$ | $O(V + E)$ |
-| **Auxiliary Space** | $O(V + E)$ (graph + in-degree + queue) | $O(V + E)$ (graph + state array + stack) |
+| **Time Complexity (All Cases)** | O(V + E) | O(V + E) |
+| **Auxiliary Space** | O(V + E) (graph + in-degree + queue) | O(V + E) (graph + state array + stack) |
 | **Cycle Detection Timing** | Discovered at end when queue empties early | Discovered instantaneously upon back-edge |
 | **Generalizability to LC #210** | Immediate (record dequeue sequence) | Requires reversing post-order traversal |
-| **Stack Overflow Risk** | Zero | Bounded by $V$ |
+| **Stack Overflow Risk** | Zero | Bounded by V |
 
 ---
 
@@ -1255,18 +1255,18 @@ public class SolutionDfs
 | **LeetCode Link** | [Course Schedule II](https://leetcode.com/problems/course-schedule-ii/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** There are `numCourses` courses labeled from $0$ to `numCourses - 1`. Given an array `prerequisites` where `prerequisites[i] = [a_i, b_i]` represents directed edge $b_i \to a_i$, return the ordering of courses you should take to finish all courses. If there are multiple valid answers, return any of them. If it is impossible to finish all courses (cycle exists), return an empty array.
+- **Formal Statement:** There are `numCourses` courses labeled from 0 to `numCourses - 1`. Given an array `prerequisites` where `prerequisites[i] = [a_i, b_i]` represents directed edge b_i -> a_i, return the ordering of courses you should take to finish all courses. If there are multiple valid answers, return any of them. If it is impossible to finish all courses (cycle exists), return an empty array.
 - **Key Constraints:**
-  - $1 \le \text{numCourses} \le 2000$.
-  - $0 \le \text{prerequisites.Length} \le numCourses \times (numCourses - 1)$.
+  - 1 <= numCourses <= 2000.
+  - 0 <= prerequisites.Length <= numCourses * (numCourses - 1).
   - All prerequisite pairs are distinct.
 - **Senior Edge Cases to Defend:**
   - Cycle present: Must return `new int[0]` (never return a partial array).
-  - Empty prerequisites: Any permutation of $0 \dots numCourses - 1$ is valid; return `[0, 1, ..., numCourses - 1]`.
+  - Empty prerequisites: Any permutation of 0 ... numCourses - 1 is valid; return `[0, 1, ..., numCourses - 1]`.
   - Disconnected subgraphs: Must schedule all independent trees into a single linear sequence.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Construct an explicit linear ordering of DAG vertices such that for every directed edge $u \to v$, $u$ appears before $v$. Solved by accumulating dequeued vertices in Kahn's algorithm or reversing post-order DFS.
+- **Conceptual Essence:** Construct an explicit linear ordering of DAG vertices such that for every directed edge u -> v, u appears before v. Solved by accumulating dequeued vertices in Kahn's algorithm or reversing post-order DFS.
 - **Sample 1:**
   - **Input:** `numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]]`
   - **Output:** `[0, 2, 1, 3]` (or `[0, 1, 2, 3]`)
@@ -1276,14 +1276,14 @@ public class SolutionDfs
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine an assembly line scheduler. Certain tasks cannot begin until prerequisite components have been assembled. You have an output conveyor belt (`order[]`) of size $numCourses$ with a pointer `writeIndex = 0`. At any time, you examine your task list: any task whose dependencies have all been satisfied sits in your "Ready" crate (Queue). You pull a task from the crate, place it onto the conveyor belt at `order[writeIndex++]`, and notify all downstream tasks that this dependency is cleared. If you fill all $numCourses$ slots on the belt, the schedule is complete. If the crate runs empty before the belt is filled, a circular dependency locked the system, and you discard the belt (return empty array).
+Imagine an assembly line scheduler. Certain tasks cannot begin until prerequisite components have been assembled. You have an output conveyor belt (`order[]`) of size numCourses with a pointer `writeIndex = 0`. At any time, you examine your task list: any task whose dependencies have all been satisfied sits in your "Ready" crate (Queue). You pull a task from the crate, place it onto the conveyor belt at `order[writeIndex++]`, and notify all downstream tasks that this dependency is cleared. If you fill all numCourses slots on the belt, the schedule is complete. If the crate runs empty before the belt is filled, a circular dependency locked the system, and you discard the belt (return empty array).
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-Generating all $N!$ permutations and testing each against $E$ edges requires $O(N! \cdot E)$ time. Repeatedly searching the graph for in-degree 0 nodes without an active queue takes $O(V^2 + E)$ time. Kahn's algorithm maintains the in-degree count dynamically, avoiding re-scans and achieving optimal linear $O(V + E)$ time.
+Generating all N! permutations and testing each against E edges requires O(N! * E) time. Repeatedly searching the graph for in-degree 0 nodes without an active queue takes O(V^2 + E) time. Kahn's algorithm maintains the in-degree count dynamically, avoiding re-scans and achieving optimal linear O(V + E) time.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
-- **Chronological Construction Invariant:** A vertex $v$ can only be enqueued after all its incoming edges have been removed. Consequently, every prerequisite of $v$ is written to `order[]` at an index strictly less than the index at which $v$ is written.
-- **Cycle Detection Guarantee:** If the graph has a cycle, vertices in the cycle never attain in-degree 0. Thus `writeIndex` will strictly satisfy $\text{writeIndex} < \text{numCourses}$ when the queue becomes empty.
+- **Chronological Construction Invariant:** A vertex v can only be enqueued after all its incoming edges have been removed. Consequently, every prerequisite of v is written to `order[]` at an index strictly less than the index at which v is written.
+- **Cycle Detection Guarantee:** If the graph has a cycle, vertices in the cycle never attain in-degree 0. Thus `writeIndex` will strictly satisfy writeIndex < numCourses when the queue becomes empty.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 - `writeIndex`: Direct cursor pointing to the next available write slot in the pre-allocated `order` array.
@@ -1319,18 +1319,18 @@ Input: `numCourses = 4`, `prerequisites = [[1, 0], [2, 0], [3, 1], [3, 2]]`.
 - `inDegree = [0: 0, 1: 1, 2: 1, 3: 2]`.
 - Queue: `[0]`.
 - **Step 1:** Dequeue `0`. `order[0] = 0`, `writeIndex = 1`.
-  - Neighbor 1: inDegree becomes $0 \implies$ Enqueue 1.
-  - Neighbor 2: inDegree becomes $0 \implies$ Enqueue 2.
+  - Neighbor 1: inDegree becomes 0 => Enqueue 1.
+  - Neighbor 2: inDegree becomes 0 => Enqueue 2.
   - Queue: `[1, 2]`.
 - **Step 2:** Dequeue `1`. `order[1] = 1`, `writeIndex = 2`.
-  - Neighbor 3: inDegree becomes $1$.
+  - Neighbor 3: inDegree becomes 1.
   - Queue: `[2]`.
 - **Step 3:** Dequeue `2`. `order[2] = 2`, `writeIndex = 3`.
-  - Neighbor 3: inDegree becomes $0 \implies$ Enqueue 3.
+  - Neighbor 3: inDegree becomes 0 => Enqueue 3.
   - Queue: `[3]`.
 - **Step 4:** Dequeue `3`. `order[3] = 3`, `writeIndex = 4`.
   - Queue empty.
-- `writeIndex == 4 == numCourses` $\implies$ Return `[0, 1, 2, 3]`.
+- `writeIndex == 4 == numCourses` => Return `[0, 1, 2, 3]`.
 
 ---
 
@@ -1347,15 +1347,15 @@ Input: `numCourses = 4`, `prerequisites = [[1, 0], [2, 0], [3, 1], [3, 2]]`.
 4. **Resolution & Return:** If `writeIndex == numCourses`, return `order`; otherwise return `Array.Empty<int>()`.
 
 #### 4.3 Alternative Approaches Analysis
-- **DFS Post-Order with Reversal:** Use tri-color state array (0 = White, 1 = Gray, 2 = Black). On cycle detection (Gray node encountered), return empty array. Upon finishing DFS for node $u$, write $u$ into `order[--writeIndex]` (filling from back to front). This achieves $O(V + E)$ without needing an extra array reversal pass.
+- **DFS Post-Order with Reversal:** Use tri-color state array (0 = White, 1 = Gray, 2 = Black). On cycle detection (Gray node encountered), return empty array. Upon finishing DFS for node u, write u into `order[--writeIndex]` (filling from back to front). This achieves O(V + E) without needing an extra array reversal pass.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Metric | Approach 1: Kahn's BFS (Pre-allocated Array) | Approach 2: DFS Post-Order Reversal |
 | :--- | :--- | :--- |
-| **Time Complexity (All Cases)** | $O(V + E)$ | $O(V + E)$ |
-| **Auxiliary Space** | $O(V + E)$ | $O(V + E)$ |
-| **Output Space** | $O(V)$ pre-allocated array | $O(V)$ array |
+| **Time Complexity (All Cases)** | O(V + E) | O(V + E) |
+| **Auxiliary Space** | O(V + E) | O(V + E) |
+| **Output Space** | O(V) pre-allocated array | O(V) array |
 | **Memory Allocations** | Single `int[V]` array write | `int[V]` array + call stack |
 | **Cache Locality** | Sequential array writes | Stack unwinding + reverse writes |
 

@@ -15,47 +15,47 @@
 | **LeetCode Link** | [Reverse String](https://leetcode.com/problems/reverse-string/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** Write a function that reverses a string. The input string is given as an array of characters `s`. You must do this by modifying the input array in-place with $O(1)$ extra memory.
+- **Formal Statement:** Write a function that reverses a string. The input string is given as an array of characters `s`. You must do this by modifying the input array in-place with O(1) extra memory.
 - **Key Constraints:**
   - `1 <= s.Length <= 10^5`
   - `s[i]` is a printable ASCII character.
 - **Senior Edge Cases to Defend:**
   - `s.Length == 1`: Loop condition `left < right` terminates immediately; zero operations executed.
   - Even length (e.g. `s = ["a", "b"]`): Pointers cross cleanly when `left` becomes `1` and `right` becomes `0`.
-  - Odd length (e.g. `s = ["a", "b", "c"]`): Midpoint element (`'b'`) at index $1$ is never touched because `left == right == 1` terminates the loop, avoiding redundant self-swapping.
-  - In-place constraint: Any allocation of a temporary array or conversion to string violates the strict $O(1)$ auxiliary space contract.
+  - Odd length (e.g. `s = ["a", "b", "c"]`): Midpoint element (`'b'`) at index 1 is never touched because `left == right == 1` terminates the loop, avoiding redundant self-swapping.
+  - In-place constraint: Any allocation of a temporary array or conversion to string violates the strict O(1) auxiliary space contract.
 
 ### 2. Summary & Sample Input / Output
 - **Conceptual Essence:** In-place symmetric swap converging from outer boundaries to center using an opposing two-pointer pincer.
 - **Sample 1:**
   - **Input:** `s = ["h","e","l","l","o"]`
   - **Step-by-Step Swaps:**
-    - Swap `s[0]` ('h') and `s[4]` ('o') $\implies$ `["o","e","l","l","h"]`
-    - Swap `s[1]` ('e') and `s[3]` ('l') $\implies$ `["o","l","l","e","h"]`
-    - Pointers meet at index 2 ('l') $\implies$ Terminate.
+    - Swap `s[0]` ('h') and `s[4]` ('o') => `["o","e","l","l","h"]`
+    - Swap `s[1]` ('e') and `s[3]` ('l') => `["o","l","l","e","h"]`
+    - Pointers meet at index 2 ('l') => Terminate.
   - **Output:** `["o","l","l","e","h"]`
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine a mirror reflection pincer. Two hands grab opposite ends of a row of physical tiles. Simultaneously, the left hand and right hand swap their tiles, then take exactly one step inward toward each other. The process repeats until the hands meet in the middle. Because reflection across a central axis maps index $i$ directly to $N - 1 - i$, performing pairwise swaps across the axis completely reverses the sequence without needing any temporary holding area.
+Imagine a mirror reflection pincer. Two hands grab opposite ends of a row of physical tiles. Simultaneously, the left hand and right hand swap their tiles, then take exactly one step inward toward each other. The process repeats until the hands meet in the middle. Because reflection across a central axis maps index i directly to N - 1 - i, performing pairwise swaps across the axis completely reverses the sequence without needing any temporary holding area.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A naive approach allocates a secondary array `temp` of size $N$, reads `s` backwards into `temp`, and copies `temp` back into `s`:
-- Space Complexity: $O(N)$ heap memory.
-- GC Overhead: In high-throughput string pipelines (e.g. protocol deserialization), allocating $10^5$ character arrays triggers garbage collection latency spikes.
+A naive approach allocates a secondary array `temp` of size N, reads `s` backwards into `temp`, and copies `temp` back into `s`:
+- Space Complexity: O(N) heap memory.
+- GC Overhead: In high-throughput string pipelines (e.g. protocol deserialization), allocating 10^5 character arrays triggers garbage collection latency spikes.
 - In-place swapping completely eliminates auxiliary memory allocations.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **Opposing Convergence Invariant:**
-For any array of length $N$, the reversed position of element $s[i]$ is $s[N - 1 - i]$.
+For any array of length N, the reversed position of element s[i] is s[N - 1 - i].
 By maintaining two cursors:
-$$left = 0, \quad right = N - 1$$
-At every step where $left < right$, swapping $s[left]$ and $s[right]$ simultaneously places both elements into their final reversed coordinates.
-Advancing $left \to left + 1$ and $right \to right - 1$ preserves the invariant:
-- All indices $< left$ and all indices $> right$ are already in their final reversed positions.
-- The active candidate slice remains $s[left \dots right]$.
-- Termination occurs in precisely $\lfloor N / 2 \rfloor$ swaps.
+left = 0, right = N - 1
+At every step where left < right, swapping s[left] and s[right] simultaneously places both elements into their final reversed coordinates.
+Advancing left -> left + 1 and right -> right - 1 preserves the invariant:
+- All indices < left and all indices > right are already in their final reversed positions.
+- The active candidate slice remains s[left ... right].
+- Termination occurs in precisely floor(N / 2) swaps.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 ```text
@@ -64,13 +64,13 @@ Advancing $left \to left + 1$ and $right \to right - 1$ preserves the invariant:
      Reversed Left              Active Swap                Reversed Right
       (Finalized)                  Pincer                   (Finalized)
 ```
-- `left`: Advances monotonically from $0 \to \lfloor N / 2 \rfloor$.
-- `right`: Decrements monotonically from $N - 1 \to \lceil N / 2 \rceil$.
-- Loop terminates strictly when $left \ge right$.
+- `left`: Advances monotonically from 0 -> floor(N / 2).
+- `right`: Decrements monotonically from N - 1 -> ceil(N / 2).
+- Loop terminates strictly when left >= right.
 
 #### 3.5 State Transition Triggers & Decision Gates
-1. **Convergence Gate:** While $left < right$:
-   - Swap $s[left]$ and $s[right]$ (using C# tuple deconstruction or scalar temp).
+1. **Convergence Gate:** While left < right:
+   - Swap s[left] and s[right] (using C# tuple deconstruction or scalar temp).
    - `left++`.
    - `right--`.
 2. **Termination:** Array is fully reversed in-place.
@@ -80,22 +80,22 @@ Input: `s = ["h", "e", "l", "l", "o"]`.
 
 | Step | `left` | `right` | `s[left]` | `s[right]` | Action | Array State | Invariant Maintained |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **0** | `0` | `4` | `'h'` | `'o'` | Swap $0 \leftrightarrow 4$ | `["o", "e", "l", "l", "h"]` | Slices `[0]` and `[4]` settled |
-| **1** | `1` | `3` | `'e'` | `'l'` | Swap $1 \leftrightarrow 3$ | `["o", "l", "l", "e", "h"]` | Slices `[0..1]` and `[3..4]` settled |
-| **2** | `2` | `2` | `'l'` | `'l'` | $left \not< right \implies$ Exit | `["o", "l", "l", "e", "h"]` | Center unchanged; fully reversed |
+| **0** | `0` | `4` | `'h'` | `'o'` | Swap 0 <-> 4 | `["o", "e", "l", "l", "h"]` | Slices `[0]` and `[4]` settled |
+| **1** | `1` | `3` | `'e'` | `'l'` | Swap 1 <-> 3 | `["o", "l", "l", "e", "h"]` | Slices `[0..1]` and `[3..4]` settled |
+| **2** | `2` | `2` | `'l'` | `'l'` | left not< right => Exit | `["o", "l", "l", "e", "h"]` | Center unchanged; fully reversed |
 
-Total swaps executed: $2 = \lfloor 5 / 2 \rfloor$.
+Total swaps executed: 2 = floor(5 / 2).
 
 ---
 
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Two-Pointer In-Place Pincer - Optimal):** $O(N)$ time, $O(1)$ space. Exactly $N / 2$ operations, zero memory allocations.
-- **Approach 2 (Recursive Reversal):** Reverse outer pair, recurse on inner slice. Consumes $O(N)$ call-stack memory, risking stack overflow for $N = 10^5$. Never use in production; iterative two-pointers is strictly superior.
+- **Approach 1 (Two-Pointer In-Place Pincer - Optimal):** O(N) time, O(1) space. Exactly N / 2 operations, zero memory allocations.
+- **Approach 2 (Recursive Reversal):** Reverse outer pair, recurse on inner slice. Consumes O(N) call-stack memory, risking stack overflow for N = 10^5. Never use in production; iterative two-pointers is strictly superior.
 
 #### 4.2 Step-by-Step Natural Progression Flow
-- **Step 1: Input Validation:** If array is null or has length $\le 1$, return immediately.
+- **Step 1: Input Validation:** If array is null or has length <= 1, return immediately.
 - **Step 2: Boundary Setup:** Set `left = 0`, `right = s.Length - 1`.
 - **Step 3: Convergence Loop:** While `left < right`, perform swap and shift pointers.
 - **Step 4: Exit:** Method completes with array modified in-place.
@@ -107,8 +107,8 @@ Total swaps executed: $2 = \lfloor 5 / 2 \rfloor$.
 
 | Dimension | Approach 1: In-Place Two Pointers (Optimal) | Approach 2: Recursive In-Place |
 | :--- | :--- | :--- |
-| **Time Complexity** | `O(N)` ($\lfloor N/2 \rfloor$ swaps) | `O(N)` ($\lfloor N/2 \rfloor$ swaps) |
-| **Auxiliary Space** | `O(1)` strictly scalar | `O(N)` call stack frames ($10^5$ frames $\implies$ StackOverflow) |
+| **Time Complexity** | `O(N)` (floor(N/2) swaps) | `O(N)` (floor(N/2) swaps) |
+| **Auxiliary Space** | `O(1)` strictly scalar | `O(N)` call stack frames (10^5 frames => StackOverflow) |
 | **GC Pressure** | Zero allocations | Zero heap allocations |
 | **Cache Locality** | Sequential inward streaming from both ends | Sequential inward streaming |
 | **Interview Defensibility**| 100% standard production pattern | Educational demonstration only |
@@ -184,9 +184,9 @@ public class Solution
 ### 2. Summary & Sample Input / Output
 - **Conceptual Essence:** Inspect characters column by column across all strings simultaneously (Vertical Scanning), terminating at the very first mismatch or string boundary.
 - **Sample 1:**
-  - **Input:** `strs = ["flower","flow","flight"]` $\implies$ `"fl"`
+  - **Input:** `strs = ["flower","flow","flight"]` => `"fl"`
 - **Sample 2:**
-  - **Input:** `strs = ["dog","racecar","car"]` $\implies$ `""`
+  - **Input:** `strs = ["dog","racecar","car"]` => `""`
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
@@ -195,20 +195,20 @@ Imagine a filing cabinet filled with punch cards, where each card contains a wor
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
 **Horizontal Scanning Bottleneck:**
-Horizontal scanning compares word 0 with word 1 to find common prefix $P_1$, then compares $P_1$ with word 2 to find $P_2$, and so on.
+Horizontal scanning compares word 0 with word 1 to find common prefix P_1, then compares P_1 with word 2 to find P_2, and so on.
 - Worst Case Flaw: Suppose `strs` contains 1,000 strings of length 1,000 that all match (`"aaaaa...aaaa"`), but the very last string is `"baaaaa..."`.
-- Horizontal scanning performs $999 \times 1,000 \approx 10^6$ character comparisons across the first 999 strings before reaching the final string and discovering that the global common prefix is `""`.
-- Vertical scanning inspects column 0 across all strings. When it reaches the last string at index 999 on column 0, it discovers the mismatch immediately and terminates after just 1,000 operations—a **$1,000\times$ reduction in redundant computation**.
+- Horizontal scanning performs 999 x 1,000 ~ 10^6 character comparisons across the first 999 strings before reaching the final string and discovering that the global common prefix is `""`.
+- Vertical scanning inspects column 0 across all strings. When it reaches the last string at index 999 on column 0, it discovers the mismatch immediately and terminates after just 1,000 operations—a **1,000* reduction in redundant computation**.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **Vertical Scanning with Early-Exit Invariant:**
-Let $S_0 = strs[0]$. For any column index $col \in [0, |S_0| - 1]$:
-1. Target character: $c = S_0[col]$.
-2. For all $row \in [1, strs.Length - 1]$:
-   - If $col == strs[row].Length$: Word $row$ has ended; no longer prefix can exist.
-   - If $strs[row][col] \ne c$: A character mismatch has occurred.
-3. If either condition triggers, $S_0[0 \dots col - 1]$ is strictly the maximal common prefix.
-4. If loop finishes through all columns of $S_0$, $S_0$ itself is the common prefix.
+Let S_0 = strs[0]. For any column index col in [0, |S_0| - 1]:
+1. Target character: c = S_0[col].
+2. For all row in [1, strs.Length - 1]:
+   - If col == strs[row].Length: Word row has ended; no longer prefix can exist.
+   - If strs[row][col] != c: A character mismatch has occurred.
+3. If either condition triggers, S_0[0 ... col - 1] is strictly the maximal common prefix.
+4. If loop finishes through all columns of S_0, S_0 itself is the common prefix.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 ```text
@@ -222,59 +222,59 @@ Let $S_0 = strs[0]$. For any column index $col \in [0, |S_0| - 1]$:
                 └───────── col = 0: 'f' == 'f' == 'f' => Continue
 ```
 - `col`: Advances across columns of reference word `strs[0]`.
-- `row`: Scans rows $1 \dots N - 1$ at the fixed column index `col`.
+- `row`: Scans rows 1 ... N - 1 at the fixed column index `col`.
 
 #### 3.5 State Transition Triggers & Decision Gates
-1. Outer Loop: $col = 0 \dots strs[0].Length - 1$.
-   - $targetChar = strs[0][col]$.
-2. Inner Loop: $row = 1 \dots strs.Length - 1$.
+1. Outer Loop: col = 0 ... strs[0].Length - 1.
+   - targetChar = strs[0][col].
+2. Inner Loop: row = 1 ... strs.Length - 1.
    - **Boundary / Mismatch Gate:**
-     If $col == strs[row].Length$ OR $strs[row][col] \ne targetChar$:
-     Return $strs[0].Substring(0, col)$.
-3. **Full Match Gate:** If outer loop completes, return $strs[0]$.
+     If col == strs[row].Length OR strs[row][col] != targetChar:
+     Return strs[0].Substring(0, col).
+3. **Full Match Gate:** If outer loop completes, return strs[0].
 
 #### 3.6 Concrete Step-by-Step State Trace
 Input: `strs = ["flower", "flow", "flight"]`. Reference: `"flower"`.
 
-| Column $col$ | $targetChar$ | Word Checked | Word Char | Comparison | Result |
+| Column col | targetChar | Word Checked | Word Char | Comparison | Result |
 | :---: | :---: | :---: | :---: | :---: | :---: |
 | **0** | `'f'` | `strs[1]` (`"flow"`) | `'f'` | `'f' == 'f'` | Match |
 | **0** | `'f'` | `strs[2]` (`"flight"`) | `'f'` | `'f' == 'f'` | Match (Column 0 passed) |
 | **1** | `'l'` | `strs[1]` (`"flow"`) | `'l'` | `'l' == 'l'` | Match |
 | **1** | `'l'` | `strs[2]` (`"flight"`) | `'l'` | `'l' == 'l'` | Match (Column 1 passed) |
 | **2** | `'o'` | `strs[1]` (`"flow"`) | `'o'` | `'o' == 'o'` | Match |
-| **2** | `'o'` | `strs[2]` (`"flight"`) | `'i'` | `'o' \ne 'i'` | **MISMATCH!** |
+| **2** | `'o'` | `strs[2]` (`"flight"`) | `'i'` | `'o' != 'i'` | **MISMATCH!** |
 
-Terminate immediately at $col = 2$.
-Return `strs[0].Substring(0, 2)` $\implies$ `"fl"`.
+Terminate immediately at col = 2.
+Return `strs[0].Substring(0, 2)` => `"fl"`.
 
 ---
 
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Vertical Scanning - Optimal):** Optimal when common prefix is short or when mismatches occur early. Best-case time is $O(N \cdot \text{minLen})$, where $\text{minLen}$ is the length of the shortest string.
+- **Approach 1 (Vertical Scanning - Optimal):** Optimal when common prefix is short or when mismatches occur early. Best-case time is O(N * minLen), where minLen is the length of the shortest string.
 - **Approach 2 (Horizontal Scanning):** Progressively reduces candidate prefix using `prefix = prefix.Substring(...)`. Good for conceptual introduction, but performs redundant comparisons when prefix collapses late.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 - **Step 1: Input Validation:** Return `""` if array is empty; return `strs[0]` if length is 1.
-- **Step 2: Outer Column Loop:** Iterate `col` from $0$ to `strs[0].Length - 1`.
+- **Step 2: Outer Column Loop:** Iterate `col` from 0 to `strs[0].Length - 1`.
 - **Step 3: Inner Row Check:** For each string in `strs[1..N-1]`, verify length and character equality.
 - **Step 4: Early Return:** On any mismatch, slice `strs[0]` up to `col`.
 - **Step 5: Full Return:** If all columns pass, return `strs[0]`.
 
 #### 4.3 Alternative Approaches Analysis
-- **Divide and Conquer:** $\text{LCP}(S_1 \dots S_N) = \text{LCP}(\text{LCP}(S_1 \dots S_{N/2}), \text{LCP}(S_{N/2+1} \dots S_N))$. Time $O(S)$, Space $O(M \log N)$. Unnecessary recursion overhead.
-- **Binary Search on Prefix Length:** Binary search on $L \in [0, \text{minLen}]$. Checks if all strings share a prefix of length $L$ in $O(N \cdot L)$. Total time $O(S \log M)$. Sub-optimal compared to vertical scanning.
+- **Divide and Conquer:** LCP(S_1 ... S_N) = LCP(LCP(S_1 ... S_N/2), LCP(S_N/2+1 ... S_N)). Time O(S), Space O(M log N). Unnecessary recursion overhead.
+- **Binary Search on Prefix Length:** Binary search on L in [0, minLen]. Checks if all strings share a prefix of length L in O(N * L). Total time O(S log M). Sub-optimal compared to vertical scanning.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Dimension | Approach 1: Vertical Scanning (Optimal) | Approach 2: Horizontal Scanning |
 | :--- | :--- | :--- |
-| **Time (Worst Case)** | `O(S)` where $S$ is sum of all characters | `O(S)` |
+| **Time (Worst Case)** | `O(S)` where S is sum of all characters | `O(S)` |
 | **Time (Best Case)** | `O(N)` (terminates on first column mismatch) | `O(S)` (if mismatch is at last word) |
 | **Auxiliary Space** | `O(1)` auxiliary (excluding return string) | `O(1)` auxiliary |
-| **String Slicing Ops** | Exactly 1 substring operation at exit | Up to $N$ substring allocations |
+| **String Slicing Ops** | Exactly 1 substring operation at exit | Up to N substring allocations |
 | **Cache Locality** | Strided across strings (pointer dereferencing) | Sequential per string pair |
 
 ---
@@ -376,7 +376,7 @@ public class SolutionHorizontal
 - **Formal Statement:** Given an array of characters `chars`, compress it using the following algorithm: Begin with an empty string `s`. For each group of consecutive repeating characters in `chars`:
   - If the group's length is `1`, append the character to `s`.
   - Otherwise, append the character followed by the group's length.
-  The compressed string `s` should not be returned separately, but instead, be stored in the input character array `chars`. Note that group lengths that are 10 or longer will be split into multiple characters in `chars`. You must write an algorithm that uses only $O(1)$ extra space.
+  The compressed string `s` should not be returned separately, but instead, be stored in the input character array `chars`. Note that group lengths that are 10 or longer will be split into multiple characters in `chars`. You must write an algorithm that uses only O(1) extra space.
 - **Key Constraints:**
   - `1 <= chars.Length <= 2000`
   - `chars[i]` is a lowercase English letter, uppercase English letter, digit, or symbol.
@@ -400,27 +400,28 @@ public class SolutionHorizontal
 Imagine a magnetic tape head mechanism with two independently moving heads on the same tape: a **Reader Head** and a **Writer Head**.
 - The Reader Head races forward to measure the length of each contiguous block of identical symbols.
 - The Writer Head follows behind, stamping down the symbol and its count digits onto the tape.
-- Because a block of $L$ identical characters is always compressed into $\le L$ slots, the tape behind the Reader Head always has enough slack for the Writer Head. The Writer Head never overtakes the Reader Head, guaranteeing zero data corruption.
+- Because a block of L identical characters is always compressed into <= L slots, the tape behind the Reader Head always has enough slack for the Writer Head. The Writer Head never overtakes the Reader Head, guaranteeing zero data corruption.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
 A naive approach allocates a `StringBuilder`, appends characters and counts, and copies them back into `chars`:
-- Auxiliary Space: $O(N)$ heap memory.
-- Violates the explicit $O(1)$ space constraint of the problem specification.
+- Auxiliary Space: O(N) heap memory.
+- Violates the explicit O(1) space constraint of the problem specification.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
-**The Non-Overwriting Reader-Writer Invariant ($write \le read$):**
-Let a run of identical characters have length $L \ge 1$.
+**The Non-Overwriting Reader-Writer Invariant (write <= read):**
+Let a run of identical characters have length L >= 1.
 The compressed representation requires:
-$$\text{Slots Needed}(L) = \begin{cases} 1 & \text{if } L = 1 \\ 1 + \lfloor \log_{10} L \rfloor + 1 & \text{if } L \ge 2 \end{cases}$$
+Slots Needed(L) = 1 if L = 1
+1 + floor(log_10 L) + 1 if L >= 2
 Analyzing each case:
-- For $L = 1$: Slots needed = $1 \le 1$.
-- For $L \in [2, 9]$: Slots needed = $1 + 1 = 2 \le L$.
-- For $L \in [10, 99]$: Slots needed = $1 + 2 = 3 \le L$ (since $3 \le 10$).
-- For $L \ge 100$: Slots needed = $1 + 3 = 4 \le 100$.
+- For L = 1: Slots needed = 1 <= 1.
+- For L in [2, 9]: Slots needed = 1 + 1 = 2 <= L.
+- For L in [10, 99]: Slots needed = 1 + 2 = 3 <= L (since 3 <= 10).
+- For L >= 100: Slots needed = 1 + 3 = 4 <= 100.
 In all possible cases:
-$$\text{Slots Needed}(L) \le L$$
-Since every group of length $L$ consumes at most $L$ write positions, the invariant:
-$$write \le read$$
+Slots Needed(L) <= L
+Since every group of length L consumes at most L write positions, the invariant:
+write <= read
 holds strictly at every moment during execution. The writer head will **never overwrite an unread input character**.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
@@ -443,13 +444,13 @@ holds strictly at every moment during execution. The writer head will **never ov
 5. Return `write` (the new logical length of the array).
 
 #### 3.6 Concrete Step-by-Step State Trace
-Input: `chars = ["a","a","b","b","c","c","c"]`. $N = 7$.
+Input: `chars = ["a","a","b","b","c","c","c"]`. N = 7.
 
-| Run | `currentChar` | `read` Start | `read` End | `count` | Written to `chars[write]` | `write` Position | Slack $(read - write)$ |
+| Run | `currentChar` | `read` Start | `read` End | `count` | Written to `chars[write]` | `write` Position | Slack (read - write) |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **1** | `'a'` | 0 | 2 | 2 | `'a'`, `'2'` | $0 \to 1 \to 2$ | $2 - 2 = 0$ |
-| **2** | `'b'` | 2 | 4 | 2 | `'b'`, `'2'` | $2 \to 3 \to 4$ | $4 - 4 = 0$ |
-| **3** | `'c'` | 4 | 7 | 3 | `'c'`, `'3'` | $4 \to 5 \to 6$ | $7 - 6 = 1$ |
+| **1** | `'a'` | 0 | 2 | 2 | `'a'`, `'2'` | 0 -> 1 -> 2 | 2 - 2 = 0 |
+| **2** | `'b'` | 2 | 4 | 2 | `'b'`, `'2'` | 2 -> 3 -> 4 | 4 - 4 = 0 |
+| **3** | `'c'` | 4 | 7 | 3 | `'c'`, `'3'` | 4 -> 5 -> 6 | 7 - 6 = 1 |
 
 Final `write` = 6. Array prefix `chars[0..5]` = `["a","2","b","2","c","3"]`.
 
@@ -458,7 +459,7 @@ Final `write` = 6. Array prefix `chars[0..5]` = `["a","2","b","2","c","3"]`.
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Two-Pointer In-Place Compaction - Optimal):** $O(N)$ single pass, $O(1)$ space. Operates directly on the input buffer; zero heap allocations.
+- **Approach 1 (Two-Pointer In-Place Compaction - Optimal):** O(N) single pass, O(1) space. Operates directly on the input buffer; zero heap allocations.
 - **Digit Formatting Note:** Converting `count` to digits can be done via `count.ToString()` (small allocation) or branchless integer arithmetic (zero allocation). In production, integer arithmetic with a small stack buffer (`Span<char>`) provides absolute zero GC pressure.
 
 #### 4.2 Step-by-Step Natural Progression Flow
@@ -480,7 +481,7 @@ Final `write` = 6. Array prefix `chars[0..5]` = `["a","2","b","2","c","3"]`.
 | Dimension | Approach 1: In-Place Compaction (Zero-Alloc) | Approach 2: StringBuilder Intermediate |
 | :--- | :--- | :--- |
 | **Time Complexity** | `O(N)` strictly linear | `O(N)` |
-| **Auxiliary Space** | `O(1)` (stack buffer $\le 10$ chars) | `O(N)` heap memory |
+| **Auxiliary Space** | `O(1)` (stack buffer <= 10 chars) | `O(N)` heap memory |
 | **GC Pressure** | Zero garbage generated | High heap allocations |
 | **Cache Locality** | Optimal single-pass cache-line reuse | Multiple buffer copies |
 | **Streaming Suitability** | Yes (can stream blocks in real-time) | No (must buffer entire output) |
@@ -582,15 +583,15 @@ public class Solution
 - **Senior Edge Cases to Defend:**
   - `s.Length == 1`: Entire string is a palindrome; return `s`.
   - All identical characters (e.g. `"aaaa"`): Expands to full string length.
-  - Even length palindromes (e.g. `"cbbd"` $\implies$ `"bb"`): Must correctly test centers between adjacent characters.
+  - Even length palindromes (e.g. `"cbbd"` => `"bb"`): Must correctly test centers between adjacent characters.
   - Multiple palindromes of same max length: Any one valid maximal palindrome is acceptable per LeetCode specification.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Expand symmetrically outward from all $2N - 1$ potential symmetry centers (both single-character and between-character pairs) in $O(1)$ auxiliary space.
+- **Conceptual Essence:** Expand symmetrically outward from all 2N - 1 potential symmetry centers (both single-character and between-character pairs) in O(1) auxiliary space.
 - **Sample 1:**
-  - **Input:** `s = "babad"` $\implies$ `"bab"` (or `"aba"`)
+  - **Input:** `s = "babad"` => `"bab"` (or `"aba"`)
 - **Sample 2:**
-  - **Input:** `s = "cbbd"` $\implies$ `"bb"`
+  - **Input:** `s = "cbbd"` => `"bb"`
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
@@ -598,27 +599,27 @@ public class Solution
 Imagine dropping a pebble into a calm pond. Concentric ripples radiate outward from the impact point. A palindromic substring possesses bilateral symmetry radiating from a central axis:
 - If the palindrome length is odd (e.g. `"aba"`), the axis is a single character (`'b'`).
 - If the palindrome length is even (e.g. `"abba"`), the axis is the empty boundary between two adjacent identical characters (`'b' | 'b'`).
-Across a string of length $N$, there are exactly $N$ single-character centers and $N - 1$ between-character centers, giving **$2N - 1$ total candidate centers**. By expanding outward from each center like concentric ripples, we identify all maximal palindromes.
+Across a string of length N, there are exactly N single-character centers and N - 1 between-character centers, giving **2N - 1 total candidate centers**. By expanding outward from each center like concentric ripples, we identify all maximal palindromes.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A brute-force scan tests every substring $s[i..j]$ ($0 \le i \le j < N$):
-- Substring count: $\frac{N(N+1)}{2} = O(N^2)$.
-- Palindrome validation per substring: $O(N)$.
-- Total Time: $O(N^3)$.
-- For $N = 1000$, $N^3 = 10^9$ operations $\implies$ guaranteed TLE.
+A brute-force scan tests every substring s[i..j] (0 <= i <= j < N):
+- Substring count: (N(N+1)) / (2) = O(N^2).
+- Palindrome validation per substring: O(N).
+- Total Time: O(N^3).
+- For N = 1000, N^3 = 10^9 operations => guaranteed TLE.
 - Redundancy: Testing `"abacaba"` from scratch repeats the work already done when testing `"bacab"` and `"aca"`.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **Expand Around Center Invariant:**
-A substring $s[L \dots R]$ is a palindrome if and only if:
-1. The inner substring $s[L + 1 \dots R - 1]$ is a palindrome, AND
-2. $s[L] == s[R]$.
+A substring s[L ... R] is a palindrome if and only if:
+1. The inner substring s[L + 1 ... R - 1] is a palindrome, AND
+2. s[L] == s[R].
 By starting at the center and expanding outward:
-$$\text{While } left \ge 0 \land right < N \land s[left] == s[right] \implies left--, \quad right++$$
-The very first time $s[left] \ne s[right]$, **expansion terminates immediately**.
-- Why is early termination safe? If $s[left] \ne s[right]$, NO larger substring centered at this axis can ever be a palindrome. We safely skip all further expansions for this center.
-- **Palindrome Length Formula:** When the while loop breaks, the valid palindrome boundaries were $[left + 1 \dots right - 1]$. Its length is:
-  $$\text{Length} = (right - 1) - (left + 1) + 1 = right - left - 1$$
+While left >= 0 AND right < N AND s[left] == s[right] => left--, right++
+The very first time s[left] != s[right], **expansion terminates immediately**.
+- Why is early termination safe? If s[left] != s[right], NO larger substring centered at this axis can ever be a palindrome. We safely skip all further expansions for this center.
+- **Palindrome Length Formula:** When the while loop breaks, the valid palindrome boundaries were [left + 1 ... right - 1]. Its length is:
+  Length = (right - 1) - (left + 1) + 1 = right - left - 1
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 ```text
@@ -631,25 +632,25 @@ s: ... [ left - 1 ]  [ left ... center ... right ]  [ right + 1 ] ...
 - `start`, `maxLen`: Global anchors recording the best palindrome slice found.
 
 #### 3.5 State Transition Triggers & Decision Gates
-1. Outer Loop: $i = 0 \dots N - 1$.
+1. Outer Loop: i = 0 ... N - 1.
 2. **Odd Expansion Gate:** Call `Expand(i, i)`.
 3. **Even Expansion Gate:** Call `Expand(i, i + 1)`.
 4. In `Expand`:
-   - While $left \ge 0 \land right < N \land s[left] == s[right]$: $left--$, $right++$.
-   - Valid length: $len = right - left - 1$.
-   - If $len > maxLen$: `maxLen = len`, `bestStart = left + 1`.
+   - While left >= 0 AND right < N AND s[left] == s[right]: left--, right++.
+   - Valid length: len = right - left - 1.
+   - If len > maxLen: `maxLen = len`, `bestStart = left + 1`.
 
 #### 3.6 Concrete Step-by-Step State Trace
 Input: `s = "babad"`.
 
-| Center $i$ | Type | Initial $(L, R)$ | Expansion Steps $(s[L] == s[R])$ | Loop Termination $(L, R)$ | Length ($R - L - 1$) | Substring | $maxLen$ |
+| Center i | Type | Initial (L, R) | Expansion Steps (s[L] == s[R]) | Loop Termination (L, R) | Length (R - L - 1) | Substring | maxLen |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **0** | Odd | (0, 0) | `'b' == 'b'` | (-1, 1) | $1 - (-1) - 1 = 1$ | `"b"` | 1 |
-| **0** | Even | (0, 1) | `'b' \ne 'a'` | (0, 1) | $1 - 0 - 1 = 0$ | — | 1 |
-| **1** | Odd | (1, 1) | `'a'=='a'`, then `'b'=='b'` | (-1, 3) | $3 - (-1) - 1 = 3$ | **`"bab"`** | **3** |
-| **1** | Even | (1, 2) | `'a' \ne 'b'` | (1, 2) | 0 | — | 3 |
-| **2** | Odd | (2, 2) | `'b'=='b'`, then `'a'=='a'` | (0, 4) | $4 - 0 - 1 = 3$ | `"aba"` | 3 |
-| **2** | Even | (2, 3) | `'b' \ne 'a'` | (2, 3) | 0 | — | 3 |
+| **0** | Odd | (0, 0) | `'b' == 'b'` | (-1, 1) | 1 - (-1) - 1 = 1 | `"b"` | 1 |
+| **0** | Even | (0, 1) | `'b' != 'a'` | (0, 1) | 1 - 0 - 1 = 0 | — | 1 |
+| **1** | Odd | (1, 1) | `'a'=='a'`, then `'b'=='b'` | (-1, 3) | 3 - (-1) - 1 = 3 | **`"bab"`** | **3** |
+| **1** | Even | (1, 2) | `'a' != 'b'` | (1, 2) | 0 | — | 3 |
+| **2** | Odd | (2, 2) | `'b'=='b'`, then `'a'=='a'` | (0, 4) | 4 - 0 - 1 = 3 | `"aba"` | 3 |
+| **2** | Even | (2, 3) | `'b' != 'a'` | (2, 3) | 0 | — | 3 |
 | **3** | Odd | (3, 3) | `'a' == 'a'` | (2, 4) | 1 | `"a"` | 3 |
 | **4** | Odd | (4, 4) | `'d' == 'd'` | (3, 5) | 1 | `"d"` | 3 |
 
@@ -660,21 +661,21 @@ Final Result: `"bab"` (or `"aba"`), length 3.
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Expand Around Center - Optimal Production Standard):** $O(N^2)$ time, $O(1)$ auxiliary space. Zero heap memory allocation during search; highly cache-friendly.
-- **Approach 2 (2D Dynamic Programming):** Computes $dp[i, j] = (s[i] == s[j] \land dp[i+1, j-1])$. Consumes $O(N^2)$ auxiliary memory (a $1000 \times 1000$ bool matrix = 1 MB heap allocation). Suffers from cache misses.
-- **Approach 3 (Manacher's Algorithm - Theoretical Advanced):** Achieves $O(N)$ linear time by reusing symmetry across previously computed palindrome boundaries. For $N \le 1000$, Expand Around Center executes in $\approx 2 \text{ ms}$ and is far easier to write and defend in an interview without bug risk.
+- **Approach 1 (Expand Around Center - Optimal Production Standard):** O(N^2) time, O(1) auxiliary space. Zero heap memory allocation during search; highly cache-friendly.
+- **Approach 2 (2D Dynamic Programming):** Computes dp[i, j] = (s[i] == s[j] AND dp[i+1, j-1]). Consumes O(N^2) auxiliary memory (a 1000 x 1000 bool matrix = 1 MB heap allocation). Suffers from cache misses.
+- **Approach 3 (Manacher's Algorithm - Theoretical Advanced):** Achieves O(N) linear time by reusing symmetry across previously computed palindrome boundaries. For N <= 1000, Expand Around Center executes in ~ 2 ms and is far easier to write and defend in an interview without bug risk.
 
 #### 4.2 Step-by-Step Natural Progression Flow
-- **Step 1: Input Validation:** Return `s` if length $\le 1$.
+- **Step 1: Input Validation:** Return `s` if length <= 1.
 - **Step 2: Initialize Anchors:** Set `start = 0`, `maxLen = 0`.
-- **Step 3: Center Traversal:** Loop $i = 0 \dots N - 1$:
+- **Step 3: Center Traversal:** Loop i = 0 ... N - 1:
   - Expand odd center: `Expand(s, i, i, ref start, ref maxLen)`.
   - Expand even center: `Expand(s, i, i + 1, ref start, ref maxLen)`.
 - **Step 4: Substring Extraction:** Return `s.Substring(start, maxLen)`.
 
 #### 4.3 Alternative Approaches Analysis
 - **Dynamic Programming Table Formulation:**
-  Base cases: substrings of length 1 are true; substrings of length 2 are true if $s[i] == s[i+1]$. For lengths $3 \dots N$: $dp[i, j] = dp[i+1, j-1] \land (s[i] == s[j])$. Space complexity $O(N^2)$ is significantly worse than $O(1)$.
+  Base cases: substrings of length 1 are true; substrings of length 2 are true if s[i] == s[i+1]. For lengths 3 ... N: dp[i, j] = dp[i+1, j-1] AND (s[i] == s[j]). Space complexity O(N^2) is significantly worse than O(1).
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
@@ -684,7 +685,7 @@ Final Result: `"bab"` (or `"aba"`), length 3.
 | **Auxiliary Space** | `O(1)` strictly scalar | `O(N^2)` boolean matrix | `O(N)` radius array |
 | **Implementation Complexity**| Low (20 lines, intuitive) | Medium (table construction) | High (virtual delimiter insertion) |
 | **Cache Overhead** | Near-zero (local L1 access) | High (strided matrix indexing) | Low |
-| **Interview Defensibility** | Highest | Good theoretical value | Overkill for $N \le 1000$ |
+| **Interview Defensibility** | Highest | Good theoretical value | Overkill for N <= 1000 |
 
 ---
 
@@ -818,45 +819,45 @@ public class Solution2DDP
   - `s` consists of lowercase English letters.
 - **Senior Edge Cases to Defend:**
   - Single character string (e.g. `s = "a"`): Returns `1`.
-  - All identical characters (e.g. `s = "aaa"`): Total substrings is $\frac{N(N+1)}{2} = \frac{3 \times 4}{2} = 6$. All are palindromes; must count every one.
+  - All identical characters (e.g. `s = "aaa"`): Total substrings is (N(N+1)) / (2) = (3 x 4) / (2) = 6. All are palindromes; must count every one.
   - No multi-character palindromes (e.g. `s = "abc"`): Every single character is an odd palindrome of length 1; returns `3`.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Count total palindromic substrings by accumulating the number of valid expansion steps across all $2N - 1$ symmetry centers in $O(1)$ auxiliary space.
+- **Conceptual Essence:** Count total palindromic substrings by accumulating the number of valid expansion steps across all 2N - 1 symmetry centers in O(1) auxiliary space.
 - **Sample 1:**
-  - **Input:** `s = "abc"` $\implies$ `3` (`"a"`, `"b"`, `"c"`)
+  - **Input:** `s = "abc"` => `3` (`"a"`, `"b"`, `"c"`)
 - **Sample 2:**
-  - **Input:** `s = "aaa"` $\implies$ `6` (`"a"`, `"a"`, `"a"`, `"aa"`, `"aa"`, `"aaa"`)
+  - **Input:** `s = "aaa"` => `6` (`"a"`, `"a"`, `"a"`, `"aa"`, `"aa"`, `"aaa"`)
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Picture concentric rings radiating from a symmetry pole. Each time you stand at a center and step one character outward to the left and one character to the right, and discover that $s[left] == s[right]$, you have discovered **exactly one brand-new, unique palindromic substring**. 
+Picture concentric rings radiating from a symmetry pole. Each time you stand at a center and step one character outward to the left and one character to the right, and discover that s[left] == s[right], you have discovered **exactly one brand-new, unique palindromic substring**. 
 For example, if you stand at center `'b'` in `"abcba"`:
 - Step 0: `"b"` is a valid palindrome (+1).
-- Step 1: $s[left] == s[right]$ ('c' == 'c') $\implies$ `"cbc"` is a valid palindrome (+1).
-- Step 2: $s[left] == s[right]$ ('a' == 'a') $\implies$ `"abcba"` is a valid palindrome (+1).
-Because every step outwards from any of the $2N - 1$ centers produces a uniquely bounded substring $[left, right]$, no duplicate counting can ever occur.
+- Step 1: s[left] == s[right] ('c' == 'c') => `"cbc"` is a valid palindrome (+1).
+- Step 2: s[left] == s[right] ('a' == 'a') => `"abcba"` is a valid palindrome (+1).
+Because every step outwards from any of the 2N - 1 centers produces a uniquely bounded substring [left, right], no duplicate counting can ever occur.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A brute-force scan enumerates all $\frac{N(N+1)}{2}$ substrings and checks each for palindrome symmetry:
-- Substring generation: $O(N^2)$.
-- Verification: $O(N)$.
-- Total Time: $O(N^3)$.
-- For $N = 1000$, $10^9$ operations cause a TLE.
-- Redundancy: Checking if $s[i..j]$ is a palindrome ignores the fact that if $s[i+1..j-1]$ is not a palindrome, $s[i..j]$ cannot possibly be one either.
+A brute-force scan enumerates all (N(N+1)) / (2) substrings and checks each for palindrome symmetry:
+- Substring generation: O(N^2).
+- Verification: O(N).
+- Total Time: O(N^3).
+- For N = 1000, 10^9 operations cause a TLE.
+- Redundancy: Checking if s[i..j] is a palindrome ignores the fact that if s[i+1..j-1] is not a palindrome, s[i..j] cannot possibly be one either.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **Exhaustive Center Partitioning Invariant:**
-Every palindromic substring in $s$ has a unique center:
-- An odd-length palindrome of length $2k + 1$ has center at integer index $c$.
-- An even-length palindrome of length $2k$ has center between indices $c$ and $c + 1$.
-Since there are exactly $N$ odd centers and $N - 1$ even centers:
-$$\text{Total Centers} = 2N - 1$$
+Every palindromic substring in s has a unique center:
+- An odd-length palindrome of length 2k + 1 has center at integer index c.
+- An even-length palindrome of length 2k has center between indices c and c + 1.
+Since there are exactly N odd centers and N - 1 even centers:
+Total Centers = 2N - 1
 Expanding outward from each center:
-- If $s[left] == s[right]$: Add 1 to total palindrome count, expand further.
-- If $s[left] \ne s[right]$: Terminate expansion for this center.
-Since each valid expansion corresponds to a unique $(left, right)$ coordinate pair, summing the successful expansion steps across all $2N - 1$ centers yields the exact total count without sets or hash tables.
+- If s[left] == s[right]: Add 1 to total palindrome count, expand further.
+- If s[left] != s[right]: Terminate expansion for this center.
+Since each valid expansion corresponds to a unique (left, right) coordinate pair, summing the successful expansion steps across all 2N - 1 centers yields the exact total count without sets or hash tables.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 ```text
@@ -865,31 +866,31 @@ Radius r = 0: s[center] == s[center]                     => count++
 Radius r = 1: s[center - 1] == s[center + 1]             => count++
 Radius r = 2: s[center - 2] != s[center + 2]             => MISMATCH! Stop.
 ```
-- `i`: Sweeps all center candidates $0 \dots N - 1$.
+- `i`: Sweeps all center candidates 0 ... N - 1.
 - `CountAroundCenter(left, right)`: Counts and returns valid expansion layers for that specific axis.
 
 #### 3.5 State Transition Triggers & Decision Gates
-1. Outer Loop: $i = 0 \dots N - 1$.
-2. For each $i$:
+1. Outer Loop: i = 0 ... N - 1.
+2. For each i:
    - `totalCount += CountAroundCenter(s, i, i)` (Odd palindromes)
    - `totalCount += CountAroundCenter(s, i, i + 1)` (Even palindromes)
 3. In `CountAroundCenter`:
-   - While $left \ge 0 \land right < N \land s[left] == s[right]$:
+   - While left >= 0 AND right < N AND s[left] == s[right]:
      - `count++`.
      - `left--`, `right++`.
    - Return `count`.
 
 #### 3.6 Concrete Step-by-Step State Trace
-Input: `s = "aaa"`. $N = 3$.
+Input: `s = "aaa"`. N = 3.
 
-| Center $i$ | Type | Initial $(L, R)$ | Expansion Steps | Palindromes Found | Cumulative Total |
+| Center i | Type | Initial (L, R) | Expansion Steps | Palindromes Found | Cumulative Total |
 | :---: | :---: | :---: | :--- | :--- | :---: |
-| **0** | Odd $(0, 0)$ | $(0, 0)$ | $s[0]=='a' \implies$ (0,0) valid | `"a"` | 1 |
-| **0** | Even $(0, 1)$ | $(0, 1)$ | $s[0]==s[1]=='a' \implies$ (0,1) valid | `"aa"` (indices 0..1) | 2 |
-| **1** | Odd $(1, 1)$ | $(1, 1)$ | $s[1]=='a'$ (+1), $s[0]==s[2]=='a'$ (+1) | `"a"`, `"aaa"` | 4 |
-| **1** | Even $(1, 2)$ | $(1, 2)$ | $s[1]==s[2]=='a' \implies$ (1,2) valid | `"aa"` (indices 1..2) | 5 |
-| **2** | Odd $(2, 2)$ | $(2, 2)$ | $s[2]=='a' \implies$ (2,2) valid | `"a"` | **6** |
-| **2** | Even $(2, 3)$ | $(2, 3)$ | $right = 3 \ge N \implies$ Invalid | — | **6** |
+| **0** | Odd (0, 0) | (0, 0) | s[0]=='a' => (0,0) valid | `"a"` | 1 |
+| **0** | Even (0, 1) | (0, 1) | s[0]==s[1]=='a' => (0,1) valid | `"aa"` (indices 0..1) | 2 |
+| **1** | Odd (1, 1) | (1, 1) | s[1]=='a' (+1), s[0]==s[2]=='a' (+1) | `"a"`, `"aaa"` | 4 |
+| **1** | Even (1, 2) | (1, 2) | s[1]==s[2]=='a' => (1,2) valid | `"aa"` (indices 1..2) | 5 |
+| **2** | Odd (2, 2) | (2, 2) | s[2]=='a' => (2,2) valid | `"a"` | **6** |
+| **2** | Even (2, 3) | (2, 3) | right = 3 >= N => Invalid | — | **6** |
 
 Total Palindromes: `6`.
 
@@ -898,19 +899,19 @@ Total Palindromes: `6`.
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Expand Around Center - Optimal):** $O(N^2)$ time, $O(1)$ space. Strict scalar tracking; zero heap memory allocations.
-- **Approach 2 (2D Dynamic Programming):** Boolean table $dp[i, j]$ where `count` increments each time $dp[i, j]$ is evaluated to `true`. Space complexity is $O(N^2)$. Approach 1 is strongly preferred for $O(1)$ space.
+- **Approach 1 (Expand Around Center - Optimal):** O(N^2) time, O(1) space. Strict scalar tracking; zero heap memory allocations.
+- **Approach 2 (2D Dynamic Programming):** Boolean table dp[i, j] where `count` increments each time dp[i, j] is evaluated to `true`. Space complexity is O(N^2). Approach 1 is strongly preferred for O(1) space.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 - **Step 1: Input Validation:** Return 0 if string is empty.
 - **Step 2: Initialize Accumulator:** `totalCount = 0`.
-- **Step 3: Dual Expansion Loop:** For $i = 0 \dots N - 1$:
+- **Step 3: Dual Expansion Loop:** For i = 0 ... N - 1:
   - Accumulate odd expansions: `CountAroundCenter(s, i, i)`.
   - Accumulate even expansions: `CountAroundCenter(s, i, i + 1)`.
 - **Step 4: Return:** Return `totalCount`.
 
 #### 4.3 Alternative Approaches Analysis
-- **Manacher's Algorithm Extension:** Palindromic radii array from Manacher's algorithm can count palindromes in $O(N)$ time: for each position, the count of palindromes centered there is $\lceil \text{radius} / 2 \rceil$. While asymptotically optimal ($O(N)$), the Expand Around Center approach ($O(N^2)$) runs in under 3 ms on $N \le 1000$ and is significantly less error-prone.
+- **Manacher's Algorithm Extension:** Palindromic radii array from Manacher's algorithm can count palindromes in O(N) time: for each position, the count of palindromes centered there is ceil(radius / 2). While asymptotically optimal (O(N)), the Expand Around Center approach (O(N^2)) runs in under 3 ms on N <= 1000 and is significantly less error-prone.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
@@ -918,7 +919,7 @@ Total Palindromes: `6`.
 | :--- | :--- | :--- |
 | **Time Complexity** | `O(N^2)` worst-case | `O(N^2)` |
 | **Auxiliary Space** | `O(1)` strictly scalar | `O(N^2)` boolean matrix |
-| **Allocation Footprint**| Zero heap memory | Allocates $10^6$ booleans for $N = 1000$ |
+| **Allocation Footprint**| Zero heap memory | Allocates 10^6 booleans for N = 1000 |
 | **Early Termination** | Stops expansion on first mismatch | Evaluates full length DP transitions |
 | **Cache Locality** | Sequential inward/outward expansion | Strided 2D matrix traversal |
 

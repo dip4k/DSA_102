@@ -34,7 +34,7 @@ public class ListNode
 ### 1. Problem Detail & Constraints
 - **Formal Statement:** Given the `head` of a singly linked list, reverse the list, and return the reversed list.
 - **Key Constraints:**
-  - The number of nodes in the list is in the range $[0, 5000]$.
+  - The number of nodes in the list is in the range [0, 5000].
   - `-5000 <= Node.val <= 5000`
   - Follow-up: Can you reverse it both iteratively and recursively?
 
@@ -56,9 +56,9 @@ public class ListNode
 Imagine a line of train cars coupled in one direction: each car has a latch hooking only onto the car ahead. You stand between two cars. To invert the train's travel direction, you must decouple the forward link and reconnect it backward. However, the moment you unhook the car in front of you, the rest of the train rolls away into the void unless you hold onto it with a third hand. Thus, reversing a singly linked list is fundamentally an exercise in **safely caching the forward universe** (`nextTemp`) before inverting the current local coupling (`curr.next = prev`).
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A naive approach pushes all node references onto an auxiliary LIFO stack or extracts all values into a dynamic array (`O(N)` space), and then reconstructs a brand-new list or overwrites values. This incurs $O(N)$ auxiliary heap memory allocations, triggers garbage collection pressure, and does not alter the underlying structural node links. A brute-force pointer chase that seeks the tail node on every iteration to build a reversed chain degrades to quadratic time:
-$$T(N) = \sum_{k=1}^N k = \frac{N(N+1)}{2} \implies O(N^2)$$
-Eliminating this redundancy requires an in-place, single-pass $O(N)$ rewiring where each pointer is redirected exactly once.
+A naive approach pushes all node references onto an auxiliary LIFO stack or extracts all values into a dynamic array (`O(N)` space), and then reconstructs a brand-new list or overwrites values. This incurs O(N) auxiliary heap memory allocations, triggers garbage collection pressure, and does not alter the underlying structural node links. A brute-force pointer chase that seeks the tail node on every iteration to build a reversed chain degrades to quadratic time:
+T(N) = Sum(k=1..N) k = (N(N+1)) / (2) => O(N^2)
+Eliminating this redundancy requires an in-place, single-pass O(N) rewiring where each pointer is redirected exactly once.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 We maintain an invariant partition splitting the linked list into two disjoint sublists at every step:
@@ -66,8 +66,8 @@ We maintain an invariant partition splitting the linked list into two disjoint s
 2. **Unreversed Suffix:** The remaining original list starting at `curr`.
 
 The loop invariant states:
-$$\forall \text{ node } u \in \text{Reversed Prefix}, \quad u.\text{next} = \text{predecessor}(u)$$
-$$\forall \text{ node } v \in \text{Unreversed Suffix}, \quad v.\text{next} = \text{successor}(v)$$
+for all node u in Reversed Prefix, u.next = predecessor(u)
+for all node v in Unreversed Suffix, v.next = successor(v)
 By caching `curr.next` into `nextTemp` before overwriting `curr.next = prev`, we safely transfer node `curr` from the head of the unreversed suffix to become the new head of the reversed prefix without losing the unreversed chain.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
@@ -119,8 +119,8 @@ Trace input: `head = [1 -> 2 -> 3 -> null]`
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Iterative Three-Pointer):** The industry standard for production systems. Operates in strict $O(1)$ auxiliary space, eliminates stack overflow vulnerabilities, and optimizes CPU instruction pipelining.
-- **Approach 2 (Recursive Post-Order):** Elegant mathematical formulation utilizing the call stack as an implicit storage mechanism. Crucial for understanding post-order tree traversals and backtracking, but incurs $O(N)$ call stack memory, making it vulnerable to stack overflow on deep lists ($N > 5000$).
+- **Approach 1 (Iterative Three-Pointer):** The industry standard for production systems. Operates in strict O(1) auxiliary space, eliminates stack overflow vulnerabilities, and optimizes CPU instruction pipelining.
+- **Approach 2 (Recursive Post-Order):** Elegant mathematical formulation utilizing the call stack as an implicit storage mechanism. Crucial for understanding post-order tree traversals and backtracking, but incurs O(N) call stack memory, making it vulnerable to stack overflow on deep lists (N > 5000).
 
 #### 4.2 Step-by-Step Natural Progression Flow
 - **Step 1: Setup & Boundaries:** Initialize `prev = null` and `curr = head`. Check for empty list or single-node list (where loop terminates immediately or executes once safely).
@@ -238,7 +238,7 @@ public class SolutionRecursive
 ### 1. Problem Detail & Constraints
 - **Formal Statement:** You are given the heads of two sorted linked lists `list1` and `list2`. Merge the two lists into one sorted list by splicing together the nodes of the first two lists. Return the head of the merged linked list.
 - **Key Constraints:**
-  - The number of nodes in both lists is in the range $[0, 50]$.
+  - The number of nodes in both lists is in the range [0, 50].
   - `-100 <= Node.val <= 100`
   - Both `list1` and `list2` are sorted in non-decreasing order.
 
@@ -260,13 +260,13 @@ public class SolutionRecursive
 Picture two sorted conveyor belts delivering items to a single packing station. At each instant, the operator looks at the items at the front of both belts, picks the smaller one, and attaches it to the end of the finished line. A **sentinel dummy node** acts as a permanent immovable anchor peg driven into the ground: rather than writing complex conditional branches to figure out which belt provides the very first item (the true head), we anchor our building chain to the dummy node and let the cursor append uniformly.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A naive approach might extract all values from both lists into a dynamic array, call `Array.Sort` ($O((M+N) \log(M+N))$ time), and allocate an entirely new linked list ($O(M+N)$ space). This completely discards the pre-existing sorted invariant of both lists and creates unnecessary heap allocations. Furthermore, without a sentinel node, an implementation must branch on every iteration to check `if (mergedHead == null)`, adding redundant condition checks.
+A naive approach might extract all values from both lists into a dynamic array, call `Array.Sort` (O((M+N) log(M+N)) time), and allocate an entirely new linked list (O(M+N) space). This completely discards the pre-existing sorted invariant of both lists and creates unnecessary heap allocations. Furthermore, without a sentinel node, an implementation must branch on every iteration to check `if (mergedHead == null)`, adding redundant condition checks.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 Both lists are pre-sorted:
-$$list1_0 \le list1_1 \le \dots \le list1_{M-1}, \quad list2_0 \le list2_1 \le \dots \le list2_{N-1}$$
-By comparing only the active heads `p1.val` and `p2.val`, we greedily select $\min(p1.val, p2.val)$, maintaining the sorted invariant of the merged list. Crucially, when one list is exhausted, the remaining elements of the other list are already sorted and strictly greater than or equal to all merged elements; we can attach the entire remainder in a single $O(1)$ pointer assignment:
-$$\text{tail.next} = (p1 \neq \text{null}) \ ? \ p1 : p2$$
+list1_0 <= list1_1 <= ... <= list1_M-1, list2_0 <= list2_1 <= ... <= list2_N-1
+By comparing only the active heads `p1.val` and `p2.val`, we greedily select min(p1.val, p2.val), maintaining the sorted invariant of the merged list. Crucially, when one list is exhausted, the remaining elements of the other list are already sorted and strictly greater than or equal to all merged elements; we can attach the entire remainder in a single O(1) pointer assignment:
+tail.next = (p1 != null) \ ? \ p1 : p2
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -310,15 +310,15 @@ Trace input: `list1 = [1, 2, 4]`, `list2 = [1, 3, 4]`
 | **Iter 2** | `2` | `3` | `p1 <= p2` | Node `2` (from L1) | `... -> 2(L1)` | L1: `[4]`, L2: `[3, 4]` |
 | **Iter 3** | `4` | `3` | `p2 < p1` | Node `3` (from L2) | `... -> 3(L2)` | L1: `[4]`, L2: `[4]` |
 | **Iter 4** | `4` | `4` | `p1 <= p2` | Node `4` (from L1) | `... -> 4(L1)` | L1: `null`, L2: `[4]` |
-| **Residual**| `null`| `4` | Loop exited | Attach `p2` (`4`) | `... -> 4(L2)` | Done in $O(1)$ |
+| **Residual**| `null`| `4` | Loop exited | Attach `p2` (`4`) | `... -> 4(L2)` | Done in O(1) |
 
 ---
 
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Iterative with Sentinel Dummy Node):** Optimal $O(1)$ space, zero heap allocation overhead, highly defensive against empty lists. Recommended for all production systems.
-- **Approach 2 (Recursive Divide & Conquer):** Concise code representation matching mathematical induction. Incurs $O(M + N)$ call stack memory, creating risk of stack overflow when lists contain thousands of elements.
+- **Approach 1 (Iterative with Sentinel Dummy Node):** Optimal O(1) space, zero heap allocation overhead, highly defensive against empty lists. Recommended for all production systems.
+- **Approach 2 (Recursive Divide & Conquer):** Concise code representation matching mathematical induction. Incurs O(M + N) call stack memory, creating risk of stack overflow when lists contain thousands of elements.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 - **Step 1: Setup & Boundaries:** Instantiate a sentinel `dummy` node. Initialize `tail = dummy`.
@@ -330,8 +330,9 @@ Trace input: `list1 = [1, 2, 4]`, `list2 = [1, 3, 4]`
 - **Recursive Merge Formulation:**
   - Base cases: If `list1 == null`, return `list2`. If `list2 == null`, return `list1`.
   - Relation:
-    $$\text{Merge}(L_1, L_2) = \begin{cases} L_1 \to \text{Merge}(L_1.\text{next}, L_2) & \text{if } L_1.\text{val} \le L_2.\text{val} \\ L_2 \to \text{Merge}(L_1, L_2.\text{next}) & \text{otherwise} \end{cases}$$
-  - Call stack depth equals $M + N$.
+    Merge(L_1, L_2) = L_1 -> Merge(L_1.next, L_2) if L_1.val <= L_2.val
+L_2 -> Merge(L_1, L_2.next) otherwise
+  - Call stack depth equals M + N.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
@@ -434,9 +435,9 @@ public class SolutionRecursive
 
 ### 1. Problem Detail & Constraints
 - **Formal Statement:** Given `head`, the head of a linked list, determine if the linked list has a cycle in it. Return `true` if there is a cycle, otherwise return `false`.
-- **Strict Constraint:** Solve it using $O(1)$ (i.e. constant) memory.
+- **Strict Constraint:** Solve it using O(1) (i.e. constant) memory.
 - **Key Constraints:**
-  - The number of the nodes in the list is in the range $[0, 10^4]$.
+  - The number of the nodes in the list is in the range [0, 10^4].
   - `-10^5 <= Node.val <= 10^5`
   - `pos` is `-1` or a valid index in the linked-list.
 
@@ -455,26 +456,26 @@ public class SolutionRecursive
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Envision two runners on a running track: a Tortoise moving at speed $1$ and a Hare moving at speed $2$. If the track is a straight open highway, the Hare will reach the end (`null`) and the run will terminate. However, if the track loops back into a closed circuit, both runners will eventually enter the loop. Because the Hare runs twice as fast as the Tortoise, the distance between them shrinks by exactly $1$ meter per second inside the loop. The Hare is mathematically guaranteed to lap and collide with the Tortoise without ever skipping past it.
+Envision two runners on a running track: a Tortoise moving at speed 1 and a Hare moving at speed 2. If the track is a straight open highway, the Hare will reach the end (`null`) and the run will terminate. However, if the track loops back into a closed circuit, both runners will eventually enter the loop. Because the Hare runs twice as fast as the Tortoise, the distance between them shrinks by exactly 1 meter per second inside the loop. The Hare is mathematically guaranteed to lap and collide with the Tortoise without ever skipping past it.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
 The naive approach uses a hash set (`HashSet<ListNode>`) to store the reference of every visited node. On each step, it checks whether the current node exists in the set:
-- **Time:** $O(N)$
-- **Space:** $O(N)$ auxiliary memory allocations
-This violates the strict $O(1)$ memory constraint, allocates heap memory for thousands of pointers, and triggers significant garbage collector overhead. Another flawed naive approach marks visited nodes by altering their values to a magic sentinel (e.g. `val = int.MinValue`), which corrupts input data and fails in multi-threaded read environments.
+- **Time:** O(N)
+- **Space:** O(N) auxiliary memory allocations
+This violates the strict O(1) memory constraint, allocates heap memory for thousands of pointers, and triggers significant garbage collector overhead. Another flawed naive approach marks visited nodes by altering their values to a magic sentinel (e.g. `val = int.MinValue`), which corrupts input data and fails in multi-threaded read environments.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
-Floyd's Cycle-Finding Algorithm (Tortoise and Hare) proves that a speed differential of $1$ guarantees collision inside a cycle:
-1. Let the non-cycle linear segment have length $m$.
-2. Let the cycle have length $C$.
-3. When `slow` reaches the start of the cycle (after $m$ steps), `fast` has taken $2m$ steps and is already at some position $k = (2m - m) \pmod C = m \pmod C$ inside the cycle.
-4. The distance from `fast` to `slow` along the direction of traversal is $d = (C - (m \pmod C)) \pmod C$.
+Floyd's Cycle-Finding Algorithm (Tortoise and Hare) proves that a speed differential of 1 guarantees collision inside a cycle:
+1. Let the non-cycle linear segment have length m.
+2. Let the cycle have length C.
+3. When `slow` reaches the start of the cycle (after m steps), `fast` has taken 2m steps and is already at some position k = (2m - m) mod C = m mod C inside the cycle.
+4. The distance from `fast` to `slow` along the direction of traversal is d = (C - (m mod C)) mod C.
 5. On each subsequent iteration:
-   - `slow` advances $1$ step.
-   - `fast` advances $2$ steps.
+   - `slow` advances 1 step.
+   - `fast` advances 2 steps.
    - The relative distance between `fast` and `slow` decreases by:
-     $$\Delta d = 2 - 1 = 1 \text{ node per iteration}$$
-6. Because $\Delta d = 1$ is an integer that divides any cycle length $C$, `fast` cannot leap over `slow`. Collision occurs within at most $C$ iterations after `slow` enters the cycle. Total iterations $\le m + C = N \implies O(N)$ time.
+     Delta d = 2 - 1 = 1 node per iteration
+6. Because Delta d = 1 is an integer that divides any cycle length C, `fast` cannot leap over `slow`. Collision occurs within at most C iterations after `slow` enters the cycle. Total iterations <= m + C = N => O(N) time.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -492,8 +493,8 @@ Inside cycle: relative distance decreases strictly by 1 per tick:
 d_{t+1} = (d_t - 1) mod C
 ```
 
-- `slow`: Advances $1$ node per iteration.
-- `fast`: Advances $2$ nodes per iteration. Lookahead guard: `fast != null && fast.next != null`.
+- `slow`: Advances 1 node per iteration.
+- `fast`: Advances 2 nodes per iteration. Lookahead guard: `fast != null && fast.next != null`.
 
 #### 3.5 State Transition Triggers & Decision Gates
 1. **Boundary Guard:** If `head == null || head.next == null`, return `false`.
@@ -503,31 +504,31 @@ d_{t+1} = (d_t - 1) mod C
    - `slow = slow.next`
    - `fast = fast.next.next`
 4. **Collision Gate:**
-   - `if (slow == fast)` $\implies$ cycle detected, return `true`.
+   - `if (slow == fast)` => cycle detected, return `true`.
 
 #### 3.6 Concrete Step-by-Step State Trace
-Trace input: `head = [3 -> 2 -> 0 -> -4 -> (back to 2)]` ($m=1, C=3$)
+Trace input: `head = [3 -> 2 -> 0 -> -4 -> (back to 2)]` (m=1, C=3)
 
 | Tick | `slow` Node (`val`) | `fast` Node (`val`) | Distance Apart in Cycle | Collision Check (`slow == fast`) |
 | :--- | :--- | :--- | :--- | :--- |
 | **0** | Node `3` | Node `3` | Outside cycle | Not checked at entry |
-| **1** | Node `2` (cycle entry)| Node `0` | Fast is 1 ahead ($d=2$ behind) | `2 != 0` |
-| **2** | Node `0` | Node `2` (cycled) | Fast is 2 ahead ($d=1$ behind) | `0 != 2` |
-| **3** | Node `-4`| Node `-4` (cycled)| Fast caught slow ($d=0$) | `slow == fast` $\implies$ **Return `true`** |
+| **1** | Node `2` (cycle entry)| Node `0` | Fast is 1 ahead (d=2 behind) | `2 != 0` |
+| **2** | Node `0` | Node `2` (cycled) | Fast is 2 ahead (d=1 behind) | `0 != 2` |
+| **3** | Node `-4`| Node `-4` (cycled)| Fast caught slow (d=0) | `slow == fast` => **Return `true`** |
 
 ---
 
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Floyd's Fast & Slow Pointers):** Optimal $O(1)$ space, zero data mutation, highly defensible in senior engineering interviews. Standard choice for embedded and systems-level programming.
-- **Approach 2 (HashSet Visited Set):** Simple to reason about, but incurs $O(N)$ auxiliary memory and garbage collection pressure. Only appropriate when nodes can be uniquely identified and memory is unconstrained.
+- **Approach 1 (Floyd's Fast & Slow Pointers):** Optimal O(1) space, zero data mutation, highly defensible in senior engineering interviews. Standard choice for embedded and systems-level programming.
+- **Approach 2 (HashSet Visited Set):** Simple to reason about, but incurs O(N) auxiliary memory and garbage collection pressure. Only appropriate when nodes can be uniquely identified and memory is unconstrained.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 - **Step 1: Setup & Boundaries:** Guard against null head or single isolated node. Initialize `slow = head`, `fast = head`.
 - **Step 2: Main Exploration Loop:** Loop while `fast != null && fast.next != null`.
 - **Step 3: Invariant Maintenance & Condition Gates:** Advance `slow` by 1, `fast` by 2. Check if `slow == fast`.
-- **Step 4: Resolution & Return:** If loop exits, fast hit `null` $\implies$ return `false`. If collision occurs, return `true`.
+- **Step 4: Resolution & Return:** If loop exits, fast hit `null` => return `false`. If collision occurs, return `true`.
 
 #### 4.3 Alternative Approaches Analysis
 - **Node Mutation Flagging:** Overwrite `node.val` with a sentinel constant or point `node.next` to a designated sentinel dummy node.
@@ -631,15 +632,15 @@ public class SolutionHashSet
 | **LeetCode Link** | [Remove Nth Node From End of List](https://leetcode.com/problems/remove-nth-node-from-end-of-list/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** Given the `head` of a linked list, remove the $n$-th node from the end of the list and return its head in a single pass.
+- **Formal Statement:** Given the `head` of a linked list, remove the n-th node from the end of the list and return its head in a single pass.
 - **Key Constraints:**
-  - The number of nodes in the list is $sz$.
-  - $1 \le sz \le 30$
-  - $0 \le \text{Node.val} \le 100$
-  - $1 \le n \le sz$
+  - The number of nodes in the list is sz.
+  - 1 <= sz <= 30
+  - 0 <= Node.val <= 100
+  - 1 <= n <= sz
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Maintain a fixed sliding window gap of $n + 1$ nodes between two pointers so that when the lead pointer hits the end (`null`), the trail pointer rests precisely on the predecessor of the target node.
+- **Conceptual Essence:** Maintain a fixed sliding window gap of n + 1 nodes between two pointers so that when the lead pointer hits the end (`null`), the trail pointer rests precisely on the predecessor of the target node.
 - **Sample 1:**
   - **Input:** `head = [1, 2, 3, 4, 5]`, `n = 2`
   - **Output:** `[1, 2, 3, 5]`
@@ -653,20 +654,20 @@ public class SolutionHashSet
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine holding a rigid measuring rod of length $n + 1$ nodes. You place the front of the rod at the start of the list and slide the entire rod forward until the front end drops off the edge of the list into `null`. Because the rod has a fixed length of $n + 1$, its back end must now be resting on the node immediately preceding the node that must be deleted. Splicing `slow.next = slow.next.next` unhooks the target node in a single move.
+Imagine holding a rigid measuring rod of length n + 1 nodes. You place the front of the rod at the start of the list and slide the entire rod forward until the front end drops off the edge of the list into `null`. Because the rod has a fixed length of n + 1, its back end must now be resting on the node immediately preceding the node that must be deleted. Splicing `slow.next = slow.next.next` unhooks the target node in a single move.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A two-pass approach first traverses the entire list of length $L$ to compute $L$ ($O(N)$ operations), and then performs a second traversal to step $L - n - 1$ times to reach the predecessor node. This requires two passes over memory, degrading cache efficiency and failing completely in a streaming environment where nodes cannot be rewound.
+A two-pass approach first traverses the entire list of length L to compute L (O(N) operations), and then performs a second traversal to step L - n - 1 times to reach the predecessor node. This requires two passes over memory, degrading cache efficiency and failing completely in a streaming environment where nodes cannot be rewound.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
-To delete the $n$-th node from the end without a second pass, we must position a pointer at index $L - n - 1$ (0-indexed from a sentinel dummy node).
-- Let a sentinel `dummy` node point to `head`. The total length from `dummy` to `null` is $L + 1$.
-- Advance `fast` pointer by $n + 1$ steps ahead of `slow` (both starting at `dummy`).
+To delete the n-th node from the end without a second pass, we must position a pointer at index L - n - 1 (0-indexed from a sentinel dummy node).
+- Let a sentinel `dummy` node point to `head`. The total length from `dummy` to `null` is L + 1.
+- Advance `fast` pointer by n + 1 steps ahead of `slow` (both starting at `dummy`).
 - The invariant maintained during subsequent synchronized stepping is:
-$$\text{index}(fast) - \text{index}(slow) = n + 1$$
-- When `fast` reaches `null` (index $L + 1$):
-$$\text{index}(slow) = (L + 1) - (n + 1) = L - n$$
-Node $L - n$ is the exact node *before* the target node to be deleted!
+index(fast) - index(slow) = n + 1
+- When `fast` reaches `null` (index L + 1):
+index(slow) = (L + 1) - (n + 1) = L - n
+Node L - n is the exact node *before* the target node to be deleted!
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -688,12 +689,12 @@ slow.next = slow.next.next  ===> Node 3 skips Node 4 and links to Node 5
 ```
 
 - `dummy`: Sentinel prepended to `head`. Guarantees that deleting the first node (`head`) is structurally identical to deleting an internal node.
-- `fast`: Scout pointer advanced $n + 1$ steps ahead.
-- `slow`: Predecessor pointer that trails `fast` by exactly $n + 1$ steps.
+- `fast`: Scout pointer advanced n + 1 steps ahead.
+- `slow`: Predecessor pointer that trails `fast` by exactly n + 1 steps.
 
 #### 3.5 State Transition Triggers & Decision Gates
 1. **Initialize Sentinel:** `ListNode dummy = new ListNode(0, head); fast = dummy; slow = dummy;`
-2. **Scout Lead Creation:** Loop $n + 1$ times: `fast = fast.next`.
+2. **Scout Lead Creation:** Loop n + 1 times: `fast = fast.next`.
 3. **Synchronized Traversal:** `while (fast != null) { fast = fast.next; slow = slow.next; }`
 4. **Bypass Deletion:** `slow.next = slow.next.next`
 5. **Return:** `dummy.next`
@@ -706,10 +707,10 @@ Trace input: `head = [1 -> 2 -> 3 -> 4 -> 5]`, `n = 2`
 | **Init** | `dummy` | `dummy` | 0 | Sentinel attached |
 | **Advance Fast (1)** | `dummy` | Node `1` | 1 | Advancing scout |
 | **Advance Fast (2)** | `dummy` | Node `2` | 2 | Advancing scout |
-| **Advance Fast (3)** | `dummy` | Node `3` | 3 ($n + 1$) | Gap established |
+| **Advance Fast (3)** | `dummy` | Node `3` | 3 (n + 1) | Gap established |
 | **Sync Step 1** | Node `1` | Node `4` | 3 | Both advance 1 step |
 | **Sync Step 2** | Node `2` | Node `5` | 3 | Both advance 1 step |
-| **Sync Step 3** | Node `3` | `null` | 3 | `fast == null` $\implies$ Loop terminates |
+| **Sync Step 3** | Node `3` | `null` | 3 | `fast == null` => Loop terminates |
 | **Deletion** | Node `3` | `null` | — | `3.next = 3.next.next (Node 5)` |
 
 Result: `[1 -> 2 -> 3 -> 5 -> null]`
@@ -719,20 +720,20 @@ Result: `[1 -> 2 -> 3 -> 5 -> null]`
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (One-Pass Two-Pointer with Sentinel):** Optimal single pass, $O(1)$ auxiliary space, handles head removal seamlessly via sentinel. Preferred in all production environments and streaming pipelines.
+- **Approach 1 (One-Pass Two-Pointer with Sentinel):** Optimal single pass, O(1) auxiliary space, handles head removal seamlessly via sentinel. Preferred in all production environments and streaming pipelines.
 - **Approach 2 (Two-Pass Length Counting):** Simpler to formulate conceptually, but requires two traversals and extra conditional handling for deleting the head.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 - **Step 1: Setup & Boundaries:** Prepend sentinel `dummy` node to `head`. Set `fast = dummy`, `slow = dummy`.
-- **Step 2: Establish Gap:** Advance `fast` $n + 1$ steps forward.
+- **Step 2: Establish Gap:** Advance `fast` n + 1 steps forward.
 - **Step 3: Synchronized Advance:** Advance `fast` and `slow` together until `fast == null`.
 - **Step 4: Deletion & Return:** Rewire `slow.next = slow.next.next`. Return `dummy.next`.
 
 #### 4.3 Alternative Approaches Analysis
 - **Two-Pass Traversal:**
-  1. Pass 1: Walk to end to find length $L$.
-  2. If $n == L$, return `head.next` (head deletion special case).
-  3. Pass 2: Walk $L - n - 1$ steps to reach target's predecessor.
+  1. Pass 1: Walk to end to find length L.
+  2. If n == L, return `head.next` (head deletion special case).
+  3. Pass 2: Walk L - n - 1 steps to reach target's predecessor.
   4. Perform deletion.
   - *Trade-off:* Double memory reads, redundant pointer dereferences.
 
@@ -845,13 +846,13 @@ public class SolutionTwoPass
 
 ### 1. Problem Detail & Constraints
 - **Formal Statement:** You are given the head of a singly linked-list:
-  $$L_0 \to L_1 \to \dots \to L_{n-1} \to L_n$$
+  L_0 -> L_1 -> ... -> L_n-1 -> L_n
   Reorder the list to be on the following form:
-  $$L_0 \to L_n \to L_1 \to L_{n-1} \to L_2 \to L_{n-2} \to \dots$$
+  L_0 -> L_n -> L_1 -> L_n-1 -> L_2 -> L_n-2 -> ...
 - **Strict Requirement:** You may not modify the values in the list's nodes. Only nodes themselves may be changed (pure in-place pointer rewiring).
 - **Key Constraints:**
-  - The number of nodes in the list is in the range $[1, 5 \times 10^4]$.
-  - $1 \le \text{Node.val} \le 1000$
+  - The number of nodes in the list is in the range [1, 5 x 10^4].
+  - 1 <= Node.val <= 1000
 
 ### 2. Summary & Sample Input / Output
 - **Conceptual Essence:** Interleave the first half of a linked list with the reversed second half using a three-phase in-place pipeline.
@@ -868,18 +869,18 @@ public class SolutionTwoPass
 Imagine a long strip of paper printed with sequential numbers. You fold the paper in half, tear it at the crease, and flip the right half upside-down so the original end is now on top. Finally, you take cards alternating from the top of the left stack and the top of the right stack, weaving them together like teeth on a zipper. This composite problem is solved by chaining **three foundational linked list primitives**: (1) Halving via Tortoise & Hare, (2) In-place list reversal, and (3) Two-pointer interleaved weaving.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A naive approach stores all node references in a dynamic array or deque (`List<ListNode>`) requiring $O(N)$ auxiliary memory allocations. Weaving elements from both ends (`l++`, `r--`) achieves $O(N)$ time but wastes heap memory and violates strict in-place constraints. A brute-force pointer chase that searches for the tail node on every step degrades to $O(N^2)$ time:
-$$T(N) = \sum_{k=1}^{N/2} (N - 2k) \implies O(N^2)$$
+A naive approach stores all node references in a dynamic array or deque (`List<ListNode>`) requiring O(N) auxiliary memory allocations. Weaving elements from both ends (`l++`, `r--`) achieves O(N) time but wastes heap memory and violates strict in-place constraints. A brute-force pointer chase that searches for the tail node on every step degrades to O(N^2) time:
+T(N) = Sum(k=1..N/2) (N - 2k) => O(N^2)
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
-By partitioning the problem into 3 distinct $O(N)$ time, $O(1)$ space phases, we achieve optimal performance:
+By partitioning the problem into 3 distinct O(N) time, O(1) space phases, we achieve optimal performance:
 1. **Phase 1 (Split):** Fast and slow pointers find the exact midpoint. `slow.next` is decoupled (`slow.next = null`) to produce two clean disjoint sublists:
-   - First half: $L_0 \to L_1 \to \dots \to L_{\lfloor(n-1)/2\rfloor}$
-   - Second half: $L_{\lfloor(n-1)/2\rfloor + 1} \to \dots \to L_n$
+   - First half: L_0 -> L_1 -> ... -> L_floor((n-1)/2)
+   - Second half: L_floor((n-1)/2) + 1 -> ... -> L_n
 2. **Phase 2 (Reverse Second Half):** Standard three-pointer reversal on the second half transforms it into:
-   - $L_n \to L_{n-1} \to \dots$
+   - L_n -> L_n-1 -> ...
 3. **Phase 3 (Interleave Weave):** Simultaneously step through both lists, weaving one node from each:
-   - Wire $L_0 \to L_n \to L_1 \to L_{n-1} \dots$
+   - Wire L_0 -> L_n -> L_1 -> L_n-1 ...
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -918,7 +919,7 @@ p1 = temp1 (2), p2 = temp2 (4)
   - Guarantees `slow` lands on the end of the first half for both odd and even lengths.
 - **Decouple Gate:** `ListNode secondHalf = slow.next; slow.next = null;`
 - **Phase 2 Reversal:** Standard iterative reversal of `secondHalf`.
-- **Phase 3 Weave Guard:** `while (p2 != null)` (since second half is always $\le$ first half in length).
+- **Phase 3 Weave Guard:** `while (p2 != null)` (since second half is always <= first half in length).
   - `temp1 = p1.next; temp2 = p2.next;`
   - `p1.next = p2; p2.next = temp1;`
   - `p1 = temp1; p2 = temp2;`
@@ -932,15 +933,15 @@ Trace input: `head = [1 -> 2 -> 3 -> 4 -> 5]`
 | **Phase 2: Reverse** | Reverse Half 2 starting at `4` | `p1 = 1 -> 2 -> 3 -> null`, `p2 = 5 -> 4 -> null` |
 | **Phase 3: Weave 1** | Wire `1.next = 5`, `5.next = 2` | `1 -> 5 -> 2`, `p1 = 2`, `p2 = 4` |
 | **Phase 3: Weave 2** | Wire `2.next = 4`, `4.next = 3` | `1 -> 5 -> 2 -> 4 -> 3`, `p1 = 3`, `p2 = null` |
-| **Termination** | `p2 == null` $\implies$ Loop terminates | Fully reordered: `[1 -> 5 -> 2 -> 4 -> 3]` |
+| **Termination** | `p2 == null` => Loop terminates | Fully reordered: `[1 -> 5 -> 2 -> 4 -> 3]` |
 
 ---
 
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Three-Phase In-Place Pipeline):** Strictly $O(1)$ auxiliary space and $O(N)$ linear time. The gold standard in technical interviews demonstrating mastery of linked list composability.
-- **Approach 2 (Array / Deque Index Buffering):** Reads all nodes into an array and rewires pointers from boundaries inward. Incurs $O(N)$ heap memory; easy to write quickly under time pressure, but rejected if interviewer mandates $O(1)$ space.
+- **Approach 1 (Three-Phase In-Place Pipeline):** Strictly O(1) auxiliary space and O(N) linear time. The gold standard in technical interviews demonstrating mastery of linked list composability.
+- **Approach 2 (Array / Deque Index Buffering):** Reads all nodes into an array and rewires pointers from boundaries inward. Incurs O(N) heap memory; easy to write quickly under time pressure, but rejected if interviewer mandates O(1) space.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 - **Step 1: Setup & Boundaries:** If `head == null || head.next == null || head.next.next == null`, return immediately (0, 1, or 2 nodes are already reordered).
@@ -950,11 +951,11 @@ Trace input: `head = [1 -> 2 -> 3 -> 4 -> 5]`
 
 #### 4.3 Alternative Approaches Analysis
 - **Deque / Vector Buffer Approach:**
-  - Copy all $N$ pointers into `ListNode[] nodes`.
+  - Copy all N pointers into `ListNode[] nodes`.
   - Use opposing pointers `i = 0, j = N - 1`.
   - While `i < j`: `nodes[i].next = nodes[j]; i++; nodes[j].next = nodes[i]; j--;`
   - Finally, set `nodes[i].next = null`.
-  - *Trade-off:* $O(N)$ memory allocations vs $O(1)$ in-place pipeline.
+  - *Trade-off:* O(N) memory allocations vs O(1) in-place pipeline.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
@@ -1102,15 +1103,15 @@ public class SolutionArrayBuffer
 ### 1. Problem Detail & Constraints
 - **Formal Statement:** You are given an array of `k` linked-lists `lists`, each linked-list is sorted in ascending order. Merge all the linked-lists into one sorted linked-list and return it.
 - **Key Constraints:**
-  - $k == \text{lists.length}$
-  - $0 \le k \le 10^4$
-  - $0 \le \text{lists[i].length} \le 500$
-  - $-10^4 \le \text{lists[i][j]} \le 10^4$
+  - k == lists.length
+  - 0 <= k <= 10^4
+  - 0 <= lists[i].length <= 500
+  - -10^4 <= lists[i][j] <= 10^4
   - Each `lists[i]` is sorted in ascending order.
-  - The sum of `lists[i].length` will not exceed $10^4$.
+  - The sum of `lists[i].length` will not exceed 10^4.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Perform a multi-way merge across $k$ sorted streams into a single sorted list in $O(N \log k)$ time, where $N$ is total nodes across all lists.
+- **Conceptual Essence:** Perform a multi-way merge across k sorted streams into a single sorted list in O(N log k) time, where N is total nodes across all lists.
 - **Sample 1:**
   - **Input:** `lists = [[1,4,5],[1,3,4],[2,6]]`
   - **Output:** `[1,1,2,3,4,4,5,6]`
@@ -1124,20 +1125,20 @@ public class SolutionArrayBuffer
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine $k$ airport check-in lines, all feeding into a single boarding gate. At any given moment, the gate agent only needs to compare the passengers standing at the very front of each of the $k$ lines. To do this efficiently, the agent maintains a small scoreboard of size $k$ (a Min-Heap). The agent calls the passenger with the lowest ticket number, and immediately invites the next passenger from that exact same line to join the scoreboard. Alternatively, the lines can be paired up and merged two by two in rounds, like a tennis tournament bracket.
+Imagine k airport check-in lines, all feeding into a single boarding gate. At any given moment, the gate agent only needs to compare the passengers standing at the very front of each of the k lines. To do this efficiently, the agent maintains a small scoreboard of size k (a Min-Heap). The agent calls the passenger with the lowest ticket number, and immediately invites the next passenger from that exact same line to join the scoreboard. Alternatively, the lines can be paired up and merged two by two in rounds, like a tennis tournament bracket.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-1. **Iterative Linear Merge (One-by-One):** Merging list 1 with list 2, then merging the result with list 3, and so on. If each list has $L$ nodes, list 1 is traversed $k-1$ times. Total comparisons:
-   $$\sum_{i=1}^k i \cdot L = L \cdot \frac{k(k+1)}{2} \implies O(N \cdot k)$$
-   When $k = 10^4$, $O(N \cdot k) \approx 10^8$ operations, causing Time Limit Exceeded (TLE).
-2. **Collect and Sort:** Dumping all $N$ node values into an array and running `Array.Sort` ($O(N \log N)$ time and $O(N)$ space) completely ignores that all $k$ sublists are already sorted.
+1. **Iterative Linear Merge (One-by-One):** Merging list 1 with list 2, then merging the result with list 3, and so on. If each list has L nodes, list 1 is traversed k-1 times. Total comparisons:
+   Sum(i=1..k) i * L = L * (k(k+1)) / (2) => O(N * k)
+   When k = 10^4, O(N * k) ~ 10^8 operations, causing Time Limit Exceeded (TLE).
+2. **Collect and Sort:** Dumping all N node values into an array and running `Array.Sort` (O(N log N) time and O(N) space) completely ignores that all k sublists are already sorted.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
-The search for the global minimum among $k$ active candidates can be optimized to $O(\log k)$ using two distinct paradigms:
-- **Paradigm A (Min-Heap / PriorityQueue):** Maintain a heap of size at most $k$. The heap top is always the absolute minimum across all active stream heads. Extracting the minimum and inserting its successor takes $O(\log k)$. Repeating for all $N$ nodes yields:
-  $$T(N) = N \cdot O(\log k) \implies O(N \log k)$$
-  *Crucial for streaming:* Only requires $O(k)$ memory; nodes can arrive on-the-fly over a network.
-- **Paradigm B (Divide & Conquer Tournament Merge):** Merge pairs of lists iteratively. In round 1, merge $k$ lists into $k/2$ lists. In round 2, merge into $k/4$ lists. Number of rounds is $\lceil \log_2 k \rceil$. In each round, every node is touched exactly once $\implies O(N \log k)$ time and strictly $O(1)$ auxiliary space.
+The search for the global minimum among k active candidates can be optimized to O(log k) using two distinct paradigms:
+- **Paradigm A (Min-Heap / PriorityQueue):** Maintain a heap of size at most k. The heap top is always the absolute minimum across all active stream heads. Extracting the minimum and inserting its successor takes O(log k). Repeating for all N nodes yields:
+  T(N) = N * O(log k) => O(N log k)
+  *Crucial for streaming:* Only requires O(k) memory; nodes can arrive on-the-fly over a network.
+- **Paradigm B (Divide & Conquer Tournament Merge):** Merge pairs of lists iteratively. In round 1, merge k lists into k/2 lists. In round 2, merge into k/4 lists. Number of rounds is ceil(log_2 k). In each round, every node is touched exactly once => O(N log k) time and strictly O(1) auxiliary space.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -1160,8 +1161,8 @@ Round 3:                                  [M_ALL]  (Total rounds: ceil(log2 k))
 ```
 
 - `tail`: Scribe cursor tracking the merged list.
-- `minHeap`: Stores `(ListNode, int val)` tuple of size at most $k$.
-- `interval`: Step interval for Divide & Conquer pairing ($1, 2, 4, 8, \dots$).
+- `minHeap`: Stores `(ListNode, int val)` tuple of size at most k.
+- `interval`: Step interval for Divide & Conquer pairing (1, 2, 4, 8, ...).
 
 #### 3.5 State Transition Triggers & Decision Gates
 - **Heap Approach:**
@@ -1169,7 +1170,7 @@ Round 3:                                  [M_ALL]  (Total rounds: ceil(log2 k))
   - While `minHeap.Count > 0`:
     - `smallest = minHeap.Dequeue()`
     - `tail.next = smallest; tail = tail.next;`
-    - If `smallest.next != null` $\implies$ `minHeap.Enqueue(smallest.next, smallest.next.val)`
+    - If `smallest.next != null` => `minHeap.Enqueue(smallest.next, smallest.next.val)`
 - **Divide & Conquer Approach:**
   - `interval = 1`
   - While `interval < k`:
@@ -1178,7 +1179,7 @@ Round 3:                                  [M_ALL]  (Total rounds: ceil(log2 k))
     - `interval *= 2`
 
 #### 3.6 Concrete Step-by-Step State Trace
-Trace input: `lists = [[1, 4, 5], [1, 3, 4], [2, 6]]` ($k=3$)
+Trace input: `lists = [[1, 4, 5], [1, 3, 4], [2, 6]]` (k=3)
 
 | Round / Step | Action | Active Heap / Merged Pairs | Merged Result So Far |
 | :--- | :--- | :--- | :--- |
@@ -1197,8 +1198,8 @@ Trace input: `lists = [[1, 4, 5], [1, 3, 4], [2, 6]]` ($k=3$)
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Min-Heap / PriorityQueue):** The definitive choice for streaming, asynchronous, or distributed systems. Can process infinite streams online because memory consumption is bounded strictly by $O(k)$.
-- **Approach 2 (Divide & Conquer Pairwise Merging):** The optimal batch processing algorithm when all $k$ list heads are pre-loaded in memory. Operates in $O(1)$ auxiliary space by reusing node pointers and the input array.
+- **Approach 1 (Min-Heap / PriorityQueue):** The definitive choice for streaming, asynchronous, or distributed systems. Can process infinite streams online because memory consumption is bounded strictly by O(k).
+- **Approach 2 (Divide & Conquer Pairwise Merging):** The optimal batch processing algorithm when all k list heads are pre-loaded in memory. Operates in O(1) auxiliary space by reusing node pointers and the input array.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 - **Heap Progression:**
@@ -1213,11 +1214,11 @@ Trace input: `lists = [[1, 4, 5], [1, 3, 4], [2, 6]]` ($k=3$)
   - Step 4: Return `lists[0]`.
 
 #### 4.3 Alternative Approaches Analysis
-- **Sequential Pairwise Merging:** Merge $L_0$ with $L_1$, then with $L_2 \dots$
-  - Time: $O(N \cdot k)$ — unacceptably slow.
+- **Sequential Pairwise Merging:** Merge L_0 with L_1, then with L_2 ...
+  - Time: O(N * k) — unacceptably slow.
 - **Array Flattening & QuickSort:**
-  - Time: $O(N \log N)$
-  - Space: $O(N)$ allocations. Disregards pre-sorted properties of lists.
+  - Time: O(N log N)
+  - Space: O(N) allocations. Disregards pre-sorted properties of lists.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
@@ -1355,14 +1356,14 @@ public class SolutionDivideAndConquer
 - **Formal Statement:** Given the `head` of a linked list, reverse the nodes of the list `k` at a time, and return the modified list. `k` is a positive integer and is less than or equal to the length of the linked list. If the number of nodes is not a multiple of `k` then left-out nodes, in the end, should remain as it is.
 - **Strict Constraints:**
   - You may not alter the values in the list's nodes, only nodes themselves may be changed.
-  - Solve it in $O(1)$ extra memory space.
+  - Solve it in O(1) extra memory space.
 - **Key Constraints:**
-  - The number of nodes in the list is $n$.
-  - $1 \le k \le n \le 5000$
-  - $0 \le \text{Node.val} \le 1000$
+  - The number of nodes in the list is n.
+  - 1 <= k <= n <= 5000
+  - 0 <= Node.val <= 1000
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Divide the linked list into consecutive blocks of size $k$. Reverse each full block in-place while keeping terminal sub-blocks of length $< k$ completely untouched.
+- **Conceptual Essence:** Divide the linked list into consecutive blocks of size k. Reverse each full block in-place while keeping terminal sub-blocks of length < k completely untouched.
 - **Sample 1:**
   - **Input:** `head = [1, 2, 3, 4, 5]`, `k = 2`
   - **Output:** `[2, 1, 4, 3, 5]`
@@ -1373,19 +1374,19 @@ public class SolutionDivideAndConquer
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Picture a train made of cargo containers. An inspection crane is programmed to reverse containers in batches of $k$. Before touching a single coupling, the crane sends a scout forward to count $k$ containers. If fewer than $k$ containers remain before the end of the track, the crane halts and leaves them untouched. If a full batch of $k$ exists, the crane uncouples the batch, flips its internal order, connects the previous train segment to the batch's new head, and wires the batch's new tail to the unreversed remainder.
+Picture a train made of cargo containers. An inspection crane is programmed to reverse containers in batches of k. Before touching a single coupling, the crane sends a scout forward to count k containers. If fewer than k containers remain before the end of the track, the crane halts and leaves them untouched. If a full batch of k exists, the crane uncouples the batch, flips its internal order, connects the previous train segment to the batch's new head, and wires the batch's new tail to the unreversed remainder.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A naive algorithm copies node values into an array, reverses subarrays of length $k$, and writes values back. This violates the strict problem requirement prohibiting value mutation and wastes $O(N)$ auxiliary space. An improper pointer reversal attempt that starts inverting links before verifying that $k$ nodes exist will find itself midway through an incomplete tail block, requiring an expensive, bug-prone second reversal to restore original order.
+A naive algorithm copies node values into an array, reverses subarrays of length k, and writes values back. This violates the strict problem requirement prohibiting value mutation and wastes O(N) auxiliary space. An improper pointer reversal attempt that starts inverting links before verifying that k nodes exist will find itself midway through an incomplete tail block, requiring an expensive, bug-prone second reversal to restore original order.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 The **Lookahead Probe Invariant**: Before initiating any pointer inversion on a candidate group, advance a scout pointer `k` steps forward:
-- If `probe == null` before reaching $k$ steps, the remaining group has length $< k$. Immediately terminate and leave the sublist untouched.
-- If $k$ valid nodes are verified, decouple the subsegment and apply the standard 3-pointer reversal algorithm for exactly $k$ iterations.
+- If `probe == null` before reaching k steps, the remaining group has length < k. Immediately terminate and leave the sublist untouched.
+- If k valid nodes are verified, decouple the subsegment and apply the standard 3-pointer reversal algorithm for exactly k iterations.
 
 Crucial structural invariant:
-- The node that was the **head** of the $k$-group before reversal becomes the **tail** of the $k$-group after reversal.
-- Therefore, `head.next` must be connected to the result of reversing the subsequent $k$-groups.
+- The node that was the **head** of the k-group before reversal becomes the **tail** of the k-group after reversal.
+- Therefore, `head.next` must be connected to the result of reversing the subsequent k-groups.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -1406,13 +1407,13 @@ groupPrev = 1 (advance anchor for next k-group)
 ```
 
 - `dummy`: Sentinel anchor guarding the overall head.
-- `groupPrev`: Pointer to the node immediately preceding the current $k$-group.
-- `probe`: Scout pointer checking for $k$ available nodes.
-- `curr`, `prev`: Pointers executing the internal $k$-node reversal.
+- `groupPrev`: Pointer to the node immediately preceding the current k-group.
+- `probe`: Scout pointer checking for k available nodes.
+- `curr`, `prev`: Pointers executing the internal k-node reversal.
 
 #### 3.5 State Transition Triggers & Decision Gates
-1. **Lookahead Gate:** Run `probe` from `curr` for $k$ steps. If `probe == null` at any step $i < k$, return `head` (or break loop).
-2. **Reverse $k$ Nodes:** Execute $k$ iterations of:
+1. **Lookahead Gate:** Run `probe` from `curr` for k steps. If `probe == null` at any step i < k, return `head` (or break loop).
+2. **Reverse k Nodes:** Execute k iterations of:
    - `nextTemp = curr.next; curr.next = prev; prev = curr; curr = nextTemp;`
 3. **Stitch Gate:**
    - In recursive form: `head.next = ReverseKGroup(curr, k); return prev;`
@@ -1421,11 +1422,11 @@ groupPrev = 1 (advance anchor for next k-group)
 #### 3.6 Concrete Step-by-Step State Trace
 Trace input: `head = [1 -> 2 -> 3 -> 4 -> 5]`, `k = 2`
 
-| Iteration | Group Candidate | Lookahead Probe ($k=2$) | Reversal Result | Stitched Chain |
+| Iteration | Group Candidate | Lookahead Probe (k=2) | Reversal Result | Stitched Chain |
 | :--- | :--- | :--- | :--- | :--- |
-| **Group 1** | Nodes `1, 2` | Probe finds `1, 2` $\implies$ valid | `2 -> 1` | `dummy -> 2 -> 1` |
-| **Group 2** | Nodes `3, 4` | Probe finds `3, 4` $\implies$ valid | `4 -> 3` | `... -> 1 -> 4 -> 3` |
-| **Group 3** | Node `5` | Probe hits `null` at step 1 ($< 2$) | Untouched (`5`) | `... -> 3 -> 5 -> null` |
+| **Group 1** | Nodes `1, 2` | Probe finds `1, 2` => valid | `2 -> 1` | `dummy -> 2 -> 1` |
+| **Group 2** | Nodes `3, 4` | Probe finds `3, 4` => valid | `4 -> 3` | `... -> 1 -> 4 -> 3` |
+| **Group 3** | Node `5` | Probe hits `null` at step 1 (< 2) | Untouched (`5`) | `... -> 3 -> 5 -> null` |
 | **Return** | Complete | — | — | `[2 -> 1 -> 4 -> 3 -> 5]` |
 
 ---
@@ -1433,23 +1434,23 @@ Trace input: `head = [1 -> 2 -> 3 -> 4 -> 5]`, `k = 2`
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Iterative with Sentinel Dummy):** Strictly $O(1)$ auxiliary space. Fulfills the strict follow-up constraint of the problem with zero risk of stack overflow on large inputs.
-- **Approach 2 (Recursive Subsegment Reversal):** Highly readable and elegant. Incurs $O(N / k)$ call stack memory. Acceptable in interviews when recursion is permitted, but must be paired with knowledge of the $O(1)$ iterative variant.
+- **Approach 1 (Iterative with Sentinel Dummy):** Strictly O(1) auxiliary space. Fulfills the strict follow-up constraint of the problem with zero risk of stack overflow on large inputs.
+- **Approach 2 (Recursive Subsegment Reversal):** Highly readable and elegant. Incurs O(N / k) call stack memory. Acceptable in interviews when recursion is permitted, but must be paired with knowledge of the O(1) iterative variant.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 - **Step 1: Setup & Sentinel:** Create `dummy` node pointing to `head`. Initialize `groupPrev = dummy`.
-- **Step 2: Lookahead Probe:** Count $k$ nodes from `groupPrev.next`. If fewer than $k$ nodes exist, break.
-- **Step 3: In-Place Reverse:** Reverse the $k$ nodes between `groupPrev.next` and `probe.next`.
+- **Step 2: Lookahead Probe:** Count k nodes from `groupPrev.next`. If fewer than k nodes exist, break.
+- **Step 3: In-Place Reverse:** Reverse the k nodes between `groupPrev.next` and `probe.next`.
 - **Step 4: Subsegment Stitch:** Connect `groupPrev` to new group head, and new group tail to next group head.
 - **Step 5: Advance Anchor:** Set `groupPrev` to the group's new tail. Repeat.
 
 #### 4.3 Alternative Approaches Analysis
 - **Recursive Formulation:**
-  - Probe $k$ nodes. If $< k$, return `head`.
-  - Reverse $k$ nodes.
+  - Probe k nodes. If < k, return `head`.
+  - Reverse k nodes.
   - `head.next = ReverseKGroup(curr, k)`
   - Return `prev`.
-  - Space: $O(N / k)$ stack frames.
+  - Space: O(N / k) stack frames.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
@@ -1460,7 +1461,7 @@ Trace input: `head = [1 -> 2 -> 3 -> 4 -> 5]`, `k = 2`
 | **Output Space** | `O(1)` in-place | `O(1)` in-place |
 | **Cache Locality** | High (localized block traversals) | Moderate (stack frames) |
 | **In-Place Mutability** | In-place pointer mutator | In-place pointer mutator |
-| **Streaming Suitability** | High (buffer size $k$) | Moderate (buffers call stack) |
+| **Streaming Suitability** | High (buffer size k) | Moderate (buffers call stack) |
 
 ---
 

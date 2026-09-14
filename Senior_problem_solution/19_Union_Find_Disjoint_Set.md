@@ -1,6 +1,6 @@
 # Phase 19: Union-Find / Disjoint Set
 
-> **Focus:** Dynamic Equivalence Relations, Path Compression, Union by Rank/Size, Amortized Inverse Ackermann Complexity $\alpha(N)$, Integer Account Indexing, and Spanning Tree Invariants.  
+> **Focus:** Dynamic Equivalence Relations, Path Compression, Union by Rank/Size, Amortized Inverse Ackermann Complexity alpha(N), Integer Account Indexing, and Spanning Tree Invariants.  
 > **Source Curriculum:** [`Senior_dsa_question_list.md`](../Senior_dsa_question_list.md) — Phase 19 (Problems #102–#105)
 
 ---
@@ -15,39 +15,39 @@
 | **LeetCode Link** | [Number of Provinces](https://leetcode.com/problems/number-of-provinces/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** There are $n$ cities. Some of them are connected directly, while others are connected indirectly. Given an $n \times n$ matrix `isConnected` where `isConnected[i][j] = 1` if city $i$ and city $j$ are directly connected, return the total number of provinces (connected components).
+- **Formal Statement:** There are n cities. Some of them are connected directly, while others are connected indirectly. Given an n x n matrix `isConnected` where `isConnected[i][j] = 1` if city i and city j are directly connected, return the total number of provinces (connected components).
 - **Key Constraints:**
-  - $1 \le n \le 200$.
-  - $\text{isConnected}[i][i] == 1$.
-  - $\text{isConnected}[i][j] == \text{isConnected}[j][i]$.
+  - 1 <= n <= 200.
+  - isConnected[i][i] == 1.
+  - isConnected[i][j] == isConnected[j][i].
   - The graph is undirected and represented as an adjacency matrix.
 - **Senior Edge Cases to Defend:**
-  - Fully disconnected graph (identity matrix $\implies n$ provinces).
-  - Fully connected complete graph ($K_n \implies 1$ province).
-  - Multi-city linear chain ($0-1-2-\dots-n-1 \implies 1$ province).
+  - Fully disconnected graph (identity matrix => n provinces).
+  - Fully connected complete graph (K_n => 1 province).
+  - Multi-city linear chain (0-1-2-...-n-1 => 1 province).
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Dynamic Equivalence Partitioning. Initialize $n$ disjoint sets. For each upper-triangular edge $(i, j)$ where $\text{isConnected}[i][j] == 1$, merge their sets; each successful merge of previously disjoint sets decrements the total province counter by 1.
+- **Conceptual Essence:** Dynamic Equivalence Partitioning. Initialize n disjoint sets. For each upper-triangular edge (i, j) where isConnected[i][j] == 1, merge their sets; each successful merge of previously disjoint sets decrements the total province counter by 1.
 - **Sample 1:**
   - **Input:** `isConnected = [[1,1,0],[1,1,0],[0,0,1]]`
-  - **Output:** `2` (Province 1: $\{0, 1\}$, Province 2: $\{2\}$).
+  - **Output:** `2` (Province 1: {0, 1}, Province 2: {2}).
 
 ---
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine $n$ independent city-states at the dawn of civilization. Each city-state hoists its own distinct flag and declares itself an independent province (total provinces = $n$). Diplomats read through a list of bilateral treaties (`isConnected`). When a treaty connects City $i$ and City $j$, the heralds check whether City $i$ and City $j$ already swear fealty to the same high king (the canonical root). If they already belong to the same alliance, the treaty changes nothing. If they belong to different kingdoms, the smaller kingdom lowers its flag and pledges fealty to the larger kingdom's monarch. With this single unification pact, the total number of independent sovereign realms on the continent decreases by exactly 1.
+Imagine n independent city-states at the dawn of civilization. Each city-state hoists its own distinct flag and declares itself an independent province (total provinces = n). Diplomats read through a list of bilateral treaties (`isConnected`). When a treaty connects City i and City j, the heralds check whether City i and City j already swear fealty to the same high king (the canonical root). If they already belong to the same alliance, the treaty changes nothing. If they belong to different kingdoms, the smaller kingdom lowers its flag and pledges fealty to the larger kingdom's monarch. With this single unification pact, the total number of independent sovereign realms on the continent decreases by exactly 1.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A brute-force approach might compute the transitive closure matrix using the Floyd-Warshall algorithm ($O(N^3)$ time), or repeatedly perform broad searches across the matrix to compute connected components. In an adjacency matrix, scanning all pairs requires $O(N^2)$ checks. Disjoint Set Union optimizes this by checking each undirected edge once (upper triangle $j > i$) and executing union-find operations in near $O(1)$ amortized time ($O(\alpha(N))$).
+A brute-force approach might compute the transitive closure matrix using the Floyd-Warshall algorithm (O(N^3) time), or repeatedly perform broad searches across the matrix to compute connected components. In an adjacency matrix, scanning all pairs requires O(N^2) checks. Disjoint Set Union optimizes this by checking each undirected edge once (upper triangle j > i) and executing union-find operations in near O(1) amortized time (O(alpha(N))).
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
-- **Inverse Ackermann Complexity $\alpha(N)$:** By combining two optimizations:
+- **Inverse Ackermann Complexity alpha(N):** By combining two optimizations:
   1. **Path Compression** in `Find`: Flattens the tree so that every node on the lookup path points directly to the root.
   2. **Union by Rank** in `Union`: Always attaches the root of the shallower tree under the root of the deeper tree, preventing tall degenerative linear tree chains.
-  The amortized time per operation is $O(\alpha(N))$, where $\alpha(N) \le 4$ for any input size up to $10^{80}$ (the number of atoms in the observable universe).
-- **Component Decrement Invariant:** Start with `Count = n`. For any pair $(i, j)$, if $\text{Find}(i) \ne \text{Find}(j)$, executing `Union(i, j)` unifies two distinct trees into one and decrements `Count` by 1. If $\text{Find}(i) == \text{Find}(j)$, the edge is redundant and `Count` remains unchanged.
+  The amortized time per operation is O(alpha(N)), where alpha(N) <= 4 for any input size up to 10^80 (the number of atoms in the observable universe).
+- **Component Decrement Invariant:** Start with `Count = n`. For any pair (i, j), if Find(i) != Find(j), executing `Union(i, j)` unifies two distinct trees into one and decrements `Count` by 1. If Find(i) == Find(j), the edge is redundant and `Count` remains unchanged.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -65,8 +65,8 @@ Upper-Triangular Scan (i: 0 -> n-1, j: i+1 -> n-1):
 ```
 
 #### 3.5 State Transition Triggers & Decision Gates
-- Loop $i$ from $0$ to $n - 1$:
-  - Loop $j$ from $i + 1$ to $n - 1$:
+- Loop i from 0 to n - 1:
+  - Loop j from i + 1 to n - 1:
     - **Matrix Gate:** If `isConnected[i][j] == 1`:
       - `rootI = Find(i)`
       - `rootJ = Find(j)`
@@ -75,17 +75,17 @@ Upper-Triangular Scan (i: 0 -> n-1, j: i+1 -> n-1):
         - `Count--`.
 
 #### 3.6 Concrete Step-by-Step State Trace
-Input: `isConnected = [[1,1,0],[1,1,0],[0,0,1]]` ($n = 3$).
+Input: `isConnected = [[1,1,0],[1,1,0],[0,0,1]]` (n = 3).
 - Initial: `parent = [0, 1, 2]`, `rank = [0, 0, 0]`, `Count = 3`.
-- Upper triangle pairs to check: $(0, 1), (0, 2), (1, 2)$.
-- **Pair $(0, 1)$:**
+- Upper triangle pairs to check: (0, 1), (0, 2), (1, 2).
+- **Pair (0, 1):**
   - `isConnected[0][1] == 1`.
   - `Find(0) = 0`, `Find(1) = 1`. Roots differ!
-  - `rank[0] == rank[1] \implies parent[1] = 0, rank[0] = 1`.
+  - `rank[0] == rank[1] => parent[1] = 0, rank[0] = 1`.
   - `Count` decreases from 3 to 2.
-- **Pair $(0, 2)$:**
+- **Pair (0, 2):**
   - `isConnected[0][2] == 0`. Skip.
-- **Pair $(1, 2)$:**
+- **Pair (1, 2):**
   - `isConnected[1][2] == 0`. Skip.
 - Loops complete. Final `Count = 2`.
 
@@ -95,25 +95,25 @@ Input: `isConnected = [[1,1,0],[1,1,0],[0,0,1]]` ($n = 3$).
 
 #### 4.1 Anchor Points & Approach Selection Criteria
 - **When to choose Approach 1 (Disjoint Set Union):** Mandatory when edges arrive in an online/streaming fashion or dynamic connectivity queries are required. Provides reusable data structure architecture for senior interviews.
-- **When to choose Approach 2 (DFS Matrix Traversal):** Simplest to write from scratch in time-pressured interviews when graph topology is static ($O(N^2)$ time, $O(N)$ visited space).
+- **When to choose Approach 2 (DFS Matrix Traversal):** Simplest to write from scratch in time-pressured interviews when graph topology is static (O(N^2) time, O(N) visited space).
 
 #### 4.2 Step-by-Step Natural Progression Flow
 1. **Setup & Boundaries:** Instantiate `DisjointSet(n)`.
-2. **Main Exploration Loop:** Iterate strictly over the upper triangle ($0 \le i < n, i < j < n$).
-3. **Invariant Maintenance & Condition Gates:** If $\text{isConnected}[i][j] == 1$, call `Union(i, j)`.
+2. **Main Exploration Loop:** Iterate strictly over the upper triangle (0 <= i < n, i < j < n).
+3. **Invariant Maintenance & Condition Gates:** If isConnected[i][j] == 1, call `Union(i, j)`.
 4. **Resolution & Return:** Return `dsu.Count`.
 
 #### 4.3 Alternative Approaches Analysis
-- **DFS Component Flood-Fill:** An array `bool[] visited = new bool[n]`. For each unvisited $i$, increment province count and recursively mark all $j$ where $\text{isConnected}[i][j] == 1$. Takes $O(N^2)$ time and $O(N)$ stack space.
+- **DFS Component Flood-Fill:** An array `bool[] visited = new bool[n]`. For each unvisited i, increment province count and recursively mark all j where isConnected[i][j] == 1. Takes O(N^2) time and O(N) stack space.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Metric | Approach 1: Disjoint Set Union (DSU) | Approach 2: DFS Matrix Traversal |
 | :--- | :--- | :--- |
-| **Time Complexity** | $O(N^2 \cdot \alpha(N)) \approx O(N^2)$ | $O(N^2)$ strictly |
-| **Auxiliary Space** | $O(N)$ (parent + rank) | $O(N)$ (visited array + stack) |
-| **Dynamic Streaming** | High (handles new edges in $O(\alpha(N))$) | Poor (requires re-running DFS) |
-| **Pair Scanning** | $N(N-1)/2$ upper triangle pairs | Up to $N^2$ full row scans |
+| **Time Complexity** | O(N^2 * alpha(N)) ~ O(N^2) | O(N^2) strictly |
+| **Auxiliary Space** | O(N) (parent + rank) | O(N) (visited array + stack) |
+| **Dynamic Streaming** | High (handles new edges in O(alpha(N))) | Poor (requires re-running DFS) |
+| **Pair Scanning** | N(N-1)/2 upper triangle pairs | Up to N^2 full row scans |
 | **Cache Locality** | High | High |
 
 ---
@@ -211,7 +211,7 @@ public class Solution
 }
 ```
 
-#### Approach 2: Boolean DFS Matrix Traversal ($O(N^2)$)
+#### Approach 2: Boolean DFS Matrix Traversal (O(N^2))
 ```csharp
 public class SolutionDfs
 {
@@ -260,17 +260,17 @@ public class SolutionDfs
 | **LeetCode Link** | [Redundant Connection](https://leetcode.com/problems/redundant-connection/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** Given an undirected graph that started as a tree with $n$ nodes labeled from $1$ to $n$, with one additional edge added, return an edge that can be removed so that the resulting graph is a tree. If there are multiple answers, return the edge that occurs last in the input.
+- **Formal Statement:** Given an undirected graph that started as a tree with n nodes labeled from 1 to n, with one additional edge added, return an edge that can be removed so that the resulting graph is a tree. If there are multiple answers, return the edge that occurs last in the input.
 - **Key Constraints:**
-  - $n == \text{edges.Length} \in [3, 1000]$.
-  - $\text{edges}[i] = [u_i, v_i]$ where $1 \le u_i < v_i \le n$.
+  - n == edges.Length in [3, 1000].
+  - edges[i] = [u_i, v_i] where 1 <= u_i < v_i <= n.
   - No repeated edges; the given graph is connected.
 - **Senior Edge Cases to Defend:**
-  - 1-indexed node identifiers: Arrays must be allocated with size $n + 1$.
+  - 1-indexed node identifiers: Arrays must be allocated with size n + 1.
   - Discarding the correct edge: If multiple cycle edges exist, the problem explicitly demands the edge that appears **last** in the input array. Processing edges chronologically with DSU naturally identifies the exact edge that closes the cycle.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Fundamental Cycle Detection. In a tree of $n$ vertices, adding an $n$-th edge creates exactly one cycle. As edges are streamed into a DSU, the first edge whose endpoints already share the same canonical root closes the cycle.
+- **Conceptual Essence:** Fundamental Cycle Detection. In a tree of n vertices, adding an n-th edge creates exactly one cycle. As edges are streamed into a DSU, the first edge whose endpoints already share the same canonical root closes the cycle.
 - **Sample 1:**
   - **Input:** `edges = [[1, 2], [1, 3], [2, 3]]`
   - **Output:** `[2, 3]`
@@ -280,14 +280,14 @@ public class SolutionDfs
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine assembling a suspension bridge using modular steel trusses. You are bolting trusses into place one after another. Your goal is to form a single rigid tree structure. Each truss connects two joints. If you attempt to install a truss between Joint $u$ and Joint $v$, and your laser scanner shows that Joint $u$ and Joint $v$ are already rigidly connected through a sequence of previously bolted trusses, this new truss creates a redundant closed loop (a cycle). Because you install trusses in strict order of delivery, the moment a truss bridges two points already in the same rigid structure, you immediately flag it as redundant.
+Imagine assembling a suspension bridge using modular steel trusses. You are bolting trusses into place one after another. Your goal is to form a single rigid tree structure. Each truss connects two joints. If you attempt to install a truss between Joint u and Joint v, and your laser scanner shows that Joint u and Joint v are already rigidly connected through a sequence of previously bolted trusses, this new truss creates a redundant closed loop (a cycle). Because you install trusses in strict order of delivery, the moment a truss bridges two points already in the same rigid structure, you immediately flag it as redundant.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A brute-force approach would remove each edge from last to first, and run a full BFS or DFS across the remaining edges to verify if the graph remains connected. This takes $O(N^2)$ time. DSU solves this in a single pass of near-constant amortized operations ($O(N \cdot \alpha(N))$).
+A brute-force approach would remove each edge from last to first, and run a full BFS or DFS across the remaining edges to verify if the graph remains connected. This takes O(N^2) time. DSU solves this in a single pass of near-constant amortized operations (O(N * alpha(N))).
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
-- **Single Fundamental Cycle:** A connected graph with $V$ vertices and $V$ edges has cyclomatic complexity $M = E - V + 1 = 1$. It contains exactly one fundamental cycle.
-- **Chronological Detection Invariant:** All edges preceding the cycle-closing edge connect previously disconnected components, acting as tree edges. The cycle-closing edge is the unique edge $(u, v)$ for which $\text{Find}(u) == \text{Find}(v)$ at the moment of evaluation.
+- **Single Fundamental Cycle:** A connected graph with V vertices and V edges has cyclomatic complexity M = E - V + 1 = 1. It contains exactly one fundamental cycle.
+- **Chronological Detection Invariant:** All edges preceding the cycle-closing edge connect previously disconnected components, acting as tree edges. The cycle-closing edge is the unique edge (u, v) for which Find(u) == Find(v) at the moment of evaluation.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -311,9 +311,9 @@ For each edge e_k = [u, v]:
 #### 3.6 Concrete Step-by-Step State Trace
 Input: `edges = [[1, 2], [2, 3], [3, 4], [1, 4], [1, 5]]`.
 - Initial: `parent = [0, 1, 2, 3, 4, 5]`.
-- `[1, 2]`: `Find(1) != Find(2) \implies Union(1, 2)`.
-- `[2, 3]`: `Find(2) == 1 != Find(3) == 3 \implies Union(1, 3)`.
-- `[3, 4]`: `Find(3) == 1 != Find(4) == 4 \implies Union(1, 4)`.
+- `[1, 2]`: `Find(1) != Find(2) => Union(1, 2)`.
+- `[2, 3]`: `Find(2) == 1 != Find(3) == 3 => Union(1, 3)`.
+- `[3, 4]`: `Find(3) == 1 != Find(4) == 4 => Union(1, 4)`.
 - `[1, 4]`: `Find(1) = 1`, `Find(4) = 1`. Equal roots! Cycle detected!
 - Return `[1, 4]`. Edge `[1, 5]` is never even processed.
 
@@ -322,23 +322,23 @@ Input: `edges = [[1, 2], [2, 3], [3, 4], [1, 4], [1, 5]]`.
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **When to choose Approach 1 (DSU):** Universally optimal. Processes edges in one pass, uses $O(N)$ space, requires zero graph reconstruction, and directly halts on the closing edge.
+- **When to choose Approach 1 (DSU):** Universally optimal. Processes edges in one pass, uses O(N) space, requires zero graph reconstruction, and directly halts on the closing edge.
 
 #### 4.2 Step-by-Step Natural Progression Flow
-1. **Setup & Boundaries:** Allocate 1-indexed `parent` and `rank` arrays of size $n + 1$.
+1. **Setup & Boundaries:** Allocate 1-indexed `parent` and `rank` arrays of size n + 1.
 2. **Main Exploration Loop:** Iterate sequentially through `edges`.
 3. **Invariant Maintenance & Condition Gates:** Compare `Find(u)` and `Find(v)`. Return if equal; union if distinct.
-4. **Resolution & Return:** Guaranteed to return within $n$ iterations.
+4. **Resolution & Return:** Guaranteed to return within n iterations.
 
 #### 4.3 Alternative Approaches Analysis
-- **Incremental DFS Cycle Search:** Maintain an adjacency list. Before adding edge $(u, v)$, run DFS from $u$ searching for $v$. If $v$ is reachable, $(u, v)$ creates a cycle. Time: $O(N^2)$.
+- **Incremental DFS Cycle Search:** Maintain an adjacency list. Before adding edge (u, v), run DFS from u searching for v. If v is reachable, (u, v) creates a cycle. Time: O(N^2).
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Metric | Approach 1: Disjoint Set Union (DSU) | Approach 2: Incremental DFS Cycle Search |
 | :--- | :--- | :--- |
-| **Time Complexity** | $O(N \cdot \alpha(N)) \approx O(N)$ | $O(N^2)$ |
-| **Auxiliary Space** | $O(N)$ (parent + rank) | $O(N)$ (adjacency list + visited) |
+| **Time Complexity** | O(N * alpha(N)) ~ O(N) | O(N^2) |
+| **Auxiliary Space** | O(N) (parent + rank) | O(N) (adjacency list + visited) |
 | **Cache Locality** | Exceptional (contiguous flat arrays) | Moderate (pointer-based lists) |
 | **Code Footprint** | Extremely compact (~25 lines) | Moderate (~45 lines) |
 
@@ -424,9 +424,9 @@ public class Solution
 ### 1. Problem Detail & Constraints
 - **Formal Statement:** Given a list of `accounts` where each entry is `accounts[i] = [name, email1, email2, ...]`, merge accounts belonging to the same person. Two accounts definitely belong to the same person if they share at least one common email address. Return the merged accounts with sorted emails and the person's name as the first element.
 - **Key Constraints:**
-  - $1 \le \text{accounts.Length} \le 1000$.
-  - $2 \le \text{accounts}[i]\text{.Length} \le 10$.
-  - Total emails across all accounts $\le 10^4$.
+  - 1 <= accounts.Length <= 1000.
+  - 2 <= accounts[i].Length <= 10.
+  - Total emails across all accounts <= 10^4.
   - Emails consist of lowercase English letters and periods.
 - **Senior Edge Cases to Defend:**
   - Name Collision with Distinct People: Two different people may share the exact same name (e.g., "John"), but have completely disjoint email sets. They must NOT be merged!
@@ -444,17 +444,17 @@ public class Solution
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine an identity verification system at a global bank. Customers open multiple bank accounts over decades under the name "John". Each account lists several verified email addresses. To unify customer profiles, we treat each bank account index ($0 \dots n-1$) as an identity dossier. As we review dossiers, we register each email into a master phonebook (`emailToAccountIndex`). If an email on Dossier $i$ was previously seen on Dossier $j$, we know Dossier $i$ and Dossier $j$ belong to the exact same human being. We clip Dossier $i$ and Dossier $j$ together into the same folder (DSU union). Once all dossiers are reviewed, we gather all emails belonging to each unified folder, sort them lexicographically, and affix the account holder's name.
+Imagine an identity verification system at a global bank. Customers open multiple bank accounts over decades under the name "John". Each account lists several verified email addresses. To unify customer profiles, we treat each bank account index (0 ... n-1) as an identity dossier. As we review dossiers, we register each email into a master phonebook (`emailToAccountIndex`). If an email on Dossier i was previously seen on Dossier j, we know Dossier i and Dossier j belong to the exact same human being. We clip Dossier i and Dossier j together into the same folder (DSU union). Once all dossiers are reviewed, we gather all emails belonging to each unified folder, sort them lexicographically, and affix the account holder's name.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A naive implementation treats each unique email string as a DSU node, maintaining `Dictionary<string, string> parent`. With $10,000$ emails, hashing strings repeatedly during path compression and union operations creates massive CPU overhead and high GC pressure. Pairwise account comparisons ($O(N^2 \cdot K)$) perform redundant string equality tests across unrelated users.
+A naive implementation treats each unique email string as a DSU node, maintaining `Dictionary<string, string> parent`. With 10,000 emails, hashing strings repeatedly during path compression and union operations creates massive CPU overhead and high GC pressure. Pairwise account comparisons (O(N^2 * K)) perform redundant string equality tests across unrelated users.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
-- **Integer-Indexed DSU Architecture:** The number of accounts $N \le 1000$ is small. Operating a Disjoint Set Union directly over **account indices $0 \dots N - 1$** eliminates string hashing inside the DSU entirely!
-- **Email-to-First-Account Mapping Invariant:** Maintain a single lookup map `Dictionary<string, int> emailToAccount`. For each email in account $i$:
-  - If the email is already in the map with account index $j$, execute `dsu.Union(i, j)`.
+- **Integer-Indexed DSU Architecture:** The number of accounts N <= 1000 is small. Operating a Disjoint Set Union directly over **account indices 0 ... N - 1** eliminates string hashing inside the DSU entirely!
+- **Email-to-First-Account Mapping Invariant:** Maintain a single lookup map `Dictionary<string, int> emailToAccount`. For each email in account i:
+  - If the email is already in the map with account index j, execute `dsu.Union(i, j)`.
   - Otherwise, record `emailToAccount[email] = i`.
-- **Component Root Grouping:** After unioning, every email in account $i$ belongs to the component identified by `dsu.Find(i)`. We group emails into `Dictionary<int, HashSet<string>>` keyed by the component root index.
+- **Component Root Grouping:** After unioning, every email in account i belongs to the component identified by `dsu.Find(i)`. We group emails into `Dictionary<int, HashSet<string>>` keyed by the component root index.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -476,14 +476,14 @@ Stage 3: Sort Emails & Prepend Name
 ```
 
 #### 3.5 State Transition Triggers & Decision Gates
-- **Phase 1 (Union Accounts):** For account $i \in [0, N-1]$, for email $e$ in `accounts[i]`:
+- **Phase 1 (Union Accounts):** For account i in [0, N-1], for email e in `accounts[i]`:
   - Gate: If `emailToAccount.TryGetValue(e, out int prevAcc)`:
     - Action: `dsu.Union(i, prevAcc)`.
   - Else:
     - Action: `emailToAccount[e] = i`.
-- **Phase 2 (Group Emails):** For account $i \in [0, N-1]$:
+- **Phase 2 (Group Emails):** For account i in [0, N-1]:
   - `root = dsu.Find(i)`.
-  - Add all emails of account $i$ to `rootToEmails[root]`.
+  - Add all emails of account i to `rootToEmails[root]`.
 - **Phase 3 (Format):** For each `(root, emailSet)` in `rootToEmails`:
   - Sort `emailSet` lexicographically.
   - Prepend `accounts[root][0]` (account holder's name).
@@ -497,8 +497,8 @@ Input accounts:
   - Acc 0: `emailToAccount["a@mail"] = 0`, `emailToAccount["b@mail"] = 0`.
   - Acc 1: `emailToAccount["c@mail"] = 1`, `emailToAccount["d@mail"] = 1`.
   - Acc 2:
-    - `"a@mail"` seen at 0 $\implies$ `Union(2, 0)`.
-    - `"c@mail"` seen at 1 $\implies$ `Union(2, 1)`.
+    - `"a@mail"` seen at 0 => `Union(2, 0)`.
+    - `"c@mail"` seen at 1 => `Union(2, 1)`.
   - Now accounts 0, 1, 2 are all unified under a single root!
 - Step 2: Grouping by root:
   - Root contains all emails: `{"a@mail", "b@mail", "c@mail", "d@mail"}`.
@@ -509,7 +509,7 @@ Input accounts:
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **When to choose Approach 1 (Integer DSU over Account Indices):** The gold standard for enterprise production. Restricts DSU memory to a flat array of size $N \le 1000$, avoiding thousands of string allocations.
+- **When to choose Approach 1 (Integer DSU over Account Indices):** The gold standard for enterprise production. Restricts DSU memory to a flat array of size N <= 1000, avoiding thousands of string allocations.
 - **When to choose Approach 2 (Email Graph DFS):** Build an explicit adjacency list where vertices are email strings. Explore components using DFS. Conceptually standard, but creates heavy graph node allocation.
 
 #### 4.2 Step-by-Step Natural Progression Flow
@@ -525,11 +525,11 @@ Input accounts:
 
 | Metric | Approach 1: Integer DSU over Accounts | Approach 2: Email Graph DFS | Approach 3: String-based DSU |
 | :--- | :--- | :--- | :--- |
-| **Time Complexity** | $O(N \cdot K \log(N \cdot K))$ | $O(N \cdot K \log(N \cdot K))$ | $O(N \cdot K \log(N \cdot K))$ |
-| **DSU Array Size** | Strictly $N \le 1000$ ints | N/A (graph lists) | Up to $10,000$ string keys |
+| **Time Complexity** | O(N * K log(N * K)) | O(N * K log(N * K)) | O(N * K log(N * K)) |
+| **DSU Array Size** | Strictly N <= 1000 ints | N/A (graph lists) | Up to 10,000 string keys |
 | **String Allocations** | Zero inside DSU | High (adjacency lists) | High (string parent map) |
 | **GC Pressure** | Minimal | Significant | High |
-| **Sorting Cost** | $O(M \log M)$ on final email sets | $O(M \log M)$ | $O(M \log M)$ |
+| **Sorting Cost** | O(M log M) on final email sets | O(M log M) | O(M log M) |
 
 ---
 
@@ -725,41 +725,41 @@ public class SolutionDfs
 | **LeetCode Link** | [Graph Valid Tree](https://leetcode.com/problems/graph-valid-tree/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** You have a graph of $n$ nodes labeled from $0$ to $n - 1$. You are given an integer $n$ and a list of `edges` where $edges[i] = [a_i, b_i]$. Check whether these edges make up a valid tree.
+- **Formal Statement:** You have a graph of n nodes labeled from 0 to n - 1. You are given an integer n and a list of `edges` where edges[i] = [a_i, b_i]. Check whether these edges make up a valid tree.
 - **Key Constraints:**
-  - $1 \le n \le 2000$.
-  - $0 \le \text{edges.Length} \le 5000$.
-  - All edges are undirected and unique ($a_i \ne b_i$).
+  - 1 <= n <= 2000.
+  - 0 <= edges.Length <= 5000.
+  - All edges are undirected and unique (a_i != b_i).
 - **Senior Edge Cases to Defend:**
-  - Fast Pruning Guard: If $\text{edges.Length} \ne n - 1$, it is mathematically impossible to be a tree $\implies$ return `false` in $O(1)$ immediately!
-  - Disconnected Components with Cycle: $n = 5$, edges = $[[0, 1], [1, 2], [2, 0], [3, 4]]$. Has 4 edges ($n - 1$), but forms a cycle and 2 components. Must reject.
-  - Degenerate single-node tree: $n = 1, \text{edges} = [] \implies 0 == 1 - 1 \implies \text{true}$.
+  - Fast Pruning Guard: If edges.Length != n - 1, it is mathematically impossible to be a tree => return `false` in O(1) immediately!
+  - Disconnected Components with Cycle: n = 5, edges = [[0, 1], [1, 2], [2, 0], [3, 4]]. Has 4 edges (n - 1), but forms a cycle and 2 components. Must reject.
+  - Degenerate single-node tree: n = 1, edges = [] => 0 == 1 - 1 => true.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Dual Invariant Tree Verification. A graph of $n$ vertices is a tree if and only if: (1) it contains exactly $n - 1$ edges, and (2) it contains no cycles. Disjoint Set Union validates acyclicity in $O(N \cdot \alpha(N))$ time.
+- **Conceptual Essence:** Dual Invariant Tree Verification. A graph of n vertices is a tree if and only if: (1) it contains exactly n - 1 edges, and (2) it contains no cycles. Disjoint Set Union validates acyclicity in O(N * alpha(N)) time.
 - **Sample 1:**
-  - **Input:** `n = 5, edges = [[0, 1], [0, 2], [0, 3], [1, 4]]` $\implies$ `true`
+  - **Input:** `n = 5, edges = [[0, 1], [0, 2], [0, 3], [1, 4]]` => `true`
 - **Sample 2:**
-  - **Input:** `n = 5, edges = [[0, 1], [1, 2], [2, 3], [1, 3], [1, 4]]` $\implies$ `false` (Cycle between 1, 2, 3).
+  - **Input:** `n = 5, edges = [[0, 1], [1, 2], [2, 3], [1, 3], [1, 4]]` => `false` (Cycle between 1, 2, 3).
 
 ---
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine designing a structural truss for a roof. An architect knows that a minimally rigid, non-redundant structure over $n$ anchor joints requires exactly $n - 1$ struts. If you have fewer than $n - 1$ struts, parts of the roof will float freely without support (disconnected graph). If you have more than $n - 1$ struts, some struts form closed structural triangles or rings that carry redundant stress (cycles). By first counting the struts ($E == n - 1$), you immediately filter out non-trees. Then, as you assemble the struts using a Disjoint Set Union, if any strut attempts to connect two joints that already form a rigid assembly, a cycle exists, and the roof is disqualified.
+Imagine designing a structural truss for a roof. An architect knows that a minimally rigid, non-redundant structure over n anchor joints requires exactly n - 1 struts. If you have fewer than n - 1 struts, parts of the roof will float freely without support (disconnected graph). If you have more than n - 1 struts, some struts form closed structural triangles or rings that carry redundant stress (cycles). By first counting the struts (E == n - 1), you immediately filter out non-trees. Then, as you assemble the struts using a Disjoint Set Union, if any strut attempts to connect two joints that already form a rigid assembly, a cycle exists, and the roof is disqualified.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A naive approach might perform a full cycle-detection DFS followed by a second full BFS to count reachable nodes and verify connectivity, ignoring the mathematical constraint on edge count. Evaluating connectivity on graphs with $E \ne n - 1$ is completely wasted work. Checking $E == n - 1$ takes $O(1)$ time and eliminates over $90\%$ of invalid graph instances instantly.
+A naive approach might perform a full cycle-detection DFS followed by a second full BFS to count reachable nodes and verify connectivity, ignoring the mathematical constraint on edge count. Evaluating connectivity on graphs with E != n - 1 is completely wasted work. Checking E == n - 1 takes O(1) time and eliminates over 90\% of invalid graph instances instantly.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
-- **The Tree Theorem:** For any undirected graph $G = (V, E)$ with $V$ vertices, any two of the following conditions strictly guarantee that $G$ is a valid tree:
-  1. $|E| = |V| - 1$.
-  2. $G$ is connected (exactly 1 connected component).
-  3. $G$ is acyclic (contains 0 cycles).
+- **The Tree Theorem:** For any undirected graph G = (V, E) with V vertices, any two of the following conditions strictly guarantee that G is a valid tree:
+  1. |E| = |V| - 1.
+  2. G is connected (exactly 1 connected component).
+  3. G is acyclic (contains 0 cycles).
 - **Senior Optimization Pivot:**
-  - Gate 1: Check $|E| == n - 1$. If false, return `false` in $O(1)$.
-  - Gate 2: Since $|E| == n - 1$ is guaranteed, checking that $G$ contains **no cycles** via DSU simultaneously guarantees that $G$ is connected! Adding $n - 1$ edges that never create a cycle must reduce the component count from $n$ to exactly $n - (n - 1) = 1$.
+  - Gate 1: Check |E| == n - 1. If false, return `false` in O(1).
+  - Gate 2: Since |E| == n - 1 is guaranteed, checking that G contains **no cycles** via DSU simultaneously guarantees that G is connected! Adding n - 1 edges that never create a cycle must reduce the component count from n to exactly n - (n - 1) = 1.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -789,12 +789,12 @@ Step 3: All n - 1 edges acyclic ==> Graph is a Valid Tree! Return true.
 
 #### 3.6 Concrete Step-by-Step State Trace
 Input: `n = 5`, `edges = [[0, 1], [0, 2], [0, 3], [1, 4]]`.
-- Edge count check: $edges.Length == 4 == 5 - 1 \implies$ Pass.
+- Edge count check: edges.Length == 4 == 5 - 1 => Pass.
 - `parent = [0, 1, 2, 3, 4]`.
-- Edge `[0, 1]`: `Find(0) = 0 != Find(1) = 1 \implies parent[0] = 1`.
-- Edge `[0, 2]`: `Find(0) = 1 != Find(2) = 2 \implies parent[1] = 2`.
-- Edge `[0, 3]`: `Find(0) = 2 != Find(3) = 3 \implies parent[2] = 3`.
-- Edge `[1, 4]`: `Find(1) = 3 != Find(4) = 4 \implies parent[3] = 4`.
+- Edge `[0, 1]`: `Find(0) = 0 != Find(1) = 1 => parent[0] = 1`.
+- Edge `[0, 2]`: `Find(0) = 1 != Find(2) = 2 => parent[1] = 2`.
+- Edge `[0, 3]`: `Find(0) = 2 != Find(3) = 3 => parent[2] = 3`.
+- Edge `[1, 4]`: `Find(1) = 3 != Find(4) = 4 => parent[3] = 4`.
 - All 4 edges processed with zero cycles. Return `true`.
 
 ---
@@ -802,8 +802,8 @@ Input: `n = 5`, `edges = [[0, 1], [0, 2], [0, 3], [1, 4]]`.
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **When to choose Approach 1 (DSU + Early Edge Count Guard):** The undisputed optimal solution. $O(1)$ early exit on edge count, near-linear $O(N \cdot \alpha(N))$ cycle detection, and minimal lines of code.
-- **When to choose Approach 2 (Adjacency List BFS/DFS):** When graph structures are already materialized as adjacency lists. Checks visited count to ensure all $n$ nodes were reached from node 0.
+- **When to choose Approach 1 (DSU + Early Edge Count Guard):** The undisputed optimal solution. O(1) early exit on edge count, near-linear O(N * alpha(N)) cycle detection, and minimal lines of code.
+- **When to choose Approach 2 (Adjacency List BFS/DFS):** When graph structures are already materialized as adjacency lists. Checks visited count to ensure all n nodes were reached from node 0.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 1. **Setup & Boundaries:** Guard `edges.Length != n - 1`. Allocate `parent` array.
@@ -812,15 +812,15 @@ Input: `n = 5`, `edges = [[0, 1], [0, 2], [0, 3], [1, 4]]`.
 4. **Resolution & Return:** Return `true` after all edges pass.
 
 #### 4.3 Alternative Approaches Analysis
-- **DFS Visited Set:** Build adjacency list. Start DFS from 0, tracking `visited`. If DFS encounters an already-visited neighbor that is not the parent, a cycle exists. At end, verify `visited.Count == n`. Complexity: $O(V + E)$ time and space.
+- **DFS Visited Set:** Build adjacency list. Start DFS from 0, tracking `visited`. If DFS encounters an already-visited neighbor that is not the parent, a cycle exists. At end, verify `visited.Count == n`. Complexity: O(V + E) time and space.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Metric | Approach 1: DSU + Edge Count Check | Approach 2: DFS Visited + Cycle Check |
 | :--- | :--- | :--- |
-| **Time Complexity** | $O(N \cdot \alpha(N)) \approx O(N)$ | $O(N)$ |
-| **Auxiliary Space** | $O(N)$ flat array | $O(N)$ graph list + stack + set |
-| **Early Rejection** | $O(1)$ when $E \ne n - 1$ | $O(1)$ when $E \ne n - 1$ |
+| **Time Complexity** | O(N * alpha(N)) ~ O(N) | O(N) |
+| **Auxiliary Space** | O(N) flat array | O(N) graph list + stack + set |
+| **Early Rejection** | O(1) when E != n - 1 | O(1) when E != n - 1 |
 | **Graph Construction** | Zero (streams edges directly) | Required (allocates adjacency lists) |
 | **Cache Locality** | High | Low |
 

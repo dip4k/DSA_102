@@ -11,7 +11,7 @@ Python is used as the secondary language for rapid whiteboard prototyping, algor
      def two_sum(nums: list[int], target: int) -> list[int]:
      ```
 3. **Core Modules:**
-   - **Queue / Deque:** Use `from collections import deque`. Never use `list.pop(0)` ($O(N)$); always use `deque.popleft()` ($O(1)$).
+   - **Queue / Deque:** Use `from collections import deque`. Never use `list.pop(0)` (`O(N)`); always use `deque.popleft()` (`O(1)`).
    - **Heaps:** Use `import heapq`. Remember that `heapq` is a **Min-Heap**. For Max-Heap, negate values (`-val`) or use custom tuples `(-priority, val)`.
    - **Binary Search:** Use `bisect.bisect_left` and `bisect.bisect_right`.
    - **Counters / Defaults:** Use `collections.Counter` and `collections.defaultdict`.

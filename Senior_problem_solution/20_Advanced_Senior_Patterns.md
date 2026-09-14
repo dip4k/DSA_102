@@ -15,14 +15,14 @@
 
 ### 1. Problem Detail & Constraints
 - **Formal Statement:** You are given an array of integers `nums`, and a sliding window of size `k` moving from the very left of the array to the very right. You can only see the `k` numbers in the window. Each step, the window slides right by one position. Return the max sliding window.
-- **Strict Requirement:** Must achieve $O(N)$ linear time complexity.
+- **Strict Requirement:** Must achieve O(N) linear time complexity.
 - **Key Constraints:**
-  - $1 \le nums.Length \le 10^5$.
-  - $1 \le k \le nums.Length$.
-  - $-10^4 \le nums[i] \le 10^4$.
+  - 1 <= nums.Length <= 10^5.
+  - 1 <= k <= nums.Length.
+  - -10^4 <= nums[i] <= 10^4.
 - **Senior Edge Cases to Defend:**
-  - $k = 1$: Window maximum is simply the array elements themselves.
-  - $k = nums.Length$: Exactly 1 output element representing the global maximum.
+  - k = 1: Window maximum is simply the array elements themselves.
+  - k = nums.Length: Exactly 1 output element representing the global maximum.
   - Strictly decreasing array vs strictly increasing array (tests deque eviction behavior).
 
 ### 2. Summary & Sample Input / Output
@@ -31,35 +31,35 @@
   - **Input:** `nums = [1, 3, -1, -3, 5, 3, 6, 7], k = 3`
   - **Output:** `[3, 3, 5, 5, 6, 7]`
   - **Explanation:**
-    - Window `[1, 3, -1]` $\implies$ max = 3
-    - Window `[3, -1, -3]` $\implies$ max = 3
-    - Window `[-1, -3, 5]` $\implies$ max = 5
-    - Window `[-3, 5, 3]` $\implies$ max = 5
-    - Window `[5, 3, 6]` $\implies$ max = 6
-    - Window `[3, 6, 7]` $\implies$ max = 7
+    - Window `[1, 3, -1]` => max = 3
+    - Window `[3, -1, -3]` => max = 3
+    - Window `[-1, -3, 5]` => max = 5
+    - Window `[-3, 5, 3]` => max = 5
+    - Window `[5, 3, 6]` => max = 6
+    - Window `[3, 6, 7]` => max = 7
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine a line of job applicants where your team window can hold $k$ candidates. A newly arriving candidate $B$ is both **younger** (will stay in the company longer) and **more qualified** (higher value $nums[i]$) than an existing candidate $A$ currently in the team.
-Under this reality, candidate $A$ will **never** be the best person in the team for any current or future window because candidate $B$ outshines them and outlasts them!
-Candidate $A$ is completely obsolete and can be eliminated immediately. By systematically popping all obsolete, weaker candidates from the back of our record book, the candidates naturally align in **strictly descending order of value**. The best candidate is always sitting right at the front of the line!
+Imagine a line of job applicants where your team window can hold k candidates. A newly arriving candidate B is both **younger** (will stay in the company longer) and **more qualified** (higher value nums[i]) than an existing candidate A currently in the team.
+Under this reality, candidate A will **never** be the best person in the team for any current or future window because candidate B outshines them and outlasts them!
+Candidate A is completely obsolete and can be eliminated immediately. By systematically popping all obsolete, weaker candidates from the back of our record book, the candidates naturally align in **strictly descending order of value**. The best candidate is always sitting right at the front of the line!
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A brute-force scan recalculates the maximum across the $k$ window elements at each of the $N - k + 1$ window positions:
-$$T(N, k) = O((N - k + 1) \times k) = O(N \cdot k)$$
-For $N = 10^5, k = 50,000$, $N \cdot k \approx 5 \times 10^9$ operations, causing catastrophic timeout.
-A Max-Heap (PriorityQueue) takes $O(N \log k)$, but standard heaps do not support $O(1)$ arbitrary removals when elements exit the window. The Monotonic Deque achieves $O(N)$ amortized time because every element is added and removed at most once.
+A brute-force scan recalculates the maximum across the k window elements at each of the N - k + 1 window positions:
+T(N, k) = O((N - k + 1) * k) = O(N * k)
+For N = 10^5, k = 50,000, N * k ~ 5 x 10^9 operations, causing catastrophic timeout.
+A Max-Heap (PriorityQueue) takes O(N log k), but standard heaps do not support O(1) arbitrary removals when elements exit the window. The Monotonic Deque achieves O(N) amortized time because every element is added and removed at most once.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **Monotonic Deque Invariant:**
 Store array **indices** (not raw values) in a double-ended queue (`LinkedList<int>` or custom circular array buffer):
-$$\forall j_1 < j_2 \in \text{deque}, \quad nums[j_1] > nums[j_2]$$
+for all j_1 < j_2 in deque, nums[j_1] > nums[j_2]
 - **Dual Eviction Mechanism:**
-  1. **Front Eviction (Expiry Gate):** Before recording the result, if `deque.First.Value <= i - k`, the front element has fallen outside the active window $[i - k + 1 \dots i]$. Pop it from the front!
-  2. **Back Eviction (Obsolescence Gate):** Before inserting index $i$, while `deque.Count > 0` and `nums[deque.Last.Value] <= nums[i]`, pop from the back. These elements are permanently dominated by $nums[i]$.
+  1. **Front Eviction (Expiry Gate):** Before recording the result, if `deque.First.Value <= i - k`, the front element has fallen outside the active window [i - k + 1 ... i]. Pop it from the front!
+  2. **Back Eviction (Obsolescence Gate):** Before inserting index i, while `deque.Count > 0` and `nums[deque.Last.Value] <= nums[i]`, pop from the back. These elements are permanently dominated by nums[i].
 - **Window Maximum Invariant:**
-  After both evictions and inserting index $i$, `nums[deque.First.Value]` is mathematically guaranteed to be the maximum element in the active window.
+  After both evictions and inserting index i, `nums[deque.First.Value]` is mathematically guaranteed to be the maximum element in the active window.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -76,30 +76,30 @@ Back Eviction:   Drop while nums[deque.Last] <= nums[i] (Dominated)
 Window Maximum:  nums[deque.First] (O(1) access)
 ```
 
-- `i`: Current array scan cursor advancing from $0$ to $N - 1$.
+- `i`: Current array scan cursor advancing from 0 to N - 1.
 - `deque`: Stores indices of potential maximum candidates in strictly decreasing value order.
-- `result`: Array of size $N - k + 1$ recording window maxima once $i \ge k - 1$.
+- `result`: Array of size N - k + 1 recording window maxima once i >= k - 1.
 
 #### 3.5 State Transition Triggers & Decision Gates
-For each index $i \in [0 \dots N - 1]$:
+For each index i in [0 ... N - 1]:
 1. **Expiry Gate:** If `deque.Count > 0 && deque.First.Value <= i - k`, execute `deque.RemoveFirst()`.
 2. **Obsolescence Gate:** While `deque.Count > 0 && nums[deque.Last.Value] <= nums[i]`, execute `deque.RemoveLast()`.
 3. **Insertion Gate:** `deque.AddLast(i)`.
-4. **Recording Gate:** If $i \ge k - 1$, record `result[i - k + 1] = nums[deque.First.Value]`.
+4. **Recording Gate:** If i >= k - 1, record `result[i - k + 1] = nums[deque.First.Value]`.
 
 #### 3.6 Concrete Step-by-Step State Trace
 Trace input: `nums = [1, 3, -1, -3, 5, 3, 6, 7]`, `k = 3`.
 
-| $i$ | `nums[i]` | Front Eviction (`<= i - 3`) | Back Eviction (`<= nums[i]`) | Deque Indices (Values) | Result Recorded |
+| i | `nums[i]` | Front Eviction (`<= i - 3`) | Back Eviction (`<= nums[i]`) | Deque Indices (Values) | Result Recorded |
 | :---: | :---: | :---: | :---: | :--- | :---: |
 | **0** | 1 | None | None | `[0 (1)]` | — |
-| **1** | 3 | None | Pop 0 (1 $\le$ 3) | `[1 (3)]` | — |
+| **1** | 3 | None | Pop 0 (1 <= 3) | `[1 (3)]` | — |
 | **2** | -1 | None | None | `[1 (3), 2 (-1)]` | `result[0] = 3` |
 | **3** | -3 | None | None | `[1 (3), 2 (-1), 3 (-3)]` | `result[1] = 3` |
-| **4** | 5 | Pop 1 ($1 \le 4-3$) | Pop 3 (-3 $\le$ 5), Pop 2 (-1 $\le$ 5) | `[4 (5)]` | `result[2] = 5` |
+| **4** | 5 | Pop 1 (1 <= 4-3) | Pop 3 (-3 <= 5), Pop 2 (-1 <= 5) | `[4 (5)]` | `result[2] = 5` |
 | **5** | 3 | None | None | `[4 (5), 5 (3)]` | `result[3] = 5` |
-| **6** | 6 | None | Pop 5 (3 $\le$ 6), Pop 4 (5 $\le$ 6) | `[6 (6)]` | `result[4] = 6` |
-| **7** | 7 | None | Pop 6 (6 $\le$ 7) | `[7 (7)]` | `result[5] = 7` |
+| **6** | 6 | None | Pop 5 (3 <= 6), Pop 4 (5 <= 6) | `[6 (6)]` | `result[4] = 6` |
+| **7** | 7 | None | Pop 6 (6 <= 7) | `[7 (7)]` | `result[5] = 7` |
 
 Final output: `[3, 3, 5, 5, 6, 7]`.
 
@@ -108,30 +108,30 @@ Final output: `[3, 3, 5, 5, 6, 7]`.
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Monotonic Deque):** Universal gold standard. $O(N)$ amortized time, $O(k)$ auxiliary space. Handles online streams where numbers arrive sequentially.
-- **Approach 2 (Block Partition Prefix / Suffix Max):** Non-queue linear alternative. Divide array into fixed blocks of size $k$. Compute prefix-max and suffix-max within each block. Window max is $\max(\text{suffix}[i], \text{prefix}[i + k - 1])$. Extremely fast cache locality, but requires static offline array access.
+- **Approach 1 (Monotonic Deque):** Universal gold standard. O(N) amortized time, O(k) auxiliary space. Handles online streams where numbers arrive sequentially.
+- **Approach 2 (Block Partition Prefix / Suffix Max):** Non-queue linear alternative. Divide array into fixed blocks of size k. Compute prefix-max and suffix-max within each block. Window max is max(suffix[i], prefix[i + k - 1]). Extremely fast cache locality, but requires static offline array access.
 
 #### 4.2 Step-by-Step Natural Progression Flow
-- **Step 1: Setup & Allocations:** Handle empty array or $k \le 0$. Allocate `result = new int[n - k + 1]`.
+- **Step 1: Setup & Allocations:** Handle empty array or k <= 0. Allocate `result = new int[n - k + 1]`.
 - **Step 2: Initialize Deque:** Create double-ended queue storing integer indices.
-- **Step 3: Exploration Loop:** Advance $i$ from $0$ to $N - 1$. Apply expiry gate, then obsolescence gate, then push $i$.
-- **Step 4: Window Output:** If $i \ge k - 1$, write `nums[deque.First.Value]` to result. Return `result`.
+- **Step 3: Exploration Loop:** Advance i from 0 to N - 1. Apply expiry gate, then obsolescence gate, then push i.
+- **Step 4: Window Output:** If i >= k - 1, write `nums[deque.First.Value]` to result. Return `result`.
 
 #### 4.3 Alternative Approaches Analysis
-- **Approach 2: Block Partitioning ($O(N)$ Time, $O(N)$ Space):**
-  - Partition array into blocks of length $k$.
-  - Compute `left[i]`: max from block start to $i$.
-  - Compute `right[i]`: max from block end down to $i$.
-  - For any window $[i \dots i + k - 1]$: max is $\max(right[i], left[i + k - 1])$.
+- **Approach 2: Block Partitioning (O(N) Time, O(N) Space):**
+  - Partition array into blocks of length k.
+  - Compute `left[i]`: max from block start to i.
+  - Compute `right[i]`: max from block end down to i.
+  - For any window [i ... i + k - 1]: max is max(right[i], left[i + k - 1]).
   - Zero deque node allocation overhead!
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Metric | Approach 1: Monotonic Deque (Standard) | Approach 2: Block Partition (Prefix/Suffix) |
 | :--- | :--- | :--- |
-| **Time Complexity (Best / Avg / Worst)** | $O(N)$ / $O(N)$ / $O(N)$ | $O(N)$ / $O(N)$ / $O(N)$ |
-| **Auxiliary Space** | $O(k)$ deque storage | $O(N)$ prefix/suffix arrays |
-| **Output Space** | $O(N - k + 1)$ array | $O(N - k + 1)$ array |
+| **Time Complexity (Best / Avg / Worst)** | O(N) / O(N) / O(N) | O(N) / O(N) / O(N) |
+| **Auxiliary Space** | O(k) deque storage | O(N) prefix/suffix arrays |
+| **Output Space** | O(N - k + 1) array | O(N - k + 1) array |
 | **Cache Locality** | Moderate (node pointer links) | Optimal (sequential flat arrays) |
 | **In-Place Mutability** | Non-destructive | Non-destructive |
 | **Streaming Suitability** | High (processes stream online) | Low (requires full array upfront) |
@@ -199,7 +199,7 @@ public class Solution
 }
 ```
 
-#### Implementation 2: Block Partition Prefix / Suffix Max ($O(N)$ Space)
+#### Implementation 2: Block Partition Prefix / Suffix Max (O(N) Space)
 ```csharp
 public class SolutionBlockPartition
 {
@@ -254,19 +254,19 @@ public class SolutionBlockPartition
 | **LeetCode Link** | [Median of Two Sorted Arrays](https://leetcode.com/problems/median-of-two-sorted-arrays/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** Given two sorted arrays `nums1` and `nums2` of size $m$ and $n$ respectively, return the median of the two sorted arrays. The overall run time complexity should be $O(\log (m + n))$.
+- **Formal Statement:** Given two sorted arrays `nums1` and `nums2` of size m and n respectively, return the median of the two sorted arrays. The overall run time complexity should be O(log (m + n)).
 - **Key Constraints:**
-  - $nums1.Length == m, nums2.Length == n$.
-  - $0 \le m, n \le 1000$.
-  - $1 \le m + n \le 2000$.
-  - $-10^6 \le nums1[i], nums2[i] \le 10^6$.
+  - nums1.Length == m, nums2.Length == n.
+  - 0 <= m, n <= 1000.
+  - 1 <= m + n <= 2000.
+  - -10^6 <= nums1[i], nums2[i] <= 10^6.
 - **Senior Edge Cases to Defend:**
-  - One array completely empty ($m = 0$ or $n = 0$).
-  - Partition cut at extreme boundaries ($i = 0$ or $i = m$). Handled via $\pm \infty$ sentinels.
+  - One array completely empty (m = 0 or n = 0).
+  - Partition cut at extreme boundaries (i = 0 or i = m). Handled via +/- infinity sentinels.
   - Ensuring search is strictly performed on the shorter array to avoid out-of-bounds indexing in the longer array.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Binary Search on Partition Cut: Binary search the partition cut in the shorter array such that the combined left half contains $(m + n + 1) / 2$ elements and every element in the combined left half is $\le$ every element in the combined right half.
+- **Conceptual Essence:** Binary Search on Partition Cut: Binary search the partition cut in the shorter array such that the combined left half contains (m + n + 1) / 2 elements and every element in the combined left half is <= every element in the combined right half.
 - **Sample 1:**
   - **Input:** `nums1 = [1, 3], nums2 = [2]`
   - **Output:** `2.0`
@@ -274,36 +274,39 @@ public class SolutionBlockPartition
 - **Sample 2:**
   - **Input:** `nums1 = [1, 2], nums2 = [3, 4]`
   - **Output:** `2.5`
-  - **Explanation:** Merged array = `[1, 2, 3, 4]`, median is $(2 + 3) / 2 = 2.5$.
+  - **Explanation:** Merged array = `[1, 2, 3, 4]`, median is (2 + 3) / 2 = 2.5.
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine dropping a single vertical guillotine blade across two parallel sorted conveyor belts $A$ and $B$.
-You want the blade to divide the total collection of $m + n$ items into two equal halves: a Left Half and a Right Half.
-- The blade cuts through belt $A$ at position $i$ (leaving $i$ items on the left) and belt $B$ at position $j$ (leaving $j$ items on the left).
-- To balance the halves, the total left items must equal $half = (m + n + 1) / 2$. Therefore, once you choose cut $i$, cut $j$ is **uniquely fixed**: $j = half - i$.
+Imagine dropping a single vertical guillotine blade across two parallel sorted conveyor belts A and B.
+You want the blade to divide the total collection of m + n items into two equal halves: a Left Half and a Right Half.
+- The blade cuts through belt A at position i (leaving i items on the left) and belt B at position j (leaving j items on the left).
+- To balance the halves, the total left items must equal half = (m + n + 1) / 2. Therefore, once you choose cut i, cut j is **uniquely fixed**: j = half - i.
 - The cut is valid if and only if no item on the left is larger than any item on the right! Because each array is already internally sorted, this requires verifying only two cross-boundary inequalities:
-  $$A[i - 1] \le B[j] \quad \land \quad B[j - 1] \le A[i]$$
-Because the condition is monotonic, we can find the perfect cut $i$ via **Binary Search**!
+  A[i - 1] <= B[j] AND B[j - 1] <= A[i]
+Because the condition is monotonic, we can find the perfect cut i via **Binary Search**!
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-Merging the two sorted arrays with two pointers takes $O(m + n)$ time and $O(m + n)$ space (or $O(1)$ space if counting up to the median index).
-For large arrays, linear scanning wastes computation inspecting thousands of elements far from the median. Binary searching the cut space in the shorter array reduces runtime to $O(\log(\min(m, n)))$, taking at most $\approx 10$ iterations for $m = 1000$.
+Merging the two sorted arrays with two pointers takes O(m + n) time and O(m + n) space (or O(1) space if counting up to the median index).
+For large arrays, linear scanning wastes computation inspecting thousands of elements far from the median. Binary searching the cut space in the shorter array reduces runtime to O(log(min(m, n))), taking at most ~ 10 iterations for m = 1000.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **Cross-Boundary Partition Invariant:**
-Let cut $i \in [0, m]$ in $A$, and $j = (m + n + 1) / 2 - i$ in $B$.
+Let cut i in [0, m] in A, and j = (m + n + 1) / 2 - i in B.
 Define four boundary values using sentinels for edge cuts:
-$$\begin{aligned} A_{left} &= (i == 0) \;?\; -\infty \;:\; A[i - 1] \\ A_{right} &= (i == m) \;?\; +\infty \;:\; A[i] \\ B_{left} &= (j == 0) \;?\; -\infty \;:\; B[j - 1] \\ B_{right} &= (j == n) \;?\; +\infty \;:\; B[j] \end{aligned}$$
+A_left = (i == 0) ? -infinity : A[i - 1]
+A_right = (i == m) ? +infinity : A[i]
+B_left = (j == 0) ? -infinity : B[j - 1]
+B_right = (j == n) ? +infinity : B[j]
 - **Invariant:** A valid partition satisfies:
-  $$A_{left} \le B_{right} \quad \land \quad B_{left} \le A_{right}$$
+  A_left <= B_right AND B_left <= A_right
 - **Binary Search Direction Gate:**
-  - If $A_{left} > B_{right}$: Cut $i$ is too far to the right in $A$. Shift binary search left: `right = i - 1`.
-  - If $B_{left} > A_{right}$: Cut $i$ is too far to the left in $A$. Shift binary search right: `left = i + 1`.
+  - If A_left > B_right: Cut i is too far to the right in A. Shift binary search left: `right = i - 1`.
+  - If B_left > A_right: Cut i is too far to the left in A. Shift binary search right: `left = i + 1`.
 - **Median Resolution:**
-  - If total elements $m + n$ is odd: Median is $\max(A_{left}, B_{left})$.
-  - If total elements $m + n$ is even: Median is $\frac{\max(A_{left}, B_{left}) + \min(A_{right}, B_{right})}{2.0}$.
+  - If total elements m + n is odd: Median is max(A_left, B_left).
+  - If total elements m + n is even: Median is frac{max(A_left, B_left) + min(A_right, B_right)}{2.0}.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -321,60 +324,60 @@ Array B: [ B[0] ... B[j-1] ] | [ B[j] ... B[n-1] ]
 Valid Cut Invariant: A_left <= B_right  AND  B_left <= A_right
 ```
 
-- `i`: Partition cut in shorter array $A$ ($0 \le i \le m$).
-- `j`: Partition cut in longer array $B$: $j = (m + n + 1) / 2 - i$.
+- `i`: Partition cut in shorter array A (0 <= i <= m).
+- `j`: Partition cut in longer array B: j = (m + n + 1) / 2 - i.
 - `A_left, A_right, B_left, B_right`: The four pivotal boundary elements surrounding the cut.
 
 #### 3.5 State Transition Triggers & Decision Gates
 While `left <= right`:
 1. **Compute Cuts:** `i = left + (right - left) / 2`, `j = (m + n + 1) / 2 - i`.
-2. **Sentinel Extraction:** Safely retrieve $A_{left}, A_{right}, B_{left}, B_{right}$ using `int.MinValue` and `int.MaxValue`.
+2. **Sentinel Extraction:** Safely retrieve A_left, A_right, B_left, B_right using `int.MinValue` and `int.MaxValue`.
 3. **Validation Gate:**
-   - If $A_{left} \le B_{right}$ AND $B_{left} \le A_{right}$: Valid partition found! Compute and return median.
-   - Else if $A_{left} > B_{right}$: `right = i - 1`.
+   - If A_left <= B_right AND B_left <= A_right: Valid partition found! Compute and return median.
+   - Else if A_left > B_right: `right = i - 1`.
    - Else: `left = i + 1`.
 
 #### 3.6 Concrete Step-by-Step State Trace
-Trace input: `nums1 = [1, 3]`, `nums2 = [2]`. $m = 2, n = 1$.
-Swap arrays so $A$ is shorter: $A = [2]$ ($m = 1$), $B = [1, 3]$ ($n = 2$).
-Total length = 3 (odd). $half = (1 + 2 + 1) / 2 = 2$.
+Trace input: `nums1 = [1, 3]`, `nums2 = [2]`. m = 2, n = 1.
+Swap arrays so A is shorter: A = [2] (m = 1), B = [1, 3] (n = 2).
+Total length = 3 (odd). half = (1 + 2 + 1) / 2 = 2.
 Search range: `left = 0, right = 1`.
 
-| Iteration | `left` | `right` | Cut $i$ in $A$ | Cut $j$ in $B$ | $A_{left}, A_{right}$ | $B_{left}, B_{right}$ | Invariant Check | Action |
+| Iteration | `left` | `right` | Cut i in A | Cut j in B | A_left, A_right | B_left, B_right | Invariant Check | Action |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
-| **1** | 0 | 1 | 0 | $2 - 0 = 2$ | $-\infty, 2$ | $3, +\infty$ | $B_{left} (3) > A_{right} (2)$ | Cut $i$ too small! `left = 0 + 1 = 1` |
-| **2** | 1 | 1 | 1 | $2 - 1 = 1$ | $2, +\infty$ | $1, 3$ | $A_{left} (2) \le B_{right} (3)$ and $B_{left} (1) \le A_{right} (\infty)$ | **Valid Partition!** |
+| **1** | 0 | 1 | 0 | 2 - 0 = 2 | -infinity, 2 | 3, +infinity | B_left (3) > A_right (2) | Cut i too small! `left = 0 + 1 = 1` |
+| **2** | 1 | 1 | 1 | 2 - 1 = 1 | 2, +infinity | 1, 3 | A_left (2) <= B_right (3) and B_left (1) <= A_right (infinity) | **Valid Partition!** |
 
-Total is odd $\implies$ Median $= \max(A_{left}, B_{left}) = \max(2, 1) = 2.0$.
+Total is odd => Median = max(A_left, B_left) = max(2, 1) = 2.0.
 
 ---
 
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Binary Search on Shorter Partition Cut):** Strictly optimal. $O(\log(\min(m, n)))$ runtime, $O(1)$ auxiliary memory. Mandatory in interviews that demand sub-linear $O(\log(m + n))$ complexity.
-- **Approach 2 (K-th Element Selection via Recursive Binary Search):** Generalizes median finding to finding the $k$-th smallest element in two sorted arrays by discarding $k/2$ elements per step in $O(\log(m + n))$ time.
+- **Approach 1 (Binary Search on Shorter Partition Cut):** Strictly optimal. O(log(min(m, n))) runtime, O(1) auxiliary memory. Mandatory in interviews that demand sub-linear O(log(m + n)) complexity.
+- **Approach 2 (K-th Element Selection via Recursive Binary Search):** Generalizes median finding to finding the k-th smallest element in two sorted arrays by discarding k/2 elements per step in O(log(m + n)) time.
 
 #### 4.2 Step-by-Step Natural Progression Flow
-- **Step 1: Guarantee Shorter Array:** If $nums1.Length > nums2.Length$, swap parameters.
+- **Step 1: Guarantee Shorter Array:** If nums1.Length > nums2.Length, swap parameters.
 - **Step 2: Binary Search Bounds:** Set `left = 0, right = m`.
-- **Step 3: Mid Calculation & Boundary Extraction:** Compute $i$ and $j$, extract boundary values with `int.MinValue` and `int.MaxValue`.
+- **Step 3: Mid Calculation & Boundary Extraction:** Compute i and j, extract boundary values with `int.MinValue` and `int.MaxValue`.
 - **Step 4: Convergence & Resolution:** Return median on valid cut; otherwise adjust binary search bounds.
 
 #### 4.3 Alternative Approaches Analysis
 - **Approach 2: K-th Element Divide and Conquer:**
   - Define `FindKth(nums1, i, nums2, j, k)`.
-  - Compare $nums1[i + k/2 - 1]$ with $nums2[j + k/2 - 1]$.
-  - Discard the smaller half ($k/2$ elements) and recurse with $k = k - k/2$.
-  - Time is $O(\log(m + n))$.
+  - Compare nums1[i + k/2 - 1] with nums2[j + k/2 - 1].
+  - Discard the smaller half (k/2 elements) and recurse with k = k - k/2.
+  - Time is O(log(m + n)).
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Metric | Approach 1: Partition Cut Binary Search (Optimal) | Approach 2: K-th Element Recursive Discard |
 | :--- | :--- | :--- |
-| **Time Complexity (Best / Avg / Worst)** | $O(\log(\min(m, n)))$ | $O(\log(m + n))$ |
-| **Auxiliary Space** | $O(1)$ scalar variables | $O(\log(m + n))$ call stack depth |
-| **Output Space** | $O(1)$ double floating-point scalar | $O(1)$ double floating-point scalar |
+| **Time Complexity (Best / Avg / Worst)** | O(log(min(m, n))) | O(log(m + n)) |
+| **Auxiliary Space** | O(1) scalar variables | O(log(m + n)) call stack depth |
+| **Output Space** | O(1) double floating-point scalar | O(1) double floating-point scalar |
 | **Cache Locality** | Pure CPU register execution | Moderate |
 | **In-Place Mutability** | Non-destructive | Non-destructive |
 | **Streaming Suitability** | Low | Low |
@@ -461,7 +464,7 @@ public class Solution
 }
 ```
 
-#### Implementation 2: K-th Element Recursive Discard ($O(\log(m + n))$)
+#### Implementation 2: K-th Element Recursive Discard (O(log(m + n)))
 ```csharp
 public class SolutionKthElement
 {
@@ -521,19 +524,19 @@ public class SolutionKthElement
 ### 1. Problem Detail & Constraints
 - **Formal Statement:** Given an array of integers `heights` representing the histogram's bar height where the width of each bar is 1, return the area of the largest rectangle in the histogram.
 - **Key Constraints:**
-  - $1 \le heights.Length \le 10^5$.
-  - $0 \le heights[i] \le 10^4$.
+  - 1 <= heights.Length <= 10^5.
+  - 0 <= heights[i] <= 10^4.
 - **Senior Edge Cases to Defend:**
   - Monotonically increasing heights (e.g. `[1, 2, 3, 4, 5]`): Must flush remaining elements in stack after array traversal.
-  - All heights equal: Handled cleanly by $\ge$ popping.
+  - All heights equal: Handled cleanly by >= popping.
   - Histogram containing zeroes: Zero-height bars act as walls separating rectangles.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Monotonic Increasing Stack: For each bar $h$, its maximum rectangular area extends between the first strictly smaller bar to its left and the first strictly smaller bar to its right.
+- **Conceptual Essence:** Monotonic Increasing Stack: For each bar h, its maximum rectangular area extends between the first strictly smaller bar to its left and the first strictly smaller bar to its right.
 - **Sample 1:**
   - **Input:** `heights = [2, 1, 5, 6, 2, 3]`
   - **Output:** `10`
-  - **Explanation:** The largest rectangle is formed by bars at indices 2 and 3 with height 5: $5 \times 2 = 10$.
+  - **Explanation:** The largest rectangle is formed by bars at indices 2 and 3 with height 5: 5 x 2 = 10.
 - **Sample 2:**
   - **Input:** `heights = [2, 4]`
   - **Output:** `4`
@@ -542,28 +545,28 @@ public class SolutionKthElement
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
 Imagine an architectural row of stone pillars of varying heights. You want to construct the largest possible rectangular billboard suspended between the pillars.
-For any pillar $mid$ of height $H$, how wide can a billboard of height $H$ stretch?
-- It can extend to the left until it hits the first pillar shorter than $H$.
-- It can extend to the right until it hits the first pillar shorter than $H$.
-If we maintain a **Monotonic Increasing Stack** of pillar indices, the moment an incoming pillar $i$ is shorter than the top of our stack, pillar $i$ forms the **right boundary wall** for the stack top! And because the stack is increasing, the pillar immediately beneath the stack top is its **left boundary wall**!
-Thus, popping a bar from the stack resolves both its left and right limits simultaneously in $O(1)$!
+For any pillar mid of height H, how wide can a billboard of height H stretch?
+- It can extend to the left until it hits the first pillar shorter than H.
+- It can extend to the right until it hits the first pillar shorter than H.
+If we maintain a **Monotonic Increasing Stack** of pillar indices, the moment an incoming pillar i is shorter than the top of our stack, pillar i forms the **right boundary wall** for the stack top! And because the stack is increasing, the pillar immediately beneath the stack top is its **left boundary wall**!
+Thus, popping a bar from the stack resolves both its left and right limits simultaneously in O(1)!
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A brute-force algorithm tests every bar $i$, expanding outward to left and right until hitting a shorter bar:
-$$T(N) = \sum_{i=0}^{N-1} O(N) = O(N^2)$$
-For $N = 10^5$, $N^2 = 10^{10}$ operations, causing guaranteed timeout. Monotonic stack eliminates redundant boundary scans by resolving boundaries in a single $O(N)$ pass.
+A brute-force algorithm tests every bar i, expanding outward to left and right until hitting a shorter bar:
+T(N) = Sum(i=0..N-1) O(N) = O(N^2)
+For N = 10^5, N^2 = 10^10 operations, causing guaranteed timeout. Monotonic stack eliminates redundant boundary scans by resolving boundaries in a single O(N) pass.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **Concurrent Dual Boundary Resolution:**
 Maintain a stack storing indices in strictly increasing order of heights:
-$$\text{stack}: \quad heights[s_0] < heights[s_1] < \dots < heights[s_k]$$
-When an incoming bar $heights[i]$ is shorter than $heights[mid]$ (where $mid = stack.Pop()$):
-1. **Right Smaller Boundary:** Strictly index $i$ (the bar that triggered the pop).
-2. **Left Smaller Boundary:** Strictly $stack.Peek()$ (the index immediately beneath $mid$ in the stack).
+stack: heights[s_0] < heights[s_1] < ... < heights[s_k]
+When an incoming bar heights[i] is shorter than heights[mid] (where mid = stack.Pop()):
+1. **Right Smaller Boundary:** Strictly index i (the bar that triggered the pop).
+2. **Left Smaller Boundary:** Strictly stack.Peek() (the index immediately beneath mid in the stack).
 3. **Width Calculation:**
-   $$width = i - \text{stack.Peek()} - 1$$
+   width = i - stack.Peek() - 1
 4. **Area:**
-   $$area = heights[mid] \times width$$
+   area = heights[mid] * width
 - **Sentinel Invariant:** Initializing the stack with sentinel `-1` cleanly defines the left boundary when a bar extends all the way to the start of the array.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
@@ -584,36 +587,36 @@ Pop mid = 3 (ht 6):
 
 - `i`: Current array scan cursor representing the right boundary of popped bars.
 - `mid`: The popped index whose rectangular area is being finalized.
-- `stack.Peek()`: The left boundary index immediately strictly smaller than $heights[mid]$.
+- `stack.Peek()`: The left boundary index immediately strictly smaller than heights[mid].
 - `maxArea`: Running maximum rectangle area seen so far.
 
 #### 3.5 State Transition Triggers & Decision Gates
-For each index $i \in [0 \dots N - 1]$:
+For each index i in [0 ... N - 1]:
 1. **Popping Gate:** While `stack.Peek() != -1 && heights[stack.Peek()] >= heights[i]`:
    - `mid = stack.Pop()`.
    - `height = heights[mid]`.
    - `width = i - stack.Peek() - 1`.
    - `maxArea = Math.Max(maxArea, height * width)`.
 2. **Push Gate:** `stack.Push(i)`.
-3. **Flush Gate:** After loop, flush remaining indices in stack using $N$ as the right boundary.
+3. **Flush Gate:** After loop, flush remaining indices in stack using N as the right boundary.
 
 #### 3.6 Concrete Step-by-Step State Trace
 Trace input: `heights = [2, 1, 5, 6, 2, 3]`. Stack initialized with `[-1]`.
 
-| Step | $i$ | `heights[i]` | Stack State (Indices) | Popped `mid` | Width Calculation | Area | `maxArea` |
+| Step | i | `heights[i]` | Stack State (Indices) | Popped `mid` | Width Calculation | Area | `maxArea` |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **1** | 0 | 2 | `[-1, 0]` | None | — | — | 0 |
-| **2** | 1 | 1 | Pop 0 | 0 (ht 2) | $1 - (-1) - 1 = 1$ | $2 \times 1 = 2$ | 2 |
+| **2** | 1 | 1 | Pop 0 | 0 (ht 2) | 1 - (-1) - 1 = 1 | 2 x 1 = 2 | 2 |
 | | | | `[-1, 1]` | Push 1 | — | — | 2 |
 | **3** | 2 | 5 | `[-1, 1, 2]` | None | — | — | 2 |
 | **4** | 3 | 6 | `[-1, 1, 2, 3]`| None | — | — | 2 |
-| **5** | 4 | 2 | Pop 3 | 3 (ht 6) | $4 - 2 - 1 = 1$ | $6 \times 1 = 6$ | 6 |
-| | | | Pop 2 | 2 (ht 5) | $4 - 1 - 1 = 2$ | $5 \times 2 = 10$ | **10** |
+| **5** | 4 | 2 | Pop 3 | 3 (ht 6) | 4 - 2 - 1 = 1 | 6 x 1 = 6 | 6 |
+| | | | Pop 2 | 2 (ht 5) | 4 - 1 - 1 = 2 | 5 x 2 = 10 | **10** |
 | | | | `[-1, 1, 4]` | Push 4 | — | — | 10 |
 | **6** | 5 | 3 | `[-1, 1, 4, 5]`| None | — | — | 10 |
-| **Flush**| — | $N=6$ | Pop 5 | 5 (ht 3) | $6 - 4 - 1 = 1$ | $3 \times 1 = 3$ | 10 |
-| | | | Pop 4 | 4 (ht 2) | $6 - 1 - 1 = 4$ | $2 \times 4 = 8$ | 10 |
-| | | | Pop 1 | 1 (ht 1) | $6 - (-1) - 1 = 6$ | $1 \times 6 = 6$ | 10 |
+| **Flush**| — | N=6 | Pop 5 | 5 (ht 3) | 6 - 4 - 1 = 1 | 3 x 1 = 3 | 10 |
+| | | | Pop 4 | 4 (ht 2) | 6 - 1 - 1 = 4 | 2 x 4 = 8 | 10 |
+| | | | Pop 1 | 1 (ht 1) | 6 - (-1) - 1 = 6 | 1 x 6 = 6 | 10 |
 
 Final maximum rectangle area: `10`.
 
@@ -622,30 +625,30 @@ Final maximum rectangle area: `10`.
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Monotonic Stack with Sentinel):** Industry gold standard. Single pass, $O(N)$ linear time, $O(N)$ stack memory. Computes both left and right boundaries concurrently.
-- **Approach 2 (Three-Pass Array Boundaries):** Precomputes `leftSmaller[i]` and `rightSmaller[i]` arrays using two monotonic passes, then computes areas in a third pass. Conceptually modular, but requires $3\times$ array allocations.
+- **Approach 1 (Monotonic Stack with Sentinel):** Industry gold standard. Single pass, O(N) linear time, O(N) stack memory. Computes both left and right boundaries concurrently.
+- **Approach 2 (Three-Pass Array Boundaries):** Precomputes `leftSmaller[i]` and `rightSmaller[i]` arrays using two monotonic passes, then computes areas in a third pass. Conceptually modular, but requires 3* array allocations.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 - **Step 1: Setup & Sentinel:** Check empty array. Allocate `Stack<int>`, push sentinel `-1`.
-- **Step 2: Exploration Loop:** Advance $i$ from $0$ to $N - 1$.
+- **Step 2: Exploration Loop:** Advance i from 0 to N - 1.
 - **Step 3: Popping & Area Maximization:** While stack top is taller than current bar, pop, calculate width using `i - stack.Peek() - 1`, maximize area.
-- **Step 4: Stack Flush & Return:** Flush remaining elements with right boundary $N$. Return `maxArea`.
+- **Step 4: Stack Flush & Return:** Flush remaining elements with right boundary N. Return `maxArea`.
 
 #### 4.3 Alternative Approaches Analysis
 - **Approach 2: Precomputed Boundary Arrays:**
   - Allocate `int[] left = new int[N]` and `int[] right = new int[N]`.
   - Pass 1: Monotonic stack left-to-right to fill `left` smaller boundaries.
   - Pass 2: Monotonic stack right-to-left to fill `right` smaller boundaries.
-  - Pass 3: Loop $i \in [0 \dots N-1]$, area $= heights[i] \times (right[i] - left[i] - 1)$.
-  - Takes $O(N)$ time and $O(N)$ space with 3 passes.
+  - Pass 3: Loop i in [0 ... N-1], area = heights[i] * (right[i] - left[i] - 1).
+  - Takes O(N) time and O(N) space with 3 passes.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Metric | Approach 1: Monotonic Stack with Sentinel (Optimal) | Approach 2: Three-Pass Boundary Arrays |
 | :--- | :--- | :--- |
-| **Time Complexity (Best / Avg / Worst)** | $O(N)$ single pass | $O(N)$ three passes |
-| **Auxiliary Space** | $O(N)$ single stack | $O(N)$ two boundary arrays + stack |
-| **Output Space** | $O(1)$ scalar integer | $O(1)$ scalar integer |
+| **Time Complexity (Best / Avg / Worst)** | O(N) single pass | O(N) three passes |
+| **Auxiliary Space** | O(N) single stack | O(N) two boundary arrays + stack |
+| **Output Space** | O(1) scalar integer | O(1) scalar integer |
 | **Cache Locality** | High (single pass) | Moderate (multiple array passes) |
 | **In-Place Mutability** | Non-destructive | Non-destructive |
 | **Streaming Suitability** | High | Low |
@@ -781,17 +784,17 @@ public class SolutionThreePass
 | **LeetCode Link** | [Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** Given $n$ non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.
+- **Formal Statement:** Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.
 - **Key Constraints:**
-  - $n == height.Length \in [1, 2 \times 10^4]$.
-  - $0 \le height[i] \le 10^5$.
+  - n == height.Length in [1, 2 x 10^4].
+  - 0 <= height[i] <= 10^5.
 - **Senior Edge Cases to Defend:**
-  - Array length $< 3$: Cannot trap any water (requires at least 2 boundaries and 1 basin).
+  - Array length < 3: Cannot trap any water (requires at least 2 boundaries and 1 basin).
   - Monotonically increasing or decreasing heights (traps 0 water).
   - All bars of equal height (traps 0 water).
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Boundary Bottleneck Invariant: Water trapped at column $i$ is strictly $\max(0, \min(leftMax, rightMax) - height[i])$. Using two opposing pointers converging inward, we advance whichever boundary is shorter in $O(N)$ time and $O(1)$ space.
+- **Conceptual Essence:** Boundary Bottleneck Invariant: Water trapped at column i is strictly max(0, min(leftMax, rightMax) - height[i]). Using two opposing pointers converging inward, we advance whichever boundary is shorter in O(N) time and O(1) space.
 - **Sample 1:**
   - **Input:** `height = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]`
   - **Output:** `6`
@@ -804,26 +807,26 @@ public class SolutionThreePass
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
 Imagine a mountain canyon between two great mountain ridges.
 - When rain falls into the valley, water pools up to the elevation of the **lower** of the two surrounding ridges.
-- You place two hydraulic surveyor flags at the opposite ends of the canyon: `left` at index 0 and `right` at index $N - 1$.
+- You place two hydraulic surveyor flags at the opposite ends of the canyon: `left` at index 0 and `right` at index N - 1.
 - As they march toward each other, they track the highest mountain peaks seen so far behind them: `leftMax` and `rightMax`.
 - If the left surveyor sees a peak of height 2 (`leftMax = 2`), but the right surveyor sees a peak of height 5 (`rightMax = 5`), the water level above the left surveyor's current position can **never exceed 2**, regardless of what uncharted mountains lie in the intermediate valley!
 - Because the lower boundary dictates the absolute water ceiling, we can safely compute trapped water at the lower boundary immediately and advance that surveyor inward.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
 A brute-force scan calculates the max height to the left and max height to the right for each bar independently:
-$$T(N) = \sum_{i=0}^{N-1} O(N) = O(N^2)$$
-Precomputing prefix and suffix max arrays eliminates redundant scans in $O(N)$ time, but consumes $O(N)$ auxiliary heap memory. The Two-Pointer approach eliminates memory allocation entirely, executing in $O(N)$ time and $O(1)$ space.
+T(N) = Sum(i=0..N-1) O(N) = O(N^2)
+Precomputing prefix and suffix max arrays eliminates redundant scans in O(N) time, but consumes O(N) auxiliary heap memory. The Two-Pointer approach eliminates memory allocation entirely, executing in O(N) time and O(1) space.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **Two-Pointer Boundary Invariant:**
-Let $leftMax = \max_{0 \le k \le L} height[k]$ and $rightMax = \max_{R \le k < N} height[k]$.
-At any point where $height[L] \le height[R]$:
-1. We know with mathematical certainty that the true global right maximum for cell $L$ is $\ge height[R] \ge height[L]$.
-2. Therefore, the limiting bottleneck for cell $L$ is strictly $leftMax$:
-   $$\min(leftMax, \text{trueRightMax}) = leftMax$$
-3. We can immediately compute water trapped at column $L$:
-   $$water = \max(0, leftMax - height[L])$$
-4. Advance $L \to L + 1$. Symmetrically, if $height[R] < height[L]$, resolve column $R$ and decrement $R \to R - 1$.
+Let leftMax = max_0 <= k <= L height[k] and rightMax = max_R <= k < N height[k].
+At any point where height[L] <= height[R]:
+1. We know with mathematical certainty that the true global right maximum for cell L is >= height[R] >= height[L].
+2. Therefore, the limiting bottleneck for cell L is strictly leftMax:
+   min(leftMax, trueRightMax) = leftMax
+3. We can immediately compute water trapped at column L:
+   water = max(0, leftMax - height[L])
+4. Advance L -> L + 1. Symmetrically, if height[R] < height[L], resolve column R and decrement R -> R - 1.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -842,8 +845,8 @@ Water at right is bounded by rightMax; advance right--
 ```
 
 - `left, right`: Opposing cursors converging inward from the array boundaries.
-- `leftMax`: Running supremum height observed from index $0$ to `left`.
-- `rightMax`: Running supremum height observed from index $N - 1$ down to `right`.
+- `leftMax`: Running supremum height observed from index 0 to `left`.
+- `rightMax`: Running supremum height observed from index N - 1 down to `right`.
 - **Invariant:** At every iteration, exactly one boundary element's trapped water is permanently resolved.
 
 #### 3.5 State Transition Triggers & Decision Gates
@@ -864,11 +867,11 @@ Initial: `left = 0, right = 5, leftMax = 0, rightMax = 0, totalWater = 0`.
 
 | Step | `left` (val) | `right` (val) | Condition | `leftMax` | `rightMax` | Water Added | `totalWater` | Pointer Shift |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
-| **1** | 0 (4) | 5 (5) | $4 \le 5$ | 4 | 0 | $0$ (new peak) | 0 | `left -> 1` |
-| **2** | 1 (2) | 5 (5) | $2 \le 5$ | 4 | 0 | $4 - 2 = 2$ | 2 | `left -> 2` |
-| **3** | 2 (0) | 5 (5) | $0 \le 5$ | 4 | 0 | $4 - 0 = 4$ | 6 | `left -> 3` |
-| **4** | 3 (3) | 5 (5) | $3 \le 5$ | 4 | 0 | $4 - 3 = 1$ | 7 | `left -> 4` |
-| **5** | 4 (2) | 5 (5) | $2 \le 5$ | 4 | 0 | $4 - 2 = 2$ | 9 | `left -> 5` |
+| **1** | 0 (4) | 5 (5) | 4 <= 5 | 4 | 0 | 0 (new peak) | 0 | `left -> 1` |
+| **2** | 1 (2) | 5 (5) | 2 <= 5 | 4 | 0 | 4 - 2 = 2 | 2 | `left -> 2` |
+| **3** | 2 (0) | 5 (5) | 0 <= 5 | 4 | 0 | 4 - 0 = 4 | 6 | `left -> 3` |
+| **4** | 3 (3) | 5 (5) | 3 <= 5 | 4 | 0 | 4 - 3 = 1 | 7 | `left -> 4` |
+| **5** | 4 (2) | 5 (5) | 2 <= 5 | 4 | 0 | 4 - 2 = 2 | 9 | `left -> 5` |
 | **End**| 5 (5) | 5 (5) | `left == right` | Loop terminates | — | — | **9** | Return 9 |
 
 ---
@@ -876,11 +879,11 @@ Initial: `left = 0, right = 5, leftMax = 0, rightMax = 0, totalWater = 0`.
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Two Pointers):** Production standard. Single pass, $O(N)$ runtime, strictly $O(1)$ auxiliary space.
+- **Approach 1 (Two Pointers):** Production standard. Single pass, O(N) runtime, strictly O(1) auxiliary space.
 - **Approach 2 (Monotonic Stack Horizontal Slab Fill):** Fills water horizontally layer by layer rather than vertically column by column. Useful when understanding contour line problems or physical reservoir draining.
 
 #### 4.2 Step-by-Step Natural Progression Flow
-- **Step 1: Setup & Boundaries:** If $height.Length < 3$, return 0. Initialize `left = 0, right = N - 1, leftMax = 0, rightMax = 0`.
+- **Step 1: Setup & Boundaries:** If height.Length < 3, return 0. Initialize `left = 0, right = N - 1, leftMax = 0, rightMax = 0`.
 - **Step 2: Converging Loop:** While `left < right`, test `height[left] <= height[right]`.
 - **Step 3: Invariant Maintenance:** Update running max or accumulate water difference. Advance active pointer.
 - **Step 4: Resolution & Return:** Return `totalWater`.
@@ -888,18 +891,18 @@ Initial: `left = 0, right = 5, leftMax = 0, rightMax = 0, totalWater = 0`.
 #### 4.3 Alternative Approaches Analysis
 - **Approach 2: Monotonic Stack (Horizontal Slabs):**
   - Maintain decreasing stack of indices.
-  - When $height[i] > height[stack.Peek()]$, pop $bottom = stack.Pop()$.
-  - If stack non-empty: $boundedHeight = \min(height[i], height[stack.Peek()]) - height[bottom]$.
-  - $distance = i - stack.Peek() - 1$.
-  - Add $distance \times boundedHeight$ to water.
+  - When height[i] > height[stack.Peek()], pop bottom = stack.Pop().
+  - If stack non-empty: boundedHeight = min(height[i], height[stack.Peek()]) - height[bottom].
+  - distance = i - stack.Peek() - 1.
+  - Add distance x boundedHeight to water.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Metric | Approach 1: Two Pointers (Optimal) | Approach 2: Monotonic Stack (Horizontal Slabs) |
 | :--- | :--- | :--- |
-| **Time Complexity (Best / Avg / Worst)** | $O(N)$ / $O(N)$ / $O(N)$ | $O(N)$ / $O(N)$ / $O(N)$ |
-| **Auxiliary Space** | $O(1)$ scalar variables | $O(N)$ stack storage |
-| **Output Space** | $O(1)$ scalar integer | $O(1)$ scalar integer |
+| **Time Complexity (Best / Avg / Worst)** | O(N) / O(N) / O(N) | O(N) / O(N) / O(N) |
+| **Auxiliary Space** | O(1) scalar variables | O(N) stack storage |
+| **Output Space** | O(1) scalar integer | O(1) scalar integer |
 | **Cache Locality** | High (converging array reads) | Moderate (stack operations) |
 | **In-Place Mutability** | Non-destructive | Non-destructive |
 | **Streaming Suitability** | Low (requires two ends) | High (single forward pass) |
@@ -1024,9 +1027,9 @@ public class SolutionStack
 ### 1. Problem Detail & Constraints
 - **Formal Statement:** Given two words, `beginWord` and `endWord`, and a dictionary `wordList`, return the number of words in the shortest transformation sequence from `beginWord` to `endWord` such that only one letter changes at each step and each transformed word exists in `wordList`. If no such sequence exists, return 0.
 - **Key Constraints:**
-  - $1 \le beginWord.Length \le 10$.
-  - $endWord.Length == beginWord.Length$.
-  - $1 \le wordList.Length \le 5000$.
+  - 1 <= beginWord.Length <= 10.
+  - endWord.Length == beginWord.Length.
+  - 1 <= wordList.Length <= 5000.
   - All words consist of lowercase English letters and are unique.
 - **Senior Edge Cases to Defend:**
   - `endWord` not in `wordList`: Return 0 immediately.
@@ -1049,26 +1052,26 @@ public class SolutionStack
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
 Imagine two search parties in a sprawling underground cave system trying to find each other.
 - Party A starts at the Entrance (`beginWord`), and Party B starts at the Treasure Vault (`endWord`).
-- If Party A searches alone (unidirectional BFS), their search frontier expands exponentially as a sphere of radius $D$:
-  $$\text{Frontier Size} = O(B^D)$$
-- But if both Party A and Party B hike toward each other simultaneously (Bidirectional BFS), their search spheres meet in the middle at radius $D / 2$:
-  $$\text{Frontier Size} = 2 \times O\left(B^{D / 2}\right)$$
-For branching factor $B = 26$ and path length $D = 6$, $26^6 \approx 3.08 \times 10^8$ nodes vs $2 \times 26^3 = 35,152$ nodes! A reduction of nearly **$10,000\times$** in explored states.
+- If Party A searches alone (unidirectional BFS), their search frontier expands exponentially as a sphere of radius D:
+  Frontier Size = O(B^D)
+- But if both Party A and Party B hike toward each other simultaneously (Bidirectional BFS), their search spheres meet in the middle at radius D / 2:
+  Frontier Size = 2 x O(B^D / 2)
+For branching factor B = 26 and path length D = 6, 26^6 ~ 3.08 x 10^8 nodes vs 2 x 26^3 = 35,152 nodes! A reduction of nearly **10,000*** in explored states.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-Building an explicit adjacency list by comparing all pairs of words takes $O(N^2 \cdot L) = (5000)^2 \times 10 = 2.5 \times 10^8$ operations before search even begins.
-Generating neighbors dynamically by changing each of the $L$ letters to `'a'..'z'` takes $O(L \cdot 26) = 260$ operations per word.
+Building an explicit adjacency list by comparing all pairs of words takes O(N^2 * L) = (5000)^2 x 10 = 2.5 x 10^8 operations before search even begins.
+Generating neighbors dynamically by changing each of the L letters to `'a'..'z'` takes O(L * 26) = 260 operations per word.
 Unidirectional BFS wastes time expanding massive frontiers near the bottom of the tree. Bidirectional BFS with dynamic frontier swapping keeps the active search set as small as possible.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **Dynamic Bidirectional Frontier Swapping:**
 Maintain two active frontier sets: `beginSet` and `endSet`.
 - **Frontier Swapping Invariant:** At the start of each level:
-  $$\text{if } |\text{beginSet}| > |\text{endSet}|, \quad \text{Swap}(\text{beginSet}, \text{endSet})$$
+  if |beginSet| > |endSet|, Swap(beginSet, endSet)
   Always expanding the **smaller** frontier set mathematically minimizes the number of neighbor mutations generated in the current level.
 - **Collision Invariant:**
   When generating neighbor `transformed`:
-  $$\text{if } transformed \in endSet \implies \text{Path found! Return } level + 1$$
+  if transformed in endSet => Path found! Return level + 1
 - Remove visited words from the dictionary (`dict.Remove(transformed)`) to prevent cycle revisitation with zero auxiliary memory!
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
@@ -1092,7 +1095,7 @@ Else if in dict                 ==> Add to nextLevelSet; remove from dict.
 #### 3.5 State Transition Triggers & Decision Gates
 1. **Target Pre-Check Gate:** If `!dict.Contains(endWord)`, return 0 immediately.
 2. **Frontier Swap Gate:** If `beginSet.Count > endSet.Count`, swap `(beginSet, endSet)`.
-3. **Neighbor Mutation Gate:** For each position $i \in [0 \dots L - 1]$, for $c \in ['a'..'z']$:
+3. **Neighbor Mutation Gate:** For each position i in [0 ... L - 1], for c in ['a'..'z']:
    - If `endSet.Contains(transformed)`: Return `level + 1`.
    - If `dict.Contains(transformed)`: Add to `nextLevelSet`, remove from `dict`.
 4. **Advance Level Gate:** Set `beginSet = nextLevelSet; level++`.
@@ -1102,11 +1105,11 @@ Trace input: `beginWord = "hit", endWord = "cog"`, `wordList = ["hot","dot","dog
 
 | Level | `beginSet` | `endSet` | Action | Collision Check | Next Frontier |
 | :---: | :---: | :---: | :--- | :---: | :--- |
-| **1** | `{"hit"}` (size 1) | `{"cog"}` (size 1) | Mutate `"hit"` $\to$ `"hot"` | `"hot" \notin endSet` | `next = {"hot"}` |
-| **2** | `{"hot"}` (size 1) | `{"cog"}` (size 1) | Mutate `"hot"` $\to$ `"dot"`, `"lot"` | Not in `endSet` | `next = {"dot", "lot"}` |
+| **1** | `{"hit"}` (size 1) | `{"cog"}` (size 1) | Mutate `"hit"` -> `"hot"` | `"hot" not in endSet` | `next = {"hot"}` |
+| **2** | `{"hot"}` (size 1) | `{"cog"}` (size 1) | Mutate `"hot"` -> `"dot"`, `"lot"` | Not in `endSet` | `next = {"dot", "lot"}` |
 | **3** | `{"dot", "lot"}` (size 2)| `{"cog"}` (size 1) | **Swap!** `beginSet = {"cog"}` | — | — |
-| | `{"cog"}` (size 1) | `{"dot", "lot"}` | Mutate `"cog"` $\to$ `"dog"`, `"log"` | Not in `endSet` | `next = {"dog", "log"}` |
-| **4** | `{"dog", "log"}` (size 2)| `{"dot", "lot"}` | Mutate `"dog"` $\to$ `"dot"` | **`"dot"` in `endSet`!** | **Collision! Return $4 + 1 = 5$** |
+| | `{"cog"}` (size 1) | `{"dot", "lot"}` | Mutate `"cog"` -> `"dog"`, `"log"` | Not in `endSet` | `next = {"dog", "log"}` |
+| **4** | `{"dog", "log"}` (size 2)| `{"dot", "lot"}` | Mutate `"dog"` -> `"dot"` | **`"dot"` in `endSet`!** | **Collision! Return 4 + 1 = 5** |
 
 Total path length: `5`.
 
@@ -1115,8 +1118,8 @@ Total path length: `5`.
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Bidirectional BFS with Frontier Swapping):** Peak performance. Drastically shrinks the branching factor; runs $50\times$ faster than unidirectional BFS on dense graphs.
-- **Approach 2 (Standard Unidirectional BFS):** Classical queue-based BFS. Good for baseline explanation, but explores the full exponential search tree of depth $D$.
+- **Approach 1 (Bidirectional BFS with Frontier Swapping):** Peak performance. Drastically shrinks the branching factor; runs 50* faster than unidirectional BFS on dense graphs.
+- **Approach 2 (Standard Unidirectional BFS):** Classical queue-based BFS. Good for baseline explanation, but explores the full exponential search tree of depth D.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 - **Step 1: Setup & Pre-check:** Convert `wordList` to `HashSet<string>`. If `endWord` not in set, return 0.
@@ -1134,9 +1137,9 @@ Total path length: `5`.
 
 | Metric | Approach 1: Bidirectional BFS (Optimal) | Approach 2: Unidirectional BFS Queue |
 | :--- | :--- | :--- |
-| **Time Complexity (Best / Avg / Worst)** | $O(N \cdot L \cdot 26)$ / $O(B^{D/2})$ | $O(B^D)$ |
-| **Auxiliary Space** | $O(N \cdot L)$ set storage | $O(N \cdot L)$ queue storage |
-| **Output Space** | $O(1)$ scalar integer | $O(1)$ scalar integer |
+| **Time Complexity (Best / Avg / Worst)** | O(N * L * 26) / O(B^D/2) | O(B^D) |
+| **Auxiliary Space** | O(N * L) set storage | O(N * L) queue storage |
+| **Output Space** | O(1) scalar integer | O(1) scalar integer |
 | **Cache Locality** | Moderate (hash set probing) | Moderate (queue nodes) |
 | **In-Place Mutability** | Non-destructive | Non-destructive |
 | **Streaming Suitability** | Low | Low |
@@ -1302,21 +1305,21 @@ public class SolutionUnidirectional
 | **LeetCode Link** | [Swim in Rising Water](https://leetcode.com/problems/swim-in-rising-water/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** You are given an $n \times n$ integer matrix `grid` where each value $grid[i][j]$ represents the elevation at that point. At time $t$, you can swim across any cell with elevation $\le t$. Return the least time until you can reach $(n - 1, n - 1)$ starting from $(0, 0)$.
+- **Formal Statement:** You are given an n x n integer matrix `grid` where each value grid[i][j] represents the elevation at that point. At time t, you can swim across any cell with elevation <= t. Return the least time until you can reach (n - 1, n - 1) starting from (0, 0).
 - **Key Constraints:**
-  - $n == grid.Length == grid[i].Length \in [1, 50]$.
-  - $0 \le grid[i][j] < n^2$.
+  - n == grid.Length == grid[i].Length in [1, 50].
+  - 0 <= grid[i][j] < n^2.
   - Each value in `grid` is unique.
 - **Senior Edge Cases to Defend:**
-  - $1 \times 1$ grid: Answer is simply $grid[0][0]$.
-  - Starting cell higher than ending cell: Water must rise to at least $grid[0][0]$.
+  - 1 x 1 grid: Answer is simply grid[0][0].
+  - Starting cell higher than ending cell: Water must rise to at least grid[0][0].
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Minimax Shortest Path: Minimize the maximum elevation encountered along the path from $(0, 0)$ to $(n - 1, n - 1)$. Solved via modified Dijkstra's Algorithm with a Min-Heap, or Binary Search on Answer + BFS reachability.
+- **Conceptual Essence:** Minimax Shortest Path: Minimize the maximum elevation encountered along the path from (0, 0) to (n - 1, n - 1). Solved via modified Dijkstra's Algorithm with a Min-Heap, or Binary Search on Answer + BFS reachability.
 - **Sample 1:**
   - **Input:** `grid = [[0, 2], [1, 3]]`
   - **Output:** `3`
-  - **Explanation:** At time 3, all cells can be crossed, including target cell $(1, 1)$ of elevation 3.
+  - **Explanation:** At time 3, all cells can be crossed, including target cell (1, 1) of elevation 3.
 - **Sample 2:**
   - **Input:** `grid = [[0,1,2,3,4],[24,23,22,21,5],[12,13,14,15,16],[11,17,18,19,20],[10,9,8,7,6]]`
   - **Output:** `16`
@@ -1324,25 +1327,25 @@ public class SolutionUnidirectional
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
-Imagine an archipelago of jagged rock towers. Rising floodwaters submerge the towers progressively as time $t$ ticks upward.
-You stand at the northwest tower $(0, 0)$ and must reach the southeast tower $(n - 1, n - 1)$.
+Imagine an archipelago of jagged rock towers. Rising floodwaters submerge the towers progressively as time t ticks upward.
+You stand at the northwest tower (0, 0) and must reach the southeast tower (n - 1, n - 1).
 You can only step onto an adjacent tower if the water level has risen to at least the height of that tower.
 Therefore, your journey is not penalized by the **length** of the route, but strictly by the **tallest rock tower** you are forced to climb along your path!
 To find the route requiring the least patience, you send an explorer equipped with a Priority Queue: always stepping next onto whichever neighboring rock has the **lowest maximum elevation** encountered so far.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-A brute force path enumeration evaluates all self-avoiding walks across the grid ($O(4^{N^2})$).
+A brute force path enumeration evaluates all self-avoiding walks across the grid (O(4^N^2)).
 Standard shortest path algorithms like BFS cannot be applied directly because edge costs are non-uniform and represent bottleneck maxima rather than additive sums.
-Dijkstra's greedy relaxation with a Min-Heap expands the path with the smallest bottleneck height, reaching the destination in $O(N^2 \log N)$ operations.
+Dijkstra's greedy relaxation with a Min-Heap expands the path with the smallest bottleneck height, reaching the destination in O(N^2 log N) operations.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **Minimax Path Relaxation Invariant:**
-Let $cost(u)$ be the minimum water height required to reach cell $u$.
-When stepping from cell $u$ to neighbor $v$:
-$$cost(v) = \max(cost(u), \; grid[v.r][v.c])$$
+Let cost(u) be the minimum water height required to reach cell u.
+When stepping from cell u to neighbor v:
+cost(v) = max(cost(u), grid[v.r][v.c])
 - **Greedy Priority Queue Selection:**
-  Maintain a Min-Heap keyed on $cost$. Dequeueing cell $(r, c)$ guarantees that we have discovered the global minimal time to reach $(r, c)$.
-- **Early Termination:** The first time $(n - 1, n - 1)$ is dequeued from the Min-Heap, its cost is guaranteed to be the global minimum answer!
+  Maintain a Min-Heap keyed on cost. Dequeueing cell (r, c) guarantees that we have discovered the global minimal time to reach (r, c).
+- **Early Termination:** The first time (n - 1, n - 1) is dequeued from the Min-Heap, its cost is guaranteed to be the global minimum answer!
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -1356,30 +1359,30 @@ Enqueue((nr, nc, nextCost), nextCost)
 ```
 
 - `r, c`: Grid coordinates.
-- `cost`: Maximum elevation encountered along the optimal path to $(r, c)$.
+- `cost`: Maximum elevation encountered along the optimal path to (r, c).
 - `visited[n, n]`: Boolean matrix preventing redundant node evaluations.
 
 #### 3.5 State Transition Triggers & Decision Gates
-1. **Seed Priority Queue:** Enqueue $((0, 0, grid[0][0]), grid[0][0])$, mark `visited[0, 0] = true`.
+1. **Seed Priority Queue:** Enqueue ((0, 0, grid[0][0]), grid[0][0]), mark `visited[0, 0] = true`.
 2. **Dequeue Gate:** Extract `(r, c, cost)` with smallest `cost`.
-3. **Destination Hit Gate:** If $r == n - 1 \land c == n - 1$, return `cost`.
-4. **4-Way Relaxation Gate:** For each orthogonal neighbor $(nr, nc)$:
+3. **Destination Hit Gate:** If r == n - 1 AND c == n - 1, return `cost`.
+4. **4-Way Relaxation Gate:** For each orthogonal neighbor (nr, nc):
    - If in bounds and `!visited[nr, nc]`:
      - `visited[nr, nc] = true`.
      - `nextCost = Math.Max(cost, grid[nr][nc])`.
-     - Enqueue $((nr, nc, nextCost), nextCost)$.
+     - Enqueue ((nr, nc, nextCost), nextCost).
 
 #### 3.6 Concrete Step-by-Step State Trace
 Trace input: `grid = [[0, 2], [1, 3]]`.
-Initial: Enqueue $(0, 0, 0)$.
+Initial: Enqueue (0, 0, 0).
 
 | Dequeued `(r, c, cost)` | Destination? | Neighbors Checked | Action | Priority Queue State |
 | :---: | :---: | :---: | :--- | :--- |
-| $(0, 0, 0)$ | No | $(0, 1) \to \max(0, 2) = 2$ | Enqueue $(0, 1, 2)$ | `[(1, 0, 1), (0, 1, 2)]` |
-| | | $(1, 0) \to \max(0, 1) = 1$ | Enqueue $(1, 0, 1)$ | |
-| $(1, 0, 1)$ | No | $(1, 1) \to \max(1, 3) = 3$ | Enqueue $(1, 1, 3)$ | `[(0, 1, 2), (1, 1, 3)]` |
-| $(0, 1, 2)$ | No | $(1, 1)$ already visited | Skip | `[(1, 1, 3)]` |
-| $(1, 1, 3)$ | **YES!** | Target reached | Return cost 3 | — |
+| (0, 0, 0) | No | (0, 1) -> max(0, 2) = 2 | Enqueue (0, 1, 2) | `[(1, 0, 1), (0, 1, 2)]` |
+| | | (1, 0) -> max(0, 1) = 1 | Enqueue (1, 0, 1) | |
+| (1, 0, 1) | No | (1, 1) -> max(1, 3) = 3 | Enqueue (1, 1, 3) | `[(0, 1, 2), (1, 1, 3)]` |
+| (0, 1, 2) | No | (1, 1) already visited | Skip | `[(1, 1, 3)]` |
+| (1, 1, 3) | **YES!** | Target reached | Return cost 3 | — |
 
 Final result: `3`.
 
@@ -1388,28 +1391,28 @@ Final result: `3`.
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Dijkstra PriorityQueue):** The industry standard for minimax path problems. Optimal greedy frontier expansion, $O(N^2 \log N)$ time, terminates early upon reaching the target.
-- **Approach 2 (Binary Search on Answer + BFS):** Clean alternative. Binary search the integer answer $T \in [0, N^2 - 1]$. For candidate $T$, run a standard BFS checking if a path exists using only cells $\le T$. Runs in $O(N^2 \log(N^2))$ time.
+- **Approach 1 (Dijkstra PriorityQueue):** The industry standard for minimax path problems. Optimal greedy frontier expansion, O(N^2 log N) time, terminates early upon reaching the target.
+- **Approach 2 (Binary Search on Answer + BFS):** Clean alternative. Binary search the integer answer T in [0, N^2 - 1]. For candidate T, run a standard BFS checking if a path exists using only cells <= T. Runs in O(N^2 log(N^2)) time.
 
 #### 4.2 Step-by-Step Natural Progression Flow
-- **Step 1: Setup & Allocations:** Allocate `visited` matrix of size $n \times n$.
-- **Step 2: Initialize PriorityQueue:** Enqueue origin with priority $grid[0][0]$.
+- **Step 1: Setup & Allocations:** Allocate `visited` matrix of size n x n.
+- **Step 2: Initialize PriorityQueue:** Enqueue origin with priority grid[0][0].
 - **Step 3: Exploration Loop:** Dequeue min cost cell. Return immediately if target reached.
 - **Step 4: Neighbor Relaxation:** Probe 4 neighbors, take `Math.Max(cost, grid[nr][nc])`, enqueue.
 
 #### 4.3 Alternative Approaches Analysis
 - **Approach 2: Binary Search on Answer + BFS:**
   - Range: `low = 0, high = N * N - 1`.
-  - Mid $T$: Can reach $(N-1, N-1)$ from $(0, 0)$ with cell values $\le T$?
+  - Mid T: Can reach (N-1, N-1) from (0, 0) with cell values <= T?
   - If BFS succeeds: `high = T`. Else: `low = T + 1`.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Metric | Approach 1: Dijkstra PriorityQueue (Optimal) | Approach 2: Binary Search on Answer + BFS |
 | :--- | :--- | :--- |
-| **Time Complexity (Best / Avg / Worst)** | $O(N^2 \log N)$ | $O(N^2 \log(N^2))$ |
-| **Auxiliary Space** | $O(N^2)$ heap + visited matrix | $O(N^2)$ BFS queue + visited matrix |
-| **Output Space** | $O(1)$ scalar integer | $O(1)$ scalar integer |
+| **Time Complexity (Best / Avg / Worst)** | O(N^2 log N) | O(N^2 log(N^2)) |
+| **Auxiliary Space** | O(N^2) heap + visited matrix | O(N^2) BFS queue + visited matrix |
+| **Output Space** | O(1) scalar integer | O(1) scalar integer |
 | **Cache Locality** | Moderate (heap operations) | High (BFS queue strides) |
 | **In-Place Mutability** | Non-destructive | Non-destructive |
 | **Streaming Suitability** | Low | Low |
@@ -1486,7 +1489,7 @@ public class Solution
 }
 ```
 
-#### Implementation 2: Binary Search on Answer + BFS ($O(N^2 \log N)$)
+#### Implementation 2: Binary Search on Answer + BFS (O(N^2 log N))
 ```csharp
 public class SolutionBinarySearch
 {
@@ -1563,15 +1566,15 @@ public class SolutionBinarySearch
 ### 1. Problem Detail & Constraints
 - **Formal Statement:** Given a string containing just the characters `'('` and `')'`, return the length of the longest valid (well-formed) parentheses substring.
 - **Key Constraints:**
-  - $0 \le s.Length \le 3 \times 10^4$.
+  - 0 <= s.Length <= 3 x 10^4.
   - `s[i]` is `'('` or `')'`.
 - **Senior Edge Cases to Defend:**
   - Empty string: Returns 0.
-  - No valid parentheses (e.g. `")((("` or `"))))"` $\implies 0$).
-  - Interleaved valid segments separated by invalid closing brackets (e.g. `")()())()()"` $\implies 4$).
+  - No valid parentheses (e.g. `")((("` or `"))))"` => 0).
+  - Interleaved valid segments separated by invalid closing brackets (e.g. `")()())()()"` => 4).
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Barrier Tracking: Maintain indices of unmatched boundary characters using a Stack with sentinel `-1`, or execute a Two-Pass Left/Right scan using two counters for $O(1)$ extra space.
+- **Conceptual Essence:** Barrier Tracking: Maintain indices of unmatched boundary characters using a Stack with sentinel `-1`, or execute a Two-Pass Left/Right scan using two counters for O(1) extra space.
 - **Sample 1:**
   - **Input:** `s = "(()"`
   - **Output:** `2`
@@ -1591,23 +1594,23 @@ Imagine walking along a shoreline.
 - However, if you see a closing bracket `')'` when already at sea level, you fall into the ocean! This unmatched closing bracket becomes an impenetrable sea wall (barrier). No valid substring starting before this wall can ever bridge across it. The sea wall resets your baseline to the current index.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-Testing all $O(N^2)$ substrings and validating each in $O(N)$ time takes $O(N^3)$.
-Even caching validation reduces to $O(N^2)$.
-By tracking the last unmatched barrier index using a stack, we compute the valid span in $O(1)$ upon every valid match, completing the entire analysis in a single $O(N)$ pass.
+Testing all O(N^2) substrings and validating each in O(N) time takes O(N^3).
+Even caching validation reduces to O(N^2).
+By tracking the last unmatched barrier index using a stack, we compute the valid span in O(1) upon every valid match, completing the entire analysis in a single O(N) pass.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **Stack Sentinel Invariant:**
 Initialize the stack with index `-1` representing the virtual barrier wall before the start of the string:
-1. When encountering `'('`: Push its index $i$ onto the stack.
+1. When encountering `'('`: Push its index i onto the stack.
 2. When encountering `')'`:
    - Pop the top of the stack (matches the most recent `'('` or removes the prior barrier).
-   - **If the stack is empty:** This closing bracket had no matching opening bracket. It becomes the **new barrier wall**! Push $i$ onto the stack.
+   - **If the stack is empty:** This closing bracket had no matching opening bracket. It becomes the **new barrier wall**! Push i onto the stack.
    - **If the stack is non-empty:** The distance from the current index to the new top of the stack is guaranteed to be a valid, well-formed substring:
-     $$length = i - \text{stack.Peek()}$$
-     $$maxLen = \max(maxLen, length)$$
+     length = i - stack.Peek()
+     maxLen = max(maxLen, length)
 
-**Two-Pass Counters Invariant ($O(1)$ Auxiliary Space):**
-- **Forward Pass (Left to Right):** Count `left` and `right`. If `left == right`, record $2 \times right$. If `right > left`, unmatched closing bracket detected; reset `left = right = 0`.
+**Two-Pass Counters Invariant (O(1) Auxiliary Space):**
+- **Forward Pass (Left to Right):** Count `left` and `right`. If `left == right`, record 2 x right. If `right > left`, unmatched closing bracket detected; reset `left = right = 0`.
 - **Backward Pass (Right to Left):** Symmetrically, if `left > right`, unmatched opening bracket detected; reset `left = right = 0`. Catches cases like `"(()"` that forward pass misses.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
@@ -1626,30 +1629,30 @@ i = 4 (')'): Pop 3 -> Stack has [ 0 ]. Valid span = 4 - 0 = 4!
 i = 5 (')'): Pop 0 -> Stack empty! Push 5 as new barrier: [ 5 ]
 ```
 
-- `i`: Read cursor advancing sequentially from $0$ to $N - 1$.
+- `i`: Read cursor advancing sequentially from 0 to N - 1.
 - `stack.Peek()`: The index of the nearest unmatched barrier on the left.
 - `maxLen`: Global maximum valid length discovered.
 
 #### 3.5 State Transition Triggers & Decision Gates
-For each index $i \in [0 \dots N - 1]$:
-1. If $s[i] == '(': \; \text{stack.Push}(i)$.
-2. If $s[i] == ')':$
+For each index i in [0 ... N - 1]:
+1. If s[i] == '(': stack.Push(i).
+2. If s[i] == ')':
    - `stack.Pop()`.
-   - **Barrier Gate:** If `stack.Count == 0`, push $i$ as new barrier.
+   - **Barrier Gate:** If `stack.Count == 0`, push i as new barrier.
    - **Span Gate:** Else, `maxLen = Math.Max(maxLen, i - stack.Peek())`.
 
 #### 3.6 Concrete Step-by-Step State Trace
 Trace input: `s = ")()())"`.
 
-| $i$ | Char | Stack Action | Stack Content After Action | Current Valid Span | `maxLen` |
+| i | Char | Stack Action | Stack Content After Action | Current Valid Span | `maxLen` |
 | :---: | :---: | :--- | :--- | :---: | :---: |
 | **Init**| — | Initial sentinel | `[-1]` | — | 0 |
-| **0** | `')'` | Pop -1 (empty) $\to$ Push 0 | `[0]` | Barrier reset | 0 |
+| **0** | `')'` | Pop -1 (empty) -> Push 0 | `[0]` | Barrier reset | 0 |
 | **1** | `'('` | Push 1 | `[0, 1]` | — | 0 |
-| **2** | `')'` | Pop 1 (stack: `[0]`) | `[0]` | $2 - 0 = 2$ | 2 |
+| **2** | `')'` | Pop 1 (stack: `[0]`) | `[0]` | 2 - 0 = 2 | 2 |
 | **3** | `'('` | Push 3 | `[0, 3]` | — | 2 |
-| **4** | `')'` | Pop 3 (stack: `[0]`) | `[0]` | $4 - 0 = 4$ | **4** |
-| **5** | `')'` | Pop 0 (empty) $\to$ Push 5 | `[5]` | Barrier reset | 4 |
+| **4** | `')'` | Pop 3 (stack: `[0]`) | `[0]` | 4 - 0 = 4 | **4** |
+| **5** | `')'` | Pop 0 (empty) -> Push 5 | `[5]` | Barrier reset | 4 |
 
 Final result: `4`.
 
@@ -1658,27 +1661,27 @@ Final result: `4`.
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Stack with Sentinel -1):** The classic interview standard. Intuitive, single pass, $O(N)$ time and space.
-- **Approach 2 (Two-Pass Left/Right Counters):** Elite memory optimization. Operates in $O(N)$ time with strictly $O(1)$ auxiliary space by scanning forward and backward.
+- **Approach 1 (Stack with Sentinel -1):** The classic interview standard. Intuitive, single pass, O(N) time and space.
+- **Approach 2 (Two-Pass Left/Right Counters):** Elite memory optimization. Operates in O(N) time with strictly O(1) auxiliary space by scanning forward and backward.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 - **Step 1: Setup & Guard:** If string is null or empty, return 0. Allocate stack, push `-1`.
-- **Step 2: Exploration Loop:** Advance $i$ through $s$. Push '('; on ')' pop and test if stack is empty.
-- **Step 3: Invariant Maintenance:** If empty, push $i$ as barrier; else compute $i - stack.Peek()$.
+- **Step 2: Exploration Loop:** Advance i through s. Push '('; on ')' pop and test if stack is empty.
+- **Step 3: Invariant Maintenance:** If empty, push i as barrier; else compute i - stack.Peek().
 - **Step 4: Resolution & Return:** Return `maxLen`.
 
 #### 4.3 Alternative Approaches Analysis
-- **Approach 2: Two-Pass Counters ($O(1)$ Space):**
+- **Approach 2: Two-Pass Counters (O(1) Space):**
   - Pass 1 (Forward): Track `left` and `right`. If `left == right`, update `maxLen = Math.Max(maxLen, 2 * right)`. If `right > left`, reset `left = right = 0`.
   - Pass 2 (Backward): Symmetrically reset when `left > right`. Update `maxLen = Math.Max(maxLen, 2 * left)`.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
-| Metric | Approach 1: Stack with Sentinel | Approach 2: Two-Pass Counters ($O(1)$ Space) |
+| Metric | Approach 1: Stack with Sentinel | Approach 2: Two-Pass Counters (O(1) Space) |
 | :--- | :--- | :--- |
-| **Time Complexity (Best / Avg / Worst)** | $O(N)$ single pass | $O(N)$ two passes |
-| **Auxiliary Space** | $O(N)$ stack memory | $O(1)$ scalar variables |
-| **Output Space** | $O(1)$ scalar integer | $O(1)$ scalar integer |
+| **Time Complexity (Best / Avg / Worst)** | O(N) single pass | O(N) two passes |
+| **Auxiliary Space** | O(N) stack memory | O(1) scalar variables |
+| **Output Space** | O(1) scalar integer | O(1) scalar integer |
 | **Cache Locality** | Moderate (stack operations) | Optimal (sequential array scans) |
 | **In-Place Mutability** | Non-destructive | Non-destructive |
 | **Streaming Suitability** | High | Low (requires reverse pass) |
@@ -1748,7 +1751,7 @@ public class Solution
 }
 ```
 
-#### Implementation 2: Two-Pass Left/Right Counters ($O(1)$ Auxiliary Space)
+#### Implementation 2: Two-Pass Left/Right Counters (O(1) Auxiliary Space)
 ```csharp
 public class SolutionTwoPass
 {
@@ -1816,7 +1819,7 @@ public class SolutionTwoPass
 ### 1. Problem Detail & Constraints
 - **Formal Statement:** Given an input string `s` and a pattern `p`, implement regular expression matching with support for `'.'` (matches any single character) and `'*'` (matches zero or more of the preceding element). The matching should cover the entire input string (not partial).
 - **Key Constraints:**
-  - $1 \le s.Length, p.Length \le 20$.
+  - 1 <= s.Length, p.Length <= 20.
   - `s` contains only lowercase English letters.
   - `p` contains only lowercase English letters, `'.'`, and `'*'`.
   - Guaranteed for each appearance of `'*'`, there is a valid preceding character to match.
@@ -1826,7 +1829,7 @@ public class SolutionTwoPass
   - Wildcard dot with star: `".*"` can match any string of any length.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** 2D State Machine Dynamic Programming: $dp[i][j]$ indicates whether prefix $s[0 \dots i - 1]$ matches prefix $p[0 \dots j - 1]$.
+- **Conceptual Essence:** 2D State Machine Dynamic Programming: dp[i][j] indicates whether prefix s[0 ... i - 1] matches prefix p[0 ... j - 1].
 - **Sample 1:**
   - **Input:** `s = "aa", p = "a*"`
   - **Output:** `true`
@@ -1840,31 +1843,31 @@ public class SolutionTwoPass
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
 Imagine a compiler parser constructed as a Non-Deterministic Finite Automaton (NFA).
-- Normal letters (`'a'..'z'`) and `'.'` represent deterministic forward transitions: to consume character $s[i-1]$, the pattern character $p[j-1]$ must match, stepping diagonally: $dp[i-1][j-1]$.
+- Normal letters (`'a'..'z'`) and `'.'` represent deterministic forward transitions: to consume character s[i-1], the pattern character p[j-1] must match, stepping diagonally: dp[i-1][j-1].
 - The Kleene star `'*'` represents a special two-way junction:
-  1. **Bypass Branch (0 occurrences):** The star ignores its preceding character completely. You jump 2 steps backward in the pattern: $dp[i][j - 2]$.
-  2. **Looping Branch (1 or more occurrences):** If the preceding pattern character matches the current string character, the star can consume $s[i-1]$ while remaining active to potentially consume more characters: $dp[i - 1][j]$.
+  1. **Bypass Branch (0 occurrences):** The star ignores its preceding character completely. You jump 2 steps backward in the pattern: dp[i][j - 2].
+  2. **Looping Branch (1 or more occurrences):** If the preceding pattern character matches the current string character, the star can consume s[i-1] while remaining active to potentially consume more characters: dp[i - 1][j].
 By combining these branches in a 2D matrix, we resolve the NFA deterministically.
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
 A recursive backtracking function branches at every `'*'` into 0-match and 1-match branches:
-$$T(M, N) = O(2^{M + N})$$
-With multiple stars (e.g. `s = "aaaaaaaa"`, `p = "a*a*a*a*"`), redundant subproblem evaluations cause exponential explosion. 2D DP caches the $(M + 1) \times (N + 1)$ prefix states, running in strict $O(M \times N)$ polynomial time.
+T(M, N) = O(2^M + N)
+With multiple stars (e.g. `s = "aaaaaaaa"`, `p = "a*a*a*a*"`), redundant subproblem evaluations cause exponential explosion. 2D DP caches the (M + 1) * (N + 1) prefix states, running in strict O(M x N) polynomial time.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **2D DP State Transitions:**
-Let $dp[i][j]$ be boolean indicating whether $s[0 \dots i - 1]$ matches $p[0 \dots j - 1]$.
-- **Base Case 1:** $dp[0][0] = \text{true}$ (empty string matches empty pattern).
-- **Base Case 2 (Empty String Matches Star Patterns):** For $j = 2 \dots N$:
-  $$\text{if } p[j - 1] == '*' \implies dp[0][j] = dp[0][j - 2]$$
-- **For $i \ge 1, j \ge 1$:**
-  1. **Case A ($p[j - 1] == '*'$):**
-     - Zero occurrences: $dp[i][j] = dp[i][j - 2]$.
-     - One or more occurrences: If preceding pattern char matches $s[i-1]$ ($p[j-2] == '.' \lor p[j-2] == s[i-1]$):
-       $$dp[i][j] = dp[i][j] \lor dp[i - 1][j]$$
-  2. **Case B ($p[j - 1] \neq '*'$):**
-     - If $p[j - 1] == '.' \lor p[j - 1] == s[i - 1]$:
-       $$dp[i][j] = dp[i - 1][j - 1]$$
+Let dp[i][j] be boolean indicating whether s[0 ... i - 1] matches p[0 ... j - 1].
+- **Base Case 1:** dp[0][0] = true (empty string matches empty pattern).
+- **Base Case 2 (Empty String Matches Star Patterns):** For j = 2 ... N:
+  if p[j - 1] == '*' => dp[0][j] = dp[0][j - 2]
+- **For i >= 1, j >= 1:**
+  1. **Case A (p[j - 1] == '*'):**
+     - Zero occurrences: dp[i][j] = dp[i][j - 2].
+     - One or more occurrences: If preceding pattern char matches s[i-1] (p[j-2] == '.' OR p[j-2] == s[i-1]):
+       dp[i][j] = dp[i][j] OR dp[i - 1][j]
+  2. **Case B (p[j - 1] != '*'):**
+     - If p[j - 1] == '.' OR p[j - 1] == s[i - 1]:
+       dp[i][j] = dp[i - 1][j - 1]
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -1880,51 +1883,51 @@ dp[i, j] = dp[i, j - 2]  (0 match)
            OR (if match) dp[i - 1, j]  (1+ match)
 ```
 
-- `i`: Prefix length of string `s` ($0 \le i \le M$).
-- `j`: Prefix length of pattern `p` ($0 \le j \le N$).
-- `dp[i, j]`: Boolean match status for prefixes $s[0 \dots i - 1]$ and $p[0 \dots j - 1]$.
+- `i`: Prefix length of string `s` (0 <= i <= M).
+- `j`: Prefix length of pattern `p` (0 <= j <= N).
+- `dp[i, j]`: Boolean match status for prefixes s[0 ... i - 1] and p[0 ... j - 1].
 
 #### 3.5 State Transition Triggers & Decision Gates
-1. **Initialize Base:** $dp[0, 0] = \text{true}$. For $j = 2 \dots N$ step 2: if $p[j - 1] == '*'$, $dp[0, j] = dp[0, j - 2]$.
-2. **Exploration Grid:** Loop $i = 1 \dots M$, $j = 1 \dots N$:
+1. **Initialize Base:** dp[0, 0] = true. For j = 2 ... N step 2: if p[j - 1] == '*', dp[0, j] = dp[0, j - 2].
+2. **Exploration Grid:** Loop i = 1 ... M, j = 1 ... N:
    - If $p[j - 1] == '*' $:
      - `dp[i, j] = dp[i, j - 2]`.
-     - If $p[j - 2] == '.' \lor p[j - 2] == s[i - 1]$, `dp[i, j] |= dp[i - 1, j]`.
+     - If p[j - 2] == '.' OR p[j - 2] == s[i - 1], `dp[i, j] |= dp[i - 1, j]`.
    - Else:
-     - If $p[j - 1] == '.' \lor p[j - 1] == s[i - 1]$, `dp[i, j] = dp[i - 1, j - 1]`.
+     - If p[j - 1] == '.' OR p[j - 1] == s[i - 1], `dp[i, j] = dp[i - 1, j - 1]`.
 3. **Return:** `dp[M, N]`.
 
 #### 3.6 Concrete Step-by-Step State Trace
 Trace input: `s = "aab"`, `p = "c*a*b"`.
-Matrix size: $(3 + 1) \times (5 + 1)$.
+Matrix size: (3 + 1) * (5 + 1).
 
-| $i \backslash j$ | `""` (0) | `'c'` (1) | `'*'` (2) | `'a'` (3) | `'*'` (4) | `'b'` (5) |
+| i backslash j | `""` (0) | `'c'` (1) | `'*'` (2) | `'a'` (3) | `'*'` (4) | `'b'` (5) |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **`""` (0)** | **T** | F | **T** ($c^* \to 0$) | F | **T** ($a^* \to 0$) | F |
-| **`"a"` (1)** | F | F | F | **T** ($a=a$) | **T** ($a^* \to 1$) | F |
-| **`"aa"` (2)**| F | F | F | F | **T** ($a^* \to 2$) | F |
-| **`"aab"` (3)**| F | F | F | F | F | **T** ($b=b$) |
+| **`""` (0)** | **T** | F | **T** (c^* -> 0) | F | **T** (a^* -> 0) | F |
+| **`"a"` (1)** | F | F | F | **T** (a=a) | **T** (a^* -> 1) | F |
+| **`"aa"` (2)**| F | F | F | F | **T** (a^* -> 2) | F |
+| **`"aab"` (3)**| F | F | F | F | F | **T** (b=b) |
 
-Final result: $dp[3, 5] = \text{true}$.
+Final result: dp[3, 5] = true.
 
 ---
 
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (2D Tabulation DP):** Standard production solution. Non-recursive, zero call-stack risk, easily verifiable table geometry. $O(M \times N)$ time and space.
+- **Approach 1 (2D Tabulation DP):** Standard production solution. Non-recursive, zero call-stack risk, easily verifiable table geometry. O(M x N) time and space.
 - **Approach 2 (Top-Down Memoized DFS):** Natural recursive mapping of the NFA branching rules. Only computes reachable states.
 
 #### 4.2 Step-by-Step Natural Progression Flow
-- **Step 1: Setup & Allocations:** Allocate `bool[m + 1, n + 1]`. Set $dp[0, 0] = \text{true}$.
+- **Step 1: Setup & Allocations:** Allocate `bool[m + 1, n + 1]`. Set dp[0, 0] = true.
 - **Step 2: Seed Row 0:** Resolve star patterns matching the empty string.
-- **Step 3: Nested State Fill:** Traverse $i \in [1 \dots m]$ and $j \in [1 \dots n]$. Apply Kleene star or literal matching gates.
-- **Step 4: Resolution & Return:** Return $dp[m, n]$.
+- **Step 3: Nested State Fill:** Traverse i in [1 ... m] and j in [1 ... n]. Apply Kleene star or literal matching gates.
+- **Step 4: Resolution & Return:** Return dp[m, n].
 
 #### 4.3 Alternative Approaches Analysis
 - **Approach 2: Top-Down Memoized DFS:**
   - Signature: `Dfs(i, j)`.
-  - If $j == p.Length$, return $i == s.Length$.
+  - If j == p.Length, return i == s.Length.
   - First match: `i < s.Length && (s[i] == p[j] || p[j] == '.')`.
   - If $j + 1 < p.Length && p[j + 1] == '*' $: return `Dfs(i, j + 2) || (firstMatch && Dfs(i + 1, j))`.
   - Else: return `firstMatch && Dfs(i + 1, j + 1)`.
@@ -1933,9 +1936,9 @@ Final result: $dp[3, 5] = \text{true}$.
 
 | Metric | Approach 1: 2D Tabulation DP | Approach 2: Top-Down Memoized DFS |
 | :--- | :--- | :--- |
-| **Time Complexity (Best / Avg / Worst)** | $O(M \times N)$ | $O(M \times N)$ |
-| **Auxiliary Space** | $O(M \times N)$ table | $O(M \times N)$ memo + $O(M + N)$ stack |
-| **Output Space** | $O(1)$ boolean | $O(1)$ boolean |
+| **Time Complexity (Best / Avg / Worst)** | O(M x N) | O(M x N) |
+| **Auxiliary Space** | O(M x N) table | O(M x N) memo + O(M + N) stack |
+| **Output Space** | O(1) boolean | O(1) boolean |
 | **Cache Locality** | High (sequential 2D array reads) | Moderate |
 | **In-Place Mutability** | Non-destructive | Non-destructive |
 | **Streaming Suitability** | Low | Low |
@@ -2079,58 +2082,58 @@ public class SolutionDfs
 | **LeetCode Link** | [Burst Balloons](https://leetcode.com/problems/burst-balloons/) |
 
 ### 1. Problem Detail & Constraints
-- **Formal Statement:** Given $n$ balloons with values `nums`, bursting balloon $i$ yields $nums[i - 1] 	imes nums[i] 	imes nums[i + 1]$ coins. If $i - 1$ or $i + 1$ goes out of bounds, treat it as a balloon with value 1. Return the maximum coins collectible by bursting balloons wisely.
+- **Formal Statement:** Given n balloons with values `nums`, bursting balloon i yields nums[i - 1] 	imes nums[i] 	imes nums[i + 1] coins. If i - 1 or i + 1 goes out of bounds, treat it as a balloon with value 1. Return the maximum coins collectible by bursting balloons wisely.
 - **Key Constraints:**
-  - $n == nums.Length \in [1, 300]$.
-  - $0 \le nums[i] \le 100$.
+  - n == nums.Length in [1, 300].
+  - 0 <= nums[i] <= 100.
 - **Senior Edge Cases to Defend:**
-  - $n = 1$: Return $1 \times nums[0] \times 1 = nums[0]$.
+  - n = 1: Return 1 x nums[0] * 1 = nums[0].
   - Zero-value balloons: Handled cleanly by multiplication.
   - Interval boundary padding: Pad array with virtual boundaries `[1, ...nums, 1]`.
 
 ### 2. Summary & Sample Input / Output
-- **Conceptual Essence:** Interval Dynamic Programming via Boundary Inversion: Invert the question from "which balloon to burst first" to "which balloon $k$ is burst **last** in open interval $(i, j)$".
+- **Conceptual Essence:** Interval Dynamic Programming via Boundary Inversion: Invert the question from "which balloon to burst first" to "which balloon k is burst **last** in open interval (i, j)".
 - **Sample 1:**
   - **Input:** `nums = [3, 1, 5, 8]`
   - **Output:** `167`
   - **Explanation:**
-    - Burst 1: coins = $3 \times 1 \times 5 = 15$
-    - Burst 5: coins = $3 \times 5 \times 8 = 120$
-    - Burst 3: coins = $1 \times 3 \times 8 = 24$
-    - Burst 8: coins = $1 \times 8 \times 1 = 8$
-    - Total = $15 + 120 + 24 + 8 = 167$.
+    - Burst 1: coins = 3 x 1 * 5 = 15
+    - Burst 5: coins = 3 x 5 * 8 = 120
+    - Burst 3: coins = 1 x 3 * 8 = 24
+    - Burst 8: coins = 1 x 8 * 1 = 8
+    - Total = 15 + 120 + 24 + 8 = 167.
 
 ### 3. Traversal Theory & Mental Model (State / Cursor Architecture)
 
 #### 3.1 The Intuitive Spark & Conceptual Metaphor
 Imagine a row of balloons pinned to a wall.
 If you think forward—*"Which balloon should I burst first?"*—you face disaster:
-When balloon $k$ pops, its left and right neighbors immediately snap together and touch each other. This creates dynamic, unpredictable dependencies where the subproblems left of $k$ and right of $k$ are hopelessly entangled!
+When balloon k pops, its left and right neighbors immediately snap together and touch each other. This creates dynamic, unpredictable dependencies where the subproblems left of k and right of k are hopelessly entangled!
 **The Inversion Breakthrough:**
-Instead, ask: **"Which balloon $k$ will be the VERY LAST balloon burst in interval $(i, j)$?"**
-Because balloon $k$ is the last to burst in $(i, j)$, all other balloons between $i$ and $j$ have already vanished!
-Therefore, when balloon $k$ finally pops, its immediate neighbors are **guaranteed to be the fixed boundary balloons $i$ and $j$**!
+Instead, ask: **"Which balloon k will be the VERY LAST balloon burst in interval (i, j)?"**
+Because balloon k is the last to burst in (i, j), all other balloons between i and j have already vanished!
+Therefore, when balloon k finally pops, its immediate neighbors are **guaranteed to be the fixed boundary balloons i and j**!
 This completely decouples the subproblems:
-$$\text{Coins}(i, j) = \max_{k \in (i, j)} \Big( dp[i, k] + dp[k, j] + nums[i] \times nums[k] \times nums[j] \Big)$$
+Coins(i, j) = max_k in (i, j) ( dp[i, k] + dp[k, j] + nums[i] * nums[k] * nums[j] )
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
 Searching all burst orders naively evaluates all permutations:
-$$T(N) = O(N!)$$
-For $N = 300$, $300! \approx 3 \times 10^{614}$, completely impossible. Interval DP groups identical sub-intervals $(i, j)$ of increasing length, reducing runtime to $O(N^3) \le 300^3 = 2.7 \times 10^7$ operations.
+T(N) = O(N!)
+For N = 300, 300! ~ 3 x 10^614, completely impossible. Interval DP groups identical sub-intervals (i, j) of increasing length, reducing runtime to O(N^3) <= 300^3 = 2.7 x 10^7 operations.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **Interval DP Recurrence with Virtual Padding:**
-Pad `nums` with $1$ on both ends:
-$$\text{padded} = [1, \; nums[0], \; nums[1], \; \dots, \; nums[n - 1], \; 1]$$
-Length of padded array is $m = n + 2$.
-Let $dp[i, j]$ be the maximum coins obtained by bursting all balloons strictly inside the open interval $(i, j)$ (excluding $i$ and $j$).
+Pad `nums` with 1 on both ends:
+padded = [1, nums[0], nums[1], ..., nums[n - 1], 1]
+Length of padded array is m = n + 2.
+Let dp[i, j] be the maximum coins obtained by bursting all balloons strictly inside the open interval (i, j) (excluding i and j).
 - **Recurrence:**
-  $$dp[i, j] = \max_{k = i + 1}^{j - 1} \Big( dp[i, k] + dp[k, j] + padded[i] \times padded[k] \times padded[j] \Big)$$
+  dp[i, j] = max_k = i + 1^j - 1 ( dp[i, k] + dp[k, j] + padded[i] * padded[k] * padded[j] )
 - **Order of Evaluation Invariant:**
   We must solve smaller intervals before larger intervals!
-  Outer loop: interval length $len = 2 \dots m - 1$.
-  Middle loop: start index $i = 0 \dots m - len - 1$ (where $j = i + len$).
-  Inner loop: last balloon $k = i + 1 \dots j - 1$.
+  Outer loop: interval length len = 2 ... m - 1.
+  Middle loop: start index i = 0 ... m - len - 1 (where j = i + len).
+  Inner loop: last balloon k = i + 1 ... j - 1.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -2145,32 +2148,32 @@ Subproblem 2: dp[k, j] (Balloons between k and j)
 Balloon k burst coins: padded[i] * padded[k] * padded[j]
 ```
 
-- `len`: Length of the open interval $j - i$ ($2 \le len < m$).
+- `len`: Length of the open interval j - i (2 <= len < m).
 - `i, j`: Left and right boundary anchors of the open interval.
-- `k`: Candidate last-burst balloon strictly inside $(i, j)$.
-- `dp[i, j]`: Maximum coins collectible by bursting all balloons in $(i, j)$.
+- `k`: Candidate last-burst balloon strictly inside (i, j).
+- `dp[i, j]`: Maximum coins collectible by bursting all balloons in (i, j).
 
 #### 3.5 State Transition Triggers & Decision Gates
-1. **Pad Array:** Create `padded` of size $n + 2$ with `padded[0] = padded[n + 1] = 1`.
-2. **Interval Loop ($len = 2 \dots n + 1$):**
-   - For $i = 0 \dots (n + 2 - len - 1)$:
-     - Let $j = i + len$.
-     - For $k = i + 1 \dots j - 1$:
-       $$coins = dp[i, k] + dp[k, j] + padded[i] \times padded[k] \times padded[j]$$
-       $$dp[i, j] = \max(dp[i, j], coins)$$
-3. **Return:** $dp[0, n + 1]$.
+1. **Pad Array:** Create `padded` of size n + 2 with `padded[0] = padded[n + 1] = 1`.
+2. **Interval Loop (len = 2 ... n + 1):**
+   - For i = 0 ... (n + 2 - len - 1):
+     - Let j = i + len.
+     - For k = i + 1 ... j - 1:
+       coins = dp[i, k] + dp[k, j] + padded[i] * padded[k] * padded[j]
+       dp[i, j] = max(dp[i, j], coins)
+3. **Return:** dp[0, n + 1].
 
 #### 3.6 Concrete Step-by-Step State Trace
-Trace input: `nums = [3, 1, 5, 8]`. Padded: `[1, 3, 1, 5, 8, 1]`. $m = 6$.
+Trace input: `nums = [3, 1, 5, 8]`. Padded: `[1, 3, 1, 5, 8, 1]`. m = 6.
 
-| Interval Length (`len`) | Interval $(i, j)$ | Candidate $k$ | Coins Calculation | $dp[i, j]$ |
+| Interval Length (`len`) | Interval (i, j) | Candidate k | Coins Calculation | dp[i, j] |
 | :---: | :---: | :---: | :--- | :---: |
-| **2** | $(0, 2)$ | 1 (val 3) | $dp[0,1] + dp[1,2] + 1 \times 3 \times 1 = 3$ | 3 |
-| **2** | $(1, 3)$ | 2 (val 1) | $dp[1,2] + dp[2,3] + 3 \times 1 \times 5 = 15$ | 15 |
-| **2** | $(2, 4)$ | 3 (val 5) | $dp[2,3] + dp[3,4] + 1 \times 5 \times 8 = 40$ | 40 |
-| **2** | $(3, 5)$ | 4 (val 8) | $dp[3,4] + dp[4,5] + 5 \times 8 \times 1 = 40$ | 40 |
+| **2** | (0, 2) | 1 (val 3) | dp[0,1] + dp[1,2] + 1 x 3 * 1 = 3 | 3 |
+| **2** | (1, 3) | 2 (val 1) | dp[1,2] + dp[2,3] + 3 x 1 * 5 = 15 | 15 |
+| **2** | (2, 4) | 3 (val 5) | dp[2,3] + dp[3,4] + 1 x 5 * 8 = 40 | 40 |
+| **2** | (3, 5) | 4 (val 8) | dp[3,4] + dp[4,5] + 5 x 8 * 1 = 40 | 40 |
 | **...** | ... | ... | ... | ... |
-| **5 (Full)** | $(0, 5)$ | 4 (val 8) | $dp[0,4] + dp[4,5] + 1 \times 8 \times 1 = 159 + 8 = 167$ | **167** |
+| **5 (Full)** | (0, 5) | 4 (val 8) | dp[0,4] + dp[4,5] + 1 x 8 * 1 = 159 + 8 = 167 | **167** |
 
 Final maximum coins: `167`.
 
@@ -2179,28 +2182,28 @@ Final maximum coins: `167`.
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Interval DP by Window Length):** The definitive standard. $O(N^3)$ time, $O(N^2)$ space. Decouples dependencies via the last-burst insight.
+- **Approach 1 (Interval DP by Window Length):** The definitive standard. O(N^3) time, O(N^2) space. Decouples dependencies via the last-burst insight.
 - **Approach 2 (Top-Down Memoized DFS):** Recursive formulation with memoization table `memo[i, j]`. Identical complexity, slightly higher constant factor due to function call overhead.
 
 #### 4.2 Step-by-Step Natural Progression Flow
 - **Step 1: Pad Array:** Copy `nums` into `padded` with sentinel 1s at both boundaries.
-- **Step 2: Table Allocation:** Allocate `dp = new int[m, m]` where $m = n + 2$.
-- **Step 3: Three-Tier Loop:** Outer loop `len` ($2 \dots m - 1$), middle loop `i`, inner loop `k`.
-- **Step 4: Resolution & Return:** Return $dp[0, m - 1]$.
+- **Step 2: Table Allocation:** Allocate `dp = new int[m, m]` where m = n + 2.
+- **Step 3: Three-Tier Loop:** Outer loop `len` (2 ... m - 1), middle loop `i`, inner loop `k`.
+- **Step 4: Resolution & Return:** Return dp[0, m - 1].
 
 #### 4.3 Alternative Approaches Analysis
 - **Approach 2: Top-Down Memoized DFS:**
-  - Define `Dfs(i, j)`. If $i + 1 == j$, return 0 (no balloons between $i$ and $j$).
-  - For $k = i + 1 \dots j - 1$: maximize $Dfs(i, k) + Dfs(k, j) + padded[i] \times padded[k] \times padded[j]$.
+  - Define `Dfs(i, j)`. If i + 1 == j, return 0 (no balloons between i and j).
+  - For k = i + 1 ... j - 1: maximize Dfs(i, k) + Dfs(k, j) + padded[i] * padded[k] * padded[j].
   - Cache in `memo[i, j]`.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix
 
 | Metric | Approach 1: Interval DP (Bottom-Up) | Approach 2: Top-Down Memoized DFS |
 | :--- | :--- | :--- |
-| **Time Complexity (Best / Avg / Worst)** | $O(N^3)$ | $O(N^3)$ |
-| **Auxiliary Space** | $O(N^2)$ 2D matrix | $O(N^2)$ memo + $O(N)$ recursion stack |
-| **Output Space** | $O(1)$ scalar integer | $O(1)$ scalar integer |
+| **Time Complexity (Best / Avg / Worst)** | O(N^3) | O(N^3) |
+| **Auxiliary Space** | O(N^2) 2D matrix | O(N^2) memo + O(N) recursion stack |
+| **Output Space** | O(1) scalar integer | O(1) scalar integer |
 | **Cache Locality** | High (bottom-up table fill) | Moderate |
 | **In-Place Mutability** | Non-destructive | Non-destructive |
 | **Streaming Suitability** | Low | Low |
@@ -2335,12 +2338,12 @@ public class SolutionMemo
 ### 1. Problem Detail & Constraints
 - **Formal Statement:** Design an algorithm to serialize and deserialize a binary tree. There is no restriction on how your serialization/deserialization algorithm should work. You just need to ensure that a binary tree can be serialized to a string and this string can be deserialized to the original tree structure.
 - **Key Constraints:**
-  - Number of nodes in the tree is in the range $[0, 10^4]$.
-  - $-1000 \le Node.val \le 1000$.
+  - Number of nodes in the tree is in the range [0, 10^4].
+  - -1000 <= Node.val <= 1000.
 - **Senior Edge Cases to Defend:**
-  - Empty tree (`root == null` $\implies$ `"#,"` or `""`).
+  - Empty tree (`root == null` => `"#,"` or `""`).
   - Single-node tree.
-  - Skewed tree (linked list topology of depth $10^4$): Avoid quadratic string concatenation.
+  - Skewed tree (linked list topology of depth 10^4): Avoid quadratic string concatenation.
 
 ### 2. Summary & Sample Input / Output
 - **Conceptual Essence:** Pre-Order DFS with Explicit Null Markers: Pre-order traversal with explicit sentinel null tokens uniquely determines binary tree topology without requiring an auxiliary in-order traversal.
@@ -2361,15 +2364,15 @@ Imagine transmitting a complex 3D skeletal sculpture over a 1D telegraph wire.
   3. Otherwise, create the node, and immediately recurse to assemble its left child, followed by its right child!
 
 #### 3.2 The Naive Bottleneck & Redundant Computation
-Older textbooks reconstruct trees using two simultaneous traversals: Pre-Order + In-Order. This requires unique node values (failing on trees with duplicate keys!) and takes $O(N^2)$ time unless pre-indexed with a Hash Map.
-String concatenation inside recursion (`s += val + ","`) creates $O(N^2)$ garbage string allocations.
-Using `StringBuilder` during serialization and a `Queue<string>` or token cursor during deserialization executes in clean $O(N)$ linear time.
+Older textbooks reconstruct trees using two simultaneous traversals: Pre-Order + In-Order. This requires unique node values (failing on trees with duplicate keys!) and takes O(N^2) time unless pre-indexed with a Hash Map.
+String concatenation inside recursion (`s += val + ","`) creates O(N^2) garbage string allocations.
+Using `StringBuilder` during serialization and a `Queue<string>` or token cursor during deserialization executes in clean O(N) linear time.
 
 #### 3.3 The Breakthrough Insight & Mathematical Invariant
 **Null-Token Pre-Order Invariant:**
 - **Serialization (Pre-Order):**
-  $$\text{Serialize}(node) = node.val + \text{Delimiter} + \text{Serialize}(node.left) + \text{Serialize}(node.right)$$
-  When $node == null$, output `"#,"`.
+  Serialize(node) = node.val + Delimiter + Serialize(node.left) + Serialize(node.right)
+  When node == null, output `"#,"`.
 - **Deserialization (FIFO Queue):**
   Split tokens into a sequential Queue.
   Dequeue token:
@@ -2378,7 +2381,7 @@ Using `StringBuilder` during serialization and a `Queue<string>` or token cursor
   - Wire `node.left = BuildTree(queue)`.
   - Wire `node.right = BuildTree(queue)`.
   - Return `node`.
-- **Bijection Proof:** Every binary tree of $N$ nodes has exactly $N + 1$ null pointers. The total token count is strictly $2N + 1$, guaranteeing unambiguous $O(N)$ reconstruction.
+- **Bijection Proof:** Every binary tree of N nodes has exactly N + 1 null pointers. The total token count is strictly 2N + 1, guaranteeing unambiguous O(N) reconstruction.
 
 #### 3.4 Cursor Semantics & Invariant Partition Architecture
 
@@ -2430,7 +2433,7 @@ Reconstructed Tree: `1 -> left = 2, right = null`.
 ### 4. Approach & Complexity Deconstruction
 
 #### 4.1 Anchor Points & Approach Selection Criteria
-- **Approach 1 (Pre-Order DFS with Null Tokens):** Universal industry favorite. Extremely compact code, handles duplicate node values naturally, strictly $O(N)$ time and space.
+- **Approach 1 (Pre-Order DFS with Null Tokens):** Universal industry favorite. Extremely compact code, handles duplicate node values naturally, strictly O(N) time and space.
 - **Approach 2 (BFS Level-Order Serialization):** Generates output mimicking LeetCode's canonical string representation. Uses a queue during both serialization and deserialization.
 
 #### 4.2 Step-by-Step Natural Progression Flow
@@ -2448,9 +2451,9 @@ Reconstructed Tree: `1 -> left = 2, right = null`.
 
 | Metric | Approach 1: Pre-Order DFS with Null Markers | Approach 2: BFS Level-Order Queue |
 | :--- | :--- | :--- |
-| **Time Complexity (Best / Avg / Worst)** | $O(N)$ / $O(N)$ / $O(N)$ | $O(N)$ / $O(N)$ / $O(N)$ |
-| **Auxiliary Space** | $O(N)$ recursion stack + token queue | $O(W)$ queue width |
-| **Output Space** | $O(N)$ serialized string | $O(N)$ serialized string |
+| **Time Complexity (Best / Avg / Worst)** | O(N) / O(N) / O(N) | O(N) / O(N) / O(N) |
+| **Auxiliary Space** | O(N) recursion stack + token queue | O(W) queue width |
+| **Output Space** | O(N) serialized string | O(N) serialized string |
 | **Cache Locality** | High | High |
 | **In-Place Mutability** | Non-destructive | Non-destructive |
 | **Streaming Suitability** | High (can stream token by token) | Moderate |
