@@ -638,9 +638,103 @@ Usually:
 
 ---
 
+## 📦 Phase 21 — System Design Data Structures
+
+**Focus:** Custom Cache Eviction Policies (LRU / LFU), $O(1)$ Randomized Collections, Stream Rate Limiting & Memory Leak Prevention, Lazy-Evaluating Hierarchical Iterators, Search Engine Inverted Indexing, and High-Throughput Circular Ring Buffers.
+
+| # | Problem | LC# | Difficulty | Priority | Pattern Tags |
+| :---: | :--- | :---: | :---: | :---: | :--- |
+| 116 | [LRU Cache](https://leetcode.com/problems/lru-cache/) | 146 | 🟡 Medium | ⭐ Core | `#hash-map` `#doubly-linked-list` `#design` `#o(1)-operations` `#lru-eviction` |
+| 117 | [Insert Delete GetRandom O(1)](https://leetcode.com/problems/insert-delete-getrandom-o1/) | 380 | 🟡 Medium | ⭐ Core | `#hash-map` `#dynamic-array` `#design` `#swap-and-pop` `#randomized-algorithms` |
+| 118 | [LFU Cache](https://leetcode.com/problems/lfu-cache/) | 460 | 🔴 Hard | 💡 Advanced | `#hash-map` `#doubly-linked-list` `#design` `#frequency-buckets` `#lfu-eviction` |
+| 119 | [Logger Rate Limiter](https://leetcode.com/problems/logger-rate-limiter/) | 359 | 🟢 Easy | ⭐ Core | `#hash-map` `#sliding-window` `#design` `#rate-limiter` `#memory-leak-prevention` |
+| 120 | [Flatten Nested List Iterator](https://leetcode.com/problems/flatten-nested-list-iterator/) | 341 | 🟡 Medium | 🔥 High | `#stack` `#iterator` `#design` `#lazy-evaluation` `#depth-first-search` |
+| 121 | [Shortest Word Distance II](https://leetcode.com/problems/shortest-word-distance-ii/) | 244 | 🟡 Medium | 🔥 High | `#hash-map` `#two-pointers` `#design` `#inverted-index` `#binary-search` |
+| 122 | [Moving Average from Data Stream](https://leetcode.com/problems/moving-average-from-data-stream/) | 346 | 🟢 Easy | ⭐ Core | `#queue` `#circular-buffer` `#design` `#sliding-window` `#rolling-sum` |
+
+---
+
+## 📦 Phase 22 — Meta Signature Patterns
+
+**Focus:** Columnar BFS Projections, String Parsing & Parentheses Balance, Monotonic Ocean Scanning, CDF Random Sampling, Sparse Vector Dot Products.
+
+| # | Problem | LC# | Difficulty | Priority | Pattern Tags |
+| :---: | :--- | :---: | :---: | :---: | :--- |
+| 123 | [Binary Tree Vertical Order Traversal](https://leetcode.com/problems/binary-tree-vertical-order-traversal/) | 314 | 🟡 Medium | ⭐ Core | `#bfs` `#binary-tree` `#hash-table` `#column-indexing` `#level-order` |
+| 124 | [Minimum Remove to Make Valid Parentheses](https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/) | 1249 | 🟡 Medium | ⭐ Core | `#string` `#stack` `#two-pass` `#greedy-balance` `#in-place` |
+| 125 | [Valid Word Abbreviation](https://leetcode.com/problems/valid-word-abbreviation/) | 408 | 🟢 Easy | ⭐ Core | `#two-pointers` `#string` `#parsing` `#leading-zero-guard` `#overflow-prevention` |
+| 126 | [Valid Palindrome II](https://leetcode.com/problems/valid-palindrome-ii/) | 680 | 🟢 Easy | ⭐ Core | `#two-pointers` `#greedy` `#palindrome` `#one-mismatch-branch` |
+| 127 | [Buildings With an Ocean View](https://leetcode.com/problems/buildings-with-an-ocean-view/) | 1762 | 🟡 Medium | ⭐ Core | `#monotonic-stack` `#right-to-left-scan` `#running-max` `#greedy` |
+| 128 | [Random Pick with Weight](https://leetcode.com/problems/random-pick-with-weight/) | 528 | 🟡 Medium | ⭐ Core | `#binary-search` `#prefix-sum` `#probability` `#cumulative-density-function` `#random-sampling` |
+| 129 | [Dot Product of Two Sparse Vectors](https://leetcode.com/problems/dot-product-of-two-sparse-vectors/) | 1570 | 🟡 Medium | ⭐ Core | `#sparse-representation` `#two-pointers` `#hash-table` `#binary-search` `#system-design` |
+| 130 | [Lowest Common Ancestor of a Binary Tree III](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iii/) | 1650 | 🟡 Medium | ⭐ Core | `#two-pointers` `#linked-list-cycle` `#tree` `#parent-pointer` `#lowest-common-ancestor` |
+| 131 | [Nested List Weight Sum](https://leetcode.com/problems/nested-list-weight-sum/) | 339 | 🟡 Medium | ⭐ Core | `#bfs` `#dfs` `#recursion` `#level-order` `#nested-structure` |
+| 132 | [Merge Sorted Array](https://leetcode.com/problems/merge-sorted-array/) | 88 | 🟢 Easy | ⭐ Core | `#two-pointers` `#reverse-in-place` `#array-mutation` `#three-pointers` |
+
+---
+
+## 📦 Phase 23 — Amazon, Google & Uber Signatures
+
+**Focus:** Multi-Source BFS Waves, Feasibility Binary Search on Answers, Stack Parsing State Machines, Dual-Graph BFS, Contribution Technique.
+
+| # | Problem | LC# | Difficulty | Priority | Pattern Tags |
+| :---: | :--- | :---: | :---: | :---: | :--- |
+| 133 | [Rotting Oranges](https://leetcode.com/problems/rotting-oranges/) | 994 | 🟡 Medium | ⭐ Core | `#multi-source-bfs` `#matrix-traversal` `#breadth-first-search` `#shortest-path` |
+| 134 | [Split Array Largest Sum](https://leetcode.com/problems/split-array-largest-sum/) | 410 | 🔴 Hard | ⭐ Core | `#binary-search-on-answer` `#greedy-feasibility` `#monotonic-predicate` `#divide-and-conquer` |
+| 135 | [Decode String](https://leetcode.com/problems/decode-string/) | 394 | 🟡 Medium | ⭐ Core | `#stack` `#string-parsing` `#recursion` `#state-machine` |
+| 136 | [Bus Routes](https://leetcode.com/problems/bus-routes/) | 815 | 🔴 Hard | ⭐ Core | `#breadth-first-search` `#dual-graph` `#hyper-graph` `#shortest-path-unweighted` |
+| 137 | [Step-By-Step Directions From a Binary Tree Node to Another](https://leetcode.com/problems/step-by-step-directions-from-a-binary-tree-node-to-another/) | 2096 | 🟡 Medium | ⭐ Core | `#binary-tree` `#lowest-common-ancestor` `#depth-first-search` `#path-compression` |
+| 138 | [Sum of Subarray Ranges](https://leetcode.com/problems/sum-of-subarray-ranges/) | 2104 | 🟡 Medium | ⭐ Core | `#monotonic-stack` `#contribution-technique` `#subarray-calculus` `#linear-sweep` |
+| 139 | [Search Suggestions System](https://leetcode.com/problems/search-suggestions-system/) | 1268 | 🟡 Medium | ⭐ Core | `#trie` `#binary-search` `#two-pointers` `#lexicographical-sort` |
+| 140 | [Analyze User Website Visit Pattern](https://leetcode.com/problems/analyze-user-website-visit-pattern/) | 1152 | 🟡 Medium | ⭐ Core | `#hash-table` `#sorting` `#combinations` `#tuple-aggregation` `#tie-breaker` |
+| 141 | [Copy List with Random Pointer](https://leetcode.com/problems/copy-list-with-random-pointer/) | 138 | 🟡 Medium | ⭐ Core | `#linked-list` `#hash-table` `#interweaving-nodes` `#pointer-manipulation` |
+
+---
+
+## 📦 Phase 24 — Matrix, Strings, Parsing & In-Place Signatures
+
+**Focus:** Boundary Shrinking 2D Spirals, In-Place Matrix Transformations, In-Place String Tokenization, Calculator Operator Stacks, Bottom-Up Subtree Gains.
+
+| # | Problem | LC# | Difficulty | Priority | Pattern Tags |
+| :---: | :--- | :---: | :---: | :---: | :--- |
+| 142 | [Spiral Matrix](https://leetcode.com/problems/spiral-matrix/) | 54 | 🟡 Medium | ⭐ Core | `#matrix` `#boundary-shrink` `#state-machine` `#simulation` |
+| 143 | [Rotate Image](https://leetcode.com/problems/rotate-image/) | 48 | 🟡 Medium | ⭐ Core | `#matrix` `#in-place` `#transpose-reflect` `#linear-algebra` |
+| 144 | [Set Matrix Zeroes](https://leetcode.com/problems/set-matrix-zeroes/) | 73 | 🟡 Medium | ⭐ Core | `#matrix` `#in-place` `#state-encoding` `#bitmasking` |
+| 145 | [Reverse Words in a String](https://leetcode.com/problems/reverse-words-in-a-string/) | 151 | 🟡 Medium | ⭐ Core | `#string` `#two-pointers` `#in-place` `#parsing` |
+| 146 | [Compare Version Numbers](https://leetcode.com/problems/compare-version-numbers/) | 165 | 🟡 Medium | 🔥 High | `#string` `#two-pointers` `#parsing` `#simulation` |
+| 147 | [Flatten Binary Tree to Linked List](https://leetcode.com/problems/flatten-binary-tree-to-linked-list/) | 114 | 🟡 Medium | ⭐ Core | `#binary-tree` `#linked-list` `#morris-traversal` `#in-place` `#dfs` |
+| 148 | [Best Time to Buy and Sell Stock](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/) | 121 | 🟢 Easy | ⭐ Core | `#array` `#dynamic-programming` `#prefix-min` `#one-pass` |
+| 149 | [Add Two Numbers II](https://leetcode.com/problems/add-two-numbers-ii/) | 445 | 🟡 Medium | 🔥 High | `#linked-list` `#stack` `#math` `#recursion` |
+| 150 | [Simplify Path](https://leetcode.com/problems/simplify-path/) | 71 | 🟡 Medium | ⭐ Core | `#string` `#stack` `#simulation` `#unix-filesystem` |
+| 151 | [Text Justification](https://leetcode.com/problems/text-justification/) | 68 | 🔴 Hard | ⭐ Core | `#string` `#greedy` `#simulation` `#two-pointers` |
+| 152 | [Basic Calculator II](https://leetcode.com/problems/basic-calculator-ii/) | 227 | 🟡 Medium | ⭐ Core | `#string` `#stack` `#math` `#parsing` `#operator-precedence` |
+| 153 | [Binary Tree Maximum Path Sum](https://leetcode.com/problems/binary-tree-maximum-path-sum/) | 124 | 🔴 Hard | 👑 Lead Anchor | `#tree` `#dfs` `#post-order` `#bottom-up-dp` `#divide-and-conquer` |
+
+---
+
+## 📦 Phase 25 — Scale, Design and Advanced Signatures
+
+**Focus:** Circular Bucket Hit Counters, Timestamped Binary Search Maps, Graph Cycle Coloring & Arbitrage, Weighted Interval DP, Card Transit Aggregators.
+
+| # | Problem | LC# | Difficulty | Priority | Pattern Tags |
+| :---: | :--- | :---: | :---: | :---: | :--- |
+| 154 | [Binary Tree Right Side View](https://leetcode.com/problems/binary-tree-right-side-view/) | 199 | 🟡 Medium | ⭐ Core | `#binary-tree` `#bfs-level-order` `#dfs-reverse-preorder` `#view-projection` `#tree-traversal` |
+| 155 | [Design Hit Counter](https://leetcode.com/problems/design-hit-counter/) | 362 | 🟡 Medium | ⭐ Core | `#system-design` `#circular-buffer` `#ring-buffer` `#queue` `#sliding-window` `#concurrency` |
+| 156 | [Time Based Key-Value Store](https://leetcode.com/problems/time-based-key-value-store/) | 981 | 🟡 Medium | ⭐ Core | `#binary-search` `#hash-map` `#system-design` `#timestamp-indexing` `#floor-entry` |
+| 157 | [Evaluate Division](https://leetcode.com/problems/evaluate-division/) | 399 | 🟡 Medium | ⭐ Core | `#graph` `#dfs-bfs` `#union-find` `#weighted-graph` `#path-multiplication` `#currency-arbitrage` |
+| 158 | [Longest Increasing Path in a Matrix](https://leetcode.com/problems/longest-increasing-path-in-a-matrix/) | 329 | 🔴 Hard | ⭐ Core | `#graph` `#matrix-dfs` `#memoization` `#topological-sort` `#dag` `#dynamic-programming` |
+| 159 | [Maximum Profit in Job Scheduling](https://leetcode.com/problems/maximum-profit-in-job-scheduling/) | 1235 | 🔴 Hard | ⭐ Core | `#dynamic-programming` `#binary-search` `#interval-scheduling` `#memoization` `#sorting` |
+| 160 | [Next Permutation](https://leetcode.com/problems/next-permutation/) | 31 | 🟡 Medium | ⭐ Core | `#two-pointers` `#in-place` `#array` `#lexicographical-order` `#permutation-logic` |
+| 161 | [Employee Free Time](https://leetcode.com/problems/employee-free-time/) | 759 | 🔴 Hard | ⭐ Core | `#intervals` `#heap-priority-queue` `#line-sweep` `#merge-intervals` |
+| 162 | [Is Graph Bipartite?](https://leetcode.com/problems/is-graph-bipartite/) | 785 | 🟡 Medium | ⭐ Core | `#graph` `#bfs` `#dfs` `#graph-coloring` `#odd-length-cycle` |
+| 163 | [Count All Valid Pickup and Delivery Options](https://leetcode.com/problems/count-all-valid-pickup-and-delivery-options/) | 1359 | 🔴 Hard | ⚪ Reinforcement | `#math` `#combinatorics` `#dynamic-programming` `#modulo-arithmetic` |
+| 164 | [Design Underground System](https://leetcode.com/problems/design-underground-system/) | 1396 | 🟡 Medium | ⭐ Core | `#design` `#hash-map` `#statistics` `#running-average` `#system-design` |
+
+---
+
 ## 📊 Pattern Coverage Matrix
 
-The objective is not to memorize 115 individual solutions. The objective is to master the fundamental algorithmic patterns that power them:
+The objective is not to memorize 164 individual solutions. The objective is to master the fundamental algorithmic patterns that power them:
 
 | Algorithmic Pattern | Representative Anchor Problems |
 | :--- | :--- |
@@ -676,7 +770,7 @@ The objective is not to memorize 115 individual solutions. The objective is to m
 
 ## 🗺️ Recommended Learning Order
 
-Do not simply solve sequentially #1 → #115. Follow this dependency-driven progression:
+Do not simply solve sequentially #1 → #164. Follow this dependency-driven progression:
 
 ```mermaid
 graph TD

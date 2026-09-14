@@ -15,6 +15,18 @@
 | **Pattern Tags** | `#hash-map` `#complement-lookup` `#array` `#one-pass` `#two-pointers` |
 | **LeetCode Link** | [Two Sum](https://leetcode.com/problems/two-sum/) |
 
+> ⚡ **30-Second Executive Pattern Flashcard:**
+> - **Pattern Trigger:** Unsorted array + find pair summing to target value $\to$ Complement Lookup.
+> - **Governing Invariant:** For current cursor $i$, its required complement $(target - nums[i])$ must already reside in historical ledger $seen$.
+> - **Subtle Trap:** Self-matching duplicate elements (e.g. $nums = [3]$, $target = 6$). Must probe $seen$ *before* inserting $nums[i]$.
+> - **Complexity:** **Time:** $O(N)$ amortized | **Auxiliary Space:** $O(N)$ hash table | **Output Space:** $O(1)$
+> - **Practice Runner:** Run `dotnet test --filter "FullyQualifiedName~Problem01_TwoSum"` or `python -m unittest discover -s Coding_Practice/Senior_Practice/python -p "test_problem01_two_sum.py"`
+
+> 🎙️ **Senior Interviewer Dialogue Script ("What to Say Out Loud"):**
+> - **The Lead-In (Clarify & Baseline):** *"We are tasked with finding two distinct indices whose values sum to target. The naive baseline compares every pair $(i, j)$ using two nested loops in $O(N^2)$ time and $O(1)$ space. The bottleneck is redundant forward scanning with zero memory of the past."*
+> - **The Invariant Pivot:** *"By rewriting $nums[i] + complement = target \iff complement = target - nums[i]$, we convert an uncertain $O(N)$ future search into an $O(1)$ historical lookup against our hash map."*
+> - **Senior Defense (Scale & Systems):** *"In C#, we pre-allocate dictionary capacity to prevent dynamic rehashing and GC pressure. For distributed streaming data (e.g. Azure Event Hubs / AWS Kinesis), we would partition by key modulus or use a bounded sliding window cache with TTL."*
+
 ### 1. Problem Detail & Constraints
 - **Formal Statement:** Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.
 - **Assumptions & Contracts:**
@@ -246,6 +258,44 @@ public class SolutionSortApproach
     }
 }
 ```
+
+---
+
+### 6. Production Python 3.11+ Implementation
+
+```python
+"""
+Problem #1: Two Sum (LeetCode #1)
+Language: Python 3.11+
+Approach: One-Pass Hash Map (Complement Lookup)
+Time Complexity: O(N) amortized
+Auxiliary Space: O(N) for dictionary
+"""
+
+def two_sum(nums: list[int], target: int) -> list[int]:
+    # Guard clause: ensure valid pair candidates
+    if not nums or len(nums) < 2:
+        raise ValueError("Input array must contain at least 2 elements.")
+
+    # Invariant: seen maps value -> index for all previously processed elements (indices < i)
+    seen: dict[int, int] = {}
+
+    for i, num in enumerate(nums):
+        complement = target - num
+
+        # Decision Gate: check if complement was indexed in past iterations
+        if complement in seen:
+            return [seen[complement], i]
+
+        # Register current number
+        seen[num] = i
+
+    raise ValueError("No valid two-sum solution exists matching target.")
+```
+
+#### ⚖️ C# vs. Python Senior Architectural Contrast
+- **Memory Overhead & GC:** In C#, `new Dictionary<int, int>(capacity)` avoids array doubling, hashing collision linked lists, and boxing overhead. In Python, `dict` has higher pointer footprint per entry (~240 bytes overhead per dict) but extremely optimized collision probing in CPython.
+- **Guard Defenses:** C# provides compile-time null safety (`int[]?`) and `ArgumentNullException.ThrowIfNull()`, while Python relies on runtime type hints (`list[int]`) and explicit value checks.
 
 ---
 
