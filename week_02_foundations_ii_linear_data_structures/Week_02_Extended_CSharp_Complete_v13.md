@@ -6,7 +6,6 @@
 
 ---
 
-**Week:** 2 – Foundations II: Linear Data Structures & Binary Search  
 **Purpose:** Master arrays, dynamic arrays, linked lists, stacks, queues, and binary search through pattern recognition, understanding, and practice  
 **Target:** Transform Week 2 topics into interview-ready C# coding skills  
 **Prerequisites:** Week 2 instructional files + standard support files complete

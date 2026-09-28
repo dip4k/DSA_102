@@ -6,8 +6,6 @@
 
 ---
 
-**Week:** 11 | **Purpose:** Prepare for technical interviews with curated Q&A  
-**Format:** Question + Expected Answer + Follow-ups + Scoring
 
 ---
 

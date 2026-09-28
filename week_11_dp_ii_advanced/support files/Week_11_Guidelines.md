@@ -6,7 +6,6 @@
 
 ---
 
-**Week:** 11 | **Category:** Dynamic Programming II — Trees, DAGs & Advanced  
 **Purpose:** Structured guidance for mastering Week 11 content  
 **Last Updated:** January 26, 2026
 

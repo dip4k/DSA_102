@@ -19,17 +19,18 @@
 
 ## 📖 Chapter 1: Context & Motivation
 
-### 1. The Engineering Challenge
-In enterprise software systems and advanced interview scenarios, standard linear and quadratic approaches collapse when input sizes reach production volume (N >= 10^5). 
-Optimize tree-based and sequence DP by tracking change points using dual priority queues.
+### 1. The Engineering Challenge: Optimizing Continuous Convex Shapes
+
+Consider the classic sequence restoration problem: *"Given an array of integers, what is the minimum cost to make the array non-decreasing if modifying a number by 1 costs 1 unit?"*
+
+Standard DP takes `O(N * MaxVal)` time and memory. **Slope Trick** recognizes that the cost function `f(x)` is a convex, piece-wise linear function. Instead of storing the function values across all points, we only store the *inflection points* (the points where the slope changes). Using a max-heap, we track and shift these inflection points in `O(N log N)` time!
 
 ### 2. High-Level Concept Diagram
 
 ```mermaid
 flowchart LR
-    Input["Input Constraints & State"] --> Analysis["Invariant Check"]
-    Analysis --> Engine["Slope Trick for Piecewise Convex Functions Engine"]
-    Engine --> Output["Optimal Result (O(N) or O(log N))"]
+    F["Convex Piecewise Cost Function"] --> Inflections["Track Slope Transitions (-1 -> 0 -> +1)"]
+    Inflections --> MaxHeap["Priority Queue Shift in O(log N)"]
 ```
 
 ---

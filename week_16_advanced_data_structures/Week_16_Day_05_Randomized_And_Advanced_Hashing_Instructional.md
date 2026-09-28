@@ -19,17 +19,19 @@
 
 ## 📖 Chapter 1: Context & Motivation
 
-### 1. The Engineering Challenge
-In enterprise software systems and advanced interview scenarios, standard linear and quadratic approaches collapse when input sizes reach production volume (N >= 10^5). 
-Zero-collision guarantees, 2-choice hash tables, and eviction cycles in high-throughput lookup engines.
+### 1. The Engineering Challenge: Eliminating Hash Table Stalls
+
+In linear probing hash tables, when two keys collide, they search consecutive slots. As load factor increases, occupied slots cluster into giant contiguous chains, causing lookup latencies to spike unpredictably from `O(1)` to `O(N)`.
+
+**Robin Hood Hashing** fixes this by equalizing probe distances: whenever an incoming element has traveled farther from its home bucket than the element currently occupying a slot, they swap positions ('take from the rich to give to the poor'). This dramatically reduces the variance of probe sequences, delivering near-constant search times even at 90% load.
 
 ### 2. High-Level Concept Diagram
 
 ```mermaid
 flowchart LR
-    Input["Input Constraints & State"] --> Analysis["Invariant Check"]
-    Analysis --> Engine["Advanced Hashing: Cuckoo & Perfect Hashing Engine"]
-    Engine --> Output["Optimal Result (O(N) or O(log N))"]
+    Slot1["Key A (DIB=0)"] --> Slot2["Key B (DIB=1)"]
+    Slot2 --> Incoming["Incoming Key C (DIB=3)"]
+    Incoming -.-> Swap["DIB 3 > DIB 1: Swap & Continue"]
 ```
 
 ---

@@ -6,7 +6,6 @@
 
 ---
 
-**Week:** 2 | **Tier:** Foundations II – Linear Structures, Binary Search  
 **Theme:** Static/Dynamic Arrays, Linked Lists, Stacks/Queues/Deques, Binary Search Invariants  
 **Format:** Hybrid (Enhanced ASCII + Web Resource Links + Reference Tools)  
 **Purpose:** Visual-first concept explanation with embedded professional resources

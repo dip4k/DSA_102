@@ -6,7 +6,6 @@
 
 ---
 
-**Week:** 11 | **Category:** Dynamic Programming II — Trees, DAGs & Advanced  
 **Language:** C# / .NET | **Difficulty:** 🔴 Advanced  
 **Focus:** Production-grade implementations, performance optimization, design patterns
 

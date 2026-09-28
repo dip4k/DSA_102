@@ -19,17 +19,20 @@
 
 ## 📖 Chapter 1: Context & Motivation
 
-### 1. The Engineering Challenge
-In enterprise software systems and advanced interview scenarios, standard linear and quadratic approaches collapse when input sizes reach production volume (N >= 10^5). 
-Ford-Fulkerson, Edmonds-Karp (BFS augmenting paths), residual graphs, and capacity constraints.
+### 1. The Engineering Challenge: The Water Pipeline Bottleneck
+
+Imagine a municipal water network connecting a mountain reservoir (Source `S`) to a city (Sink `T`) through a complex web of intermediate pumping stations and pipes. Every pipe has a physical capacity limit (gallons per second). What is the absolute maximum water volume the city can receive without bursting any pipe?
+
+A greedy heuristic fails because filling one large pipe early can block multiple downstream pathways. **Network Flow** solves this through **residual graphs**: every time you push flow along an augmenting path, you leave a "backward edge" that allows future steps to undo or redirect flow if a better global route is discovered.
 
 ### 2. High-Level Concept Diagram
 
 ```mermaid
 flowchart LR
-    Input["Input Constraints & State"] --> Analysis["Invariant Check"]
-    Analysis --> Engine["Network Flow Fundamentals Engine"]
-    Engine --> Output["Optimal Result (O(N) or O(log N))"]
+    S["Source (S)"] -->|flow/cap: 4/10| A["Node A"]
+    S -->|flow/cap: 6/6| B["Node B (Saturated)"]
+    A -->|flow/cap: 4/4| T["Sink (T)"]
+    B -->|flow/cap: 6/8| T
 ```
 
 ---

@@ -19,17 +19,21 @@
 
 ## 📖 Chapter 1: Context & Motivation
 
-### 1. The Engineering Challenge
-In enterprise software systems and advanced interview scenarios, standard linear and quadratic approaches collapse when input sizes reach production volume (N >= 10^5). 
-Reduce quadratic DP states to linear time by maintaining upper/lower envelopes of linear functions.
+### 1. The Engineering Challenge: From Quadratic Collapse to Logarithmic Speed
+
+In dynamic programming, we often face state transitions of the form:
+`dp[i] = min(m_j * x_i + b_j)` for all `j < i`.
+
+Computing this naively requires checking all previous `j` states, taking `O(N)` per transition and `O(N^2)` overall. When `N = 100,000`, `10^10` operations will time out in any interview or production job.
+
+Notice the structure: `m_j * x + b_j` is simply the equation of a straight line! We are asking: *"Given a collection of lines, which line is lowest at coordinate x?"* The **Convex Hull Trick (CHT)** maintains the lower envelope of lines, allowing minimum queries in `O(log N)` via binary search.
 
 ### 2. High-Level Concept Diagram
 
 ```mermaid
-flowchart LR
-    Input["Input Constraints & State"] --> Analysis["Invariant Check"]
-    Analysis --> Engine["Convex Hull Trick & DP Slope Optimization Engine"]
-    Engine --> Output["Optimal Result (O(N) or O(log N))"]
+flowchart TD
+    Lines["Multiple Candidate Lines y = m*x + b"] --> Envelope["Lower Envelope (Convex Hull)"]
+    Envelope --> Query["Binary Search Query at x -> O(log N)"]
 ```
 
 ---

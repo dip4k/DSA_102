@@ -7,7 +7,6 @@
 ---
 
 **Filename:** `Week_12_Extended_CSharp_Complete_v13.md`  
-**Week:** 12  
 **Theme:** Greedy Algorithms & Proofs (C#-focused implementation support)
 
 > This extended C# file turns Week 12’s greedy theory into concrete, interview-ready C# patterns and implementations.

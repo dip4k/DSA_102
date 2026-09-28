@@ -6,7 +6,6 @@
 
 ---
 
-**Week:** 3 | **Tier:** Foundations III – Sorting, Heaps, Hashing  
 **Theme:** Elementary Sorts, Merge/Quick Sort, Heaps, Hash Tables, String Hashing  
 **Format:** Hybrid (Enhanced ASCII + Web Resource Links + Reference Tools)  
 **Purpose:** Visual-first concept explanation with embedded professional resources

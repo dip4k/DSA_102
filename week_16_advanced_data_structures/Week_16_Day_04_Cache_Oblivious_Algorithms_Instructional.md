@@ -19,17 +19,21 @@
 
 ## 📖 Chapter 1: Context & Motivation
 
-### 1. The Engineering Challenge
-In enterprise software systems and advanced interview scenarios, standard linear and quadratic approaches collapse when input sizes reach production volume (N >= 10^5). 
-Design optimal memory layouts that leverage CPU caches and memory pages without hardcoding hardware cache lines.
+### 1. The Engineering Challenge: Outsmarting Unknown Hardware
+
+Standard memory models pretend all RAM access takes uniform time. In reality, modern CPUs have L1 (1 ns), L2 (4 ns), L3 (10 ns), and RAM (100 ns). Traditional cache-aware algorithms tune buffer sizes for specific CPU architectures (e.g., block size `B = 64 bytes`).
+
+**Cache-Oblivious Algorithms** achieve optimal memory performance across *all* cache levels simultaneously—without knowing the cache line size or capacity! By using recursive divide-and-conquer (like matrix quad-splits or van Emde Boas layouts), problems shrink until they naturally fit inside whatever cache level happens to be present.
 
 ### 2. High-Level Concept Diagram
 
 ```mermaid
-flowchart LR
-    Input["Input Constraints & State"] --> Analysis["Invariant Check"]
-    Analysis --> Engine["Cache-Oblivious Structures Engine"]
-    Engine --> Output["Optimal Result (O(N) or O(log N))"]
+flowchart TD
+    Matrix["N x N Matrix"] --> Q1["Top-Left Submatrix"]
+    Matrix --> Q2["Top-Right Submatrix"]
+    Matrix --> Q3["Bottom-Left Submatrix"]
+    Matrix --> Q4["Bottom-Right Submatrix"]
+    Q1 -.-> Fits["Shrinks until it fits in L1 Cache"]
 ```
 
 ---

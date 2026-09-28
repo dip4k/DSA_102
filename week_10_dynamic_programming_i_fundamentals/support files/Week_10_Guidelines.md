@@ -6,7 +6,6 @@
 
 ---
 
-**Week:** 10 | **Phase:** C (Trees, Graphs & Dynamic Programming)  
 **Theme:** Dynamic Programming I: Building Intuition from Recursion to Tables  
 **Difficulty:** 🟡 Intermediate to 🔴 Advanced  
 

@@ -6,7 +6,6 @@
 
 ---
 
-**Week:** 4 | **Tier:** Core Problem-Solving Patterns I  
 **Theme:** Two Pointers, Sliding Windows, Divide & Conquer, Binary Search  
 **Format:** Hybrid (Enhanced ASCII + Web Resource Links + Reference Tools)  
 **Purpose:** Visual-first concept explanation with embedded professional resources

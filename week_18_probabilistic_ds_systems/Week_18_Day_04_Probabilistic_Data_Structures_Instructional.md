@@ -19,17 +19,25 @@
 
 ## 📖 Chapter 1: Context & Motivation
 
-### 1. The Engineering Challenge
-In enterprise software systems and advanced interview scenarios, standard linear and quadratic approaches collapse when input sizes reach production volume (N >= 10^5). 
-Bloom Filters, Count-Min Sketch, and HyperLogLog for sub-linear memory cardinality and set membership.
+### 1. The Engineering Challenge: Checking 1 Billion Items in Megabytes of RAM
+
+Imagine building a spam filter, web crawler, or database cache (like Cassandra or Bigtable) that needs to check if a key exists before hitting disk. Storing 1 billion 64-bit IDs in a hash table requires at least 16 to 32 Gigabytes of expensive RAM.
+
+**Bloom Filters** trade 100% exactness for massive 95% space reduction. Using a compact bit array and `k` hash functions, a Bloom filter answers:
+- *"Definitely NOT in set"* (100% guaranteed, zero false negatives)
+- *"Probably in set"* (small, configurable false positive rate, e.g., 1%)
+All within a few megabytes of memory!
 
 ### 2. High-Level Concept Diagram
 
 ```mermaid
 flowchart LR
-    Input["Input Constraints & State"] --> Analysis["Invariant Check"]
-    Analysis --> Engine["Probabilistic Data Structures in Distributed Systems Engine"]
-    Engine --> Output["Optimal Result (O(N) or O(log N))"]
+    Item["Key to Check"] --> H1["Hash 1"]
+    Item --> H2["Hash 2"]
+    Item --> H3["Hash 3"]
+    H1 --> B["Bit Array: If ANY bit is 0 -> Definitely NOT in Set"]
+    H2 --> B
+    H3 --> B
 ```
 
 ---

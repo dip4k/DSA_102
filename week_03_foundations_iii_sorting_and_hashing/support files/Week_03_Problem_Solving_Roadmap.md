@@ -6,7 +6,6 @@
 
 ---
 
-**Week:** 3 – Foundations III: Sorting, Heaps & Hashing  
 **Purpose:** Transform Week 3 sorting, heaps, and hashing knowledge into problem-solving fluency  
 **Target Audience:** Learners progressing from Week 2 linear structures to Week 3 advanced data structures  
 **File Type:** Support File (Problem-Solving Playbook)  

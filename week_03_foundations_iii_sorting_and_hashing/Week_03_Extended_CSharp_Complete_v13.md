@@ -6,7 +6,6 @@
 
 ---
 
-**Week:** 3 – Foundations III: Sorting, Heaps & Hashing  
 **Purpose:** Master sorting algorithms, heaps, and hash tables through pattern recognition, understanding, and practice  
 **Target:** Transform Week 3 topics into interview-ready C# coding skills  
 **Prerequisites:** Week 3 instructional files + standard support files complete

@@ -8,7 +8,6 @@
 
 **Filename:** `WEEK_08_FULL_PLAYBOOK.md`  
 **Phase:** C – Trees, Graphs & Dynamic Programming  
-**Week:** 08  
 **Primary Goal:** Build strong intuition for graph models and basic traversals (BFS & DFS), including topological sort, connectivity, and SCC structure.
 
 ---

@@ -11,6 +11,21 @@
 
 ---
 
+## 🧭 Pattern Decision Tree: Which Pattern to Pick?
+
+```mermaid
+flowchart TD
+    Start["Unsorted Array / List Problem"] --> Q1{"What is the primary objective?"}
+    Q1 -->|Find pair complement or check membership| P1["Hash Map / Hash Set O(1)"]
+    Q1 -->|Find 'next greater' or 'next smaller' element| P2["Monotonic Stack O(N)"]
+    Q1 -->|Merge meeting times or overlapping ranges| P3["Interval Sorting & Greedy Merge"]
+    Q1 -->|Numbers are in range 1 to N| P4["Cyclic Sort (Place x at index x-1)"]
+    Q1 -->|Contiguous subarray with maximum sum| P5["Kadane's Algorithm O(N)"]
+    Q1 -->|Detect cycle or find midpoint in sequence| P6["Fast & Slow Pointers (Floyd's)"]
+```
+
+---
+
 ## 🎯 Overall Problem-Solving Strategy for Week 05
 
 ### Stage 1: Pattern Recognition (Foundation)

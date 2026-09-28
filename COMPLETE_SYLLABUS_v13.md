@@ -1,5 +1,5 @@
-# 📘 DATA STRUCTURES & ALGORITHMS COMPLETE CURRICULUM v13
-## Comprehensive 19-Week Professional Syllabus
+# 📘 DATA STRUCTURES & ALGORITHMS COMPLETE CURRICULUM
+## Comprehensive Professional Syllabus & Master Roadmap
 
 > 🧭 **Quick Phase Navigation:**  
 > [Phase A: Foundations (W1–3)](#-phase-a-foundations--computational-thinking) • [Phase B: Core Patterns (W4–6)](#-phase-b-core-patterns--string-manipulation) • [Phase C: Trees, Graphs & DP (W7–11)](#-phase-c-trees-graphs--dynamic-programming) • [Phase D: Paradigms (W12–13)](#-phase-d-algorithm-paradigms) • [Phase E: Integration (W14–15)](#-phase-e-integration--extensions) • [Phase F: Deep Dives (W16–18)](#-phase-f-advanced-deep-dives-optional) • [Phase G: Mocks (W19)](#-phase-g-mock-interviews--final-review)
@@ -11,12 +11,54 @@
 
 ---
 
-# 🎓 CURRICULUM OVERVIEW
+# 🎓 CURRICULUM OVERVIEW & DUAL LEARNING TRACKS
+
+### Core Philosophy: Intuition & Patterns Over Memorization
+
+Learning Data Structures & Algorithms should feel like building with Lego blocks, not reciting an encyclopedic catalog. Every concept in this syllabus is taught through the **3-Pillar Clear Educator Framework**:
+1. **The Intuitive Hook:** Start with an everyday engineering problem. Why do linear arrays choke on large inserts? Why do we need heaps for streaming medians?
+2. **The Visual Blueprint:** Build the visual trace before writing code. If you can draw the pointers moving on a napkin, the code writes itself.
+3. **The Invariant:** Identify the single rule that the algorithm preserves at every iteration.
+
+---
+
+### Dual Learning Tracks
+
+We provide two distinct paths through this syllabus to fit your background and timeline:
+
+| Dimension | Track 1: Longitudinal Foundations (19 Weeks) | Track 2: Accelerated Interview Track (12 Weeks) |
+| :--- | :--- | :--- |
+| **Pace** | 8–12 hours / week (deep, comprehensive) | 15–20 hours / week (high velocity) |
+| **Best For** | University students, career switchers, staff-level depth | Engineers with interviews scheduled in 2–3 months |
+| **Coverage** | Full 19 Weeks (Architecture, Memory, CP deep dives) | High-yield 12 Weeks (Core Patterns, Trees, DP, Graphs, Mocks) |
+| **Cognitive Sequencing** | Sequential modular order (Phases A through G) | **Optimized Cognitive Flow:**<br/>1. Arrays, Two Pointers & Sliding Window (W1–4)<br/>2. Stacks, Queues & Linked Lists (W2, W5)<br/>3. Trees & Binary Search Trees (W7)<br/>4. **Backtracking & Decision Trees (W13)** *(Bridging step)*<br/>5. **Dynamic Programming I & II (W10–11)** *(Memoized Backtracking)*<br/>6. Graphs & Traversals (W8)<br/>7. **Union-Find before Kruskal's MST (W9)**<br/>8. Shortest Paths & Intervals (W9, W5, W12)<br/>9. Full Mock Simulation (W19) |
+
+---
+
+### 🧭 Pattern Recognition Cheat Sheet ("When to Reach for What")
+
+Use this reference table to immediately decode interview problem descriptions:
+
+| Problem Signal | Optimal Pattern | Core Mental Model |
+| :--- | :--- | :--- |
+| Sorted array; target pair sum or condition | **Two Pointers (Opposing)** | Converge inward; discard half the search space |
+| Contiguous subarray with min/max length or sum | **Sliding Window** | Expand right to satisfy; shrink left to optimize |
+| Next greater / smaller element in an array | **Monotonic Stack** | Maintain strict ascending or descending order |
+| Overlapping intervals, meeting rooms, scheduling | **Interval Sorting / Greedy** | Sort by boundary (start or end); resolve collisions |
+| Find cycle or midpoint in a linked list | **Fast & Slow Pointers** | Relative speed gap closes; cycle detection |
+| Explore all combinations, subsets, permutations | **Backtracking** | Build candidate step-by-step; undo choice on return |
+| Optimization (min/max/count) with overlapping states | **Dynamic Programming** | Remember past solutions so you never recompute |
+| Shortest path on unweighted grid or graph | **Breadth-First Search (BFS)** | Level-by-level outward wave expansion |
+| Shortest path on weighted non-negative graph | **Dijkstra's Algorithm** | Greedily expand shortest unvisited distance |
+| Dynamic connectivity / cycle in undirected graph | **Union-Find (DSU)** | Disjoint sets with path compression and rank union |
+| Running median or top K frequent elements | **Min/Max Heaps** | Maintain balance between upper and lower halves |
+
+---
 
 ## Phase Structure & Duration
 
 | Phase | Name | Weeks | Duration | Focus Area |
-|-------|------|-------|----------|-----------|
+| :--- | :--- | :--- | :--- | :--- |
 | **A** | 🟦 Foundations & Computational Thinking | 1-3 | 40-45 hrs | Fundamentals, Memory, Complexity |
 | **B** | 🟩 Core Patterns & String Manipulation | 4-6 | 40-45 hrs | Problem-Solving Patterns |
 | **C** | 🟨 Trees, Graphs & Dynamic Programming | 7-11 | 60-70 hrs | Advanced Data Structures |
@@ -91,6 +133,9 @@ This week establishes the theoretical foundation for all subsequent work. Studen
 
 ### 📅 DAY 1: RAM MODEL, VIRTUAL MEMORY & POINTERS | 90 min
 
+> 💡 **One-Minute Intuition:** *Computers aren't magic; memory is just a giant numbered street of byte addresses. Knowing how hardware reads memory blocks (cache lines) explains why contiguous arrays run 10x faster than pointer-heavy node chains.*
+> 🎯 **Governing Invariant:** *Contiguous sequential reads maximize hardware cache hits; jumping randomly across memory incurs high page and cache-miss penalties.*
+
 **Topics:**
 - **Memory Models**
   - RAM model: addressable cells with O(1) random access
@@ -125,6 +170,9 @@ This week establishes the theoretical foundation for all subsequent work. Studen
 ---
 
 ### 📅 DAY 2: ASYMPTOTIC ANALYSIS - BIG-O, BIG-Ω, BIG-Θ | 90 min
+
+> 💡 **One-Minute Intuition:** *Big-O isn't about counting processor clock cycles; it's about predicting how your algorithm's runtime scales as input size N explodes to millions.*
+> 🎯 **Governing Invariant:** *Focus strictly on the highest-order growth term and drop constant multipliers as N approaches infinity.*
 
 **Topics:**
 - **Complexity Notation**
@@ -175,6 +223,9 @@ This week establishes the theoretical foundation for all subsequent work. Studen
 
 ### 📅 DAY 3: SPACE COMPLEXITY & MEMORY USAGE | 90 min
 
+> 💡 **One-Minute Intuition:** *Memory isn't free. We analyze auxiliary memory—the temporary scratchpad space our code demands on the stack and heap, separate from the input itself.*
+> 🎯 **Governing Invariant:** *In-place algorithms preserve O(1) auxiliary space by mutating existing memory rather than allocating fresh buffers.*
+
 **Topics:**
 - **Space Analysis**
   - Total space = input + output + auxiliary
@@ -216,6 +267,9 @@ This week establishes the theoretical foundation for all subsequent work. Studen
 
 ### 📅 DAY 4: RECURSION I - CALL STACK & PATTERNS | 90 min
 
+> 💡 **One-Minute Intuition:** *Recursion is simply delegating a smaller slice of work to an identical function clone, trusting it to finish, and combining the results.*
+> 🎯 **Governing Invariant:** *Every recursive call must strictly make progress toward a non-recursive base case to prevent stack overflow.*
+
 **Topics:**
 - **Call Stack Mechanics**
   - Activation records: parameters, locals, return address
@@ -256,6 +310,9 @@ This week establishes the theoretical foundation for all subsequent work. Studen
 ---
 
 ### 📅 DAY 5: RECURSION II - ADVANCED PATTERNS & MEMOIZATION | 120 min
+
+> 💡 **One-Minute Intuition:** *When a recursive function solves the exact same subproblem hundreds of times, storing the answer in a lookup table (memoization) turns exponential O(2^N) disaster into lightning-fast linear O(N).*
+> 🎯 **Governing Invariant:** *Subproblems with identical parameter states must always yield identical deterministic results.*
 
 **Topics:**
 - **Recursion Patterns**
@@ -303,6 +360,9 @@ This week establishes the theoretical foundation for all subsequent work. Studen
 ---
 
 ### 📅 DAY 6 (OPTIONAL): PEAK FINDING & ALGORITHMIC THINKING | 120 min
+
+> 💡 **One-Minute Intuition:** *You don't need to look at every element to find a peak. If your neighbor is taller than you, walk uphill—a peak is guaranteed to exist in that direction.*
+> 🎯 **Governing Invariant:** *Bisection into the strictly uphill neighbor guarantees that at least one local maximum resides in the chosen half.*
 
 **Topics:**
 - **1D Peak Finding**
@@ -355,6 +415,9 @@ This week covers fundamental data structures and the most important search algor
 
 ### 📅 DAY 1: ARRAYS & MEMORY LAYOUT | 90 min
 
+> 💡 **One-Minute Intuition:** *An array is a continuous slab of memory. Finding arr[i] is instantaneous pointer arithmetic: base_address + i * element_size.*
+> 🎯 **Governing Invariant:** *Element positions map deterministically to memory offsets, delivering true O(1) random access.*
+
 **Topics:**
 - **Static Arrays**
   - Contiguous memory: elements stored sequentially
@@ -394,6 +457,9 @@ This week covers fundamental data structures and the most important search algor
 ---
 
 ### 📅 DAY 2: DYNAMIC ARRAYS & AMORTIZED GROWTH | 90 min
+
+> 💡 **One-Minute Intuition:** *When an array fills up, double its capacity and copy everything over. Paying an occasional expensive resize makes almost every append operation a cheap O(1).*
+> 🎯 **Governing Invariant:** *Doubling capacity ensures each element pays for its own future reallocation credit, guaranteeing amortized O(1) appends.*
 
 **Topics:**
 - **Dynamic Array Model**
@@ -438,6 +504,9 @@ This week covers fundamental data structures and the most important search algor
 ---
 
 ### 📅 DAY 3: LINKED LISTS | 90 min
+
+> 💡 **One-Minute Intuition:** *Unlike arrays, linked lists scatter nodes across memory, connected by pointers. They shine at cheap insertions and deletions once a pointer is in hand, but sacrifice instant random indexing.*
+> 🎯 **Governing Invariant:** *Every pointer reassignment must secure the reference to the downstream list before severing the upstream link.*
 
 **Topics:**
 - **Singly Linked Lists**
@@ -491,6 +560,9 @@ This week covers fundamental data structures and the most important search algor
 ---
 
 ### 📅 DAY 4: STACKS, QUEUES & DEQUES | 90 min
+
+> 💡 **One-Minute Intuition:** *A stack is a stack of plates (Last In, First Out); a queue is a line at the grocery checkout (First In, First Out); a deque allows adding and removing at both ends.*
+> 🎯 **Governing Invariant:** *Access is strictly restricted to designated boundaries, guaranteeing O(1) insertions and removals without shifting elements.*
 
 **Topics:**
 - **Stacks (LIFO)**
@@ -548,6 +620,9 @@ This week covers fundamental data structures and the most important search algor
 ---
 
 ### 📅 DAY 5: BINARY SEARCH & INVARIANTS | 120 min
+
+> 💡 **One-Minute Intuition:** *In a sorted space, comparing against the midpoint lets you discard half the remaining candidates in a single check.*
+> 🎯 **Governing Invariant:** *The target value (or optimal boundary) is strictly guaranteed to lie within the active range [low, high] at each step.*
 
 **Topics:**
 - **Binary Search Precondition**
@@ -616,6 +691,9 @@ This week covers fundamental data structures and the most important search algor
 
 ### 📅 DAY 6: STRINGS & NUMBERS - REPRESENTATION & CONVERSIONS | 120 min
 
+> 💡 **One-Minute Intuition:** *Characters are integers under the hood (ASCII/UTF-8). String mutations create new memory allocations in most modern languages unless using specialized builders.*
+> 🎯 **Governing Invariant:** *Character arithmetic (c - 'a') maps alphabets directly to zero-indexed frequency arrays in O(1) space.*
+
 **Topics:**
 - **Why representations matter (engineering motivation)**
   - Real failures and costs: overflow bugs, encoding corruption, performance traps (concat-in-loop)
@@ -666,6 +744,9 @@ This week covers three fundamental primitives used across countless algorithms. 
 
 ### 📅 DAY 1: ELEMENTARY SORTS - BUBBLE, SELECTION, INSERTION | 90 min
 
+> 💡 **One-Minute Intuition:** *Elementary sorts show fundamental boundary maintenance: growing a sorted partition one element at a time.*
+> 🎯 **Governing Invariant:** *After iteration k, the boundary prefix (or suffix) of size k is guaranteed to be in its final sorted order.*
+
 **Topics:**
 - **Bubble Sort**
   - Adjacent swaps: compare neighbors, swap if out of order
@@ -715,6 +796,9 @@ This week covers three fundamental primitives used across countless algorithms. 
 ---
 
 ### 📅 DAY 2: MERGE SORT & QUICKSORT | 120 min
+
+> 💡 **One-Minute Intuition:** *Divide and conquer. Merge sort splits in half and stitches sorted arrays back together; Quicksort picks a pivot and partitions elements around it.*
+> 🎯 **Governing Invariant:** *Merge sort guarantees O(N log N) worst-case time by balanced splitting; Quicksort places the pivot at its exact final sorted index in linear time.*
 
 **Topics:**
 - **Merge Sort**
@@ -790,6 +874,9 @@ This week covers three fundamental primitives used across countless algorithms. 
 
 ### 📅 DAY 3: HEAPS, HEAPIFY & HEAP SORT | 90 min
 
+> 💡 **One-Minute Intuition:** *A heap is a complete binary tree packed into an array where every parent dominates its children. It gives you instant O(1) access to the minimum or maximum element.*
+> 🎯 **Governing Invariant:** *Heap-order property: for any node i, val(parent(i)) <= val(i) (min-heap), maintained via logarithmic bubbling.*
+
 **Topics:**
 - **Binary Heap Structure**
   - Complete binary tree in array
@@ -848,6 +935,9 @@ This week covers three fundamental primitives used across countless algorithms. 
 ---
 
 ### 📅 DAY 4: HASH TABLES I - SEPARATE CHAINING | 90 min
+
+> 💡 **One-Minute Intuition:** *A hash function maps arbitrary keys into bucket indices. When keys collide, store them in a bucket chain.*
+> 🎯 **Governing Invariant:** *Equal keys produce identical hash codes; bucket lookup preserves average O(1) access under uniform hashing.*
 
 **Topics:**
 - **Hash Function Basics**
@@ -909,6 +999,9 @@ This week covers three fundamental primitives used across countless algorithms. 
 ---
 
 ### 📅 DAY 5: HASH TABLES II - OPEN ADDRESSING & ROLLING HASH | 120 min
+
+> 💡 **One-Minute Intuition:** *If a bucket is occupied, probe the next slot. Rolling hash allows updating a substring hash in O(1) by subtracting the departing character and adding the arriving character.*
+> 🎯 **Governing Invariant:** *Probe sequences must deterministically revisit valid occupied elements until an empty sentinel slot is encountered.*
 
 **Topics:**
 - **Open Addressing Overview**
@@ -1020,6 +1113,9 @@ This week teaches the most fundamental patterns in array and sequence problems. 
 
 ### 📅 DAY 1: TWO-POINTER PATTERNS | 90 min
 
+> 💡 **One-Minute Intuition:** *Instead of a nested loop testing every pair, two pointers walk toward each other or slide in tandem, pruning hopeless candidates with each step.*
+> 🎯 **Governing Invariant:** *Moving a pointer never discards a candidate that could form a valid optimal pair.*
+
 **Topics:**
 - **Same-Direction Pointers**
   - Both start at beginning, move in same direction
@@ -1067,6 +1163,9 @@ This week teaches the most fundamental patterns in array and sequence problems. 
 ---
 
 ### 📅 DAY 2: SLIDING WINDOW (FIXED SIZE) | 90 min
+
+> 💡 **One-Minute Intuition:** *Slide a magnifying glass of size K across an array: add the new incoming element on the right, drop the outgoing element on the left.*
+> 🎯 **Governing Invariant:** *The window length strictly equals K at every step, updating rolling state in O(1) per shift.*
 
 **Topics:**
 - **Fixed-Length Windows**
@@ -1121,6 +1220,9 @@ This week teaches the most fundamental patterns in array and sequence problems. 
 ---
 
 ### 📅 DAY 3: SLIDING WINDOW (VARIABLE SIZE) | 120 min
+
+> 💡 **One-Minute Intuition:** *Expand the right boundary to satisfy a condition; contract the left boundary to find the shortest or optimal valid window.*
+> 🎯 **Governing Invariant:** *The window state [left, right] remains valid, contracting greedily whenever the constraint is violated.*
 
 **Topics:**
 - **Variable-Size Window Mechanics**
@@ -1183,6 +1285,9 @@ This week teaches the most fundamental patterns in array and sequence problems. 
 ---
 
 ### 📅 DAY 4: DIVIDE & CONQUER PATTERN | 90 min
+
+> 💡 **One-Minute Intuition:** *Break a monolithic problem into independent subproblems, solve each recursively, and combine their solutions.*
+> 🎯 **Governing Invariant:** *Subproblems do not overlap; combining subproblem solutions takes polynomial time.*
 
 **Topics:**
 - **Divide & Conquer Template**
@@ -1254,6 +1359,9 @@ This week teaches the most fundamental patterns in array and sequence problems. 
 ---
 
 ### 📅 DAY 5: BINARY SEARCH AS A PATTERN | 120 min
+
+> 💡 **One-Minute Intuition:** *When you cannot sort the input, check if the answer space has a monotonic property: 'If X is feasible, any value > X is also feasible.'*
+> 🎯 **Governing Invariant:** *Predicate isFeasible(X) produces a monotonic boolean sequence [False, ..., False, True, ..., True].*
 
 **Topics:**
 - **Framing as Binary Search**
@@ -1339,6 +1447,9 @@ This week covers patterns that appear in 50%+ of interview problems. Each patter
 
 ### 📅 DAY 1: HASH MAP / HASH SET PATTERNS | 90 min
 
+> 💡 **One-Minute Intuition:** *Trade memory for speed: store complements (target - x) or frequency tallies to resolve searches in O(1) time.*
+> 🎯 **Governing Invariant:** *At index i, the hash map contains a verified summary of all historical elements [0 ... i - 1].*
+
 **Topics:**
 - **Two-Sum & Complement Patterns**
   - Problem: find two numbers summing to target
@@ -1395,6 +1506,9 @@ This week covers patterns that appear in 50%+ of interview problems. Each patter
 ---
 
 ### 📅 DAY 2: MONOTONIC STACK | 120 min
+
+> 💡 **One-Minute Intuition:** *Maintain elements in strictly increasing or decreasing order. When an incoming element breaks the order, pop until order is restored—the arriving element is the 'next greater' for all popped items.*
+> 🎯 **Governing Invariant:** *Stack elements are maintained in strict monotonic order; each element is pushed and popped at most once (amortized O(1)).*
 
 **Topics:**
 - **Monotonic Stack Concept**
@@ -1462,6 +1576,9 @@ This week covers patterns that appear in 50%+ of interview problems. Each patter
 
 ### 📅 DAY 3: MERGE OPERATIONS & INTERVAL PATTERNS | 120 min
 
+> 💡 **One-Minute Intuition:** *Sort intervals by start time. If the next interval starts before the current one ends, they overlap—merge them into one.*
+> 🎯 **Governing Invariant:** *Processing intervals in sorted order guarantees that any new interval can only overlap with the immediately preceding active interval.*
+
 **Topics:**
 - **Merging Sorted Arrays**
   - Two sorted arrays: merge in O(m+n)
@@ -1528,6 +1645,9 @@ This week covers patterns that appear in 50%+ of interview problems. Each patter
 
 ### 📅 DAY 4A: PARTITION & CYCLIC SORT | 120 min
 
+> 💡 **One-Minute Intuition:** *When numbers are in the range 1 to N, each number belongs at index num - 1. Swap numbers to their home indices until everyone is in place.*
+> 🎯 **Governing Invariant:** *Array elements cycle deterministically into their designated indices in at most N swaps.*
+
 **Topics:**
 - **Dutch National Flag Problem**
   - Partition array into three regions: 0s, 1s, 2s
@@ -1581,6 +1701,9 @@ This week covers patterns that appear in 50%+ of interview problems. Each patter
 
 ### 📅 DAY 4B: KADANE'S ALGORITHM | 120 min
 
+> 💡 **One-Minute Intuition:** *Kadane asks at each step: 'Should I extend the existing subarray sum, or start fresh from the current number?'*
+> 🎯 **Governing Invariant:** *Kadane preserves the maximum contiguous subarray ending at index i: maxEndingHere = max(num, maxEndingHere + num).*
+
 **Topics:**
 - **Kadane's Algorithm - Maximum Subarray Sum**
   - Find contiguous subarray with largest sum
@@ -1621,6 +1744,9 @@ This week covers patterns that appear in 50%+ of interview problems. Each patter
 ---
 
 ### 📅 DAY 5: FAST & SLOW POINTERS | 120 min
+
+> 💡 **One-Minute Intuition:** *Two runners on a circular track will eventually meet. If the fast runner moves twice as fast as the slow runner, they must collide if a cycle exists.*
+> 🎯 **Governing Invariant:** *The distance between fast and slow pointers decreases by 1 step per cycle iteration until convergence.*
 
 **Topics:**
 - **Floyd's Cycle Detection (Tortoise & Hare)**
@@ -1708,6 +1834,9 @@ This week applies pattern knowledge to strings. Strings are arrays of characters
 
 ### 📅 DAY 1: PALINDROME PATTERNS | 90 min
 
+> 💡 **One-Minute Intuition:** *A palindrome reads the same backwards and forwards. Expand outwards from every single character and every character pair to find all palindromes.*
+> 🎯 **Governing Invariant:** *Symmetry around center [c - k ... c + k] holds until mismatched characters are encountered.*
+
 **Topics:**
 - **Simple Palindrome Check**
   - Two pointers from ends converging
@@ -1766,6 +1895,9 @@ This week applies pattern knowledge to strings. Strings are arrays of characters
 ---
 
 ### 📅 DAY 2: SUBSTRING & SLIDING WINDOW ON STRINGS | 120 min
+
+> 💡 **One-Minute Intuition:** *Track character frequencies in a dynamic window to find minimum substrings containing target alphabets or distinct character counts.*
+> 🎯 **Governing Invariant:** *Frequency map accurately reflects counts within [left, right]; left pointer only advances when all constraints are met.*
 
 **Topics:**
 - **Longest Substring Without Repeating Characters**
@@ -1829,6 +1961,9 @@ This week applies pattern knowledge to strings. Strings are arrays of characters
 
 ### 📅 DAY 3: PARENTHESES & BRACKET MATCHING | 90 min
 
+> 💡 **One-Minute Intuition:** *Every opening bracket waits for its matching closing partner. Use a stack to track open brackets; closing brackets must match the stack's top.*
+> 🎯 **Governing Invariant:** *At any point, the number of open brackets must be greater than or equal to closing brackets; the stack must be empty at the end.*
+
 **Topics:**
 - **Valid Parentheses via Stack**
   - Push opening brackets: (, [, {
@@ -1888,6 +2023,9 @@ This week applies pattern knowledge to strings. Strings are arrays of characters
 ---
 
 ### 📅 DAY 4: STRING TRANSFORMATIONS & BUILDING | 120 min
+
+> 💡 **One-Minute Intuition:** *Strings are immutable in many languages. Repeated string concatenations in a loop produce O(N^2) allocations; use buffers or array mutations for O(N).*
+> 🎯 **Governing Invariant:** *Character buffers append in amortized O(1) time without triggering garbage collection reallocation churn.*
 
 **Topics:**
 - **String to Integer (atoi)**
@@ -1953,6 +2091,9 @@ This week applies pattern knowledge to strings. Strings are arrays of characters
 ---
 
 ### 📅 DAY 5 (OPTIONAL): STRING MATCHING & ROLLING HASH | 90 min
+
+> 💡 **One-Minute Intuition:** *Treat substrings as numbers in base B modulo M. Sliding the window updates the hash value in O(1) via modular arithmetic.*
+> 🎯 **Governing Invariant:** *Matching hash values identify candidate positions; verify character-by-character to avoid false positive collisions.*
 
 **Topics:**
 - **Rabin-Karp Algorithm**
@@ -2025,6 +2166,9 @@ This week introduces hierarchical data structures. Trees are fundamental for org
 
 ### 📅 DAY 1: BINARY TREES & TRAVERSALS | 120 min
 
+> 💡 **One-Minute Intuition:** *Trees represent hierarchical relationships. DFS explores deep paths first (Pre/In/Post order); BFS explores level by level using a queue.*
+> 🎯 **Governing Invariant:** *In-order traversal of a binary search tree visits nodes in strictly ascending sorted order.*
+
 **Topics:**
 - **Tree Terminology**
   - Root: topmost node, entry point
@@ -2080,6 +2224,9 @@ This week introduces hierarchical data structures. Trees are fundamental for org
 ---
 
 ### 📅 DAY 2: BINARY SEARCH TREES (BSTs) | 120 min
+
+> 💡 **One-Minute Intuition:** *Every node acts as a partition: smaller values go left, larger values go right. Searching takes O(height) time.*
+> 🎯 **Governing Invariant:** *For any node X, all keys in X.left < X.key and all keys in X.right > X.key.*
 
 **Topics:**
 - **BST Property & Definition**
@@ -2138,6 +2285,9 @@ This week introduces hierarchical data structures. Trees are fundamental for org
 
 ### 📅 DAY 3: BALANCED BSTS - AVL & RED-BLACK (OVERVIEW) | 120 min
 
+> 💡 **One-Minute Intuition:** *An unbalanced BST can degenerate into a linked list with O(N) lookup. Tree rotations rebalance heights to guarantee O(log N) operations.*
+> 🎯 **Governing Invariant:** *Balance factor between left and right subtree heights never exceeds 1 (AVL) or color balance invariants (Red-Black).*
+
 **Topics:**
 - **Why Balance Matters**
   - Unbalanced BST: degenerates to O(n)
@@ -2195,6 +2345,9 @@ This week introduces hierarchical data structures. Trees are fundamental for org
 
 ### 📅 DAY 4: TREE PATTERNS | 120 min
 
+> 💡 **One-Minute Intuition:** *Bottom-up post-order traversal allows children to return height, path sums, or target presence to parents to compute global tree properties.*
+> 🎯 **Governing Invariant:** *At any node, the maximum path passing through it is left_gain + right_gain + node.val.*
+
 **Topics:**
 - **Path Sum Problems**
   - Root to leaf sum: DFS from root, accumulate sum, check at leaves
@@ -2248,6 +2401,9 @@ This week introduces hierarchical data structures. Trees are fundamental for org
 ---
 
 ### 📅 DAY 5 (OPTIONAL): AUGMENTED TREES & ORDER-STATISTICS | 90 min
+
+> 💡 **One-Minute Intuition:** *Store subtree sizes in each node. This allows finding the k-th smallest element or the rank of a value in O(log N) time.*
+> 🎯 **Governing Invariant:** *node.subtreeSize = 1 + size(node.left) + size(node.right).*
 
 **Topics:**
 - **Augmenting Trees with Metadata**
@@ -2303,6 +2459,9 @@ Graphs model relationships and enable powerful algorithms. This week covers fund
 
 ### 📅 DAY 1: GRAPH MODELS & REPRESENTATIONS | 90 min
 
+> 💡 **One-Minute Intuition:** *Graphs model arbitrary connections (networks, cities, dependencies). Use adjacency lists for sparse graphs and adjacency matrices for dense graphs.*
+> 🎯 **Governing Invariant:** *Adjacency list requires O(V + E) memory; each edge is stored once (directed) or twice (undirected).*
+
 **Topics:**
 - **Graph Types**
   - Directed vs undirected: edges have direction or not
@@ -2357,6 +2516,9 @@ Graphs model relationships and enable powerful algorithms. This week covers fund
 
 ### 📅 DAY 2: BREADTH-FIRST SEARCH (BFS) | 120 min
 
+> 💡 **One-Minute Intuition:** *Ripple in a pond. BFS visits nodes in order of their hop distance from the start, guaranteeing the shortest path in unweighted graphs.*
+> 🎯 **Governing Invariant:** *Queue contains nodes at distance d followed by distance d + 1; first visit to a node marks its shortest distance.*
+
 **Topics:**
 - **BFS Algorithm Template**
   - Queue-based frontier expansion
@@ -2409,6 +2571,9 @@ Graphs model relationships and enable powerful algorithms. This week covers fund
 ---
 
 ### 📅 DAY 3: DEPTH-FIRST SEARCH & TOPOLOGICAL SORT | 120 min
+
+> 💡 **One-Minute Intuition:** *Mazes and labyrinths. Follow a path until you hit a dead end, then backtrack and try the next unexplored branch.*
+> 🎯 **Governing Invariant:** *Recursion or explicit stack maintains the active path; visited set prevents infinite loops.*
 
 **Topics:**
 - **DFS Algorithm Template**
@@ -2469,6 +2634,9 @@ Graphs model relationships and enable powerful algorithms. This week covers fund
 
 ### 📅 DAY 4: CONNECTIVITY & BIPARTITE GRAPHS | 90 min
 
+> 💡 **One-Minute Intuition:** *2-coloring checks if a graph can be partitioned into two sets where no neighbors share a color.*
+> 🎯 **Governing Invariant:** *A graph is bipartite if and only if it contains no odd-length cycles.*
+
 **Topics:**
 - **Connected Components (Undirected)**
   - Nodes are grouped if reachable from each other
@@ -2511,6 +2679,9 @@ Graphs model relationships and enable powerful algorithms. This week covers fund
 ---
 
 ### 📅 DAY 5 (OPTIONAL): STRONGLY CONNECTED COMPONENTS | 90 min
+
+> 💡 **One-Minute Intuition:** *SCCs identify maximal subgraphs where every vertex is reachable from every other vertex in a directed graph.*
+> 🎯 **Governing Invariant:** *Reversing all edges in a directed graph preserves internal SCC reachability while reversing DAG component flow.*
 
 **Topics:**
 - **SCC Definition**
@@ -2564,6 +2735,9 @@ This week covers two major graph optimization problems: finding shortest paths a
 ---
 
 ### 📅 DAY 1: DIJKSTRA'S ALGORITHM | 120 min
+
+> 💡 **One-Minute Intuition:** *Greedily expand the closest unvisited node using a min-heap. Because edge weights are non-negative, the shortest distance to the popped node is finalized.*
+> 🎯 **Governing Invariant:** *When node u is popped from the priority queue, dist[u] is strictly the shortest path from the source.*
 
 **Topics:**
 - **Single-Source Shortest Path Problem**
@@ -2619,6 +2793,9 @@ This week covers two major graph optimization problems: finding shortest paths a
 
 ### 📅 DAY 2: BELLMAN-FORD & NEGATIVE WEIGHTS | 120 min
 
+> 💡 **One-Minute Intuition:** *Relax all E edges V - 1 times. If distances still decrease on the V-th pass, a negative weight cycle exists.*
+> 🎯 **Governing Invariant:** *After iteration k, dist[v] represents the shortest path from source using at most k edges.*
+
 **Topics:**
 - **Problem: Negative Weights**
   - Dijkstra fails with negative weights
@@ -2665,6 +2842,9 @@ This week covers two major graph optimization problems: finding shortest paths a
 
 ### 📅 DAY 3: FLOYD-WARSHALL (ALL-PAIRS SHORTEST PATHS) | 120 min
 
+> 💡 **One-Minute Intuition:** *Dynamic programming over intermediate vertices. Check if path i -> k -> j is shorter than direct path i -> j.*
+> 🎯 **Governing Invariant:** *dp[i][j] holds shortest path between i and j using only intermediate nodes from {1 ... k}.*
+
 **Topics:**
 - **Problem: All-Pairs Shortest Paths**
   - Find shortest paths between all pairs of nodes
@@ -2708,6 +2888,9 @@ This week covers two major graph optimization problems: finding shortest paths a
 ---
 
 ### 📅 DAY 4: MINIMUM SPANNING TREES - KRUSKAL & PRIM | 120 min
+
+> 💡 **One-Minute Intuition:** *Connect all nodes with minimum total edge weight without cycles. Kruskal sorts edges and picks non-cyclic ones; Prim grows a tree from a starting node.*
+> 🎯 **Governing Invariant:** *Cut property: the minimum weight edge crossing any cut between two subsets of vertices must belong to the MST.*
 
 **Topics:**
 - **MST Problem**
@@ -2761,6 +2944,9 @@ This week covers two major graph optimization problems: finding shortest paths a
 ---
 
 ### 📅 DAY 5: UNION-FIND (DISJOINT SET UNION) | 90 min
+
+> 💡 **One-Minute Intuition:** *Track connected components efficiently. Near O(1) operations by flattening tree paths (path compression) and attaching smaller trees to larger trees (union by rank).*
+> 🎯 **Governing Invariant:** *Every element points to a representative root; two elements are connected if and only if find(u) == find(v).*
 
 **Topics:**
 - **Disjoint Set Problem**
@@ -2849,6 +3035,9 @@ Dynamic programming is a powerful optimization technique. This week teaches the 
 
 ### 📅 DAY 1: DP AS RECURSION + MEMOIZATION | 90 min
 
+> 💡 **One-Minute Intuition:** *Dynamic programming is remembering the past so you don't repeat work. Memoization is top-down (recursive with cache); Tabulation is bottom-up (filling an array iteratively).*
+> 🎯 **Governing Invariant:** *Optimal substructure: the optimal solution to the problem contains optimal solutions to its subproblems.*
+
 **Topics:**
 - **Overlapping Subproblems Concept**
   - Same subproblem solved repeatedly in recursion
@@ -2911,6 +3100,9 @@ Dynamic programming is a powerful optimization technique. This week teaches the 
 
 ### 📅 DAY 2: 1D DP & KNAPSACK FAMILY | 120 min
 
+> 💡 **One-Minute Intuition:** *Transitions depend only on the last few states. Optimize space from O(N) to O(1) by storing only the previous two variables.*
+> 🎯 **Governing Invariant:** *dp[i] contains the optimal answer for prefix [0 ... i], computed once and never altered.*
+
 **Topics:**
 - **1D DP Patterns**
   - Array dp[i] representing answer for problem of size i
@@ -2963,6 +3155,9 @@ Dynamic programming is a powerful optimization technique. This week teaches the 
 
 ### 📅 DAY 3: 2D DP - GRIDS & EDIT DISTANCE | 120 min
 
+> 💡 **One-Minute Intuition:** *Decisions depend on moving right/down or inserting/deleting/replacing characters. The table stores answers to sub-grid or prefix pairs.*
+> 🎯 **Governing Invariant:** *dp[i][j] represents optimal cost for substrings word1[0...i-1] and word2[0...j-1].*
+
 **Topics:**
 - **2D Grid DP**
   - State: dp[i][j] = answer for cell (i, j)
@@ -3012,6 +3207,9 @@ Dynamic programming is a powerful optimization technique. This week teaches the 
 
 ### 📅 DAY 4: DP ON SEQUENCES | 120 min
 
+> 💡 **One-Minute Intuition:** *Compare characters or numbers along sequences. Longest Increasing Subsequence can be accelerated to O(N log N) using binary search (patience sorting).*
+> 🎯 **Governing Invariant:** *tails[k] stores the smallest tail element of all increasing subsequences of length k + 1.*
+
 **Topics:**
 - **Longest Increasing Subsequence (LIS)**
   - Find longest subsequence with increasing values
@@ -3050,6 +3248,9 @@ Dynamic programming is a powerful optimization technique. This week teaches the 
 
 ### 📅 DAY 5 (OPTIONAL): STORY-DRIVEN DP | 90 min
 
+> 💡 **One-Minute Intuition:** *Translate word problems (stocks, house robber variants, job scheduling) into clear state machines with finite states and allowed transitions.*
+> 🎯 **Governing Invariant:** *State machine transitions exhaustively cover all mutually exclusive choices at time step t.*
+
 **Topics:**
 - **Problem Interpretation**
   - Complex DP problems often have story/real-world context
@@ -3087,6 +3288,9 @@ DP is incredibly powerful. This week extends basic patterns to more complex stru
 ---
 
 ### 📅 DAY 1: DP ON TREES | 120 min
+
+> 💡 **One-Minute Intuition:** *Compute DP values bottom-up from leaf nodes to root. Each subtree reports its best outcome to its parent node.*
+> 🎯 **Governing Invariant:** *When processing node u, DP values for all children in its subtree are completely evaluated.*
 
 **Topics:**
 - **Tree DP Framework**
@@ -3130,6 +3334,9 @@ DP is incredibly powerful. This week extends basic patterns to more complex stru
 
 ### 📅 DAY 2: DP ON DAGS | 120 min
 
+> 💡 **One-Minute Intuition:** *Process vertices in topological order. Because edges are acyclic, states flow in one direction without recursive cycles.*
+> 🎯 **Governing Invariant:** *Any state dp[v] is finalized once all predecessor nodes u in u -> v have been evaluated.*
+
 **Topics:**
 - **DAG (Directed Acyclic Graph)**
   - Directed graph with no cycles
@@ -3169,6 +3376,9 @@ DP is incredibly powerful. This week extends basic patterns to more complex stru
 ---
 
 ### 📅 DAY 3: BITMASK & SUBSET DP | 120 min
+
+> 💡 **One-Minute Intuition:** *Represent small sets (size <= 20) as binary integers. Bit 1 << i denotes element i is visited or selected.*
+> 🎯 **Governing Invariant:** *Subsets strictly contain fewer set bits than supersets, providing a natural topological evaluation order.*
 
 **Topics:**
 - **Bitmask Representation**
@@ -3212,6 +3422,9 @@ DP is incredibly powerful. This week extends basic patterns to more complex stru
 
 ### 📅 DAY 4 (OPTIONAL): STATE COMPRESSION & OPTIMIZATIONS | 90 min
 
+> 💡 **One-Minute Intuition:** *If dp[i][j] only needs row i - 1, discard older rows and alternate between two rows to reduce O(N^2) space to O(N).*
+> 🎯 **Governing Invariant:** *Memory buffer stores only the minimal active working state required for the current transition.*
+
 **Topics:**
 - **Space Optimization**
   - Sliding window: keep only current and previous states
@@ -3235,6 +3448,9 @@ DP is incredibly powerful. This week extends basic patterns to more complex stru
 ---
 
 ### 📅 DAY 5 (OPTIONAL): MIXED DP PROBLEMS | 90 min
+
+> 💡 **One-Minute Intuition:** *Combine multiple dimensions (capacities, remaining transactions, cooldowns) into compact state tuples.*
+> 🎯 **Governing Invariant:** *Every state tuple (index, capacity, state) maps deterministically to a memoized subproblem result.*
 
 **Topics:**
 - **Multi-Concept Problems**
@@ -3294,6 +3510,9 @@ Learn greedy algorithm design and when greedy is guaranteed optimal.
 
 ### 📅 DAY 1: GREEDY FUNDAMENTALS | 90 min
 
+> 💡 **One-Minute Intuition:** *Make the locally best choice right now and never look back. Works when local choices guarantee global optimality.*
+> 🎯 **Governing Invariant:** *Greedy-choice property: a globally optimal solution can always be reached by making a locally optimal choice.*
+
 **Topics:**
 - **Greedy Algorithm Concept**
   - Make locally optimal choice at each step
@@ -3326,6 +3545,9 @@ Learn greedy algorithm design and when greedy is guaranteed optimal.
 
 ### 📅 DAY 2: ACTIVITY SELECTION & INTERVAL PROBLEMS | 90 min
 
+> 💡 **One-Minute Intuition:** *To schedule the most events in one room, always pick the event that finishes earliest to leave maximum room for future events.*
+> 🎯 **Governing Invariant:** *Sorting by earliest end time maximizes the remaining idle time window for subsequent compatible activities.*
+
 **Topics:**
 - **Activity Selection**
   - Given activities with start/end times
@@ -3347,6 +3569,9 @@ Learn greedy algorithm design and when greedy is guaranteed optimal.
 
 ### 📅 DAY 3: HUFFMAN CODING & OPTIMAL TREES | 90 min
 
+> 💡 **One-Minute Intuition:** *Assign shorter bit-codes to frequent characters and longer codes to rare characters. Merging the two lowest-frequency trees repeatedly builds the optimal code.*
+> 🎯 **Governing Invariant:** *Greedy merge tree guarantees no code word is a prefix of another (prefix-free property).*
+
 **Topics:**
 - **Huffman Coding**
   - Optimal prefix code for character frequencies
@@ -3361,6 +3586,9 @@ Learn greedy algorithm design and when greedy is guaranteed optimal.
 ---
 
 ### 📅 DAY 4: FRACTIONAL KNAPSACK & SCHEDULING | 90 min
+
+> 💡 **One-Minute Intuition:** *Sort items by value-to-weight ratio. Greedily take as much of the highest-density item as possible.*
+> 🎯 **Governing Invariant:** *Density ordering guarantees maximum value accumulation per unit capacity consumed.*
 
 **Topics:**
 - **Fractional Knapsack**
@@ -3382,6 +3610,9 @@ Learn greedy algorithm design and when greedy is guaranteed optimal.
 ---
 
 ### 📅 DAY 5 (OPTIONAL): GREEDY IN SYSTEMS | 90 min
+
+> 💡 **One-Minute Intuition:** *Real-world systems use greedy heuristics for load balancing, cache eviction (LRU/LFU), and packet routing.*
+> 🎯 **Governing Invariant:** *Heuristic rules prioritize high-yield local metrics to achieve bounded near-optimal throughput.*
 
 **Topics:**
 - **Greedy in Networks**
@@ -3419,6 +3650,9 @@ Master backtracking for combinatorial problems and branch & bound for optimizati
 
 ### 📅 DAY 1: BACKTRACKING FUNDAMENTALS | 90 min
 
+> 💡 **One-Minute Intuition:** *Choose, explore, un-choose. Walk down a decision tree; if you hit a dead end, backtrack by undoing the last choice and trying the next branch.*
+> 🎯 **Governing Invariant:** *The mutable state variable is strictly restored to its exact previous state after each recursive exploration branch returns.*
+
 **Topics:**
 - **Backtracking Concept**
   - Build solution incrementally
@@ -3442,6 +3676,9 @@ Master backtracking for combinatorial problems and branch & bound for optimizati
 ---
 
 ### 📅 DAY 2: BACKTRACKING PROBLEMS | 120 min
+
+> 💡 **One-Minute Intuition:** *Systematically enumerate combinations or permutations by controlling candidate choices and tracking visited elements.*
+> 🎯 **Governing Invariant:** *Candidate generator strictly enforces problem constraints (e.g. no two queens on the same row, column, or diagonal).*
 
 **Topics:**
 - **N-Queens Problem**
@@ -3472,6 +3709,9 @@ Master backtracking for combinatorial problems and branch & bound for optimizati
 
 ### 📅 DAY 3: BRANCH & BOUND | 120 min
 
+> 💡 **One-Minute Intuition:** *Estimate the best possible outcome of an entire branch using a heuristic bound. If the best potential outcome is worse than our current best answer, prune the entire branch immediately.*
+> 🎯 **Governing Invariant:** *Pruned branches are mathematically guaranteed not to contain a solution better than the best-known candidate.*
+
 **Topics:**
 - **Branch & Bound Concept**
   - Systematic search for optimization
@@ -3497,6 +3737,9 @@ Master backtracking for combinatorial problems and branch & bound for optimizati
 ---
 
 ### 📅 DAY 4: AMORTIZED ANALYSIS | 120 min
+
+> 💡 **One-Minute Intuition:** *An operation might be slow occasionally (like dynamic array resizing), but the average cost per operation across a long sequence of operations is low.*
+> 🎯 **Governing Invariant:** *Aggregate total cost of N operations divided by N yields the true amortized bound O(1).*
 
 **Topics:**
 - **Amortized Complexity Concept**
@@ -3529,6 +3772,9 @@ Master backtracking for combinatorial problems and branch & bound for optimizati
 ---
 
 ### 📅 DAY 5 (OPTIONAL): MIXED PARADIGM PROBLEMS | 90 min
+
+> 💡 **One-Minute Intuition:** *Blend paradigms: use greedy heuristics to prune backtracking search trees, or dynamic programming to evaluate branch bounds.*
+> 🎯 **Governing Invariant:** *Composite algorithms maintain safety invariants from both contributing paradigms.*
 
 **Topics:**
 - **Combining Paradigms**
@@ -3577,6 +3823,9 @@ Master specialized problem domains: matrices, bitwise operations, and number the
 
 ### 📅 DAY 1: MATRIX OPERATIONS | 90 min
 
+> 💡 **One-Minute Intuition:** *Treat 2D grids as graphs where adjacent cells (r +- 1, c +- 1) are neighbors. Traverse spirally, rotate in-place, or binary search on sorted matrices.*
+> 🎯 **Governing Invariant:** *Boundary guards 0 <= r < M and 0 <= c < N prevent index-out-of-bounds exceptions.*
+
 **Topics:**
 - **Matrix Rotation (90 degrees)**
   - Clockwise: transpose then reverse each row
@@ -3600,6 +3849,9 @@ Master specialized problem domains: matrices, bitwise operations, and number the
 ---
 
 ### 📅 DAY 2: BITWISE OPERATIONS | 120 min
+
+> 💡 **One-Minute Intuition:** *Computer processors operate directly on 32-bit and 64-bit binary words. Bitwise AND, OR, XOR, and shifts run at single-cycle hardware speed.*
+> 🎯 **Governing Invariant:** *x ^ x = 0 (cancellation) and x & (x - 1) clears lowest set bit.*
 
 **Topics:**
 - **Basic Operations**
@@ -3629,6 +3881,9 @@ Master specialized problem domains: matrices, bitwise operations, and number the
 
 ### 📅 DAY 3: NUMBER THEORY BASICS | 90 min
 
+> 💡 **One-Minute Intuition:** *Modular arithmetic acts like clock math. Sieve of Eratosthenes finds all primes up to N in O(N log log N) by crossing out multiples.*
+> 🎯 **Governing Invariant:** *(A + B) % M = ((A % M) + (B % M)) % M; every composite number n has a prime factor <= sqrt(n).*
+
 **Topics:**
 - **GCD & LCM**
   - Euclidean algorithm: O(log min(a,b))
@@ -3655,6 +3910,9 @@ Master specialized problem domains: matrices, bitwise operations, and number the
 ---
 
 ### 📅 DAY 4: ADVANCED STRING PROBLEMS | 120 min
+
+> 💡 **One-Minute Intuition:** *A Trie shares common prefixes across thousands of strings; Rolling Hash evaluates substring equality in O(1) average time.*
+> 🎯 **Governing Invariant:** *Trie depth equals string length; each node path represents a unique prefix.*
 
 **Topics:**
 - **KMP (Knuth-Morris-Pratt)**
@@ -3686,6 +3944,9 @@ Master specialized problem domains: matrices, bitwise operations, and number the
 ---
 
 ### 📅 DAY 5 (OPTIONAL): NUMBER THEORY DEPTH & ADVANCED | 90 min
+
+> 💡 **One-Minute Intuition:** *Compute modular inverse via Fermat's Little Theorem: A^(M-2) % M when M is prime. Enables fast combinations nCr % M.*
+> 🎯 **Governing Invariant:** *Precomputed factorials allow O(1) combinatorial queries modulo prime M.*
 
 **Topics:**
 - **Euler's Totient Function**
@@ -3720,6 +3981,9 @@ Master advanced string algorithms, range-query data structures, and core flow co
 
 ### 📅 DAY 1: Z-ALGORITHM & ADVANCED STRING MATCHING | 120 min
 
+> 💡 **One-Minute Intuition:** *Compute the longest common prefix between string S and all its suffixes in linear time using a sliding match window.*
+> 🎯 **Governing Invariant:** *Active segment [L, R] maintains the rightmost substring matching a prefix of S.*
+
 **Topics:**
 - **Z-Algorithm**
   - Compute Z-array: longest substring matching prefix
@@ -3743,6 +4007,9 @@ Master advanced string algorithms, range-query data structures, and core flow co
 ---
 
 ### 📅 DAY 2: SEGMENT TREES & RANGE QUERIES | 120 min
+
+> 💡 **One-Minute Intuition:** *A binary tree where each node stores an aggregate (sum, min, max) of an array interval. Point updates and range queries execute in O(log N).*
+> 🎯 **Governing Invariant:** *Tree node represents interval [l, r]; left child covers [l, mid] and right child covers [mid + 1, r].*
 
 **Topics:**
 - **Segment Tree Concept**
@@ -3777,6 +4044,9 @@ Master advanced string algorithms, range-query data structures, and core flow co
 
 ### 📅 DAY 3: NETWORK FLOW BASICS | 120 min
 
+> 💡 **One-Minute Intuition:** *Water flowing through pipes with capacities. Edmonds-Karp repeatedly pushes flow along the shortest augmenting path found by BFS.*
+> 🎯 **Governing Invariant:** *Capacity constraint: flow on edge <= capacity; Conservation: incoming flow equals outgoing flow for all non-terminal nodes.*
+
 **Topics:**
 - **Flow Network Concept**
   - Directed graph with capacities
@@ -3808,6 +4078,9 @@ Master advanced string algorithms, range-query data structures, and core flow co
 
 ### 📅 DAY 4: NETWORK FLOW APPLICATIONS | 90 min
 
+> 💡 **One-Minute Intuition:** *Max-Flow Min-Cut theorem: the maximum flow passing through a network equals the minimum capacity of edges whose removal disconnects source from sink.*
+> 🎯 **Governing Invariant:** *Minimum cut partitions vertices into S and T, identifying bottlenecks in bipartite matching or project selection.*
+
 **Topics:**
 - **Bipartite Matching**
   - Maximum matching in bipartite graph
@@ -3823,6 +4096,9 @@ Master advanced string algorithms, range-query data structures, and core flow co
 ---
 
 ### 📅 DAY 5 (OPTIONAL): DESIGN PATTERNS & COMPANY-SPECIFIC EXTENSIONS | 90 min
+
+> 💡 **One-Minute Intuition:** *Connect algorithmic concepts to real-world architectures: rate limiters, token buckets, and distributed task schedulers.*
+> 🎯 **Governing Invariant:** *Algorithmic primitives enforce throughput caps and state consistency under high concurrency.*
 
 **Topics:**
 - **Data Structure Design Patterns**
@@ -3875,6 +4151,9 @@ Study data structures beyond standard libraries.
 
 ### 📅 DAY 1: SKIP LISTS & TREAPS | 120 min
 
+> 💡 **One-Minute Intuition:** *Probabilistic balance. Skip lists use randomized tower heights; Treaps assign random heap priorities to BST nodes so rotations maintain logarithmic balance.*
+> 🎯 **Governing Invariant:** *Binary search tree invariant on keys + min-heap invariant on random priorities guarantees expected O(log N) depth.*
+
 **Topics:**
 - **Skip Lists**
   - Probabilistic balanced search structure
@@ -3897,6 +4176,9 @@ Study data structures beyond standard libraries.
 
 ### 📅 DAY 2: LINK-CUT TREES | 120 min
 
+> 💡 **One-Minute Intuition:** *Maintain a forest of trees undergoing dynamic edge additions and deletions. Splay trees represent preferred paths to enable O(log N) operations.*
+> 🎯 **Governing Invariant:** *Access(v) brings node v into the root of an auxiliary splay tree representing the path from root to v.*
+
 **Topics:**
 - **Dynamic Tree Problem**
   - Trees that change structure
@@ -3915,6 +4197,9 @@ Study data structures beyond standard libraries.
 
 ### 📅 DAY 3: PERSISTENT DATA STRUCTURES | 90 min
 
+> 💡 **One-Minute Intuition:** *Never overwrite old nodes. When updating a tree, copy only the path from root to the modified leaf, sharing all untouched branches.*
+> 🎯 **Governing Invariant:** *Path copying creates at most O(log N) new nodes per version, preserving full historical queryability.*
+
 **Topics:**
 - **Persistent vs Ephemeral**
   - Ephemeral: old version lost on update
@@ -3931,6 +4216,9 @@ Study data structures beyond standard libraries.
 ---
 
 ### 📅 DAY 4-5: ADVANCED TOPICS | 180 min
+
+> 💡 **One-Minute Intuition:** *Cache-oblivious divide-and-conquer algorithms optimize for unknown L1/L2/L3 cache line sizes without tuning machine-specific parameters.*
+> 🎯 **Governing Invariant:** *Recursive subproblem bisection down to cache line thresholds minimizes memory transfer stalls.*
 
 **Topics:**
 - **Cache-Oblivious Algorithms**
@@ -3965,6 +4253,9 @@ Master advanced algorithmic techniques used in competitive programming.
 
 ### 📅 DAY 1: CONVEX HULL TRICK & CHT | 120 min
 
+> 💡 **One-Minute Intuition:** *Optimize 1D dynamic programming transitions of the form dp[i] = min(m_j * x_i + b_j). Maintain the lower envelope of linear functions.*
+> 🎯 **Governing Invariant:** *Lines in envelope maintain strictly decreasing slopes and increasing x-intersection coordinates.*
+
 **Topics:**
 - **Linear DP Optimization**
   - Some DP recurrences have special structure
@@ -3984,6 +4275,9 @@ Master advanced algorithmic techniques used in competitive programming.
 
 ### 📅 DAY 2: SLOPE TRICK | 120 min
 
+> 💡 **One-Minute Intuition:** *Maintain the inflection points of convex piece-wise linear functions in two priority queues for fast slope-change shifts.*
+> 🎯 **Governing Invariant:** *Convexity ensures minimum occurs where the derivative transitions from negative to non-negative.*
+
 **Topics:**
 - **Slope Trick Concept**
   - Piecewise linear function minimization
@@ -3993,6 +4287,9 @@ Master advanced algorithmic techniques used in competitive programming.
 ---
 
 ### 📅 DAY 3: GAME THEORY & NIMBERS | 90 min
+
+> 💡 **One-Minute Intuition:** *Impartial games evaluate to winning or losing positions via the Sprague-Grundy theorem. The combined game state is winning if XOR sum of Grundy values > 0.*
+> 🎯 **Governing Invariant:** *A state is losing (P-position) iff its Grundy value equals 0; every move from a P-position leads to an N-position (Grundy > 0).*
 
 **Topics:**
 - **Impartial Games**
@@ -4007,6 +4304,9 @@ Master advanced algorithmic techniques used in competitive programming.
 ---
 
 ### 📅 DAY 4-5: COMBINATORICS & COUNTING | 180 min
+
+> 💡 **One-Minute Intuition:** *Count permutations, combinations, and Catalan sequences modulo 10^9 + 7 using precomputed factorials and modular inverse.*
+> 🎯 **Governing Invariant:** *Fermat's Little Theorem inv(A) = A^(MOD - 2) mod MOD provides O(log MOD) modular inverse for prime moduli.*
 
 **Topics:**
 - **Counting Techniques**
@@ -4042,6 +4342,9 @@ Master techniques and patterns from competitive programming.
 
 ### 📅 DAY 1: MEET-IN-THE-MIDDLE | 120 min
 
+> 💡 **One-Minute Intuition:** *When N is around 40, O(2^N) is too slow but O(2^(N/2)) is fast. Split elements into two equal halves, generate subsets for both, and reconcile with binary search.*
+> 🎯 **Governing Invariant:** *Splitting search space in half reduces complexity from 2^40 (~10^12) to 2 * 2^20 (~2 * 10^6).*
+
 **Topics:**
 - **Concept**
   - Split problem in half
@@ -4061,6 +4364,9 @@ Master techniques and patterns from competitive programming.
 
 ### 📅 DAY 2: SQUARE ROOT DECOMPOSITION | 120 min
 
+> 💡 **One-Minute Intuition:** *Divide an array of size N into blocks of size sqrt(N). Update single elements in O(1) and query ranges across whole blocks in O(sqrt(N)).*
+> 🎯 **Governing Invariant:** *Range queries decompose into at most two partial blocks and O(sqrt(N)) full blocks.*
+
 **Topics:**
 - **Sqrt Decomposition**
   - Divide array into sqrt(n) blocks
@@ -4075,6 +4381,9 @@ Master techniques and patterns from competitive programming.
 
 ### 📅 DAY 3: HEAVY-LIGHT DECOMPOSITION | 90 min
 
+> 💡 **One-Minute Intuition:** *Decompose a tree into heavy paths based on subtree sizes. Flattening the paths into a continuous array allows Segment Tree queries along tree paths in O(log^2 N).*
+> 🎯 **Governing Invariant:** *Any path from a node to the root crosses at most O(log N) light edges.*
+
 **Topics:**
 - **Tree Decomposition**
   - Decompose tree into paths
@@ -4087,6 +4396,9 @@ Master techniques and patterns from competitive programming.
 ---
 
 ### 📅 DAY 4-5: FINAL COMPETITIVE TECHNIQUES | 180 min
+
+> 💡 **One-Minute Intuition:** *Probabilistic filters (Bloom Filters) trade exactness for massive memory savings. Consistent hashing distributes keys evenly across dynamic server clusters.*
+> 🎯 **Governing Invariant:** *Bloom filters guarantee zero false negatives; virtual nodes on hash rings prevent server hotspotting.*
 
 **Topics:**
 - **Two Pointers on Multiple Dimensions**
@@ -4132,6 +4444,9 @@ Conduct mock interviews and identify remaining weak areas.
 
 ### 📅 DAY 1: MOCK INTERVIEW SESSION A - ARRAYS & STRINGS
 
+> 💡 **One-Minute Intuition:** *Two-pointer opposing convergence and frequency sliding windows under live interview pressure (Trapping Rain Water, Min Window Substring).*
+> 🎯 **Governing Invariant:** *Clarify bounds, state brute force baseline, name invariant, trace edge cases before coding.*
+
 **Duration:** 120 minutes
 
 **Problems:**
@@ -4165,6 +4480,9 @@ Conduct mock interviews and identify remaining weak areas.
 
 ### 📅 DAY 2: MOCK INTERVIEW SESSION B - TREES & GRAPHS
 
+> 💡 **One-Minute Intuition:** *Tree paths, Lowest Common Ancestor via Binary Lifting, and graph connectivity under time constraints.*
+> 🎯 **Governing Invariant:** *Separate tree traversal logic from state accumulation; verify cycle guards on directed graphs.*
+
 **Duration:** 120 minutes
 
 **Problems:**
@@ -4183,6 +4501,9 @@ Conduct mock interviews and identify remaining weak areas.
 ---
 
 ### 📅 DAY 3: MOCK INTERVIEW SESSION C - DYNAMIC PROGRAMMING & OPTIMIZATION
+
+> 💡 **One-Minute Intuition:** *Dynamic programming state definition, transition formulation, and space optimization under evaluation.*
+> 🎯 **Governing Invariant:** *State space must be mutually exclusive and collectively exhaustive; confirm base cases handle empty inputs.*
 
 **Duration:** 120 minutes
 
@@ -4203,6 +4524,9 @@ Conduct mock interviews and identify remaining weak areas.
 
 ### 📅 DAY 4: MIXED PROBLEM SOLVING
 
+> 💡 **One-Minute Intuition:** *Composite system structures: Monotonic deques for sliding window maximums and doubly-linked hash tables for O(1) LRU caches.*
+> 🎯 **Governing Invariant:** *Evict stale nodes before checking capacity; maintain strict node link pointers during structural reordering.*
+
 **Duration:** 90 minutes
 
 **Problems:**
@@ -4217,6 +4541,9 @@ Conduct mock interviews and identify remaining weak areas.
 ---
 
 ### 📅 DAY 5: FINAL ASSESSMENT & WEAK AREA DIAGNOSIS
+
+> 💡 **One-Minute Intuition:** *Diagnostic review of personal pattern blind spots, time management, defensive coding assertions, and follow-up communication.*
+> 🎯 **Governing Invariant:** *Defensive guard clauses, verified edge dry runs, and active interviewer alignment ensure interview success.*
 
 **Duration:** 90 minutes
 
@@ -4245,6 +4572,9 @@ Conduct mock interviews and identify remaining weak areas.
 ---
 
 ### 📅 DAY 6 (OPTIONAL): INTERVIEW SPECIFIC TIPS & FINAL DRILLS
+
+> 💡 **One-Minute Intuition:** *Polishing communication, verbalizing trade-offs, handling hints gracefully, and negotiating system scale requirements.*
+> 🎯 **Governing Invariant:** *Think out loud continuously; validate assumptions before touching the keyboard.*
 
 **Duration:** 90 minutes
 

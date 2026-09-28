@@ -19,17 +19,23 @@
 
 ## 📖 Chapter 1: Context & Motivation
 
-### 1. The Engineering Challenge
-In enterprise software systems and advanced interview scenarios, standard linear and quadratic approaches collapse when input sizes reach production volume (N >= 10^5). 
-Bridging core algorithmic patterns with distributed caching, partition keys, load balancing, and SLA constraints.
+### 1. The Engineering Challenge: Sharding Without the Rehash Stampede
+
+You are designing a distributed cache cluster (like Memcached or DynamoDB) with 100 servers. A naive sharding rule maps keys using `server = hash(key) % N`.
+
+What happens when server #42 crashes, or you scale up to 101 servers?
+`N` changes from 100 to 101. Almost *every single key* hashes to a completely different server! Your cache hit rate drops to zero, flooding your database in a catastrophic cache stampede.
+
+**Consistent Hashing** maps both servers and keys onto a circular hash ring `[0 ... 2^32 - 1]`. Adding or removing a server only relocates keys belonging to its immediate neighbor—retaining 99% of cached entries!
 
 ### 2. High-Level Concept Diagram
 
 ```mermaid
-flowchart LR
-    Input["Input Constraints & State"] --> Analysis["Invariant Check"]
-    Analysis --> Engine["Algorithmic Systems Design & Production Scaling Engine"]
-    Engine --> Output["Optimal Result (O(N) or O(log N))"]
+flowchart TD
+    Ring["Circular Hash Ring (0 to 2^32-1)"] --> S1["Server A (and Virtual Nodes)"]
+    Ring --> S2["Server B (and Virtual Nodes)"]
+    Ring --> S3["Server C (and Virtual Nodes)"]
+    Key["Key Hash"] -.-> Next["Walks Clockwise to First Server"]
 ```
 
 ---

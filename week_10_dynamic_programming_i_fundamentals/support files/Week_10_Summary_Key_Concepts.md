@@ -6,7 +6,6 @@
 
 ---
 
-**Week:** 10 | **Phase:** C (Trees, Graphs & Dynamic Programming)  
 **Topic:** Dynamic Programming I: Fundamentals  
 
 ---

@@ -6,7 +6,6 @@
 
 ---
 
-**Week:** 7 – Trees & Balanced Search Trees  
 **Purpose:** Complete learning framework for Week 7 mastery
 
 ---

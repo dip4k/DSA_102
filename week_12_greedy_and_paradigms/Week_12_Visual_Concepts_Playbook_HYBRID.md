@@ -7,7 +7,6 @@
 ---
 
 **Filename:** `Week_12_Visual_Concepts_Playbook_HYBRID.md`  
-**Week:** 12  
 **Theme:** Greedy Algorithms & Proofs  
 **Mode:** HYBRID → Whiteboard Sketches + Slide Blueprints + Step Traces + External Visual References
 

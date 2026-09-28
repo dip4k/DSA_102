@@ -6,7 +6,6 @@
 
 ---
 
-**Week:** 12  
 **Phase:** 🟧 Algorithm Paradigms  
 **Focus:** Greedy algorithm design, correctness proofs, and when greedy is guaranteed (or not) to be optimal.
 

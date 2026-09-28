@@ -6,8 +6,6 @@
 
 ---
 
-**Week:** 11 | **Purpose:** Structured problem-solving progression from basic to advanced  
-**Format:** Problem list organized by day, difficulty, and concept
 
 ---
 

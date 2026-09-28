@@ -19,17 +19,20 @@
 
 ## 📖 Chapter 1: Context & Motivation
 
-### 1. The Engineering Challenge
-In enterprise software systems and advanced interview scenarios, standard linear and quadratic approaches collapse when input sizes reach production volume (N >= 10^5). 
-Path copying and version branches; query past states in O(log N) without cloning full trees.
+### 1. The Engineering Challenge: Time Travel in Data Structures
+
+How do modern tools like Git, database point-in-time recovery (MVCC), and functional programming languages preserve history without creating massive memory bloat? If you make a small update to an array or tree of 1,000,000 elements, cloning the whole structure for every change consumes gigabytes in seconds.
+
+**Persistent Data Structures** solve this via **path copying**: when updating a node, you copy only the spine of nodes from the root down to the modified leaf (`O(log N)` nodes), while cleanly reusing all other untouched subtrees.
 
 ### 2. High-Level Concept Diagram
 
 ```mermaid
-flowchart LR
-    Input["Input Constraints & State"] --> Analysis["Invariant Check"]
-    Analysis --> Engine["Persistent Data Structures Engine"]
-    Engine --> Output["Optimal Result (O(N) or O(log N))"]
+flowchart TD
+    R1["Root v1"] --> L1["Left Subtree (Shared)"]
+    R1 --> M1["Old Leaf"]
+    R2["Root v2"] --> L1
+    R2 --> M2["New Modified Leaf"]
 ```
 
 ---

@@ -6,7 +6,6 @@
 
 ---
 
-**Week:** 12  
 **Phase:** 🟧 Algorithm Paradigms (Greedy & Backtracking)  
 **Theme:** Learning when “locally best” is actually globally optimal — and when it is not.
 

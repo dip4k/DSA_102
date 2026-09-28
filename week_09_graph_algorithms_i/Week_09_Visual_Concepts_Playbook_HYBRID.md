@@ -6,7 +6,6 @@
 
 ---
 
-**Week:** 09 | **Duration:** 18.5 hours  
 **Primary Goal:** Master graph algorithms through visual and conceptual learning  
 **Format:** Markdown with ASCII diagrams, visual flowcharts, and concept maps
 

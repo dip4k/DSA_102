@@ -8,7 +8,6 @@
 ## Hash Maps, Monotonic Stacks, Interval Patterns, Partition Schemes, Kadane's Algorithm & Fast-Slow Pointers
 
 **Phase:** B (Patterns)  
-**Week:** 5 of 19  
 **Last Updated:** January 15, 2026, 2:03 AM IST  
 **Format:** Visual Concepts Playbook Hybrid Instructional  
 

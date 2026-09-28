@@ -6,7 +6,6 @@
 
 ---
 
-**Week:** 9 – Graph Algorithms I: Shortest Paths, MST & Union-Find  
 **Purpose:** Master Week 9 graph patterns through pattern recognition, understanding, and practice  
 **Target:** Transform Week 9 knowledge into interview-ready C# coding skills  
 **Prerequisites:** Week 9 instructional files + standard support files complete

@@ -19,17 +19,19 @@
 
 ## 📖 Chapter 1: Context & Motivation
 
-### 1. The Engineering Challenge
-In enterprise software systems and advanced interview scenarios, standard linear and quadratic approaches collapse when input sizes reach production volume (N >= 10^5). 
-Maintain collections of rooted trees with dynamic edge additions, deletions, and amortized O(log N) path aggregates via Splay Trees.
+### 1. The Engineering Challenge: Dynamic Forests in Real-Time
+
+In static trees, techniques like Heavy-Light Decomposition allow `O(log^2 N)` path queries. But what happens in distributed networks or dynamic physical topologies where connections are constantly being created (`link`) or severed (`cut`)?
+
+A static tree structure completely breaks when edges change. A **Link-Cut Tree (LCT)** maintains a dynamic forest of trees using auxiliary Splay Trees. By dynamically switching which paths are 'preferred', it supports path queries, connectivity checks, subtree updates, and edge mutations in amortized `O(log N)` time.
 
 ### 2. High-Level Concept Diagram
 
 ```mermaid
-flowchart LR
-    Input["Input Constraints & State"] --> Analysis["Invariant Check"]
-    Analysis --> Engine["Link-Cut Trees for Dynamic Trees Engine"]
-    Engine --> Output["Optimal Result (O(N) or O(log N))"]
+flowchart TD
+    Root["Represented Tree"] --> Path["Preferred Path"]
+    Path --> Splay["Auxiliary Splay Tree (Key = Depth)"]
+    Splay --> Ops["O(log N) Link, Cut & Path Aggregate"]
 ```
 
 ---

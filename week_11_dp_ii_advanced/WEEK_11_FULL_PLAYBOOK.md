@@ -6,7 +6,6 @@
 
 ---
 
-**Week:** 11 | **Phase:** D — Intermediate Advanced  
 **Duration:** 5 days (120 min each) | **Total:** 600 minutes (10 hours)  
 **Difficulty Level:** 🔴 Advanced  
 **Prerequisites:** Week 10 (Basic DP), Weeks 8-9 (Trees/Graphs), Weeks 4-5 (Bit Manipulation)

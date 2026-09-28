@@ -6,7 +6,6 @@
 
 ---
 
-**Week:** 12  
 **Phase:** 🟧 Algorithm Paradigms  
 **Focus:** Daily execution plan for mastering greedy algorithms and their proofs.
 

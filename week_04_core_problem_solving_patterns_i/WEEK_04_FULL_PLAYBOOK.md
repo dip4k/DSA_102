@@ -8,7 +8,6 @@
 ## Two-Pointers, Sliding Windows (Fixed & Variable), Divide & Conquer, Binary Search as Pattern
 
 **Phase:** B (Patterns)  
-**Week:** 4 of 19  
 **Last Updated:** January 15, 2026, 2:33 AM IST  
 **Format:** Complete Visual Concepts Playbook - Correct Edition  
 

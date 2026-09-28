@@ -7,9 +7,7 @@
 ---
 
 **Filename:** `Week_08_Visual_Concepts_Playbook_HYBRID.md`  
-**Syllabus Source:** `COMPLETE_SYLLABUS_v13_FINAL.md`  
-**Week:** 08 – 🌐 Graph Fundamentals: Representations, BFS, DFS & Topological Sort  
-**Format:** Hybrid – ASCII diagrams + Web Resources (works fully offline, enhanced online)  
+**Syllabus Source:** `COMPLETE_SYLLABUS_v13.md`  
 **Primary Goal:** Build **visual, structural intuition** for graph models, BFS, DFS, topological sort, connectivity, bipartite graphs, and SCCs.
 
 ---

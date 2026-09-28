@@ -7,8 +7,6 @@
 ---
 
 **File Classification:** Visual Playbook Support Document (v12)  
-**Week:** 7 | **Days:** 1-5 (Core + Advanced)  
-**Format:** Markdown with Integrated Visual Concepts & ASCII Diagrams  
 **Purpose:** Unified visual reference spanning all five instructional files  
 **Last Updated:** January 22, 2026
 

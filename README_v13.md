@@ -1,4 +1,4 @@
-# 📚 DSA Master Curriculum v13
+# 📚 DSA Master Curriculum: Comprehensive Narrative Guide
 ## **Narrative-First, Interview-Ready, Production-Grade**
 
 **License:** 📜 MIT (Free for learning and teaching)
@@ -9,7 +9,7 @@
 
 This is a **comprehensive, narrative-driven Data Structures and Algorithms curriculum** designed to transform you from foundational understanding (RAM model, Big-O, recursion) to mastery (advanced patterns, systems design, production-grade code, interview readiness) over **19 weeks**.
 
-It preserves the **structure, tone, and visual style** of professional DSA education, while delivering the **complete phase, week, and day-by-day syllabus** aligned with `COMPLETE_SYLLABUS_v13.md` (v13.0).
+It preserves the **structure, tone, and visual style** of professional DSA education, while delivering the **complete phase, week, and day-by-day syllabus** aligned with `COMPLETE_SYLLABUS_v13.md`.
 
 ### 🧠 Core Philosophy
 
@@ -18,8 +18,8 @@ It preserves the **structure, tone, and visual style** of professional DSA educa
 - ⚙️ **Systems-Grounded** — Every concept connects to **real production systems** (Linux kernel, PostgreSQL, Redis, Netflix engineering).
 - 🎨 **Pattern-Centric** — 180+ topics organized as **learnable, reusable patterns** across interview problems.
 - 🎯 **Interview-Ready** — ~**98% coverage** of real FAANG-style technical interview question patterns.
-- 💻 **Production-Grade Code** — C# implementations with professional quality, not LeetCode spaghetti.
-- 🌐 **Visual + Interactive** — 30+ ASCII diagrams per week + dedicated visual playbooks and external visualization tools.
+- 💻 **Production-Grade Dual-Language Code** — Modern C# (.NET 8/9) and idiomatic Python 3.11+ implementations with clean zero-allocation patterns.
+- 🌐 **Visual + Interactive** — Compact Mermaid flowcharts, visual state transition tables, and dedicated visual playbooks.
 
 ---
 
@@ -32,7 +32,7 @@ It preserves the **structure, tone, and visual style** of professional DSA educa
 - Hope interview questions match what you practiced
 - Fight against forgetting (high cognitive load, low retention)
 
-### ✅ v13 Approach (Understanding)
+### ✅ Modern Narrative Approach (Understanding)
 - Build **mental models** of how data structures live in memory
 - Understand **why** some algorithms are faster (cache behavior, locality, CPU physics)
 - Learn **patterns** that appear across 100+ problems (two-pointer, window, DP families, graph templates)
@@ -86,7 +86,7 @@ It preserves the **structure, tone, and visual style** of professional DSA educa
 
 ---
 
-## 📊 Curriculum Overview: 7 Phases, 19 Weeks (v13.0)
+## 📊 Curriculum Overview: 7 Phases, 19 Weeks
 
 | Phase | Weeks | Focus | Topics | Interview Coverage | Goal |
 |-------|-------|-------|--------|--------------------|------|
@@ -275,7 +275,7 @@ Every week follows a **consistent file structure** so you always know where to g
 
 ---
 
-## 📋 Detailed Week-by-Week Breakdown (v13.0)
+## 📋 Detailed Week-by-Week Breakdown
 
 ### 🟦 **PHASE A: FOUNDATIONS & COMPUTATIONAL THINKING (Weeks 1–3)**
 
@@ -512,7 +512,7 @@ Every week follows a **consistent file structure** so you always know where to g
 
 ## 📊 How This Is Different from Alternatives
 
-| Aspect | v13 Curriculum | LeetCode | YouTube | Books | Educative |
+| Aspect | This Curriculum | LeetCode | YouTube | Books | Educative |
 |--------|----------------|---------|--------|-------|-----------|
 | **Mental Models** | ✅ Deep first (narrative, diagrams) | ❌ Problem list | 🟡 Varies | ✅ Strong | 🟡 Some |
 | **Systems Grounding** | ✅ OS/DB/cache examples | ❌ None | 🟡 Some channels | 🟡 Limited | ❌ None |
@@ -702,10 +702,10 @@ Quick Refresh?     → Topic-based, 2–4 weeks
 
 ---
 
-## 📂 Repository Structure (v13.0)
+## 📂 Repository Structure
 
 ```text
-dsa-master-curriculum-v13/
+dsa-master-curriculum/
 
 📄 README_v13.md                   # Main entrypoint (this file)
 📄 START_HERE.md                   # Path selection & orientation
@@ -817,7 +817,7 @@ For now, this curriculum is primarily a **learning artifact**. If you spot error
 
 ---
 
-**v13.0 (Professional Edition)** — Narrative-first, MIT-aligned, comprehensive DSA curriculum with 500+ subtopics, 19 weeks, 235-270 hours of expert content.
+**Professional Edition** — Narrative-first, MIT-aligned, comprehensive DSA curriculum with 500+ subtopics, 19 weeks, 235-270 hours of expert content.
 
 
 **All files are available for download and immediate use.**

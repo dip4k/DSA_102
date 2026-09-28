@@ -6,7 +6,6 @@
 
 ---
 
-**Week:** 10 | **Theme:** Dynamic Programming I: Fundamentals  
 **Philosophy:** Structured progress from understanding → implementation → mastery
 
 ---

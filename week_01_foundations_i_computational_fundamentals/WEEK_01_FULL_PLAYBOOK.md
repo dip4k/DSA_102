@@ -8,7 +8,6 @@
 ## RAM, Big-O Complexity Analysis, Space Complexity, Recursion, Peak Finding
 
 **Phase:** A (Foundations)  
-**Week:** 1 of 19  
 **Last Updated:** January 15, 2026, 1:50 AM IST  
 **Format:** Visual Concepts Playbook Hybrid Instructional  
 

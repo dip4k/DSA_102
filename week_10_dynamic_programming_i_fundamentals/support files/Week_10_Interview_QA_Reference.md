@@ -6,8 +6,6 @@
 
 ---
 
-**Week:** 10 | **Topic:** Dynamic Programming I: Fundamentals  
-**Format:** 50+ questions with multi-level follow-ups  
 **Difficulty Progression:** Basic → Intermediate → Advanced
 
 ---

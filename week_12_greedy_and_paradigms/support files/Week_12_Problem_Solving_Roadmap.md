@@ -6,7 +6,6 @@
 
 ---
 
-**Week:** 12  
 **Phase:** 🟧 Algorithm Paradigms  
 **Focus:** Progressive practice strategy for mastering greedy algorithm design and correctness proofs.
 
@@ -32,6 +31,19 @@ You're deciding when greedy is appropriate vs DP/backtracking, combining multipl
 - **Days 1–2:** Stage 1 problems (foundations + activity selection)
 - **Days 3–4:** Stage 2 problems (Huffman, fractional knapsack, scheduling variations)
 - **Day 5 + Review:** Stage 3 problems (systems greedy, approximation, paradigm mixing)
+
+---
+
+## 🧭 Pattern Decision Tree: Greedy vs. Dynamic Programming
+
+```mermaid
+flowchart TD
+    Start["Optimization Problem (Min / Max / Best)"] --> Q1{"Does a locally optimal choice guarantee global optimum?"}
+    Q1 -->|Yes: Greedy Choice Property holds| P1["Greedy Algorithm (Interval scheduling, Huffman, MST)"]
+    Q1 -->|No: Early sacrifice gives future advantage| Q2{"Are there overlapping subproblems?"}
+    Q2 -->|Yes: Overlapping states| P2["Dynamic Programming (0/1 Knapsack, Coin Change)"]
+    Q2 -->|No: Exhaustive choices required| P3["Backtracking / Branch & Bound"]
+```
 
 ---
 

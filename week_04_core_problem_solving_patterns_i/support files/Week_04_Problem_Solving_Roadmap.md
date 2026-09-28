@@ -11,6 +11,22 @@
 
 ---
 
+## 🧭 Pattern Decision Tree: Which Pattern to Pick?
+
+```mermaid
+flowchart TD
+    Start["Array / Sequence Problem"] --> Q1{"Is the array sorted?"}
+    Q1 -->|Yes| Q2{"Target sum, pair, or boundary?"}
+    Q2 -->|Yes: Two elements| P1["Two Pointers (Opposing)"]
+    Q2 -->|No: Searching value or threshold| P2["Binary Search"]
+    Q1 -->|No| Q3{"Contiguous Subarray or Substring?"}
+    Q3 -->|Yes: Fixed window size K| P3["Fixed Sliding Window (Add right, Drop left)"]
+    Q3 -->|Yes: Dynamic constraint| P4["Variable Sliding Window (Expand right, Shrink left)"]
+    Q3 -->|No: Independent subproblems| P5["Divide & Conquer (Split, Solve, Combine)"]
+```
+
+---
+
 ## 🎯 Overall Problem-Solving Strategy for Week 04
 
 ### Stage 1: Pattern Recognition (Foundation)

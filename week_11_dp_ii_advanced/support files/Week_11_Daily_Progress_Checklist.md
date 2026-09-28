@@ -6,7 +6,6 @@
 
 ---
 
-**Week:** 11 | **Purpose:** Track daily progress and problem-solving skills  
 **Use:** Check off as you complete items, identify weak areas
 
 ---

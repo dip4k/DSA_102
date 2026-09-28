@@ -6,7 +6,6 @@
 
 ---
 
-**Week:** 6 – Tier 1.5 String Manipulation Patterns  
 **Purpose:** Master practical string patterns for palindromes, substrings, parentheses, and transformations  
 **Target:** Transform Week 6 string patterns into interview-ready C# coding skills  
 **Prerequisites:** Week 6 instructional files + standard support files complete

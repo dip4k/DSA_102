@@ -26,6 +26,22 @@ This guide provides a **structured pathway** for solving Week 09 problems, organ
 
 ---
 
+## 🧭 Pattern Decision Tree: Which Shortest Path / Tree Algorithm?
+
+```mermaid
+flowchart TD
+    Start["Weighted Graph Problem"] --> Q1{"Single Source or All Pairs?"}
+    Q1 -->|Single Source| Q2{"Are edge weights non-negative?"}
+    Q2 -->|Yes: Non-negative weights| P1["Dijkstra's Algorithm with Min-Heap O((V+E)log V)"]
+    Q2 -->|No: Has negative edge weights| P2["Bellman-Ford Algorithm O(V*E) (Detects negative cycles)"]
+    Q1 -->|All Pairs Shortest Paths| P3["Floyd-Warshall Algorithm O(V^3)"]
+    Start --> Q3{"Minimum Spanning Tree or Dynamic Connectivity?"}
+    Q3 -->|Connect all nodes with min total weight| P4["Kruskal's MST (with Union-Find) or Prim's"]
+    Q3 -->|Track dynamic connected components or cycles| P5["Union-Find (DSU) with Path Compression"]
+```
+
+---
+
 ## 🎯 TIER 1: FOUNDATIONAL PROBLEMS (Build Core Competency)
 
 ### Goal

@@ -8,7 +8,6 @@
 ## Arrays, Dynamic Arrays, Linked Lists, Stacks, Queues, Binary Search
 
 **Phase:** A (Foundations)  
-**Week:** 2 of 19  
 **Last Updated:** January 15, 2026, 1:39 AM IST  
 **Format:** Visual Concepts Playbook Hybrid Instructional  
 

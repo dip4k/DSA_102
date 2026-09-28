@@ -7,7 +7,7 @@
 
 ## Trees & Balanced Search Trees – Complete Curriculum Guide
 
-**Curriculum Alignment:** COMPLETE_SYLLABUS_v13_FINAL.md  
+**Curriculum Alignment:** COMPLETE_SYLLABUS_v13.md  
 **Phase:** C – Trees, Graphs, Dynamic Programming (Week 7)  
 **Format:** Markdown – Self-contained, offline-first, GitHub-friendly  
 **Deployment:** Immediate use – no external dependencies

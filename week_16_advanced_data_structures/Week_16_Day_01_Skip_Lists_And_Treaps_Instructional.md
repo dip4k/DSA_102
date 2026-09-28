@@ -19,17 +19,27 @@
 
 ## 📖 Chapter 1: Context & Motivation
 
-### 1. The Engineering Challenge
-In enterprise software systems and advanced interview scenarios, standard linear and quadratic approaches collapse when input sizes reach production volume (N >= 10^5). 
-Probabilistic balanced search with randomized heights; priority heap property for self-balancing search trees.
+### 1. The Engineering Challenge: Balance Without the Complexity Nightmare
+
+Self-balancing trees like AVL and Red-Black trees guarantee `O(log N)` search, insert, and delete. However, implementing them in production requires hundreds of lines of fragile pointer rotations, color flips, and double-rotation corner cases.
+
+Can we achieve the exact same `O(log N)` performance using the power of **randomization**?
+- **Skip Lists:** Create express subway lanes above a linked list using random coin flips. Fast trains skip 10 stations at a time, dropping down to local tracks only near the destination.
+- **Treaps:** Combine a Binary Search Tree (on keys) with a Binary Heap (on random priorities). The heap priorities ensure the tree remains probabilistically balanced without manual rebalancing heuristics.
 
 ### 2. High-Level Concept Diagram
 
 ```mermaid
 flowchart LR
-    Input["Input Constraints & State"] --> Analysis["Invariant Check"]
-    Analysis --> Engine["Skip Lists & Treaps Engine"]
-    Engine --> Output["Optimal Result (O(N) or O(log N))"]
+    subgraph Express["Express Lane (Level 2)"]
+        E1["Node 1"] --> E4["Node 4"] --> E8["Node 8"]
+    end
+    subgraph Local["Local Track (Level 0)"]
+        L1["1"] --> L2["2"] --> L3["3"] --> L4["4"] --> L5["5"] --> L8["8"]
+    end
+    E1 -.-> L1
+    E4 -.-> L4
+    E8 -.-> L8
 ```
 
 ---

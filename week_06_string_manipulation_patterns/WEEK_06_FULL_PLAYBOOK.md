@@ -8,7 +8,6 @@
 ## Palindromes, Substring Problems, Parentheses Matching, Advanced String Techniques
 
 **Phase:** B (Patterns)  
-**Week:** 6 of 19  
 **Last Updated:** January 15, 2026, 1:56 AM IST  
 **Format:** Visual Concepts Playbook Hybrid Instructional  
 

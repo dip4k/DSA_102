@@ -6,7 +6,6 @@
 
 ---
 
-**Week:** 4 – Core Problem-Solving Patterns I: Two Pointers, Sliding Windows, Divide & Conquer, Binary Search  
 **Purpose:** Master foundational array/sequence patterns that drastically simplify many problems  
 **Target:** Transform Week 4 patterns into interview-ready C# coding skills  
 **Prerequisites:** Week 4 instructional files + standard support files complete

@@ -19,17 +19,20 @@
 
 ## 📖 Chapter 1: Context & Motivation
 
-### 1. The Engineering Challenge
-In enterprise software systems and advanced interview scenarios, standard linear and quadratic approaches collapse when input sizes reach production volume (N >= 10^5). 
-Partition arrays into sqrt(N) blocks for O(sqrt(N)) range queries, point updates, and offline query sorting.
+### 1. The Engineering Challenge: When Trees Are Overkill
+
+Segment trees are powerful, but implementing them for complex range operations (e.g., counting distinct elements, range mode) can be agonizingly difficult.
+
+**Square Root Decomposition** provides a simpler, intuitive alternative: divide an array of size `N` into blocks of size `sqrt(N)`. Any arbitrary range `[L, R]` spans a few partial boundary blocks and several full blocks. Updates take `O(1)` and queries take `O(sqrt(N))`—striking an elegant balance between implementation simplicity and speed.
 
 ### 2. High-Level Concept Diagram
 
 ```mermaid
-flowchart LR
-    Input["Input Constraints & State"] --> Analysis["Invariant Check"]
-    Analysis --> Engine["Square Root Decomposition (Mo's Algorithm) Engine"]
-    Engine --> Output["Optimal Result (O(N) or O(log N))"]
+flowchart TD
+    Array["N Elements Array"] --> B1["Block 1: [0 ... sqrt(N)-1]"]
+    Array --> B2["Block 2: [sqrt(N) ... 2*sqrt(N)-1]"]
+    Array --> B3["Block 3: [2*sqrt(N) ... 3*sqrt(N)-1]"]
+    B1 --> Query["Query: Left Partial + Middle Full Blocks + Right Partial"]
 ```
 
 ---

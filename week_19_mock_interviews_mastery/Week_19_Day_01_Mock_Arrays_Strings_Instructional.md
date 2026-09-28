@@ -19,17 +19,22 @@
 
 ## 📖 Chapter 1: Context & Motivation
 
-### 1. The Engineering Challenge
-In enterprise software systems and advanced interview scenarios, standard linear and quadratic approaches collapse when input sizes reach production volume (N >= 10^5). 
-Live simulation: fast pattern identification, boundary-condition communication, and edge-case testing.
+### 1. The Interview Challenge: Trapping Rain Water (Live Simulation)
+
+**Interviewer Prompt:**
+*"Given an elevation map of non-negative integers representing the width of each bar being 1, compute how much water it can trap after raining."*
+
+In a live senior interview, the interviewer is watching how you handle ambiguity:
+1. **Clarify Inputs:** What happens if `height.length < 3`? Can elevations be negative? What is max `N`?
+2. **Brute Force Baseline:** For each bar, water trapped is `min(maxLeft, maxRight) - height[i]`. Scanning left and right for every bar takes `O(N^2)`.
+3. **The 'Aha!' Invariant:** The lower of the two boundary heights governs trapped water. By converging two opposing pointers inward from the outer edges, we solve the problem in `O(N)` time with `O(1)` auxiliary memory!
 
 ### 2. High-Level Concept Diagram
 
 ```mermaid
 flowchart LR
-    Input["Input Constraints & State"] --> Analysis["Invariant Check"]
-    Analysis --> Engine["Mock Round 1: Arrays, Strings & Two-Pointers Engine"]
-    Engine --> Output["Optimal Result (O(N) or O(log N))"]
+    Left["Left Pointer (Tracks left_max)"] -->|Moves Inward| Meet["Lower boundary traps water"]
+    Right["Right Pointer (Tracks right_max)"] -->|Moves Inward| Meet
 ```
 
 ---

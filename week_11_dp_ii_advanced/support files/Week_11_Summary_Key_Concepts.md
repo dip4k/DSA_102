@@ -6,7 +6,6 @@
 
 ---
 
-**Week:** 11 | **Purpose:** One-page reference for all Week 11 concepts  
 **For:** Quick lookup during problem-solving or review
 
 ---

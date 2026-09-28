@@ -6,12 +6,11 @@
 
 ---
 
-**Week:** 13  
 **Phase:** D – Algorithm Paradigms  
 **Theme:** Backtracking & Branch & Bound  
 **Core Topics:** Backtracking Fundamentals, Backtracking Problems, Branch & Bound, Amortized Analysis  
 **Format:** Hybrid (Enhanced ASCII + Web Resource Links)  
-**Syllabus Source:** COMPLETE_SYLLABUS_v13_FINAL.md  
+**Syllabus Source:** COMPLETE_SYLLABUS_v13.md  
 
 ---
 
@@ -2044,7 +2043,7 @@ Credit balance: 0 (valid, non-negative)
 ## 🚀 COMPLETE WEEK 13 ECOSYSTEM
 
 ### TIER 1: Core Learning (This Week's Foundation)
-**Primary Source:** COMPLETE_SYLLABUS_v13_FINAL.md
+**Primary Source:** COMPLETE_SYLLABUS_v13.md
 - Day 1: Backtracking Fundamentals | 90 min
 - Day 2: Backtracking Problems | 120 min
 - Day 3: Branch & Bound | 120 min

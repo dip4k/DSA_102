@@ -6,7 +6,6 @@
 
 ---
 
-**Week:** 1 | **Tier:** Foundations I – Computational Model, Asymptotics, Recursion, Peak Finding  
 **Theme:** RAM Model, Pointers, Memory Layout, Big-O Analysis, Recursion Patterns, 1D/2D Peak Finding  
 **Format:** Hybrid (Enhanced ASCII + Web Resource Links + Reference Tools)  
 **Purpose:** Visual-first concept explanation with embedded professional resources  

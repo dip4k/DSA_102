@@ -19,17 +19,18 @@
 
 ## 📖 Chapter 1: Context & Motivation
 
-### 1. The Engineering Challenge
-In enterprise software systems and advanced interview scenarios, standard linear and quadratic approaches collapse when input sizes reach production volume (N >= 10^5). 
-Compute Grundy numbers, evaluate game equivalence, and use XOR sum for multi-pile games.
+### 1. The Engineering Challenge: Predicting Who Wins Before the First Move
+
+Two players play an impartial game: on each turn, a player removes items from piles according to fixed rules, and the player with no legal moves loses. Can you determine whether Player 1 has a guaranteed winning strategy from the starting configuration?
+
+The **Sprague-Grundy Theorem** proves that every impartial game is mathematically equivalent to a single game of Nim. By computing the **Minimum Excluded Value (MEX)** for each state and taking the XOR sum of all games, we can evaluate composite game states in `O(1)` time!
 
 ### 2. High-Level Concept Diagram
 
 ```mermaid
 flowchart LR
-    Input["Input Constraints & State"] --> Analysis["Invariant Check"]
-    Analysis --> Engine["Impartial Game Theory & Sprague-Grundy Theorem Engine"]
-    Engine --> Output["Optimal Result (O(N) or O(log N))"]
+    Piles["Independent Game Piles"] --> Grundy["Compute Grundy Values via MEX"]
+    Grundy --> NimSum["XOR Sum > 0 ? Player 1 Wins : Player 2 Wins"]
 ```
 
 ---

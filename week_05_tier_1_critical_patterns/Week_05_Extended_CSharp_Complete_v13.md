@@ -6,7 +6,6 @@
 
 ---
 
-**Week:** 5 – Tier 1 Critical Patterns: Hash, Monotonic Stack, Intervals, Partition & Kadane, Fast/Slow  
 **Purpose:** Master high-frequency patterns covering large fraction of interview problem space  
 **Target:** Transform Week 5 critical patterns into interview-ready C# coding skills  
 **Prerequisites:** Week 5 instructional files + standard support files complete

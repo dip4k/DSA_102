@@ -8,7 +8,7 @@
 
 **Phase:** D – Algorithm Paradigms  
 **Week Theme:** Backtracking & Branch & Bound  
-**Syllabus Source:** COMPLETE_SYLLABUS_v13_FINAL.md  
+**Syllabus Source:** COMPLETE_SYLLABUS_v13.md  
 **Tone:** Training Coach
 
 ---
@@ -39,6 +39,18 @@ This roadmap provides a **3-stage progressive problem ladder** designed to build
 - **Beginner:** Complete Stage 1 (5-8 problems)
 - **Intermediate:** Complete Stages 1-2 (12-15 problems)
 - **Advanced:** Complete all stages (20+ problems)
+
+---
+
+## 🧭 Pattern Decision Tree: Which Search Paradigm to Pick?
+
+```mermaid
+flowchart TD
+    Start["State Space Search Problem"] --> Q1{"What does the problem require?"}
+    Q1 -->|Find ALL possible valid solutions| P1["Backtracking (Subsets, Permutations, N-Queens)"]
+    Q1 -->|Find ONE optimal solution in massive space| P2["Branch & Bound (Prune subtrees using bounds)"]
+    Q1 -->|Optimization with overlapping subproblems| P3["Dynamic Programming (Memoize redundant branches)"]
+```
 
 ---
 
