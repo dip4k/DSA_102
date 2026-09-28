@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_02_Day_02_Dynamic_Arrays_Amortized_Growth_Instructional.md)
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_02_Day_02_Dynamic_Arrays_Amortized_Growth_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -594,4 +594,4 @@ This principle—**structure enables efficiency**—is the theme of the entire c
 **Batch Status:** ✅ COMPLETE — Week 02 Day 01 Final
 ---
 
-> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_02_Day_02_Dynamic_Arrays_Amortized_Growth_Instructional.md)
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_02_Day_02_Dynamic_Arrays_Amortized_Growth_Instructional.md)

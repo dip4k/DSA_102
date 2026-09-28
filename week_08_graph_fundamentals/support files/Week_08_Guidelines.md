@@ -1,6 +1,6 @@
 # 🌐 Week 08 Guidelines – Graph Fundamentals: Representations, BFS, DFS & Topological Sort
 
-> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS.md)
 > 
 > 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
 
@@ -266,4 +266,4 @@ If 80% of these are true, you have built a solid Week 08 foundation. The remaini
 
 ---
 
-> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS.md)

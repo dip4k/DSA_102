@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_06_Day_04_String_Transformations_Building_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_06_FULL_PLAYBOOK.md)
+> 🧭 **Navigation:** [← Previous Day](Week_06_Day_04_String_Transformations_Building_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_06_FULL_PLAYBOOK.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -707,4 +707,4 @@ These questions will guide you to the right tool.
 ---
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_06_Day_04_String_Transformations_Building_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_06_FULL_PLAYBOOK.md)
+> 🧭 **Navigation:** [← Previous Day](Week_06_Day_04_String_Transformations_Building_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_06_FULL_PLAYBOOK.md)

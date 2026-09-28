@@ -3,7 +3,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_14_Day_03_Number_Theory_Basics_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_14_Day_05_Advanced_Number_Theory_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_14_Day_03_Number_Theory_Basics_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_14_Day_05_Advanced_Number_Theory_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -495,4 +495,4 @@ To minimize this memory footprint, high-performance systems use:
     *   *Correction*: While Tries are faster for prefix matching, they use significantly more memory because they store pointers for each character transition. In some cases, Hash Tables search routines are faster because of better cache locality.
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_14_Day_03_Number_Theory_Basics_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_14_Day_05_Advanced_Number_Theory_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_14_Day_03_Number_Theory_Basics_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_14_Day_05_Advanced_Number_Theory_Instructional.md)

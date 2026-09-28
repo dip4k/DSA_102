@@ -8,14 +8,14 @@
 ## 🎯 WHAT YOU NOW HAVE
 
 ### ✅ Canonical Syllabus Source
-**File:** `COMPLETE_SYLLABUS_v13.md`
+**File:** `COMPLETE_SYLLABUS.md`
 - All 19 weeks in one canonical sequence
 - Weekly goals + weekly outcomes across all weeks
 - Day-wise topic/subtopic breakdowns
 - Student-mode execution guidance
 
 ### ✅ Student Navigation Sources
-**Files:** `README_v13.md`, `START_HERE.md`
+**Files:** `README.md`, `START_HERE.md`
 - Study-path guidance (mastery / interview / quick reference)
 - Repository navigation and file-selection rules
 - Manual study workflow without CI dependency
@@ -299,11 +299,11 @@ The current order is already strong, but these optional adjustments improve flow
 ## 📦 CURRENT STUDENT DELIVERABLES
 
 ### Primary Files
-📄 **COMPLETE_SYLLABUS_v13.md**
+📄 **COMPLETE_SYLLABUS.md**
 - Canonical 19-week syllabus source
 - Weekly goals/outcomes + day-level topic breakdowns
 
-📄 **README_v13.md**
+📄 **README.md**
 - Repository overview and practical learning paths
 
 📄 **START_HERE.md**
@@ -321,7 +321,7 @@ The current order is already strong, but these optional adjustments improve flow
 ## 🚀 HOW TO USE
 
 ### Study Workflow
-1. **Start with Week 1, Day 1** in `COMPLETE_SYLLABUS_v13.md`
+1. **Start with Week 1, Day 1** in `COMPLETE_SYLLABUS.md`
 2. **Follow daily structure:** 90-120 min per day
 3. **Each day includes:**
    - Topics with subtopics
@@ -340,7 +340,7 @@ The current order is already strong, but these optional adjustments improve flow
    - Build confidence
 
 ### Daily Study Entry Order (Student Mode)
-1. Read the target day in `COMPLETE_SYLLABUS_v13.md`
+1. Read the target day in `COMPLETE_SYLLABUS.md`
 2. Open matching week folder and day instructional file
 3. Use `support files/` for summary/review/checklist
 4. Skip `v10/`, `v12/`, and `_v12_` files unless comparing versions

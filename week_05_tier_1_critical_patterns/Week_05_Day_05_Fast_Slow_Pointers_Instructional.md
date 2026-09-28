@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_05_Day_04_Part_B_Kadane_Algorithm_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_05_FULL_PLAYBOOK.md)
+> 🧭 **Navigation:** [← Previous Day](Week_05_Day_04_Part_B_Kadane_Algorithm_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_05_FULL_PLAYBOOK.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -586,4 +586,4 @@ Week 5 represents the culmination of **Tier 1 Critical Patterns**. You're now eq
 ---
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_05_Day_04_Part_B_Kadane_Algorithm_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_05_FULL_PLAYBOOK.md)
+> 🧭 **Navigation:** [← Previous Day](Week_05_Day_04_Part_B_Kadane_Algorithm_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_05_FULL_PLAYBOOK.md)

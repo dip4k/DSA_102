@@ -1,6 +1,6 @@
 # WEEK 09 FULL PLAYBOOK
 
-> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)
 > 
 > 💡 **Instructor Note:** *This Comprehensive Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
 
@@ -77,8 +77,8 @@ Core outcomes:
 3. `Week_09_Day_03_Floyd_Warshall_All_Pairs_Shortest_Paths_Instructional.md`
 4. `Week_09_Day_04_Minimum_Spanning_Trees_Kruskal_Prim_Instructional.md`
 5. `Week_09_Day_05_Union_Find_DSU_In_Depth_Instructional.md`
-6. `Week_09_Extended_CSharp_Complete_v13.md`
-7. `Week_09_Extended_Python_Complete_v13.md`
+6. `Week_09_Extended_CSharp_Complete.md`
+7. `Week_09_Extended_Python_Complete.md`
 8. `Week_09_Visual_Concepts_Playbook_HYBRID.md`
 9. `support files/`
 10. `WEEK_09_START_HERE.md` for orientation and pacing
@@ -95,4 +95,4 @@ Core outcomes:
 
 ---
 
-> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)

@@ -3,7 +3,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_14_Day_02_Bitwise_Operations_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_14_Day_04_Advanced_Strings_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_14_Day_02_Bitwise_Operations_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_14_Day_04_Advanced_Strings_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -232,4 +232,4 @@ For composite modulus, use Extended Euclidean Algorithm and require gcd(A, M) = 
     *   *Correction*: It is safe for common small moduli, but for very large moduli you must use overflow-safe multiplication.
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_14_Day_02_Bitwise_Operations_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_14_Day_04_Advanced_Strings_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_14_Day_02_Bitwise_Operations_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_14_Day_04_Advanced_Strings_Instructional.md)

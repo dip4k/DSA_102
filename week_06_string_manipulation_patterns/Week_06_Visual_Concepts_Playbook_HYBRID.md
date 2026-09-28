@@ -1,6 +1,6 @@
 # 📊 Week 06 Visual Concepts Playbook HYBRID: String Patterns at Scale
 
-> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)
 > 
 > 💡 **Instructor Note:** *This Visual Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
 
@@ -1332,7 +1332,7 @@ Turnitin plagiarism detection searches 100 million documents for plagiarized sub
 
 ### Educational Completeness
 - ✅ 5 days covered (skip Day 6 Optional Advanced)
-- ✅ 30+ topics from COMPLETE_SYLLABUS_v13.md
+- ✅ 30+ topics from COMPLETE_SYLLABUS.md
 - ✅ 15 quiz questions (3 per day)
 - ✅ 8-10 failure modes (2-3 per day)
 - ✅ Pattern family trees show relationships
@@ -1364,7 +1364,7 @@ Turnitin plagiarism detection searches 100 million documents for plagiarized sub
 **Format:** Markdown (.md), UTF-8, LF line endings  
 **Size:** ~18,000 words, 30+ ASCII diagrams  
 **Deployment:** Immediate use, no modifications needed  
-**Syllabus Version:** COMPLETE_SYLLABUS_v13.md (Week 06 topics only)  
+**Syllabus Version:** COMPLETE_SYLLABUS.md (Week 06 topics only)  
 
 ---
 
@@ -1374,4 +1374,4 @@ Turnitin plagiarism detection searches 100 million documents for plagiarized sub
 
 ---
 
-> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)

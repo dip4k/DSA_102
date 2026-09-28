@@ -1,6 +1,6 @@
 # 🎤 WEEK 13 INTERVIEW Q&A REFERENCE
 
-> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS.md)
 > 
 > 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
 
@@ -8,7 +8,7 @@
 
 **Phase:** D – Algorithm Paradigms  
 **Week Theme:** Backtracking & Branch & Bound  
-**Syllabus Source:** COMPLETE_SYLLABUS_v13.md  
+**Syllabus Source:** COMPLETE_SYLLABUS.md  
 **Tone:** Interview Coach  
 **Format:** Questions Only (NO ANSWERS)
 
@@ -648,4 +648,4 @@ Practice: Q4, Q10, Q13, Q25, Q31, Q35, Q41, Q43, Q48
 
 ---
 
-> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS.md)

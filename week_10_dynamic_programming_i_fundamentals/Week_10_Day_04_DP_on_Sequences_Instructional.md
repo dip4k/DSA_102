@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_10_Day_03_2D_DP_Grids_Edit_Distance_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_10_Day_05_Story_Driven_DP_Advanced_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_10_Day_03_2D_DP_Grids_Edit_Distance_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_10_Day_05_Story_Driven_DP_Advanced_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -1544,4 +1544,4 @@ The connection: Both DP and neural methods solve optimization on sequences. DP g
 **End of Week 10 Day 04 Comprehensive Instructional Content**
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_10_Day_03_2D_DP_Grids_Edit_Distance_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_10_Day_05_Story_Driven_DP_Advanced_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_10_Day_03_2D_DP_Grids_Edit_Distance_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_10_Day_05_Story_Driven_DP_Advanced_Instructional.md)

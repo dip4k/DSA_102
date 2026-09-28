@@ -1,6 +1,6 @@
 # 📖 Week 14 Guidelines & Core Synthesis
 
-> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS.md)
 > 
 > 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
 
@@ -34,4 +34,4 @@ Welcome to Week 14. This week represents an integration checkpoint where we brid
 
 ---
 
-> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS.md)

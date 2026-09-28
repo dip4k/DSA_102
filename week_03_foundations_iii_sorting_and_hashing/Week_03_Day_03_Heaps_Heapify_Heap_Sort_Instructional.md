@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_03_Day_02_Merge_Quick_Sort_Instructional_Revised.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_03_Day_04_Hash_Tables_Separate_Chaining_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_03_Day_02_Merge_Quick_Sort_Instructional_Revised.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_03_Day_04_Hash_Tables_Separate_Chaining_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -701,4 +701,4 @@ Master heaps—their structure, their operations, their real-world applications�
 **Batch Status:** ✅ COMPLETE — Week 03 Day 03 Final
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_03_Day_02_Merge_Quick_Sort_Instructional_Revised.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_03_Day_04_Hash_Tables_Separate_Chaining_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_03_Day_02_Merge_Quick_Sort_Instructional_Revised.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_03_Day_04_Hash_Tables_Separate_Chaining_Instructional.md)

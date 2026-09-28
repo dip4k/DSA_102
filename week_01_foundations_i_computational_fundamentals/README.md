@@ -1,6 +1,6 @@
 # 📘 Computational Fundamentals, RAM Model & Asymptotics
 
-> 🧭 **Navigation:** [← Root Curriculum](../README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next: Week 02 →](../week_02_foundations_ii_linear_data_structures/README.md)
+> 🧭 **Navigation:** [← Root Curriculum](../README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 02 →](../week_02_foundations_ii_linear_data_structures/README.md)
 
 ---
 
@@ -40,8 +40,8 @@ flowchart LR
 
 *   📖 **Comprehensive Week Playbook:** [WEEK_01_FULL_PLAYBOOK.md](WEEK_01_FULL_PLAYBOOK.md) — High-density synthesis of all invariants, theorems, and pattern triggers for this week.
 *   📊 **Visual Concepts Playbook (Hybrid):** [Week_01_Visual_Concepts_Playbook_HYBRID.md](Week_01_Visual_Concepts_Playbook_HYBRID.md) — Compact Mermaid diagrams, state transitions, and complexity reference tables.
-*   💻 **Production C# Reference (.NET 8/9):** [Week_01_Problem_Solving_Roadmap_Extended_CSharp.md](Week_01_Problem_Solving_Roadmap_Extended_CSharp.md) — Idiomatic, zero-allocation memory-aware implementations and problem ladders.
-*   🐍 **Production Python Reference (Python 3.11+):** [Week_01_Extended_Python_Complete_v13.md](Week_01_Extended_Python_Complete_v13.md) — Clean, pythonic reference implementations for rapid whiteboard prototyping.
+*   💻 **Production C# Reference (.NET 8/9):** [Week_01_Extended_CSharp_Complete.md](Week_01_Extended_CSharp_Complete.md) — Idiomatic, zero-allocation memory-aware implementations and problem ladders.
+*   🐍 **Production Python Reference (Python 3.11+):** [Week_01_Extended_Python_Complete.md](Week_01_Extended_Python_Complete.md) — Clean, pythonic reference implementations for rapid whiteboard prototyping.
 
 ---
 
@@ -57,4 +57,4 @@ Every week is accompanied by five dedicated support files located in the `suppor
 
 ---
 
-> 🧭 **Navigation:** [← Root Curriculum](../README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next: Week 02 →](../week_02_foundations_ii_linear_data_structures/README.md)
+> 🧭 **Navigation:** [← Root Curriculum](../README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 02 →](../week_02_foundations_ii_linear_data_structures/README.md)

@@ -1,6 +1,6 @@
 # 📊 Week 17 Visual Concepts Playbook (Hybrid)
 
-> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)
 > 
 > 💡 **Instructor Note:** *Visual diagrams are designed to fit comfortably on standard GitHub markdown and wiki page views without horizontal scrolling.*
 
@@ -43,4 +43,4 @@ flowchart TD
 
 ---
 
-> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)

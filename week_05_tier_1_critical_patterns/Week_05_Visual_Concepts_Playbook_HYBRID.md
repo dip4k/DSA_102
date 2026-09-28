@@ -1,6 +1,6 @@
 # 📊 Week 05 Visual Concepts Playbook (HYBRID)
 
-> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)
 > 
 > 💡 **Instructor Note:** *This Visual Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
 
@@ -1294,7 +1294,7 @@ flowchart TD
 
 # 🔍 Quality Assurance Checklist
 
-- ✅ All 5 core topics from COMPLETE_SYLLABUS_v13.md included
+- ✅ All 5 core topics from COMPLETE_SYLLABUS.md included
 - ✅ 30+ ASCII diagrams embedded inline, not grouped
 - ✅ 15 quiz questions total (3 per day)
 - ✅ 8-10 failure modes documented with WRONG/CORRECT examples
@@ -1324,4 +1324,4 @@ Master these mental models, and the code becomes implementation detail.
 
 ---
 
-> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)

@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_06_Day_01_Palindrome_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_06_Day_03_Parentheses_Bracket_Matching_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_06_Day_01_Palindrome_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_06_Day_03_Parentheses_Bracket_Matching_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -692,4 +692,4 @@ When you see a problem involving sequences and constraints, pause. Ask: **"Can I
 ---
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_06_Day_01_Palindrome_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_06_Day_03_Parentheses_Bracket_Matching_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_06_Day_01_Palindrome_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_06_Day_03_Parentheses_Bracket_Matching_Instructional.md)

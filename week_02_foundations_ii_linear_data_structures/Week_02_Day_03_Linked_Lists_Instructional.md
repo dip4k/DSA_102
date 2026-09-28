@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_02_Day_02_Dynamic_Arrays_Amortized_Growth_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_02_Day_04_Stacks_Queues_Deques_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_02_Day_02_Dynamic_Arrays_Amortized_Growth_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_02_Day_04_Stacks_Queues_Deques_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -621,4 +621,4 @@ This is where algorithms meets systems. Big-O complexity tells half the story. M
 **Batch Status:** ✅ COMPLETE — Week 02 Day 03 Final
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_02_Day_02_Dynamic_Arrays_Amortized_Growth_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_02_Day_04_Stacks_Queues_Deques_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_02_Day_02_Dynamic_Arrays_Amortized_Growth_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_02_Day_04_Stacks_Queues_Deques_Instructional.md)

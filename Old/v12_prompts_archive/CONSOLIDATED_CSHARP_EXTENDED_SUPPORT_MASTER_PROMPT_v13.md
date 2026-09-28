@@ -623,7 +623,7 @@ CONSOLIDATED_CSHARP_EXTENDED_SUPPORT_MASTER_PROMPT_v13.md ← YOU ARE HERE
 ├─ Usage workflows
 └─ Validation checklist
 
-Week_02_Extended_CSharp_Complete_v13.md
+Week_02_Extended_CSharp_Complete.md
 ├─ EXAMPLE of output using this prompt
 ├─ Reference for students
 └─ Template for consistency

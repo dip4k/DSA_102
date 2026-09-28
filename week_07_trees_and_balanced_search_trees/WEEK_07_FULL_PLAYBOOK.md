@@ -1,5 +1,5 @@
 # 📚 WEEK 07 FULL PLAYBOOK
-> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)
 > 
 > 💡 **Instructor Note:** *This Comprehensive Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
 
@@ -7,7 +7,7 @@
 
 ## Trees & Balanced Search Trees – Complete Curriculum Guide
 
-**Curriculum Alignment:** COMPLETE_SYLLABUS_v13.md  
+**Curriculum Alignment:** COMPLETE_SYLLABUS.md  
 **Phase:** C – Trees, Graphs, Dynamic Programming (Week 7)  
 **Format:** Markdown – Self-contained, offline-first, GitHub-friendly  
 **Deployment:** Immediate use – no external dependencies
@@ -1559,4 +1559,4 @@ After this week, you're ready to:
 
 ---
 
-> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)

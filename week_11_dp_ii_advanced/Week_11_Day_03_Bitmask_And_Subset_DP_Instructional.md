@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_11_Day_02_DP_On_DAGs_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_11_Day_04_State_Compression_And_Optimizations_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_11_Day_02_DP_On_DAGs_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_11_Day_04_State_Compression_And_Optimizations_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -807,4 +807,4 @@ Bitmask DP formalized in the 1960s-70s during the computational complexity revol
 **File Status:** ✅ COMPLETE — Exceeds 12,000-18,000 word guideline (extended to 20,847 due to complexity and multiple detailed examples), includes 5 cognitive lenses, 8 inline visuals (bitmask enumerations and DP traces), 4 real-world case studies, 5-chapter narrative arc, and comprehensive supplementary outcomes. All Week 11 Day 03 syllabus topics covered exhaustively without skipping subsections. Multiple detailed traces with step-by-step verification.
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_11_Day_02_DP_On_DAGs_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_11_Day_04_State_Compression_And_Optimizations_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_11_Day_02_DP_On_DAGs_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_11_Day_04_State_Compression_And_Optimizations_Instructional.md)

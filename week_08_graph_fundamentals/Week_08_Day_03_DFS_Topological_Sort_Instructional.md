@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_08_Day_02_Breadth_First_Search_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_08_Day_04_Connectivity_and_Bipartite_Graphs_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_08_Day_02_Breadth_First_Search_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_08_Day_04_Connectivity_and_Bipartite_Graphs_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -1517,4 +1517,4 @@ DFS is a stepping stone to:
 - ✅ Ready for immediate use in instruction
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_08_Day_02_Breadth_First_Search_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_08_Day_04_Connectivity_and_Bipartite_Graphs_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_08_Day_02_Breadth_First_Search_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_08_Day_04_Connectivity_and_Bipartite_Graphs_Instructional.md)

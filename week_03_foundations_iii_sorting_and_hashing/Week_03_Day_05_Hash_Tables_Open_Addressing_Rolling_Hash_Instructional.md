@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_03_Day_04_Hash_Tables_Separate_Chaining_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_03_FULL_PLAYBOOK.md)
+> 🧭 **Navigation:** [← Previous Day](Week_03_Day_04_Hash_Tables_Separate_Chaining_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_03_FULL_PLAYBOOK.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -881,4 +881,4 @@ Master open addressing, rolling hash, and universal hashing—their mechanics, t
 **Batch Status:** ✅ COMPLETE — Week 03 Day 05 Final
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_03_Day_04_Hash_Tables_Separate_Chaining_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_03_FULL_PLAYBOOK.md)
+> 🧭 **Navigation:** [← Previous Day](Week_03_Day_04_Hash_Tables_Separate_Chaining_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_03_FULL_PLAYBOOK.md)

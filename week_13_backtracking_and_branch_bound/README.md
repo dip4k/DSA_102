@@ -1,6 +1,6 @@
 # 📘 Backtracking & Branch and Bound
 
-> 🧭 **Navigation:** [← Previous: Week 12](../week_12_greedy_and_paradigms/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next: Week 14 →](../week_14_matrix_backtracking_bits/README.md)
+> 🧭 **Navigation:** [← Previous: Week 12](../week_12_greedy_and_paradigms/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 14 →](../week_14_matrix_backtracking_bits/README.md)
 
 ---
 
@@ -39,8 +39,8 @@ flowchart LR
 
 *   📖 **Comprehensive Week Playbook:** [WEEK_13_FULL_PLAYBOOK.md](WEEK_13_FULL_PLAYBOOK.md) — High-density synthesis of all invariants, theorems, and pattern triggers for this week.
 *   📊 **Visual Concepts Playbook (Hybrid):** [Week_13_Visual_Concepts_Playbook_HYBRID.md](Week_13_Visual_Concepts_Playbook_HYBRID.md) — Compact Mermaid diagrams, state transitions, and complexity reference tables.
-*   💻 **Production C# Reference (.NET 8/9):** [Week_13_Extended_CSharp_Complete_v13.md](Week_13_Extended_CSharp_Complete_v13.md) — Idiomatic, zero-allocation memory-aware implementations and problem ladders.
-*   🐍 **Production Python Reference (Python 3.11+):** [Week_13_Extended_Python_Complete_v13.md](Week_13_Extended_Python_Complete_v13.md) — Clean, pythonic reference implementations for rapid whiteboard prototyping.
+*   💻 **Production C# Reference (.NET 8/9):** [Week_13_Extended_CSharp_Complete.md](Week_13_Extended_CSharp_Complete.md) — Idiomatic, zero-allocation memory-aware implementations and problem ladders.
+*   🐍 **Production Python Reference (Python 3.11+):** [Week_13_Extended_Python_Complete.md](Week_13_Extended_Python_Complete.md) — Clean, pythonic reference implementations for rapid whiteboard prototyping.
 
 ---
 
@@ -56,4 +56,4 @@ Every week is accompanied by five dedicated support files located in the `suppor
 
 ---
 
-> 🧭 **Navigation:** [← Previous: Week 12](../week_12_greedy_and_paradigms/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next: Week 14 →](../week_14_matrix_backtracking_bits/README.md)
+> 🧭 **Navigation:** [← Previous: Week 12](../week_12_greedy_and_paradigms/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 14 →](../week_14_matrix_backtracking_bits/README.md)

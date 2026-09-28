@@ -1,6 +1,6 @@
 # 📊 WEEK 01 VISUAL CONCEPTS PLAYBOOK (HYBRID)
 
-> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md)
 > 
 > 💡 **Instructor Note:** *Visual diagrams are formatted as compact, responsive Mermaid charts and markdown tables that fit standard GitHub markdown views without excessive horizontal scrolling.*
 

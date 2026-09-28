@@ -3,7 +3,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_14_Day_04_Advanced_Strings_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_14_FULL_PLAYBOOK.md)
+> 🧭 **Navigation:** [← Previous Day](Week_14_Day_04_Advanced_Strings_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_14_FULL_PLAYBOOK.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -276,4 +276,4 @@ def solve_crt(a: list[int], m: list[int]) -> int:
     *   *Correction*: If the moduli are not coprime, a solution might not exist, or it might not be unique modulo their product. You must verify that the GCD of the moduli is 1 before starting.
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_14_Day_04_Advanced_Strings_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_14_FULL_PLAYBOOK.md)
+> 🧭 **Navigation:** [← Previous Day](Week_14_Day_04_Advanced_Strings_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_14_FULL_PLAYBOOK.md)

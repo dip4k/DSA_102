@@ -1,6 +1,6 @@
 # 📊 WEEK 13 VISUAL CONCEPTS PLAYBOOK (HYBRID)
 
-> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)
 > 
 > 💡 **Instructor Note:** *This Visual Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
 
@@ -10,7 +10,7 @@
 **Theme:** Backtracking & Branch & Bound  
 **Core Topics:** Backtracking Fundamentals, Backtracking Problems, Branch & Bound, Amortized Analysis  
 **Format:** Hybrid (Enhanced ASCII + Web Resource Links)  
-**Syllabus Source:** COMPLETE_SYLLABUS_v13.md  
+**Syllabus Source:** COMPLETE_SYLLABUS.md  
 
 ---
 
@@ -2043,7 +2043,7 @@ Credit balance: 0 (valid, non-negative)
 ## 🚀 COMPLETE WEEK 13 ECOSYSTEM
 
 ### TIER 1: Core Learning (This Week's Foundation)
-**Primary Source:** COMPLETE_SYLLABUS_v13.md
+**Primary Source:** COMPLETE_SYLLABUS.md
 - Day 1: Backtracking Fundamentals | 90 min
 - Day 2: Backtracking Problems | 120 min
 - Day 3: Branch & Bound | 120 min
@@ -2144,4 +2144,4 @@ Use this checklist to verify your understanding:
 
 ---
 
-> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)

@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_02_Day_03_Linked_Lists_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_02_Day_05_Binary_Search_Invariants_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_02_Day_03_Linked_Lists_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_02_Day_05_Binary_Search_Invariants_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -675,4 +675,4 @@ The lesson transcends data structures: constraining your interface options often
 **Batch Status:** ✅ COMPLETE — Week 02 Day 04 Final
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_02_Day_03_Linked_Lists_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_02_Day_05_Binary_Search_Invariants_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_02_Day_03_Linked_Lists_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_02_Day_05_Binary_Search_Invariants_Instructional.md)

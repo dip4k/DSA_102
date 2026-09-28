@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_03_Day_01_Sorting_Fundamentals_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_03_Day_03_Heaps_Heapify_Heap_Sort_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_03_Day_01_Sorting_Fundamentals_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_03_Day_03_Heaps_Heapify_Heap_Sort_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -693,4 +693,4 @@ Master both algorithms, understand their trade-offs, and you understand a princi
 **Batch Status:** ✅ COMPLETE — Week 03 Day 02 (Revised) Final
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_03_Day_01_Sorting_Fundamentals_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_03_Day_03_Heaps_Heapify_Heap_Sort_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_03_Day_01_Sorting_Fundamentals_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_03_Day_03_Heaps_Heapify_Heap_Sort_Instructional.md)

@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_10_Day_01_DP_Recursion_Memoization_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_10_Day_03_2D_DP_Grids_Edit_Distance_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_10_Day_01_DP_Recursion_Memoization_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_10_Day_03_2D_DP_Grids_Edit_Distance_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -1001,4 +1001,4 @@ By the 1970s-80s, DP had been applied to bioinformatics (sequence alignment—ed
 **End of Week 10 Day 02 Instructional Content**
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_10_Day_01_DP_Recursion_Memoization_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_10_Day_03_2D_DP_Grids_Edit_Distance_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_10_Day_01_DP_Recursion_Memoization_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_10_Day_03_2D_DP_Grids_Edit_Distance_Instructional.md)

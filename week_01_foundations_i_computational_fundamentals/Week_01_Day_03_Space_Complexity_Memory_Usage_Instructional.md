@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_01_Day_02_Asymptotic_Analysis_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_01_Day_04_Recursion_I_Call_Stack_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_01_Day_02_Asymptotic_Analysis_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_01_Day_04_Recursion_I_Call_Stack_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -867,4 +867,4 @@ In the 1980s-90s, memory was expensive and scarce. Systems obsessed over space. 
 **Next:** Week 1 Day 4 (Recursion I: Call Stack & Basic Patterns)
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_01_Day_02_Asymptotic_Analysis_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_01_Day_04_Recursion_I_Call_Stack_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_01_Day_02_Asymptotic_Analysis_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_01_Day_04_Recursion_I_Call_Stack_Instructional.md)

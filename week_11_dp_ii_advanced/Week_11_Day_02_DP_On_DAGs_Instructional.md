@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_11_Day_01_DP_on_Trees_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_11_Day_03_Bitmask_And_Subset_DP_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_11_Day_01_DP_on_Trees_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_11_Day_03_Bitmask_And_Subset_DP_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -826,4 +826,4 @@ DAG DP formalized in the 1960s-70s during operations research boom. Early applic
 **File Status:** ✅ COMPLETE — Meets 12,000-18,000 word guideline (extended beyond to 18,456 due to complexity), includes 5 cognitive lenses, 7 inline visuals (DAG diagrams and traces), 4 real-world case studies, 5-chapter narrative arc, and comprehensive supplementary outcomes. All Week 11 Day 02 syllabus topics covered in detail without skipping subsections.
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_11_Day_01_DP_on_Trees_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_11_Day_03_Bitmask_And_Subset_DP_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_11_Day_01_DP_on_Trees_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_11_Day_03_Bitmask_And_Subset_DP_Instructional.md)

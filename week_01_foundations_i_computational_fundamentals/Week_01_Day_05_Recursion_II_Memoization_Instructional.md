@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_01_Day_04_Recursion_I_Call_Stack_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_01_Day_06_Peak_Finding_Algorithmic_Thinking_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_01_Day_04_Recursion_I_Call_Stack_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_01_Day_06_Peak_Finding_Algorithmic_Thinking_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -841,4 +841,4 @@ With memoization mastered, you're now ready for dynamic programming (Week 10), w
 **Batch Status:** ✅ COMPLETE — Ready for "Continue" signal or next file generation
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_01_Day_04_Recursion_I_Call_Stack_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_01_Day_06_Peak_Finding_Algorithmic_Thinking_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_01_Day_04_Recursion_I_Call_Stack_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_01_Day_06_Peak_Finding_Algorithmic_Thinking_Instructional.md)

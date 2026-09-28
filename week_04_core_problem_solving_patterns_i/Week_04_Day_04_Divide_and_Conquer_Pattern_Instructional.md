@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_04_Day_03_Sliding_Window_Variable_Size_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_04_Day_05_Binary_Search_as_Pattern_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_04_Day_03_Sliding_Window_Variable_Size_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_04_Day_05_Binary_Search_as_Pattern_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -542,4 +542,4 @@ The problems we solve in this chapter—sorting, counting inversions, finding ma
 **Interview-Ready:** Yes — covers mechanics, recurrence analysis, and production scenarios
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_04_Day_03_Sliding_Window_Variable_Size_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_04_Day_05_Binary_Search_as_Pattern_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_04_Day_03_Sliding_Window_Variable_Size_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_04_Day_05_Binary_Search_as_Pattern_Instructional.md)

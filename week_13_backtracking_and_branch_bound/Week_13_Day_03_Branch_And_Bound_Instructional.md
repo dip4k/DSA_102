@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_13_Day_02_Backtracking_Problems_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_13_Day_04_Amortized_Analysis_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_13_Day_02_Backtracking_Problems_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_13_Day_04_Amortized_Analysis_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -1683,4 +1683,4 @@ If you can complete 3/4 challenges, you're ready for **Day 4: Amortized Analysis
 **Congratulations on mastering branch & bound optimization!** 🎉
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_13_Day_02_Backtracking_Problems_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_13_Day_04_Amortized_Analysis_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_13_Day_02_Backtracking_Problems_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_13_Day_04_Amortized_Analysis_Instructional.md)

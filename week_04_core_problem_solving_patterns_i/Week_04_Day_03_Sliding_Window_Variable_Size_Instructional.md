@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_04_Day_02_Sliding_Window_Fixed_Size_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_04_Day_04_Divide_and_Conquer_Pattern_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_04_Day_02_Sliding_Window_Fixed_Size_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_04_Day_04_Divide_and_Conquer_Pattern_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -599,4 +599,4 @@ Master variable-size sliding windows, and you've mastered a fundamental pattern 
 **Interview-Ready:** Yes — covers mechanics, amortized analysis, and production scenarios
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_04_Day_02_Sliding_Window_Fixed_Size_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_04_Day_04_Divide_and_Conquer_Pattern_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_04_Day_02_Sliding_Window_Fixed_Size_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_04_Day_04_Divide_and_Conquer_Pattern_Instructional.md)

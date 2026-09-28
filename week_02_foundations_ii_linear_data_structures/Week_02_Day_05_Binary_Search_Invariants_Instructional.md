@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_02_Day_04_Stacks_Queues_Deques_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_02_Day_06_Strings_Numbers_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_02_Day_04_Stacks_Queues_Deques_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_02_Day_06_Strings_Numbers_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -634,4 +634,4 @@ Master binary search, and you master a fundamental pattern that appears througho
 **Batch Status:** ✅ COMPLETE — Week 02 Day 05 Final
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_02_Day_04_Stacks_Queues_Deques_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_02_Day_06_Strings_Numbers_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_02_Day_04_Stacks_Queues_Deques_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_02_Day_06_Strings_Numbers_Instructional.md)

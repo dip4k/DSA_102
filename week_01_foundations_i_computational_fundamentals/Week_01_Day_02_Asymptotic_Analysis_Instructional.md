@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_01_Day_01_RAM_Model_Pointers_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_01_Day_03_Space_Complexity_Memory_Usage_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_01_Day_01_RAM_Model_Pointers_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_01_Day_03_Space_Complexity_Memory_Usage_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -766,4 +766,4 @@ In the 1970s-80s, algorithms (sorting, searching) were the frontier. Computer sc
 **Next:** Week 1 Day 3 (Space Complexity & Memory Usage)
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_01_Day_01_RAM_Model_Pointers_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_01_Day_03_Space_Complexity_Memory_Usage_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_01_Day_01_RAM_Model_Pointers_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_01_Day_03_Space_Complexity_Memory_Usage_Instructional.md)

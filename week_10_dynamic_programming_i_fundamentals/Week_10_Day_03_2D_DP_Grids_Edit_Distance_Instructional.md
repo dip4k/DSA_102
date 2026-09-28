@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_10_Day_02_1D_DP_Knapsack_Family_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_10_Day_04_DP_on_Sequences_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_10_Day_02_1D_DP_Knapsack_Family_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_10_Day_04_DP_on_Sequences_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -1678,4 +1678,4 @@ The connection: Both DP and neural models solve alignment problems by comparing 
 - Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_10_Day_02_1D_DP_Knapsack_Family_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_10_Day_04_DP_on_Sequences_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_10_Day_02_1D_DP_Knapsack_Family_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_10_Day_04_DP_on_Sequences_Instructional.md)

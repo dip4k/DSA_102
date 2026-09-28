@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_05_Day_04_Part_A_Partition_Cyclic_Sort_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_05_Day_05_Fast_Slow_Pointers_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_05_Day_04_Part_A_Partition_Cyclic_Sort_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_05_Day_05_Fast_Slow_Pointers_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -611,4 +611,4 @@ By the end of Week 5, you'll have mastered 8 critical patterns—hash, stack, in
 ---
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_05_Day_04_Part_A_Partition_Cyclic_Sort_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_05_Day_05_Fast_Slow_Pointers_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_05_Day_04_Part_A_Partition_Cyclic_Sort_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_05_Day_05_Fast_Slow_Pointers_Instructional.md)

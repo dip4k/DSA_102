@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_09_Day_02_Bellman_Ford_Negative_Weights_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_09_Day_04_Minimum_Spanning_Trees_Kruskal_Prim_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_09_Day_02_Bellman_Ford_Negative_Weights_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_09_Day_04_Minimum_Spanning_Trees_Kruskal_Prim_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -991,4 +991,4 @@ Floyd–Warshall represents the culmination of shortest-path algorithms: it hand
 ---
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_09_Day_02_Bellman_Ford_Negative_Weights_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_09_Day_04_Minimum_Spanning_Trees_Kruskal_Prim_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_09_Day_02_Bellman_Ford_Negative_Weights_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_09_Day_04_Minimum_Spanning_Trees_Kruskal_Prim_Instructional.md)

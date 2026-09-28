@@ -5,7 +5,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_07_Day_01_Binary_Trees_And_Traversals_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_07_Day_03_Balanced_BSTs_AVL_And_RedBlack_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_07_Day_01_Binary_Trees_And_Traversals_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_07_Day_03_Balanced_BSTs_AVL_And_RedBlack_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -753,4 +753,4 @@ BSTs were formalized in the 1960s as computer scientists moved from arrays to dy
 ---
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_07_Day_01_Binary_Trees_And_Traversals_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_07_Day_03_Balanced_BSTs_AVL_And_RedBlack_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_07_Day_01_Binary_Trees_And_Traversals_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_07_Day_03_Balanced_BSTs_AVL_And_RedBlack_Instructional.md)

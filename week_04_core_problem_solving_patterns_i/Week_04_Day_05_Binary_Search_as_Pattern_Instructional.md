@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_04_Day_04_Divide_and_Conquer_Pattern_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_04_FULL_PLAYBOOK.md)
+> 🧭 **Navigation:** [← Previous Day](Week_04_Day_04_Divide_and_Conquer_Pattern_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_04_FULL_PLAYBOOK.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -594,4 +594,4 @@ Master binary search on answers, and you've unlocked a fundamental optimization 
 **Interview-Ready:** Yes — covers pattern recognition, implementation, and production scenarios
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_04_Day_04_Divide_and_Conquer_Pattern_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_04_FULL_PLAYBOOK.md)
+> 🧭 **Navigation:** [← Previous Day](Week_04_Day_04_Divide_and_Conquer_Pattern_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_04_FULL_PLAYBOOK.md)

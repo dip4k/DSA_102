@@ -242,8 +242,8 @@ week_XX_*/
 |-- README.md                                             # Weekly mission, schedule & jump links
 |-- WEEK_XX_FULL_PLAYBOOK.md                             # Deep conceptual reference & edge cases
 |-- Week_XX_Visual_Concepts_Playbook_HYBRID.md           # Mermaid charts, failure modes & visual traces
-|-- Week_XX_Extended_CSharp_Complete_v13.md              # Production-grade C# (.NET 8/9) code
-|-- Week_XX_Extended_Python_Complete_v13.md              # Idiomatic Python 3.11+ reference implementations
+|-- Week_XX_Extended_CSharp_Complete.md              # Production-grade C# (.NET 8/9) code
+|-- Week_XX_Extended_Python_Complete.md              # Idiomatic Python 3.11+ reference implementations
 |-- Week_XX_Day_01_*_Instructional.md                    # Core daily instructional modules (Days 1-5/6)
 `-- support files/                                       # Canonical 5-file support suite
     |-- Week_XX_Daily_Progress_Checklist.md              # Daily learning checkpoints

@@ -1,6 +1,6 @@
 # 📘 WEEK 11 SUMMARY: KEY CONCEPTS & QUICK REFERENCE
 
-> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS.md)
 > 
 > 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
 
@@ -399,7 +399,7 @@ Use: LIS, coin change, knapsack
 - Week_11_Day_0X_Instructional.md (specific topic)
 
 **For implementation:**
-- Week_11_Extended_CSharp_Complete_v13.md (C# code)
+- Week_11_Extended_CSharp_Complete.md (C# code)
 
 **For practice:**
 - Week_11_Daily_Progress_Checklist.md (problem list)
@@ -413,4 +413,4 @@ Use: LIS, coin change, knapsack
 
 ---
 
-> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS.md)

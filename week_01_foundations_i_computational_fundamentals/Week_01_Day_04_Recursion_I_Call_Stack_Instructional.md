@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_01_Day_03_Space_Complexity_Memory_Usage_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_01_Day_05_Recursion_II_Memoization_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_01_Day_03_Space_Complexity_Memory_Usage_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_01_Day_05_Recursion_II_Memoization_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -722,4 +722,4 @@ The call stack is the foundation of how all programs execute. Master it, and rec
 **Batch Status:** ✅ COMPLETE — Ready for "Continue" signal or next file generation
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_01_Day_03_Space_Complexity_Memory_Usage_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_01_Day_05_Recursion_II_Memoization_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_01_Day_03_Space_Complexity_Memory_Usage_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_01_Day_05_Recursion_II_Memoization_Instructional.md)

@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_06_Day_02_Substring_Sliding_Window_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_06_Day_04_String_Transformations_Building_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_06_Day_02_Substring_Sliding_Window_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_06_Day_04_String_Transformations_Building_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -714,4 +714,4 @@ When you encounter a problem involving nesting, hierarchies, or "last-in-first-o
 ---
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_06_Day_02_Substring_Sliding_Window_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_06_Day_04_String_Transformations_Building_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_06_Day_02_Substring_Sliding_Window_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_06_Day_04_String_Transformations_Building_Instructional.md)

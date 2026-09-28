@@ -2,7 +2,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_19_Day_02_Mock_Trees_Graphs_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_19_Day_04_Mock_Mixed_Complex_Rounds_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_19_Day_02_Mock_Trees_Graphs_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_19_Day_04_Mock_Mixed_Complex_Rounds_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -169,4 +169,4 @@ def length_of_lis(nums: List[int]) -> int:
 | **Extreme Range** | High bound `10^9` | Zero 32-bit register overflow | Use of `left + (right - left) / 2` avoids wrap |
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_19_Day_02_Mock_Trees_Graphs_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_19_Day_04_Mock_Mixed_Complex_Rounds_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_19_Day_02_Mock_Trees_Graphs_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_19_Day_04_Mock_Mixed_Complex_Rounds_Instructional.md)

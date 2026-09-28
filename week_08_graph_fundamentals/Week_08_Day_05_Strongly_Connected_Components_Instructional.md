@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_08_Day_04_Connectivity_and_Bipartite_Graphs_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_08_FULL_PLAYBOOK.md)
+> 🧭 **Navigation:** [← Previous Day](Week_08_Day_04_Connectivity_and_Bipartite_Graphs_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_08_FULL_PLAYBOOK.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -1004,4 +1004,4 @@ SCCs are not an isolated trick; they are a fundamental lens for understanding an
 With this, your mental model of graphs now covers the full 6.006-style foundation: representations, basic traversals, topological structure, connectivity, and strongly connected components. You are ready to step into Week 9, where weights enter the picture and paths gain cost—shortest paths and minimum spanning trees build directly on the intuition you’ve developed here.
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_08_Day_04_Connectivity_and_Bipartite_Graphs_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_08_FULL_PLAYBOOK.md)
+> 🧭 **Navigation:** [← Previous Day](Week_08_Day_04_Connectivity_and_Bipartite_Graphs_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_08_FULL_PLAYBOOK.md)

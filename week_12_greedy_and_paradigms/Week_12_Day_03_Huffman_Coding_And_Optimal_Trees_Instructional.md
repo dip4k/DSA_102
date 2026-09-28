@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_12_Day_02_Activity_Selection_And_Interval_Problems_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_12_Day_04_Fractional_Knapsack_And_Scheduling_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_12_Day_02_Activity_Selection_And_Interval_Problems_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_12_Day_04_Fractional_Knapsack_And_Scheduling_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -830,4 +830,4 @@ In ML and data compression research, Huffman coding is often used as a simple en
 ---
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_12_Day_02_Activity_Selection_And_Interval_Problems_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_12_Day_04_Fractional_Knapsack_And_Scheduling_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_12_Day_02_Activity_Selection_And_Interval_Problems_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_12_Day_04_Fractional_Knapsack_And_Scheduling_Instructional.md)

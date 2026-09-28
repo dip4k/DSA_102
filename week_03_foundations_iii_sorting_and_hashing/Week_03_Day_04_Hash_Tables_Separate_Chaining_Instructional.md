@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_03_Day_03_Heaps_Heapify_Heap_Sort_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_03_Day_05_Hash_Tables_Open_Addressing_Rolling_Hash_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_03_Day_03_Heaps_Heapify_Heap_Sort_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_03_Day_05_Hash_Tables_Open_Addressing_Rolling_Hash_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -762,4 +762,4 @@ Master hash tables—their design, their applications, their trade-offs—and yo
 **Batch Status:** ✅ COMPLETE — Week 03 Day 04 Final
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_03_Day_03_Heaps_Heapify_Heap_Sort_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_03_Day_05_Hash_Tables_Open_Addressing_Rolling_Hash_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_03_Day_03_Heaps_Heapify_Heap_Sort_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_03_Day_05_Hash_Tables_Open_Addressing_Rolling_Hash_Instructional.md)

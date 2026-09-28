@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_09_Day_04_Minimum_Spanning_Trees_Kruskal_Prim_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_09_FULL_PLAYBOOK.md)
+> 🧭 **Navigation:** [← Previous Day](Week_09_Day_04_Minimum_Spanning_Trees_Kruskal_Prim_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_09_FULL_PLAYBOOK.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -1012,4 +1012,4 @@ This analogy extends to single-link clustering: DSU implicitly computes the clus
 ---
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_09_Day_04_Minimum_Spanning_Trees_Kruskal_Prim_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_09_FULL_PLAYBOOK.md)
+> 🧭 **Navigation:** [← Previous Day](Week_09_Day_04_Minimum_Spanning_Trees_Kruskal_Prim_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_09_FULL_PLAYBOOK.md)

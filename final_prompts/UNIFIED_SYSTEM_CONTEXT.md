@@ -8,9 +8,9 @@ Primary goal
 - Preserve the repository motto: narrative-first, mental models first, systems-grounded, interview-ready.
 
 Source precedence
-1. `COMPLETE_SYLLABUS_v13.md`
+1. `COMPLETE_SYLLABUS.md`
 2. `v13/*.md`
-3. `Readme.md` and `README_v13.md`
+3. `Readme.md` and `README.md`
 4. `COMPLETE_CONTENT_INDEX.md`
 5. Legacy compatibility references archived under `Old/v12_prompts_archive/`
 

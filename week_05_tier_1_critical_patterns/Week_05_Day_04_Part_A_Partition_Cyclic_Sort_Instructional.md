@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_05_Day_03_Merge_Operations_Interval_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_05_Day_04_Part_B_Kadane_Algorithm_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_05_Day_03_Merge_Operations_Interval_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_05_Day_04_Part_B_Kadane_Algorithm_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -573,4 +573,4 @@ By the end of Day 4 (after Kadane's), you'll have mastered 8 critical patterns c
 ---
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_05_Day_03_Merge_Operations_Interval_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_05_Day_04_Part_B_Kadane_Algorithm_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_05_Day_03_Merge_Operations_Interval_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_05_Day_04_Part_B_Kadane_Algorithm_Instructional.md)

@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_05_Day_01_Hash_Map_Hash_Set_Patterns_Instructional_EXPANDED.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_05_Day_03_Merge_Operations_Interval_Patterns_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_05_Day_01_Hash_Map_Hash_Set_Patterns_Instructional_EXPANDED.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_05_Day_03_Merge_Operations_Interval_Patterns_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -953,4 +953,4 @@ By mastering monotonic stacks on Day 2, you're building the intuition for a whol
 ---
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_05_Day_01_Hash_Map_Hash_Set_Patterns_Instructional_EXPANDED.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_05_Day_03_Merge_Operations_Interval_Patterns_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_05_Day_01_Hash_Map_Hash_Set_Patterns_Instructional_EXPANDED.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_05_Day_03_Merge_Operations_Interval_Patterns_Instructional.md)

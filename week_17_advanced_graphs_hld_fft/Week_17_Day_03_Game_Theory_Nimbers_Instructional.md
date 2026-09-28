@@ -2,7 +2,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_17_Day_02_Slope_Trick_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_17_Day_04_Combinatorics_And_Counting_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_17_Day_02_Slope_Trick_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_17_Day_04_Combinatorics_And_Counting_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -154,4 +154,4 @@ def can_first_player_win(pile_sizes: List[int], transition_rules: List[int]) -> 
 | **Extreme Range** | High bound `10^9` | Zero 32-bit register overflow | Use of `left + (right - left) / 2` avoids wrap |
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_17_Day_02_Slope_Trick_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_17_Day_04_Combinatorics_And_Counting_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_17_Day_02_Slope_Trick_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_17_Day_04_Combinatorics_And_Counting_Instructional.md)

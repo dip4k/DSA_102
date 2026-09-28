@@ -1,6 +1,6 @@
 # 📝 WEEK 13 SUMMARY — KEY CONCEPTS
 
-> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS.md)
 > 
 > 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
 
@@ -8,7 +8,7 @@
 
 **Phase:** D – Algorithm Paradigms  
 **Week Theme:** Backtracking & Branch & Bound  
-**Syllabus Source:** COMPLETE_SYLLABUS_v13.md  
+**Syllabus Source:** COMPLETE_SYLLABUS.md  
 **Tone:** Graduate Student Lecture Notes
 
 ---
@@ -710,4 +710,4 @@ By mastering Week 13, you should be able to:
 
 ---
 
-> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS.md)

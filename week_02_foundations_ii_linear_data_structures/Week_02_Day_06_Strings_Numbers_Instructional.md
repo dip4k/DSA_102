@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_02_Day_05_Binary_Search_Invariants_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_02_FULL_PLAYBOOK.md)
+> 🧭 **Navigation:** [← Previous Day](Week_02_Day_05_Binary_Search_Invariants_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_02_FULL_PLAYBOOK.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -1066,4 +1066,4 @@ You've mastered this chapter when you can:
 *Comprehensive, production-grade, interview-ready*
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_02_Day_05_Binary_Search_Invariants_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_02_FULL_PLAYBOOK.md)
+> 🧭 **Navigation:** [← Previous Day](Week_02_Day_05_Binary_Search_Invariants_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_02_FULL_PLAYBOOK.md)

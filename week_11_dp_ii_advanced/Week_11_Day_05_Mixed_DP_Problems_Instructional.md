@@ -4,7 +4,7 @@
 
 
 
-> 🧭 **Navigation:** [← Previous Day](Week_11_Day_04_State_Compression_And_Optimizations_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_11_FULL_PLAYBOOK.md)
+> 🧭 **Navigation:** [← Previous Day](Week_11_Day_04_State_Compression_And_Optimizations_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_11_FULL_PLAYBOOK.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
@@ -717,4 +717,4 @@ DP emerged from Bellman's principle of optimality (1950s). It's not new, but it'
 - Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_11_Day_04_State_Compression_And_Optimizations_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_11_FULL_PLAYBOOK.md)
+> 🧭 **Navigation:** [← Previous Day](Week_11_Day_04_State_Compression_And_Optimizations_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_11_FULL_PLAYBOOK.md)
