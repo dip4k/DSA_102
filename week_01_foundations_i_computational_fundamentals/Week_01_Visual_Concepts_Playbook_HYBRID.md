@@ -1,5 +1,11 @@
 # 📊 WEEK 01 VISUAL CONCEPTS PLAYBOOK (HYBRID)
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Visual diagrams are formatted as compact, responsive Mermaid charts and markdown tables that fit standard GitHub markdown views without excessive horizontal scrolling.*
+
+---
+
 **Week:** 1 | **Tier:** Foundations I – Computational Model, Asymptotics, Recursion, Peak Finding  
 **Theme:** RAM Model, Pointers, Memory Layout, Big-O Analysis, Recursion Patterns, 1D/2D Peak Finding  
 **Format:** Hybrid (Enhanced ASCII + Web Resource Links + Reference Tools)  
@@ -44,29 +50,16 @@
 
 ### Pattern Map: Memory Organization
 
-```
-MEMORY ABSTRACTION LAYERS
-├─ RAM Model (Abstract)
-│  ├─ Array of cells, each addressable
-│  ├─ O(1) random access assumption
-│  └─ Cost model for algorithms
-│
-├─ Process Address Space (Concrete)
-│  ├─ Code segment (read-only)
-│  ├─ Data segment (globals, statics)
-│  ├─ Heap (dynamic allocation)
-│  ├─ Stack (call frames)
-│  └─ Memory-mapped regions
-│
-├─ Virtual Memory (Systems)
-│  ├─ Logical vs physical address
-│  ├─ Pages and TLB
-│  └─ Page faults (expensive!)
-│
-└─ Hardware Caches (Performance)
-   ├─ L1, L2, L3 caches
-   ├─ Cache lines (64 bytes)
-   └─ Locality patterns
+```mermaid
+flowchart TD
+    subgraph MemoryLayers["Memory Abstraction Hierarchy"]
+        direction TB
+        RAM["RAM Model (Abstract: O(1) random cell access)"]
+        PAS["Process Address Space (Code, Data, Heap, Stack)"]
+        VM["Virtual Memory & Paging (TLB, Page Fault Protection)"]
+        Cache["Hardware Caches (L1/L2/L3, 64-byte Cache Lines)"]
+    end
+    RAM --> PAS --> VM --> Cache
 ```
 
 ---
@@ -77,50 +70,19 @@ MEMORY ABSTRACTION LAYERS
 
 #### Visual 1: Abstract RAM Model
 
-```
-CONCEPTUAL RAM: Array of Addressable Cells
-────────────────────────────────────────
 
-Address │ Value
-────────┼──────
-0       │ ┌───┐
-        │ │ 42│  ← Cell contents (byte, int, etc.)
-        │ └───┘
-        │
-1       │ ┌───┐
-        │ │ 78│
-        │ └───┘
-        │
-2       │ ┌───┐
-        │ │ 15│
-        │ └───┘
-...     │ ...
+| Address | Value |
+| :--- | :--- |
+| 0 | [] |
+|  | 42 |
+| 1 | [] |
+|  | 78 |
+| 2 | [] |
+|  | 15 |
+| ... | ... |
+| n-1 | [] |
+|  | 99 |
 
-n-1     │ ┌───┐
-        │ │ 99│
-        │ └───┘
-
-ASSUMPTION: Access any cell in O(1) time
-────────────────────────────────────────
-
-Access address 0: get value in 1 step ✓
-Access address 1,000,000: get value in 1 step ✓
-Access address 5: get value in 1 step ✓
-
-This is abstraction—hides real hardware complexity!
-
-WHY THIS WORKS FOR ALGORITHMS:
-├─ Most algorithms don't access random memory
-├─ Pattern: Sequential, nearby, or structured access
-├─ Cache hierarchy keeps hot data fast
-└─ Analysis based on RAM model still correct "on average"
-
-WHEN IT BREAKS (Systems Reality):
-├─ True random access: Cache miss cost ≈ 100× penalty
-├─ Deep recursion: Stack overflow crashes
-├─ Memory fragmentation: Allocation fails
-└─ But for algorithm design: RAM model is sufficient
-```
 
 ---
 
@@ -128,71 +90,26 @@ WHEN IT BREAKS (Systems Reality):
 
 #### Visual 1: Memory Layout During Execution
 
+```mermaid
+flowchart TD
+    subgraph AddressSpace["64-Bit Process Address Space (High to Low Addresses)"]
+        direction TB
+        K["Kernel Space (Protected OS Space) [0xFFFF...]"]
+        S["Stack (Function call frames, local variables — grows downward)"]
+        Gap["Unallocated Gap"]
+        H["Heap (malloc / new dynamic objects — grows upward)"]
+        D["Data Segment (Static & initialized global variables)"]
+        C["Code Segment (Compiled machine instructions, read-only) [0x0000...]"]
+    end
+    K --> S --> Gap --> H --> D --> C
 ```
-MODERN 64-BIT PROCESS ADDRESS SPACE:
-──────────────────────────────────────
 
-Higher Addresses (0xFFFF...)
-┌──────────────────────────────┐
-│  Kernel Space (OS)           │  ← Not directly accessible
-│  (Protected)                 │
-└──────────────────────────────┘
-
-┌──────────────────────────────┐
-│  STACK (Grows Downward)      │  ← Function call frames
-├──────────────────────────────┤
-│  - Function 1: (params,      │
-│    locals, return addr)      │
-│  - Function 2: (params,      │
-│    locals, return addr)      │
-│  ...                         │
-└──────────────────────────────┘
-
-         (Unallocated Gap)
-         Possible collision
-         causes segfault
-
-┌──────────────────────────────┐
-│  HEAP (Grows Upward)         │  ← Dynamic allocation
-├──────────────────────────────┤
-│  malloc(), new Object()      │
-│  Objects, arrays, lists      │
-└──────────────────────────────┘
-
-┌──────────────────────────────┐
-│  DATA SEGMENT                │  ← Globals, statics
-├──────────────────────────────┤
-│  Initialized globals         │
-│  Static variables            │
-└──────────────────────────────┘
-
-┌──────────────────────────────┐
-│  CODE SEGMENT (Read-Only)    │  ← Your program
-├──────────────────────────────┤
-│  Function code               │
-│  String literals             │
-└──────────────────────────────┘
-
-Lower Addresses (0x0000...)
-
-LIFETIME & SCOPE:
-────────────────
-
-Stack Variables (Automatic):
-  Scope: Function block
-  Lifetime: Function call duration
-  Cleanup: Automatic on return
-
-Heap Allocations (Manual in C++):
-  Scope: Until you free
-  Lifetime: Until you delete (or memory leak!)
-  Cleanup: Manual (or garbage collector)
-
-Static/Global:
-  Scope: Program lifetime
-  Lifetime: Program start to end
-  Cleanup: Program termination
-```
+| Memory Region | Allocation / Scope | Lifetime | Cleanup Mechanism |
+| :--- | :--- | :--- | :--- |
+| **Stack** | Automatic (function scope) | Active call frame duration | Immediate pop on return |
+| **Heap** | Dynamic (`malloc`, `new`) | Until freed or collected | Explicit free or GC cycle |
+| **Data Segment** | Static / Global scope | Whole program execution | Process termination |
+| **Code Segment** | Read-only compiled binary | Whole program execution | Process termination |
 
 ---
 
@@ -200,82 +117,14 @@ Static/Global:
 
 #### Visual 1: Pointers as Arrows
 
-```
-POINTER CONCEPT: Address in a Variable
-──────────────────────────────────────
 
-int x = 42;
-int* p = &x;
+| Stack Address | Variable | Value |
+| :--- | :--- | :--- |
+| 0x1000 | x | 42 |
+| 0x1008 | p | 0x1000  ← Pointer stores address! |
+|  | x = 42 |  |
+|  | at 0x1000 |  |
 
-MEMORY LAYOUT:
-
-Stack Address │ Variable │ Value
-──────────────┼──────────┼──────────
-0x1000        │ x        │ 42
-0x1008        │ p        │ 0x1000  ← Pointer stores address!
-
-DEREFERENCING (*p reads the value at address):
-
-*p = 42  (follow the arrow, get value)
-p = 0x1000  (the arrow itself)
-
-VISUALIZATION:
-
-┌─────────────────────────────┐
-│ Variable p                  │
-│ Type: int*                  │
-│ Value: 0x1000 (address)    │
-│         ↓                   │
-│         └──────────────────────┐
-│                                │
-│                                ▼
-│                           ┌──────────┐
-│                           │ x = 42   │
-│                           │ at 0x1000│
-│                           └──────────┘
-└─────────────────────────────┘
-
-POINTER ARITHMETIC:
-
-Array allocation on heap:
-  int* arr = new int[5];
-  arr = 0x5000 (base address)
-
-Access arr[0]: *(arr + 0) = *(0x5000)
-Access arr[1]: *(arr + 1) = *(0x5004)  (4 bytes later)
-Access arr[2]: *(arr + 2) = *(0x5008)
-
-Formula: address_of(arr[i]) = arr + i*sizeof(int)
-
-COMMON PITFALLS:
-────────────────
-
-❌ Uninitialized Pointer:
-   int* p;  // What's in p? Garbage!
-   *p = 5;  // Crash—writing to garbage address!
-
-✓ Initialized Pointer:
-   int x = 10;
-   int* p = &x;  // p now points to x
-   *p = 20;      // Safe—modify x through p
-
-❌ Dangling Pointer:
-   int* p = new int(10);
-   delete p;
-   *p = 20;  // Crash—p points to freed memory!
-
-✓ Check Before Use:
-   if (p != nullptr) *p = 20;
-
-❌ Double Free:
-   int* p = new int(10);
-   delete p;
-   delete p;  // Crash—memory already freed!
-
-✓ Set to null after delete:
-   delete p;
-   p = nullptr;  // Prevent accidental reuse
-```
 
 ---
 
@@ -283,18 +132,20 @@ COMMON PITFALLS:
 
 ### Pattern Map: Complexity Landscape
 
-```
-COMPLEXITY HIERARCHY (Slowest to Fastest)
-──────────────────────────────────────────
-
-O(n!)    Factorial - Permutations
-O(2^n)   Exponential - Naive recursion
-O(n^3)   Cubic - Triple nested loops
-O(n^2)   Quadratic - Nested loops
-O(n log n) Linearithmic - Merge sort, divide-conquer
-O(n)     Linear - Single loop
-O(log n) Logarithmic - Binary search
-O(1)     Constant - Direct access
+```mermaid
+flowchart TD
+    subgraph Hierarchy["Asymptotic Complexity Hierarchy (Slowest to Fastest)"]
+        direction TB
+        F["O(N!) — Factorial (Permutations)"]
+        E["O(2^N) — Exponential (Subsets, Exhaustive Search)"]
+        C["O(N^3) — Cubic (Matrix Multiplication)"]
+        Q["O(N^2) — Quadratic (Bubble Sort, Nested Loops)"]
+        L["O(N log N) — Linearithmic (Merge Sort, Quick Sort Avg)"]
+        N["O(N) — Linear (Single Pass Scan)"]
+        LOG["O(log N) — Logarithmic (Binary Search)"]
+        O1["O(1) — Constant Time (Array Index, Hash Lookup)"]
+    end
+    F --> E --> C --> Q --> L --> N --> LOG --> O1
 ```
 
 ---
@@ -305,49 +156,14 @@ O(1)     Constant - Direct access
 
 #### Visual 1: Function Growth Comparison
 
-```
-COMPARING COMPLEXITY CLASSES:
-─────────────────────────────
 
-n      │ O(1)  │ O(log n) │ O(n)   │ O(n log n) │ O(n²)   │ O(2^n)
-───────┼───────┼──────────┼────────┼────────────┼─────────┼────────
-10     │ 1     │ 3        │ 10     │ 30         │ 100     │ 1,024
-100    │ 1     │ 7        │ 100    │ 700        │ 10,000  │ 1.3e30
-1,000  │ 1     │ 10       │ 1K     │ 10K        │ 1M      │ overflow
-10,000 │ 1     │ 13       │ 10K    │ 130K       │ 100M    │ overflow
+| n | O(1) | O(log n) | O(n) | O(n log n) | O(n²) | O(2^n) |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| 10 | 1 | 3 | 10 | 30 | 100 | 1,024 |
+| 100 | 1 | 7 | 100 | 700 | 10,000 | 1.3e30 |
+| 1,000 | 1 | 10 | 1K | 10K | 1M | overflow |
+| 10,000 | 1 | 13 | 10K | 130K | 100M | overflow |
 
-GROWTH VISUALIZATION:
-
-Time
-│
-│                                      O(2^n)
-│                                    ╱
-│                                 ╱
-│                     O(n²)    ╱
-│                    ╱      ╱
-│              O(n log n)
-│            ╱
-│         O(n)
-│       ╱
-│    O(log n)
-│ ╱
-│ O(1) ─────────────────────────────────
-└──────────────────────────────────────── input size n
-
-KEY LESSONS:
-────────────
-
-❌ O(2^n) becomes impossible around n=40 (1e12 ops)
-✓ O(n^2) works up to n≈10,000
-
-❌ O(n²) = 100M ops for n=10,000 (very slow)
-✓ O(n log n) = 130K ops for n=10,000 (fast!)
-
-❌ Wrong algorithm: 1 second wait time becomes 10K seconds
-✓ Right algorithm: Still 1 second
-
-The right algorithm choice matters enormously!
-```
 
 ---
 
@@ -355,67 +171,21 @@ The right algorithm choice matters enormously!
 
 #### Visual 1: Formal Notations Explained
 
+
+```mermaid
+flowchart TD
+    R["BIG-O (Upper Bound)"]
+    R --> N1["Worst case: element at end or not found = n comparisons"]
+    R --> N2["T(n) ≤ 1·n for all n ≥ 1 ✓"]
+    R --> N3["All cases: splits + merges = n log n operations"]
+    R --> N4["T(n) ≤ 1·(n log n) + small overhead ✓"]
+    R --> N5["Best case: Still need log n splits = n log n work"]
+    R --> N6["T(n) ≥ 1·(n log n) for all n ✓"]
+    R --> N7["Best case: n log n"]
+    R --> N8["Worst case: n log n"]
+    R --> N9["Always n log n (tight!) ✓"]
 ```
-BIG-O (Upper Bound):
-────────────────────
 
-T(n) is O(f(n)) if:
-  ∃ constants c > 0, n₀ such that
-  T(n) ≤ c·f(n) for all n ≥ n₀
-
-Intuition: "At most this much" (worst-case)
-
-Example: Linear search is O(n)
-  ├─ Worst case: element at end or not found = n comparisons
-  └─ T(n) ≤ 1·n for all n ≥ 1 ✓
-
-Example: Merge sort is O(n log n)
-  ├─ All cases: splits + merges = n log n operations
-  └─ T(n) ≤ 1·(n log n) + small overhead ✓
-
-
-BIG-Ω (Lower Bound):
-────────────────────
-
-T(n) is Ω(f(n)) if:
-  ∃ constants c > 0, n₀ such that
-  T(n) ≥ c·f(n) for all n ≥ n₀
-
-Intuition: "At least this much" (best-case)
-
-Example: Any comparison-based sort is Ω(n log n)
-  ├─ Best case: Still need log n splits = n log n work
-  └─ T(n) ≥ 1·(n log n) for all n ✓
-
-
-BIG-Θ (Tight Bound):
-────────────────────
-
-T(n) is Θ(f(n)) if:
-  T(n) is both O(f(n)) AND Ω(f(n))
-
-Intuition: "Exactly this growth" (tight bound)
-
-Example: Merge sort is Θ(n log n)
-  ├─ Best case: n log n
-  ├─ Worst case: n log n
-  └─ Always n log n (tight!) ✓
-
-NOTATION GUIDE:
-───────────────
-
-Use O(·) for:          → Algorithm analysis
-  "My algorithm runs in O(n) time"
-  (Worst-case guarantee)
-
-Use Θ(·) for:          → Tight analysis
-  "Merge sort is Θ(n log n)"
-  (Exact growth, not just bound)
-
-Use Ω(·) for:          → Lower bounds
-  "Any comparison sort needs Ω(n log n)"
-  (Theoretical lower bound)
-```
 
 ---
 
@@ -423,28 +193,28 @@ Use Ω(·) for:          → Lower bounds
 
 ### Pattern Map: Where Memory Lives
 
+
+```mermaid
+flowchart TD
+    R["SPACE TYPES & LIFETIME"]
+    R --> N1["Stack Space"]
+    N1 --> N2["Function parameters"]
+    N1 --> N3["Local variables"]
+    N1 --> N4["Automatic cleanup on return"]
+    N1 --> N5["Limited size (typically 1-8 MB)"]
+    R --> N6["Heap Space"]
+    N6 --> N7["Dynamic allocation (malloc, new)"]
+    N6 --> N8["Manual deallocation required"]
+    N6 --> N9["Larger available space"]
+    N6 --> N10["Can cause memory leaks"]
+    R --> N11["Total Space"]
+    N11 --> N12["Input size + auxiliary space"]
+    N11 --> N13["Both matter for complexity"]
+    R --> N14["Input vs Auxiliary"]
+    N14 --> N15["Input: the data you're given"]
+    N14 --> N16["Auxiliary: extra space your algorithm allocates"]
 ```
-SPACE TYPES & LIFETIME
-├─ Stack Space
-│  ├─ Function parameters
-│  ├─ Local variables
-│  ├─ Automatic cleanup on return
-│  └─ Limited size (typically 1-8 MB)
-│
-├─ Heap Space
-│  ├─ Dynamic allocation (malloc, new)
-│  ├─ Manual deallocation required
-│  ├─ Larger available space
-│  └─ Can cause memory leaks
-│
-├─ Total Space
-│  ├─ Input size + auxiliary space
-│  └─ Both matter for complexity
-│
-└─ Input vs Auxiliary
-   ├─ Input: the data you're given
-   └─ Auxiliary: extra space your algorithm allocates
-```
+
 
 ---
 
@@ -452,70 +222,13 @@ SPACE TYPES & LIFETIME
 
 #### Visual 1: Nested Function Calls
 
-```
-CALL STACK DURING EXECUTION:
-────────────────────────────
 
-void factorial(int n) {
-  int result = n * factorial(n-1);
-  return result;
-}
+| factorial(3) | ← Current frame |
+| :--- | :--- |
+| factorial(2) | ← Called from 3 |
+| factorial(1) | ← Called from 2 |
+| factorial(0) | ← Called from 1 |
 
-factorial(3) called:
-
-┌─────────────────────┐
-│ STACK               │
-├─────────────────────┤
-│ factorial(3)        │  ← Current frame
-│ ├─ n = 3            │
-│ ├─ result = ?       │
-│ └─ return addr      │
-│                     │
-│ factorial(2)        │  ← Called from 3
-│ ├─ n = 2            │
-│ ├─ result = ?       │
-│ └─ return addr      │
-│                     │
-│ factorial(1)        │  ← Called from 2
-│ ├─ n = 1            │
-│ ├─ result = ?       │
-│ └─ return addr      │
-│                     │
-│ factorial(0)        │  ← Called from 1
-│ ├─ n = 0            │
-│ ├─ result = 1       │
-│ └─ return addr      │
-│                     │
-│ [Base case reached] │
-└─────────────────────┘
-
-UNWINDING (Return phase):
-
-factorial(0): return 1
-  ↓ (stack frame pops)
-
-factorial(1): return 1*1 = 1
-  ↓ (stack frame pops)
-
-factorial(2): return 2*1 = 2
-  ↓ (stack frame pops)
-
-factorial(3): return 3*2 = 6
-  ↓ (stack frame pops)
-
-RESULT: 6
-
-STACK DEPTH:
-Space used ∝ maximum recursion depth
-For factorial(n): depth = n frames
-Space complexity: O(n)
-
-DEEP RECURSION PROBLEM:
-Each frame ≈ 50-100 bytes
-Stack limit ≈ 1-8 MB
-Max recursion depth ≈ 10,000-100,000
-Exceeding this: Stack overflow! (crash)
-```
 
 ---
 
@@ -523,86 +236,11 @@ Exceeding this: Stack overflow! (crash)
 
 #### Visual 1: Memory Allocation Strategies
 
-```
-STACK ALLOCATION (Automatic):
-──────────────────────────────
 
-int[] local_array = new int[100];
+|  | [0,0,0,...,0] |
+| :--- | :--- |
+|  |  |
 
-┌─────────────────────┐
-│ STACK               │
-├─────────────────────┤
-│ local_array         │
-│ ├─ address: 0x1000  │
-│ ├─ size: 100        │
-│ ├─ actual data:     │
-│ │  [0,0,0,...,0]   │
-│ └─ cleanup: on ret  │
-└─────────────────────┘
-
-✓ Fast allocation (just move pointer)
-✓ Automatic cleanup (no leaks)
-✓ Cache-friendly (contiguous)
-✓ Very fast access
-
-❌ Limited size (stack is small)
-❌ Can't persist after function returns
-❌ Size must be known at compile time (in C)
-
-
-HEAP ALLOCATION (Manual):
-─────────────────────────
-
-int* heap_array = new int[100];
-
-┌─────────────────┐
-│ STACK           │
-├─────────────────┤
-│ heap_array      │
-│ └─ 0x5000 ──────────┐
-│                 │    │
-└─────────────────┘    │
-                       ▼
-                ┌──────────────────┐
-                │ HEAP             │
-                ├──────────────────┤
-                │ at 0x5000:       │
-                │ [0,0,0,...,0]    │
-                │                  │
-                │ cleanup: manual  │
-                │ or memory leak   │
-                └──────────────────┘
-
-✓ Large size available
-✓ Persists after function returns
-✓ Dynamic size possible
-✓ Can return pointers/references
-
-❌ Slower allocation (fragmentation)
-❌ Manual deallocation (risk of leaks)
-❌ Pointer indirection (cache miss)
-❌ Requires delete (or garbage collection)
-
-
-TIME-SPACE TRADE-OFF:
-────────────────────
-
-Store results (more space):
-  ├─ Memoization: cache expensive computations
-  ├─ Precomputation: build lookup tables
-  └─ Trade: Memory cost vs time savings
-
-Recompute (less space):
-  ├─ Recursion without memoization
-  ├─ Streaming algorithms
-  └─ Trade: Time cost vs memory savings
-
-Example (Fibonacci):
-  Without memoization: O(2^n) time, O(n) space (stack)
-  With memoization: O(n) time, O(n) space (memo table)
-  ├─ Use when time is critical
-  └─ Worth the extra memory
-```
 
 ---
 
@@ -610,31 +248,31 @@ Example (Fibonacci):
 
 ### Pattern Map: Recursion Structures
 
+
+```mermaid
+flowchart TD
+    R["RECURSION PATTERNS"]
+    R --> N1["Linear Recursion"]
+    N1 --> N2["Single recursive call per function"]
+    N1 --> N3["Chain-like call structure"]
+    N1 --> N4["Examples: factorial, sum, linear search"]
+    N1 --> N5["Depth: O(n)"]
+    R --> N6["Tree Recursion"]
+    N6 --> N7["Multiple recursive calls per function"]
+    N6 --> N8["Tree-like branching structure"]
+    N6 --> N9["Examples: Fibonacci, tree traversal"]
+    N6 --> N10["Depth: O(log n) to O(n)"]
+    R --> N11["Divide-and-Conquer"]
+    N11 --> N12["Splits problem, solves parts, combines"]
+    N11 --> N13["Balanced or unbalanced splits"]
+    N11 --> N14["Examples: merge sort, binary search"]
+    N11 --> N15["Depth: O(log n)"]
+    R --> N16["Mutual/Indirect Recursion"]
+    N16 --> N17["Function A calls B, B calls A"]
+    N16 --> N18["Careful about infinite loops"]
+    N16 --> N19["Rare but useful for certain problems"]
 ```
-RECURSION PATTERNS
-├─ Linear Recursion
-│  ├─ Single recursive call per function
-│  ├─ Chain-like call structure
-│  ├─ Examples: factorial, sum, linear search
-│  └─ Depth: O(n)
-│
-├─ Tree Recursion
-│  ├─ Multiple recursive calls per function
-│  ├─ Tree-like branching structure
-│  ├─ Examples: Fibonacci, tree traversal
-│  └─ Depth: O(log n) to O(n)
-│
-├─ Divide-and-Conquer
-│  ├─ Splits problem, solves parts, combines
-│  ├─ Balanced or unbalanced splits
-│  ├─ Examples: merge sort, binary search
-│  └─ Depth: O(log n)
-│
-└─ Mutual/Indirect Recursion
-   ├─ Function A calls B, B calls A
-   ├─ Careful about infinite loops
-   └─ Rare but useful for certain problems
-```
+
 
 ---
 
@@ -644,81 +282,13 @@ RECURSION PATTERNS
 
 #### Visual 1: Factorial vs Fibonacci Trees
 
-```
-FACTORIAL (Linear Recursion):
-─────────────────────────────
 
-factorial(4)
-│
-└─ factorial(3)
-   │
-   └─ factorial(2)
-      │
-      └─ factorial(1)
-         │
-         └─ factorial(0)  → BASE CASE: return 1
+|  | +- fib(1) → 1 |
+| :--- | :--- |
+|  | +- fib(0) → 0 |
+|  | +- fib(1) → 1 ✓ cache |
+|  | +- fib(0) → 0 ✓ cache |
 
-Depth: 4
-Nodes: 4
-Time: O(n)
-Space: O(n)
-
-EXECUTION TRACE:
-factorial(4) calls factorial(3)
-  factorial(3) calls factorial(2)
-    factorial(2) calls factorial(1)
-      factorial(1) calls factorial(0)
-        factorial(0) returns 1 ← Base case!
-      factorial(1) returns 1*1 = 1
-    factorial(2) returns 2*1 = 2
-  factorial(3) returns 3*2 = 6
-factorial(4) returns 4*6 = 24
-
-
-FIBONACCI (Tree Recursion):
-───────────────────────────
-
-fib(4)
-├─ fib(3)
-│  ├─ fib(2)
-│  │  ├─ fib(1) → 1
-│  │  └─ fib(0) → 0
-│  └─ fib(1) → 1
-└─ fib(2)
-   ├─ fib(1) → 1
-   └─ fib(0) → 0
-
-Depth: 4
-Nodes: 9
-Time: O(2^n) ✗ EXPONENTIAL!
-Space: O(n) for call stack
-
-LOOK AT THE WASTE:
-fib(2) computed 2 times
-fib(1) computed 3 times
-fib(0) computed 2 times
-
-As n grows: Exponential explosion!
-
-With Memoization:
-─────────────────
-
-memo = {} (cache results)
-
-fib(4)
-├─ fib(3)
-│  ├─ fib(2)
-│  │  ├─ fib(1) → 1 ✓ cache
-│  │  └─ fib(0) → 0 ✓ cache
-│  └─ fib(1) → retrieve from cache! O(1)
-└─ fib(2) → retrieve from cache! O(1)
-
-Each fib(k) computed once: O(n) total
-Time: O(n) ✓ OPTIMAL!
-Space: O(n) for cache + call stack
-
-Speedup: O(2^n) → O(n) with same structure!
-```
 
 ---
 
@@ -728,7 +298,7 @@ Speedup: O(2^n) → O(n) with same structure!
 
 ```
 ❌ WRONG: No base case
-───────────────────
+-------------------
 
 def fact(n):
   return n * fact(n-1)  # What stops recursion?
@@ -738,7 +308,7 @@ Calls: fact(5) → fact(4) → fact(3) → ...
   → Stack overflow after 10,000+ calls
 
 ✓ CORRECT: Clear base case
-─────────────────────────
+-------------------------
 
 def fact(n):
   if n <= 1:           # Base case!
@@ -750,7 +320,7 @@ Calls: fact(5) → fact(4) → fact(3) → fact(2)
 
 
 ❌ WRONG: Base case never reached
-─────────────────────────────────
+---------------------------------
 
 def count(n):
   if n == 0:           # Base case
@@ -762,7 +332,7 @@ count(2.5) → count(1.5) → count(0.5)
   → count(-0.5) → count(-1.5) INFINITE!
 
 ✓ CORRECT: Ensure progress toward base case
-─────────────────────────────────────────
+-----------------------------------------
 
 def count(n):
   if n <= 0:           # Clearer base condition
@@ -777,7 +347,7 @@ count(2.5) → count(1.5) → count(0.5)
 
 ```
 ❌ WRONG: Naive Fibonacci
-──────────────────────
+----------------------
 
 def fib(n):
   if n <= 1:
@@ -798,7 +368,7 @@ fib(30): 1,346,269 calls! (0.5 seconds)
 fib(40): 2,654,435,387 calls! (1 hour+)
 
 ✓ CORRECT: Memoization
-──────────────────────
+----------------------
 
 memo = {}
 
@@ -825,23 +395,24 @@ Order of magnitude improvement!
 
 ### Pattern Map: Problem-Solving Approach
 
+
+```mermaid
+flowchart TD
+    R["PEAK FINDING STORY"]
+    R --> N1["1D Peak Finding"]
+    N1 --> N2["Brute force: O(n)"]
+    N1 --> N3["Divide-conquer: O(log n)"]
+    N1 --> N4["Key insight: Exploit monotonicity"]
+    R --> N5["2D Peak Finding"]
+    N5 --> N6["Naive: O(n²)"]
+    N5 --> N7["Smart: O(n log m)"]
+    N5 --> N8["Strategy: Mid-column approach"]
+    R --> N9["Meta-Lesson"]
+    N9 --> N10["Better-than-brute-force thinking"]
+    N9 --> N11["Use structure of problem"]
+    N9 --> N12["Design algorithm top-down"]
 ```
-PEAK FINDING STORY
-├─ 1D Peak Finding
-│  ├─ Brute force: O(n)
-│  ├─ Divide-conquer: O(log n)
-│  └─ Key insight: Exploit monotonicity
-│
-├─ 2D Peak Finding
-│  ├─ Naive: O(n²)
-│  ├─ Smart: O(n log m)
-│  └─ Strategy: Mid-column approach
-│
-└─ Meta-Lesson
-   ├─ Better-than-brute-force thinking
-   ├─ Use structure of problem
-   └─ Design algorithm top-down
-```
+
 
 ---
 
@@ -853,7 +424,7 @@ PEAK FINDING STORY
 
 ```
 1D PEAK FINDING PROBLEM:
-────────────────────────
+------------------------
 
 Array: [1, 3, 5, 4, 7, 9, 8, 6, 2]
 Index: [0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -863,7 +434,7 @@ Peak: An element where left ≤ element ≥ right
   Element 9 (index 5): 7 ≤ 9 ≥ 8 ✓ PEAK!
 
 NAIVE SOLUTION: O(n)
-──────────────────
+------------------
 
 Peak = first element where left ≤ element ≥ right
 
@@ -875,7 +446,7 @@ Worst case: scan entire array
 
 
 SMART SOLUTION: Divide-Conquer
-──────────────────────────────
+------------------------------
 
 Insight: Use the structure!
 
@@ -895,7 +466,7 @@ Algorithm:
 
 
 TRACE:
-──────
+------
 
 Array: [1, 3, 5, 4, 7, 9, 8, 6, 2]
 
@@ -929,7 +500,7 @@ Is 9 a peak? 7 ≤ 9 ≥ 8 ✓ PEAK!
 RETURN 5
 
 TIME ANALYSIS:
-──────────────
+--------------
 
 Search space halves each iteration
 Like binary search!
@@ -948,7 +519,7 @@ MUCH BETTER: O(log n) vs O(n)!
 
 ```
 2D PEAK FINDING PROBLEM:
-────────────────────────
+------------------------
 
 Matrix:
    0   1   2   3
@@ -959,7 +530,7 @@ Matrix:
 Peak: element where all 4 neighbors are ≤
 
 NAIVE: O(n²)
-───────────
+-----------
 
 Check every cell:
 for each row:
@@ -971,7 +542,7 @@ Worst case: check all n² cells
 
 
 SMART: O(n log m) (n=rows, m=cols)
-─────────────────
+-----------------
 
 Strategy: Mid-column approach
 
@@ -984,7 +555,7 @@ Strategy: Mid-column approach
 6. Recurse on chosen half
 
 TRACE:
-──────
+------
 
 Matrix (3×4):
    0   1   2   3
@@ -1013,7 +584,7 @@ Check up/down:
 12 is a PEAK! (or verify with matrix edge)
 
 TIME ANALYSIS:
-──────────────
+--------------
 
 Each iteration:
   Find column max: O(n)
@@ -1033,110 +604,67 @@ MUCH BETTER: O(n log m) vs O(n²)!
 
 #### Visual 1: Better-Than-Brute-Force Thinking
 
+
+```mermaid
+flowchart TD
+    R["META-LESSONS FROM PEAK FINDING"]
+    R --> N1["What property can we exploit?"]
+    R --> N2["In 1D: Monotonicity (middle element leads us)"]
+    R --> N3["In 2D: Column structure (we can narrow down)"]
+    R --> N4["Key: Not all problems have obvious structure!"]
+    R --> N5["If mid > right: peak exists to left or is mid"]
+    R --> N6["If mid < right: peak exists to right"]
+    R --> N7["Halve search space each step"]
+    R --> N8["Algorithm: 'Compare and move'"]
+    R --> N9["Analysis: 'Halving → log n'"]
+    R --> N10["Always verify correctness!"]
+    R --> N11["Binary search: Works on ANY structure"]
+    R --> N12["Divide-conquer: Works when problem"]
+    R --> N13["Peak finding is just structured binary search!"]
+    R --> N14["State"]
 ```
-META-LESSONS FROM PEAK FINDING:
-───────────────────────────────
 
-1. IDENTIFY STRUCTURE
-   ├─ What property can we exploit?
-   ├─ In 1D: Monotonicity (middle element leads us)
-   ├─ In 2D: Column structure (we can narrow down)
-   └─ Key: Not all problems have obvious structure!
-
-2. USE STRUCTURE TO ELIMINATE SEARCH SPACE
-   ├─ If mid > right: peak exists to left or is mid
-   │  → Don't need to search right!
-   ├─ If mid < right: peak exists to right
-   │  → Don't need to search left!
-   └─ Halve search space each step
-
-3. DESIGN ALGORITHM, THEN ANALYZE
-   ├─ Algorithm: "Compare and move"
-   ├─ Analysis: "Halving → log n"
-   └─ Always verify correctness!
-
-4. RECOGNIZE PATTERNS FOR FUTURE
-   ├─ Binary search: Works on ANY structure
-   │  where you can ask "left or right?"
-   ├─ Divide-conquer: Works when problem
-   │  has optimal substructure
-   └─ Peak finding is just structured binary search!
-
-RECURRENCE INSIGHT:
-──────────────────
-
-Any algorithm with T(n) = T(n/2) + O(1):
-  T(n) = T(n/2) + O(1)
-       = T(n/4) + O(1) + O(1)
-       = T(n/8) + O(1) + O(1) + O(1)
-       ...
-       = O(1) + O(1) + O(1) ... [log n times]
-       = O(log n)
-
-This is the logarithmic recurrence!
-Merge sort: T(n) = 2T(n/2) + O(n)
-  → O(n log n) (more work per level)
-
-BETTER-THAN-BRUTE-FORCE:
-────────────────────────
-
-Problem: Find peak in array
-Brute Force: O(n) - check every element
-Smart: O(log n) - use structure
-
-Speedup: For n=1M: 1,000,000 → 20 steps!
-
-This is the power of algorithmic thinking:
-┌─────────────────────────────────────┐
-│ Not every problem requires checking │
-│ every piece of data. Use the        │
-│ problem structure to eliminate      │
-│ search space intelligently.         │
-└─────────────────────────────────────┘
-```
 
 ---
 
 ## 🎯 WEEK 01 VISUAL SUMMARY TABLE
 
-```
-┌────────────────────────────────────────────────────┐
-│ DAY │ TOPIC         │ Complexity    │ Key Concept │
-├────────────────────────────────────────────────────┤
-│ 1   │ RAM Model     │ O(1) abstract │ Addressable │
-│     │ Pointers      │ address model │ cells       │
-│     │               │               │             │
-│ 2   │ Big-O Analy.  │ Growth rate   │ Function    │
-│     │ Asymptotics   │ classification│ comparison  │
-│     │               │               │             │
-│ 3   │ Space Complex.│ Stack/Heap    │ Memory      │
-│     │ Call Stack    │ lifetimes     │ management  │
-│     │               │               │             │
-│ 4   │ Recursion I   │ O(n) or more  │ Base case   │
-│     │ Patterns      │ depending     │ required    │
-│     │               │               │             │
-│ 5   │ Peak Finding  │ O(log n) 1D   │ Exploit     │
-│     │ Design Story  │ O(n log m) 2D │ structure   │
-│     │               │               │             │
-└────────────────────────────────────────────────────┘
-```
+
+| DAY | TOPIC | Complexity | Key Concept |
+| :--- | :--- | :--- | :--- |
+| 1 | RAM Model | O(1) abstract | Addressable |
+|  | Pointers | address model | cells |
+|  |  |  |  |
+| 2 | Big-O Analy. | Growth rate | Function |
+|  | Asymptotics | classification | comparison |
+|  |  |  |  |
+| 3 | Space Complex. | Stack/Heap | Memory |
+|  | Call Stack | lifetimes | management |
+|  |  |  |  |
+| 4 | Recursion I | O(n) or more | Base case |
+|  | Patterns | depending | required |
+|  |  |  |  |
+| 5 | Peak Finding | O(log n) 1D | Exploit |
+|  | Design Story | O(n log m) 2D | structure |
+|  |  |  |  |
+
 
 ---
 
 ## 📋 COMPLEXITY REFERENCE TABLE
 
-```
-Structure/Algo │ Time      │ Space  │ Use When
-───────────────┼───────────┼────────┼─────────────────
-Linear Search  │ O(n)      │ O(1)   │ Unsorted data
-Binary Search  │ O(log n)  │ O(1)   │ Sorted array
-Factorial      │ O(n)      │ O(n)   │ Recursive def.
-Fibonacci(memo)│ O(n)      │ O(n)   │ DP formulation
-1D Peak Find   │ O(log n)  │ O(1)   │ Exploit struct.
-2D Peak Find   │ O(n log m)│ O(1)   │ Column approach
-Recursion Tree │ O(2^n)    │ O(n)   │ Exponential space
-With Memoiz.   │ O(n)      │ O(n)   │ Overlapping subs.
-```
+
+| Structure/Algo | Time | Space | Use When |
+| :--- | :--- | :--- | :--- |
+| Linear Search | O(n) | O(1) | Unsorted data |
+| Binary Search | O(log n) | O(1) | Sorted array |
+| Factorial | O(n) | O(n) | Recursive def. |
+| Fibonacci(memo) | O(n) | O(n) | DP formulation |
+| 1D Peak Find | O(log n) | O(1) | Exploit struct. |
+| 2D Peak Find | O(n log m) | O(1) | Column approach |
+| Recursion Tree | O(2^n) | O(n) | Exponential space |
+| With Memoiz. | O(n) | O(n) | Overlapping subs. |
+
 
 ---
 

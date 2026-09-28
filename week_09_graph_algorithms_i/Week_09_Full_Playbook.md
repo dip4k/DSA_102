@@ -1,5 +1,11 @@
 # WEEK 09 FULL PLAYBOOK
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Comprehensive Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
+
+---
+
 ## Shortest Paths, MST, and Union-Find
 
 Week 09 is the bridge from graph traversal to graph optimization.
@@ -86,3 +92,7 @@ Core outcomes:
 - Can I write the Union-Find invariants clearly?
 - Can I justify which graph representation I picked?
 - Can I articulate time and space complexity for all five core topics?
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

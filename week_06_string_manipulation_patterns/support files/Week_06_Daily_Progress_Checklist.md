@@ -1,5 +1,11 @@
 # ✅ Week 06 Daily Progress Checklist: Daily Actions & Reflection
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Audience:** Students working through Week 06 day-by-day  
 **Purpose:** Track daily progress, consolidate learning, maintain momentum  
 **How to Use:** Check off each item, reflect on learnings, adjust pace as needed
@@ -387,3 +393,6 @@ By end of week, you should feel:
 **Interview Readiness:** Ready after completion  
 **Mastery Readiness:** Ready after solving Stage 1 + Stage 2 problems
 
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

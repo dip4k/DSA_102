@@ -1,12 +1,12 @@
 # 📘 Week 04 Day 05: Binary Search as a Pattern — Optimization Through Feasibility Testing
 
-**Metadata:**
-- **Week:** 4 | **Day:** 5
-- **Category:** Core Problem-Solving Patterns
-- **Difficulty:** 🟡 Intermediate-Advanced (builds on binary search basics from Week 2, divide & conquer from Day 4)
-- **Real-World Impact:** Binary search as an optimization pattern solves constraint-based allocation problems at scale across infrastructure, resource planning, and logistics. Kubernetes uses it for resource scheduling (what's the minimum CPU needed to run all pods?); ride-sharing platforms use it for driver allocation (what's the minimum wait time achievable with k drivers?); manufacturing uses it for production scheduling (what's the maximum product output possible with time constraint T?); data centers use it for load balancing (what's the minimum server count needed?).
-- **Prerequisites:** Week 2 (Binary search on sorted arrays), Week 4 Day 4 (Divide & conquer foundations), recursion fundamentals
-- **MIT Alignment:** Search on answer space from MIT 6.006; optimization via feasibility from algorithm design; binary search as a meta-pattern
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_04_Day_04_Divide_and_Conquer_Pattern_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_04_FULL_PLAYBOOK.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -66,14 +66,14 @@ Imagine a graph where the x-axis is the "answer candidate" and the y-axis is "fe
 Answer Space: [0, 100]
 
 Feasibility:
-NO  │
-    │  ╭─────────────────────
-    │  │
-    │  │
-    │  │
-    │  │
-YES │──┘
-    └─────────────────────────
+NO  |
+    |  ╭---------------------
+    |  |
+    |  |
+    |  |
+    |  |
+YES |--+
+    +-------------------------
       0    10   20   30   40 (boundary) 50 ... 100
 
 Boundary at answer = 40:
@@ -592,3 +592,6 @@ Master binary search on answers, and you've unlocked a fundamental optimization 
 **Inline Visuals:** 8 (answer space diagrams, trace tables, comparison matrices)  
 **Real-World Stories:** 3 (Kubernetes scheduling, Ride-sharing, Supply chain)  
 **Interview-Ready:** Yes — covers pattern recognition, implementation, and production scenarios
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_04_Day_04_Divide_and_Conquer_Pattern_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_04_FULL_PLAYBOOK.md)

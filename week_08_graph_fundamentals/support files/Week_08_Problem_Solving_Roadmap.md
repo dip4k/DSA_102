@@ -1,5 +1,11 @@
 # 🧗 Week 08 Problem Solving Roadmap – Graph Fundamentals
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 Filename: `Week_08_Problem_Solving_Roadmap.md`  
 Week: 08 – Graph Fundamentals: Representations, BFS, DFS & Topological Sort
 
@@ -351,3 +357,7 @@ By the end of Week 08, try to achieve:
   - 1 problem combining SCC + topo or connectivity + BFS distances.
 
 Use this roadmap as your **checklist** when selecting problems from LeetCode, Codeforces, or any other platform.
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

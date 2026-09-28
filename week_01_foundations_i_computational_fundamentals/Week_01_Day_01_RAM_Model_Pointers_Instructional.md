@@ -1,11 +1,12 @@
 # 📘 Week 1 Day 1: RAM Model & Pointers — Engineering Guide
 
-**Metadata:**
-- **Week:** 1 | **Day:** 1
-- **Category:** Foundations & Mental Models
-- **Difficulty:** 🟢 Basic (but foundational)
-- **Real-World Impact:** Understanding memory is the difference between writing code that works and writing code that scales, survives in production, and doesn't leak resources.
-- **Prerequisites:** None (this is where it all begins)
+
+
+
+
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_01_Day_02_Asymptotic_Analysis_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -62,37 +63,17 @@ This matters because now we understand the difference:
 
 Here's what this looks like in memory:
 
+
+```mermaid
+flowchart TD
+    R["Address Space (Logical View)"]
+    R --> N1["State"]
+    R --> N2["State"]
+    R --> N3["State"]
+    R --> N4["State"]
+    R --> N5["State"]
 ```
-Address Space (Logical View)
-┌─────────────────────────────────────┐
-│  0                                   │
-│  ┌─────────────────────────────┐    │
-│  │  Code Segment               │    │  Instructions live here
-│  │  (Read-only)                │    │
-│  └─────────────────────────────┘    │
-│                                      │
-│  ┌─────────────────────────────┐    │
-│  │  Global/Static Data         │    │  Global variables, constants
-│  │  (Read-write)               │    │
-│  └─────────────────────────────┘    │
-│                ▲                     │
-│                │                     │
-│           (grows down)               │
-│  ┌──────────────────────────────┐   │
-│  │ Heap                         │   │  Dynamic allocations (malloc/new)
-│  │ [allocated objects]          │   │
-│  └──────────────────────────────┘   │
-│                ▼                     │
-│           (grows up)                 │
-│  ┌──────────────────────────────┐   │
-│  │ Stack                        │   │  Local variables, return addresses
-│  │ [function frames]            │   │  [main frame]
-│  │ [print frame]                │   │  [print frame]
-│  └──────────────────────────────┘   │
-│                                      │
-│  (very high addresses)               │
-└─────────────────────────────────────┘
-```
+
 
 The key insight: **The stack and heap grow toward each other**. This is by design. The OS doesn't know in advance how much of each you'll need, so it gives each the ability to grow.
 
@@ -183,56 +164,19 @@ int main() {
 
 Here's the memory state at each step:
 
-```
-After Line 1 (int x = 10):
-Stack:
-┌─────────────────────────┐
-│ main() frame            │
-│ ┌─────────────┐         │
-│ │ x: 10       │ (addr 1000)
-│ └─────────────┘         │
-└─────────────────────────┘
 
-After Line 2 (int y = 20):
-Stack:
-┌─────────────────────────┐
-│ main() frame            │
-│ ┌─────────────┐         │
-│ │ x: 10       │ (addr 1000)
-│ ├─────────────┤         │
-│ │ y: 20       │ (addr 1004)
-│ └─────────────┘         │
-└─────────────────────────┘
+|  | x: 10 | (addr 1000) |
+| :--- | :--- | :--- |
+|  | x: 10 | (addr 1000) |
+|  | y: 20 | (addr 1004) |
+|  | x: 10 | (addr 1000) |
+|  | y: 20 | (addr 1004) |
+|  | ptr: 1000 | (addr 1008) |
+|  | x: 15 | (addr 1000) |
+|  | (changed!) |  |
+|  | y: 20 | (addr 1004) |
+|  | ptr: 1000 | (addr 1008) |
 
-After Line 3 (int* ptr = &x):
-Stack:
-┌──────────────────────────────┐
-│ main() frame                 │
-│ ┌─────────────┐              │
-│ │ x: 10       │ (addr 1000)  │
-│ ├─────────────┤              │
-│ │ y: 20       │ (addr 1004)  │
-│ ├──────────────┐             │
-│ │ ptr: 1000   │ (addr 1008)  │
-│ └──────────────┘             │
-│ [ptr's value is the address  │
-│  of x]                       │
-└──────────────────────────────┘
-
-After Line 4 (*ptr = 15):
-Stack:
-┌──────────────────────────────┐
-│ main() frame                 │
-│ ┌─────────────┐              │
-│ │ x: 15       │ (addr 1000)  │
-│ │ (changed!)  │              │
-│ ├─────────────┤              │
-│ │ y: 20       │ (addr 1004)  │
-│ ├──────────────┐             │
-│ │ ptr: 1000   │ (addr 1008)  │
-│ └──────────────┘             │
-└──────────────────────────────┘
-```
 
 **The key action in Line 4:** We dereference `ptr`. The CPU:
 1. Reads the value stored at address 1008 (which is 1000).
@@ -262,35 +206,16 @@ void PrintNumber(int n) {
 
 **Visual Trace:**
 
+
+```mermaid
+flowchart TD
+    R["Function Call Stack (top = most recent frame)"]
+    R --> N1["State"]
+    R --> N2["State"]
+    R --> N3["State"]
+    R --> N4["State"]
 ```
-Function Call Stack (top = most recent frame):
 
-Before PrintNumber:
-┌──────────────────┐
-│ main() frame     │
-│ [...variables...]│
-└──────────────────┘
-Stack Pointer (SP) ▲
-
-During PrintNumber:
-┌──────────────────┐
-│ main() frame     │
-│ [...variables...]│
-├──────────────────┤
-│ PrintNumber()    │
-│ frame            │
-│ [local: ?]       │ <- "local" variable
-└──────────────────┘
-Stack Pointer ▲
-
-After PrintNumber returns:
-┌──────────────────┐
-│ main() frame     │
-│ [...variables...]│
-└──────────────────┘
-Stack Pointer ▲
-(PrintNumber frame is deallocated)
-```
 
 ### 🔧 Operation 2: Dereferencing a Pointer
 
@@ -351,35 +276,13 @@ var node2 = new Node { value = 20, next = node1 };
 
 **Memory Layout:**
 
-```
-Heap:
-┌───────────────────────┐
-│ node1 object          │
-│ ┌─────────────────┐   │
-│ │ value: 10       │   │
-│ ├─────────────────┤   │
-│ │ next: null      │   │
-│ └─────────────────┘   │
-│ (address: 0xA000)     │
-└───────────────────────┘
 
-┌───────────────────────┐
-│ node2 object          │
-│ ┌─────────────────┐   │
-│ │ value: 20       │   │
-│ ├─────────────────┤   │
-│ │ next: 0xA000 ───┼─> (points to node1)
-│ └─────────────────┘   │
-│ (address: 0xB000)     │
-└───────────────────────┘
+|  | value: 10 |  |
+| :--- | :--- | :--- |
+|  | next: null |  |
+|  | value: 20 |  |
+|  | next: 0xA000 ---+-> (points to node1) |  |
 
-Stack:
-┌────────────────────┐
-│ node1 ref: 0xA000 │
-├────────────────────┤
-│ node2 ref: 0xB000 │
-└────────────────────┘
-```
 
 **Key Insight:** The `Node` objects live on the heap. The variables `node1` and `node2` on the stack are *references* (pointers) to those objects. In C#, this is automatic; in C++, you'd write `Node* ptr = new Node(...)`.
 
@@ -721,14 +624,6 @@ Early computers (1950s-1960s) had memory measured in kilobytes. Programmers obse
 ---
 
 **End of Week 1 Day 1: RAM Model & Pointers**
-
-
-Next: Week 1 Day 2 (Asymptotic Analysis)
-
 ---
 
-## 📊 Complexity Recap
-
-- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
-- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
-
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_01_Day_02_Asymptotic_Analysis_Instructional.md)

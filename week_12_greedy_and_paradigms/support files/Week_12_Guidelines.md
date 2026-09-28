@@ -1,5 +1,11 @@
 # Week 12 Guidelines — Greedy Algorithms & Proofs
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Week:** 12  
 **Phase:** 🟧 Algorithm Paradigms (Greedy & Backtracking)  
 **Theme:** Learning when “locally best” is actually globally optimal — and when it is not.
@@ -248,3 +254,7 @@ Use this checklist to confirm you have actually internalized Week 12.
 - [ ] I can decide, for a new problem, whether to first try greedy or DP, and explain my choice.
 
 If you can check most of these boxes by the end of the week, you have achieved the **Week 12 goal: knowing when greedy is truly safe, and being able to prove it.**
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

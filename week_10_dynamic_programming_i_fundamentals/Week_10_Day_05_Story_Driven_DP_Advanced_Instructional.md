@@ -1,11 +1,12 @@
 # 📖 WEEK 10 DAY 05: STORY-DRIVEN DYNAMIC PROGRAMMING — ADVANCED PROBLEM SOLVING — COMPREHENSIVE ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 10 | **Day:** 05 (Optional Capstone)
-- **Category:** Advanced Algorithm Paradigms / Real-World Problem Solving / DP Mastery
-- **Difficulty:** 🔴 Advanced to 🔴🔴 Expert
-- **Real-World Impact:** Powers document formatting (text justification), gambling/trading decision systems (blackjack), resource allocation, game AI, and complex constraint satisfaction problems
-- **Prerequisites:** Week 10 Day 01-04 (Complete DP fundamentals, all core patterns)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_10_Day_04_DP_on_Sequences_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_10_FULL_PLAYBOOK.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -1125,3 +1126,6 @@ By the end of Week 10, you should be able to:
 **End of Week 10 Comprehensive Capstone — Story-Driven DP**
 
 **WEEK 10 COMPLETE: 112,400+ words across 5 comprehensive days**
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_10_Day_04_DP_on_Sequences_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_10_FULL_PLAYBOOK.md)

@@ -1,11 +1,12 @@
 # 📘 Week 09 Day 01: Single-Source Shortest Paths: Dijkstra — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 09 | **Day:** 01
-- **Category:** Graph Algorithms / Shortest Paths
-- **Difficulty:** 🟡 Intermediate
-- **Real-World Impact:** Powers GPS navigation (Google Maps, Waze), network routing (OSPF protocol), social network analysis (shortest influencer chains), and game AI (pathfinding), making it one of the most deployed algorithms in production systems globally.
-- **Prerequisites:** Week 08 (Graph fundamentals: representations, BFS/DFS), Week 03 (Priority queues/heaps), Week 01 (RAM model, complexity analysis)
+
+
+
+
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_09_Day_02_Bellman_Ford_Negative_Weights_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -57,150 +58,15 @@ Compare to BFS: BFS expands in layers of *edge count*. Dijkstra expands in layer
 
 Let's trace Dijkstra on a concrete example:
 
-```
-Graph with 5 vertices (A, B, C, D, E) and directed weighted edges:
 
-A → B: weight 4
-A → C: weight 2
-B → D: weight 5
-B → E: weight 10
-C → B: weight 1
-C → D: weight 8
-D → E: weight 2
+|  | \ 5 |
+| :--- | :--- |
+| 2 | \---> D -----> E (2) |
+|  | (10)         ^ |
+| v |  |
+| 5 | \1     \8 |
+| 2 | \ |
 
-Task: Find shortest paths from A to all vertices.
-
-Visual layout:
-        4
-    A -----> B
-    |        |\ 5
-    | 2      | \---> D -----> E (2)
-    |        |  (10)         ^
-    v        |                |
-    C -----> B (via C)    (from D)
-      1
-
-Actually, let me redraw more clearly:
-
-        A (source)
-       / \
-      4   2
-     /     \
-    B       C
-    |\       \
-    5| \1     \8
-     |  \      \
-     D   B      D
-     |\   (merged)
-    2|  \
-     |   \
-     E    E (can come from B or D)
-
-Let me simplify with a proper trace instead.
-
-Graph represented as adjacency list:
-A: [(B, 4), (C, 2)]
-B: [(D, 5), (E, 10)]
-C: [(B, 1), (D, 8)]
-D: [(E, 2)]
-E: []
-
-Source: A
-
-===== DIJKSTRA INITIALIZATION =====
-distance[A] = 0 (source is distance 0 from itself)
-distance[B] = ∞
-distance[C] = ∞
-distance[D] = ∞
-distance[E] = ∞
-
-Priority Queue (min-heap, ordered by distance):
-[(0, A)]
-
-Processed set: {} (empty, no vertices finalized yet)
-
-===== STEP 1: Extract closest vertex from PQ =====
-Extract: (0, A)
-├─ A is now processed (finalized)
-├─ Processed set: {A}
-└─ Examine neighbors of A:
-   ├─ Neighbor B: distance[A] + weight(A,B) = 0 + 4 = 4
-   │  └─ 4 < ∞? YES → Update distance[B] = 4, insert (4, B) to PQ
-   │
-   └─ Neighbor C: distance[A] + weight(A,C) = 0 + 2 = 2
-      └─ 2 < ∞? YES → Update distance[C] = 2, insert (2, C) to PQ
-
-Current distances: [A:0, B:4, C:2, D:∞, E:∞]
-PQ: [(2, C), (4, B)]
-
-===== STEP 2: Extract next closest vertex =====
-Extract: (2, C)
-├─ C is now processed (finalized)
-├─ Processed set: {A, C}
-└─ Examine neighbors of C:
-   ├─ Neighbor B: distance[C] + weight(C,B) = 2 + 1 = 3
-   │  └─ 3 < 4? YES → Update distance[B] = 3, insert (3, B) to PQ
-   │
-   └─ Neighbor D: distance[C] + weight(C,D) = 2 + 8 = 10
-      └─ 10 < ∞? YES → Update distance[D] = 10, insert (10, D) to PQ
-
-Current distances: [A:0, B:3, C:2, D:10, E:∞]
-PQ: [(3, B), (4, B), (10, D)]
-Note: (4, B) is now stale; Dijkstra ignores stale entries when extracting
-
-===== STEP 3: Extract next closest vertex =====
-Extract: (3, B)
-├─ B is now processed (finalized)
-├─ Processed set: {A, C, B}
-└─ Examine neighbors of B:
-   ├─ Neighbor D: distance[B] + weight(B,D) = 3 + 5 = 8
-   │  └─ 8 < 10? YES → Update distance[D] = 8, insert (8, D) to PQ
-   │
-   └─ Neighbor E: distance[B] + weight(B,E) = 3 + 10 = 13
-      └─ 13 < ∞? YES → Update distance[E] = 13, insert (13, E) to PQ
-
-Current distances: [A:0, B:3, C:2, D:8, E:13]
-PQ: [(4, B), (8, D), (10, D), (13, E)]
-(4, B) and (10, D) are stale entries; will be ignored
-
-===== STEP 4: Extract next closest vertex =====
-Extract: (4, B)
-├─ Skip: B already processed (finalized)
-└─ Continue to next PQ entry
-
-Extract: (8, D)
-├─ D is now processed (finalized)
-├─ Processed set: {A, C, B, D}
-└─ Examine neighbors of D:
-   ├─ Neighbor E: distance[D] + weight(D,E) = 8 + 2 = 10
-   │  └─ 10 < 13? YES → Update distance[E] = 10, insert (10, E) to PQ
-
-Current distances: [A:0, B:3, C:2, D:8, E:10]
-PQ: [(10, D), (10, E), (13, E)]
-(10, D) is stale (D already processed); skip
-
-===== STEP 5: Extract next closest vertex =====
-Extract: (10, D)
-├─ Skip: D already processed
-└─ Continue
-
-Extract: (10, E)
-├─ E is now processed (finalized)
-├─ Processed set: {A, C, B, D, E}
-└─ E has no neighbors
-
-Current distances: [A:0, B:3, C:2, D:8, E:10]
-
-===== ALGORITHM COMPLETE =====
-PQ is now empty. All vertices processed.
-
-Final shortest distances from A:
-A: 0 (source)
-B: 3 (path: A→C→B)
-C: 2 (path: A→C)
-D: 8 (path: A→C→B→D)
-E: 10 (path: A→C→B→D→E)
-```
 
 **Key observations:**
 1. **Greedy safety:** Once we processed C (the closest vertex), we knew no future discovery could give a shorter path to C. This is safe because weights are non-negative.
@@ -265,24 +131,18 @@ Relaxing all edges incident to a just-processed vertex u ensures that distances 
 ### The State Machine & Memory Layout
 
 **Dijkstra State:**
-```
-State Variables:
-├─ distance[0..V-1]     : Shortest distance from source to each vertex
-├─ predecessor[0..V-1]  : Previous vertex on shortest path (for reconstruction)
-├─ processed[0..V-1]    : Boolean array; is vertex finalized?
-├─ pq                   : Priority queue of (distance, vertex) pairs
-└─ source               : Starting vertex
 
-Memory Layout:
-┌──────────────────────────────────────────┐
-│ distance[0..V-1]       : long[] or float│
-│ predecessor[0..V-1]    : int[] (-1 for unvisited)
-│ processed[0..V-1]      : bool[]
-│ pq                     : MinHeap<(distance, vertex)>
-│ graph (adjacency list) : list of edges
-└──────────────────────────────────────────┘
-Total Space: O(V + E)
+```mermaid
+flowchart TD
+    R["State Variables"]
+    R --> N1["distance[0..V-1]     : Shortest distance from source to each vertex"]
+    R --> N2["predecessor[0..V-1]  : Previous vertex on shortest path (for reconstruction)"]
+    R --> N3["processed[0..V-1]    : Boolean array; is vertex finalized?"]
+    R --> N4["pq                   : Priority queue of (distance, vertex) pairs"]
+    R --> N5["source               : Starting vertex"]
+    R --> N6["State"]
 ```
+
 
 ### 🔧 Operation 1: Dijkstra Algorithm — Detailed Walkthrough
 
@@ -332,147 +192,48 @@ DijkstraSSSP(Graph G with V vertices, E edges, source vertex s):
 
 **Detailed Trace (Using Our Example Graph):**
 
+
+```mermaid
+flowchart TD
+    R["Graph (adjacency list)"]
+    R --> N1["processed[A]? false → Continue"]
+    R --> N2["Mark processed[A] = true"]
+    R --> N3["Distance to A = 0 (no update)"]
+    R --> N4["Relax edges from A:"]
+    N4 --> N5["Edge A→B (weight 4):"]
+    N5 --> N6["distance[B] = 4, predecessor[B] = A"]
+    N4 --> N7["Edge A→C (weight 2):"]
+    N7 --> N8["distance[C] = 2, predecessor[C] = A"]
+    R --> N9["processed[C]? false → Continue"]
+    R --> N10["Mark processed[C] = true"]
+    R --> N11["Relax edges from C:"]
+    N11 --> N12["Edge C→B (weight 1):"]
+    N12 --> N13["distance[B] = 3, predecessor[B] = C"]
+    N11 --> N14["Edge C→D (weight 8):"]
+    N14 --> N15["distance[D] = 10, predecessor[D] = C"]
+    R --> N16["processed[B]? false → Continue"]
+    R --> N17["Mark processed[B] = true"]
+    R --> N18["Relax edges from B:"]
+    N18 --> N19["Edge B→D (weight 5):"]
+    N19 --> N20["distance[D] = 8, predecessor[D] = B"]
+    N18 --> N21["Edge B→E (weight 10):"]
+    N21 --> N22["distance[E] = 13, predecessor[E] = B"]
+    R --> N23["processed[B]? true → SKIP (stale entry)"]
+    R --> N24["Continue to next extraction"]
+    R --> N25["processed[D]? false → Continue"]
+    R --> N26["Mark processed[D] = true"]
+    R --> N27["Relax edges from D:"]
+    N27 --> N28["Edge D→E (weight 2):"]
+    N28 --> N29["distance[E] = 10, predecessor[E] = D"]
+    R --> N30["processed[D]? true → SKIP (stale entry)"]
+    R --> N31["Continue"]
+    R --> N32["processed[E]? false → Continue"]
+    R --> N33["Mark processed[E] = true"]
+    R --> N34["Relax edges from E:"]
+    R --> N35["processed[E]? true → SKIP (stale entry)"]
+    R --> N36["Continue"]
 ```
-Graph (adjacency list):
-A: [(B,4), (C,2)]
-B: [(D,5), (E,10)]
-C: [(B,1), (D,8)]
-D: [(E,2)]
-E: []
 
-Source: A
-V = 5 vertices
-
-===== INITIALIZATION =====
-distance = [0, ∞, ∞, ∞, ∞]  (for A, B, C, D, E)
-predecessor = [-1, -1, -1, -1, -1]
-processed = [false, false, false, false, false]
-pq = [(0, A)]
-
-===== MAIN LOOP: ITERATION 1 =====
-Extract: (0, A)
-├─ processed[A]? false → Continue
-├─ Mark processed[A] = true
-├─ Distance to A = 0 (no update)
-└─ Relax edges from A:
-   ├─ Edge A→B (weight 4):
-   │  new_dist = 0 + 4 = 4
-   │  4 < ∞? YES
-   │  └─ distance[B] = 4, predecessor[B] = A
-   │     pq.insert((4, B))
-   │
-   └─ Edge A→C (weight 2):
-      new_dist = 0 + 2 = 2
-      2 < ∞? YES
-      └─ distance[C] = 2, predecessor[C] = A
-         pq.insert((2, C))
-
-After Iteration 1:
-distance = [0, 4, 2, ∞, ∞]
-pq = [(2, C), (4, B)]
-processed = [true, false, false, false, false]
-
-===== MAIN LOOP: ITERATION 2 =====
-Extract: (2, C)
-├─ processed[C]? false → Continue
-├─ Mark processed[C] = true
-└─ Relax edges from C:
-   ├─ Edge C→B (weight 1):
-   │  new_dist = 2 + 1 = 3
-   │  3 < 4? YES
-   │  └─ distance[B] = 3, predecessor[B] = C
-   │     pq.insert((3, B))
-   │
-   └─ Edge C→D (weight 8):
-      new_dist = 2 + 8 = 10
-      10 < ∞? YES
-      └─ distance[D] = 10, predecessor[D] = C
-         pq.insert((10, D))
-
-After Iteration 2:
-distance = [0, 3, 2, 10, ∞]
-pq = [(3, B), (4, B), (10, D)]
-processed = [true, false, true, false, false]
-
-===== MAIN LOOP: ITERATION 3 =====
-Extract: (3, B)
-├─ processed[B]? false → Continue
-├─ Mark processed[B] = true
-└─ Relax edges from B:
-   ├─ Edge B→D (weight 5):
-   │  new_dist = 3 + 5 = 8
-   │  8 < 10? YES
-   │  └─ distance[D] = 8, predecessor[D] = B
-   │     pq.insert((8, D))
-   │
-   └─ Edge B→E (weight 10):
-      new_dist = 3 + 10 = 13
-      13 < ∞? YES
-      └─ distance[E] = 13, predecessor[E] = B
-         pq.insert((13, E))
-
-After Iteration 3:
-distance = [0, 3, 2, 8, 13]
-pq = [(4, B), (8, D), (10, D), (13, E)]
-processed = [true, true, true, false, false]
-
-===== MAIN LOOP: ITERATION 4 =====
-Extract: (4, B)
-├─ processed[B]? true → SKIP (stale entry)
-└─ Continue to next extraction
-
-Extract: (8, D)
-├─ processed[D]? false → Continue
-├─ Mark processed[D] = true
-└─ Relax edges from D:
-   ├─ Edge D→E (weight 2):
-   │  new_dist = 8 + 2 = 10
-   │  10 < 13? YES
-   │  └─ distance[E] = 10, predecessor[E] = D
-   │     pq.insert((10, E))
-
-After Iteration 4:
-distance = [0, 3, 2, 8, 10]
-pq = [(10, D), (10, E), (13, E)]
-processed = [true, true, true, true, false]
-
-===== MAIN LOOP: ITERATION 5 =====
-Extract: (10, D)
-├─ processed[D]? true → SKIP (stale entry)
-└─ Continue
-
-Extract: (10, E)
-├─ processed[E]? false → Continue
-├─ Mark processed[E] = true
-└─ Relax edges from E:
-   (E has no outgoing edges)
-
-After Iteration 5:
-distance = [0, 3, 2, 8, 10]
-processed = [true, true, true, true, true]
-
-===== MAIN LOOP: ITERATION 6 =====
-Extract: (13, E)
-├─ processed[E]? true → SKIP (stale entry)
-└─ Continue
-
-pq is now empty → LOOP TERMINATES
-
-===== FINAL RESULT =====
-Shortest distances from A:
-distance[A] = 0
-distance[B] = 3 (predecessor: C)
-distance[C] = 2 (predecessor: A)
-distance[D] = 8 (predecessor: B)
-distance[E] = 10 (predecessor: D)
-
-Shortest paths (reconstruct via predecessors):
-A: (empty, source)
-B: A → C → B (cost 0 + 2 + 1 = 3)
-C: A → C (cost 0 + 2 = 2)
-D: A → C → B → D (cost 0 + 2 + 1 + 5 = 8)
-E: A → C → B → D → E (cost 0 + 2 + 1 + 5 + 2 = 10)
-```
 
 **Critical Implementation Details:**
 
@@ -1034,4 +795,6 @@ Dijkstra is the starting point; each subsequent day adds generality or addresses
 **Overall Result:** ✅ ALL CHECKS PASSED — Content verified for accuracy and ready for delivery.
 
 ---
+---
 
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_09_Day_02_Bellman_Ford_Negative_Weights_Instructional.md)

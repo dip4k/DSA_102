@@ -1,5 +1,11 @@
 # 📊 WEEK 13 VISUAL CONCEPTS PLAYBOOK (HYBRID)
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Visual Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
+
+---
+
 **Week:** 13  
 **Phase:** D – Algorithm Paradigms  
 **Theme:** Backtracking & Branch & Bound  
@@ -58,38 +64,36 @@
 
 ### Topics Hierarchy
 
+
+```mermaid
+flowchart TD
+    R["WEEK 13 BACKTRACKING & BRANCH & BOUND"]
+    R --> N1["DAY 1: Backtracking Fundamentals"]
+    N1 --> N2["Backtracking concept & template"]
+    N1 --> N3["State space tree structure"]
+    N1 --> N4["DFS exploration with pruning"]
+    R --> N5["DAY 2: Backtracking Problems"]
+    N5 --> N6["N-Queens (placement with constraints)"]
+    N5 --> N7["Sudoku solver (grid constraints)"]
+    N5 --> N8["Permutations & combinations generation"]
+    N5 --> N9["Word search (path finding)"]
+    N5 --> N10["Maze solving (navigation)"]
+    R --> N11["DAY 3: Branch & Bound"]
+    N11 --> N12["Branch & bound concept"]
+    N11 --> N13["Best-first search strategy"]
+    N11 --> N14["TSP with branch & bound"]
+    N11 --> N15["Knapsack with branch & bound"]
+    R --> N16["DAY 4: Amortized Analysis"]
+    N16 --> N17["Amortized complexity concept"]
+    N16 --> N18["Aggregate analysis method"]
+    N16 --> N19["Accounting method"]
+    N16 --> N20["Potential method"]
+    N16 --> N21["Dynamic array analysis"]
+    N16 --> N22["Self-adjusting structures"]
+    R --> N23["DAY 5 (OPTIONAL): Mixed Paradigm Problems"]
+    N23 --> N24["Combined techniques for complex problems"]
 ```
-WEEK 13: BACKTRACKING & BRANCH & BOUND
-│
-├── DAY 1: Backtracking Fundamentals
-│   ├── Backtracking concept & template
-│   ├── State space tree structure
-│   └── DFS exploration with pruning
-│
-├── DAY 2: Backtracking Problems
-│   ├── N-Queens (placement with constraints)
-│   ├── Sudoku solver (grid constraints)
-│   ├── Permutations & combinations generation
-│   ├── Word search (path finding)
-│   └── Maze solving (navigation)
-│
-├── DAY 3: Branch & Bound
-│   ├── Branch & bound concept
-│   ├── Best-first search strategy
-│   ├── TSP with branch & bound
-│   └── Knapsack with branch & bound
-│
-├── DAY 4: Amortized Analysis
-│   ├── Amortized complexity concept
-│   ├── Aggregate analysis method
-│   ├── Accounting method
-│   ├── Potential method
-│   ├── Dynamic array analysis
-│   └── Self-adjusting structures
-│
-└── DAY 5 (OPTIONAL): Mixed Paradigm Problems
-    └── Combined techniques for complex problems
-```
+
 
 ---
 
@@ -97,40 +101,38 @@ WEEK 13: BACKTRACKING & BRANCH & BOUND
 
 ### Pattern Map: Backtracking Concept Family
 
+
+```mermaid
+flowchart TD
+    R["BACKTRACKING METHODOLOGY"]
+    R --> N1["Core Concept"]
+    N1 --> N2["Build solution incrementally"]
+    N1 --> N3["Try all valid choices at each step"]
+    N1 --> N4["Backtrack when no progress possible"]
+    N1 --> N5["Equivalent to DFS on solution tree"]
+    R --> N6["Backtracking Template"]
+    N6 --> N7["State: current partial solution"]
+    N6 --> N8["Choices: next decisions to try"]
+    N6 --> N9["Constraints: which choices valid"]
+    N6 --> N10["DFS: recursively explore"]
+    N6 --> N11["Prune: skip invalid branches"]
+    R --> N12["State Space Tree"]
+    N12 --> N13["Root: empty solution"]
+    N12 --> N14["Internal nodes: partial solutions"]
+    N12 --> N15["Leaves: complete solutions or pruned"]
+    N12 --> N16["Edges: choices/decisions"]
+    R --> N17["Pruning Strategies"]
+    N17 --> N18["Constraint checking (validity)"]
+    N17 --> N19["Optimality bounds (branch & bound)"]
+    N17 --> N20["Duplicate detection (memoization)"]
+    N17 --> N21["Early termination (first solution)"]
+    R --> N22["Implementation Patterns"]
+    N22 --> N23["Recursive DFS"]
+    N22 --> N24["State modification + restore"]
+    N22 --> N25["Choice iteration"]
+    N22 --> N26["Base case detection"]
 ```
-BACKTRACKING METHODOLOGY
-│
-├── Core Concept
-│   ├── Build solution incrementally
-│   ├── Try all valid choices at each step
-│   ├── Backtrack when no progress possible
-│   └── Equivalent to DFS on solution tree
-│
-├── Backtracking Template
-│   ├── State: current partial solution
-│   ├── Choices: next decisions to try
-│   ├── Constraints: which choices valid
-│   ├── DFS: recursively explore
-│   └── Prune: skip invalid branches
-│
-├── State Space Tree
-│   ├── Root: empty solution
-│   ├── Internal nodes: partial solutions
-│   ├── Leaves: complete solutions or pruned
-│   └── Edges: choices/decisions
-│
-├── Pruning Strategies
-│   ├── Constraint checking (validity)
-│   ├── Optimality bounds (branch & bound)
-│   ├── Duplicate detection (memoization)
-│   └── Early termination (first solution)
-│
-└── Implementation Patterns
-    ├── Recursive DFS
-    ├── State modification + restore
-    ├── Choice iteration
-    └── Base case detection
-```
+
 
 ---
 
@@ -140,43 +142,11 @@ BACKTRACKING METHODOLOGY
 
 #### Visual 1: Backtracking State Space Tree
 
-```
-STATE SPACE TREE (Backtracking Exploration)
-═════════════════════════════════════════
 
-Goal: Find all permutations of [1,2,3]
+|  |  |
+| :--- | :--- |
+|  |  |
 
-                          []
-                          │
-        ┌─────────────────┼─────────────────┐
-        1                 2                 3
-        │                 │                 │
-    ┌───┴───┐         ┌───┴───┐         ┌───┴───┐
-   [1,2]   [1,3]     [2,1]   [2,3]     [3,1]   [3,2]
-    │       │         │       │         │       │
- [1,2,3] [1,3,2]   [2,1,3] [2,3,1]   [3,1,2] [3,2,1]
-   ✓       ✓         ✓       ✓         ✓       ✓
-
-KEY OBSERVATIONS:
-─────────────────
-1. Root [] = empty solution
-2. Each level = making one choice
-3. Depth 3 = complete permutation (all elements used)
-4. 6 leaves = 3! = 6 permutations
-5. DFS explores left subtree fully before right
-
-BACKTRACKING FLOW:
-──────────────────
-1. Start at root: partial = []
-2. Choose 1: partial = [1]
-3. Choose 2: partial = [1,2]
-4. Choose 3: partial = [1,2,3] ✓ COMPLETE → Record
-5. Backtrack to [1,2]: remove 3
-6. No more choices → Backtrack to [1]
-7. Choose 3: partial = [1,3]
-8. Choose 2: partial = [1,3,2] ✓ COMPLETE → Record
-9. Continue...
-```
 
 **Explanation:**
 - **State Space Tree**: Represents all possible solution paths
@@ -188,60 +158,11 @@ BACKTRACKING FLOW:
 
 #### Visual 2: Backtracking Template Structure
 
-```
-BACKTRACKING TEMPLATE (Generic Pattern)
-════════════════════════════════════════
 
-PSEUDOCODE:
-───────────
-function backtrack(state, choices, result):
-    # BASE CASE: Complete solution found
-    if is_complete(state):
-        result.add(copy(state))
-        return
-    
-    # RECURSIVE CASE: Try each valid choice
-    for choice in choices:
-        if is_valid(state, choice):
-            # MAKE CHOICE
-            state.add(choice)
-            
-            # RECURSE with updated state
-            backtrack(state, remaining_choices, result)
-            
-            # UNDO CHOICE (Backtrack)
-            state.remove(choice)
+|  |  |
+| :--- | :--- |
+|  | +-> Backtrack to [1] Remove 2 |
 
-EXECUTION TRACE (Example: Subsets of [1,2]):
-═════════════════════════════════════════════
-
-Call Stack:          State:        Action:
-────────────────     ──────        ───────
-backtrack([])        []            Start
-  │
-  ├─> Choose 1       [1]           Add 1
-  │     │
-  │     ├─> Choose 2 [1,2]         Add 2 → ✓ Record
-  │     │     │
-  │     │     └─> Backtrack to [1] Remove 2
-  │     │
-  │     └─> No more choices → Backtrack to []
-  │
-  ├─> Remove 1       []            Undo 1
-  │
-  └─> Choose 2       [2]           Add 2 → ✓ Record
-        │
-        └─> Backtrack to [] → Done
-
-KEY COMPONENTS:
-───────────────
-1. STATE: Current partial solution
-2. CHOICES: Available decisions at this step
-3. CONSTRAINTS: is_valid() checks
-4. MODIFICATION: state.add(choice)
-5. RECURSION: explore deeper
-6. RESTORATION: state.remove(choice) ← CRITICAL!
-```
 
 **Explanation:**
 - **State Modification**: Add choice to current solution
@@ -253,61 +174,11 @@ KEY COMPONENTS:
 
 #### Visual 3: Backtracking vs Brute Force DFS
 
-```
-COMPARISON: BACKTRACKING vs BRUTE FORCE
-════════════════════════════════════════
 
-Problem: N-Queens (Place 4 queens on 4×4 board, no attacks)
+|  |  |  |
+| :--- | :--- | :--- |
+| 2. Diagonal check: | row1-row2 | == |
 
-BRUTE FORCE DFS (No Pruning):
-──────────────────────────────
-Generate all 4^16 board configurations
-Check each for validity
-Time: O(n^(n²)) = exponential in n²
-
-STATE SPACE SIZE:
-Each cell: queen or empty (2 choices)
-16 cells × 2 choices = 2^16 = 65,536 configurations
-
-BACKTRACKING (With Constraint Checking):
-─────────────────────────────────────────
-Place queens column by column
-Check validity before placing (row, diagonal conflicts)
-Prune invalid branches immediately
-
-STATE SPACE TREE (Pruned):
-
-                    []
-                     │
-        ┌────────────┼────────────┐
-      Q@(0,0)      Q@(1,0)      Q@(2,0)  Q@(3,0)
-        │            │              │       │
-    ┌───┴───┐    ┌───┴───┐      (prune)  (prune)
-  Q@(1,1) Q@(2,1)...
-    │       │
-  (prune) Q@(3,1) → Continue...
-            │
-          Q@(0,2)
-            │
-          Q@(2,3) ✓ SOLUTION FOUND
-
-PRUNING POWER:
-──────────────
-Without pruning: 65,536 nodes
-With pruning: ~876 nodes explored (actual depends on order)
-Speedup: ~75× fewer nodes
-
-CONSTRAINT CHECKING (O(1) per placement):
-──────────────────────────────────────────
-1. Row check: queen in same row?
-2. Diagonal check: |row1-row2| == |col1-col2|?
-3. Early rejection prevents exploring invalid subtrees
-
-RESULT:
-───────
-Backtracking: Practical for n=8 (92 solutions)
-Brute force: Infeasible even for n=5
-```
 
 **Explanation:**
 - **Brute Force**: Generate all configurations, test each
@@ -323,7 +194,7 @@ Brute force: Infeasible even for n=5
 
 ```
 ❌ WRONG: Not Undoing Choice
-────────────────────────────
+----------------------------
 
 function backtrack(state):
     if is_complete(state):
@@ -336,13 +207,13 @@ function backtrack(state):
         # ← MISSING: state.remove(choice)
 
 RESULT:
-───────
+-------
 State accumulates choices without cleanup
 All solutions end up identical (final state)
 No exploration of alternative branches
 
 EXAMPLE TRACE:
-──────────────
+--------------
 backtrack([])
   Choose 1: state = [1]
     Choose 2: state = [1,2] → Record (but not copied)
@@ -352,7 +223,7 @@ backtrack([])
   Choose 2: state = [1,2,3,2] → Invalid!
 
 ✓ CORRECT: Restore State After Recursion
-────────────────────────────────────────
+----------------------------------------
 
 function backtrack(state):
     if is_complete(state):
@@ -365,7 +236,7 @@ function backtrack(state):
         state.remove(choice)  # ← RESTORE STATE
 
 WHY IT WORKS:
-─────────────
+-------------
 1. After exploring with choice, state returns to previous
 2. Next iteration tries different choice from same state
 3. Each branch independent
@@ -378,7 +249,7 @@ WHY IT WORKS:
 
 ```
 ❌ WRONG: Recording Reference
-─────────────────────────────
+-----------------------------
 
 solutions = []
 state = []
@@ -390,13 +261,13 @@ function backtrack():
     # ... rest of backtracking
 
 RESULT:
-───────
+-------
 All solutions point to same list object
 After backtracking completes, all solutions are identical
 Lost all intermediate results
 
 EXAMPLE:
-────────
+--------
 After finding [1,2,3]:
   solutions = [[1,2,3]]  # reference to state
 
@@ -408,7 +279,7 @@ Final after all backtracking:
   solutions = [[3,2,1], [3,2,1], [3,2,1], ...]  # all identical
 
 ✓ CORRECT: Deep Copy Solution
-──────────────────────────────
+------------------------------
 
 function backtrack():
     if is_complete(state):
@@ -417,7 +288,7 @@ function backtrack():
     # ... rest
 
 WHY IT WORKS:
-─────────────
+-------------
 Each recorded solution is independent copy
 Modifications to state don't affect recorded solutions
 All unique solutions preserved correctly
@@ -429,7 +300,7 @@ All unique solutions preserved correctly
 
 ```
 ❌ WRONG: Weak Constraint Check
-───────────────────────────────
+-------------------------------
 
 Problem: N-Queens (no two queens attack each other)
 
@@ -441,13 +312,13 @@ function is_valid(board, row, col):
     return True  # ← BUG: Doesn't check diagonals!
 
 RESULT:
-───────
+-------
 Places queens that attack diagonally
 Generates invalid solutions
 Wastes time exploring bad paths
 
 EXAMPLE (4×4 board):
-────────────────────
+--------------------
 Q . . .
 . . Q .  ← Q@(1,2) attacks Q@(0,0) diagonally
 . . . .
@@ -456,7 +327,7 @@ Q . . .
 This configuration would be accepted (WRONG!)
 
 ✓ CORRECT: Complete Constraint Validation
-──────────────────────────────────────────
+------------------------------------------
 
 function is_valid(board, row, col):
     # Check column
@@ -477,14 +348,14 @@ function is_valid(board, row, col):
     return True
 
 WHY IT WORKS:
-─────────────
+-------------
 Checks all three attack directions
 Prevents exploring invalid branches
 Only generates valid solutions
 Prunes search space effectively
 
 OPTIMIZED VERSION (O(1) checking):
-───────────────────────────────────
+-----------------------------------
 Track occupied columns, diagonals, anti-diagonals in sets
 is_valid: check if col/diag/antidiag already in set
 Time: O(1) per check vs O(n) scanning
@@ -515,31 +386,30 @@ Time: O(1) per check vs O(n) scanning
 
 ### Pattern Map: Classic Backtracking Problems
 
+
+```mermaid
+flowchart TD
+    R["BACKTRACKING PROBLEM FAMILIES"]
+    R --> N1["Constraint Satisfaction"]
+    N1 --> N2["N-Queens (placement constraints)"]
+    N1 --> N3["Sudoku (grid constraints)"]
+    N1 --> N4["Graph coloring (adjacency constraints)"]
+    R --> N5["Combinatorial Generation"]
+    N5 --> N6["Permutations (all orderings)"]
+    N5 --> N7["Combinations (all subsets)"]
+    N5 --> N8["Subsets (all subsets including empty)"]
+    N5 --> N9["Partitions (split into groups)"]
+    R --> N10["Path Finding"]
+    N10 --> N11["Word search (find word in grid)"]
+    N10 --> N12["Maze solving (find exit path)"]
+    N10 --> N13["Hamiltonian path (visit all nodes once)"]
+    N10 --> N14["Knight's tour (visit all board squares)"]
+    R --> N15["Optimization Problems"]
+    N15 --> N16["Subset sum (find subset with target sum)"]
+    N15 --> N17["Knapsack (maximize value under weight)"]
+    N15 --> N18["Traveling salesman (shortest tour)"]
 ```
-BACKTRACKING PROBLEM FAMILIES
-│
-├── Constraint Satisfaction
-│   ├── N-Queens (placement constraints)
-│   ├── Sudoku (grid constraints)
-│   └── Graph coloring (adjacency constraints)
-│
-├── Combinatorial Generation
-│   ├── Permutations (all orderings)
-│   ├── Combinations (all subsets)
-│   ├── Subsets (all subsets including empty)
-│   └── Partitions (split into groups)
-│
-├── Path Finding
-│   ├── Word search (find word in grid)
-│   ├── Maze solving (find exit path)
-│   ├── Hamiltonian path (visit all nodes once)
-│   └── Knight's tour (visit all board squares)
-│
-└── Optimization Problems
-    ├── Subset sum (find subset with target sum)
-    ├── Knapsack (maximize value under weight)
-    └── Traveling salesman (shortest tour)
-```
+
 
 ---
 
@@ -551,57 +421,57 @@ BACKTRACKING PROBLEM FAMILIES
 
 ```
 N-QUEENS PROBLEM (n=4)
-═══════════════════════
+=======================
 
 GOAL: Place 4 queens on 4×4 board, no two queens attack
       (No two queens share row, column, or diagonal)
 
 STATE SPACE TREE (Column-by-Column Placement):
-═══════════════════════════════════════════════
+===============================================
 
 Level 0 (Col 0):
                         []
-                         │
-        ┌────────────────┼────────────────┐
+                         |
+        +----------------+----------------+
      Q@(0,0)          Q@(1,0)          Q@(2,0)          Q@(3,0)
 
 Level 1 (Col 1):
      Q@(0,0)
-        │
-    ┌───┴───────────┐
+        |
+    +---|-----------+
 Q@(1,1) Q@(2,1)  Q@(3,1)
-   ✗      │         ✗
+   ✗      |         ✗
        Valid    (Attacks diagonally)
        
      Q@(0,0), Q@(2,1)
-            │
-    ┌───────┼───────┐
+            |
+    +-------+-------+
 Q@(1,2) Q@(3,2)   (0,2),(1,2) pruned
-   ✗       │
+   ✗       |
         Valid
 
      Q@(0,0), Q@(2,1), Q@(3,2) ← Dead end (no valid placement in col 3)
-            │
+            |
          Backtrack ↩
 
 [After exhaustive search...]
 
 VALID SOLUTION 1:
-─────────────────
+-----------------
 . Q . .    Q@(1,0)
 . . . Q    Q@(3,1)
 Q . . .    Q@(0,2)
 . . Q .    Q@(2,3)
 
 VALID SOLUTION 2:
-─────────────────
+-----------------
 . . Q .    Q@(2,0)
 Q . . .    Q@(0,1)
 . . . Q    Q@(3,2)
 . Q . .    Q@(1,3)
 
 CONSTRAINT CHECKING (for each placement):
-──────────────────────────────────────────
+------------------------------------------
 1. Column: Already placing column by column (guaranteed unique)
 2. Row: Check if row already occupied
    rows_used = set()
@@ -617,13 +487,13 @@ CONSTRAINT CHECKING (for each placement):
      if (row + col) in diag2_used: return False
 
 PRUNING EFFECT:
-───────────────
+---------------
 Total positions without pruning: 4^4 = 256
 Positions explored with pruning: ~30-50 (depends on order)
 Speedup: ~5-8× for n=4, exponential for larger n
 
 ALGORITHM:
-──────────
+----------
 function solve_nqueens(col, board, solutions):
     if col == n:
         solutions.add(copy(board))
@@ -658,84 +528,18 @@ function solve_nqueens(col, board, solutions):
 
 #### Visual 1: Sudoku Constraint Checking
 
-```
-SUDOKU SOLVER
-══════════════
 
-CONSTRAINTS (Every placement must satisfy ALL):
-────────────────────────────────────────────────
-1. Row: Each row has digits 1-9 exactly once
-2. Column: Each column has digits 1-9 exactly once
-3. 3×3 Box: Each 3×3 sub-grid has digits 1-9 exactly once
+| 5 3 . | . 7 . | . . . |
+| :--- | :--- | :--- |
+| 6 . . | 1 9 5 | . . . |
+| . 9 8 | . . . | . 6 . |
+| 8 . . | . 6 . | . . 3 |
+| 4 . . | 8 . 3 | . . 1 |
+| 7 . . | . 2 . | . . 6 |
+| . 6 . | . . . | 2 8 . |
+| . . . | 4 1 9 | . . 5 |
+| . . . | . 8 . | . 7 9 |
 
-INITIAL BOARD (dots = empty):
-──────────────────────────────
-5 3 . | . 7 . | . . .
-6 . . | 1 9 5 | . . .
-. 9 8 | . . . | . 6 .
-──────┼───────┼──────
-8 . . | . 6 . | . . 3
-4 . . | 8 . 3 | . . 1
-7 . . | . 2 . | . . 6
-──────┼───────┼──────
-. 6 . | . . . | 2 8 .
-. . . | 4 1 9 | . . 5
-. . . | . 8 . | . 7 9
-
-BACKTRACKING STRATEGY:
-──────────────────────
-1. Find next empty cell (row, col)
-2. Try digits 1-9 in that cell
-3. For each digit:
-   - Check if valid (row, column, box constraints)
-   - If valid: place digit, recurse
-   - If recursive call succeeds: done
-   - If fails: remove digit (backtrack), try next
-4. If no digit works: return False (trigger backtracking)
-
-CONSTRAINT CHECKING EXAMPLE:
-─────────────────────────────
-Cell (0,2) is empty. Try digit 4:
-
-Row check: Does row 0 already have 4?
-  Row 0: [5,3,_,_,7,_,_,_,_] → No 4 ✓
-
-Column check: Does column 2 already have 4?
-  Col 2: [_,_,8,_,_,_,_,_,_] → No 4 ✓
-
-Box check: Does top-left 3×3 box have 4?
-  Box: 5 3 _
-       6 _ _
-       _ 9 8  → No 4 ✓
-
-ALL CHECKS PASS → Place 4, continue
-
-STATE SPACE FRAGMENT:
-─────────────────────
-                    [Initial board]
-                         │
-         ┌───────────────┼───────────────┐
-    Try (0,2)=1     Try (0,2)=2     Try (0,2)=4
-         ✗               ✗               │
-    (conflicts)    (conflicts)      Valid ✓
-                                         │
-                                 Try (0,3)=2
-                                         │
-                                    [Continue...]
-
-PRUNING POWER:
-──────────────
-Each cell has up to 9 choices
-Empty cells: typically 30-50
-Without pruning: 9^50 ≈ 10^47 configurations
-With constraint checking: Practical in milliseconds
-
-OPTIMIZATION:
-─────────────
-- Choose cell with fewest valid digits (most constrained first)
-- Reduces branching factor early
-- Finds contradictions faster
-```
 
 **Explanation:**
 - **Three Constraints**: Row, column, and 3×3 box uniqueness
@@ -753,28 +557,28 @@ OPTIMIZATION:
 
 ```
 PERMUTATIONS OF [1,2,3]
-════════════════════════
+========================
 
 GOAL: Generate all 3! = 6 orderings
 
 STATE SPACE TREE:
-─────────────────
+-----------------
                           []
-                          │
-        ┌─────────────────┼─────────────────┐
+                          |
+        +-----------------+-----------------+
       Choose 1          Choose 2          Choose 3
       partial=[1]       partial=[2]       partial=[3]
-        │                 │                 │
-    ┌───┴───┐         ┌───┴───┐         ┌───┴───┐
+        |                 |                 |
+    +---|---+         +---|---+         +---|---+
   +2      +3         +1      +3         +1      +2
 [1,2]   [1,3]       [2,1]   [2,3]       [3,1]   [3,2]
-  │       │           │       │           │       │
+  |       |           |       |           |       |
  +3      +2          +3      +1          +2      +1
 [1,2,3] [1,3,2]     [2,1,3] [2,3,1]     [3,1,2] [3,2,1]
   ✓       ✓           ✓       ✓           ✓       ✓
 
 ALGORITHM:
-──────────
+----------
 function permute(nums):
     result = []
     used = [False] * len(nums)
@@ -802,9 +606,9 @@ function permute(nums):
     return result
 
 EXECUTION TRACE:
-════════════════
+================
 Step  | current  | used        | Action
-─────────────────────────────────────────
+-----------------------------------------
 1     | []       | [F,F,F]     | Try i=0
 2     | [1]      | [T,F,F]     | Try i=1
 3     | [1,2]    | [T,T,F]     | Try i=2
@@ -819,13 +623,13 @@ Step  | current  | used        | Action
 ...   | ...      | ...         | Continue for all paths
 
 TIME COMPLEXITY:
-────────────────
+----------------
 - Total permutations: n!
 - Building each: O(n) to copy
 - Total: O(n! × n)
 
 SPACE COMPLEXITY:
-─────────────────
+-----------------
 - Recursion depth: O(n)
 - used array: O(n)
 - current list: O(n)
@@ -843,13 +647,13 @@ SPACE COMPLEXITY:
 
 ```
 COMBINATIONS (k=2) OF [1,2,3,4]
-════════════════════════════════
+================================
 
 GOAL: Choose 2 elements (order doesn't matter)
       Result: [1,2], [1,3], [1,4], [2,3], [2,4], [3,4]
 
 KEY DIFFERENCE FROM PERMUTATIONS:
-──────────────────────────────────
+----------------------------------
 Permutations: [1,2] and [2,1] are different
 Combinations: [1,2] and [2,1] are same (only keep [1,2])
 
@@ -857,21 +661,21 @@ STRATEGY: Only choose elements AFTER current element
           (Ensures [1,2] generated, but [2,1] never attempted)
 
 STATE SPACE TREE:
-─────────────────
+-----------------
                         []
-                        │
-        ┌───────────────┼───────────────┐
+                        |
+        +---------------+---------------+
       Start=0         Start=1         Start=2
       Choose 1        Choose 2        Choose 3
       [1]             [2]             [3]
-        │               │               │
-    ┌───┼───┐       ┌───┴───┐         │
+        |               |               |
+    +---+---+       +---|---+         |
    +2  +3  +4      +3     +4         +4
   [1,2][1,3][1,4] [2,3]  [2,4]      [3,4]
     ✓    ✓    ✓     ✓      ✓          ✓
 
 ALGORITHM:
-──────────
+----------
 function combine(n, k):
     result = []
     current = []
@@ -895,9 +699,9 @@ function combine(n, k):
     return result
 
 EXECUTION TRACE (n=4, k=2):
-═══════════════════════════
+===========================
 Call         | current | start | Action
-────────────────────────────────────────
+----------------------------------------
 backtrack(1) | []      | 1     | Try i=1
 backtrack(2) | [1]     | 2     | Try i=2
              | [1,2]   | -     | ✓ Record → Backtrack
@@ -915,12 +719,12 @@ backtrack(4) | [3]     | 4     | Try i=4
              | [3,4]   | -     | ✓ Record → Backtrack
 
 COMBINATIONS COUNT:
-───────────────────
+-------------------
 C(n,k) = n! / (k! × (n-k)!)
 C(4,2) = 4! / (2! × 2!) = 24 / 4 = 6 ✓
 
 TIME COMPLEXITY:
-────────────────
+----------------
 O(C(n,k) × k) = O(n choose k × k)
 ```
 
@@ -939,10 +743,10 @@ O(C(n,k) × k) = O(n choose k × k)
 
 ```
 WORD SEARCH (Find "SEAR" in grid)
-═══════════════════════════════════
+===================================
 
 GRID:
-─────
+-----
 S E A R
 A B C D
 R E K L
@@ -951,38 +755,38 @@ T E A R
 GOAL: Find path that spells "SEAR" (adjacent cells: up/down/left/right)
 
 APPROACH:
-─────────
+---------
 1. For each cell, try as starting point
 2. DFS from that cell to match word
 3. Mark visited cells to avoid cycles
 4. Backtrack and unmark after exploring
 
 SEARCH STARTING AT (0,0) for "SEAR":
-═════════════════════════════════════
+=====================================
 
 Step 1: Match 'S' at (0,0)
-────────────────────────
+------------------------
 ■ E A R    ■ = visited
 A B C D    Try neighbors: (0,1), (1,0)
 R E K L
 T E A R
 
 Step 2: Match 'E' at (0,1)
-────────────────────────
+------------------------
 ■ ■ A R    Continue with 'A'
 A B C D    Try neighbors: (0,2), (1,1)
 R E K L
 T E A R
 
 Step 3: Match 'A' at (0,2)
-────────────────────────
+------------------------
 ■ ■ ■ R    Continue with 'R'
 A B C D    Try neighbors: (0,3), (1,2)
 R E K L
 T E A R
 
 Step 4: Match 'R' at (0,3)
-────────────────────────
+------------------------
 ■ ■ ■ ■    Word complete! ✓
 A B C D    Return True
 R E K L
@@ -991,7 +795,7 @@ T E A R
 Path: (0,0)→(0,1)→(0,2)→(0,3)
 
 ALGORITHM:
-──────────
+----------
 function exist(board, word):
     for row in range(rows):
         for col in range(cols):
@@ -1028,7 +832,7 @@ function dfs(board, word, index, row, col):
     return found
 
 BACKTRACKING EXAMPLE (Failed path):
-════════════════════════════════════
+====================================
 
 Searching for "SEAB" (doesn't exist):
 Step 1: S at (0,0) ✓
@@ -1051,14 +855,14 @@ Step 2: E at (1,0)? → 'A' not 'E' ✗
 All paths exhausted → Return False
 
 TIME COMPLEXITY:
-────────────────
+----------------
 Worst case: O(rows × cols × 4^word_length)
 - For each cell: try as start (rows × cols)
 - Each DFS: up to 4 branches per character (4^L)
 - Pruning reduces in practice
 
 SPACE COMPLEXITY:
-─────────────────
+-----------------
 O(word_length) for recursion stack
 ```
 
@@ -1078,17 +882,17 @@ O(word_length) for recursion stack
 
 ```
 MAZE SOLVING (Find path from S to E)
-═════════════════════════════════════
+=====================================
 
 MAZE (1=wall, 0=path):
-──────────────────────
+----------------------
 S 0 1 0 0
 1 0 1 0 1
 0 0 0 1 0
 0 1 0 0 E
 
 BACKTRACKING APPROACH:
-──────────────────────
+----------------------
 1. Start at S
 2. Try each direction (up, down, left, right)
 3. Mark current cell as visited
@@ -1096,49 +900,49 @@ BACKTRACKING APPROACH:
 5. If blocked: backtrack and try different direction
 
 PATH EXPLORATION:
-═════════════════
+=================
 
 Attempt 1: Go right from S
-───────────────────────────
+---------------------------
 ■ ■ 1 0 0    ■ = visited
 1 0 1 0 1    Blocked by wall → Backtrack
 0 0 0 1 0
 0 1 0 0 E
 
 Backtrack to S, try down:
-─────────────────────────
+-------------------------
 ■ 0 1 0 0
 ■ 0 1 0 1    Reached (1,0), try down
 0 0 0 1 0
 0 1 0 0 E
 
 Continue down from (1,0):
-─────────────────────────
+-------------------------
 ■ 0 1 0 0
 ■ 0 1 0 1
 ■ 0 0 1 0    Reached (2,0), try right
 0 1 0 0 E
 
 Continue exploration:
-─────────────────────
+---------------------
 ■ 0 1 0 0
 ■ ■ 1 0 1
 ■ ■ ■ 1 0    Dead end → Backtrack
 0 1 0 0 E
 
 After backtracking and trying alternatives:
-───────────────────────────────────────────
+-------------------------------------------
 ■ ■ 1 0 0
 1 ■ 1 0 1
 0 ■ ■ 1 0
 0 1 ■ ■ ■ ✓ Found path to E!
 
 SUCCESSFUL PATH:
-────────────────
+----------------
 (0,0)→(0,1)→(1,1)→(2,1)→(2,2)→(3,2)→(3,3)→(3,4)
 
 ALGORITHM:
-──────────
+----------
 function solveMaze(maze, row, col):
     # Base cases
     if row == exit_row and col == exit_col:
@@ -1168,7 +972,7 @@ function solveMaze(maze, row, col):
     return False
 
 BACKTRACKING VISUALIZATION:
-═══════════════════════════
+===========================
 Stack depth represents recursion level
 Each level tries 4 directions
 
@@ -1185,12 +989,12 @@ Return True propagates up stack:
 Level 7 → Level 6 → Level 5 → ... → Level 0
 
 TIME COMPLEXITY:
-────────────────
+----------------
 O(rows × cols) in worst case (visit every cell)
 Pruning helps in practice
 
 SPACE COMPLEXITY:
-─────────────────
+-----------------
 O(rows × cols) for visited array
 O(path_length) for recursion stack (at most rows+cols)
 ```
@@ -1209,7 +1013,7 @@ O(path_length) for recursion stack (at most rows+cols)
 
 ```
 ❌ WRONG: Missing Visited Tracking
-──────────────────────────────────
+----------------------------------
 
 function wordSearch(board, word, index, row, col):
     if index == len(word):
@@ -1227,13 +1031,13 @@ function wordSearch(board, word, index, row, col):
             dfs(..., row, col-1))
 
 RESULT:
-───────
+-------
 Infinite recursion: visits same cell repeatedly
 Stack overflow
 Never finds solution or crashes
 
 EXAMPLE:
-────────
+--------
 Grid: S E
       A R
 
@@ -1243,7 +1047,7 @@ Search "SEA":
          Cycle never breaks!
 
 ✓ CORRECT: Mark and Unmark Visited
-───────────────────────────────────
+-----------------------------------
 
 function wordSearch(board, word, index, row, col):
     if index == len(word):
@@ -1268,7 +1072,7 @@ function wordSearch(board, word, index, row, col):
     return found
 
 WHY IT WORKS:
-─────────────
+-------------
 Prevents cycles within single path
 Allows cell reuse in different paths
 Correctly explores all possibilities
@@ -1280,7 +1084,7 @@ Correctly explores all possibilities
 
 ```
 ❌ WRONG: Recording Reference to Mutable State
-──────────────────────────────────────────────
+----------------------------------------------
 
 solutions = []
 
@@ -1302,12 +1106,12 @@ function permute(nums):
     return solutions
 
 RESULT:
-───────
+-------
 All solutions point to same list
 After backtracking completes, all are identical (empty or last state)
 
 TRACE:
-──────
+------
 After finding [1,2,3]:
   solutions = [[1,2,3]]  ← Reference to current
 
@@ -1319,7 +1123,7 @@ Final state:
   solutions = [[], [], [], [], [], []]  ← All empty!
 
 ✓ CORRECT: Deep Copy Solution
-──────────────────────────────
+------------------------------
 
 function backtrack():
     if len(current) == len(nums):
@@ -1328,7 +1132,7 @@ function backtrack():
     # ... rest unchanged
 
 WHY IT WORKS:
-─────────────
+-------------
 Each solution is independent copy
 Modifications don't affect recorded solutions
 All unique permutations preserved
@@ -1359,39 +1163,37 @@ All unique permutations preserved
 
 ### Pattern Map: Branch & Bound Methodology
 
+
+```mermaid
+flowchart TD
+    R["BRANCH & BOUND PARADIGM"]
+    R --> N1["Core Concepts"]
+    N1 --> N2["Systematic search for optimization"]
+    N1 --> N3["Branch: explore sub-problem spaces"]
+    N1 --> N4["Bound: compute upper/lower bounds"]
+    N1 --> N5["Prune: skip branches that can't improve best"]
+    R --> N6["Best-First Search Strategy"]
+    N6 --> N7["Priority queue ordered by bound"]
+    N6 --> N8["Process most promising nodes first"]
+    N6 --> N9["Often finds good solution early"]
+    N6 --> N10["Convergence to optimal"]
+    R --> N11["Bounding Functions"]
+    N11 --> N12["Minimization: lower bound (can't do better than this)"]
+    N11 --> N13["Maximization: upper bound (can't exceed this)"]
+    N11 --> N14["Relaxation: simplified problem solution"]
+    N11 --> N15["Greedy estimate: optimistic heuristic"]
+    R --> N16["Pruning Strategies"]
+    N16 --> N17["Fathoming: bound worse than current best"]
+    N16 --> N18["Dominance: one branch clearly superior"]
+    N16 --> N19["Infeasibility: violates constraints"]
+    N16 --> N20["Early termination: optimal proven"]
+    R --> N21["Classic Applications"]
+    N21 --> N22["Traveling Salesman Problem (TSP)"]
+    N21 --> N23["Knapsack (0/1)"]
+    N21 --> N24["Job scheduling"]
+    N21 --> N25["Integer programming"]
 ```
-BRANCH & BOUND PARADIGM
-│
-├── Core Concepts
-│   ├── Systematic search for optimization
-│   ├── Branch: explore sub-problem spaces
-│   ├── Bound: compute upper/lower bounds
-│   └── Prune: skip branches that can't improve best
-│
-├── Best-First Search Strategy
-│   ├── Priority queue ordered by bound
-│   ├── Process most promising nodes first
-│   ├── Often finds good solution early
-│   └── Convergence to optimal
-│
-├── Bounding Functions
-│   ├── Minimization: lower bound (can't do better than this)
-│   ├── Maximization: upper bound (can't exceed this)
-│   ├── Relaxation: simplified problem solution
-│   └── Greedy estimate: optimistic heuristic
-│
-├── Pruning Strategies
-│   ├── Fathoming: bound worse than current best
-│   ├── Dominance: one branch clearly superior
-│   ├── Infeasibility: violates constraints
-│   └── Early termination: optimal proven
-│
-└── Classic Applications
-    ├── Traveling Salesman Problem (TSP)
-    ├── Knapsack (0/1)
-    ├── Job scheduling
-    └── Integer programming
-```
+
 
 ---
 
@@ -1401,79 +1203,12 @@ BRANCH & BOUND PARADIGM
 
 #### Visual 1: Branch & Bound vs Pure Backtracking
 
-```
-BRANCH & BOUND vs BACKTRACKING
-════════════════════════════════
 
-Problem: Find minimum cost path (optimization)
+|  |  |
+| :--- | :--- |
+|  |  |
+|  |  |
 
-PURE BACKTRACKING (Exhaustive):
-════════════════════════════════
-Explores ALL paths to find minimum
-No early pruning based on cost
-
-               Start
-                 │
-        ┌────────┼────────┐
-      Cost=10  Cost=5   Cost=15
-        │        │        │
-    [Continue] [Continue] [Continue]
-        │        │        │
-      End=25   End=12   End=30
-        ✗        ✓        ✗
-
-Result: Must explore all 3 paths
-Best: 12 (found at path 2)
-
-BRANCH & BOUND (Optimization):
-═══════════════════════════════
-Uses bounds to prune inferior paths early
-
-               Start
-                 │
-        ┌────────┼────────┐
-    Path A    Path B    Path C
-    (cost=10) (cost=5)  (cost=15)
-        │        │        │
-    Bound=20  Bound=10  Bound=25
-                │
-            Process B first (best bound)
-            Find solution: cost=12
-            Update best=12
-                │
-            ┌───┴───┐
-        Check A  Check C
-        Bound=20 Bound=25
-         > 12     > 12
-          PRUNE    PRUNE
-            │        │
-           ✂️       ✂️
-
-Result: Only explore 1 complete path
-Best: 12 (found immediately)
-Pruned: 2 paths (bounds worse than 12)
-
-KEY DIFFERENCES:
-────────────────
-BACKTRACKING:
-- Explores all solutions
-- No optimization-based pruning
-- Time: O(b^d) where b=branching, d=depth
-
-BRANCH & BOUND:
-- Tracks best solution found so far
-- Computes bound for each branch
-- Prunes branches with bound worse than best
-- Often much faster in practice
-- Time: Still O(b^d) worst case, but avg << backtracking
-
-COMPONENTS:
-───────────
-1. BRANCH: Divide problem into subproblems
-2. BOUND: Estimate best possible solution in branch
-3. PRUNE: Skip branch if bound worse than current best
-4. UPDATE: Track best solution found
-```
 
 **Explanation:**
 - **Backtracking**: Explores all paths, finds best by exhaustion
@@ -1485,96 +1220,15 @@ COMPONENTS:
 
 #### Visual 2: Branch & Bound State Space Tree
 
-```
-BRANCH & BOUND STATE SPACE
-═══════════════════════════
 
-STRUCTURE:
-──────────
-┌─────────────┐
-│ Live Node   │ ← Currently being explored
-├─────────────┤
-│ Dead Node   │ ← Pruned (bound worse than best)
-├─────────────┤
-│ E-Node      │ ← Expansion node (generating children)
-└─────────────┘
+| Live Node | ← Currently being explored |
+| :--- | :--- |
+| Dead Node | ← Pruned (bound worse than best) |
+| E-Node | ← Expansion node (generating children) |
+|  |  |
+|  |  |
+|  |  |
 
-PRIORITY QUEUE (Best-First Search):
-────────────────────────────────────
-Orders nodes by bound (best bound = highest priority)
-Always process most promising node next
-
-Example (Minimization Problem):
-────────────────────────────────
-
-Initial: Start node with bound=0
-
-                 [Start]
-                 bound=0
-                 best=∞
-                    │
-        ┌───────────┼───────────┐
-     [Node A]    [Node B]    [Node C]
-     bound=15    bound=8     bound=20
-        │           │           │
-    Queue: [(B,8), (A,15), (C,20)]
-           ↑ Process first (best bound)
-
-Process B:
-──────────
-Partial cost: 8
-Expand B → Generate children
-
-                 [Node B]
-                 bound=8
-                    │
-        ┌───────────┼───────────┐
-     [Node D]    [Node E]    [Node F]
-     bound=12    bound=10    bound=25
-        │           │           │
-    D complete: cost=12 → Update best=12
-    
-    Queue: [(E,10), (D,12), (A,15), (C,20), (F,25)]
-           ↑ Process E next
-
-Process E:
-──────────
-                 [Node E]
-                 bound=10
-                    │
-        ┌───────────┼───────────┐
-     [Node G]    [Node H]    [Node I]
-     bound=14    bound=11    bound=30
-        │           │           │
-    H complete: cost=11 → Update best=11
-    
-    Prune G: 14 > 11 (best) ✂️
-    Prune I: 30 > 11 (best) ✂️
-    
-    Queue: [(H,11), (D,12), (A,15), (C,20), (F,25)]
-
-Process H:
-──────────
-Already complete with cost=11
-Current best=11
-
-Check remaining queue:
-──────────────────────
-D: bound=12 > 11 → Prune ✂️
-A: bound=15 > 11 → Prune ✂️
-C: bound=20 > 11 → Prune ✂️
-F: bound=25 > 11 → Prune ✂️
-
-RESULT:
-───────
-Optimal solution: H with cost=11
-Nodes explored: Start, B, E, H (4 nodes)
-Nodes pruned: A, C, D, F, G, I (6 nodes)
-Total nodes: 10 (explored 4, pruned 6)
-
-Without B&B: Would explore all 10 nodes
-With B&B: Only 4 nodes explored (60% reduction)
-```
 
 **Explanation:**
 - **Priority Queue**: Orders nodes by bound (most promising first)
@@ -1592,12 +1246,12 @@ With B&B: Only 4 nodes explored (60% reduction)
 
 ```
 TRAVELING SALESMAN PROBLEM (TSP)
-═════════════════════════════════
+=================================
 
 PROBLEM: Visit all cities exactly once, return to start, minimize distance
 
 CITIES (4 cities: A, B, C, D):
-───────────────────────────────
+-------------------------------
 
 Distance Matrix:
      A   B   C   D
@@ -1607,16 +1261,16 @@ C [ 15  35   0  30 ]
 D [ 20  25  30   0 ]
 
 LOWER BOUND (using Minimum Spanning Tree):
-═══════════════════════════════════════════
+===========================================
 
 For any tour, sum of edges ≥ MST weight + min edge back to start
 
 MST of 4 cities:
-────────────────
+----------------
 A --10-- B
-│        │
+|        |
 15      25
-│        │
+|        |
 C --30-- D
 
 MST weight = 10 + 15 + 25 = 50
@@ -1629,30 +1283,30 @@ Lower bound = 50 + 0 = 50
 (Any tour ≥ 50)
 
 BRANCH & BOUND SEARCH:
-══════════════════════
+======================
 
                     [Start A]
                     bound=50
                     path=[A]
-                       │
-        ┌──────────────┼──────────────┐
+                       |
+        +--------------+--------------+
      [A→B]          [A→C]          [A→D]
     bound=60       bound=65       bound=70
     path=[A,B]     path=[A,C]     path=[A,D]
-        │
+        |
     Process A→B first (best bound)
-        │
-    ┌───┴────────┐
+        |
+    +---|--------+
  [A→B→C]      [A→B→D]
 bound=95      bound=85
-    │            │
+    |            |
   Prune        Continue
-  (>best)         │
+  (>best)         |
               [A→B→D→C]
               cost=10+25+30+15=80
               ✓ Complete tour
               Update best=80
-                  │
+                  |
     Backtrack and check other branches:
     
     [A→C]: bound=65 < 80 → Explore
@@ -1668,20 +1322,20 @@ bound=95      bound=85
         [A→D→C→B]: cost=20+30+35+10=95 > 80 → Prune
 
 OPTIMAL SOLUTION:
-─────────────────
+-----------------
 Tour: A→B→D→C→A or A→C→D→B→A
 Cost: 80
 Nodes explored: ~8-10 (depends on order)
 Nodes pruned: ~6 (bound worse than 80)
 
 WITHOUT BRANCH & BOUND:
-───────────────────────
+-----------------------
 Total permutations: (n-1)!/2 = 3!/2 = 3
 Must check: A→B→C→D, A→B→D→C, A→C→B→D, etc.
 All 12 tours checked
 
 WITH BRANCH & BOUND:
-────────────────────
+--------------------
 Explored: ~8 nodes
 Pruned: ~6 nodes
 Speedup: Moderate for small n, exponential for large n
@@ -1703,10 +1357,10 @@ Speedup: Moderate for small n, exponential for large n
 
 ```
 0/1 KNAPSACK WITH BRANCH & BOUND
-═════════════════════════════════
+=================================
 
 PROBLEM:
-────────
+--------
 Capacity W = 15
 Items: [(value, weight), ...]
   Item 1: (10, 2)  value/weight = 5.0
@@ -1717,7 +1371,7 @@ Items: [(value, weight), ...]
 Goal: Maximize value, capacity ≤ 15
 
 UPPER BOUND (Fractional Knapsack):
-═══════════════════════════════════
+===================================
 
 Sort by value/weight ratio (descending):
   Item 1: 5.0
@@ -1736,37 +1390,37 @@ Total fractional value: 10+10+12+6=38
 Upper bound for any 0/1 solution: 38
 
 BRANCH & BOUND TREE:
-════════════════════
+====================
 
                     []
                     bound=38
                     value=0, weight=0
-                       │
-        ┌──────────────┼──────────────┐
+                       |
+        +--------------+--------------+
      [Include 1]                 [Exclude 1]
      value=10,w=2                value=0,w=0
      bound=38                    bound=28
-        │                            │
+        |                            |
     Process left first (better bound)
-        │
-    ┌───┴────────┐
+        |
+    +---|--------+
 [Include 2]   [Exclude 2]
 v=20,w=6      v=10,w=2
 bound=38      bound=34
-    │            │
+    |            |
  Continue    Continue
-    │
+    |
 [Include 3]
 v=32,w=12
 bound=38
-    │
+    |
 [Include 4]? → w=21 > 15 → Can't include
 [Exclude 4]
 v=32,w=12 ✓ Complete solution
 Update best=32
 
 Backtrack and check other branches:
-────────────────────────────────────
+------------------------------------
 
 [Exclude 3 from (Include 1, Include 2)]:
   v=20,w=6, bound=35
@@ -1783,19 +1437,19 @@ Continue checking:
 All nodes with bound < 38 explored or pruned
 
 OPTIMAL SOLUTION:
-─────────────────
+-----------------
 Items: 1, 2, 4
 Value: 10+10+18=38
 Weight: 2+4+9=15 (exactly capacity)
 
 PRUNING ANALYSIS:
-─────────────────
+-----------------
 Total possible subsets: 2^4 = 16
 Nodes explored: ~10-12
 Nodes pruned: ~4-6 (bound ≤ current best)
 
 KEY INSIGHT:
-────────────
+------------
 Fractional knapsack upper bound is optimistic
 If 0/1 solution achieves it → Optimal
 Otherwise, provides tight bound for pruning
@@ -1815,7 +1469,7 @@ Otherwise, provides tight bound for pruning
 
 ```
 ❌ WRONG: Pessimistic or Invalid Bound
-──────────────────────────────────────
+--------------------------------------
 
 Problem: TSP (minimization)
 
@@ -1827,14 +1481,14 @@ function calculate_bound(partial_tour):
     return bound
 
 RESULT:
-───────
+-------
 Bound is higher than actual cost possible
 Doesn't prune enough branches
 Explores more nodes than necessary
 Defeats purpose of branch & bound
 
 EXAMPLE:
-────────
+--------
 Partial tour: A→B, cost=10
 Unvisited: C, D
 Max edges: C→30, D→25
@@ -1845,7 +1499,7 @@ B→C (15) + C→D (20) + D→A (10) = 45
 Total: 10+45=55 << 65 (bound too loose)
 
 ✓ CORRECT: Optimistic Bound (MST or Minimum Edges)
-───────────────────────────────────────────────────
+---------------------------------------------------
 
 function calculate_bound(partial_tour):
     # Use minimum edges or MST of remaining
@@ -1856,14 +1510,14 @@ function calculate_bound(partial_tour):
     return bound
 
 WHY IT WORKS:
-─────────────
+-------------
 Provides tightest lower bound
 Any completion ≥ this bound
 Prunes more aggressively
 Reduces search space significantly
 
 EXAMPLE:
-────────
+--------
 Partial tour: A→B, cost=10
 Unvisited: C, D
 MST(C,D): 20 (min spanning tree)
@@ -1880,7 +1534,7 @@ Actual best completion: ≥ 40
 
 ```
 ❌ WRONG: Forgetting to Track Best
-──────────────────────────────────
+----------------------------------
 
 best_solution = None  # ← Never updated!
 
@@ -1894,14 +1548,14 @@ function branch_and_bound(node):
             branch_and_bound(child)
 
 RESULT:
-───────
+-------
 No pruning occurs (best_known not set)
 Explores entire search space
 Equivalent to brute force
 No optimization benefit
 
 ✓ CORRECT: Maintain and Update Best
-───────────────────────────────────
+-----------------------------------
 
 best_solution = None
 best_value = -∞  # For maximization
@@ -1920,7 +1574,7 @@ function branch_and_bound(node):
             prune(child)  # Bound not better than known
 
 WHY IT WORKS:
-─────────────
+-------------
 Tracks best solution found so far
 Uses it for pruning decisions
 Updates as better solutions discovered
@@ -1952,45 +1606,42 @@ Guarantees optimal when search completes
 
 ### Pattern Map: Amortized Analysis Techniques
 
+
+```mermaid
+flowchart TD
+    R["AMORTIZED ANALYSIS METHODOLOGY"]
+    R --> N1["Amortized Complexity Concept"]
+    N1 --> N2["Average cost over sequence of operations"]
+    N1 --> N3["Some operations expensive, many cheap"]
+    N1 --> N4["Amortized = total cost / number of operations"]
+    N1 --> N5["Smooths out occasional expensive ops"]
+    R --> N6["Analysis Methods"]
+    N6 --> N7["Aggregate Analysis"]
+    N7 --> N8["Calculate total cost for n operations"]
+    N7 --> N9["Divide by n for amortized cost"]
+    N7 --> N10["Simplest method, often sufficient"]
+    N6 --> N11["Accounting Method"]
+    N11 --> N12["Assign 'charged' cost to each operation"]
+    N11 --> N13["Build 'credit' for future expensive ops"]
+    N11 --> N14["Show credit never goes negative"]
+    N11 --> N15["Intuitive budgeting metaphor"]
+    N6 --> N16["Potential Method"]
+    N16 --> N17["Define potential function Φ on data structure"]
+    N16 --> N18["Amortized cost = actual + ΔΦ"]
+    N16 --> N19["Sum amortized costs bounds total actual"]
+    N16 --> N20["Most powerful, handles complex cases"]
+    R --> N21["Classic Examples"]
+    N21 --> N22["Dynamic Arrays (doubling strategy)"]
+    N21 --> N23["Stack operations (multipop)"]
+    N21 --> N24["Binary counter increment"]
+    N21 --> N25["Splay trees (self-adjusting)"]
+    R --> N26["Applications"]
+    N26 --> N27["Data structure design"]
+    N26 --> N28["Algorithm efficiency analysis"]
+    N26 --> N29["Competitive programming"]
+    N26 --> N30["Performance prediction"]
 ```
-AMORTIZED ANALYSIS METHODOLOGY
-│
-├── Amortized Complexity Concept
-│   ├── Average cost over sequence of operations
-│   ├── Some operations expensive, many cheap
-│   ├── Amortized = total cost / number of operations
-│   └── Smooths out occasional expensive ops
-│
-├── Analysis Methods
-│   ├── Aggregate Analysis
-│   │   ├── Calculate total cost for n operations
-│   │   ├── Divide by n for amortized cost
-│   │   └── Simplest method, often sufficient
-│   │
-│   ├── Accounting Method
-│   │   ├── Assign "charged" cost to each operation
-│   │   ├── Build "credit" for future expensive ops
-│   │   ├── Show credit never goes negative
-│   │   └── Intuitive budgeting metaphor
-│   │
-│   └── Potential Method
-│       ├── Define potential function Φ on data structure
-│       ├── Amortized cost = actual + ΔΦ
-│       ├── Sum amortized costs bounds total actual
-│       └── Most powerful, handles complex cases
-│
-├── Classic Examples
-│   ├── Dynamic Arrays (doubling strategy)
-│   ├── Stack operations (multipop)
-│   ├── Binary counter increment
-│   └── Splay trees (self-adjusting)
-│
-└── Applications
-    ├── Data structure design
-    ├── Algorithm efficiency analysis
-    ├── Competitive programming
-    └── Performance prediction
-```
+
 
 ---
 
@@ -2000,66 +1651,20 @@ AMORTIZED ANALYSIS METHODOLOGY
 
 #### Visual 1: Amortized Cost vs Worst-Case Cost
 
-```
-AMORTIZED ANALYSIS CONCEPT
-═══════════════════════════
 
-MOTIVATION:
-───────────
-Some operations occasionally expensive, but average cost low
-Worst-case per operation misleading
-Amortized analysis gives tighter bound
+| Operation | Array Size Before | Operation Cost | Notes |
+| :--- | :--- | :--- | :--- |
+| append(1) | 0 | 1 | Allocate size 1 |
+| append(2) | 1 | 2 | Full, resize to 2 (copy 1, add 1) |
+| append(3) | 2 | 1 | Space available |
+| append(4) | 2 | 4 | Full, resize to 4 (copy 2, add 1) |
+| append(5) | 4 | 1 | Space available |
+| append(6) | 4 | 1 | Space available |
+| append(7) | 4 | 1 | Space available |
+| append(8) | 4 | 8 | Full, resize to 8 (copy 4, add 1) |
+| append(9) | 8 | 1 | Space available |
+| ... | ... | ... | ... |
 
-EXAMPLE: Dynamic Array Doubling
-════════════════════════════════
-
-Sequence of n append operations:
-
-Operation | Array Size Before | Operation Cost | Notes
-──────────┼───────────────────┼────────────────┼──────
-append(1) | 0                 | 1              | Allocate size 1
-append(2) | 1                 | 2              | Full, resize to 2 (copy 1, add 1)
-append(3) | 2                 | 1              | Space available
-append(4) | 2                 | 4              | Full, resize to 4 (copy 2, add 1)
-append(5) | 4                 | 1              | Space available
-append(6) | 4                 | 1              | Space available
-append(7) | 4                 | 1              | Space available
-append(8) | 4                 | 8              | Full, resize to 8 (copy 4, add 1)
-append(9) | 8                 | 1              | Space available
-...       | ...               | ...            | ...
-
-COSTS BREAKDOWN:
-────────────────
-Cheap operations (no resize): O(1) each
-Expensive operations (resize): O(current_size) each
-  - Happens at sizes: 1, 2, 4, 8, 16, ..., 2^k
-
-Total cost for n operations:
-────────────────────────────
-Cheap ops: ~n operations × 1 = n
-Expensive ops: 1+2+4+8+...+2^(log n) = 2n-1 (geometric series)
-
-Total: n + (2n-1) = 3n-1 ≈ 3n
-
-Amortized cost per operation:
-──────────────────────────────
-Total cost / n operations = 3n / n = 3 = O(1)
-
-CONCLUSION:
-───────────
-Worst-case per operation: O(n) (expensive resize)
-Amortized cost per operation: O(1)
-Amortized analysis provides much tighter bound!
-
-VISUALIZATION:
-──────────────
-Operation:  1  2  3  4  5  6  7  8  9  10  11  12  13  14  15  16  17
-Cost:       1  2  1  4  1  1  1  8  1   1   1   1   1   1   1  16   1
-            ↑  ↑     ↑           ↑                             ↑
-         Resize  Resize      Resize                        Resize
-
-Average: Total cost ~33 / 17 ops ≈ 2 (approaches O(1) as n grows)
-```
 
 **Explanation:**
 - **Occasional Expensive**: Resize operations cost O(n)
@@ -2075,76 +1680,18 @@ Average: Total cost ~33 / 17 ops ≈ 2 (approaches O(1) as n grows)
 
 #### Visual 1: Aggregate Analysis of Dynamic Array
 
-```
-AGGREGATE ANALYSIS METHOD
-══════════════════════════
 
-DEFINITION:
-───────────
-Calculate TOTAL cost for n operations
-Divide by n to get amortized cost per operation
+| Op | Size | Action | Cost | Running Total |
+| :--- | :--- | :--- | :--- | :--- |
+| 1 | 0→1 | Resize | 1 | 1 |
+| 2 | 1→2 | Resize | 2 | 3 |
+| 3 | 2 | Append | 1 | 4 |
+| 4 | 2→4 | Resize | 4 | 8 |
+| 5-7 | 4 | Append×3 | 3 | 11 |
+| 8 | 4→8 | Resize | 8 | 19 |
+| 9-15 | 8 | Append×7 | 7 | 26 |
+| 16 | 8→16 | Resize | 16 | 42 |
 
-EXAMPLE: Dynamic Array with n appends
-══════════════════════════════════════
-
-Starting capacity: 1
-Doubling strategy: When full, allocate 2× capacity, copy elements
-
-COST BREAKDOWN:
-───────────────
-n operations total
-
-Cheap appends (no resize):
-  How many? n - (# of resizes)
-  # of resizes = log₂(n) (at sizes 1,2,4,8,...,n)
-  Cheap appends ≈ n - log₂(n) ≈ n
-  Cost per cheap: 1
-  Total cheap cost: n × 1 = n
-
-Expensive appends (with resize):
-  Happen at sizes: 1, 2, 4, 8, ..., 2^⌊log₂ n⌋
-  Cost at size k: k (copy k elements) + 1 (insert) ≈ k
-  
-  Total resize cost:
-  1 + 2 + 4 + 8 + ... + 2^⌊log₂ n⌋
-  = 2^(⌊log₂ n⌋+1) - 1  (geometric series formula)
-  ≈ 2n - 1 (when 2^⌊log₂ n⌋ ≈ n)
-
-TOTAL COST:
-───────────
-Cheap + Expensive = n + (2n-1) = 3n - 1
-
-AMORTIZED COST:
-───────────────
-Total / n = (3n-1) / n ≈ 3 = O(1)
-
-STEP-BY-STEP FOR n=16:
-═══════════════════════
-
-Op  | Size | Action    | Cost | Running Total
-────┼──────┼───────────┼──────┼──────────────
-1   | 0→1  | Resize    | 1    | 1
-2   | 1→2  | Resize    | 2    | 3
-3   | 2    | Append    | 1    | 4
-4   | 2→4  | Resize    | 4    | 8
-5-7 | 4    | Append×3  | 3    | 11
-8   | 4→8  | Resize    | 8    | 19
-9-15| 8    | Append×7  | 7    | 26
-16  | 8→16 | Resize    | 16   | 42
-
-Total cost: 42
-Amortized: 42/16 ≈ 2.6 ≈ O(1)
-
-(As n grows, approaches 3)
-
-GENERAL FORMULA:
-────────────────
-For n operations:
-  Resize costs: 1+2+4+...+2^⌊log₂ n⌋ ≤ 2n
-  Regular costs: n
-  Total: ≤ 3n
-  Amortized: O(1)
-```
 
 **Explanation:**
 - **Total Cost**: Sum all operation costs across sequence
@@ -2160,75 +1707,16 @@ For n operations:
 
 #### Visual 1: Accounting Method for Stack Multipop
 
-```
-ACCOUNTING METHOD (BANKER'S METHOD)
-════════════════════════════════════
 
-CONCEPT:
-────────
-Assign "charged cost" to each operation (may differ from actual)
-Build "credit" (charged > actual) for future expensive operations
-Credit must never go negative (sufficient to pay for all ops)
+| Op | Stack State | Credit on Stack | Charged | Credit Balance |
+| :--- | :--- | :--- | :--- | :--- |
+| Push(A) | [A] | 1 (on A) | 2 | +1 |
+| Push(B) | [A,B] | 1+1 = 2 | 2 | +1 (total +2) |
+| Push(C) | [A,B,C] | 1+1+1 = 3 | 2 | +1 (total +3) |
+| Pop() | [A,B] | 1+1 = 2 | 0 | Use credit from C |
+| Multipop(5) | [] | 0 | 0 | Use credits from A,B |
+| Push(D) | [D] | 1 | 2 | +1 |
 
-EXAMPLE: Stack with Multipop
-═════════════════════════════
-
-OPERATIONS:
-───────────
-1. Push(x): Add element to stack
-2. Pop(): Remove one element
-3. Multipop(k): Remove min(k, stack_size) elements
-
-ACTUAL COSTS:
-─────────────
-Push: O(1) actual
-Pop: O(1) actual
-Multipop(k): O(min(k, stack_size)) actual (can be O(n))
-
-CHARGED COSTS (Accounting):
-────────────────────────────
-Push: Charge 2 (actual=1, credit=1)
-  - 1 pays for push itself
-  - 1 stored as credit for future pop
-Pop: Charge 0 (use credit from push)
-  - Use the credit stored with element
-Multipop: Charge 0 (use credits from pushes)
-  - Use credits stored with each popped element
-
-INVARIANT:
-──────────
-Every element on stack has 1 credit
-Credit ≥ 0 always (never goes negative)
-
-SEQUENCE EXAMPLE:
-═════════════════
-
-Op         | Stack State | Credit on Stack | Charged | Credit Balance
-───────────┼─────────────┼─────────────────┼─────────┼────────────────
-Push(A)    | [A]         | 1 (on A)        | 2       | +1
-Push(B)    | [A,B]       | 1+1 = 2         | 2       | +1 (total +2)
-Push(C)    | [A,B,C]     | 1+1+1 = 3       | 2       | +1 (total +3)
-Pop()      | [A,B]       | 1+1 = 2         | 0       | Use credit from C
-Multipop(5)| []          | 0               | 0       | Use credits from A,B
-Push(D)    | [D]         | 1               | 2       | +1
-
-Total charged: 2+2+2+0+0+2 = 8 for 6 operations
-Amortized per op: 8/6 ≈ 1.33 = O(1)
-
-PROOF OF CORRECTNESS:
-─────────────────────
-1. Each push charges 2, stores 1 credit with element
-2. Each pop/multipop uses stored credits
-3. Credit balance never negative (each popped element has credit)
-4. Total charged cost = O(n) for n operations
-5. Amortized: O(1) per operation
-
-KEY INSIGHT:
-────────────
-"Overpay" for cheap operations (push)
-Use savings for expensive operations (multipop)
-Like budgeting: save during good times for bad times
-```
 
 **Explanation:**
 - **Charged Cost**: What we "charge" (may be more than actual)
@@ -2244,97 +1732,19 @@ Like budgeting: save during good times for bad times
 
 #### Visual 1: Potential Method for Binary Counter
 
-```
-POTENTIAL METHOD (PHYSICIST'S METHOD)
-══════════════════════════════════════
 
-CONCEPT:
-────────
-Define potential function Φ(data structure state)
-Φ measures "stored energy" or "disorder"
-Amortized cost = Actual cost + ΔΦ (change in potential)
+| Counter | Binary | Φ | Actual | ΔΦ | Amortized |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 0 | 0000 | 0 | - | - | - |
+| 1 | 0001 | 1 | 1 | +1 | 2 |
+| 2 | 0010 | 1 | 2 | 0 | 2 |
+| 3 | 0011 | 2 | 1 | +1 | 2 |
+| 4 | 0100 | 1 | 3 | -2 | 1 |
+| 5 | 0101 | 2 | 1 | +1 | 2 |
+| 6 | 0110 | 2 | 2 | 0 | 2 |
+| 7 | 0111 | 3 | 1 | +1 | 2 |
+| 8 | 1000 | 1 | 4 | -3 | 1 |
 
-KEY PROPERTY:
-─────────────
-Sum of amortized costs = Sum of actual costs + (Φ_final - Φ_initial)
-
-If Φ_initial ≤ Φ_final, then:
-  Sum amortized ≥ Sum actual (valid upper bound)
-
-EXAMPLE: Binary Counter Increment
-═══════════════════════════════════
-
-OPERATION: Increment n-bit binary counter
-ACTUAL COST: Number of bit flips per increment
-
-POTENTIAL FUNCTION:
-───────────────────
-Φ(counter) = # of 1-bits in counter
-
-INTUITION: More 1s → more potential to flip
-
-INCREMENT ANALYSIS:
-═══════════════════
-
-Suppose counter has t trailing 1s:
-
-Before: ...X 1 1 1 1 1  (t trailing 1s)
-After:  ...Y 0 0 0 0 0  (all flipped to 0, one 0 flipped to 1)
-         ↑
-      Changes from 0→1
-
-Actual cost: t+1 bit flips
-  - Flip t trailing 1s to 0
-  - Flip one 0 to 1
-
-Potential change:
-  Before: t trailing 1s (plus others)
-  After: 0 trailing 1s, one new 1 (plus others)
-  ΔΦ = -t + 1 = 1 - t
-
-Amortized cost:
-  Actual + ΔΦ = (t+1) + (1-t) = 2 = O(1)
-
-EXAMPLE TRACE:
-══════════════
-
-Counter | Binary | Φ | Actual | ΔΦ   | Amortized
-────────┼────────┼───┼────────┼──────┼──────────
-0       | 0000   | 0 | -      | -    | -
-1       | 0001   | 1 | 1      | +1   | 2
-2       | 0010   | 1 | 2      | 0    | 2
-3       | 0011   | 2 | 1      | +1   | 2
-4       | 0100   | 1 | 3      | -2   | 1
-5       | 0101   | 2 | 1      | +1   | 2
-6       | 0110   | 2 | 2      | 0    | 2
-7       | 0111   | 3 | 1      | +1   | 2
-8       | 1000   | 1 | 4      | -3   | 1
-
-OBSERVATIONS:
-─────────────
-1. Amortized cost always ≤ 2 (O(1))
-2. Expensive operations (many flips) have negative ΔΦ
-3. Cheap operations (few flips) have positive ΔΦ
-4. Potential smooths out cost fluctuations
-
-TOTAL COST FOR n INCREMENTS:
-─────────────────────────────
-
-Sum of actual costs:
-  Bit 0 flips: n times (every increment)
-  Bit 1 flips: n/2 times (every 2 increments)
-  Bit 2 flips: n/4 times (every 4 increments)
-  ...
-  Total: n + n/2 + n/4 + ... = n(1 + 1/2 + 1/4 + ...) = 2n
-
-Sum of amortized costs:
-  2 per operation × n operations = 2n
-
-Verification:
-  Φ_final - Φ_initial = (# of 1s in n) - 0 ≤ log₂(n)
-  Sum actual + (Φ_final - Φ_initial) ≈ 2n + log₂(n)
-  Sum amortized = 2n ✓
-```
 
 **Explanation:**
 - **Potential Function**: Captures "stored energy" in data structure
@@ -2350,90 +1760,13 @@ Verification:
 
 #### Visual 1: Three Methods Compared
 
-```
-DYNAMIC ARRAY: ALL THREE AMORTIZED ANALYSIS METHODS
-═════════════════════════════════════════════════════
 
-Problem: n append operations on dynamic array (doubling strategy)
+| Method | Amortized | Ease of Use | Power |
+| :--- | :--- | :--- | :--- |
+| Aggregate | O(1) | Easiest | Simple total costs |
+| Accounting | O(1) | Medium | Intuitive budgeting |
+| Potential | O(1) | Hardest | Most flexible |
 
-METHOD 1: AGGREGATE ANALYSIS
-══════════════════════════════
-
-Total cost for n operations:
-  Cheap appends: n
-  Resize costs: 1+2+4+...+2^⌊log₂ n⌋ ≤ 2n
-  Total: ≤ 3n
-
-Amortized: 3n/n = 3 = O(1)
-
-METHOD 2: ACCOUNTING METHOD
-════════════════════════════
-
-Charged costs:
-  Append: Charge 3
-    - 1 pays for append itself
-    - 1 credit for copying this element during next resize
-    - 1 credit for copying a previously-inserted element
-
-Invariant: Every element has 2 credits (enough for 2 future copies)
-
-Proof:
-  When resize from size k to 2k:
-    - Need to copy k elements
-    - Each has 2 credits (total 2k credits available)
-    - Use k credits for k copies
-    - k credits remain for future
-  Credit never goes negative ✓
-
-Amortized: Charged cost = 3 per operation = O(1)
-
-METHOD 3: POTENTIAL METHOD
-═══════════════════════════
-
-Potential function:
-  Φ(array) = 2 × size - capacity
-
-Intuition: Potential increases as array fills up
-
-Before resize:
-  size = capacity = k
-  Φ = 2k - k = k
-
-After resize:
-  size = k+1, capacity = 2k
-  Φ = 2(k+1) - 2k = 2
-
-Append WITH resize:
-  Actual cost = k+1 (copy k, insert 1)
-  ΔΦ = Φ_after - Φ_before = 2 - k
-  Amortized = (k+1) + (2-k) = 3
-
-Append WITHOUT resize:
-  Actual cost = 1
-  Before: size = s, capacity = c > s, Φ = 2s - c
-  After: size = s+1, capacity = c, Φ = 2(s+1) - c
-  ΔΦ = 2
-  Amortized = 1 + 2 = 3
-
-Amortized: 3 per operation = O(1) ✓
-
-COMPARISON OF METHODS:
-══════════════════════
-
-Method      | Amortized | Ease of Use | Power
-────────────┼───────────┼─────────────┼──────────────────
-Aggregate   | O(1)      | Easiest     | Simple total costs
-Accounting  | O(1)      | Medium      | Intuitive budgeting
-Potential   | O(1)      | Hardest     | Most flexible
-
-All three methods give same result: O(1) amortized cost!
-
-WHEN TO USE WHICH:
-──────────────────
-Aggregate: When total cost easy to compute directly
-Accounting: When "saving up" metaphor is natural
-Potential: When operations have complex interdependencies
-```
 
 **Explanation:**
 - **All Three Methods**: Aggregate, Accounting, Potential all work
@@ -2449,25 +1782,25 @@ Potential: When operations have complex interdependencies
 
 ```
 ❌ WRONG: Claiming Amortized = Worst-Case
-─────────────────────────────────────────
+-----------------------------------------
 
 "Dynamic array append is O(n) because resize costs O(n)"
 
 RESULT:
-───────
+-------
 Misleading: Ignores that most appends are O(1)
 Overstates actual cost
 Amortized analysis provides tighter bound
 
 ✓ CORRECT: Distinguish Worst-Case vs Amortized
-───────────────────────────────────────────────
+-----------------------------------------------
 
 Dynamic array append:
   Worst-case per operation: O(n) (when resize happens)
   Amortized per operation: O(1) (averaged over sequence)
 
 WHY DIFFERENT:
-──────────────
+--------------
 Worst-case: Single operation in isolation
 Amortized: Average over sequence of operations
 Amortized ≤ Worst-case (often much smaller)
@@ -2479,7 +1812,7 @@ Amortized ≤ Worst-case (often much smaller)
 
 ```
 ❌ WRONG: Insufficient Charged Cost
-───────────────────────────────────
+-----------------------------------
 
 Stack with multipop:
   Push: Charge 1 (actual=1, credit=0)
@@ -2487,25 +1820,25 @@ Stack with multipop:
   Multipop(k): Charge 0 (actual=k)
 
 RESULT:
-───────
+-------
 After pop operations, credit goes negative
 Analysis invalid (can't pay for operations)
 
 EXAMPLE:
-────────
+--------
 Push(A): Charged=1, Credit=0
 Push(B): Charged=1, Credit=0
 Multipop(2): Charged=0, Actual=2, Credit=-2 ✗ INVALID!
 
 ✓ CORRECT: Charge Enough to Never Go Negative
-──────────────────────────────────────────────
+----------------------------------------------
 
 Push: Charge 2 (actual=1, credit=1 stored with element)
 Pop: Charge 0 (use credit from element)
 Multipop: Charge 0 (use credits from popped elements)
 
 EXAMPLE:
-────────
+--------
 Push(A): Charged=2, Credit=+1 (on A)
 Push(B): Charged=2, Credit=+1 (on B), Total=2
 Multipop(2): Charged=0, Actual=2, Use 2 credits ✓
@@ -2810,3 +2143,6 @@ Use this checklist to verify your understanding:
 
 **Remember:** Backtracking is DFS with state restoration; Branch & Bound adds bounds for optimization; Amortized analysis smooths occasional expensive operations over sequences.
 
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

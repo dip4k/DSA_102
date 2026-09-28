@@ -1,4 +1,10 @@
 # 📚 WEEK 10: DYNAMIC PROGRAMMING I - FUNDAMENTALS
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Comprehensive Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
+
+---
+
 ## FULL WEEKLY PLAYBOOK
 
 **Document Status:** ✅ PRODUCTION-READY PLAYBOOK
@@ -29,25 +35,25 @@
 ```
                     WEEK 10 CURRICULUM ARC
                     
-Week 9 (Prior):   Understand recursion       │  Prerequisite
-                  & backtracking patterns     │
-                            │                │
-                            ▼                │
-Day 1 (This):     Overlapping subproblems    │  DP Foundation
-                  Optimal substructure       │
-                  Memoization patterns       │
-                            │                │
-                            ▼                │
-Day 2-3:          1D & 2D DP patterns       │  Core Patterns
-                  Sequences & Grids         │
-                            │                │
-                            ▼                │
-Day 4-5:          Advanced DP               │  Mastery
-                  Story-driven problems     │
-                            │                │
-                            ▼                │
-Week 11 (Future): Interval DP                │  Advanced Applications
-                  Tree DP, Game DP           │
+Week 9 (Prior):   Understand recursion       |  Prerequisite
+                  & backtracking patterns     |
+                            |                |
+                            ▼                |
+Day 1 (This):     Overlapping subproblems    |  DP Foundation
+                  Optimal substructure       |
+                  Memoization patterns       |
+                            |                |
+                            ▼                |
+Day 2-3:          1D & 2D DP patterns       |  Core Patterns
+                  Sequences & Grids         |
+                            |                |
+                            ▼                |
+Day 4-5:          Advanced DP               |  Mastery
+                  Story-driven problems     |
+                            |                |
+                            ▼                |
+Week 11 (Future): Interval DP                |  Advanced Applications
+                  Tree DP, Game DP           |
 ```
 
 ### Weekly Outcomes
@@ -126,23 +132,20 @@ Result:
 
 **Definition:** Same subproblem solved multiple times in recursive tree
 
-```
-❌ PROBLEM (without memoization):
-    fib(5)
-    ├─ fib(4)
-    │  ├─ fib(3) ◄─ RECOMPUTED LATER
-    │  └─ fib(2)
-    └─ fib(3) ◄─ SAME WORK AGAIN!
 
-✅ SOLUTION (with memoization):
-    fib(5)
-    ├─ fib(4)  → compute, cache fib(4)
-    │  ├─ fib(3) → compute, cache fib(3)
-    │  └─ fib(2) → compute, cache fib(2)
-    └─ fib(3) → RETURN FROM CACHE! (O(1))
-
-Benefit: Transforms O(2^n) to O(n)
+```mermaid
+flowchart TD
+    R["❌ PROBLEM (without memoization)"]
+    R --> N1["fib(4)"]
+    N1 --> N2["fib(3) ◄ RECOMPUTED LATER"]
+    N1 --> N3["fib(2)"]
+    R --> N4["fib(3) ◄ SAME WORK AGAIN!"]
+    R --> N5["fib(4)  → compute, cache fib(4)"]
+    N5 --> N6["fib(3) → compute, cache fib(3)"]
+    N5 --> N7["fib(2) → compute, cache fib(2)"]
+    R --> N8["fib(3) → RETURN FROM CACHE! (O(1))"]
 ```
+
 
 ### Core Concept 2: Optimal Substructure
 
@@ -192,38 +195,20 @@ function solve(n, memo):
 
 **Fibonacci Example:**
 
+
+```mermaid
+flowchart TD
+    R["Top-Down DP (Recursive with caching)"]
+    R --> N1["fib(4) [not in memo]"]
+    N1 --> N2["fib(3) [not in memo]"]
+    N2 --> N3["fib(2) [not in memo]"]
+    N3 --> N4["fib(1) → return 1, cache fib(1)=1"]
+    N3 --> N5["fib(0) → return 0, cache fib(0)=0"]
+    N2 --> N6["fib(1) [IN CACHE] → return 1"]
+    N1 --> N7["fib(2) [IN CACHE] → return 1"]
+    R --> N8["fib(3) [IN CACHE] → return 2"]
 ```
-Top-Down DP (Recursive with caching):
 
-function fib(n, memo = {}):
-    if n in memo:
-        return memo[n]
-    
-    if n <= 1:
-        return n
-    
-    memo[n] = fib(n-1, memo) + fib(n-2, memo)
-    return memo[n]
-
-Trace for fib(5):
-  fib(5)
-  ├─ fib(4) [not in memo]
-  │  ├─ fib(3) [not in memo]
-  │  │  ├─ fib(2) [not in memo]
-  │  │  │  ├─ fib(1) → return 1, cache fib(1)=1
-  │  │  │  └─ fib(0) → return 0, cache fib(0)=0
-  │  │  │  → fib(2) = 1, cache memo[2]=1
-  │  │  ├─ fib(1) [IN CACHE] → return 1
-  │  │  → fib(3) = 1+1 = 2, cache memo[3]=2
-  │  ├─ fib(2) [IN CACHE] → return 1
-  │  → fib(4) = 2+1 = 3, cache memo[4]=3
-  ├─ fib(3) [IN CACHE] → return 2
-  → fib(5) = 3+2 = 5
-
-Operations: 5 calls (one per unique subproblem)
-Time: O(n)
-Space: O(n) for memo + O(n) for recursion stack = O(n)
-```
 
 ### Core Concept 4: Tabulation (Bottom-Up DP)
 
@@ -281,38 +266,16 @@ Space: O(n) for dp array
 
 ### Comparison: Top-Down vs Bottom-Up
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    TOP-DOWN (MEMOIZATION)                   │
-├─────────────────────────────────────────────────────────────┤
-│ Approach:          Recursive from full problem down         │
-│ Code style:        Natural, intuitive                       │
-│ Space (memory):    Stack frames + memo table                │
-│ All subproblems:   Only computes needed subproblems        │
-│ Risk:              Stack overflow for very deep recursion  │
-│                                                              │
-│ Use when:                                                   │
-│ • Problem structure naturally suggests recursion           │
-│ • Not all subproblems may be needed                        │
-│ • You want cleaner code                                    │
-└─────────────────────────────────────────────────────────────┘
 
-┌─────────────────────────────────────────────────────────────┐
-│                   BOTTOM-UP (TABULATION)                    │
-├─────────────────────────────────────────────────────────────┤
-│ Approach:          Iterative from base cases up             │
-│ Code style:        Explicit loop structure                  │
-│ Space (memory):    Just the DP table (no stack frames)      │
-│ All subproblems:   Computes all possible states             │
-│ Risk:              May compute unnecessary subproblems      │
-│                                                              │
-│ Use when:                                                   │
-│ • Iteration order is clear                                 │
-│ • You need guaranteed O(1) space per state access          │
-│ • Deep recursion could overflow                            │
-│ • Performance is critical                                  │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    R["State"]
+    R --> N1["State"]
+    R --> N2["State"]
+    R --> N3["State"]
+    R --> N4["State"]
 ```
+
 
 ### Real-World Application: Stock Trading Simulation
 
@@ -1960,27 +1923,21 @@ Space complexity: O(_______)
 
 ### Problem Recognition Flowchart
 
+
+```mermaid
+flowchart TD
+    R["Problem Given"]
+    R --> N1["State"]
+    R --> N2["State"]
 ```
-                    Problem Given
-                         |
-                         ▼
-            Is it a sequence problem?
-                    Yes/No
-                    /      \
-        ┌──────────┘        └──────────┐
-        ▼                               ▼
-    Maximize/Min        Is it 2D (grid/string)?
-    sum/subarray            Yes/No
-        |                   /      \
-     Kadane         ┌──────┘        └──────┐
-    LIS/LDS         ▼                      ▼
-   Intervals    Grid/String          Other
-                 Edit Dist           (custom DP)
-                 LCS
-```
+
 
 ---
 
 **End of Week 10 Full Playbook**
 
 **Total Coverage: 112,000+ words | 35+ chapters | 80+ problems | 20+ real systems | 100% mastery**
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

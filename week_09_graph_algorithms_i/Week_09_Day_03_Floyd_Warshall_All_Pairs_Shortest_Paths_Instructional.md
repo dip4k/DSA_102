@@ -1,11 +1,12 @@
 # 📘 Week 09 Day 03: All-Pairs Shortest Paths: Floyd–Warshall — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 09 | **Day:** 03
-- **Category:** Graph Algorithms / Shortest Paths
-- **Difficulty:** 🟡 Intermediate
-- **Real-World Impact:** Enables computation of complete distance matrices for network analysis (internet topology, social graphs, transportation networks), powers recommendation systems measuring pairwise similarity, and solves transitive closure problems in databases and knowledge graphs.
-- **Prerequisites:** Week 09 Days 01-02 (Dijkstra, Bellman–Ford), Week 08 (Graph fundamentals), Week 10 (Dynamic Programming fundamentals)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_09_Day_02_Bellman_Ford_Negative_Weights_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_09_Day_04_Minimum_Spanning_Trees_Kruskal_Prim_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -321,20 +322,16 @@ Since dist[i][j][k] depends only on dist[...][...][k-1], we can use a single 2D 
 ### The State Machine & Memory Layout
 
 **Floyd–Warshall State:**
-```
-State Variables:
-├─ dist[0..V-1][0..V-1]  : Distance matrix; dist[i][j] = shortest distance i→j
-├─ next[0..V-1][0..V-1]  : Path reconstruction; next[i][j] = next vertex on shortest i→j path
-└─ V                      : Number of vertices
 
-Memory Layout:
-┌──────────────────────────────────────────┐
-│ dist[V][V]    : 2D array of distances   │
-│ next[V][V]    : 2D array of next vertex │
-│ (optional)    : For path reconstruction │
-└──────────────────────────────────────────┘
-Total Space: O(V²)
+```mermaid
+flowchart TD
+    R["State Variables"]
+    R --> N1["dist[0..V-1][0..V-1]  : Distance matrix; dist[i][j] = shortest distance i→j"]
+    R --> N2["next[0..V-1][0..V-1]  : Path reconstruction; next[i][j] = next vertex on shortest i→j path"]
+    R --> N3["V                      : Number of vertices"]
+    R --> N4["State"]
 ```
+
 
 ### 🔧 Operation 1: Floyd–Warshall Algorithm — Detailed Walkthrough
 
@@ -992,4 +989,6 @@ Floyd–Warshall represents the culmination of shortest-path algorithms: it hand
 **Overall Result:** ✅ ALL CHECKS PASSED — Content verified for accuracy and ready for delivery.
 
 ---
+---
 
+> 🧭 **Navigation:** [← Previous Day](Week_09_Day_02_Bellman_Ford_Negative_Weights_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_09_Day_04_Minimum_Spanning_Trees_Kruskal_Prim_Instructional.md)

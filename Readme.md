@@ -20,6 +20,9 @@ A narrative-driven, 19-week DSA curriculum — from RAM model and Big-O to advan
 | Interview Acceleration | 6–8 weeks, 20–30 hrs/week | Working professionals with a deadline |
 | Quick Refresh | 2–4 weeks, flexible | Experienced devs doing targeted review |
 
+> 💡 **Instructor Guidance Note:**  
+> *Not all sections or topics are mandatory. As a learner, you can adapt your pace freely. If you are preparing on an accelerated interview timeline or already feel confident with specific foundational concepts, feel free to skip or skim optional topics and prioritize high-yield patterns based on your personal interview goals.*
+
 ---
 
 ## Curriculum Map: 7 Phases, 19 Weeks
@@ -40,7 +43,7 @@ A narrative-driven, 19-week DSA curriculum — from RAM model and Big-O to advan
 
 ### Phase A — Foundations (Weeks 1–3)
 
-**Week 1: Computational Fundamentals**
+**[Week 1: Computational Fundamentals](week_01_foundations_i_computational_fundamentals/README.md)**
 - Day 1: RAM Model, Virtual Memory, Pointers
 - Day 2: Asymptotic Analysis (Big-O, Ω, Θ)
 - Day 3: Space Complexity
@@ -48,7 +51,7 @@ A narrative-driven, 19-week DSA curriculum — from RAM model and Big-O to advan
 - Day 5: Recursion II — Memoization & Advanced
 - Day 6 *(optional)*: Peak Finding (1D & 2D, MIT 6.006)
 
-**Week 2: Linear Data Structures & Binary Search**
+**[Week 2: Linear Data Structures & Binary Search](week_02_foundations_ii_linear_data_structures/README.md)**
 - Day 1: Static Arrays & Memory Layout
 - Day 2: Dynamic Arrays & Amortized Growth
 - Day 3: Linked Lists & Cache Effects
@@ -56,7 +59,7 @@ A narrative-driven, 19-week DSA curriculum — from RAM model and Big-O to advan
 - Day 5: Binary Search & Invariants
 - Day 6: Strings & Numbers
 
-**Week 3: Sorting, Heaps & Hashing**
+**[Week 3: Sorting, Heaps & Hashing](week_03_foundations_iii_sorting_and_hashing/README.md)**
 - Day 1: Elementary Sorts (Bubble, Selection, Insertion)
 - Day 2: Merge Sort & Quick Sort
 - Day 3: Heaps, Heapify & Heap Sort
@@ -67,21 +70,21 @@ A narrative-driven, 19-week DSA curriculum — from RAM model and Big-O to advan
 
 ### Phase B — Core Patterns (Weeks 4–6)
 
-**Week 4: Core Problem-Solving Patterns I**
+**[Week 4: Core Problem-Solving Patterns I](week_04_core_problem_solving_patterns_i/README.md)**
 - Day 1: Two-Pointer Techniques
 - Day 2: Sliding Window (Fixed Size)
 - Day 3: Sliding Window (Variable Size)
 - Day 4: Divide & Conquer
 - Day 5: Binary Search as a Pattern
 
-**Week 5: Tier 1 Critical Patterns** ⭐
+**[Week 5: Tier 1 Critical Patterns](week_05_tier_1_critical_patterns/README.md)** ⭐
 - Day 1: Hash Map & Hash Set Patterns
 - Day 2: Monotonic Stack
 - Day 3: Merge Operations & Interval Patterns
 - Day 4: Partition, Cyclic Sort & Kadane's Algorithm
 - Day 5: Fast-Slow Pointers & Cycle Detection
 
-**Week 6: String Manipulation Patterns**
+**[Week 6: String Manipulation Patterns](week_06_string_manipulation_patterns/README.md)**
 - Day 1: Palindrome Patterns
 - Day 2: Substring & Sliding Window
 - Day 3: Parentheses & Bracket Matching
@@ -92,35 +95,35 @@ A narrative-driven, 19-week DSA curriculum — from RAM model and Big-O to advan
 
 ### Phase C — Trees, Graphs & DP (Weeks 7–11)
 
-**Week 7: Trees & Balanced Search Trees**
+**[Week 7: Trees & Balanced Search Trees](week_07_trees_and_balanced_search_trees/README.md)**
 - Day 1: Binary Trees & Traversals
 - Day 2: Binary Search Trees (BSTs)
 - Day 3: Balanced BSTs (AVL & Red-Black)
 - Day 4: Tree Patterns (Paths, Diameter, LCA)
 - Day 5 *(optional)*: Augmented Trees & Order-Statistics
 
-**Week 8: Graph Fundamentals**
+**[Week 8: Graph Fundamentals](week_08_graph_fundamentals/README.md)**
 - Day 1: Graph Models & Representations
 - Day 2: Breadth-First Search
 - Day 3: Depth-First Search
 - Day 4: Topological Sort & Cycle Detection
 - Day 5: Connectivity, 2-Coloring & SCCs
 
-**Week 9: Graph Algorithms I — Shortest Paths & MST**
+**[Week 9: Graph Algorithms I — Shortest Paths & MST](week_09_graph_algorithms_i/README.md)**
 - Day 1: Dijkstra's Algorithm
 - Day 2: Bellman-Ford & Negative Cycles
 - Day 3: Floyd-Warshall (All-Pairs Shortest Paths)
 - Day 4: MST — Kruskal & Prim
 - Day 5: Union-Find (Disjoint Set Union)
 
-**Week 10: Dynamic Programming I — Fundamentals**
+**[Week 10: Dynamic Programming I — Fundamentals](week_10_dynamic_programming_i_fundamentals/README.md)**
 - Day 1: DP Basics, Memoization vs Tabulation
 - Day 2: 1D DP (Stairs, House Robber, Coin Change)
 - Day 3: 2D DP (Grids, Edit Distance)
 - Day 4: Sequence DP (LCS, LIS)
 - Day 5 *(optional)*: Story-Driven DP Problems
 
-**Week 11: Dynamic Programming II — Advanced**
+**[Week 11: Dynamic Programming II — Advanced](week_11_dp_ii_advanced/README.md)**
 - Day 1: DP on Trees (Diameter, Independent Set)
 - Day 2: DP on DAGs (Topological Order, Path Counting)
 - Day 3: Bitmask & Subset DP (TSP, Hamiltonian Paths)
@@ -131,14 +134,14 @@ A narrative-driven, 19-week DSA curriculum — from RAM model and Big-O to advan
 
 ### Phase D — Algorithm Paradigms (Weeks 12–13)
 
-**Week 12: Greedy Algorithms & Exchange Arguments**
+**[Week 12: Greedy Algorithms & Exchange Arguments](week_12_greedy_and_paradigms/README.md)**
 - Day 1: Greedy Fundamentals & Choice Property
 - Day 2: Interval Scheduling & Activity Selection
 - Day 3: MST as Greedy (Cut Property & Proof)
 - Day 4: Huffman Coding & Optimal Prefix Trees
 - Day 5: When Greedy Fails — Counterexamples vs DP
 
-**Week 13: Backtracking & Branch and Bound**
+**[Week 13: Backtracking & Branch and Bound](week_13_backtracking_and_branch_bound/README.md)**
 - Day 1: Backtracking Fundamentals
 - Day 2: Backtracking Problems & Pruning
 - Day 3: Branch & Bound Optimization
@@ -149,14 +152,14 @@ A narrative-driven, 19-week DSA curriculum — from RAM model and Big-O to advan
 
 ### Phase E — Integration & Extensions (Weeks 14–15)
 
-**Week 14: Matrix, Bitmasks & Number Theory**
+**[Week 14: Matrix, Bitmasks & Number Theory](week_14_matrix_backtracking_bits/README.md)**
 - Day 1: Matrix Traversal & Search Patterns
 - Day 2: Backtracking on Grids
 - Day 3: Bitmask Tricks & State Compression
 - Day 4 *(optional)*: Number Theory & Modular Arithmetic
 - Day 5 *(optional)*: Probability & Sampling
 
-**Week 15: Advanced Strings, Range Queries & Network Flow**
+**[Week 15: Advanced Strings, Range Queries & Network Flow](week_15_advanced_strings_flow/README.md)**
 - Day 1: Z-Algorithm & Advanced String Matching
 - Day 2: Segment Trees & Range Queries
 - Day 3: Network Flow Basics
@@ -167,13 +170,13 @@ A narrative-driven, 19-week DSA curriculum — from RAM model and Big-O to advan
 
 ### Phase F — Advanced Deep Dives (Weeks 16–18, Optional)
 
-**Week 16: Advanced Data Structures**
+**[Week 16: Advanced Data Structures](week_16_advanced_data_structures/README.md)**
 - Segment Trees, Lazy Propagation, Fenwick Tree, Matrix Exponentiation, Computational Geometry
 
-**Week 17: Advanced Graphs, HLD & FFT**
+**[Week 17: Advanced Graphs, HLD & FFT](week_17_advanced_graphs_hld_fft/README.md)**
 - Heavy-Light Decomposition, Aho-Corasick, FFT & Polynomial Operations
 
-**Week 18: Probabilistic DS & System Design**
+**[Week 18: Probabilistic DS & System Design](week_18_probabilistic_ds_systems/README.md)**
 - Bloom Filters, Count-Min Sketch, HyperLogLog, Min-Cost Flow, Algorithmic Systems Design
 
 ---

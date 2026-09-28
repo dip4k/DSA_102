@@ -1,5 +1,11 @@
 # 📊 WEEK 7: Trees & Balanced Search Trees — Visual Hybrid Support Guide
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Visual Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
+
+---
+
 **File Classification:** Visual Playbook Support Document (v12)  
 **Week:** 7 | **Days:** 1-5 (Core + Advanced)  
 **Format:** Markdown with Integrated Visual Concepts & ASCII Diagrams  
@@ -27,66 +33,34 @@
 
 ### The Tree Evolution Diagram
 
+
+```mermaid
+flowchart TD
+    R["State"]
+    R --> N1["State"]
+    N1 --> N2["State"]
+    N1 --> N3["State"]
+    N3 --> N4["State"]
+    N1 --> N5["State"]
+    N5 --> N6["State"]
+    N6 --> N7["State"]
+    R --> N8["State"]
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                      WEEK 7 PROGRESSION                      │
-├─────────────────────────────────────────────────────────────┤
-│                                                               │
-│  Day 1: Generic Trees        Day 2: Ordered Trees           │
-│  ┌──────────┐                ┌──────────┐                   │
-│  │    10    │                │    5     │ (BST invariant:   │
-│  │   /  \   │                │   / \    │  left < root)    │
-│  │  5   15  │                │  3   7   │                   │
-│  │ / \      │                └──────────┘                   │
-│  │3   7     │                                                │
-│  └──────────┘                                                │
-│  (unordered)                (ordered)                        │
-│       ↓                           ↓                          │
-│   Day 3: Balanced Trees      Day 4: Patterns                │
-│  ┌──────────┐                ┌──────────┐                   │
-│  │    5(3)  │ (AVL/RB        │   Path Sum = 22              │
-│  │   /  \   │  height=2)     │   Diameter = 4              │
-│  │ 3  7(2)  │                │   LCA = 5                   │
-│  │      \   │                │   Serialize = [...]         │
-│  │       8  │                └──────────┘                   │
-│  └──────────┘                                                │
-│  (guaranteed O(log n))       (algorithms)                    │
-│       ↓                           ↓                          │
-│       └─────────────────────────────────┐                   │
-│                                         ↓                    │
-│                        Day 5: Augmented Trees               │
-│                       ┌──────────────────┐                  │
-│                       │   5(size=3,sum=15)│                │
-│                       │   /           \   │                │
-│                       │ 3(1,3)     7(1,7) │                │
-│                       │                    │                │
-│                       │ kth smallest = O(log n)            │
-│                       │ rank queries = O(log n)            │
-│                       └──────────────────┘                  │
-│                       (optimized queries)                   │
-└─────────────────────────────────────────────────────────────┘
-```
+
 
 ### Week 7 Conceptual Layers
 
+
+```mermaid
+flowchart TD
+    R["State"]
+    R --> N1["State"]
+    R --> N2["State"]
+    R --> N3["State"]
+    R --> N4["State"]
+    R --> N5["State"]
 ```
-┌──────────────────────────────────────────────────┐
-│ Layer 5: Query Optimization (Day 5)              │
-│ Augmentation with metadata for O(log n) queries  │
-├──────────────────────────────────────────────────┤
-│ Layer 4: Algorithm Patterns (Day 4)              │
-│ Path sum, diameter, LCA, serialization           │
-├──────────────────────────────────────────────────┤
-│ Layer 3: Performance Guarantee (Day 3)           │
-│ Balance invariant for O(log n) height            │
-├──────────────────────────────────────────────────┤
-│ Layer 2: Ordering (Day 2)                        │
-│ BST invariant: left < parent < right             │
-├──────────────────────────────────────────────────┤
-│ Layer 1: Structure (Day 1)                       │
-│ Tree anatomy, traversals, memory layout          │
-└──────────────────────────────────────────────────┘
-```
+
 
 ---
 
@@ -118,46 +92,32 @@ NOT FULL              NOT COMPLETE         NOT BALANCED (h=3)
 
 ### All 4 Traversal Orders — Visual Mapping
 
-```
-Sample Tree:
-           A
-          / \
-         B   C
-        / \
-       D   E
 
-PREORDER (root, left, right):           INORDER (left, root, right):
-Visit: A → B → D → E → C                Visit: D → B → E → A → C
-       └─ parent first                         └─ sorted (if BST)
-       
-Result: [A, B, D, E, C]                Result: [D, B, E, A, C]
-
-POSTORDER (left, right, root):          LEVEL-ORDER (BFS):
-Visit: D → E → B → C → A                Visit: A → B → C → D → E
-       └─ parent last                          └─ breadth-first
-       
-Result: [D, E, B, C, A]                Result: [A, B, C, D, E]
+```mermaid
+flowchart TD
+    R["Sample Tree"]
+    R --> N1["parent first                          sorted (if BST)"]
+    R --> N2["parent last                           breadth-first"]
 ```
+
 
 ### Recursion Call Stack Visualization (Preorder)
 
-```
-preorder(A)
-│
-├─ print A
-├─ preorder(B)
-│  ├─ print B
-│  ├─ preorder(D)
-│  │  └─ print D
-│  ├─ preorder(E)
-│  │  └─ print E
-│  
-├─ preorder(C)
-│  └─ print C
 
-Call Stack Depth = Tree Height = 3
-Stack Frames: A → B → D (max 3)
+```mermaid
+flowchart TD
+    R["preorder(A)"]
+    R --> N1["print A"]
+    R --> N2["preorder(B)"]
+    N2 --> N3["print B"]
+    N2 --> N4["preorder(D)"]
+    N4 --> N5["print D"]
+    N2 --> N6["preorder(E)"]
+    N6 --> N7["print E"]
+    R --> N8["preorder(C)"]
+    N8 --> N9["print C"]
 ```
+
 
 ### Iterative Traversal Using Explicit Stack
 
@@ -409,23 +369,17 @@ so this tree might not be perfectly valid RB)
 
 ### AVL vs Red-Black Trade-offs
 
-```
-┌────────────────┬────────────────┬────────────────┐
-│ Property       │ AVL            │ Red-Black      │
-├────────────────┼────────────────┼────────────────┤
-│ Height         │ ~1.0×log₂(n)   │ ~1.5×log₂(n)   │
-│ Balance        │ Strict ±1      │ Loose (colors) │
-│ Rotations/ins  │ ~1 avg         │ ~1 avg (fewer) │
-│ Worst case     │ ~2 rotations   │ ~3 rotations   │
-│ Lookup speed   │ Faster (tighter)│ Slightly slower│
-│ Insert speed   │ Slower (rotate) │ Faster        │
-│ Production use │ Rare (LLVM)    │ Common (Java)  │
-└────────────────┴────────────────┴────────────────┘
 
-In practice:
-AVL: ▓▓▓▓░░ (balance, fewer searches)
-RB:  ▓▓▓░░░ (practicality, fewer rotations)
-```
+| Property | AVL | Red-Black |
+| :--- | :--- | :--- |
+| Height | ~1.0×log₂(n) | ~1.5×log₂(n) |
+| Balance | Strict ±1 | Loose (colors) |
+| Rotations/ins | ~1 avg | ~1 avg (fewer) |
+| Worst case | ~2 rotations | ~3 rotations |
+| Lookup speed | Faster (tighter) | Slightly slower |
+| Insert speed | Slower (rotate) | Faster |
+| Production use | Rare (LLVM) | Common (Java) |
+
 
 ---
 
@@ -503,30 +457,14 @@ Trace visualization:
 
 ### Serialization — Preorder with Null Markers
 
+
+```mermaid
+flowchart TD
+    R["Tree           Serialization"]
+    R --> N1["Right of 1      Right of 3"]
+    N1 --> N2["Left of 1 (null)"]
 ```
-Tree:           Serialization:
-      1(root)   [1, 2, null, null, 3, null, null]
-     / \            ↓     ↑                  ↑
-    2   3           │     └─ Right of 1     └─ Right of 3
-                    └─ Left of 1 (null)
 
-Deserialization (reconstruct from array):
-[1, 2, null, null, 3, null, null]
-
-Read 1: Create node 1
-Read 2: Create left child of 1 = node 2
-Read null: No left child of 2
-Read null: No right child of 2
-Read 3: Create right child of 1 = node 3
-Read null: No left child of 3
-Read null: No right child of 3
-Done!
-
-Result:
-      1
-     / \
-    2   3  ✓
-```
 
 ---
 
@@ -635,22 +573,15 @@ All ancestors updated from insertion point to root
 
 ### Comparison: All 5 Tree Variants
 
-```
-┌──────────────────┬────────────┬────────┬──────────┬────────────┐
-│ Tree Type        │ Order      │ Height │ Insert   │ Use Case   │
-├──────────────────┼────────────┼────────┼──────────┼────────────┤
-│ Generic Tree     │ None       │ O(n)   │ O(1)     │ Structure  │
-│ BST              │ Ordered    │ O(n)   │ O(log n) │ Search     │
-│ AVL              │ Ordered    │ O(log n)│O(log n) │ Guaranteed │
-│ Red-Black        │ Ordered    │ O(log n)│O(log n) │ Practical  │
-│ Augmented        │ Ordered    │ O(log n)│O(log n) │ Queries    │
-└──────────────────┴────────────┴────────┴──────────┴────────────┘
 
-Visual height comparison (1000 nodes):
-Generic/Degenerate: ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ (1000)
-BST (random):       ▓▓▓▓▓▓▓▓▓▓ (150)
-Balanced (AVL/RB):  ▓▓▓▓▓ (20)
-```
+| Tree Type | Order | Height | Insert | Use Case |
+| :--- | :--- | :--- | :--- | :--- |
+| Generic Tree | None | O(n) | O(1) | Structure |
+| BST | Ordered | O(n) | O(log n) | Search |
+| AVL | Ordered | O(log n) | O(log n) | Guaranteed |
+| Red-Black | Ordered | O(log n) | O(log n) | Practical |
+| Augmented | Ordered | O(log n) | O(log n) | Queries |
+
 
 ### Comparison: Insertion Scenarios
 
@@ -759,45 +690,13 @@ Order-stats (kth smallest):
 
 ### Memory Overhead Comparison
 
-```
-Data Structure Memory Use (per node):
 
-Generic/BST Node:
-  ┌─────────────────────┐
-  │ value       (8 bytes)│
-  │ left*       (8 bytes)│
-  │ right*      (8 bytes)│
-  └─────────────────────┘
-  Total: 24 bytes per node
+| height      (4 bytes) | ← +4 bytes |
+| :--- | :--- |
+| padding     (4 bytes) | ← alignment |
+| parent*     (8 bytes) | ← +8 bytes |
+| padding     (7 bytes) | ← alignment |
 
-AVL Node (add height):
-  ┌─────────────────────┐
-  │ value       (8 bytes)│
-  │ left*       (8 bytes)│
-  │ right*      (8 bytes)│
-  │ height      (4 bytes)│ ← +4 bytes
-  │ padding     (4 bytes)│ ← alignment
-  └─────────────────────┘
-  Total: 32 bytes per node
-
-Red-Black Node (add parent + color):
-  ┌─────────────────────┐
-  │ value       (8 bytes)│
-  │ left*       (8 bytes)│
-  │ right*      (8 bytes)│
-  │ parent*     (8 bytes)│ ← +8 bytes
-  │ color       (1 byte) │
-  │ padding     (7 bytes)│ ← alignment
-  └─────────────────────┘
-  Total: 40 bytes per node
-
-For 1 million nodes:
-  Basic BST: 24 MB
-  AVL:       32 MB (+8 MB / +33%)
-  Red-Black: 40 MB (+16 MB / +67%)
-  
-Negligible overhead for query benefits ✓
-```
 
 ---
 
@@ -896,7 +795,7 @@ INSIGHT 3: Rotations Are O(1) Local Operations
 LeftRotate(x):                   RightRotate(y):
      y        O(1) pointers        x
     / \       updated!           / \
-   x   c     ────────→          a   y
+   x   c     --------→          a   y
 
 Cost: ~6 pointer assignments ✓
 
@@ -916,30 +815,13 @@ Choose based on problem needs!
 
 ### Diagram Conventions Used Throughout Week 7
 
+
+```mermaid
+flowchart TD
+    R["Node Notation"]
+    R --> N1["← special edge (parent pointer, etc.)"]
 ```
-Node Notation:
-  5        ← value only
-  
-  5(3)     ← value, augmented size
-  
-  5(B)     ← value, color (Red-Black)
-  
-  5(BF=0)  ← value, balance factor (AVL)
 
-Edge Notation:
-  /\       ← normal children
-  
-  └─       ← special edge (parent pointer, etc.)
-
-Traversal Notation:
-  → ← ↘ ↙  ← direction of travel
-
-Operation Notation:
-  ✓ Correct / Valid
-  ✗ Invalid / Wrong
-  → Transformation
-  ⇒ Implies
-```
 
 ### Color/Emphasis Scheme
 
@@ -1012,3 +894,6 @@ Complexity:
 **Diagram Count: 38 ASCII diagrams + descriptions**  
 **Coverage:** All 5 days, all major concepts, comparison tables, memory layouts, complexity analysis
 
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

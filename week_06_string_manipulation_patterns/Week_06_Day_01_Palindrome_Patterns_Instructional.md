@@ -1,11 +1,12 @@
 # 📘 Week 06 Day 1: Palindrome Patterns — Engineering Guide
 
-**Metadata:**
-- **Week:** 06 | **Day:** 1
-- **Category:** String Patterns
-- **Difficulty:** 🟡 Intermediate
-- **Real-World Impact:** Palindrome detection powers text editors, DNA sequence analysis, and spam filtering systems that need to identify symmetric patterns in data streams.
-- **Prerequisites:** Week 02 (Arrays, Strings), Week 04 (Two-Pointers, Sliding Windows)
+
+
+
+
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_06_Day_02_Substring_Sliding_Window_Patterns_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -178,31 +179,20 @@ This is the simplest check. No preprocessing, no clever tricks. Just the symmetr
 
 **Inline Trace:**
 
-```
-String: "A man a plan a canal Panama" (ignoring spaces & case)
-Normalized: "amanaplanacanalpanama" (length 21)
 
-State (left, right, char_left, char_right):
-┌─────────────────────────────────────────┐
-│ Step | L  R  Left Char  Right Char Match │
-├─────────────────────────────────────────┤
-│  0   │ 0  20    a          a       ✓   │
-│  1   │ 1  19    m          m       ✓   │
-│  2   │ 2  18    a          a       ✓   │
-│  3   │ 3  17    n          n       ✓   │
-│  4   │ 4  16    a          a       ✓   │
-│  5   │ 5  15    p          p       ✓   │
-│  6   │ 6  14    l          l       ✓   │
-│  7   │ 7  13    a          a       ✓   │
-│  8   │ 8  12    n          n       ✓   │
-│  9   │ 9  11    a          a       ✓   │
-│ 10   │10  10    c          c       ✓   │ (center)
-│ Termination: left=10, right=10 (left >= right)
-└─────────────────────────────────────────┘
+| 0 | 0  20    a          a       ✓ |
+| :--- | :--- |
+| 1 | 1  19    m          m       ✓ |
+| 2 | 2  18    a          a       ✓ |
+| 3 | 3  17    n          n       ✓ |
+| 4 | 4  16    a          a       ✓ |
+| 5 | 5  15    p          p       ✓ |
+| 6 | 6  14    l          l       ✓ |
+| 7 | 7  13    a          a       ✓ |
+| 8 | 8  12    n          n       ✓ |
+| 9 | 9  11    a          a       ✓ |
+| 10 | 10  10    c          c       ✓ |
 
-Result: All characters matched → Palindrome ✓
-Time: O(n), Space: O(1)
-```
 
 The key insight: we only iterate through n/2 positions, not n. Even though we traverse the entire string logically, we only do direct comparisons at O(n) positions.
 
@@ -267,44 +257,26 @@ This is O(n²) time: O(n) centers, each taking O(n) expansion in worst case.
 
 Let's trace the expand-around-center algorithm more carefully for a longer string:
 
-```
-String: "bananas" (length 7)
 
-ODD CENTERS:
-┌────────────────────────────────────────┐
-│ Center | Char | Expansion | Palindrome │
-├────────────────────────────────────────┤
-│   0    │  'b' │    b      │     "b"    │
-│   1    │  'a' │   bab?    │     "a"    │
-│        │      │    (b≠n)  │            │
-│   2    │  'n' │   ana     │   "ana"    │
-│        │      │  (ba match)│ (length 3) │
-│   3    │  'a' │   nanana? │  "nanana"  │
-│        │      │  (bna...  │ (length 7) │
-│        │      │   matches!)│ Full str! │
-│   4    │  'n' │    ana    │   "ana"    │
-│   5    │  'a' │     a     │     "a"    │
-│   6    │  's' │     s     │     "s"    │
-└────────────────────────────────────────┘
+| 0 | 'b' | b | "b" |
+| :--- | :--- | :--- | :--- |
+| 1 | 'a' | bab? | "a" |
+|  |  | (b≠n) |  |
+| 2 | 'n' | ana | "ana" |
+|  |  | (ba match) | (length 3) |
+| 3 | 'a' | nanana? | "nanana" |
+|  |  | (bna... | (length 7) |
+|  |  | matches!) | Full str! |
+| 4 | 'n' | ana | "ana" |
+| 5 | 'a' | a | "a" |
+| 6 | 's' | s | "s" |
+| Between 0-1 | ba? → no match |  |  |
+| Between 1-2 | an? → no match |  |  |
+| Between 2-3 | na? → no match |  |  |
+| Between 3-4 | an? → no match |  |  |
+| Between 4-5 | na? → no match |  |  |
+| Between 5-6 | as? → no match |  |  |
 
-EVEN CENTERS (between positions):
-│ Between 0-1 │  ba? → no match
-│ Between 1-2 │  an? → no match
-│ Between 2-3 │  na? → no match
-│ Between 3-4 │  an? → no match
-│ Between 4-5 │  na? → no match
-│ Between 5-6 │  as? → no match
-
-Result: Longest palindrome = "nanana" at center 3 (length 7)
-Wait... let me recalculate. "nanana" is the substring s[1:7] = "ananas", not "nanana".
-
-Actually, expanding from center 3 ('a'):
-  Compare s[2] with s[4] → 'n' with 'n' → match
-  Compare s[1] with s[5] → 'a' with 'a' → match
-  Compare s[0] with s[6] → 'b' with 's' → no match, stop
-  
-Palindrome found: s[1:6] = "anana" (length 5)
-```
 
 The algorithm correctly identifies the longest palindromic substring!
 
@@ -444,25 +416,23 @@ Mitigations:
 
 **Decision Tree:**
 
-```
-Does the problem involve palindromes?
 
-├─ "Is entire string a palindrome?"
-│  └─ Use two-pointer check: O(n) time, O(1) space ✓
-│
-├─ "Find longest palindromic substring"
-│  ├─ If n < 1000: Use expand-around-center: O(n²), simple ✓
-│  └─ If n > 10000: Use Manacher or DP: O(n), complex
-│
-├─ "Partition string into palindromes"
-│  └─ Use backtracking or DP: explore all partitions
-│
-├─ "Make string a palindrome" (add chars)
-│  └─ Reverse matching or KMP variants
-│
-└─ "Palindromic subsequence" (not substring)
-   └─ Use DP: edit distance variant
+```mermaid
+flowchart TD
+    R["Does the problem involve palindromes?"]
+    R --> N1["'Is entire string a palindrome?'"]
+    N1 --> N2["Use two-pointer check: O(n) time, O(1) space ✓"]
+    R --> N3["'Find longest palindromic substring'"]
+    N3 --> N4["If n < 1000: Use expand-around-center: O(n²), simple ✓"]
+    N3 --> N5["If n > 10000: Use Manacher or DP: O(n), complex"]
+    R --> N6["'Partition string into palindromes'"]
+    N6 --> N7["Use backtracking or DP: explore all partitions"]
+    R --> N8["'Make string a palindrome' (add chars)"]
+    N8 --> N9["Reverse matching or KMP variants"]
+    R --> N10["'Palindromic subsequence' (not substring)"]
+    N10 --> N11["Use DP: edit distance variant"]
 ```
+
 
 - **✅ Use when:** String analysis, DNA matching, text validation, constraint satisfaction
 - **🛑 Avoid when:** Working with non-string data (e.g., numbers as-is without conversion)
@@ -627,3 +597,6 @@ This principle isn't limited to strings. Palindromes are one manifestation of a 
 When you encounter a new problem asking you to find or validate patterns, pause. Ask yourself: **"Is there symmetry here? Can I exploit it?"** This question, asked regularly, separates competent engineers from great ones.
 
 ---
+---
+
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_06_Day_02_Substring_Sliding_Window_Patterns_Instructional.md)

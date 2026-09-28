@@ -1,5 +1,11 @@
 # 📖 Week 01 Summary & Key Concepts: Computational Foundations Deep Reference
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Audience:** Students completing Week 01 instructional content  
 **Purpose:** Comprehensive reference for review and retention
 
@@ -33,24 +39,14 @@ Reality: True for L1 cache hits, false for disk I/O
 
 Modern 64-bit process (typical layout, high-to-low addresses):
 
-```
-High Addresses (2^63)
-┌─────────────────────────┐
-│  Kernel Space           │ (OS, not accessible)
-├─────────────────────────┤
-│  Stack (grows down)     │ Functions, locals, frames
-│  ...                    │
-│  (unused space)         │
-│  ...                    │
-│  Heap (grows up)        │ malloc, new, dynamic
-├─────────────────────────┤
-│  Data Segment           │ Globals, statics
-│  (initialized + uninit) │
-├─────────────────────────┤
-│  Code Segment (Text)    │ Instructions (read-only)
-└─────────────────────────┘
-Low Addresses (0)
-```
+
+| Kernel Space | (OS, not accessible) |
+| :--- | :--- |
+| Stack (grows down) | Functions, locals, frames |
+| Heap (grows up) | malloc, new, dynamic |
+| Data Segment | Globals, statics |
+| Code Segment (Text) | Instructions (read-only) |
+
 
 **Stack:** LIFO structure. When function calls, frame pushed (parameters + locals + return address). When function returns, frame popped. Typical size: 1-10 MB.
 
@@ -213,17 +209,16 @@ Common hidden space costs:
 
 ### Recursion Tree Visualization
 
+
+```mermaid
+flowchart TD
+    R["fact(4) = 4 * fact(3)"]
+    R --> N1["fact(3) = 3 * fact(2)"]
+    N1 --> N2["fact(2) = 2 * fact(1)"]
+    N2 --> N3["fact(1) = 1 * fact(0)"]
+    N3 --> N4["fact(0) = 1"]
 ```
-fact(4) = 4 * fact(3)
-   |
-   └─ fact(3) = 3 * fact(2)
-      |
-      └─ fact(2) = 2 * fact(1)
-         |
-         └─ fact(1) = 1 * fact(0)
-            |
-            └─ fact(0) = 1
-```
+
 
 Each box is a stack frame. Computation happens **on the way back up** (unwind).
 
@@ -349,3 +344,7 @@ Input: [10, 20, 15, 30, 25, ...]
 ---
 
 **Review Time:** 2-3 hours
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

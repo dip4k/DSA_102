@@ -1,5 +1,11 @@
 # 📚 Week_07_Guidelines.md
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Week:** 7 – Trees & Balanced Search Trees  
 **Purpose:** Complete learning framework for Week 7 mastery
 
@@ -388,3 +394,6 @@ Trees generalize linear structures into hierarchies. BSTs and balanced BSTs are 
 
 **Week 7 is foundational. Master it thoroughly. Trees unlock graph algorithms and advanced DP patterns.**
 
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

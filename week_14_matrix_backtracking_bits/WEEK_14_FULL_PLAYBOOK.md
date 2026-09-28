@@ -1,5 +1,11 @@
 # 📘 Week 14 Full Playbook: Matrices, Bitmasks & Number Theory Mastery
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Comprehensive Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
+
+---
+
 Welcome to the comprehensive, integrated study workbook for Week 14. This playbook aligns your mental models, mechanical walkthroughs, and optimized implementations across five cohesive study days. 
 
 ---
@@ -131,7 +137,7 @@ def popcount(n: int) -> int:
 ### 1. Conceptual Grounding
 To prevent register overflows on large exponents, solve equations on wrapped modular spaces.
 *   **Euclidean algorithm**: Finding greatest common divisors using modulo remainder steps:
-    gcd(a, b) = gcd(b, a \bmod b)
+    gcd(a, b) = gcd(b, a % b)
 
 ### 2. State Mechanics & Dry-Runs
 
@@ -345,3 +351,7 @@ To master Week 14's topics, combine them to solve complex problems:
 1.  **Bitmask Matrix States**: For small grids (N <= 25), store state information as single integer bitmasks. This avoids large allocations inside recursive search loops.
 2.  **Sieve Precomputation**: Precompute primes once at startup using a sieve to speed up subsequent primality checks to O(1) time.
 3.  **Compressed Path Tries**: Reduce the memory footprint of large-scale character dictionaries by merging adjacent nodes with single children into compressed paths.
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

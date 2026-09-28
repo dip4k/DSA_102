@@ -1,5 +1,11 @@
 # 🗺️ Week_02_Extended_CSharp_Problem_Solving_Implementation — COMPLETE v13
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This C# (.NET 8/9) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 **Week:** 2 – Foundations II: Linear Data Structures & Binary Search  
 **Purpose:** Master arrays, dynamic arrays, linked lists, stacks, queues, and binary search through pattern recognition, understanding, and practice  
 **Target:** Transform Week 2 topics into interview-ready C# coding skills  
@@ -1142,3 +1148,7 @@ This file combines:
 - ✅ **Progressive learning** (v11 strength) — Practice from easy to hard
 - ✅ **Interview readiness** (v13 integration) — Pass technical interviews
 - ✅ **Complete coverage** (WEEK 2 TOPICS) — Arrays, linked lists, stacks, queues, binary search
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

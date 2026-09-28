@@ -1,5 +1,11 @@
 # 📖 Week 14 Guidelines & Core Synthesis
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 Welcome to Week 14. This week represents an integration checkpoint where we bridge geometric transformations, machine-level bit manipulation, algebraic structures, and advanced string pattern matching.
 
 ---
@@ -25,3 +31,7 @@ Welcome to Week 14. This week represents an integration checkpoint where we brid
 *   [ ] Construct a standard character Trie supporting insertion, search, and prefix matching.
 *   [ ] Calculate Euler's Totient function phi(N) in O(sqrt(N)) time.
 *   [ ] Solve systems of simultaneous modular equations using the Chinese Remainder Theorem.
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

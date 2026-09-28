@@ -1,12 +1,14 @@
 # 📘 WEEK 11: DAY 01 — DYNAMIC PROGRAMMING ON TREES
 
-**Document Type:** Instructional Content & Conceptual Guide
-**Course:** DSA Mastery — Advanced Problem-Solving
-**Week:** 11 | Day: 01
-**Topic:** Dynamic Programming on Trees
-**Duration:** 120 minutes
-**Language:** Pseudo-code + C# examples where needed
-**Target Audience:** Intermediate to Advanced Learners
+
+
+
+
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_11_Day_02_DP_On_DAGs_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
+
+---
 
 ---
 
@@ -1235,24 +1237,17 @@ foreach (int val in subtree_values)
 
 ## 📊 COMPLEXITY SUMMARY TABLE
 
-```
-┌────────────────────────────────┬──────────┬──────────┐
-│ Problem                        │ Time     │ Space    │
-├────────────────────────────────┼──────────┼──────────┤
-│ Subtree Sum                    │ O(n)     │ O(n)     │
-│ Maximum Independent Set        │ O(n)     │ O(n)     │
-│ Tree Diameter                  │ O(n)     │ O(h)     │
-│ Tree Coloring (K colors)       │ O(n × K) │ O(n)     │
-│ Maximum Path Sum               │ O(n)     │ O(h)     │
-│ Tree Rerooting                 │ O(n)     │ O(n)     │
-│ Leaf Count per Subtree         │ O(n)     │ O(h)     │
-└────────────────────────────────┴──────────┴──────────┘
 
-Legend:
-n = number of nodes
-h = height of tree
-K = number of colors
-```
+| Problem | Time | Space |
+| :--- | :--- | :--- |
+| Subtree Sum | O(n) | O(n) |
+| Maximum Independent Set | O(n) | O(n) |
+| Tree Diameter | O(n) | O(h) |
+| Tree Coloring (K colors) | O(n × K) | O(n) |
+| Maximum Path Sum | O(n) | O(h) |
+| Tree Rerooting | O(n) | O(n) |
+| Leaf Count per Subtree | O(n) | O(h) |
+
 
 ---
 
@@ -1307,3 +1302,6 @@ K = number of colors
 *Duration: ~120 minutes of guided learning + practice*
 *Difficulty: Intermediate to Advanced*
 *Prerequisites: Basic tree knowledge, DP fundamentals from Week 10*
+---
+
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_11_Day_02_DP_On_DAGs_Instructional.md)

@@ -1,12 +1,12 @@
 # 📘 Week 02 Day 01: Arrays & Memory Layout — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 2 | **Day:** 1
-- **Category:** Foundations / Linear Data Structures
-- **Difficulty:** 🟢 Intermediate (builds on Week 1 RAM/memory foundations)
-- **Real-World Impact:** Arrays are the substrate of everything—every database index, cache line, GPU computation, and high-performance system relies on arrays. Understanding memory layout transforms you from "I use arrays" to "I understand why arrays are fast (and when they're slow)." This knowledge compounds through the rest of the curriculum.
-- **Prerequisites:** Week 1 (RAM model, memory hierarchy, asymptotics)
-- **MIT Alignment:** Arrays and memory layout from MIT 6.006 Lecture 2–3
+
+
+
+
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_02_Day_02_Dynamic_Arrays_Amortized_Growth_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -67,20 +67,13 @@ Arrays are the "organized library." Pointers and jumps are expensive. Contiguity
 
 Let's visualize how an array lives in memory:
 
-```
-Memory Address:  0x1000  0x1004  0x1008  0x100C  0x1010  0x1014  0x1018  0x101C ...
-                 ┌─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐
-Array int[] {    │  5  │  12 │  8  │  15 │  3  │  20 │  11 │  7  │  ... }
-                 └─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
-Index:            0     1     2     3     4     5     6     7
 
-Base Address: 0x1000 (where array[0] is stored)
-Element Size: 4 bytes (for int)
-Stride: 4 bytes (distance from one int to the next)
-
-Array[2] address = 0x1000 + 2 × 4 = 0x1008
-Array[i] address = 0x1000 + i × 4 (general formula: base + i × stride)
+```mermaid
+flowchart TD
+    R["Memory Address  0x1000  0x1004  0x1008  0x100C  0x1010  0x1014  0x1018  0x101C ..."]
+    R --> N1["Step"]
 ```
+
 
 **Key insight:** Computing the address is O(1)—just multiply and add. Accessing `array[100000]` takes the same time as accessing `array[0]` (in the RAM model).
 
@@ -88,25 +81,13 @@ Array[i] address = 0x1000 + i × 4 (general formula: base + i × stride)
 
 Modern CPUs have caches. When you access `array[0]`, the CPU doesn't just load 4 bytes; it loads an entire **cache line** (typically 64 bytes).
 
+
+```mermaid
+flowchart TD
+    R["Single cache line (64 bytes)"]
+    R --> N1["Step"]
 ```
-Single cache line (64 bytes):
-┌─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┬─────┐
-│int0 │int1 │int2 │int3 │int4 │int5 │int6 │int7 │int8 │int9 │...                              │
-└─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┴─────┘
-(each int is 4 bytes, so one cache line holds ~16 ints)
 
-When you access array[0]:
-1. CPU requests int[0] from memory
-2. Cache miss → memory fetch
-3. Memory returns entire cache line (ints 0-15)
-4. ints 1-15 are now in cache (spatial locality)
-
-When you access array[1]:
-1. Cache hit! (int[1] is already cached)
-2. No memory wait
-
-Result: Sequential access is fast. Random access causes cache misses everywhere.
-```
 
 ### 📊 Row-Major vs Column-Major for Matrices
 
@@ -611,3 +592,6 @@ This principle—**structure enables efficiency**—is the theme of the entire c
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers both theory and practical optimization  
 **Batch Status:** ✅ COMPLETE — Week 02 Day 01 Final
+---
+
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_02_Day_02_Dynamic_Arrays_Amortized_Growth_Instructional.md)

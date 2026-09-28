@@ -1,5 +1,11 @@
 # 📘 WEEK 11: EXTENDED C# PROBLEM-SOLVING & IMPLEMENTATION GUIDE
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This C# (.NET 8/9) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 **Week:** 11 | **Category:** Dynamic Programming II — Trees, DAGs & Advanced  
 **Language:** C# / .NET | **Difficulty:** 🔴 Advanced  
 **Focus:** Production-grade implementations, performance optimization, design patterns
@@ -1445,22 +1451,22 @@ public class PerformanceOptimizations
 public class ComplexityReference
 {
     /*
-    ╔══════════════════════════════════════════════════════════════╗
-    ║              DP COMPLEXITY REFERENCE TABLE                   ║
-    ╠═════════════════════╦════════════╦═════════════╦═════════════╣
-    ║ Problem             ║ Time       ║ Space       ║ Feasible    ║
-    ╠═════════════════════╬════════════╬═════════════╬═════════════╣
-    ║ Tree DP             ║ O(n)       ║ O(h)        ║ Yes         ║
-    ║ DAG DP              ║ O(V+E)     ║ O(V)        ║ Yes         ║
-    ║ Bitmask DP          ║ O(2^n×n²)  ║ O(2^n×n)    ║ n≤20        ║
-    ║ With Pruning        ║ O(c×2^n)   ║ O(2^n×n)    ║ n≤25        ║
-    ║ LCS                 ║ O(m×n)     ║ O(min(m,n)) ║ Yes         ║
-    ║ Edit Distance       ║ O(m×n)     ║ O(min(m,n)) ║ Yes         ║
-    ║ Knapsack            ║ O(n×W)     ║ O(W)        ║ Yes         ║
-    ║ Coin Change         ║ O(n×W)     ║ O(W)        ║ Yes         ║
-    ║ LIS                 ║ O(n²)      ║ O(n)        ║ Yes         ║
-    ║ Fibonacci (Memoize) ║ O(n)       ║ O(n)        ║ Yes         ║
-    ╚═════════════════════╩════════════╩═════════════╩═════════════╝
+    +==============================================================+
+    |              DP COMPLEXITY REFERENCE TABLE                   |
+    +=====================+============+=============+=============+
+    | Problem             | Time       | Space       | Feasible    |
+    +=====================+============+=============+=============+
+    | Tree DP             | O(n)       | O(h)        | Yes         |
+    | DAG DP              | O(V+E)     | O(V)        | Yes         |
+    | Bitmask DP          | O(2^n×n²)  | O(2^n×n)    | n≤20        |
+    | With Pruning        | O(c×2^n)   | O(2^n×n)    | n≤25        |
+    | LCS                 | O(m×n)     | O(min(m,n)) | Yes         |
+    | Edit Distance       | O(m×n)     | O(min(m,n)) | Yes         |
+    | Knapsack            | O(n×W)     | O(W)        | Yes         |
+    | Coin Change         | O(n×W)     | O(W)        | Yes         |
+    | LIS                 | O(n²)      | O(n)        | Yes         |
+    | Fibonacci (Memoize) | O(n)       | O(n)        | Yes         |
+    +=====================+============+=============+=============+
     
     Where:
       n = number of elements
@@ -1527,3 +1533,6 @@ public class ComplexityReference
 
 **File Status:** ✅ COMPLETE — Comprehensive C# implementations for all Week 11 DP topics, with detailed explanations, anti-patterns, optimization techniques, and production-ready code patterns.
 
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

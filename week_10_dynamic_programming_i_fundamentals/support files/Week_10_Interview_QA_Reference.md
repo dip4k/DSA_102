@@ -1,5 +1,11 @@
 # 🎙️ Week_10_Interview_QA_Reference.md
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Week:** 10 | **Topic:** Dynamic Programming I: Fundamentals  
 **Format:** 50+ questions with multi-level follow-ups  
 **Difficulty Progression:** Basic → Intermediate → Advanced
@@ -630,3 +636,6 @@ Track trends. By week's end, aim for mostly Green on basic/intermediate, mostly 
 
 ---
 
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

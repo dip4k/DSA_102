@@ -1,5 +1,11 @@
 # 🎤 Week 08 Interview Q&A Reference – Graph Fundamentals
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 Filename: `Week_08_Interview_QA_Reference.md`  
 Week: 08 – Graph Fundamentals: Representations, BFS, DFS & Topological Sort
 
@@ -298,3 +304,7 @@ Aim to cover all questions **twice**: once early in the week and once closer to 
   - Evaluate: did you explain **why**, not just **what**? Did you connect to real-world systems and performance?
 
 Revisit this file periodically even after Week 08; these graph questions will reappear in many guises throughout your interview prep.
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

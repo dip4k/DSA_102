@@ -1,11 +1,12 @@
 # 📘 Week 09 Day 04: Minimum Spanning Trees — Kruskal & Prim Algorithms — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 09 | **Day:** 04
-- **Category:** Graph Algorithms / Optimization
-- **Difficulty:** 🔴 Advanced
-- **Real-World Impact:** Powers network design (telecommunications, electrical grids), clustering algorithms, Steiner tree approximations, and infrastructure planning where connecting all nodes with minimum total cost is critical.
-- **Prerequisites:** Week 09 Days 01-03 (Shortest paths), Week 06 (Graph Fundamentals & BFS/DFS), Week 05 (Priority Queues & Heaps)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_09_Day_03_Floyd_Warshall_All_Pairs_Shortest_Paths_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_09_Day_05_Union_Find_DSU_In_Depth_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -66,156 +67,54 @@ Both approaches are "greedy" but operate differently:
 
 Here's how both algorithms build an MST on the same graph:
 
-```
-Graph with 4 vertices and 5 edges:
 
-       A
-      /|\
-     4 | 2
-    /  |  \
-   B---6---C
-        \
-         3\
-          \|
-           D
+| / | \ |
+| :--- | :--- |
+| 4 | 2 |
+| / | \ |
+| 4 | 2 |
 
-Edges with weights:
-1. A-B: weight 4
-2. A-C: weight 2
-3. B-C: weight 6
-4. B-D: weight 3
-5. C-D: weight 8
-
-Task: Build MST connecting all 4 vertices with minimum total weight.
-Need exactly 3 edges (V-1 = 4-1 = 3).
-
-===== KRUSKAL'S ALGORITHM (Edge-Centric, Global) =====
-
-Step 0 - Sort all edges by weight:
-1. A-C: 2 ← Lightest
-2. B-D: 3
-3. A-B: 4
-4. B-C: 6
-5. C-D: 8
-
-Components initially: {A}, {B}, {C}, {D}
-
-Step 1 - Consider edge A-C (weight 2):
-├─ A is in component {A}, C is in component {C}
-├─ Components are different, so add this edge ✓
-├─ Merge components: {A,C}, {B}, {D}
-├─ MST edges so far: [A-C]
-└─ Total weight: 2
-
-Step 2 - Consider edge B-D (weight 3):
-├─ B is in component {B}, D is in component {D}
-├─ Components are different, so add this edge ✓
-├─ Merge components: {A,C}, {B,D}
-├─ MST edges so far: [A-C, B-D]
-└─ Total weight: 2 + 3 = 5
-
-Step 3 - Consider edge A-B (weight 4):
-├─ A is in component {A,C}, B is in component {B,D}
-├─ Components are different, so add this edge ✓
-├─ Merge components: {A,B,C,D}
-├─ MST edges so far: [A-C, B-D, A-B]
-└─ Total weight: 2 + 3 + 4 = 9
-├─ Check: 3 edges added (= V-1), all vertices connected ✓
-└─ ALGORITHM COMPLETE
-
-Step 4 - (Would check edge B-C, but we already have 3 edges):
-├─ Edge B-C (weight 6): Would connect components {A,B,C,D} to {A,B,C,D}
-├─ Same component → would create cycle, so skip ✗
-
-Step 5 - (Would check edge C-D, but algorithm already complete)
-├─ Edge C-D (weight 8): Would create cycle, so skip ✗
-
-Final MST (Kruskal):
-Edges: A-C (2), B-D (3), A-B (4)
-Total weight: 9
-Visual:
-       A
-      /|
-     4 | 2
-    /  |
-   B   C
-    \
-     3\
-      \|
-       D
-```
 
 Now let's trace **Prim's algorithm** on the same graph:
 
+
+```mermaid
+flowchart TD
+    R["===== PRIM'S ALGORITHM (Vertex-Centric, Local) ====="]
+    R --> N1["A-B: 4 (A in tree, B outside)"]
+    R --> N2["A-C: 2 (A in tree, C outside)"]
+    R --> N3["Minimum is A-C (weight 2)"]
+    R --> N4["Add vertex C to tree"]
+    R --> N5["Tree: {A, C}"]
+    R --> N6["Non-tree: {B, D}"]
+    R --> N7["MST edges: [A-C]"]
+    R --> N8["Total weight: 2"]
+    R --> N9["A-B: 4 (A in tree, B outside)"]
+    R --> N10["A-C: 2 (both in tree, not frontier)"]
+    R --> N11["B-C: 6 (B outside, C in tree) ✓ NEW"]
+    R --> N12["B-D: 3 (B outside, D outside) ✓ Candidate"]
+    R --> N13["C-D: 8 (C in tree, D outside) ✓ NEW"]
+    R --> N14["Non-frontier: (edges within tree or outside tree)"]
+    R --> N15["Minimum is B-D (weight 3)"]
+    R --> N16["Add vertex D to tree"]
+    R --> N17["Tree: {A, C, D}"]
+    R --> N18["Non-tree: {B}"]
+    R --> N19["MST edges: [A-C, B-D]"]
+    R --> N20["Total weight: 2 + 3 = 5"]
+    R --> N21["A-B: 4 (A in tree, B outside) ✓ Frontier"]
+    R --> N22["B-C: 6 (C in tree, B outside) ✓ Frontier"]
+    R --> N23["B-D: 3 (both in tree, not frontier)"]
+    R --> N24["C-D: 8 (both in tree, not frontier)"]
+    R --> N25["A-C: 2 (both in tree, not frontier)"]
+    R --> N26["Frontier edges: A-B (4), B-C (6)"]
+    R --> N27["Minimum is A-B (weight 4)"]
+    R --> N28["Add vertex B to tree"]
+    R --> N29["Tree: {A, B, C, D}"]
+    R --> N30["Non-tree: {} (all vertices in tree)"]
+    R --> N31["MST edges: [A-C, B-D, A-B]"]
+    R --> N32["Total weight: 2 + 3 + 4 = 9"]
 ```
-===== PRIM'S ALGORITHM (Vertex-Centric, Local) =====
 
-Start with vertex A (arbitrary choice).
-Tree: {A}
-Non-tree vertices: {B, C, D}
-
-Edges from tree to non-tree:
-├─ A-B: 4 (A in tree, B outside)
-└─ A-C: 2 (A in tree, C outside)
-
-Step 1 - Add minimum edge from tree to non-tree:
-├─ Minimum is A-C (weight 2)
-├─ Add vertex C to tree
-├─ Tree: {A, C}
-├─ Non-tree: {B, D}
-├─ MST edges: [A-C]
-└─ Total weight: 2
-
-Edges from tree {A,C} to non-tree {B,D}:
-├─ A-B: 4 (A in tree, B outside)
-├─ A-C: 2 (both in tree, not frontier)
-├─ B-C: 6 (B outside, C in tree) ✓ NEW
-├─ B-D: 3 (B outside, D outside) ✓ Candidate
-├─ C-D: 8 (C in tree, D outside) ✓ NEW
-└─ Non-frontier: (edges within tree or outside tree)
-
-Frontier edges: A-B (4), B-C (6), B-D (3), C-D (8)
-
-Step 2 - Add minimum frontier edge:
-├─ Minimum is B-D (weight 3)
-├─ Add vertex D to tree
-├─ Tree: {A, C, D}
-├─ Non-tree: {B}
-├─ MST edges: [A-C, B-D]
-└─ Total weight: 2 + 3 = 5
-
-Edges from tree {A,C,D} to non-tree {B}:
-├─ A-B: 4 (A in tree, B outside) ✓ Frontier
-├─ B-C: 6 (C in tree, B outside) ✓ Frontier
-├─ B-D: 3 (both in tree, not frontier)
-├─ C-D: 8 (both in tree, not frontier)
-├─ A-C: 2 (both in tree, not frontier)
-└─ Frontier edges: A-B (4), B-C (6)
-
-Step 3 - Add minimum frontier edge:
-├─ Minimum is A-B (weight 4)
-├─ Add vertex B to tree
-├─ Tree: {A, B, C, D}
-├─ Non-tree: {} (all vertices in tree)
-├─ MST edges: [A-C, B-D, A-B]
-└─ Total weight: 2 + 3 + 4 = 9
-
-All vertices in tree → ALGORITHM COMPLETE
-
-Final MST (Prim, starting from A):
-Edges: A-C (2), B-D (3), A-B (4)
-Total weight: 9
-Visual:
-       A
-      /|
-     4 | 2
-    /  |
-   B   C
-    \
-     3\
-      \|
-       D
-```
 
 **Critical Observation:**
 Both Kruskal and Prim produce the **same MST** (same edges and same total weight = 9), even though they construct it differently! This demonstrates that:
@@ -287,41 +186,27 @@ Given an undirected connected graph G = (V, E) with weight function w: E → ℝ
 Both algorithms maintain different state structures:
 
 **Kruskal's State:**
-```
-State Variables:
-├─ edges[]         : All edges, sorted by weight ascending
-├─ dsu             : Disjoint Set Union for tracking components
-├─ mst_edges[]     : Selected edges for MST
-└─ mst_weight      : Sum of edge weights in MST
 
-Memory Layout:
-┌──────────────────────────────────────┐
-│ edges[0..E-1]        : (u, v, w)[]   │ sorted by weight
-│ dsu.parent[0..V-1]   : int[]         │ parent in Union-Find
-│ dsu.rank[0..V-1]     : int[]         │ rank for union by rank
-│ mst_edges[0..V-2]    : (u, v)[]      │ V-1 edges in MST
-└──────────────────────────────────────┘
-Total Space: O(V + E)
-```
+| edges[0..E-1]        : (u, v, w)[] | sorted by weight |
+| :--- | :--- |
+| dsu.parent[0..V-1]   : int[] | parent in Union-Find |
+| dsu.rank[0..V-1]     : int[] | rank for union by rank |
+| mst_edges[0..V-2]    : (u, v)[] | V-1 edges in MST |
+
 
 **Prim's State:**
-```
-State Variables:
-├─ in_tree[v]      : Boolean; is vertex v in tree?
-├─ key[v]          : Minimum-weight edge from v to tree
-├─ parent[v]       : Which tree vertex connects to v
-├─ pq               : Priority queue of (key, vertex)
-└─ mst_weight      : Sum of edge weights in MST
 
-Memory Layout:
-┌──────────────────────────────────────┐
-│ in_tree[0..V-1]   : bool[]           │
-│ key[0..V-1]       : long[]           │
-│ parent[0..V-1]    : int[]            │
-│ pq                : MinHeap           │
-└──────────────────────────────────────┘
-Total Space: O(V + E)
+```mermaid
+flowchart TD
+    R["State Variables"]
+    R --> N1["in_tree[v]      : Boolean; is vertex v in tree?"]
+    R --> N2["key[v]          : Minimum-weight edge from v to tree"]
+    R --> N3["parent[v]       : Which tree vertex connects to v"]
+    R --> N4["pq               : Priority queue of (key, vertex)"]
+    R --> N5["mst_weight      : Sum of edge weights in MST"]
+    R --> N6["State"]
 ```
+
 
 ### 🔧 Operation 1: Kruskal's Algorithm — Detailed Walkthrough
 
@@ -369,61 +254,31 @@ KruskalMST(Graph G with V vertices, E edges):
 
 **Detailed Trace (Using Our Example Graph):**
 
+
+```mermaid
+flowchart TD
+    R["Graph"]
+    R --> N1["Union(A, C): Connect components"]
+    R --> N2["New parent (example): {A: A, B: B, C: A, D: D}"]
+    R --> N3["Components: {A, C}, {B}, {D}"]
+    R --> N4["Add edge (A, C) to MST"]
+    R --> N5["mst_weight = 0 + 2 = 2"]
+    R --> N6["mst_edges = [(A, C)]"]
+    R --> N7["Union(B, D): Connect components"]
+    R --> N8["New parent: {A: A, B: B, C: A, D: B}"]
+    R --> N9["Components: {A, C}, {B, D}"]
+    R --> N10["Add edge (B, D) to MST"]
+    R --> N11["mst_weight = 2 + 3 = 5"]
+    R --> N12["mst_edges = [(A, C), (B, D)]"]
+    R --> N13["Union(A, B): Connect components"]
+    R --> N14["New parent: {A: A, B: A, C: A, D: B} or {A: A, B: A, C: A, D: A}"]
+    R --> N15["Components: {A, B, C, D} (all merged!)"]
+    R --> N16["Add edge (A, B) to MST"]
+    R --> N17["mst_weight = 5 + 4 = 9"]
+    R --> N18["mst_edges = [(A, C), (B, D), (A, B)]"]
+    R --> N19["mst_edges.size() = 3 = V - 1 ✓ ALGORITHM TERMINATES"]
 ```
-Graph:
-A-B: 4, A-C: 2, B-C: 6, B-D: 3, C-D: 8
 
-Sorted edges:
-1. A-C: 2
-2. B-D: 3
-3. A-B: 4
-4. B-C: 6
-5. C-D: 8
-
-Initial DSU state (each vertex is own component):
-parent: {A: A, B: B, C: C, D: D}
-rank:   {A: 0, B: 0, C: 0, D: 0}
-
-Components: {A}, {B}, {C}, {D}
-
-===== PROCESS EDGE 1: A-C (weight 2) =====
-Find(A) = A (representative)
-Find(C) = C (representative)
-A ≠ C? YES → Different components
-├─ Union(A, C): Connect components
-├─ New parent (example): {A: A, B: B, C: A, D: D}
-├─ Components: {A, C}, {B}, {D}
-├─ Add edge (A, C) to MST
-├─ mst_weight = 0 + 2 = 2
-└─ mst_edges = [(A, C)]
-
-===== PROCESS EDGE 2: B-D (weight 3) =====
-Find(B) = B
-Find(D) = D
-B ≠ D? YES → Different components
-├─ Union(B, D): Connect components
-├─ New parent: {A: A, B: B, C: A, D: B}
-├─ Components: {A, C}, {B, D}
-├─ Add edge (B, D) to MST
-├─ mst_weight = 2 + 3 = 5
-└─ mst_edges = [(A, C), (B, D)]
-
-===== PROCESS EDGE 3: A-B (weight 4) =====
-Find(A) = A
-Find(B) = B
-A ≠ B? YES → Different components
-├─ Union(A, B): Connect components
-├─ New parent: {A: A, B: A, C: A, D: B} or {A: A, B: A, C: A, D: A}
-├─ Components: {A, B, C, D} (all merged!)
-├─ Add edge (A, B) to MST
-├─ mst_weight = 5 + 4 = 9
-├─ mst_edges = [(A, C), (B, D), (A, B)]
-└─ mst_edges.size() = 3 = V - 1 ✓ ALGORITHM TERMINATES
-
-Final MST:
-Edges: (A, C), (B, D), (A, B)
-Total weight: 9
-```
 
 **Important Notes:**
 - DSU operations (Find with path compression, Union with union by rank) are nearly O(1), so all E iterations combined are O(E α(V)) ≈ O(E).
@@ -484,111 +339,38 @@ PrimMST(Graph G with V vertices, start vertex = s):
 
 **Detailed Trace (Using Our Example Graph):**
 
+
+```mermaid
+flowchart TD
+    R["Graph"]
+    R --> N1["in_tree[A] = true"]
+    R --> N2["mst_weight = 0 + 0 = 0"]
+    R --> N3["Consider neighbors of A:"]
+    N3 --> N4["Neighbor B: weight = 4"]
+    N4 --> N5["key[B] = 4, parent[B] = A"]
+    N3 --> N6["Neighbor C: weight = 2"]
+    N6 --> N7["key[C] = 2, parent[C] = A"]
+    R --> N8["in_tree[C] = true"]
+    R --> N9["mst_weight = 0 + 2 = 2"]
+    R --> N10["Consider neighbors of C:"]
+    N10 --> N11["Neighbor A: weight = 2"]
+    N10 --> N12["Neighbor B: weight = 6"]
+    N10 --> N13["Neighbor D: weight = 8"]
+    N13 --> N14["key[D] = 8, parent[D] = C"]
+    R --> N15["in_tree[B] = true"]
+    R --> N16["mst_weight = 2 + 4 = 6"]
+    R --> N17["Consider neighbors of B:"]
+    N17 --> N18["Neighbor A: weight = 4"]
+    N17 --> N19["Neighbor C: weight = 6"]
+    N17 --> N20["Neighbor D: weight = 3"]
+    N20 --> N21["key[D] = 3, parent[D] = B"]
+    R --> N22["in_tree[D] = true"]
+    R --> N23["mst_weight = 6 + 3 = 9"]
+    R --> N24["Consider neighbors of D:"]
+    N24 --> N25["Neighbor B: weight = 3"]
+    N24 --> N26["Neighbor C: weight = 8"]
 ```
-Graph:
-A-B: 4, A-C: 2, B-C: 6, B-D: 3, C-D: 8
 
-Start with vertex A.
-
-Initial state:
-in_tree: {A: false, B: false, C: false, D: false}
-key:     {A: 0,     B: ∞,     C: ∞,     D: ∞}
-parent:  {A: -1,    B: -1,    C: -1,    D: -1}
-pq:      [(0, A)]
-
-===== STEP 1: Extract (0, A) =====
-u = A, dist = 0
-in_tree[A]? false → Process
-├─ in_tree[A] = true
-├─ mst_weight = 0 + 0 = 0
-└─ Consider neighbors of A:
-   ├─ Neighbor B: weight = 4
-   │  in_tree[B]? false
-   │  4 < ∞? YES
-   │  └─ key[B] = 4, parent[B] = A
-   │     pq.insert((4, B))
-   │
-   └─ Neighbor C: weight = 2
-      in_tree[C]? false
-      2 < ∞? YES
-      └─ key[C] = 2, parent[C] = A
-         pq.insert((2, C))
-
-in_tree: {A: true, B: false, C: false, D: false}
-key:     {A: 0, B: 4, C: 2, D: ∞}
-pq:      [(2, C), (4, B)]
-
-===== STEP 2: Extract (2, C) =====
-u = C, dist = 2
-in_tree[C]? false → Process
-├─ in_tree[C] = true
-├─ mst_weight = 0 + 2 = 2
-└─ Consider neighbors of C:
-   ├─ Neighbor A: weight = 2
-   │  in_tree[A]? true → skip (already in tree)
-   │
-   ├─ Neighbor B: weight = 6
-   │  in_tree[B]? false
-   │  6 < 4? NO → skip (worse edge)
-   │
-   └─ Neighbor D: weight = 8
-      in_tree[D]? false
-      8 < ∞? YES
-      └─ key[D] = 8, parent[D] = C
-         pq.insert((8, D))
-
-in_tree: {A: true, B: false, C: true, D: false}
-key:     {A: 0, B: 4, C: 2, D: 8}
-pq:      [(4, B), (8, D)]
-
-===== STEP 3: Extract (4, B) =====
-u = B, dist = 4
-in_tree[B]? false → Process
-├─ in_tree[B] = true
-├─ mst_weight = 2 + 4 = 6
-└─ Consider neighbors of B:
-   ├─ Neighbor A: weight = 4
-   │  in_tree[A]? true → skip
-   │
-   ├─ Neighbor C: weight = 6
-   │  in_tree[C]? true → skip
-   │
-   └─ Neighbor D: weight = 3
-      in_tree[D]? false
-      3 < 8? YES
-      └─ key[D] = 3, parent[D] = B
-         pq.insert((3, D))
-
-in_tree: {A: true, B: true, C: true, D: false}
-key:     {A: 0, B: 4, C: 2, D: 3}
-pq:      [(3, D), (8, D)]  ← Note: (8, D) is stale
-
-===== STEP 4: Extract (3, D) =====
-u = D, dist = 3
-in_tree[D]? false → Process
-├─ in_tree[D] = true
-├─ mst_weight = 6 + 3 = 9
-└─ Consider neighbors of D:
-   ├─ Neighbor B: weight = 3
-   │  in_tree[B]? true → skip
-   │
-   └─ Neighbor C: weight = 8
-      in_tree[C]? true → skip
-
-in_tree: {A: true, B: true, C: true, D: true}
-
-===== STEP 5: Extract (8, D) =====
-u = D, dist = 8
-in_tree[D]? true → Skip (stale entry)
-
-===== PQ IS EMPTY =====
-All vertices in tree → ALGORITHM COMPLETE
-
-Final MST (Prim from A):
-parent: {A: -1, B: A, C: A, D: B}
-Edges: A-C (weight 2), A-B (weight 4), B-D (weight 3)
-Total weight: 9
-```
 
 **Key Implementation Details:**
 - **Stale entries in PQ:** We may insert the same vertex multiple times with different keys. We only process it once (the first extraction with in_tree[v] = false). Subsequent extractions are skipped.
@@ -844,24 +626,20 @@ For graphs with millions or billions of vertices/edges:
 
 MST algorithms represent a **shift from path optimization to connectivity optimization**:
 
+
+```mermaid
+flowchart TD
+    R["Single-Source Shortest Paths (Days 1-2)"]
+    R --> N1["Dijkstra, Bellman-Ford"]
+    R --> N2["Goal: Minimize distance from one source to all others"]
+    R --> N3["Floyd-Warshall"]
+    R --> N4["Goal: Minimize distances between all pairs"]
+    R --> N5["Kruskal, Prim"]
+    R --> N6["Goal: Connect all vertices with minimum total weight"]
+    R --> N7["Tracks connectivity and components"]
+    R --> N8["Goal: Efficiently answer 'are u and v connected?' and merge components"]
 ```
-Single-Source Shortest Paths (Days 1-2):
-├─ Dijkstra, Bellman-Ford
-└─ Goal: Minimize distance from one source to all others
 
-All-Pairs Shortest Paths (Day 3):
-├─ Floyd-Warshall
-└─ Goal: Minimize distances between all pairs
-
-Minimum Spanning Tree (Day 4) ← TODAY
-├─ Kruskal, Prim
-└─ Goal: Connect all vertices with minimum total weight
-    (don't care about specific distances)
-
-Union-Find / Disjoint Set Union (Day 5) ← Enables efficient Kruskal
-├─ Tracks connectivity and components
-└─ Goal: Efficiently answer "are u and v connected?" and merge components
-```
 
 **Key insight:** Shortest paths minimize along routes. MST minimizes globally across all edges. Both use greedy/DP thinking but apply to different problems.
 
@@ -1076,4 +854,6 @@ All three are correct and optimal. Kruskal and Prim are preferred in education d
 
 - Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
 - Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+---
 
+> 🧭 **Navigation:** [← Previous Day](Week_09_Day_03_Floyd_Warshall_All_Pairs_Shortest_Paths_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_09_Day_05_Union_Find_DSU_In_Depth_Instructional.md)

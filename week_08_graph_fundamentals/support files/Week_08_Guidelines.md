@@ -1,5 +1,11 @@
 # 🌐 Week 08 Guidelines – Graph Fundamentals: Representations, BFS, DFS & Topological Sort
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 Filename: `Week_08_Guidelines.md`  
 Week: 08 – Phase C: Trees, Graphs, Dynamic Programming  
 Theme: **From trees to general graphs – modelling, traversing, and ordering complex systems**
@@ -257,3 +263,7 @@ By the end of the week, you should be able to check:
 - [ ] I feel comfortable enough with these concepts that I could **explain them in an interview** without code.
 
 If 80% of these are true, you have built a solid Week 08 foundation. The remaining items can be targeted in revision sessions or in problem-solving practice in subsequent weeks.
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

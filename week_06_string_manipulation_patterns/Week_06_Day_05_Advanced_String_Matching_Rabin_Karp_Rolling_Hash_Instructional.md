@@ -1,11 +1,12 @@
 # 📘 Week 06 Day 5: Advanced String Matching — Rabin-Karp & Rolling Hash — Engineering Guide
 
-**Metadata:**
-- **Week:** 06 | **Day:** 5
-- **Category:** String Patterns (Optional Advanced)
-- **Difficulty:** 🔴 Hard / Advanced
-- **Real-World Impact:** Rolling hash powers plagiarism detection systems at scale, enables fast substring matching in genomics, and optimizes search engines. Rabin-Karp algorithm reduces O(nm) naive pattern matching to O(n + m) on average.
-- **Prerequisites:** Week 02 (Strings, Hashing), Week 03 (Hash tables), Week 06 Days 1-4 (All core string patterns)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_06_Day_04_String_Transformations_Building_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_06_FULL_PLAYBOOK.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -506,26 +507,26 @@ CORRECT:
 
 **Decision Tree:**
 
-```
-Is the problem PATTERN MATCHING?
 
-├─ Yes, SINGLE pattern?
-│  ├─ Very long pattern (m > 100)?
-│  │  └─ Use Boyer-Moore (O(n/m) avg)
-│  ├─ Short pattern, many searches?
-│  │  └─ Use Rabin-Karp (O(n+m) avg, easy to parallelize)
-│  └─ Guaranteed linear needed?
-│     └─ Use KMP (O(n+m) worst-case)
-│
-├─ Yes, MULTIPLE patterns?
-│  ├─ Small number (< 10)?
-│  │  └─ Rabin-Karp (hash each, one pass)
-│  └─ Many patterns (> 100)?
-│     └─ Use Aho-Corasick (O(n + m + z) for all)
-│
-└─ Yes, APPROXIMATE matching?
-   └─ Rabin-Karp with Hamming threshold
+```mermaid
+flowchart TD
+    R["Is the problem PATTERN MATCHING?"]
+    R --> N1["Yes, SINGLE pattern?"]
+    N1 --> N2["Very long pattern (m > 100)?"]
+    N2 --> N3["Use Boyer-Moore (O(n/m) avg)"]
+    N1 --> N4["Short pattern, many searches?"]
+    N4 --> N5["Use Rabin-Karp (O(n+m) avg, easy to parallelize)"]
+    N1 --> N6["Guaranteed linear needed?"]
+    N6 --> N7["Use KMP (O(n+m) worst-case)"]
+    R --> N8["Yes, MULTIPLE patterns?"]
+    N8 --> N9["Small number (< 10)?"]
+    N9 --> N10["Rabin-Karp (hash each, one pass)"]
+    N8 --> N11["Many patterns (> 100)?"]
+    N11 --> N12["Use Aho-Corasick (O(n + m + z) for all)"]
+    R --> N13["Yes, APPROXIMATE matching?"]
+    N13 --> N14["Rabin-Karp with Hamming threshold"]
 ```
+
 
 - **✅ Use when:** Multiple patterns, online/streaming matching, approximate matching, large-scale systems
 - **🛑 Avoid when:** Need guaranteed worst-case O(n+m) (use KMP), or pattern very long and text very short (use naive)
@@ -704,3 +705,6 @@ When you encounter a pattern matching problem at scale—plagiarism detection, D
 These questions will guide you to the right tool.
 
 ---
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_06_Day_04_String_Transformations_Building_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_06_FULL_PLAYBOOK.md)

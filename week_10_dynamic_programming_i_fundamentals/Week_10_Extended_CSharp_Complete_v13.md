@@ -1,5 +1,11 @@
 # 📘 WEEK 10: DYNAMIC PROGRAMMING I — C# EXTENDED SUPPORT & IMPLEMENTATION GUIDE
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This C# (.NET 8/9) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 **Document Type:** C# Extended Implementation Reference
 **Scope:** Week 10 (Days 01-05) — Complete DP Implementation Patterns
 **Language:** C# (.NET 6+)
@@ -1847,32 +1853,32 @@ public class ComplexityReference
     // Summary table for all Day 1-5 algorithms
     
     /*
-    ╔══════════════════════════════╦═════════╦═══════════╦══════════════╗
-    ║ Algorithm                    ║ Time    ║ Space     ║ Notes        ║
-    ╠══════════════════════════════╬═════════╬═══════════╬══════════════╣
-    ║ Fibonacci (recursive)         ║ O(2^n)  ║ O(n)      ║ Exponential  ║
-    ║ Fibonacci (memo)              ║ O(n)    ║ O(n)      ║ Linear       ║
-    ║ Fibonacci (tabulation)        ║ O(n)    ║ O(n)      ║ Optimal      ║
-    ║ Fibonacci (space-opt)         ║ O(n)    ║ O(1)      ║ Best         ║
-    ╠══════════════════════════════╬═════════╬═══════════╬══════════════╣
-    ║ Climbing Stairs              ║ O(n)    ║ O(n) O(1) ║ Like Fib     ║
-    ║ House Robber                 ║ O(n)    ║ O(1)      ║ 2-state      ║
-    ║ Coin Change                  ║ O(n×m)  ║ O(n)      ║ n=amount,m=coin║
-    ║ 0/1 Knapsack                 ║ O(n×W)  ║ O(W)      ║ n=items,W=cap║
-    ║ Unbounded Knapsack           ║ O(W×n)  ║ O(W)      ║ Items ∞      ║
-    ╠══════════════════════════════╬═════════╬═══════════╬══════════════╣
-    ║ Unique Paths (grid)          ║ O(m×n)  ║ O(n)      ║ Space-opt    ║
-    ║ Min Path Sum                 ║ O(m×n)  ║ O(n)      ║ Space-opt    ║
-    ║ Edit Distance                ║ O(m×n)  ║ O(min(m,n))║ Space-opt   ║
-    ║ LCS                          ║ O(m×n)  ║ O(min(m,n))║ Space-opt    ║
-    ║ Matrix Chain Mult            ║ O(n³)   ║ O(n²)     ║ Interval DP  ║
-    ╠══════════════════════════════╬═════════╬═══════════╬══════════════╣
-    ║ LIS (DP)                     ║ O(n²)   ║ O(n)      ║ Simple       ║
-    ║ LIS (Binary Search)          ║ O(n logn)║ O(n)     ║ Optimal      ║
-    ║ Kadane's Algorithm           ║ O(n)    ║ O(1)      ║ Greedy-like  ║
-    ║ Weighted Interval Sched      ║ O(n logn)║ O(n)     ║ With binary search║
-    ║ Text Justification           ║ O(n²)   ║ O(n)      ║ Custom DP    ║
-    ╚══════════════════════════════╩═════════╩═══════════╩══════════════╝
+    +==============================+=========+===========+==============+
+    | Algorithm                    | Time    | Space     | Notes        |
+    +==============================+=========+===========+==============+
+    | Fibonacci (recursive)         | O(2^n)  | O(n)      | Exponential  |
+    | Fibonacci (memo)              | O(n)    | O(n)      | Linear       |
+    | Fibonacci (tabulation)        | O(n)    | O(n)      | Optimal      |
+    | Fibonacci (space-opt)         | O(n)    | O(1)      | Best         |
+    +==============================+=========+===========+==============+
+    | Climbing Stairs              | O(n)    | O(n) O(1) | Like Fib     |
+    | House Robber                 | O(n)    | O(1)      | 2-state      |
+    | Coin Change                  | O(n×m)  | O(n)      | n=amount,m=coin|
+    | 0/1 Knapsack                 | O(n×W)  | O(W)      | n=items,W=cap|
+    | Unbounded Knapsack           | O(W×n)  | O(W)      | Items ∞      |
+    +==============================+=========+===========+==============+
+    | Unique Paths (grid)          | O(m×n)  | O(n)      | Space-opt    |
+    | Min Path Sum                 | O(m×n)  | O(n)      | Space-opt    |
+    | Edit Distance                | O(m×n)  | O(min(m,n))| Space-opt   |
+    | LCS                          | O(m×n)  | O(min(m,n))| Space-opt    |
+    | Matrix Chain Mult            | O(n³)   | O(n²)     | Interval DP  |
+    +==============================+=========+===========+==============+
+    | LIS (DP)                     | O(n²)   | O(n)      | Simple       |
+    | LIS (Binary Search)          | O(n logn)| O(n)     | Optimal      |
+    | Kadane's Algorithm           | O(n)    | O(1)      | Greedy-like  |
+    | Weighted Interval Sched      | O(n logn)| O(n)     | With binary search|
+    | Text Justification           | O(n²)   | O(n)      | Custom DP    |
+    +==============================+=========+===========+==============+
     */
 }
 ```
@@ -1956,3 +1962,7 @@ public class KnapsackCompleteExample
 ---
 
 **End of Week 10 C# Extended Support — Production-Ready Implementation Guide**
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

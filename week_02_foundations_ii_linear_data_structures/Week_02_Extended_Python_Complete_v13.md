@@ -1,5 +1,11 @@
 # Week 02 Extended Python Complete v13
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Python (3.11+) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 Purpose: translate Week 02 linear data structures and binary search into Python implementation fluency.
 
 ## Week 02 Python focus
@@ -202,3 +208,7 @@ Should:
 Optional:
 - implement a minimal deque wrapper
 - compare `bisect_left` with hand-written lower bound
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

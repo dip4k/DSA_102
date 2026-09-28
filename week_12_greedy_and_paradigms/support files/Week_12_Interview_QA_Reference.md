@@ -1,5 +1,11 @@
 # Week 12 Interview Q&A Reference — Greedy Algorithms and Proofs
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 This file is a question bank for Week 12: Greedy Algorithms and Proofs.
 
 Use it to:
@@ -248,3 +254,7 @@ No answers are provided by design. Treat every follow-up as something you must a
 - Follow-up 1: What specific questions do you ask yourself about optimal substructure and the greedy choice property?  
 - Follow-up 2: How do you structure at least a sketch of a proof (exchange, stays-ahead, or induction) before coding?  
 - Follow-up 3: How do you communicate this reasoning to the interviewer in a clear and time-efficient way?
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

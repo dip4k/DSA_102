@@ -1,4 +1,10 @@
 # 📚 WEEK 05: TIER 1 CRITICAL PATTERNS
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Comprehensive Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
+
+---
+
 ## Hash Maps, Monotonic Stacks, Interval Patterns, Partition Schemes, Kadane's Algorithm & Fast-Slow Pointers
 
 **Phase:** B (Patterns)  
@@ -1654,29 +1660,19 @@ Stock trader has 1M daily prices. Needs:
 - **Decision:** Continue subarray or start fresh?
 - **Update:** Track global maximum
 
-```
-Kadane's Algorithm:
 
-Array: [-2, 1, -3, 4, -1, 2, 1, -5, 4]
+| Position | Element | Max ending here | Max so far | Subarray |
+| :--- | :--- | :--- | :--- | :--- |
+| 0 | -2 | -2 | -2 | [-2] |
+| 1 | 1 | 1 (restart) | 1 | [1] |
+| 2 | -3 | -2 | 1 | [1, -3] |
+| 3 | 4 | 4 (restart) | 4 | [4] |
+| 4 | -1 | 3 | 4 | [4, -1] |
+| 5 | 2 | 5 | 5 | [4, -1, 2] |
+| 6 | 1 | 6 | 6 | [4, -1, 2, 1] |
+| 7 | -5 | 1 | 6 | [4, -1, 2, 1, -5] |
+| 8 | 4 | 5 | 6 | [4] |
 
-At each element:
-├─ Current max: Keep extending subarray or restart?
-└─ Global max: Track best subarray seen so far
-
-Position | Element | Max ending here | Max so far | Subarray
----------|---------|-----------------|------------|----------
-0        | -2      | -2              | -2         | [-2]
-1        | 1       | 1 (restart)     | 1          | [1]
-2        | -3      | -2              | 1          | [1, -3]
-3        | 4       | 4 (restart)     | 4          | [4]
-4        | -1      | 3               | 4          | [4, -1]
-5        | 2       | 5               | 5          | [4, -1, 2]
-6        | 1       | 6               | 6          | [4, -1, 2, 1]
-7        | -5      | 1               | 6          | [4, -1, 2, 1, -5]
-8        | 4       | 5               | 6          | [4]
-
-Result: Max sum = 6, subarray = [4, -1, 2, 1]
-```
 
 ### Fast-Slow Pointers: Cycle Detection
 
@@ -1685,20 +1681,14 @@ Result: Max sum = 6, subarray = [4, -1, 2, 1]
 - **Convergence:** If cycle, they meet
 - **Detection:** Floyd's cycle detection
 
-```
-Fast-Slow Pointer Pattern:
 
-Linked list: 1 → 2 → 3 → 4 → 2 (cycle back)
-            ^               └─┘
-            Cycle starts at 2
+| Step | Slow | Fast | Position |
+| :--- | :--- | :--- | :--- |
+| 0 | 1 | 1 | Start |
+| 1 | 2 | 3 | Slow moves 1, fast moves 2 |
+| 2 | 3 | 2 | Slow at 3, fast wraps to 2 |
+| 3 | 4 | 4 | Slow at 4, fast at 4 → MEET! |
 
-Step | Slow | Fast | Position
------|------|------|----------
-0    | 1    | 1    | Start
-1    | 2    | 3    | Slow moves 1, fast moves 2
-2    | 3    | 2    | Slow at 3, fast wraps to 2
-3    | 4    | 4    | Slow at 4, fast at 4 → MEET!
-```
 
 ---
 
@@ -2118,26 +2108,24 @@ D) Can't really detect cycles
 
 ## 🎯 Pattern Selection Decision Tree
 
+
+```mermaid
+flowchart TD
+    R["Array/data problem?"]
+    R --> N1["Need frequency analysis?"]
+    N1 --> N2["Hash map patterns"]
+    R --> N3["Need next greater/smaller?"]
+    N3 --> N4["Monotonic stack"]
+    R --> N5["Have intervals to process?"]
+    N5 --> N6["Interval patterns"]
+    R --> N7["Need in-place rearrangement?"]
+    N7 --> N8["Partition schemes"]
+    R --> N9["Need optimal subarray?"]
+    N9 --> N10["Kadane's algorithm"]
+    R --> N11["Need cycle detection?"]
+    N11 --> N12["Fast-slow pointers"]
 ```
-Array/data problem?
-├─ Need frequency analysis?
-│  └─ Hash map patterns
-│
-├─ Need next greater/smaller?
-│  └─ Monotonic stack
-│
-├─ Have intervals to process?
-│  └─ Interval patterns
-│
-├─ Need in-place rearrangement?
-│  └─ Partition schemes
-│
-├─ Need optimal subarray?
-│  └─ Kadane's algorithm
-│
-└─ Need cycle detection?
-   └─ Fast-slow pointers
-```
+
 
 ---
 
@@ -2232,3 +2220,7 @@ Pattern recognition → faster solutions → better interviews.
 **Ready for Deployment:** YES ✅  
 **Quality Score:** 9.5/10 ⭐⭐⭐⭐⭐  
 **Next:** Week 06 - Advanced String Patterns
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

@@ -1,5 +1,11 @@
 # Week 13 Extended CSharp Complete v13
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This C# (.NET 8/9) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 Purpose: provide C# implementation support for backtracking, branch and bound, amortized analysis, and mixed paradigm reasoning.
 
 ## Focus tags
@@ -83,3 +89,7 @@ Best-first idea:
 - Must: subsets/permutations/combinations, N-Queens template, word search backtracking, branch-and-bound knapsack reasoning
 - Should: best-first B&B trace with bounds, Sudoku backtracking structure
 - Optional: TSP lower-bound exploration and mixed-paradigm comparisons
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

@@ -1,5 +1,11 @@
 # 📅 Week_07_Daily_Progress_Checklist.md
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Purpose:** Concrete daily actions and reflection prompts  
 **Audience:** Active learners with structured daily schedule  
 
@@ -601,3 +607,6 @@ Answer these WITHOUT looking at notes or solutions:
 
 *Remember: This is your personal learning roadmap. Adapt it to your pace. If Monday feels rushed, extend to Tuesday. If you finish early, advance to Stage 2. The goal is mastery, not speed.*
 
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

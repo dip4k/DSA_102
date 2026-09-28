@@ -1,5 +1,11 @@
 # 📊 WEEK 10: DYNAMIC PROGRAMMING I - VISUAL CONCEPTS PLAYBOOK (HYBRID)
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Visual Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
+
+---
+
 **Document Type:** Visual Learning Resource & Reference Guide
 **Scope:** Week 10 (Days 01-05) — Dynamic Programming Fundamentals
 **Target:** Visual learners, quick reference, concept reinforcement
@@ -23,115 +29,42 @@
 
 ### 1.1 The DP Landscape — Week 10 Overview
 
+
+```mermaid
+flowchart TD
+    R["State"]
+    R --> N1["Step"]
+    R --> N2["Step"]
+    N2 --> N3["Step"]
 ```
-                    ┌─────────────────────────────────┐
-                    │   DYNAMIC PROGRAMMING (Week 10) │
-                    └──────────────────┬──────────────┘
-                                       │
-                    ┌──────────────────┼──────────────────┐
-                    │                  │                  │
-                    ▼                  ▼                  ▼
-            ┌──────────────┐   ┌──────────────┐   ┌──────────────┐
-            │ Day 01: CORE │   │ Day 02-03:   │   │ Day 04-05:   │
-            │              │   │ APPLICATIONS │   │ ADVANCED     │
-            └──────┬───────┘   └──────┬───────┘   └──────┬───────┘
-                   │                  │                  │
-        ┌──────────┼──────────┐      │                  │
-        │          │          │      │                  │
-        ▼          ▼          ▼      ▼                  ▼
-    Overlapping Optimal   Memoization
-    Subproblems Substructure (Top-Down)
-                            │
-                            │ Tabulation
-                            │ (Bottom-Up)
-                            ▼
-                    ┌─────────────────┐
-                    │  1D DP Patterns │
-                    │  (Stairs, House,│
-                    │   Coin, Knapsack)
-                    └────────┬────────┘
-                             │
-                   ┌─────────┼─────────┐
-                   │         │         │
-                   ▼         ▼         ▼
-                 Grid     String    Sequence
-                 DP        DP        DP
-                (2D)      (2D)     (Value-based)
-```
+
 
 ### 1.2 The Four Pillars of DP (Conceptual Foundation)
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                   DP PROBLEM SOLVABILITY                     │
-└─────────────────────────────────────────────────────────────┘
 
-            ┌─────────────────────────────────────┐
-            │  1. OPTIMAL SUBSTRUCTURE            │
-            │     (Subproblems form solution)    │
-            │     ✓ Shortest path problem        │
-            │     ✗ Longest simple path          │
-            └─────────────────────────────────────┘
-                            ▲
-                            │
-            ┌─────────────────────────────────────┐
-            │  2. OVERLAPPING SUBPROBLEMS        │
-            │     (Same calc repeated)            │
-            │     ✓ Fibonacci(5) uses Fib(3) 2x │
-            │     ✗ Merge sort (no overlap)      │
-            └─────────────────────────────────────┘
-                            ▲
-                            │
-            ┌─────────────────────────────────────┐
-            │  3. POLYNOMIAL STATE SPACE         │
-            │     (Tractable computations)        │
-            │     ✓ O(n × W) states feasible    │
-            │     ✗ 2^n states (exponential)     │
-            └─────────────────────────────────────┘
-                            ▲
-                            │
-            ┌─────────────────────────────────────┐
-            │  4. TRACTABLE RECURRENCE           │
-            │     (Fast state combining)          │
-            │     ✓ O(1) or O(log n) merge      │
-            │     ✗ O(n) merge per state        │
-            └─────────────────────────────────────┘
-
-        All 4 ✓ = DP Viable  |  Missing any = Try other approach
+```mermaid
+flowchart TD
+    R["State"]
+    R --> N1["State"]
+    N1 --> N2["State"]
+    N1 --> N3["State"]
+    N1 --> N4["State"]
+    N1 --> N5["State"]
 ```
+
 
 ### 1.3 DP Approach Selection Tree
 
+
+```mermaid
+flowchart TD
+    R["Problem Given"]
+    R --> N1["→ Not DP material"]
+    R --> N2["→ Try Divide & Conquer"]
+    R --> N3["→ Infeasible (exponential)"]
+    R --> N4["State"]
 ```
-                    Problem Given
-                         │
-                         ▼
-            Can you divide into subproblems?
-                    Yes ──┐  No
-                         │      └──→ Not DP material
-                         ▼
-            Do subproblems overlap?
-                    Yes ──┐  No
-                         │      └──→ Try Divide & Conquer
-                         ▼
-            Can state space be polynomial?
-                    Yes ──┐  No
-                         │      └──→ Infeasible (exponential)
-                         ▼
-            ┌────────────────────────────────────┐
-            │   ✓ USE DYNAMIC PROGRAMMING        │
-            │   Choose: Top-Down or Bottom-Up?   │
-            └────────────────────────────────────┘
-                         │
-            ┌────────────┴────────────┐
-            │                         │
-            ▼                         ▼
-    TOP-DOWN (Recursive)      BOTTOM-UP (Iterative)
-    - Natural flow            - Explicit DP table
-    - Easy to understand      - More efficient
-    - Risk: Stack overflow    - May compute unnecessary states
-    - Use memoization         - Explicit iteration order
-```
+
 
 ---
 
@@ -139,59 +72,15 @@
 
 ### 2.1 Fibonacci — Exponential to Polynomial Transformation
 
-```
-┌─────────────────────── WITHOUT MEMOIZATION ─────────────────────────┐
-│                         fib(5) Tree (2^n)                           │
-│                                                                      │
-│                            fib(5)                                   │
-│                          /        \                                │
-│                      fib(4)        fib(3)  ◄─ RECOMPUTED!         │
-│                      /    \        /    \                          │
-│                  fib(3) fib(2)  fib(2) fib(1)  ◄─ RECOMPUTED!     │
-│                  / \     / \     / \                               │
-│              fib(2) fib(1) ...fib(2) fib(1)...                     │
-│                                                                     │
-│  Operations: ~32 calls for fib(5)                                 │
-│  Time: O(2^n) — EXPONENTIAL!                                      │
-└─────────────────────────────────────────────────────────────────────┘
 
-┌─────────────────── WITH MEMOIZATION (TOP-DOWN) ───────────────────┐
-│                      fib(5) with Cache                             │
-│                                                                    │
-│                          fib(5)                                   │
-│                          /    \                                  │
-│                      fib(4)  fib(3)                              │
-│                      /    \                                     │
-│                  fib(3)  fib(2)                                 │
-│                  /   \    /   \                                │
-│              fib(2) fib(1) fib(1) fib(0)                       │
-│              / \                                               │
-│          fib(1) fib(0)                                         │
-│                                                                │
-│  Memo Cache:     fib(0)=0, fib(1)=1, fib(2)=1, fib(3)=2      │
-│                  fib(4)=3, fib(5)=5                           │
-│                                                               │
-│  Operations: ~5 calls (one per unique subproblem)            │
-│  Time: O(n) — LINEAR!                                        │
-└────────────────────────────────────────────────────────────────┘
-
-┌──────────────── BOTTOM-UP (TABULATION) ────────────────┐
-│                    DP Table Build                      │
-│                                                       │
-│  Initialize: dp[0]=0, dp[1]=1                        │
-│                                                       │
-│  Iteration:                                          │
-│  dp[2] = dp[0] + dp[1] = 0 + 1 = 1                 │
-│  dp[3] = dp[1] + dp[2] = 1 + 1 = 2                 │
-│  dp[4] = dp[2] + dp[3] = 1 + 2 = 3                 │
-│  dp[5] = dp[3] + dp[4] = 2 + 3 = 5                 │
-│                                                       │
-│  Final: dp = [0, 1, 1, 2, 3, 5]                     │
-│                                                       │
-│  Time: O(n), Space: O(n)                            │
-│  (Can optimize space to O(1))                       │
-└────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    R[" WITHOUT MEMOIZATION "]
+    R --> N1["State"]
+    R --> N2["State"]
+    R --> N3["State"]
 ```
+
 
 ### 2.2 Climbing Stairs — DP Progression Visualization
 
@@ -418,98 +307,39 @@ Answer: Length = tails.length = 3  |  LIS tail ends with 20
 
 ### 4.1 DP Approaches: Top-Down vs Bottom-Up
 
-```
-┌──────────────────────────────────────────────────────────────────┐
-│                  TOP-DOWN (MEMOIZATION)                          │
-├──────────────────────────────────────────────────────────────────┤
-│ Execution Flow:      Recursive (DFS-like)                        │
-│ Code Style:          Natural, intuitive                          │
-│ Problem View:        Start with full problem, recurse down      │
-│ Memory Usage:        Recursion stack + memoization table        │
-│ All Subproblems?:    NO (only needed subproblems computed)     │
-│ Stack Overflow Risk: YES (for very deep recursion)             │
-│                                                                  │
-│ Example (Fibonacci):                                            │
-│   function fib(n, memo):                                        │
-│       if n in memo: return memo[n]                             │
-│       if n <= 1: return n                                      │
-│       memo[n] = fib(n-1, memo) + fib(n-2, memo)               │
-│       return memo[n]                                            │
-│                                                                  │
-│ Pros:               ✓ Intuitive | ✓ Clean code | ✓ Only needed │
-│ Cons:               ✗ Stack overhead | ✗ Risk of overflow     │
-└──────────────────────────────────────────────────────────────────┘
 
-┌──────────────────────────────────────────────────────────────────┐
-│                  BOTTOM-UP (TABULATION)                          │
-├──────────────────────────────────────────────────────────────────┤
-│ Execution Flow:      Iterative (loops)                           │
-│ Code Style:          Structured, explicit DP table             │
-│ Problem View:        Start with base cases, build up           │
-│ Memory Usage:        Explicit DP table (no recursion stack)    │
-│ All Subproblems?:    YES (compute all possible states)        │
-│ Stack Overflow Risk: NO (iterative only)                       │
-│                                                                  │
-│ Example (Fibonacci):                                            │
-│   function fib(n):                                              │
-│       dp = array of size n+1                                   │
-│       dp[0] = 0, dp[1] = 1                                     │
-│       for i from 2 to n:                                       │
-│           dp[i] = dp[i-1] + dp[i-2]                           │
-│       return dp[n]                                              │
-│                                                                  │
-│ Pros:               ✓ No stack risk | ✓ Explicit order | ✓ Fast│
-│ Cons:               ✗ Computes all | ✗ Need iteration order    │
-└──────────────────────────────────────────────────────────────────┘
-
-┌──────────────────────────────────────────────────────────────────┐
-│                        WHEN TO USE EACH                          │
-├──────────────────────────────────────────────────────────────────┤
-│ Use TOP-DOWN when:                                              │
-│   • Problem structure is naturally recursive                   │
-│   • Not all subproblems need to be computed                   │
-│   • Recursion depth is manageable                             │
-│   • Code clarity is priority                                  │
-│                                                                  │
-│ Use BOTTOM-UP when:                                            │
-│   • Iteration order is clear                                  │
-│   • Deep recursion might cause stack overflow                 │
-│   • Need guaranteed time/space bounds                        │
-│   • Space can be optimized (keep only recent states)         │
-│   • Performance is critical                                   │
-└──────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    R["State"]
+    R --> N1["State"]
+    R --> N2["State"]
+    R --> N3["State"]
+    R --> N4["State"]
+    R --> N5["State"]
+    R --> N6["State"]
 ```
+
 
 ### 4.2 DP Patterns at a Glance (Time/Space Comparison)
 
-```
-┌──────────────────────┬─────────────┬─────────────┬──────────────┐
-│ Pattern              │ Time        │ Space       │ When Use     │
-├──────────────────────┼─────────────┼─────────────┼──────────────┤
-│ Fibonacci            │ O(n)        │ O(n) / O(1) │ Teaching DP  │
-│ Climbing Stairs      │ O(n)        │ O(n) / O(1) │ Route finding│
-│ House Robber         │ O(n)        │ O(1)        │ Selections   │
-│ Coin Change          │ O(n×C)      │ O(n)        │ Optimization │
-│ 0/1 Knapsack         │ O(n×W)      │ O(W)        │ Constraints  │
-│ Unbounded Knapsack   │ O(W×items)  │ O(W)        │ Selections   │
-├──────────────────────┼─────────────┼─────────────┼──────────────┤
-│ Grid Paths           │ O(m×n)      │ O(n)        │ 2D navigation│
-│ Min Path Sum         │ O(m×n)      │ O(n)        │ Path finding │
-│ Edit Distance        │ O(m×n)      │ O(n)        │ String sim   │
-│ LCS                  │ O(m×n)      │ O(n)        │ String match │
-├──────────────────────┼─────────────┼─────────────┼──────────────┤
-│ LIS O(n²)            │ O(n²)       │ O(n)        │ Subsequence  │
-│ LIS O(n log n)       │ O(n log n)  │ O(n)        │ Large inputs │
-│ Kadane               │ O(n)        │ O(1)        │ Subarrays    │
-│ Weighted Intervals   │ O(n log n)  │ O(n)        │ Scheduling   │
-└──────────────────────┴─────────────┴─────────────┴──────────────┘
 
-Legend:
-  n = problem size
-  C = coin denominations or amount
-  W = knapsack capacity
-  m, n = grid dimensions
-```
+| Pattern | Time | Space | When Use |
+| :--- | :--- | :--- | :--- |
+| Fibonacci | O(n) | O(n) / O(1) | Teaching DP |
+| Climbing Stairs | O(n) | O(n) / O(1) | Route finding |
+| House Robber | O(n) | O(1) | Selections |
+| Coin Change | O(n×C) | O(n) | Optimization |
+| 0/1 Knapsack | O(n×W) | O(W) | Constraints |
+| Unbounded Knapsack | O(W×items) | O(W) | Selections |
+| Grid Paths | O(m×n) | O(n) | 2D navigation |
+| Min Path Sum | O(m×n) | O(n) | Path finding |
+| Edit Distance | O(m×n) | O(n) | String sim |
+| LCS | O(m×n) | O(n) | String match |
+| LIS O(n²) | O(n²) | O(n) | Subsequence |
+| LIS O(n log n) | O(n log n) | O(n) | Large inputs |
+| Kadane | O(n) | O(1) | Subarrays |
+| Weighted Intervals | O(n log n) | O(n) | Scheduling |
+
 
 ---
 
@@ -517,80 +347,43 @@ Legend:
 
 ### 5.1 "Which DP Pattern Applies?" Decision Tree
 
-```
-                    Problem Given
-                        │
-                        ▼
-            ┌─────────────────────────────┐
-            │ Is it a sequence problem?   │
-            └─────────────────────────────┘
-                   Yes ▲              No ▲
-                       │                 │
-            ┌──────────┘                  └──────────┐
-            │                                        │
-            ▼                                        ▼
-    ┌─────────────────────┐             ┌──────────────────────┐
-    │ Maximize/minimize   │             │ Is it a grid/2D      │
-    │ sum of subsequence? │             │ problem?             │
-    └─────────────────────┘             └──────────────────────┘
-            │                                    │
-        Yes │ No                             Yes │ No
-            │  │                                 │  │
-            ▼  ▼                                 ▼  ▼
-         Kadane LIS              Min Cost   Other...
-                                 Path
 
-    ┌────────────────────────────┐
-    │ Kadane's Algorithm         │
-    │ dp[i] = max/min sum        │
-    │ ending at i                │
-    │ O(n) time, O(1) space      │
-    └────────────────────────────┘
+| Maximize/minimize |  | Is it a grid/2D |
+| :--- | :--- | :--- |
+| sum of subsequence? |  | problem? |
+| Yes | No                             Yes | No |
+|  |  |  |
 
-    ┌────────────────────────────┐
-    │ LIS (Increasing Subseq)    │
-    │ dp[i] = longest ending     │
-    │ at i                       │
-    │ O(n²) or O(n log n)        │
-    └────────────────────────────┘
-
-    ┌────────────────────────────┐
-    │ Grid DP (Unique Paths)     │
-    │ dp[i][j] = answer for      │
-    │ position (i,j)             │
-    │ O(m×n) time, O(n) space    │
-    └────────────────────────────┘
-```
 
 ### 5.2 Problem Type to Pattern Mapping
 
 ```
 PROBLEM TYPE                    PATTERN                   EXAMPLE
-───────────────────────────────────────────────────────────────────
+-------------------------------------------------------------------
 "How many ways?"         → Counting/Summing             Coin ways,
                            State: count                 Paths
-───────────────────────────────────────────────────────────────────
+-------------------------------------------------------------------
 "Minimum/Maximum"        → Optimization                 Min cost,
                            State: best value            Max profit
-───────────────────────────────────────────────────────────────────
+-------------------------------------------------------------------
 "Subarray/Substring"     → Kadane / Pattern            Max sum,
                            State: ending position       Min window
-───────────────────────────────────────────────────────────────────
+-------------------------------------------------------------------
 "Subsequence"            → LIS / String alignment       LCS,
                            State: position in           Edit dist
-───────────────────────────────────────────────────────────────────
+-------------------------------------------------------------------
 "Grid navigation"        → 2D DP                        Unique paths,
                            State: (row, col)            Min path sum
-───────────────────────────────────────────────────────────────────
+-------------------------------------------------------------------
 "Selection problem"      → Knapsack                     0/1 Knapsack,
                            State: item, capacity        Unbounded
-───────────────────────────────────────────────────────────────────
+-------------------------------------------------------------------
 "Sequence matching"      → 2D string DP                 LCS,
                            State: (i, j) in strings     Edit distance
-───────────────────────────────────────────────────────────────────
+-------------------------------------------------------------------
 "Ordering problem"       → Interval / Greedy + DP       Activity sched,
                            State: position/interval     Weighted interv
-───────────────────────────────────────────────────────────────────
+-------------------------------------------------------------------
 ```
 
 ---
@@ -600,29 +393,29 @@ PROBLEM TYPE                    PATTERN                   EXAMPLE
 ### 6.1 Time & Space Complexity Reference (Week 10)
 
 ```
-╔════════════════════════════════════════════════════════════════════════╗
-║                    DP COMPLEXITY QUICK REFERENCE                       ║
-╠════════════════════════════════════════════════════════════════════════╣
-║ ALGORITHM              TIME              SPACE            NOTES         ║
-╠════════════════════════════════════════════════════════════════════════╣
-║ Fibonacci              O(2^n) → O(n)     O(n) → O(1)     Memoization   ║
-║ Climbing Stairs        O(n)              O(n) → O(1)     Space optim   ║
-║ House Robber           O(n)              O(1)            2 variables   ║
-║ Coin Change            O(n×coins)        O(n)            Unbounded     ║
-║ 0/1 Knapsack           O(n×W)            O(W)            W = capacity  ║
-║ Unbounded Knapsack     O(W×n)            O(W)            Each item ∞  ║
-║───────────────────────────────────────────────────────────────────────║
-║ Grid Paths             O(m×n)            O(m×n) → O(n)   Obstacles    ║
-║ Min Path Sum           O(m×n)            O(m×n) → O(n)   Cost acctum  ║
-║ Edit Distance          O(m×n)            O(m×n) → O(n)   Space optim  ║
-║ LCS                    O(m×n)            O(m×n) → O(n)   Reconstruct  ║
-║───────────────────────────────────────────────────────────────────────║
-║ LIS (DP)               O(n²)             O(n)            All pairs    ║
-║ LIS (Binary Search)    O(n log n)        O(n)            Binary search║
-║ Kadane                 O(n)              O(1)            Single pass  ║
-║ Weighted Intervals     O(n log n)        O(n)            Binary search║
-║ Distinct Subsequences  O(m×n)            O(m×n) → O(n)   2D string    ║
-╚════════════════════════════════════════════════════════════════════════╝
++========================================================================+
+|                    DP COMPLEXITY QUICK REFERENCE                       |
++========================================================================+
+| ALGORITHM              TIME              SPACE            NOTES         |
++========================================================================+
+| Fibonacci              O(2^n) → O(n)     O(n) → O(1)     Memoization   |
+| Climbing Stairs        O(n)              O(n) → O(1)     Space optim   |
+| House Robber           O(n)              O(1)            2 variables   |
+| Coin Change            O(n×coins)        O(n)            Unbounded     |
+| 0/1 Knapsack           O(n×W)            O(W)            W = capacity  |
+| Unbounded Knapsack     O(W×n)            O(W)            Each item ∞  |
+|-----------------------------------------------------------------------|
+| Grid Paths             O(m×n)            O(m×n) → O(n)   Obstacles    |
+| Min Path Sum           O(m×n)            O(m×n) → O(n)   Cost acctum  |
+| Edit Distance          O(m×n)            O(m×n) → O(n)   Space optim  |
+| LCS                    O(m×n)            O(m×n) → O(n)   Reconstruct  |
+|-----------------------------------------------------------------------|
+| LIS (DP)               O(n²)             O(n)            All pairs    |
+| LIS (Binary Search)    O(n log n)        O(n)            Binary search|
+| Kadane                 O(n)              O(1)            Single pass  |
+| Weighted Intervals     O(n log n)        O(n)            Binary search|
+| Distinct Subsequences  O(m×n)            O(m×n) → O(n)   2D string    |
++========================================================================+
 
 Notation:
   n = sequence/array length
@@ -640,7 +433,7 @@ Space Optimization Indicators:
 
 ```
 ALGORITHM          BEST CASE           WORST CASE        WHEN TO USE
-──────────────────────────────────────────────────────────────────────
+----------------------------------------------------------------------
 Fibonacci O(n)    n=1,2 (base)         n=100,000         Always for Fib
 LIS O(n²)         n<1,000              n>5,000           Small sequences
 LIS O(n log n)    n>1,000              n=10^6            Large sequences
@@ -662,55 +455,21 @@ Trade-off Summary:
 
 ### 7.1 Problem Statement Keywords → DP Pattern
 
-```
-┌──────────────────────────────────────────────────────────────────┐
-│                    KEYWORD SPOTTING GUIDE                        │
-└──────────────────────────────────────────────────────────────────┘
 
-KEYWORD FAMILY              PATTERN                    CONFIDENCE
-───────────────────────────────────────────────────────────────────
-"Maximum", "Minimum"   →    Optimization DP           HIGH
-"Count ways", "Paths"  →    Counting DP              HIGH
-"Longest", "Shortest"  →    Sequence DP              HIGH
-"At most", "At least"  →    Constraint DP            MEDIUM
-"No adjacent"          →    House Robber variant      HIGH
-"Grid", "Matrix"       →    2D DP                     MEDIUM
-"Edit", "Transform"    →    String alignment DP       HIGH
-"Weighted", "Cost"     →    Knapsack / Interval       MEDIUM
-"Optimal order"        →    Interval / Matrix chain   MEDIUM
-"Increasing/Decreasing"→    LIS / Sequence           HIGH
-"Subsequence"          →    String DP                 HIGH
-"Substring"            →    String DP (contiguous)    MEDIUM
-"Overlapping"          →    Optimal substructure     HIGH
-"Subproblem"           →    DP hint                   VERY HIGH
+```mermaid
+flowchart TD
+    R["State"]
+    R --> N1["State"]
 ```
+
 
 ### 7.2 DP Pattern Visual Flowchart
 
-```
-                    Problem Statement
-                           │
-                           ▼
-            ┌──────────────────────────┐
-            │ Keywords or structure?   │
-            └────────┬─────────────────┘
-                     │
-       ┌─────────────┼─────────────┬────────────────┐
-       │             │             │                │
-       ▼             ▼             ▼                ▼
-    "Sequence"   "Grid/2D"   "Selection"      "Ordering"
-       │             │             │                │
-       ▼             ▼             ▼                ▼
-    LIS/        Grid DP      Knapsack         Weighted
-   Kadane/      Edit Dist    House Robber     Interval
-   String DP    LCS                           Text Just
 
-    Decision logic:
-    - Does order matter? → Sequence/Interval DP
-    - Is state 2D spatial? → Grid DP
-    - Is state value-based? → Sequence DP
-    - Multiple constraints? → Knapsack
-```
+|  |  |  |
+| :--- | :--- | :--- |
+|  |  |  |
+
 
 ---
 
@@ -718,91 +477,23 @@ KEYWORD FAMILY              PATTERN                    CONFIDENCE
 
 ### 8.1 DP Applications Across Industries
 
+
+```mermaid
+flowchart TD
+    R["State"]
+    R --> N1["State"]
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│            DYNAMIC PROGRAMMING IN THE WILD                         │
-└─────────────────────────────────────────────────────────────────────┘
 
-INDUSTRY               APPLICATION              DP PATTERN USED
-─────────────────────────────────────────────────────────────────────
-FINANCE
-  • Stock trading      Maximize profit          Kadane + State machine
-  • Portfolio opt      Optimal allocation       Knapsack variant
-  • Risk minimization  Minimize loss            Optimization DP
-
-BIOINFORMATICS
-  • DNA alignment      LCS of sequences         String DP (LCS, LCS-2)
-  • Protein folding    Optimal structure        Interval DP
-  • Gene prediction    Hidden patterns          HMM (DP variant)
-
-COMPUTER GRAPHICS
-  • Image compression  LIS on pixel values      Sequence DP
-  • Path rendering     Optimal curve            Interval DP
-  • Animation keyframe Min transitions          Weighted intervals
-
-NATURAL LANGUAGE
-  • Spell checking     Edit distance            String alignment DP
-  • Machine translation Word alignment          LCS + scoring
-  • Text justification Min badness              Text DP
-
-ROBOTICS
-  • Path planning      Min cost navigation      Grid DP
-  • Motion planning    Optimal trajectory       Interval DP
-  • Task scheduling    Non-overlapping jobs     Weighted intervals
-
-SYSTEMS & NETWORKS
-  • Cache management   Optimal eviction         Optimization DP
-  • Load balancing     Min makespan             Interval DP
-  • Network routing    Shortest paths           DAG DP
-
-GAMING
-  • Chess AI           Minimax scoring          Game tree DP
-  • Puzzle solving     Min moves to goal        State space DP
-  • Resource mgmt      Optimal allocation       Knapsack
-─────────────────────────────────────────────────────────────────────
-```
 
 ### 8.2 Real-World Problem Translation Example
 
+
+```mermaid
+flowchart TD
+    R["State"]
+    R --> N1["State"]
 ```
-┌──────────────────────────────────────────────────────────────────┐
-│ STORY: "Delivery Route Planning"                                │
-│                                                                  │
-│ A delivery company has 10 packages to deliver on a route.      │
-│ Each package has a location (coordinates) and time window      │
-│ (earliest/latest delivery). The truck has limited capacity.    │
-│ Minimize delivery time.                                        │
-└──────────────────────────────────────────────────────────────────┘
 
-PROBLEM DECOMPOSITION:
-
-1. Recognize components:
-   ✓ Multiple items (packages)
-   ✓ Constraints (time windows, capacity)
-   ✓ Objective (minimize time)
-
-2. Identify DP applicability:
-   ✓ Optimal substructure: Best route for packages 1..k contains
-     best route for packages 1..k-1
-   ✓ Overlapping: Same package set processed in different routes
-   ✓ Polynomial state space: Subset of packages × time
-   ✓ Tractable recurrence: Combine routes efficiently
-
-3. Define state:
-   dp[S][t] = minimum cost to deliver packages in set S, 
-              ending at time t
-
-4. Recurrence:
-   dp[S][t] = min(dp[S-{i}][t'] + cost(i, t-t'))
-              for all i in S, t' < t
-
-5. Implementation:
-   Use bitmask DP: S = bitmask of packages
-   O(2^n × T) time (n=packages, T=max time)
-   For n=10: 1024 × T states (feasible!)
-
-RESULT: Find optimal delivery sequence → dp[all packages][min time]
-```
 
 ---
 
@@ -812,7 +503,7 @@ RESULT: Find optimal delivery sequence → dp[all packages][min time]
 
 ```
 PROBLEM TYPE              STATE DEFINITION            RECURRENCE SKETCH
-──────────────────────────────────────────────────────────────────────
+----------------------------------------------------------------------
 Climbing Stairs          dp[i]=ways to reach i       dp[i]=dp[i-1]+dp[i-2]
 House Robber             dp[i]=max value til i       dp[i]=max(skip,rob)
 Coin Change              dp[i]=min coins for i       dp[i]=min(dp[i-c]+1)
@@ -829,14 +520,14 @@ LIS                      dp[i]=longest ending        dp[i]=max(dp[j]+1
                          at i                        for j<i, arr[j]<arr[i])
 Kadane                   dp[i]=max sum ending        dp[i]=max(arr[i],
                          at i                        dp[i-1]+arr[i])
-──────────────────────────────────────────────────────────────────────
+----------------------------------------------------------------------
 ```
 
 ### 9.2 Problem→Solution Mapping
 
 ```
 PROBLEM                     SOLUTION OUTLINE              TYPICAL TIME
-─────────────────────────────────────────────────────────────────────
+---------------------------------------------------------------------
 Find "k-th smallest"       Binary search + DP            O(n log n)
 Find "maximum subarray"    Kadane (one pass)             O(n)
 Count "distinct ways"      Counting DP (summing)         O(n^d)
@@ -845,7 +536,7 @@ Maximize "profit"          Optimization DP (knapsack)    O(n×W)
 Find "longest sequence"    LIS or string DP              O(n^2) or O(n log n)
 Navigate "2D grid"         Grid DP                       O(m×n)
 Schedule "non-overlapping" Weighted intervals + binary   O(n log n)
-─────────────────────────────────────────────────────────────────────
+---------------------------------------------------------------------
 ```
 
 ---
@@ -854,45 +545,32 @@ Schedule "non-overlapping" Weighted intervals + binary   O(n log n)
 
 ### 10.1 Recommended Visual Learning Progression
 
+
+```mermaid
+flowchart TD
+    R["Week 10 Learning Path (Visual Approach)"]
+    R --> N1["WATCH: Exponential tree vs memoization diagram (Part 2.1)"]
+    R --> N2["TRACE: Fibonacci table build (manually on paper)"]
+    R --> N3["DRAW: Recursive call tree for fib(5) with cache hits"]
+    R --> N4["PRACTICE: Hand-trace climbing stairs for n=5"]
+    R --> N5["STUDY: Comparison chart (Part 4.2)"]
+    R --> N6["TRACE: House robber DP table"]
+    R --> N7["DRAW: Decision tree for knapsack (take vs skip)"]
+    R --> N8["PRACTICE: Build coin change table step-by-step"]
+    R --> N9["WATCH: Edit distance state propagation (Part 3.1)"]
+    R --> N10["TRACE: LCS diagonal matching (Part 3.2)"]
+    R --> N11["DRAW: Grid navigation with obstacles"]
+    R --> N12["PRACTICE: Fill edit distance table by hand"]
+    R --> N13["STUDY: LIS comparison (both approaches, Part 3.3)"]
+    R --> N14["TRACE: Binary search optimization"]
+    R --> N15["DRAW: Kadane progression"]
+    R --> N16["PRACTICE: Find LIS length manually"]
+    R --> N17["TRANSLATE: Story problem to DP state (Part 8.2)"]
+    R --> N18["DESIGN: Custom state for novel problem"]
+    R --> N19["DRAW: Problem decomposition tree"]
+    R --> N20["PRACTICE: Formulate recurrence for new scenario"]
 ```
-Week 10 Learning Path (Visual Approach):
 
-Day 1: Fundamentals
-  ├─ WATCH: Exponential tree vs memoization diagram (Part 2.1)
-  ├─ TRACE: Fibonacci table build (manually on paper)
-  ├─ DRAW: Recursive call tree for fib(5) with cache hits
-  └─ PRACTICE: Hand-trace climbing stairs for n=5
-
-Day 2: 1D Patterns
-  ├─ STUDY: Comparison chart (Part 4.2)
-  ├─ TRACE: House robber DP table
-  ├─ DRAW: Decision tree for knapsack (take vs skip)
-  └─ PRACTICE: Build coin change table step-by-step
-
-Day 3: 2D Patterns
-  ├─ WATCH: Edit distance state propagation (Part 3.1)
-  ├─ TRACE: LCS diagonal matching (Part 3.2)
-  ├─ DRAW: Grid navigation with obstacles
-  └─ PRACTICE: Fill edit distance table by hand
-
-Day 4: Sequences
-  ├─ STUDY: LIS comparison (both approaches, Part 3.3)
-  ├─ TRACE: Binary search optimization
-  ├─ DRAW: Kadane progression
-  └─ PRACTICE: Find LIS length manually
-
-Day 5: Advanced
-  ├─ TRANSLATE: Story problem to DP state (Part 8.2)
-  ├─ DESIGN: Custom state for novel problem
-  ├─ DRAW: Problem decomposition tree
-  └─ PRACTICE: Formulate recurrence for new scenario
-
-Recommended tools:
-  • Paper & pencil: For hand-tracing tables
-  • Graph paper: For grid DP visualization
-  • Index cards: For pattern cards (keyword → algorithm)
-  • Whiteboard: For explaining DP to others
-```
 
 ### 10.2 Visual Debugging Checklist
 
@@ -935,62 +613,26 @@ When your DP isn't working, check these (in order):
 
 ### 10.3 How Week 10 Connects to Rest of Curriculum
 
-```
-                    ┌──────────────┐
-                    │ Week 1-3     │
-                    │ Recursion &  │
-                    │ Backtracking │
-                    └────────┬─────┘
-                             │ (builds on recursive thinking)
-                             ▼
-                    ┌──────────────────┐
-                    │ Week 10: DP I    │
-                    │ Fundamentals     │
-                    └────────┬─────────┘
-                             │
-            ┌────────────────┼────────────────┐
-            │                │                │
-            ▼                ▼                ▼
-        ┌────────┐    ┌──────────┐   ┌──────────────┐
-        │Week 11 │    │Week 12   │   │Week 13       │
-        │AdvDP  │    │GraphDP   │   │OptimizeDP    │
-        │Game DP │    │Shortest  │   │CHT, Monge    │
-        └────────┘    └──────────┘   └──────────────┘
 
-DP Applications (scattered across later weeks):
-  • Tree problems (Week 6): Tree DP
-  • Graphs (Week 7): DAG DP, shortest paths
-  • String matching (elsewhere): DP solutions
-  • Greedy (Week 5): Recognizing when greedy fails, use DP instead
-  • Divide & Conquer (Week 4): Understanding why DP differs
-```
+|  |  |
+| :--- | :--- |
+| Week 11 |  |
+| AdvDP |  |
+| Game DP |  |
+
 
 ---
 
 ## 📌 CONCLUSION: Visual DP Mastery Roadmap
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                  YOUR DP VISUAL JOURNEY                             │
-│                                                                     │
-│  START: Overwhelmed by abstract state definitions                   │
-│         │                                                           │
-│         ├→ See Fibonacci exponential tree (motivates caching)       │
-│         │                                                           │
-│         ├→ Trace Edit Distance table step-by-step (state is real!)  │
-│         │                                                           │
-│         ├→ Draw LIS for arrays (sequence DP intuition)              │
-│         │                                                           │
-│         ├→ Recognize patterns by keywords (pattern matching)        │
-│         │                                                           │
-│         └→ Translate story to DP (mastery!)                        │
-│                                                                     │
-│  END: Confident DP problem solver with visual understanding        │
-│                                                                     │
-└─────────────────────────────────────────────────────────────────────┘
 
-Next: Practice with actual problems using these visuals as reference!
-```
+|  |  |
+| :--- | :--- |
+|  |  |
+|  |  |
+|  |  |
+|  |  |
+
 
 ---
 
@@ -1013,3 +655,7 @@ Next: Practice with actual problems using these visuals as reference!
 **End of Week 10 Visual Concepts Playbook**
 
 **This playbook complements the 5 detailed instructional files (Days 01-05) and provides visual-first learning for kinesthetic and visual learners.**
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

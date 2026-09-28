@@ -1,5 +1,14 @@
 # 📅 Week 14, Day 5: Advanced Number Theory, Euler's Totient & Chinese Remainder Theorem
 
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_14_Day_04_Advanced_Strings_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_14_FULL_PLAYBOOK.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
+
+---
+
 Welcome to Day 5. Today, we bridge theoretical modular math with low-level register overflow protection. We study Euler's Totient function to count coprime sets, explore prime factor sifting arrays, analyze systems of congruent mod equation zones, and build a generic Chinese Remainder Theorem (CRT) solver using the Extended Euclidean algorithm.
 
 ---
@@ -265,3 +274,6 @@ def solve_crt(a: list[int], m: list[int]) -> int:
 ### Misconceptions and Corrections
 *   *Incorrect Idea*: Assuming that the Chinese Remainder Theorem can solve systems with non-pairwise coprime moduli without modifications.
     *   *Correction*: If the moduli are not coprime, a solution might not exist, or it might not be unique modulo their product. You must verify that the GCD of the moduli is 1 before starting.
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_14_Day_04_Advanced_Strings_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_14_FULL_PLAYBOOK.md)

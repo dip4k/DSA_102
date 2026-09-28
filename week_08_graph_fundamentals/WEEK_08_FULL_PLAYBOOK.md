@@ -1,5 +1,11 @@
 # 🌐 Week 08 Full Playbook – Graph Fundamentals: Representations, BFS, DFS & Topological Sort
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Comprehensive Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
+
+---
+
 **Filename:** `WEEK_08_FULL_PLAYBOOK.md`  
 **Phase:** C – Trees, Graphs & Dynamic Programming  
 **Week:** 08  
@@ -62,26 +68,26 @@ Everything later in the course—shortest paths, MSTs, advanced DP—assumes you
 
 ### 1.1 Concept Family Tree 🌳
 
-```text
-GRAPH FUNDAMENTALS (Day 1)
-├── Graph Types
-│   ├── Directed
-│   └── Undirected
-│
-├── Edge Weights
-│   ├── Unweighted
-│   └── Weighted
-│
-├── Representations
-│   ├── Adjacency List
-│   ├── Adjacency Matrix
-│   └── Edge List
-│
-└── Implicit Graphs
-    ├── Grids
-    ├── Puzzles
-    └── State Spaces
+
+```mermaid
+flowchart TD
+    R["GRAPH FUNDAMENTALS (Day 1)"]
+    R --> N1["Graph Types"]
+    N1 --> N2["Directed"]
+    N1 --> N3["Undirected"]
+    R --> N4["Edge Weights"]
+    N4 --> N5["Unweighted"]
+    N4 --> N6["Weighted"]
+    R --> N7["Representations"]
+    N7 --> N8["Adjacency List"]
+    N7 --> N9["Adjacency Matrix"]
+    N7 --> N10["Edge List"]
+    R --> N11["Implicit Graphs"]
+    N11 --> N12["Grids"]
+    N11 --> N13["Puzzles"]
+    N11 --> N14["State Spaces"]
 ```
+
 
 ### 1.2 Real-World Engineering Problem 🎛️
 
@@ -240,22 +246,23 @@ Examples of implicit graphs:
 
 ### 2.1 Concept Family Tree 🌳
 
-```text
-BREADTH-FIRST SEARCH (Day 2)
-├── Mechanics
-│   ├── Queue-based frontier
-│   ├── Level-by-level exploration
-│   └── Visited marking
-│
-├── Shortest Paths (Unweighted)
-│   ├── Distance layers
-│   └── Parent pointers for paths
-│
-└── Applications
-    ├── Shortest route in unweighted networks
-    ├── Level order traversal in trees
-    └── Conceptual: components, bipartite checks
+
+```mermaid
+flowchart TD
+    R["BREADTH-FIRST SEARCH (Day 2)"]
+    R --> N1["Mechanics"]
+    N1 --> N2["Queue-based frontier"]
+    N1 --> N3["Level-by-level exploration"]
+    N1 --> N4["Visited marking"]
+    R --> N5["Shortest Paths (Unweighted)"]
+    N5 --> N6["Distance layers"]
+    N5 --> N7["Parent pointers for paths"]
+    R --> N8["Applications"]
+    N8 --> N9["Shortest route in unweighted networks"]
+    N8 --> N10["Level order traversal in trees"]
+    N8 --> N11["Conceptual: components, bipartite checks"]
 ```
+
 
 ### 2.2 Real-World Engineering Problem 🚍
 
@@ -460,26 +467,26 @@ public class BfsShortestPath
 
 ### 3.1 Concept Family Tree 🌳
 
-```text
-DEPTH-FIRST SEARCH & TOPO SORT (Day 3)
-├── DFS Mechanics
-│   ├── Recursive exploration
-│   ├── Explicit stack variant
-│   └── Discovery/Finish times
-│
-├── Edge Types (Directed Graphs)
-│   ├── Tree edges
-│   ├── Back edges
-│   ├── Forward edges
-│   └── Cross edges
-│
-├── Cycle Detection
-│   └── Back edges in directed graphs
-│
-└── Topological Sort
-    ├── DFS post-order method
-    └── Kahn's algorithm (in-degree + BFS)
+
+```mermaid
+flowchart TD
+    R["DEPTH-FIRST SEARCH & TOPO SORT (Day 3)"]
+    R --> N1["DFS Mechanics"]
+    N1 --> N2["Recursive exploration"]
+    N1 --> N3["Explicit stack variant"]
+    N1 --> N4["Discovery/Finish times"]
+    R --> N5["Edge Types (Directed Graphs)"]
+    N5 --> N6["Tree edges"]
+    N5 --> N7["Back edges"]
+    N5 --> N8["Forward edges"]
+    N5 --> N9["Cross edges"]
+    R --> N10["Cycle Detection"]
+    N10 --> N11["Back edges in directed graphs"]
+    R --> N12["Topological Sort"]
+    N12 --> N13["DFS post-order method"]
+    N12 --> N14["Kahn's algorithm (in-degree + BFS)"]
 ```
+
 
 ### 3.2 Real-World Engineering Problem 📦
 
@@ -699,23 +706,23 @@ public class DfsTopoSort
 
 ### 4.1 Concept Family Tree 🌳
 
-```text
-CONNECTIVITY & BIPARTITE GRAPHS (Day 4)
-├── Connected Components (Undirected)
-│   ├── BFS/DFS for components
-│   └── Component labeling & sizes
-│
-├── Bipartite Testing
-│   ├── Two-coloring via BFS/DFS
-│   └── Odd cycle detection
-│
-├── Union–Find / DSU
-│   └── Offline connectivity queries
-│
-└── Network Reliability Examples
-    ├── Grid connectivity
-    └── Single points of failure (articulation points, bridges – high-level)
+
+```mermaid
+flowchart TD
+    R["CONNECTIVITY & BIPARTITE GRAPHS (Day 4)"]
+    R --> N1["Connected Components (Undirected)"]
+    N1 --> N2["BFS/DFS for components"]
+    N1 --> N3["Component labeling & sizes"]
+    R --> N4["Bipartite Testing"]
+    N4 --> N5["Two-coloring via BFS/DFS"]
+    N4 --> N6["Odd cycle detection"]
+    R --> N7["Union–Find / DSU"]
+    N7 --> N8["Offline connectivity queries"]
+    R --> N9["Network Reliability Examples"]
+    N9 --> N10["Grid connectivity"]
+    N9 --> N11["Single points of failure (articulation points, bridges – high-level)"]
 ```
+
 
 ### 4.2 Visual: Connected Components as Islands 🏝️
 
@@ -840,35 +847,33 @@ With **path compression** and **union by rank/size**, trees stay shallow and ope
 
 ### 5.1 Concept Family Tree 🌳
 
-```text
-STRONGLY CONNECTED COMPONENTS (Day 5 – Optional Advanced)
-├── Strong Connectivity
-│   ├── Mutual reachability (u→v and v→u)
-│   └── SCCs as equivalence classes
-│
-├── Algorithms (Conceptual)
-│   ├── Kosaraju (two-pass DFS + transpose)
-│   └── Tarjan (single-pass DFS with low-link)
-│
-└── Component DAG
-    ├── Collapse SCCs into nodes
-    └── Result is always a DAG
+
+```mermaid
+flowchart TD
+    R["STRONGLY CONNECTED COMPONENTS (Day 5 – Optional Advanced)"]
+    R --> N1["Strong Connectivity"]
+    N1 --> N2["Mutual reachability (u→v and v→u)"]
+    N1 --> N3["SCCs as equivalence classes"]
+    R --> N4["Algorithms (Conceptual)"]
+    N4 --> N5["Kosaraju (two-pass DFS + transpose)"]
+    N4 --> N6["Tarjan (single-pass DFS with low-link)"]
+    R --> N7["Component DAG"]
+    N7 --> N8["Collapse SCCs into nodes"]
+    N7 --> N9["Result is always a DAG"]
 ```
+
 
 ### 5.2 Visual: SCC Decomposition ♻️
 
 Directed graph:
 
-```text
-  1 → 2 → 3 → 4
-  ↑   ↓   ↑
-  |   └→ 5
-  └──────┘
 
-  6 → 7
-
-  8
+```mermaid
+flowchart TD
+    R["1 → 2 → 3 → 4"]
+    R --> N1["State"]
 ```
+
 
 SCCs:
 
@@ -1156,3 +1161,7 @@ Use these to deepen Week 08 topics:
    - Try problems where you must compress SCCs into a DAG and then perform some DP or counting.
 
 > By the end of Week 08, your mental picture of graphs should be crystal clear: how to represent them, how to traverse them, and how to read their global structure.
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

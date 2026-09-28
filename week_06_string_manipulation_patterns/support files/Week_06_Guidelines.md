@@ -1,5 +1,11 @@
 # 📋 Week 06 Guidelines: String Patterns Mastery
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Week Overview:** String Manipulation Patterns (Tier 1.5)  
 **Total Content:** 5 comprehensive instructional files + 5 support guides  
 **Time Allocation:** 12-18 hours core learning + practice
@@ -218,35 +224,33 @@ Don't skip stages. Rushing to Stage 3 before mastering Stage 1 creates false con
 
 ## 📊 Concept Map: How Week 06 Patterns Connect
 
-```
-All String Problems
 
-├─ ANALYZE STRUCTURE
-│  ├─ Palindrome? (Day 1)
-│  └─ Symmetry-based solution
-│
-├─ FIND SUBSTRING WITH PROPERTY
-│  ├─ Fixed window? (Day 2, simple)
-│  ├─ Variable window? (Day 2, complex)
-│  └─ Sliding window template
-│
-├─ VALIDATE NESTING
-│  ├─ Brackets? (Day 3)
-│  ├─ Stack for LIFO matching
-│  └─ State machine for validation
-│
-├─ CONVERT FORMATS
-│  ├─ Build new string? (Day 4)
-│  ├─ Parse input safely? (Day 4)
-│  ├─ StringBuilder for efficiency
-│  └─ Greedy mapping for conversion
-│
-└─ SCALE TO BILLIONS
-   ├─ Multiple patterns? (Day 5)
-   ├─ Massive corpus? (Day 5)
-   ├─ Rolling hash + Rabin-Karp
-   └─ O(n+m) beats O(nm)
+```mermaid
+flowchart TD
+    R["All String Problems"]
+    R --> N1["ANALYZE STRUCTURE"]
+    N1 --> N2["Palindrome? (Day 1)"]
+    N1 --> N3["Symmetry-based solution"]
+    R --> N4["FIND SUBSTRING WITH PROPERTY"]
+    N4 --> N5["Fixed window? (Day 2, simple)"]
+    N4 --> N6["Variable window? (Day 2, complex)"]
+    N4 --> N7["Sliding window template"]
+    R --> N8["VALIDATE NESTING"]
+    N8 --> N9["Brackets? (Day 3)"]
+    N8 --> N10["Stack for LIFO matching"]
+    N8 --> N11["State machine for validation"]
+    R --> N12["CONVERT FORMATS"]
+    N12 --> N13["Build new string? (Day 4)"]
+    N12 --> N14["Parse input safely? (Day 4)"]
+    N12 --> N15["StringBuilder for efficiency"]
+    N12 --> N16["Greedy mapping for conversion"]
+    R --> N17["SCALE TO BILLIONS"]
+    N17 --> N18["Multiple patterns? (Day 5)"]
+    N17 --> N19["Massive corpus? (Day 5)"]
+    N17 --> N20["Rolling hash + Rabin-Karp"]
+    N17 --> N21["O(n+m) beats O(nm)"]
 ```
+
 
 ---
 
@@ -325,3 +329,6 @@ You've mastered Week 06 when:
 **Next:** Week 06 Summary & Key Concepts  
 **Time to Completion:** 12-18 hours core learning
 
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

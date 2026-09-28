@@ -1,5 +1,11 @@
 # 📊 Week 06 Visual Concepts Playbook HYBRID: String Patterns at Scale
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Visual Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
+
+---
+
 **Metadata:**
 - **Week:** 06
 - **Phase:** B (Patterns III)
@@ -50,30 +56,29 @@
 
 ### Pattern Map: Palindrome Detection Family Tree
 
-```
-Palindrome Detection Concepts
 
-├─ Symmetry Detection
-│  ├─ Odd-length center (single char)
-│  │  └─ Example: "aba" centered at 'b'
-│  └─ Even-length center (between chars)
-│     └─ Example: "abba" centered between two 'b's
-│
-├─ Expansion Strategy
-│  ├─ Naive: Check all substrings O(n²)
-│  ├─ Expand-Around-Center: Check from centers O(n²)
-│  └─ Dynamic Programming: Build table O(n²) space
-│
-├─ Applications
-│  ├─ String validation (is it palindrome?)
-│  ├─ DNA pattern detection (symmetric sequences)
-│  └─ Compression detection (repeating patterns)
-│
-└─ Complexity Analysis
-   ├─ Time: O(n²) for longest palindrome
-   ├─ Space: O(1) for expand-around-center
-   └─ Why: 2n-1 centers × expansion per center
+```mermaid
+flowchart TD
+    R["Palindrome Detection Concepts"]
+    R --> N1["Symmetry Detection"]
+    N1 --> N2["Odd-length center (single char)"]
+    N2 --> N3["Example: 'aba' centered at 'b'"]
+    N1 --> N4["Even-length center (between chars)"]
+    N4 --> N5["Example: 'abba' centered between two 'b's"]
+    R --> N6["Expansion Strategy"]
+    N6 --> N7["Naive: Check all substrings O(n²)"]
+    N6 --> N8["Expand-Around-Center: Check from centers O(n²)"]
+    N6 --> N9["Dynamic Programming: Build table O(n²) space"]
+    R --> N10["Applications"]
+    N10 --> N11["String validation (is it palindrome?)"]
+    N10 --> N12["DNA pattern detection (symmetric sequences)"]
+    N10 --> N13["Compression detection (repeating patterns)"]
+    R --> N14["Complexity Analysis"]
+    N14 --> N15["Time: O(n²) for longest palindrome"]
+    N14 --> N16["Space: O(1) for expand-around-center"]
+    N14 --> N17["Why: 2n-1 centers × expansion per center"]
 ```
+
 
 ### 🔄 Pattern 1.1: Expand-Around-Center for Palindromes
 
@@ -241,36 +246,34 @@ In DNA analysis, a palindromic sequence can form a hairpin loop (important for p
 
 ### Pattern Map: Sliding Window Family Tree
 
-```
-Substring Search Concepts
 
-├─ Window Types
-│  ├─ Fixed-size window
-│  │  └─ Move by 1, recompute constraints
-│  │     └─ O(n) amortized with smart tracking
-│  │
-│  └─ Variable-size window (Day 2 focus)
-│     ├─ Expand when constraint not satisfied
-│     ├─ Shrink when constraint violated
-│     └─ O(n) amortized (each element visited twice)
-│
-├─ Constraint Types
-│  ├─ "Longest without repeating" (uniqueness)
-│  ├─ "At most K distinct" (bounded diversity)
-│  ├─ "All characters of pattern" (coverage)
-│  └─ "At most K changes" (modification budget)
-│
-├─ Tracking Methods
-│  ├─ Frequency map (character → count)
-│  ├─ Index map (character → last position)
-│  ├─ Constraint counter (violations so far)
-│  └─ Validation function (true/false)
-│
-└─ Optimization Patterns
-   ├─ Expand then shrink
-   ├─ Shrink completely then expand
-   └─ Twin pointer with lazy updates
+```mermaid
+flowchart TD
+    R["Substring Search Concepts"]
+    R --> N1["Window Types"]
+    N1 --> N2["Fixed-size window"]
+    N2 --> N3["Move by 1, recompute constraints"]
+    N3 --> N4["O(n) amortized with smart tracking"]
+    N1 --> N5["Variable-size window (Day 2 focus)"]
+    N5 --> N6["Expand when constraint not satisfied"]
+    N5 --> N7["Shrink when constraint violated"]
+    N5 --> N8["O(n) amortized (each element visited twice)"]
+    R --> N9["Constraint Types"]
+    N9 --> N10["'Longest without repeating' (uniqueness)"]
+    N9 --> N11["'At most K distinct' (bounded diversity)"]
+    N9 --> N12["'All characters of pattern' (coverage)"]
+    N9 --> N13["'At most K changes' (modification budget)"]
+    R --> N14["Tracking Methods"]
+    N14 --> N15["Frequency map (character → count)"]
+    N14 --> N16["Index map (character → last position)"]
+    N14 --> N17["Constraint counter (violations so far)"]
+    N14 --> N18["Validation function (true/false)"]
+    R --> N19["Optimization Patterns"]
+    N19 --> N20["Expand then shrink"]
+    N19 --> N21["Shrink completely then expand"]
+    N19 --> N22["Twin pointer with lazy updates"]
 ```
+
 
 ### 🔄 Pattern 2.1: Variable-Size Window with Frequency Tracking
 
@@ -437,39 +440,37 @@ Email input validation needs to find the longest substring without special chara
 
 ### Pattern Map: Bracket Matching Family Tree
 
-```
-Bracket Matching Concepts
 
-├─ Problem Types
-│  ├─ Validation: Is the string balanced?
-│  ├─ Extraction: Find longest valid substring
-│  ├─ Generation: Produce all valid combinations
-│  └─ Transformation: Make invalid string valid
-│
-├─ Stack Discipline (LIFO)
-│  ├─ Open bracket → Push to stack
-│  ├─ Close bracket → Must match top of stack
-│  ├─ Mismatch → Invalid (e.g., {[}])
-│  └─ Empty stack on close → Invalid
-│
-├─ Matching Rules
-│  ├─ ) matches only (
-│  ├─ ] matches only [
-│  ├─ } matches only {
-│  └─ Order matters (nesting)
-│
-├─ Variations
-│  ├─ Single bracket type: ()
-│  ├─ Multiple types: (){[]}
-│  ├─ With other chars: a(b[c])d
-│  └─ Weights/points assigned per type
-│
-└─ Applications
-   ├─ Compiler syntax checking
-   ├─ JSON/XML parsing
-   ├─ Expression evaluation
-   └─ Code editor matching
+```mermaid
+flowchart TD
+    R["Bracket Matching Concepts"]
+    R --> N1["Problem Types"]
+    N1 --> N2["Validation: Is the string balanced?"]
+    N1 --> N3["Extraction: Find longest valid substring"]
+    N1 --> N4["Generation: Produce all valid combinations"]
+    N1 --> N5["Transformation: Make invalid string valid"]
+    R --> N6["Stack Discipline (LIFO)"]
+    N6 --> N7["Open bracket → Push to stack"]
+    N6 --> N8["Close bracket → Must match top of stack"]
+    N6 --> N9["Mismatch → Invalid (e.g., {[}])"]
+    N6 --> N10["Empty stack on close → Invalid"]
+    R --> N11["Matching Rules"]
+    N11 --> N12[") matches only ("]
+    N11 --> N13["] matches only ["]
+    N11 --> N14["} matches only {"]
+    N11 --> N15["Order matters (nesting)"]
+    R --> N16["Variations"]
+    N16 --> N17["Single bracket type: ()"]
+    N16 --> N18["Multiple types: (){[]}"]
+    N16 --> N19["With other chars: a(b[c])d"]
+    N16 --> N20["Weights/points assigned per type"]
+    R --> N21["Applications"]
+    N21 --> N22["Compiler syntax checking"]
+    N21 --> N23["JSON/XML parsing"]
+    N21 --> N24["Expression evaluation"]
+    N21 --> N25["Code editor matching"]
 ```
+
 
 ### 🏗️ Pattern 3.1: Stack-Based Validation
 
@@ -657,39 +658,37 @@ How does a code editor highlight matching brackets? Does it use a stack? What if
 
 ### Pattern Map: String Transformation Family Tree
 
-```
-String Transformation Concepts
 
-├─ Parsing (String → Structured)
-│  ├─ atoi: Parse string to integer
-│  ├─ Validation: Check format correctness
-│  ├─ Overflow detection: Handle boundary values
-│  └─ Error handling: Manage invalid input
-│
-├─ Building (Structured → String)
-│  ├─ StringBuilder: O(n) concatenation (NOT naive O(n²))
-│  ├─ Greedy mapping: Integer to Roman
-│  ├─ Character-by-character: Compression encoding
-│  └─ Formatting: Alignment, padding, spacing
-│
-├─ Format Conversion
-│  ├─ Integer to Roman: Greedy from largest
-│  ├─ Roman to Integer: Additive vs subtractive rules
-│  ├─ Binary to Hex: Digit grouping
-│  └─ Compression: Run-length encoding
-│
-├─ Efficiency Pitfalls
-│  ├─ Naive concatenation: O(n²) disaster
-│  ├─ String immutability cost: Hidden allocations
-│  ├─ Bounds checking: Off-by-one in parsing
-│  └─ Overflow detection: Integer limits
-│
-└─ Real Systems
-   ├─ Logging: 10M entries/day, StringBuilder mandatory
-   ├─ Serialization: Protocol buffers, JSON encoding
-   ├─ User input validation: Defensive parsing
-   └─ Data format conversion: Efficiency critical
+```mermaid
+flowchart TD
+    R["String Transformation Concepts"]
+    R --> N1["Parsing (String → Structured)"]
+    N1 --> N2["atoi: Parse string to integer"]
+    N1 --> N3["Validation: Check format correctness"]
+    N1 --> N4["Overflow detection: Handle boundary values"]
+    N1 --> N5["Error handling: Manage invalid input"]
+    R --> N6["Building (Structured → String)"]
+    N6 --> N7["StringBuilder: O(n) concatenation (NOT naive O(n²))"]
+    N6 --> N8["Greedy mapping: Integer to Roman"]
+    N6 --> N9["Character-by-character: Compression encoding"]
+    N6 --> N10["Formatting: Alignment, padding, spacing"]
+    R --> N11["Format Conversion"]
+    N11 --> N12["Integer to Roman: Greedy from largest"]
+    N11 --> N13["Roman to Integer: Additive vs subtractive rules"]
+    N11 --> N14["Binary to Hex: Digit grouping"]
+    N11 --> N15["Compression: Run-length encoding"]
+    R --> N16["Efficiency Pitfalls"]
+    N16 --> N17["Naive concatenation: O(n²) disaster"]
+    N16 --> N18["String immutability cost: Hidden allocations"]
+    N16 --> N19["Bounds checking: Off-by-one in parsing"]
+    N16 --> N20["Overflow detection: Integer limits"]
+    R --> N21["Real Systems"]
+    N21 --> N22["Logging: 10M entries/day, StringBuilder mandatory"]
+    N21 --> N23["Serialization: Protocol buffers, JSON encoding"]
+    N21 --> N24["User input validation: Defensive parsing"]
+    N21 --> N25["Data format conversion: Efficiency critical"]
 ```
+
 
 ### 🔨 Pattern 4.1: StringBuilder vs Naive Concatenation
 
@@ -943,38 +942,36 @@ A logging system writes 10 million events/day, each event with 5-10 fields. If e
 
 ### Pattern Map: Pattern Matching Family Tree
 
-```
-String Matching Concepts
 
-├─ Naive Approach: O(nm)
-│  ├─ For each position in text, compare all m characters of pattern
-│  ├─ Worst case: "aaaaa..." text, "aaab" pattern
-│  └─ 10 million characters text × 100 chars pattern = 1 billion comparisons
-│
-├─ Rolling Hash: O(n+m) expected
-│  ├─ Precompute hash of pattern once: O(m)
-│  ├─ Hash each window of text in O(1): Remove-Shift-Add
-│  ├─ Compare hashes in O(1), verify on match: O(m)
-│  └─ Rare collisions make this faster in practice
-│
-├─ KMP: O(n+m) guaranteed
-│  ├─ Build failure function: O(m)
-│  ├─ Single pass through text: O(n)
-│  ├─ No false positives, but more complex code
-│  └─ Best for single pattern, guaranteed linear time
-│
-├─ Boyer-Moore: O(n/m) best case
-│  ├─ Shift pattern by comparing from right to left
-│  ├─ Best case: pattern doesn't occur, skip many chars
-│  ├─ Worst case: O(nm) like naive
-│  └─ Practical best for long patterns
-│
-└─ Rabin-Karp Use Cases
-   ├─ Multiple patterns in same text
-   ├─ Plagiarism detection (multiple documents)
-   ├─ DNA sequence matching (disease patterns)
-   └─ Streaming data (incremental hashing)
+```mermaid
+flowchart TD
+    R["String Matching Concepts"]
+    R --> N1["Naive Approach: O(nm)"]
+    N1 --> N2["For each position in text, compare all m characters of pattern"]
+    N1 --> N3["Worst case: 'aaaaa...' text, 'aaab' pattern"]
+    N1 --> N4["10 million characters text × 100 chars pattern = 1 billion comparisons"]
+    R --> N5["Rolling Hash: O(n+m) expected"]
+    N5 --> N6["Precompute hash of pattern once: O(m)"]
+    N5 --> N7["Hash each window of text in O(1): Remove-Shift-Add"]
+    N5 --> N8["Compare hashes in O(1), verify on match: O(m)"]
+    N5 --> N9["Rare collisions make this faster in practice"]
+    R --> N10["KMP: O(n+m) guaranteed"]
+    N10 --> N11["Build failure function: O(m)"]
+    N10 --> N12["Single pass through text: O(n)"]
+    N10 --> N13["No false positives, but more complex code"]
+    N10 --> N14["Best for single pattern, guaranteed linear time"]
+    R --> N15["Boyer-Moore: O(n/m) best case"]
+    N15 --> N16["Shift pattern by comparing from right to left"]
+    N15 --> N17["Best case: pattern doesn't occur, skip many chars"]
+    N15 --> N18["Worst case: O(nm) like naive"]
+    N15 --> N19["Practical best for long patterns"]
+    R --> N20["Rabin-Karp Use Cases"]
+    N20 --> N21["Multiple patterns in same text"]
+    N20 --> N22["Plagiarism detection (multiple documents)"]
+    N20 --> N23["DNA sequence matching (disease patterns)"]
+    N20 --> N24["Streaming data (incremental hashing)"]
 ```
+
 
 ### 🔍 Pattern 5.1: Rolling Polynomial Hash
 
@@ -1382,3 +1379,7 @@ Turnitin plagiarism detection searches 100 million documents for plagiarized sub
 **Generation Date:** Saturday, January 10, 2026, 7:15 PM IST  
 **Template Used:** VISUAL_PLAYBOOK_GENERATION_PROMPT_v12_UPDATED.md  
 **Quality Standard:** v12 FINAL (MIT-level, narrative-driven)
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

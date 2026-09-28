@@ -1,5 +1,11 @@
 # Week 09 Extended Python Complete v13
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Python (3.11+) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 Purpose: build Python fluency for weighted graph algorithms: shortest paths, MSTs, and DSU.
 
 ## Focus tags
@@ -97,3 +103,7 @@ def kruskal(n, edges):
 - Must: network delay time, course-schedule-style graph review, MST basics, DSU connectivity
 - Should: count shortest paths, minimum effort path, Bellman-Ford negative-cycle reasoning
 - Optional: all-pairs reconstruction and weighted-graph optimizations
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

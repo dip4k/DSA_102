@@ -1,11 +1,13 @@
 # 📘 WEEK 7 DAY 1: Binary Trees & Traversals — Engineering Guide
 
-**Metadata:**
-- **Week:** 7 | **Day:** 1
-- **Category:** Data Structures / Trees
-- **Difficulty:** 🟡 Intermediate
-- **Real-World Impact:** Binary trees form the backbone of hierarchical data processing in compilers (AST), databases (indexing), graphics (scene graphs), and AI systems (decision trees, neural networks). Understanding traversals is essential for implementing search, serialization, and evaluation algorithms across these domains.
-- **Prerequisites:** Week 1 (recursion mechanics, call stack), Week 2 (pointers/references, dynamic memory), Week 3 (array vs linked structures)
+
+
+
+
+
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_07_Day_02_Binary_Search_Trees_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -70,12 +72,13 @@ Or think of it as **visiting a museum**. You're standing at the entrance (root).
 
 Let's build a concrete mental image. Here's a binary tree:
 
-```
-        A
-       / \
-      B   C
-     / \   \
-    D   E   F
+```mermaid
+flowchart TD
+    A["A"] --> B["B"]
+    A --> C["C"]
+    B --> D["D"]
+    B --> E["E"]
+    C --> F["F"]
 ```
 
 Each node is a container with **three pieces of data**: the value (A, B, C, ...), a left pointer, and a right pointer. The root node `A` has no parent; leaf nodes `D`, `E`, `F` have no children.
@@ -150,17 +153,18 @@ class TreeNode {
 
 When you traverse a tree recursively, the call stack automatically maintains state:
 
+
+```mermaid
+flowchart TD
+    R["Stack Frame 1 function traverse(nodeA)"]
+    R --> N1["Stack Frame 2: function traverse(nodeB) [called from nodeA]"]
+    N1 --> N2["Stack Frame 3: function traverse(nodeD) [called from nodeB]"]
+    N2 --> N3["Stack Frame 4: function traverse(null) [returns immediately]"]
+    N2 --> N4["'Visit D here' (depends on traversal order)"]
+    N1 --> N5["'Visit B here' (depends on traversal order)"]
+    R --> N6["'Visit A here' (depends on traversal order)"]
 ```
-Stack Frame 1: function traverse(nodeA)
-    ├─ Stack Frame 2: function traverse(nodeB) [called from nodeA]
-    │   ├─ Stack Frame 3: function traverse(nodeD) [called from nodeB]
-    │   │   ├─ Stack Frame 4: function traverse(null) [returns immediately]
-    │   │   └─ "Visit D here" (depends on traversal order)
-    │   │
-    │   └─ "Visit B here" (depends on traversal order)
-    │
-    └─ "Visit A here" (depends on traversal order)
-```
+
 
 For iterative traversal, **you explicitly maintain a stack** (or queue for level-order), managing the same state manually. This trades elegance for control—you can pause, resume, or inspect the stack at any point.
 
@@ -183,17 +187,16 @@ Why does this work? Because step 2 happens *before* the recursive calls in steps
 
 Given tree:
 
-```
-      A
-     / \
-    B   C
-   / \
-  D   E
+```mermaid
+flowchart TD
+    A["A"] --> B["B"]
+    A --> C["C"]
+    B --> D["D"]
+    B --> E["E"]
 ```
 
 Execution trace for preorder traversal:
 
-```
 | Step | Action | Current Node | Output | Call Stack Depth |
 |------|--------|--------------|--------|------------------|
 | 1    | Visit  | A            | A      | 1 (traversing A) |
@@ -219,7 +222,6 @@ Execution trace for preorder traversal:
 | 21   | Recurse| C.right=null | -      | 3 |
 | 22   | Return | Back to A    | -      | 1 (C frame exits) |
 | 23   | Return | Back to caller| -     | 0 (A frame exits, done) |
-```
 
 **Final output: A, B, D, E, C**
 
@@ -270,17 +272,16 @@ Why does this work? The node is visited *sandwiched* between its children. For a
 
 Given the same tree:
 
-```
-      A
-     / \
-    B   C
-   / \
-  D   E
+```mermaid
+flowchart TD
+    A["A"] --> B["B"]
+    A --> C["C"]
+    B --> D["D"]
+    B --> E["E"]
 ```
 
 Execution trace for inorder traversal:
 
-```
 | Step | Action | Current Node | Output | Notes |
 |------|--------|--------------|--------|-------|
 | 1    | Recurse| Traverse left of A (go to B) | - | Go left before visiting A |
@@ -295,7 +296,6 @@ Execution trace for inorder traversal:
 | 10   | Recurse| Traverse right of A (go to C) | - | Go right |
 | 11   | Visit  | C (no left child) | D, B, E, A, C | Visit C |
 | 12   | Recurse| C has no right child | - | Done |
-```
 
 **Final output: D, B, E, A, C**
 
@@ -365,17 +365,16 @@ Why does this work? The node is visited only after its children have been comple
 
 Given tree:
 
-```
-      A
-     / \
-    B   C
-   / \
-  D   E
+```mermaid
+flowchart TD
+    A["A"] --> B["B"]
+    A --> C["C"]
+    B --> D["D"]
+    B --> E["E"]
 ```
 
 Postorder execution:
 
-```
 | Step | Node | Action | Output |
 |------|------|--------|--------|
 | 1    | A    | Recurse left to B | - |
@@ -387,7 +386,6 @@ Postorder execution:
 | 7    | A    | Recurse right to C | - |
 | 8    | C    | No children, visit C | D, E, B, C |
 | 9    | A    | Both children visited, visit A | D, E, B, C, A |
-```
 
 **Final output: D, E, B, C, A**
 
@@ -413,17 +411,17 @@ Why queue and not stack? A stack processes depth-first (exploring down one path 
 
 Given tree:
 
-```
-      A
-     / \
-    B   C
-   / \   \
-  D   E   F
+```mermaid
+flowchart TD
+    A["A"] --> B["B"]
+    A --> C["C"]
+    B --> D["D"]
+    B --> E["E"]
+    C --> F["F"]
 ```
 
 Level-order execution:
 
-```
 | Step | Queue Before | Action | Output | Queue After |
 |------|--------------|--------|--------|-------------|
 | 1    | [A]          | Visit A, enqueue children | A | [B, C] |
@@ -433,7 +431,6 @@ Level-order execution:
 | 5    | [E, F]       | Visit E (no children) | A, B, C, D, E | [F] |
 | 6    | [F]          | Visit F (no children) | A, B, C, D, E, F | [] |
 | 7    | []           | Queue empty, done | - | - |
-```
 
 **Final output: A, B, C, D, E, F**
 
@@ -445,12 +442,14 @@ Let's build a tree representing an arithmetic expression: `(3 + 4) * (2 + 5)`.
 
 The expression tree looks like:
 
-```
-         *
-        / \
-       +   +
-      / \ / \
-     3  4 2  5
+```mermaid
+flowchart TD
+    mul["*"] --> plus1["+"]
+    mul --> plus2["+"]
+    plus1 --> n3["3"]
+    plus1 --> n4["4"]
+    plus2 --> n2["2"]
+    plus2 --> n5["5"]
 ```
 
 Now, let's see how different traversals interpret this tree:
@@ -752,27 +751,12 @@ Why does this matter? These names have stood for 60 years because they capture s
 
 ---
 
-**Total Word Count: 14,800 words**
-
-**Visual Elements: 8 diagrams (tree structures, execution traces, comparison tables)**
-
-
-This file follows the Unified v13 Narrative-First architecture:
-- ✅ 5-chapter arc: Context → Mental Model → Mechanics → Reality → Mastery
-- ✅ Inline visuals placed exactly where concepts introduced
-- ✅ Production case studies (5 detailed stories, not lists)
-- ✅ Flowing prose with natural transitions
-- ✅ Mechanical understanding through traces and examples
-- ✅ Both recursive and iterative implementations explained
-- ✅ Real systems grounding (compilers, databases, game engines, ML)
-- ✅ Interview-focused supplementary outcomes
-
-
-
----
-
 ## 📊 Complexity Recap
 
-- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
-- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+- **Time Complexity:** `O(N)` for all four traversals, visiting each of the `N` nodes exactly once.
+- **Auxiliary Space:** `O(H)` where `H` is the tree height (`O(log N)` balanced, `O(N)` skewed) due to recursion stack frames or explicit iteration stacks. For level-order traversal, `O(W)` auxiliary space where `W` is maximum tree width (`O(N)` in the worst case). Morris traversal achieves `O(1)` auxiliary space via temporary threading.
 
+---
+---
+
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_07_Day_02_Binary_Search_Trees_Instructional.md)

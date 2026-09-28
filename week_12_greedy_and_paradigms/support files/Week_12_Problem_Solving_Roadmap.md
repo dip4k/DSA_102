@@ -1,5 +1,11 @@
 # Week 12 Problem Solving Roadmap — Greedy Algorithms & Proofs
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Week:** 12  
 **Phase:** 🟧 Algorithm Paradigms  
 **Focus:** Progressive practice strategy for mastering greedy algorithm design and correctness proofs.
@@ -576,3 +582,7 @@ The goal is **interview-ready mastery**: you can solve, explain, and prove greed
 - Use Week_12_Summary_Key_Concepts.md for quick reference and insights.
 
 Good luck, and remember: **Greedy is elegant when it works, but proving it works is the real skill.**
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

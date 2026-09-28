@@ -1,5 +1,11 @@
 # 🎯 Week_10_Guidelines.md
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Week:** 10 | **Phase:** C (Trees, Graphs & Dynamic Programming)  
 **Theme:** Dynamic Programming I: Building Intuition from Recursion to Tables  
 **Difficulty:** 🟡 Intermediate to 🔴 Advanced  
@@ -372,3 +378,7 @@ At the end of each day, ask yourself:
 
 
 All sections align with v12 narrative-first philosophy and MIT 6.006 DP fundamentals.
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

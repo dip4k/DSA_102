@@ -1,5 +1,11 @@
 # 📋 Week 05 Guidelines: Tier 1 Critical Patterns Mastery
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Week Overview:** Tier 1 Critical Patterns (Hash, Monotonic Stack, Intervals, Partition, Kadane, Fast-Slow)  
 **Total Content:** 5 comprehensive instructional files + 5 support guides  
 **Time Allocation:** 15-20 hours core learning + practice  
@@ -220,39 +226,36 @@ For each pattern, create quick mental references:
 
 ## 📊 Concept Map: How Week 05 Patterns Connect
 
-```
-Week 05: Critical Patterns
 
-├─ LOOK UP FAST (Hash)
-│  ├─ Two-sum complement search
-│  ├─ Frequency counting
-│  └─ Membership testing
-│
-├─ FIND NEXT/PREVIOUS (Monotonic Stack)
-│  ├─ Next greater/smaller
-│  ├─ Stock span
-│  └─ Trapping rain water
-│
-├─ MERGE RANGES (Intervals)
-│  ├─ Sorted arrays merge
-│  ├─ Interval merging
-│  └─ Insert interval
-│
-├─ REARRANGE IN-PLACE (Partition)
-│  ├─ Dutch National Flag (0-1-2)
-│  ├─ Cyclic sort
-│  └─ Move zeros
-│
-├─ FIND BEST SUBARRAY (Kadane)
-│  ├─ Max sum subarray
-│  ├─ Max product
-│  └─ Circular variants
-│
-└─ DETECT CYCLES (Fast-Slow)
-   ├─ Cycle detection
-   ├─ Finding cycle start
-   └─ Midpoint detection
+```mermaid
+flowchart TD
+    R["Week 05 Critical Patterns"]
+    R --> N1["LOOK UP FAST (Hash)"]
+    N1 --> N2["Two-sum complement search"]
+    N1 --> N3["Frequency counting"]
+    N1 --> N4["Membership testing"]
+    R --> N5["FIND NEXT/PREVIOUS (Monotonic Stack)"]
+    N5 --> N6["Next greater/smaller"]
+    N5 --> N7["Stock span"]
+    N5 --> N8["Trapping rain water"]
+    R --> N9["MERGE RANGES (Intervals)"]
+    N9 --> N10["Sorted arrays merge"]
+    N9 --> N11["Interval merging"]
+    N9 --> N12["Insert interval"]
+    R --> N13["REARRANGE IN-PLACE (Partition)"]
+    N13 --> N14["Dutch National Flag (0-1-2)"]
+    N13 --> N15["Cyclic sort"]
+    N13 --> N16["Move zeros"]
+    R --> N17["FIND BEST SUBARRAY (Kadane)"]
+    N17 --> N18["Max sum subarray"]
+    N17 --> N19["Max product"]
+    N17 --> N20["Circular variants"]
+    R --> N21["DETECT CYCLES (Fast-Slow)"]
+    N21 --> N22["Cycle detection"]
+    N21 --> N23["Finding cycle start"]
+    N21 --> N24["Midpoint detection"]
 ```
+
 
 ---
 
@@ -337,3 +340,7 @@ You've mastered Week 05 when:
 
 **Next:** Week 05 Summary & Key Concepts  
 **Time to Completion:** 15-20 hours core learning
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

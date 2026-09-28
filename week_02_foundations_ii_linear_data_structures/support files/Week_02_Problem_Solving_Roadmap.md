@@ -1,5 +1,11 @@
 # 🗓️ Week 02 Problem-Solving Roadmap: Progression & Strategy
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Purpose:** Guide problem selection, daily progression, and selection mechanisms across 6 cohesive study days.
 
 ---
@@ -83,21 +89,25 @@
 ```
 Are you processing elements in a FIFO manner?
    ↓
- [Yes] ────> Use Queue (implemented with circular array buffer or list)
+ [Yes] ----> Use Queue (implemented with circular array buffer or list)
    ↓
- [No]  ────> Need LIFO state reversals/undo paths?
+ [No]  ----> Need LIFO state reversals/undo paths?
                ↓
-             [Yes] ────> Use Stack
+             [Yes] ----> Use Stack
                ↓
-             [No]  ────> Need instant O(1) random index access?
+             [No]  ----> Need instant O(1) random index access?
                            ↓
-                         [Yes] ────> Use Array / Dynamic Array
+                         [Yes] ----> Use Array / Dynamic Array
                            ↓
-                         [No]  ────> Need O(1) mid-inserts at known reference points?
+                         [No]  ----> Need O(1) mid-inserts at known reference points?
                                        ↓
-                                     [Yes] ────> Use Linked List
+                                     [Yes] ----> Use Linked List
                                        ↓
-                                     [No]  ────> Search space sorted or monotonic?
+                                     [No]  ----> Search space sorted or monotonic?
                                                    ↓
-                                                 [Yes] ────> Apply Binary Search
+                                                 [Yes] ----> Apply Binary Search
 ```
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

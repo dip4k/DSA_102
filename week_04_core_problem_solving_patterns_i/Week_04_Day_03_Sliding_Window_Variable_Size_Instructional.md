@@ -1,12 +1,12 @@
 # 📘 Week 04 Day 03: Sliding Window (Variable Size) — Dynamic Constraint Management
 
-**Metadata:**
-- **Week:** 4 | **Day:** 3
-- **Category:** Core Problem-Solving Patterns
-- **Difficulty:** 🟡 Intermediate-Advanced (builds on fixed-size window from Day 2)
-- **Real-World Impact:** Variable-size sliding windows solve constraint-based problems at scale across systems that enforce dynamic limits. Browsers use them for cache management (evict LRU items when memory exceeds threshold); databases use them for query result streaming (expand to collect results, shrink when memory pressure rises); networking uses them for congestion detection (shrink window when packet loss detected); fraud detection uses them for anomaly windows (expand to analyze suspicious patterns, shrink when threat passes).
-- **Prerequisites:** Week 4 Day 1-2 (two-pointer intuition, fixed-size windows), Week 3 (hash maps)
-- **MIT Alignment:** Constraint satisfaction and dynamic programming foundations from 6.006; pattern-based optimization
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_04_Day_02_Sliding_Window_Fixed_Size_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_04_Day_04_Divide_and_Conquer_Pattern_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -33,7 +33,7 @@ But there's a beautiful insight: you don't need to find the LRU item among all i
 
 Or consider a different scenario: you're analyzing user behavior for anomalies. You're looking for the longest substring where no more than 2 distinct user types appear (to detect when users from unusual regions suddenly appear). You expand your window to include new users, but when you exceed 2 types, you shrink from the left until you're back to 2 types.
 
-Now imagine real-time fraud detection. A system monitors transactions and looks for patterns like "purchase high-value items within a short window." The window size isn't fixed—it should be small for unusual patterns (minutes for $10k purchases) and larger for normal patterns (days for $100 purchases). The algorithm expands to gather context and shrinks when patterns no longer fit.
+Now imagine real-time fraud detection. A system monitors transactions and looks for patterns like "purchase high-value items within a short window." The window size isn't fixed—it should be small for unusual patterns (minutes for \$10k purchases) and larger for normal patterns (days for \$100 purchases). The algorithm expands to gather context and shrinks when patterns no longer fit.
 
 ### The Solution: Variable-Size Windows
 
@@ -597,3 +597,6 @@ Master variable-size sliding windows, and you've mastered a fundamental pattern 
 **Inline Visuals:** 8 (ASCII diagrams, trace tables, comparison matrices)  
 **Real-World Stories:** 3 (Browser LRU cache, Database streaming, TCP congestion)  
 **Interview-Ready:** Yes — covers mechanics, amortized analysis, and production scenarios
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_04_Day_02_Sliding_Window_Fixed_Size_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_04_Day_04_Divide_and_Conquer_Pattern_Instructional.md)

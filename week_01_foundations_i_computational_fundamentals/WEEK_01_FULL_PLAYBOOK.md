@@ -1,4 +1,10 @@
 # 📚 WEEK 01: FOUNDATIONS I - COMPUTATIONAL THINKING
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Comprehensive Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
+
+---
+
 ## RAM, Big-O Complexity Analysis, Space Complexity, Recursion, Peak Finding
 
 **Phase:** A (Foundations)  
@@ -67,27 +73,17 @@ A company needs to build a search system for 1 billion items. Two algorithm opti
 - **Operations:** Simple operations (arithmetic, comparison, assignment) take O(1) time
 - **Cost Model:** Analyze how many operations algorithm performs
 
+
+```mermaid
+flowchart TD
+    R["RAM Model Components"]
+    R --> N1["Read/write memory: 1 operation"]
+    R --> N2["Arithmetic (+, -, ×, ÷): 1 operation"]
+    R --> N3["Comparison (==, <, >): 1 operation"]
+    R --> N4["Assignment (a = b): 1 operation"]
+    R --> N5["Function call/return: 1 operation"]
 ```
-RAM Model Components:
 
-Memory: [Word0] [Word1] [Word2] [Word3] ... [WordN]
-         Address: 0     1       2      3         N
-         Access any word: O(1) time
-
-Operations (all O(1)):
-├─ Read/write memory: 1 operation
-├─ Arithmetic (+, -, ×, ÷): 1 operation  
-├─ Comparison (==, <, >): 1 operation
-├─ Assignment (a = b): 1 operation
-└─ Function call/return: 1 operation
-
-Example: x = a + b
-        1. Read a from memory: O(1)
-        2. Read b from memory: O(1)
-        3. Add a + b: O(1)
-        4. Write result to x: O(1)
-        Total: 4 operations = O(1)
-```
 
 ---
 
@@ -948,31 +944,24 @@ public class SpaceComplexityExamples
 
 ### Trace Table: Space Analysis for Recursive Algorithm
 
+
+```mermaid
+flowchart TD
+    R["Function BinarySearch(arr, target, 0, 1023)"]
+    R --> N1["Return address: 8 bytes"]
+    R --> N2["Parameters (arr, target, left, right): 32 bytes"]
+    R --> N3["Local variable (mid): 4 bytes"]
+    R --> N4["Total per frame: ~64 bytes"]
+    R --> N5["Input array: 1024 × 4 = 4KB"]
+    R --> N6["Call stack: 10 frames × 64 bytes = 640 bytes"]
+    R --> N7["Auxiliary variables: negligible"]
+    R --> N8["Total: ~4.6 KB = O(log N) space!"]
+    R --> N9["If array had 1 Billion items:"]
+    N9 --> N10["Input: 4GB"]
+    N9 --> N11["Call stack: log₂(1B) × 64 = 30 × 64 = 1.9 KB"]
+    N9 --> N12["Total: ~4GB (dominantly the input!)"]
 ```
-Function: BinarySearch(arr, target, 0, 1023)
-Array size: 1024
 
-Recursion depth: log₂(1024) = 10 levels
-Call stack frames: 10
-
-Each frame:
-├─ Return address: 8 bytes
-├─ Parameters (arr, target, left, right): 32 bytes
-├─ Local variable (mid): 4 bytes
-└─ Total per frame: ~64 bytes
-
-Total space:
-├─ Input array: 1024 × 4 = 4KB
-├─ Call stack: 10 frames × 64 bytes = 640 bytes
-├─ Auxiliary variables: negligible
-└─ Total: ~4.6 KB = O(log N) space!
-
-Comparison:
-├─ If array had 1 Billion items:
-│  ├─ Input: 4GB
-│  ├─ Call stack: log₂(1B) × 64 = 30 × 64 = 1.9 KB
-│  └─ Total: ~4GB (dominantly the input!)
-```
 
 ---
 
@@ -1138,28 +1127,21 @@ Algorithm needs factorial of N. Two approaches:
 - **Recursive case:** Break problem into smaller version
 - **Call stack:** Each call added to stack, unwound on return
 
+
+```mermaid
+flowchart TD
+    R["Recursion structure"]
+    R --> N1["Recursive(4)"]
+    N1 --> N2["Recursive(3)"]
+    N2 --> N3["Recursive(2)"]
+    N3 --> N4["Recursive(1)"]
+    N4 --> N5["Base case: return 1"]
+    N3 --> N6["return 2 × 1 = 2"]
+    N2 --> N7["return 3 × 2 = 6"]
+    N1 --> N8["return 4 × 6 = 24"]
+    R --> N9["return 5 × 24 = 120"]
 ```
-Recursion structure:
 
-function Recursive(n):
-    if (n == base_case):        ← Base case (stop here)
-        return base_value
-    else:
-        return Recursive(n-1)   ← Recursive case (smaller problem)
-
-Stack unwinding:
-
-Recursive(5)
-├─ Recursive(4)
-│  ├─ Recursive(3)
-│  │  ├─ Recursive(2)
-│  │  │  ├─ Recursive(1)
-│  │  │  │  └─ Base case: return 1
-│  │  │  └─ return 2 × 1 = 2
-│  │  └─ return 3 × 2 = 6
-│  └─ return 4 × 6 = 24
-└─ return 5 × 24 = 120
-```
 
 ---
 
@@ -1172,29 +1154,16 @@ Recursive(5)
 - **Reaching smallest doll:** Base case (no more nesting)
 - **Closing dolls:** Combine results back up
 
-```
-Russian Dolls Analogy:
 
-Factorial(5):
-┌─────────────────┐
-│ Need 5!         │
-│ = 5 × 4!        │
-│ ┌─────────────┐ │
-│ │ Need 4!     │ │
-│ │ = 4 × 3!    │ │
-│ │ ┌─────────┐ │ │
-│ │ │ Need 3! │ │ │
-│ │ │ = 3 × 2!│ │ │
-│ │ │ ┌─────┐ │ │ │
-│ │ │ │ 2! =2│ │ │ │ Base case
-│ │ │ └─────┘ │ │ │
-│ │ │ 3 × 2=6 │ │ │
-│ │ └─────────┘ │ │
-│ │ 4 × 6 = 24  │ │
-│ └─────────────┘ │
-│ 5 × 24 = 120    │
-└─────────────────┘
+```mermaid
+flowchart TD
+    R["Russian Dolls Analogy"]
+    R --> N1["State"]
+    R --> N2["State"]
+    R --> N3["State"]
+    R --> N4["State"]
 ```
+
 
 ---
 
@@ -1470,12 +1439,12 @@ private long FibHelper(int n, long[] memo) {
 **Solution:** Recursive parsing
 ```csharp
 ParseObject():
-├─ Parse key
-├─ Parse value (recursive):
-│  ├─ If number: parse number
-│  ├─ If string: parse string
-│  └─ If object: ParseObject() (recursive!)
-└─ Continue until }
++- Parse key
++- Parse value (recursive):
+|  +- If number: parse number
+|  +- If string: parse string
+|  +- If object: ParseObject() (recursive!)
++- Continue until }
 ```
 
 **Real Impact:**
@@ -1547,18 +1516,17 @@ Stock market algorithm monitors price stream. Must find peak (local maximum wher
 - **Matrix peak:** Element ≥ all 4 neighbors
 - **Guarantee:** Sorted array always has peak at one end
 
-```
-Array: [1, 3, 5, 4, 2]
 
-Peaks:
-├─ Index 0 (1): 1 ≥ 3? NO
-├─ Index 1 (3): 3 ≥ 1 and 3 ≥ 5? NO
-├─ Index 2 (5): 5 ≥ 3 and 5 ≥ 4? YES ✅ Peak!
-├─ Index 3 (4): 4 ≥ 5 and 4 ≥ 2? NO
-└─ Index 4 (2): 2 ≥ 4? NO
-
-Peak found: 5 at index 2
+```mermaid
+flowchart TD
+    R["Array [1, 3, 5, 4, 2]"]
+    R --> N1["Index 0 (1): 1 ≥ 3? NO"]
+    R --> N2["Index 1 (3): 3 ≥ 1 and 3 ≥ 5? NO"]
+    R --> N3["Index 2 (5): 5 ≥ 3 and 5 ≥ 4? YES ✅ Peak!"]
+    R --> N4["Index 3 (4): 4 ≥ 5 and 4 ≥ 2? NO"]
+    R --> N5["Index 4 (2): 2 ≥ 4? NO"]
 ```
+
 
 ---
 
@@ -1570,26 +1538,21 @@ Peak found: 5 at index 2
 - **Direction:** If higher to left, explore left; if higher to right, explore right
 - **Peak found:** When neighbors are lower
 
-```
-Mountain Climbing:
 
-Array: [1, 3, 5, 4, 2]
-Start at middle (5):
-├─ 5 > 3 (left)?  YES
-├─ 5 > 4 (right)? YES
-└─ Both neighbors lower → Peak found! ✅
-
-Array: [1, 3, 5, 7, 9]
-Start at middle (5):
-├─ 5 > 3 (left)?  YES
-├─ 5 > 7 (right)? NO → Go right
-Start at middle-right (7):
-├─ 7 > 5 (left)?  YES
-├─ 7 > 9 (right)? NO → Go right
-Start at rightmost (9):
-├─ 9 > 7 (left)?  YES
-└─ 9 > none (right) → Peak found! ✅
+```mermaid
+flowchart TD
+    R["Mountain Climbing"]
+    R --> N1["5 > 3 (left)?  YES"]
+    R --> N2["5 > 4 (right)? YES"]
+    R --> N3["Both neighbors lower → Peak found! ✅"]
+    R --> N4["5 > 3 (left)?  YES"]
+    R --> N5["5 > 7 (right)? NO → Go right"]
+    R --> N6["7 > 5 (left)?  YES"]
+    R --> N7["7 > 9 (right)? NO → Go right"]
+    R --> N8["9 > 7 (left)?  YES"]
+    R --> N9["9 > none (right) → Peak found! ✅"]
 ```
+
 
 ---
 
@@ -1955,27 +1918,25 @@ D) No peak exists
 
 ## 🎯 Pattern Selection Decision Tree
 
-```
-Choosing algorithm efficiency:
 
-Performance matters?
-├─ Yes, many operations (N > 1000)
-│  ├─ Linear scan O(N) acceptable?
-│  │  ├─ No → Need O(log N)?
-│  │  │  ├─ Data sorted? → Binary search O(log N) ✅
-│  │  │  └─ Need recursion? → Divide & conquer
-│  │  └─ Yes → Simple O(N) solution
-│  └─ Never use O(N²) on large N
-│
-└─ Small N (< 100)
-   └─ Simplicity > performance
-
-Space constrained?
-├─ Yes (embedded, mobile)
-│  └─ Use O(1) space, O(N) time acceptable
-└─ No (server)
-   └─ Trade space for speed (O(log N) recursion fine)
+```mermaid
+flowchart TD
+    R["Choosing algorithm efficiency"]
+    R --> N1["Yes, many operations (N > 1000)"]
+    N1 --> N2["Linear scan O(N) acceptable?"]
+    N2 --> N3["No → Need O(log N)?"]
+    N3 --> N4["Data sorted? → Binary search O(log N) ✅"]
+    N3 --> N5["Need recursion? → Divide & conquer"]
+    N2 --> N6["Yes → Simple O(N) solution"]
+    N1 --> N7["Never use O(N²) on large N"]
+    R --> N8["Small N (< 100)"]
+    N8 --> N9["Simplicity > performance"]
+    R --> N10["Yes (embedded, mobile)"]
+    N10 --> N11["Use O(1) space, O(N) time acceptable"]
+    R --> N12["No (server)"]
+    N12 --> N13["Trade space for speed (O(log N) recursion fine)"]
 ```
+
 
 ---
 
@@ -2069,3 +2030,6 @@ This is Week 1's legacy: Tools to predict and design efficient systems.
 **Quality Score:** 9.5/10 ⭐⭐⭐⭐⭐  
 **Next:** Week 02 - Linear Data Structures
 
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

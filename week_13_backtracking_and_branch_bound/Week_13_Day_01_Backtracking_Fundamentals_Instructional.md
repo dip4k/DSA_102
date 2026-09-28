@@ -1,13 +1,12 @@
 # Week 13 Day 01: Backtracking Fundamentals — Engineering Guide
 
-**📂 Metadata**
-- **Week:** 13  
-- **Day:** 01  
-- **Phase:** 🟧 Algorithm Paradigms  
-- **Category:** Combinatorial Search & Constraint Satisfaction  
-- **Difficulty:** Intermediate → Advanced  
-- **Real-World Impact:** Powers constraint solvers, game AI, configuration generators, scheduling systems, and puzzle solvers across every major tech platform.  
-- **Prerequisites:** Tree traversal (Week 7-8), DFS (Week 9), Recursion fundamentals (Week 1)
+
+
+
+
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_13_Day_02_Backtracking_Problems_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -190,32 +189,30 @@ If we added a constraint (e.g., "no two consecutive A's"), we'd **prune** at nod
 
 ## Taxonomy of Backtracking Problems
 
+
+```mermaid
+flowchart TD
+    R["State"]
+    R --> N1["State"]
+    N1 --> N2["Permutations & Combinations"]
+    N2 --> N3["All permutations of [1,2,3]"]
+    N2 --> N4["All subsets (power set)"]
+    N2 --> N5["Combinations with constraints (sum = target)"]
+    N1 --> N6["Constraint Satisfaction (CSP)"]
+    N6 --> N7["N-Queens: No two queens attack each other"]
+    N6 --> N8["Sudoku: Fill grid respecting row/col/box rules"]
+    N6 --> N9["Graph Coloring: Color nodes with k colors, no adjacent same"]
+    N6 --> N10["Crossword Puzzles: Words fit and intersect correctly"]
+    N1 --> N11["Path Finding with Constraints"]
+    N11 --> N12["Maze solving: Find path from start to exit"]
+    N11 --> N13["Word Search: Find word in grid (DFS with backtracking)"]
+    N11 --> N14["Knight's Tour: Visit all squares exactly once"]
+    N1 --> N15["Optimization with Pruning"]
+    N15 --> N16["Traveling Salesman (small n)"]
+    N15 --> N17["0/1 Knapsack (when DP impractical)"]
+    N15 --> N18["Job Scheduling with deadlines"]
 ```
-┌─────────────────────────────────────────────────────────┐
-│                 Backtracking Problems                    │
-└─────────────────────────────────────────────────────────┘
-        │
-        ├─── Permutations & Combinations
-        │    ├─ All permutations of [1,2,3]
-        │    ├─ All subsets (power set)
-        │    └─ Combinations with constraints (sum = target)
-        │
-        ├─── Constraint Satisfaction (CSP)
-        │    ├─ N-Queens: No two queens attack each other
-        │    ├─ Sudoku: Fill grid respecting row/col/box rules
-        │    ├─ Graph Coloring: Color nodes with k colors, no adjacent same
-        │    └─ Crossword Puzzles: Words fit and intersect correctly
-        │
-        ├─── Path Finding with Constraints
-        │    ├─ Maze solving: Find path from start to exit
-        │    ├─ Word Search: Find word in grid (DFS with backtracking)
-        │    └─ Knight's Tour: Visit all squares exactly once
-        │
-        └─── Optimization with Pruning
-             ├─ Traveling Salesman (small n)
-             ├─ 0/1 Knapsack (when DP impractical)
-             └─ Job Scheduling with deadlines
-```
+
 
 **Key Distinction**:
 - **Decision problems** (find any solution): Backtracking terminates on first success
@@ -240,19 +237,14 @@ Every backtracking algorithm has four components:
 ### Memory Layout
 
 **Stack Frame** (per recursive call):
+
+```mermaid
+flowchart TD
+    R["State"]
+    R --> N1["State"]
+    R --> N2["State"]
 ```
-┌─────────────────────────────────────┐
-│ Function: Backtrack(state, level)   │
-├─────────────────────────────────────┤
-│ Parameters:                          │
-│   - state: current partial solution  │
-│   - level: depth in decision tree    │
-│ Local Variables:                     │
-│   - choices: available options       │
-│   - valid: constraint check result   │
-│ Return Address                       │
-└─────────────────────────────────────┘
-```
+
 
 **Typical space usage**:
 - **Recursion stack**: O(d) where d = max depth
@@ -368,13 +360,13 @@ PERMUTE(nums, path, used, result):
 ```
                        Row 0
             Q at (0,0) | Q at (0,1) | Q at (0,2) | Q at (0,3)
-                │
+                |
             Row 1 (for Q at (0,0))
        Q at (1,2) | Q at (1,3)  [cols 0,1 attacked, pruned]
-         │
+         |
      Row 2 (for Q at (0,0), Q at (1,2))
        Q at (2,1) | Q at (2,3)  [others pruned]
-         │
+         |
      ...
 ```
 
@@ -561,52 +553,15 @@ DFS(grid, word, row, col, idx, visited):
 
 **Trace for "ABCCED"** starting from (0,0):
 
-```
-Step 1: Start at A(0,0), idx=0, match 'A'
-  ┌─────────────────┐
-  │[A] B  C  E │  visited[0][0] = TRUE
-  │ S  F  C  S │
-  │ A  D  E  E │
-  └─────────────────┘
 
-Step 2: Try Down(1,0) → S ≠ B, fail
-        Try Right(0,1) → B = B, match! idx=1
-  ┌─────────────────┐
-  │[A][B] C  E │  visited[0][1] = TRUE
-  │ S  F  C  S │
-  │ A  D  E  E │
-  └─────────────────┘
+| [A] B  C  E | visited[0][0] = TRUE |
+| :--- | :--- |
+| [A][B] C  E | visited[0][1] = TRUE |
+| [A][B][C] E | visited[0][2] = TRUE |
+| [A][B][C] E | visited[1][2] = TRUE |
+| [A][B][C] E | visited[2][2] = TRUE |
+| [A][B][C] E | visited[2][1] = TRUE |
 
-Step 3: From B, try Right(0,2) → C = C, match! idx=2
-  ┌─────────────────┐
-  │[A][B][C] E │  visited[0][2] = TRUE
-  │ S  F  C  S │
-  │ A  D  E  E │
-  └─────────────────┘
-
-Step 4: From C, try Down(1,2) → C = C, match! idx=3
-  ┌─────────────────┐
-  │[A][B][C] E │  visited[1][2] = TRUE
-  │ S  F [C] S │
-  │ A  D  E  E │
-  └─────────────────┘
-
-Step 5: From C(1,2), try Down(2,2) → E = E, match! idx=4
-  ┌─────────────────┐
-  │[A][B][C] E │  visited[2][2] = TRUE
-  │ S  F [C] S │
-  │ A  D [E] E │
-  └─────────────────┘
-
-Step 6: From E(2,2), try Left(2,1) → D = D, match! idx=5
-  ┌─────────────────┐
-  │[A][B][C] E │  visited[2][1] = TRUE
-  │ S  F [C] S │
-  │ A [D][E] E │
-  └─────────────────┘
-
-Step 7: idx == word.length → SUCCESS! Return TRUE
-```
 
 **Watch Out**:
 - **Forgetting to unmark visited**: If you don't set `visited[row][col] = FALSE` after recursion, future paths that need this cell will be blocked incorrectly.
@@ -1011,3 +966,6 @@ Before moving to Day 2, ensure you can:
 If you can do all of these, you're ready for **Day 2: Backtracking Problems** (N-Queens, Sudoku, Word Search in depth).
 
 ---
+---
+
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_13_Day_02_Backtracking_Problems_Instructional.md)

@@ -1,5 +1,11 @@
 # 📋 Week 04 Guidelines: Pattern Foundations (Two-Pointer, Sliding Window, Divide-Conquer, Binary Search)
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Week Overview:** Problem-Solving Patterns I — Foundational patterns that solve 20-30% of interview problems  
 **Total Content:** 5 comprehensive instructional files + 5 support guides  
 **Time Allocation:** 15-18 hours core learning + practice  
@@ -215,26 +221,25 @@ Ask BEFORE coding:
 
 ## 📊 Concept Map: How Week 04 Patterns Connect
 
-```
-Week 04: Pattern Foundations
 
-├─ TWO-POINTER (Dual Movement)
-│  ├─ Same-direction (merge, duplicates)
-│  └─ Opposite-direction (water, sum in sorted)
-│
-├─ SLIDING WINDOW (Incremental Computation)
-│  ├─ Fixed-size (running sum, max in window)
-│  └─ Variable-size (at-most K, longest substring)
-│
-├─ DIVIDE-CONQUER (Recursive Decomposition)
-│  ├─ Divide: split problem
-│  ├─ Conquer: solve subproblems
-│  └─ Combine: merge results
-│
-└─ BINARY SEARCH (Geometric Narrowing)
-   ├─ On sorted arrays (classic)
-   └─ On answer space (feasibility check)
+```mermaid
+flowchart TD
+    R["Week 04 Pattern Foundations"]
+    R --> N1["TWO-POINTER (Dual Movement)"]
+    N1 --> N2["Same-direction (merge, duplicates)"]
+    N1 --> N3["Opposite-direction (water, sum in sorted)"]
+    R --> N4["SLIDING WINDOW (Incremental Computation)"]
+    N4 --> N5["Fixed-size (running sum, max in window)"]
+    N4 --> N6["Variable-size (at-most K, longest substring)"]
+    R --> N7["DIVIDE-CONQUER (Recursive Decomposition)"]
+    N7 --> N8["Divide: split problem"]
+    N7 --> N9["Conquer: solve subproblems"]
+    N7 --> N10["Combine: merge results"]
+    R --> N11["BINARY SEARCH (Geometric Narrowing)"]
+    N11 --> N12["On sorted arrays (classic)"]
+    N11 --> N13["On answer space (feasibility check)"]
 ```
+
 
 ---
 
@@ -320,3 +325,7 @@ You've mastered Week 04 when:
 
 **Next:** Week 04 Summary & Key Concepts  
 **Time to Completion:** 15-18 hours core learning
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

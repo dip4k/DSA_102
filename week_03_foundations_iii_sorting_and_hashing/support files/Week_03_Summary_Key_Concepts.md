@@ -1,5 +1,11 @@
 # 📖 Week 03 Summary & Key Concepts: Sorting, Heaps, Hashing Deep Reference
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Audience:** Students completing Week 03 instructional content  
 **Purpose:** Comprehensive reference for review, retention, and connection-building
 
@@ -19,85 +25,78 @@
 
 ### Sorting Algorithms Taxonomy
 
-```
-SORTING ALGORITHMS
 
-├─ ELEMENTARY SORTS (O(n²) worst-case)
-│  │
-│  ├─ BUBBLE SORT (Stable, O(n) best)
-│  │  ├─ Mechanism: Swap adjacent elements, bubble largest to end
-│  │  ├─ Invariant: After pass i, i largest elements in final positions
-│  │  ├─ Comparisons: n(n-1)/2
-│  │  ├─ Swaps: 0 (best), n(n-1)/2 (worst)
-│  │  ├─ When to use: Nearly sorted, minimizing comparisons not critical
-│  │  └─ Real-world: Rarely (educational)
-│  │
-│  ├─ SELECTION SORT (Unstable, O(n²) always)
-│  │  ├─ Mechanism: Find min in unsorted portion, swap with start
-│  │  ├─ Invariant: [0,i) is sorted and contains i smallest
-│  │  ├─ Comparisons: n(n-1)/2 (always)
-│  │  ├─ Swaps: n-1 (minimal, useful for expensive writes)
-│  │  ├─ When to use: Minimize writes (flash memory, I/O)
-│  │  └─ Real-world: Flash storage, disk sorting in extreme cases
-│  │
-│  └─ INSERTION SORT (Stable, O(n) best, O(n²) worst)
-│     ├─ Mechanism: Maintain sorted prefix, insert each element
-│     ├─ Invariant: [0,i) is sorted
-│     ├─ Comparisons: n/2 (best), n²/2 (worst)
-│     ├─ Swaps: (or shifts) 0 (best), n²/2 (worst)
-│     ├─ When to use: Small arrays, nearly sorted data, as hybrid
-│     └─ Real-world: In Timsort (Python), Introsort, hybrids
-│
-├─ ADVANCED SORTS (O(n log n) guaranteed or expected)
-│  │
-│  ├─ MERGE SORT (Stable, O(n log n) guaranteed, O(n) extra space)
-│  │  ├─ Mechanism: Divide array, recursively sort, merge two sorted halves
-│  │  ├─ Recurrence: T(n) = 2T(n/2) + O(n)
-│  │  ├─ Proof of O(n log n): log n levels, O(n) work per level
-│  │  ├─ Merge function: Two-pointer scan, O(n+m) for arrays of size n, m
-│  │  ├─ Space: O(n) auxiliary (or O(log n) with careful in-place merge)
-│  │  ├─ Comparisons: n log n (average and worst-case)
-│  │  ├─ Cache behavior: Poor (alternating halves), but predictable
-│  │  ├─ When to use: Need guaranteed O(n log n), need stability
-│  │  └─ Real-world: Stable external sorting, multi-threaded sorting
-│  │
-│  ├─ QUICK SORT (Unstable, O(n log n) expected, O(n²) worst, O(log n) extra space)
-│  │  ├─ Mechanism: Choose pivot, partition into <pivot and >pivot, recurse
-│  │  ├─ Recurrence (random): T(n) = T(k) + T(n-k-1) + O(n), expected T(n) = O(n log n)
-│  │  ├─ Pivot strategies:
-│  │  │  ├─ First/last element: O(n²) on sorted input (bad)
-│  │  │  ├─ Random element: O(n log n) expected, no bad input (good)
-│  │  │  └─ Median-of-three: Reduces bad inputs probability (practical)
-│  │  ├─ Partition: Rearrange so <pivot on left, >pivot on right
-│  │  ├─ Comparisons: O(n log n) expected, O(n²) worst
-│  │  ├─ Cache behavior: Good (in-place, sequential access)
-│  │  ├─ Constants: Smaller than merge sort (3 moves per comparison vs merge overhead)
-│  │  ├─ When to use: Need in-place, want practical speed
-│  │  └─ Real-world: Default choice in most libraries until recently
-│  │
-│  ├─ HEAP SORT (Unstable, O(n log n) guaranteed, O(1) extra space)
-│  │  ├─ Mechanism: Build heap, repeatedly extract root and bubble down
-│  │  ├─ Phase 1: Build heap in O(n)
-│  │  ├─ Phase 2: Extract min n times, each O(log n), total O(n log n)
-│  │  ├─ Comparisons: ~2n log n (twice as many as merge/quick due to sift-down overhead)
-│  │  ├─ In-place and stable heap sort possible but complex
-│  │  ├─ Cache behavior: Poor (random access within heap)
-│  │  ├─ When to use: Need O(n log n) with O(1) space, no stability needed
-│  │  └─ Real-world: Rarely (constants worse than quick, less cache-friendly than merge)
-│  │
-│  └─ HYBRID SORTS (Practical)
-│     ├─ TIMSORT (Python, Java object arrays)
-│     │  ├─ Uses insertion sort on runs (64 elements)
-│     │  ├─ Merges runs using merge sort
-│     │  ├─ Near-O(n) on nearly sorted data
-│     │  └─ O(n log n) worst-case, stable
-│     │
-│     └─ INTROSORT (C++ std::sort, GCC libstdc++)
-│        ├─ Uses quick sort with depth limit 2·log(n)
-│        ├─ If depth exceeded, switch to heap sort (prevent O(n²))
-│        ├─ Uses insertion sort for small subarrays
-│        └─ Achieves O(n log n) worst-case + quick sort constants
+```mermaid
+flowchart TD
+    R["SORTING ALGORITHMS"]
+    R --> N1["ELEMENTARY SORTS (O(n²) worst-case)"]
+    N1 --> N2["BUBBLE SORT (Stable, O(n) best)"]
+    N2 --> N3["Mechanism: Swap adjacent elements, bubble largest to end"]
+    N2 --> N4["Invariant: After pass i, i largest elements in final positions"]
+    N2 --> N5["Comparisons: n(n-1)/2"]
+    N2 --> N6["Swaps: 0 (best), n(n-1)/2 (worst)"]
+    N2 --> N7["When to use: Nearly sorted, minimizing comparisons not critical"]
+    N2 --> N8["Real-world: Rarely (educational)"]
+    N1 --> N9["SELECTION SORT (Unstable, O(n²) always)"]
+    N9 --> N10["Mechanism: Find min in unsorted portion, swap with start"]
+    N9 --> N11["Invariant: [0,i) is sorted and contains i smallest"]
+    N9 --> N12["Comparisons: n(n-1)/2 (always)"]
+    N9 --> N13["Swaps: n-1 (minimal, useful for expensive writes)"]
+    N9 --> N14["When to use: Minimize writes (flash memory, I/O)"]
+    N9 --> N15["Real-world: Flash storage, disk sorting in extreme cases"]
+    N1 --> N16["INSERTION SORT (Stable, O(n) best, O(n²) worst)"]
+    N16 --> N17["Mechanism: Maintain sorted prefix, insert each element"]
+    N16 --> N18["Invariant: [0,i) is sorted"]
+    N16 --> N19["Comparisons: n/2 (best), n²/2 (worst)"]
+    N16 --> N20["Swaps: (or shifts) 0 (best), n²/2 (worst)"]
+    N16 --> N21["When to use: Small arrays, nearly sorted data, as hybrid"]
+    N16 --> N22["Real-world: In Timsort (Python), Introsort, hybrids"]
+    R --> N23["ADVANCED SORTS (O(n log n) guaranteed or expected)"]
+    N23 --> N24["MERGE SORT (Stable, O(n log n) guaranteed, O(n) extra space)"]
+    N24 --> N25["Mechanism: Divide array, recursively sort, merge two sorted halves"]
+    N24 --> N26["Recurrence: T(n) = 2T(n/2) + O(n)"]
+    N24 --> N27["Proof of O(n log n): log n levels, O(n) work per level"]
+    N24 --> N28["Merge function: Two-pointer scan, O(n+m) for arrays of size n, m"]
+    N24 --> N29["Space: O(n) auxiliary (or O(log n) with careful in-place merge)"]
+    N24 --> N30["Comparisons: n log n (average and worst-case)"]
+    N24 --> N31["Cache behavior: Poor (alternating halves), but predictable"]
+    N24 --> N32["When to use: Need guaranteed O(n log n), need stability"]
+    N24 --> N33["Real-world: Stable external sorting, multi-threaded sorting"]
+    N23 --> N34["QUICK SORT (Unstable, O(n log n) expected, O(n²) worst, O(log n) extra space)"]
+    N34 --> N35["Mechanism: Choose pivot, partition into <pivot and >pivot, recurse"]
+    N34 --> N36["Recurrence (random): T(n) = T(k) + T(n-k-1) + O(n), expected T(n) = O(n log n)"]
+    N34 --> N37["Pivot strategies:"]
+    N37 --> N38["First/last element: O(n²) on sorted input (bad)"]
+    N37 --> N39["Random element: O(n log n) expected, no bad input (good)"]
+    N37 --> N40["Median-of-three: Reduces bad inputs probability (practical)"]
+    N34 --> N41["Partition: Rearrange so <pivot on left, >pivot on right"]
+    N34 --> N42["Comparisons: O(n log n) expected, O(n²) worst"]
+    N34 --> N43["Cache behavior: Good (in-place, sequential access)"]
+    N34 --> N44["Constants: Smaller than merge sort (3 moves per comparison vs merge overhead)"]
+    N34 --> N45["When to use: Need in-place, want practical speed"]
+    N34 --> N46["Real-world: Default choice in most libraries until recently"]
+    N23 --> N47["HEAP SORT (Unstable, O(n log n) guaranteed, O(1) extra space)"]
+    N47 --> N48["Mechanism: Build heap, repeatedly extract root and bubble down"]
+    N47 --> N49["Phase 1: Build heap in O(n)"]
+    N47 --> N50["Phase 2: Extract min n times, each O(log n), total O(n log n)"]
+    N47 --> N51["Comparisons: ~2n log n (twice as many as merge/quick due to sift-down overhead)"]
+    N47 --> N52["In-place and stable heap sort possible but complex"]
+    N47 --> N53["Cache behavior: Poor (random access within heap)"]
+    N47 --> N54["When to use: Need O(n log n) with O(1) space, no stability needed"]
+    N47 --> N55["Real-world: Rarely (constants worse than quick, less cache-friendly than merge)"]
+    N23 --> N56["HYBRID SORTS (Practical)"]
+    N56 --> N57["TIMSORT (Python, Java object arrays)"]
+    N57 --> N58["Uses insertion sort on runs (64 elements)"]
+    N57 --> N59["Merges runs using merge sort"]
+    N57 --> N60["Near-O(n) on nearly sorted data"]
+    N57 --> N61["O(n log n) worst-case, stable"]
+    N56 --> N62["INTROSORT (C++ std::sort, GCC libstdc++)"]
+    N62 --> N63["Uses quick sort with depth limit 2·log(n)"]
+    N62 --> N64["If depth exceeded, switch to heap sort (prevent O(n²))"]
+    N62 --> N65["Uses insertion sort for small subarrays"]
+    N62 --> N66["Achieves O(n log n) worst-case + quick sort constants"]
 ```
+
 
 **Sorting Algorithm Selection Table**
 
@@ -439,3 +438,6 @@ You're ready for interviews when:
 **Next:** Week 03 Interview Q&A Reference  
 **Review Time:** 2-3 hours
 
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

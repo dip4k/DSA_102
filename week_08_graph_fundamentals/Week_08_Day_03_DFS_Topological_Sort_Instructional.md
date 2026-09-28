@@ -1,11 +1,12 @@
 # 📘 Week 8 Day 3: Depth-First Search and Topological Sort — Engineering Guide
 
-**Metadata:**
-- **Week:** 8 | **Day:** 3  
-- **Category:** Graph Algorithms  
-- **Difficulty:** 🟡 Intermediate → 🔴 Advanced  
-- **Real-World Impact:** DFS explores dependency chains, detects cycles, and finds articulation points. Topological sort is the backbone of build systems, schedulers, and compiler optimization. Master these, and you understand how the entire software delivery pipeline works.  
-- **Prerequisites:** Week 8 Day 1 (Graph Models & Representations), Week 8 Day 2 (BFS Basics)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_08_Day_02_Breadth_First_Search_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_08_Day_04_Connectivity_and_Bipartite_Graphs_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -1121,28 +1122,16 @@ The stability of DFS in the algorithm canon—unchanged for 60+ years—is a tes
 
 Gradle uses topological sorting to compile modules:
 
+
+```mermaid
+flowchart TD
+    R["Project structure"]
+    R --> N1["build.gradle (depends on lib, utils)"]
+    R --> N2["build.gradle (depends on core)"]
+    R --> N3["build.gradle (depends on core)"]
+    R --> N4["build.gradle (no dependencies)"]
 ```
-Project structure:
-app/
-  ├─ build.gradle (depends on lib, utils)
-lib/
-  ├─ build.gradle (depends on core)
-utils/
-  ├─ build.gradle (depends on core)
-core/
-  ├─ build.gradle (no dependencies)
 
-Dependency graph:
-app → lib → core
-app → utils → core
-
-Topological sort: core, lib, utils, app
-(core must compile first; lib and utils can compile in parallel; app last)
-
-Gradle detects circular dependencies:
-If app depends on lib, lib depends on utils, utils depends on app → cycle!
-Gradle rejects this with an error.
-```
 
 **Algorithm:** Gradle uses DFS-based topological sort (or Kahn's algorithm variant) to determine build order and detect cyclic dependencies.
 
@@ -1154,9 +1143,9 @@ Git's commit history is a DAG (directed acyclic graph):
 Commits form nodes; parent-child relationships form edges.
 
 Merge commits have multiple parents:
-    A ─→ C
+    A -→ C
     ↓    ↑
-    B ─→ D
+    B -→ D
 
 When you run `git merge B`, Git finds the lowest common ancestor (LCA) of current HEAD and B.
 LCA is computed using DFS/BFS on the commit DAG.
@@ -1526,4 +1515,6 @@ DFS is a stepping stone to:
 - ✅ MIT-level depth with production insights
 - ✅ Smooth transitions between chapters
 - ✅ Ready for immediate use in instruction
+---
 
+> 🧭 **Navigation:** [← Previous Day](Week_08_Day_02_Breadth_First_Search_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_08_Day_04_Connectivity_and_Bipartite_Graphs_Instructional.md)

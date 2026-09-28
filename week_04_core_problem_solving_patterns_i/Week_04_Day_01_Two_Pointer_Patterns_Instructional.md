@@ -1,12 +1,12 @@
 # 📘 Week 04 Day 01: Two-Pointer Patterns — Elegance Through Synchronized Movement
 
-**Metadata:**
-- **Week:** 4 | **Day:** 1
-- **Category:** Core Problem-Solving Patterns
-- **Difficulty:** 🟢 Intermediate (builds on arrays, linked lists from Weeks 1-2)
-- **Real-World Impact:** Two-pointer patterns solve array/sequence problems across major tech companies—merging sorted data at scale, in-place transformations in O(n) time with O(1) space, and foundational techniques for interview questions. Netflix uses variants for contiguous streaming optimization; browsers use them for DOM traversal; databases use them for join operations.
-- **Prerequisites:** Week 2 (Arrays, Linked Lists, Dynamic Arrays), Week 3 (Sorting - understanding sorted order)
-- **MIT Alignment:** Pattern-based problem solving from MIT 6.006; interview-style patterns from competitive programming
+
+
+
+
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_04_Day_02_Sliding_Window_Fixed_Size_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -548,3 +548,6 @@ Master the invariant, and you master the pattern. That's the essence of two-poin
 **Inline Visuals:** 8 (ASCII diagrams, trace tables, comparison matrices)  
 **Real-World Stories:** 3 (PostgreSQL merge joins, Netflix buffering, IoT deduplication)  
 **Interview-Ready:** Yes — covers mechanics, analysis, and applications
+---
+
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_04_Day_02_Sliding_Window_Fixed_Size_Instructional.md)

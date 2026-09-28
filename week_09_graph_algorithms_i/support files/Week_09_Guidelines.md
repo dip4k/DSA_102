@@ -1,5 +1,11 @@
 # 📋 Week 09 Guidelines — Graph Algorithms I: Shortest Paths, MST & Union–Find
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Last Updated:** January 23, 2026  
 **Target Audience:** DSA Mastery Course Students (Intermediate-Advanced)
 
@@ -290,37 +296,32 @@ Week 10+: Advanced Applications (DP on graphs, advanced flows, etc.)
 
 ### Skill Progression Model
 
+
+```mermaid
+flowchart TD
+    R["Week Start"]
+    R --> N1["Conceptual Understanding: 0%"]
+    R --> N2["Implementation Ability: 0%"]
+    R --> N3["Trade-off Analysis: 0%"]
+    R --> N4["Interview Readiness: 0%"]
+    R --> N5["Conceptual: 20% (1 algorithm understood deeply)"]
+    R --> N6["Implementation: 30% (can code Dijkstra)"]
+    R --> N7["Trade-off: 15% (understand Dijkstra's place)"]
+    R --> N8["Interview: 20% (can solve Dijkstra problem)"]
+    R --> N9["Conceptual: 70% (3 shortest-path algorithms + theory)"]
+    R --> N10["Implementation: 70% (can code all three)"]
+    R --> N11["Trade-off: 50% (understand when each is used)"]
+    R --> N12["Interview: 60% (can solve shortest-path problems)"]
+    R --> N13["Conceptual: 95% (all core algorithms understood)"]
+    R --> N14["Implementation: 90% (can code all; understand optimizations)"]
+    R --> N15["Trade-off: 90% (articulate pros/cons of each approach)"]
+    R --> N16["Interview: 85% (ready for graph algorithm questions)"]
+    R --> N17["Conceptual: 100% (mastered all topics)"]
+    R --> N18["Implementation: 95% (code is natural; optimizations understood)"]
+    R --> N19["Trade-off: 95% (can recommend algorithm for any scenario)"]
+    R --> N20["Interview: 95% (confident answering graph questions; system thinking applied)"]
 ```
-Week Start:
-├─ Conceptual Understanding: 0%
-├─ Implementation Ability: 0%
-├─ Trade-off Analysis: 0%
-└─ Interview Readiness: 0%
 
-After Day 1 (Dijkstra):
-├─ Conceptual: 20% (1 algorithm understood deeply)
-├─ Implementation: 30% (can code Dijkstra)
-├─ Trade-off: 15% (understand Dijkstra's place)
-└─ Interview: 20% (can solve Dijkstra problem)
-
-After Day 3:
-├─ Conceptual: 70% (3 shortest-path algorithms + theory)
-├─ Implementation: 70% (can code all three)
-├─ Trade-off: 50% (understand when each is used)
-└─ Interview: 60% (can solve shortest-path problems)
-
-After Day 5:
-├─ Conceptual: 95% (all core algorithms understood)
-├─ Implementation: 90% (can code all; understand optimizations)
-├─ Trade-off: 90% (articulate pros/cons of each approach)
-└─ Interview: 85% (ready for graph algorithm questions)
-
-Week End Target:
-├─ Conceptual: 100% (mastered all topics)
-├─ Implementation: 95% (code is natural; optimizations understood)
-├─ Trade-off: 95% (can recommend algorithm for any scenario)
-└─ Interview: 95% (confident answering graph questions; system thinking applied)
-```
 
 ---
 
@@ -460,3 +461,6 @@ Week End Target:
 
 ---
 
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

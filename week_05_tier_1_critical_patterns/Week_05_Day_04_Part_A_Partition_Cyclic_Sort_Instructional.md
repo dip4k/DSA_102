@@ -1,10 +1,12 @@
 # 📘 Week 05 Day 04 Part A: Partition & Cyclic Sort Patterns — Engineering Guide
 
-**Week:** 5 | **Day:** 4 Part A | **Tier:** Tier 1 Critical Patterns  
-**Category:** In-Place Array Transformation  
-**Difficulty:** 🟡 Intermediate  
-**Real-World Impact:** Enables O(n) in-place partitioning for quicksort, array reorganization without extra space, and efficient segregation in data processing pipelines  
-**Prerequisites:** Week 1-4 + Days 1-3 (two-pointer techniques, sorting, arrays)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_05_Day_03_Merge_Operations_Interval_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_05_Day_04_Part_B_Kadane_Algorithm_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -569,3 +571,6 @@ The in-place constraint forces elegance. You can't hide complexity in extra spac
 By the end of Day 4 (after Kadane's), you'll have mastered 8 critical patterns covering 50%+ of interview problems. These patterns—hash, stack, intervals, partitions—are the vocabulary of efficient algorithms.
 
 ---
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_05_Day_03_Merge_Operations_Interval_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_05_Day_04_Part_B_Kadane_Algorithm_Instructional.md)

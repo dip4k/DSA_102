@@ -1,11 +1,12 @@
 # 📘 WEEK 7 DAY 5: Augmented BSTs & Order-Statistics Trees — Engineering Guide
 
-**Metadata:**
-- **Week:** 7 | **Day:** 5
-- **Category:** Advanced Data Structures / MIT 6.046 Level
-- **Difficulty:** 🔴 Advanced
-- **Real-World Impact:** Augmented data structures are the bridge between simple algorithms and production-grade systems. Order-statistics queries power ranking systems, percentile calculations, and competitive analysis. Range count queries enable range aggregation in databases, time-series analytics, and financial reporting. Understanding how to augment a BST with metadata transforms it from a search tool into a data warehouse. This is where algorithmic theory becomes engineering practice—the difference between "theoretically correct" and "practically fast enough to serve millions of queries."
-- **Prerequisites:** Week 7 Day 1-4 (complete tree knowledge), Week 10 (dynamic programming theory), Week 13 (segment trees—related structure), Understanding of recursive computation, tree decomposition, and invariant maintenance.
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_07_Day_04_Tree_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_07_FULL_PLAYBOOK.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -39,7 +40,7 @@ With a naive approach:
 
 Even with a balanced BST, querying rank is O(n) in theory, O(log² n) in practice (traverse left subtree, count, combine). For millions of queries, this is too slow.
 
-Or consider a financial system: "How many trades happened in the $100-$110 price range?" Without augmentation, you'd scan all trades and filter—O(n). With augmentation, you can answer in O(log n).
+Or consider a financial system: "How many trades happened in the \\$100-\\$110 price range?" Without augmentation, you'd scan all trades and filter—O(n). With augmentation, you can answer in O(log n).
 
 Or an analytics system: "What's the 95th percentile of request latency?" You need to know, for every threshold value, how many requests are below it. Order-statistics enable this.
 
@@ -68,7 +69,7 @@ Think of an augmented BST like a **census system for a country.** Each region ha
 
 When you ask "How many people live in regions with population > 100,000?" you don't count individual people. Instead, you sum up the precomputed counts at the regional level. If a region's count is ≤ 100,000, skip it and its subregions entirely. This is the power of augmentation: you skip entire subtrees because the aggregate tells you what you need to know.
 
-Or think of it like a **financial portfolio.** Each stock in your portfolio has a price. Your portfolio is organized hierarchically (sectors contain stocks). To find "How much value is in tech stocks priced between $100-$200?", you don't check each stock individually. Instead, you use the precomputed sector summaries and drill down only when necessary.
+Or think of it like a **financial portfolio.** Each stock in your portfolio has a price. Your portfolio is organized hierarchically (sectors contain stocks). To find "How much value is in tech stocks priced between \\$100-\\$200?", you don't check each stock individually. Instead, you use the precomputed sector summaries and drill down only when necessary.
 
 ### 🖼 Visualizing the Structure
 
@@ -503,7 +504,7 @@ Databases support queries like: "SELECT * FROM orders WHERE amount BETWEEN 100 A
 
 Fintech platforms (trading desks, risk management) need to compute percentiles of millions of trades:
 - "What was the 95th percentile price today?"
-- "How many trades were in the $50-$60 range?"
+- "How many trades were in the \\$50-\\$60 range?"
 
 **The problem:** Sorting all trades per query is O(n log n). With thousands of queries per day, this is expensive.
 
@@ -766,4 +767,6 @@ This file follows the Unified v13 Narrative-First architecture:
 
 - Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
 - Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+---
 
+> 🧭 **Navigation:** [← Previous Day](Week_07_Day_04_Tree_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_07_FULL_PLAYBOOK.md)

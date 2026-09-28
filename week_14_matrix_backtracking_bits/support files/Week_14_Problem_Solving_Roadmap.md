@@ -1,5 +1,11 @@
 # 🗺️ Week 14 Problem Solving Roadmap
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 Use this guide to determine which specialized technique applies to a given problem.
 
 ---
@@ -33,3 +39,7 @@ graph TD
 *   *If the problem is "Find modular inverse of a prime modulus"*: Use fast exponentiation with Fermat's exponent: `ModPow(A, P-2, P)`.
 *   *If the problem is "Find single pattern in stream without backtracking"*: Precompute the LPS table and run a KMP search (O(N + M) time).
 *   *If the problem is "Solve systems of simultaneous mod equations"*: Verify that the moduli are coprime, then use the Chinese Remainder Theorem.
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

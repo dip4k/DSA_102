@@ -1,5 +1,11 @@
 # Week 17 Extended Python Complete v13
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Python (3.11+) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 Purpose: build Python intuition for advanced DP optimizations, game theory, and counting techniques.
 
 ## Focus tags
@@ -30,3 +36,7 @@ from math import comb
 - Must: explain convex hull trick use cases, compute mex by hand, reason about xor of Grundy numbers
 - Should: inclusion-exclusion examples and Catalan-number interpretations
 - Optional: full advanced line-container implementations
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

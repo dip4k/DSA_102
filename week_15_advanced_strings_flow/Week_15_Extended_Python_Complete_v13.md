@@ -1,5 +1,11 @@
 # Week 15 Extended Python Complete v13
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Python (3.11+) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 Purpose: build Python fluency for advanced string matching, range queries, and network-flow fundamentals.
 
 ## Focus tags
@@ -68,3 +74,7 @@ def bfs_level(cap, flow, s, t, parent):
 - Must: Z-array matching trace, Fenwick point-update/prefix-query, bipartite matching via flow idea
 - Should: segment-tree range query/update reasoning, Edmonds-Karp implementation, flow-to-matching reduction
 - Optional: Dinic/min-cost max-flow follow-up
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

@@ -1,5 +1,11 @@
 # 📘 WEEK 11 INTERVIEW Q&A REFERENCE
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Week:** 11 | **Purpose:** Prepare for technical interviews with curated Q&A  
 **Format:** Question + Expected Answer + Follow-ups + Scoring
 
@@ -651,3 +657,6 @@ for i in 0..m:
 
 **File Status:** ✅ Complete | **Last Updated:** January 26, 2026
 
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

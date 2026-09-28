@@ -713,22 +713,22 @@ dsa-master-curriculum-v13/
 📄 COMPLETE_CONTENT_INDEX.md
 
 📁 final_prompts/                 # Unified generation framework (active)
-   ├── UNIFIED_SYSTEM_CONTEXT.md
-   ├── UNIFIED_MASTER_PROMPT.md
-   ├── UNIFIED_TEMPLATE_NARRATIVE.md
-   ├── UNIFIED_WEEKLY_BATCH_PROMPT.md
-   ├── QUALITY_VALIDATION_CHECKLIST.md
-   ├── MIGRATION_MAP.md
-   └── language_support/
-       ├── CSHARP_STUDY_MATERIAL_LOGIC.md
-       └── PYTHON_STUDY_MATERIAL_LOGIC.md
+   - UNIFIED_SYSTEM_CONTEXT.md
+   - UNIFIED_MASTER_PROMPT.md
+   - UNIFIED_TEMPLATE_NARRATIVE.md
+   - UNIFIED_WEEKLY_BATCH_PROMPT.md
+   - QUALITY_VALIDATION_CHECKLIST.md
+   - MIGRATION_MAP.md
+   - language_support/
+     - CSHARP_STUDY_MATERIAL_LOGIC.md
+     - PYTHON_STUDY_MATERIAL_LOGIC.md
 
 📁 .github/                       # Copilot/GenAI context engineering
-   ├── copilot-instructions.md
-   ├── UNIFIED_CONTEXT_MANIFEST.md
-   ├── instructions/
-   ├── prompts/
-   └── skills/
+   - copilot-instructions.md
+   - UNIFIED_CONTEXT_MANIFEST.md
+   - instructions/
+   - prompts/
+   - skills/
 
 📁 week_01_foundations_i_computational_fundamentals/
 📁 week_02_foundations_ii_linear_data_structures/
@@ -737,14 +737,14 @@ dsa-master-curriculum-v13/
 📁 week_19_mock_interviews_mastery/
 
 📁 Old/                           # Archived legacy systems and prompts
-   ├── v12_prompts_archive/
-   └── context_engineering_archive/
+   - v12_prompts_archive/
+   - context_engineering_archive/
 
 📁 assets/
-   ├── diagrams/
-   ├── flowcharts/
-   ├── traces/
-   └── tables/
+   - diagrams/
+   - flowcharts/
+   - traces/
+   - tables/
 ```
 
 ---

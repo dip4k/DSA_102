@@ -1,5 +1,11 @@
 # 🧭 Week_07_Problem_Solving_Roadmap.md
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Purpose:** Structured progression from basic to advanced tree problems  
 **Audience:** Active learners solving practice problems  
 
@@ -724,3 +730,6 @@ After mastering Week 7 problems, you're ready for:
 
 ---
 
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

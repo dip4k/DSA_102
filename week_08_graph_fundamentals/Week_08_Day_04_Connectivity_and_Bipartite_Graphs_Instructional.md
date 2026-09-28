@@ -1,11 +1,12 @@
 # 📘 Week 8 Day 4: Connectivity & Bipartite Graphs — Engineering Guide
 
-**Metadata:**
-- **Week:** 8 | **Day:** 4  
-- **Category:** Graph Algorithms  
-- **Difficulty:** 🟡 Intermediate → 🔴 Upper-Intermediate  
-- **Real-World Impact:** Connectivity and bipartiteness determine whether a network is robust, whether a system fragments under failures, and whether constraints like “no conflicts within a group” can be satisfied. They sit underneath social clustering, network reliability, grid-based simulations, and scheduling with simple constraints.
-- **Prerequisites:** Week 8 Day 1 (Graph Models & Representations), Day 2 (BFS), Day 3 (DFS & Topological Sort)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_08_Day_03_DFS_Topological_Sort_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_08_Day_05_Strongly_Connected_Components_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -1035,4 +1036,6 @@ You are now ready to step into directed worlds—**strongly connected components
 
 - Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
 - Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+---
 
+> 🧭 **Navigation:** [← Previous Day](Week_08_Day_03_DFS_Topological_Sort_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_08_Day_05_Strongly_Connected_Components_Instructional.md)

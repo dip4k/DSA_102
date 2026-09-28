@@ -1,5 +1,11 @@
 # Week 01 Extended Python Complete v13
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Python (3.11+) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 Purpose: turn Week 01 foundations into Python reasoning and implementation fluency.
 
 ## Week 01 Python focus
@@ -174,3 +180,7 @@ Should:
 Optional:
 - 2D peak-finding reasoning
 - compare memoization with bottom-up tabulation
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

@@ -1,9 +1,12 @@
 # 📚 Week 05 Day 03: Merge Operations & Interval Patterns (Engineering Guide)
 
-**Week:** 5 | **Day:** 3 | **Tier:** Tier 1 Critical Patterns  
-**Category:** Interval & Merge Optimization  
-**Real-World Impact:** Powers calendar scheduling, room booking systems, network traffic merging, and meeting conflict resolution; enables O(n log n) solutions for interval problems  
-**Prerequisites:** Week 1-4 + Days 1-2 (sorting, hashing, stacking)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_05_Day_02_Monotonic_Stack_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_05_Day_04_Part_A_Partition_Cyclic_Sort_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -600,3 +603,6 @@ Sort (hard), then linear scan (easy). This principle applies to:
 By Week 15, you'll see this pattern in 30+ problems. Master it on Day 3.
 
 ---
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_05_Day_02_Monotonic_Stack_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_05_Day_04_Part_A_Partition_Cyclic_Sort_Instructional.md)

@@ -1,5 +1,14 @@
 # 📅 Week 14, Day 2: Basic Bitwise Operations, Tricks, Subset Enumeration & Gray Codes
 
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_14_Day_01_Matrix_Operations_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_14_Day_03_Number_Theory_Basics_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
+
+---
+
 Welcome to Day 2. Today, we study registers, binary digits manipulation, and how to pack full set structures into single-word registers with zero allocation costs.
 
 ---
@@ -229,3 +238,6 @@ def integer_to_gray(n: int) -> int:
 ### Misconceptions and Corrections
 *   *Incorrect Idea*: Assuming that checking `(n & (n - 1)) == 0` is sufficient to prove that `n` is a power of two.
     *   *Correction*: If `n == 0`, `n & (n - 1)` evaluates to `0` even though `0` is not a power of 2. You must explicitly verify that `n > 0`.
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_14_Day_01_Matrix_Operations_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_14_Day_03_Number_Theory_Basics_Instructional.md)

@@ -1,5 +1,11 @@
 # Week 13 Extended Python Complete v13
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Python (3.11+) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 Purpose: provide Python implementation support for backtracking, branch and bound, and amortized-analysis-oriented problem solving.
 
 ## Focus tags
@@ -98,3 +104,7 @@ Core B&B idea:
 - Must: subsets, permutations, combinations, N-Queens, word search
 - Should: Sudoku structure, branch-and-bound knapsack, pruning-order experiments
 - Optional: TSP bound sketches and mixed backtracking/greedy reasoning
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

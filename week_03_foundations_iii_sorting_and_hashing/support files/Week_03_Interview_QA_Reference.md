@@ -1,5 +1,11 @@
 # 🎙️ Week 03 Interview Q&A Reference: 40+ Questions by Topic
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Audience:** Students preparing for technical interviews  
 **Format:** Questions only (no answers) + follow-ups to force deeper thinking  
 **How to Use:** Pick 4-5 questions daily, attempt before looking up answers, discuss with partner
@@ -243,3 +249,6 @@
 **Total Questions:** 40+ (8-10 per major topic)  
 **Interview Prep Time:** 3-4 hours daily during interview week
 
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

@@ -1,5 +1,11 @@
 # Week 12 Daily Progress Checklist — Greedy Algorithms & Proofs
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Week:** 12  
 **Phase:** 🟧 Algorithm Paradigms  
 **Focus:** Daily execution plan for mastering greedy algorithms and their proofs.
@@ -225,3 +231,7 @@ At the end of Week 12, confirm:
 - [ ] I know when to prefer **DP** or **backtracking** over greedy.
 
 If these boxes are checked, you’ve completed Week 12 with a solid, interview-ready understanding of greedy algorithms and their proofs.
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

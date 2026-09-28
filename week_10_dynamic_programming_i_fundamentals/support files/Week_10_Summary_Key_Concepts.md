@@ -1,5 +1,11 @@
 # 🗺️ Week_10_Summary_Key_Concepts.md
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Week:** 10 | **Phase:** C (Trees, Graphs & Dynamic Programming)  
 **Topic:** Dynamic Programming I: Fundamentals  
 
@@ -318,15 +324,18 @@ DP is about **problem structure**, not just caching. A memoized solution isn't D
 
 ## 🎯 DECISION FLOWCHART (When to Use DP)
 
+
+```mermaid
+flowchart TD
+    R["Problem Find optimal solution?"]
+    R --> N1["YES → Has optimal substructure? (Optimal solution = f(optimal subsolutions))"]
+    N1 --> N2["YES → Has overlapping subproblems? (Same subproblem solved multiple times)"]
+    N2 --> N3["YES → DP is suitable! ✓"]
+    N2 --> N4["NO → Greedy or divide-and-conquer may work"]
+    N1 --> N5["NO → Greedy, divide-and-conquer, or brute-force"]
+    R --> N6["NO → Not an optimization problem; may need heuristics or approximation"]
 ```
-Problem: Find optimal solution?
-├─ YES → Has optimal substructure? (Optimal solution = f(optimal subsolutions))
-│  ├─ YES → Has overlapping subproblems? (Same subproblem solved multiple times)
-│  │  ├─ YES → DP is suitable! ✓
-│  │  └─ NO → Greedy or divide-and-conquer may work
-│  └─ NO → Greedy, divide-and-conquer, or brute-force
-└─ NO → Not an optimization problem; may need heuristics or approximation
-```
+
 
 ---
 
@@ -381,3 +390,6 @@ Problem: Find optimal solution?
 
 ---
 
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

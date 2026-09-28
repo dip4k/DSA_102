@@ -1,12 +1,12 @@
 # 📘 Week 03 Day 04: Hash Tables I — Separate Chaining — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 3 | **Day:** 4
-- **Category:** Foundations / Advanced Data Structures
-- **Difficulty:** 🟡 Intermediate–Advanced (builds on Week 2 arrays and linked lists, Week 3 sorting/heaps)
-- **Real-World Impact:** Hash tables are the workhorse of modern programming. Every language, database, and systems software uses them. Hash tables achieve O(1) average-case lookup—beating binary search's O(log n). Understanding hash function design, collision resolution strategies, load factor management, and real-world pitfalls is critical for systems design, database internals, caching, and competitive programming.
-- **Prerequisites:** Week 2 (arrays, linked lists), Week 3 Days 1–3 (sorting, heaps motivation)
-- **MIT Alignment:** Hash tables and hashing from MIT 6.006 Lecture 9–10
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_03_Day_03_Heaps_Heapify_Heap_Sort_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_03_Day_05_Hash_Tables_Open_Addressing_Rolling_Hash_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -760,3 +760,6 @@ Master hash tables—their design, their applications, their trade-offs—and yo
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers mechanics, design, and applications  
 **Batch Status:** ✅ COMPLETE — Week 03 Day 04 Final
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_03_Day_03_Heaps_Heapify_Heap_Sort_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_03_Day_05_Hash_Tables_Open_Addressing_Rolling_Hash_Instructional.md)

@@ -1,5 +1,11 @@
 # 🗓️ Week 05 Problem-Solving Roadmap: Progression & Decision Matrix
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Audience:** Students working through practice problems  
 **Purpose:** Guide problem selection, difficulty progression, and pattern recognition
 
@@ -243,34 +249,29 @@ while fast and fast.next and fast.next.next:
 
 Given a problem, which pattern(s) fit?
 
-```
-Does the problem ask about:
 
-├─ "Find pairs/elements with property"?
-│  └─ Use Hash (complement lookup, frequency)
-│
-├─ "Next/Previous element greater/smaller"?
-│  └─ Use Monotonic Stack
-│
-├─ "Merge overlapping ranges"?
-│  └─ Use Intervals (sort + greedy)
-│
-├─ "Find missing/duplicate in 1..n"?
-│  └─ Use Partition / Cyclic Sort
-│
-├─ "Maximum/minimum subarray sum"?
-│  └─ Use Kadane's Algorithm
-│
-├─ "Linked list cycle/midpoint"?
-│  └─ Use Fast-Slow Pointers
-│
-├─ "Combining two or more above"?
-│  └─ Use integration (multiple patterns)
-│
-└─ "Unsure"?
-   └─ Check: sorted? Space constraint? Streaming? Multiple solutions?
-      └─ These hints suggest pattern family
+```mermaid
+flowchart TD
+    R["Does the problem ask about"]
+    R --> N1["'Find pairs/elements with property'?"]
+    N1 --> N2["Use Hash (complement lookup, frequency)"]
+    R --> N3["'Next/Previous element greater/smaller'?"]
+    N3 --> N4["Use Monotonic Stack"]
+    R --> N5["'Merge overlapping ranges'?"]
+    N5 --> N6["Use Intervals (sort + greedy)"]
+    R --> N7["'Find missing/duplicate in 1..n'?"]
+    N7 --> N8["Use Partition / Cyclic Sort"]
+    R --> N9["'Maximum/minimum subarray sum'?"]
+    N9 --> N10["Use Kadane's Algorithm"]
+    R --> N11["'Linked list cycle/midpoint'?"]
+    N11 --> N12["Use Fast-Slow Pointers"]
+    R --> N13["'Combining two or more above'?"]
+    N13 --> N14["Use integration (multiple patterns)"]
+    R --> N15["'Unsure'?"]
+    N15 --> N16["Check: sorted? Space constraint? Streaming? Multiple solutions?"]
+    N16 --> N17["These hints suggest pattern family"]
 ```
+
 
 ---
 
@@ -339,3 +340,7 @@ Does the problem ask about:
 
 **Next:** Daily Progress Checklist  
 **Practice Time:** 12-15 hours for 25-30 problems
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

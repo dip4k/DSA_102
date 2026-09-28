@@ -1,4 +1,10 @@
 # 📚 WEEK 07 FULL PLAYBOOK
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Comprehensive Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
+
+---
+
 ## Trees & Balanced Search Trees – Complete Curriculum Guide
 
 **Curriculum Alignment:** COMPLETE_SYLLABUS_v13_FINAL.md  
@@ -1550,3 +1556,7 @@ After this week, you're ready to:
 ---
 
 **END OF WEEK 07 FULL PLAYBOOK**
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

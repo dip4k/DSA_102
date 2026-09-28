@@ -1,11 +1,12 @@
 # 📘 Week 06 Day 4: String Transformations & Building — Engineering Guide
 
-**Metadata:**
-- **Week:** 06 | **Day:** 4
-- **Category:** String Patterns
-- **Difficulty:** 🟡 Intermediate
-- **Real-World Impact:** String transformation powers data pipelines, serialization formats, user-facing formatting, and data encoding systems. Converting between representations (integers, numerals, encodings) is foundational to information processing.
-- **Prerequisites:** Week 02 (Strings), Week 06 Days 1-3 (Palindromes, Substrings, Brackets)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_06_Day_03_Parentheses_Bracket_Matching_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_06_Day_05_Advanced_String_Matching_Rabin_Karp_Rolling_Hash_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -63,38 +64,16 @@ String transformation is exactly this: **data enters in one format, exits in ano
 
 Different representations of the same data:
 
-```
-Data Entity: The number 123
 
-Memory (Integer):
-┌─────────────────────────┐
-│ 64-bit signed integer   │
-│ Value: 123 (decimal)    │
-│ Binary: 0x7B (hex)      │
-│ Bits: 01111011          │
-└─────────────────────────┘
-         ↕ Transform
-String (Text):
-┌─────────────────────────┐
-│ Three character string  │
-│ "123"                   │
-│ UTF-8 bytes: 31 32 33   │
-└─────────────────────────┘
-         ↕ Transform
-Roman Numeral:
-┌─────────────────────────┐
-│ "CXXIII"                │
-│ C=100, XX=20, III=3     │
-└─────────────────────────┘
-         ↕ Transform
-Compressed (RLE):
-┌─────────────────────────┐
-│ "1x1, 2x1, 3x1"         │
-│ (each digit appears 1x) │
-└─────────────────────────┘
-
-All represent the same entity; different formats for different purposes.
+```mermaid
+flowchart TD
+    R["Data Entity The number 123"]
+    R --> N1["State"]
+    R --> N2["State"]
+    R --> N3["State"]
+    R --> N4["State"]
 ```
+
 
 The mental model: **data has intrinsic meaning (a number, a sequence), but multiple external representations (string, binary, roman, compressed, etc.).**
 
@@ -627,26 +606,25 @@ CORRECT:
 
 **Decision Tree:**
 
-```
-Is the problem about TRANSFORMATION between formats?
 
-├─ Yes, NUMBER ↔ STRING?
-│  ├─ String to integer? (watch overflow)
-│  ├─ Integer to roman? (use mapping table)
-│  └─ Integer to words? (special mapping)
-│
-├─ Yes, DATA COMPRESSION?
-│  ├─ Run-length encoding? (count consecutive)
-│  └─ Other encoding? (understand the scheme)
-│
-├─ Yes, FORMATTING/BUILDING?
-│  ├─ Zigzag or pattern layout? (derive index formula)
-│  └─ String building? (use builder, not concatenation)
-│
-└─ Yes, ESCAPING/SPECIAL HANDLING?
-   ├─ JSON/XML escaping? (replace special chars)
-   └─ URL encoding? (percent-encode)
+```mermaid
+flowchart TD
+    R["Is the problem about TRANSFORMATION between formats?"]
+    R --> N1["Yes, NUMBER ↔ STRING?"]
+    N1 --> N2["String to integer? (watch overflow)"]
+    N1 --> N3["Integer to roman? (use mapping table)"]
+    N1 --> N4["Integer to words? (special mapping)"]
+    R --> N5["Yes, DATA COMPRESSION?"]
+    N5 --> N6["Run-length encoding? (count consecutive)"]
+    N5 --> N7["Other encoding? (understand the scheme)"]
+    R --> N8["Yes, FORMATTING/BUILDING?"]
+    N8 --> N9["Zigzag or pattern layout? (derive index formula)"]
+    N8 --> N10["String building? (use builder, not concatenation)"]
+    R --> N11["Yes, ESCAPING/SPECIAL HANDLING?"]
+    N11 --> N12["JSON/XML escaping? (replace special chars)"]
+    N11 --> N13["URL encoding? (percent-encode)"]
 ```
+
 
 - **✅ Use when:** Converting between representations, building strings, encoding/decoding
 - **🛑 Avoid when:** Not really about format conversion (e.g., finding patterns, use substring matching)
@@ -836,3 +814,6 @@ When you encounter a transformation problem, pause. Ask:
 These questions will lead you to elegant, efficient solutions.
 
 ---
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_06_Day_03_Parentheses_Bracket_Matching_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_06_Day_05_Advanced_String_Matching_Rabin_Karp_Rolling_Hash_Instructional.md)

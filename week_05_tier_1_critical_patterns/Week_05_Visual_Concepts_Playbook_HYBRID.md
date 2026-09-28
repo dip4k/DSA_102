@@ -1,5 +1,11 @@
 # 📊 Week 05 Visual Concepts Playbook (HYBRID)
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Visual Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
+
+---
+
 **Syllabus Reference:** COMPLETE_SYLLABUS_v13_FINAL.md  
 **Week:** 05 | Phase B – Tier 1 Critical Patterns  
 **Total Concepts Covered:** 30 core patterns across 5 days  
@@ -51,34 +57,37 @@ Each day includes pattern maps, detailed visualizations, failure mode analysis, 
 
 ---
 
-## ═══════════════════════════════════════════════════════════════════════════════
+---
 
 # DAY 1: Hash Map & Hash Set Patterns
 
 ## Pattern Map: Hash Family Tree
 
+
+```mermaid
+flowchart TD
+    R["HASHING & LOOKUPS"]
+    R --> N1["Basic Hashing Concepts"]
+    N1 --> N2["Hash Functions"]
+    N1 --> N3["Collision Resolution"]
+    N1 --> N4["Load Factor Management"]
+    R --> N5["Hash Map Operations"]
+    N5 --> N6["Two-Sum Complements"]
+    N5 --> N7["Frequency Counting"]
+    N5 --> N8["Group & Classify"]
+    R --> N9["Hash Set Operations"]
+    N9 --> N10["Membership Testing"]
+    N9 --> N11["Deduplication"]
+    N9 --> N12["Set Operations (Union, Intersection)"]
+    R --> N13["Advanced Patterns"]
+    N13 --> N14["Two-Pointer Hash Hybrid"]
+    N13 --> N15["Prefix Hash Maps"]
+    R --> N16["Failure Modes"]
+    N16 --> N17["Collision Storms"]
+    N16 --> N18["Memory Exhaustion"]
+    N16 --> N19["Order Dependency Bugs"]
 ```
-HASHING & LOOKUPS
-├── Basic Hashing Concepts
-│   ├── Hash Functions
-│   ├── Collision Resolution
-│   └── Load Factor Management
-├── Hash Map Operations
-│   ├── Two-Sum Complements
-│   ├── Frequency Counting
-│   └── Group & Classify
-├── Hash Set Operations
-│   ├── Membership Testing
-│   ├── Deduplication
-│   └── Set Operations (Union, Intersection)
-├── Advanced Patterns
-│   ├── Two-Pointer Hash Hybrid
-│   └── Prefix Hash Maps
-└── Failure Modes
-    ├── Collision Storms
-    ├── Memory Exhaustion
-    └── Order Dependency Bugs
-```
+
 
 ### Why Hash Patterns Matter
 
@@ -98,23 +107,20 @@ The complement pattern asks: "Given a target, find two elements that sum to it."
 
 ### Visual 1: Two-Sum Execution Trace
 
+
+```mermaid
+flowchart TD
+    R["Array [2, 7, 11, 15], Target 9"]
+    R --> N1["Complement needed: 9 - 2 = 7"]
+    R --> N2["Seen set: {}"]
+    R --> N3["Found? No"]
+    R --> N4["Add 2 to seen: {2}"]
+    R --> N5["Complement needed: 9 - 7 = 2"]
+    R --> N6["Seen set: {2}"]
+    R --> N7["Found? YES! (2 is in seen)"]
+    R --> N8["Return indices: [0, 1]"]
 ```
-Array: [2, 7, 11, 15], Target: 9
 
-STATE 1: i=0, num=2
-  ├─ Complement needed: 9 - 2 = 7
-  ├─ Seen set: {}
-  ├─ Found? No
-  └─ Add 2 to seen: {2}
-
-STATE 2: i=1, num=7
-  ├─ Complement needed: 9 - 7 = 2
-  ├─ Seen set: {2}
-  ├─ Found? YES! (2 is in seen)
-  └─ Return indices: [0, 1]
-
-RESULT: Pair found at one pass, O(1) lookup per element
-```
 
 ### Visual 2: Hash Map Population Pattern
 
@@ -143,58 +149,50 @@ The hash set acts as a **temporal filter**. By checking "have I seen this comple
 
 #### Failure 1.1: Duplicate Element Pair
 
-```
-WRONG:
-  Array: [3, 2, 4], Target: 6
-  At i=0, num=3, complement=3
-  ├─ Check: is 3 in seen? No (it's the current element)
-  └─ Solution WRONG: Can't pair element with itself (unless allowed)
 
-CORRECT:
-  ├─ Add to seen AFTER checking, not before
-  ├─ For exact duplicates, count occurrences
-  ├─ Only pair if we have 2+ of the same element
-  └─ Track: frequency[target/2] >= 2
-
-LESSON: Temporal order matters. Check first, add second.
+```mermaid
+flowchart TD
+    R["WRONG"]
+    R --> N1["Check: is 3 in seen? No (it's the current element)"]
+    R --> N2["Solution WRONG: Can't pair element with itself (unless allowed)"]
+    R --> N3["Add to seen AFTER checking, not before"]
+    R --> N4["For exact duplicates, count occurrences"]
+    R --> N5["Only pair if we have 2+ of the same element"]
+    R --> N6["Track: frequency[target/2] >= 2"]
 ```
+
 
 #### Failure 1.2: Floating-Point or Integer Overflow
 
-```
-WRONG:
-  Target = 2^31 - 1, complement = target - num
-  ├─ If num is large and negative, complement overflows
-  └─ Hash lookup fails silently (hash(overflow) ≠ hash(real_value))
 
-CORRECT:
-  ├─ Validate complement is in valid range before lookup
-  ├─ Use integer types matching your constraint
-  ├─ For floating-point, use range tolerance (±epsilon)
-  └─ Document assumptions about value ranges
-
-LESSON: Edge cases hide in numeric boundaries, not logic.
+```mermaid
+flowchart TD
+    R["WRONG"]
+    R --> N1["If num is large and negative, complement overflows"]
+    R --> N2["Hash lookup fails silently (hash(overflow) ≠ hash(real_value))"]
+    R --> N3["Validate complement is in valid range before lookup"]
+    R --> N4["Use integer types matching your constraint"]
+    R --> N5["For floating-point, use range tolerance (±epsilon)"]
+    R --> N6["Document assumptions about value ranges"]
 ```
+
 
 #### Failure 1.3: Off-by-One in Duplicate Checking
 
-```
-WRONG:
-  Array: [5, 5, 5], Target: 10
-  Using single pass with seen set:
-  ├─ i=0: 5, complement=5, not in seen, add 5 → seen={5}
-  ├─ i=1: 5, complement=5, found in seen! Add indices [0,1]
-  ├─ i=2: 5, complement=5, found in seen! Add indices [0,2] or [1,2]?
-  └─ Returns multiple pairs (ambiguous)
 
-CORRECT:
-  ├─ If only one pair needed, return on first match
-  ├─ If all pairs needed, track index pairs, not just values
-  ├─ Use a frequency map: {value: count}
-  └─ Check: if value==target/2, need count >= 2
-
-LESSON: Duplicate handling requires clear requirements upfront.
+```mermaid
+flowchart TD
+    R["WRONG"]
+    R --> N1["i=0: 5, complement=5, not in seen, add 5 → seen={5}"]
+    R --> N2["i=1: 5, complement=5, found in seen! Add indices [0,1]"]
+    R --> N3["i=2: 5, complement=5, found in seen! Add indices [0,2] or [1,2]?"]
+    R --> N4["Returns multiple pairs (ambiguous)"]
+    R --> N5["If only one pair needed, return on first match"]
+    R --> N6["If all pairs needed, track index pairs, not just values"]
+    R --> N7["Use a frequency map: {value: count}"]
+    R --> N8["Check: if value==target/2, need count >= 2"]
 ```
+
 
 ---
 
@@ -234,25 +232,15 @@ COMPLEXITY: O(n) build + O(26) compare = O(n)
 
 ### Visual 2: Top-K Frequent Elements
 
+
+```mermaid
+flowchart TD
+    R["Array [1,1,1,2,2,3], k=2"]
+    R --> N1["Naive: Hash + sort → O(n log n)"]
+    R --> N2["Better: Hash + min-heap(k) → O(n log k)"]
+    R --> N3["Best case: Hash + bucket sort → O(n) when k small"]
 ```
-Array: [1,1,1,2,2,3], k=2
 
-FREQUENCY COUNT:
-  1 → 3 occurrences
-  2 → 2 occurrences
-  3 → 1 occurrence
-
-SORT BY FREQUENCY (descending):
-  [1(3), 2(2), 3(1)]
-
-TAKE TOP K:
-  Top 2: [1, 2]
-
-OPTIMIZATION PATH:
-  ├─ Naive: Hash + sort → O(n log n)
-  ├─ Better: Hash + min-heap(k) → O(n log k)
-  └─ Best case: Hash + bucket sort → O(n) when k small
-```
 
 ---
 
@@ -269,34 +257,37 @@ You're asked: "Find all anagrams in a list of words." Would you build one freque
 
 ---
 
-## ═══════════════════════════════════════════════════════════════════════════════
+---
 
 # DAY 2: Monotonic Stack
 
 ## Pattern Map: Stack-Based Optimization
 
+
+```mermaid
+flowchart TD
+    R["MONOTONIC STACK PATTERNS"]
+    R --> N1["Core Concept"]
+    N1 --> N2["Decreasing Stack"]
+    N1 --> N3["Increasing Stack"]
+    N1 --> N4["Stack Invariant Maintenance"]
+    R --> N5["Single-Pass Problems"]
+    N5 --> N6["Next Greater Element"]
+    N5 --> N7["Previous Smaller Element"]
+    N5 --> N8["Combination: Both Sides"]
+    R --> N9["Advanced Applications"]
+    N9 --> N10["Stock Span Problem"]
+    N9 --> N11["Largest Rectangle in Histogram"]
+    N9 --> N12["Trapping Rain Water (alternate view)"]
+    R --> N13["Failure Modes"]
+    N13 --> N14["Popping Wrong Elements"]
+    N13 --> N15["Confusing Index vs Value"]
+    N13 --> N16["Boundary Conditions"]
+    R --> N17["Optimization Tricks"]
+    N17 --> N18["Array vs Stack-based DP"]
+    N17 --> N19["Space-time Tradeoffs"]
 ```
-MONOTONIC STACK PATTERNS
-├── Core Concept
-│   ├── Decreasing Stack
-│   ├── Increasing Stack
-│   └── Stack Invariant Maintenance
-├── Single-Pass Problems
-│   ├── Next Greater Element
-│   ├── Previous Smaller Element
-│   └── Combination: Both Sides
-├── Advanced Applications
-│   ├── Stock Span Problem
-│   ├── Largest Rectangle in Histogram
-│   └── Trapping Rain Water (alternate view)
-├── Failure Modes
-│   ├── Popping Wrong Elements
-│   ├── Confusing Index vs Value
-│   └── Boundary Conditions
-└── Optimization Tricks
-    ├── Array vs Stack-based DP
-    └── Space-time Tradeoffs
-```
+
 
 ### Why Monotonic Stacks Exist
 
@@ -316,48 +307,36 @@ Given an array, for each element, find the **next element to its right that is s
 
 ### Visual 1: Decreasing Stack Execution
 
+
+```mermaid
+flowchart TD
+    R["Array [2, 1, 2, 4, 3]"]
+    R --> N1["Stack: [2]"]
+    R --> N2["Result: {}"]
+    R --> N3["(No comparison yet, stack empty after 2)"]
+    R --> N4["1 < 2? Yes"]
+    R --> N5["Stack: [2, 1]"]
+    R --> N6["Result: {}"]
+    R --> N7["(1 doesn't pop anything)"]
+    R --> N8["2 < 1? No, 2 > 1"]
+    R --> N9["Pop 1, record: next_greater[1] = 2"]
+    R --> N10["Compare 2 with 2? No, equal (we want strictly greater)"]
+    R --> N11["Stack: [2, 2]"]
+    R --> N12["Result: {1: 2}"]
+    R --> N13["(Both 2s in stack now)"]
+    R --> N14["4 > 2? Yes"]
+    R --> N15["Pop 2, record: next_greater[2] = 4"]
+    R --> N16["4 > 2? Yes (first 2)"]
+    R --> N17["Pop 2, record: next_greater[0] = 4"]
+    R --> N18["Stack: [4]"]
+    R --> N19["Result: {0: 4, 2: 4, 1: 2}"]
+    R --> N20["(All smaller elements found their answer)"]
+    R --> N21["3 < 4? Yes"]
+    R --> N22["Stack: [4, 3]"]
+    R --> N23["Result: {0: 4, 2: 4, 1: 2}"]
+    R --> N24["(3 doesn't pop 4)"]
 ```
-Array: [2, 1, 2, 4, 3]
 
-STEP 1: Process 2
-  ├─ Stack: [2]
-  ├─ Result: {}
-  └─ (No comparison yet, stack empty after 2)
-
-STEP 2: Process 1
-  ├─ 1 < 2? Yes
-  ├─ Stack: [2, 1]
-  ├─ Result: {}
-  └─ (1 doesn't pop anything)
-
-STEP 3: Process 2
-  ├─ 2 < 1? No, 2 > 1
-  ├─ Pop 1, record: next_greater[1] = 2
-  ├─ Compare 2 with 2? No, equal (we want strictly greater)
-  ├─ Stack: [2, 2]
-  ├─ Result: {1: 2}
-  └─ (Both 2s in stack now)
-
-STEP 4: Process 4
-  ├─ 4 > 2? Yes
-  ├─ Pop 2, record: next_greater[2] = 4
-  ├─ 4 > 2? Yes (first 2)
-  ├─ Pop 2, record: next_greater[0] = 4
-  ├─ Stack: [4]
-  ├─ Result: {0: 4, 2: 4, 1: 2}
-  └─ (All smaller elements found their answer)
-
-STEP 5: Process 3
-  ├─ 3 < 4? Yes
-  ├─ Stack: [4, 3]
-  ├─ Result: {0: 4, 2: 4, 1: 2}
-  └─ (3 doesn't pop 4)
-
-END: Stack [4, 3] → no right neighbors greater, result: -1
-  Final: [4, 2, 4, -1, -1]
-
-COMPLEXITY: O(n) — each element pushed/popped once
-```
 
 ### Visual 2: Stack State Transitions
 
@@ -387,69 +366,55 @@ Given stock prices, for each day find the **maximum span**—the longest contigu
 
 ### Visual 1: Stock Span Calculation
 
+
+```mermaid
+flowchart TD
+    R["Prices [100, 80, 60, 70, 60, 75, 85]"]
+    R --> N1["Stack: [(100, 1)]"]
+    R --> N2["Span[0] = 1 (only itself)"]
+    R --> N3["(Nothing before day 0)"]
+    R --> N4["80 < 100? Yes"]
+    R --> N5["Push (80, 1)"]
+    R --> N6["Stack: [(100, 1), (80, 1)]"]
+    R --> N7["Span[1] = 1 (80 < 100 to its left)"]
+    R --> N8["(Can't extend backward past 100)"]
+    R --> N9["60 < 80? Yes"]
+    R --> N10["Push (60, 1)"]
+    R --> N11["Stack: [(100, 1), (80, 1), (60, 1)]"]
+    R --> N12["Span[2] = 1"]
+    R --> N13["(Can't extend anywhere)"]
+    R --> N14["70 > 60? Yes"]
+    R --> N15["Pop (60, 1), absorb span: span[3] = 1 (current) + 1 (from 60) = 2"]
+    R --> N16["70 < 80? Yes"]
+    R --> N17["Push (70, 2)"]
+    R --> N18["Stack: [(100, 1), (80, 1), (70, 2)]"]
+    R --> N19["Span[3] = 2 (days 2 and 3)"]
+    R --> N20["(We skipped day 2 by absorbing its span)"]
+    R --> N21["60 < 70? Yes"]
+    R --> N22["Push (60, 1)"]
+    R --> N23["Stack: [(100, 1), (80, 1), (70, 2), (60, 1)]"]
+    R --> N24["Span[4] = 1"]
+    R --> N25["(Immediately drops below 70)"]
+    R --> N26["75 > 60? Yes"]
+    R --> N27["Pop (60, 1), absorb: span[5] = 1 + 1 = 2"]
+    R --> N28["75 < 70? No, 75 > 70"]
+    R --> N29["Pop (70, 2), absorb: span[5] = 2 + 2 = 4"]
+    R --> N30["75 < 80? Yes"]
+    R --> N31["Push (75, 4)"]
+    R --> N32["Stack: [(100, 1), (80, 1), (75, 4)]"]
+    R --> N33["Span[5] = 4 (days 2, 3, 4, 5)"]
+    R --> N34["(We absorbed both 70 and 60)"]
+    R --> N35["85 > 75? Yes"]
+    R --> N36["Pop (75, 4), absorb: span[6] = 1 + 4 = 5"]
+    R --> N37["85 > 80? Yes"]
+    R --> N38["Pop (80, 1), absorb: span[6] = 5 + 1 = 6"]
+    R --> N39["85 < 100? Yes"]
+    R --> N40["Push (85, 6)"]
+    R --> N41["Stack: [(100, 1), (85, 6)]"]
+    R --> N42["Span[6] = 6 (days 1, 2, 3, 4, 5, 6)"]
+    R --> N43["(Everything except day 0)"]
 ```
-Prices: [100, 80, 60, 70, 60, 75, 85]
-          [0]  [1] [2] [3] [4] [5]  [6]  (indices)
 
-DAY 0: price=100
-  ├─ Stack: [(100, 1)]
-  ├─ Span[0] = 1 (only itself)
-  └─ (Nothing before day 0)
-
-DAY 1: price=80
-  ├─ 80 < 100? Yes
-  ├─ Push (80, 1)
-  ├─ Stack: [(100, 1), (80, 1)]
-  ├─ Span[1] = 1 (80 < 100 to its left)
-  └─ (Can't extend backward past 100)
-
-DAY 2: price=60
-  ├─ 60 < 80? Yes
-  ├─ Push (60, 1)
-  ├─ Stack: [(100, 1), (80, 1), (60, 1)]
-  ├─ Span[2] = 1
-  └─ (Can't extend anywhere)
-
-DAY 3: price=70
-  ├─ 70 > 60? Yes
-  ├─ Pop (60, 1), absorb span: span[3] = 1 (current) + 1 (from 60) = 2
-  ├─ 70 < 80? Yes
-  ├─ Push (70, 2)
-  ├─ Stack: [(100, 1), (80, 1), (70, 2)]
-  ├─ Span[3] = 2 (days 2 and 3)
-  └─ (We skipped day 2 by absorbing its span)
-
-DAY 4: price=60
-  ├─ 60 < 70? Yes
-  ├─ Push (60, 1)
-  ├─ Stack: [(100, 1), (80, 1), (70, 2), (60, 1)]
-  ├─ Span[4] = 1
-  └─ (Immediately drops below 70)
-
-DAY 5: price=75
-  ├─ 75 > 60? Yes
-  ├─ Pop (60, 1), absorb: span[5] = 1 + 1 = 2
-  ├─ 75 < 70? No, 75 > 70
-  ├─ Pop (70, 2), absorb: span[5] = 2 + 2 = 4
-  ├─ 75 < 80? Yes
-  ├─ Push (75, 4)
-  ├─ Stack: [(100, 1), (80, 1), (75, 4)]
-  ├─ Span[5] = 4 (days 2, 3, 4, 5)
-  └─ (We absorbed both 70 and 60)
-
-DAY 6: price=85
-  ├─ 85 > 75? Yes
-  ├─ Pop (75, 4), absorb: span[6] = 1 + 4 = 5
-  ├─ 85 > 80? Yes
-  ├─ Pop (80, 1), absorb: span[6] = 5 + 1 = 6
-  ├─ 85 < 100? Yes
-  ├─ Push (85, 6)
-  ├─ Stack: [(100, 1), (85, 6)]
-  ├─ Span[6] = 6 (days 1, 2, 3, 4, 5, 6)
-  └─ (Everything except day 0)
-
-RESULT: [1, 1, 1, 2, 1, 4, 6]
-```
 
 ### Why Span Absorption Works
 
@@ -470,35 +435,38 @@ If the prices wrapped around (circular), how would you modify the monotonic stac
 
 ---
 
-## ═══════════════════════════════════════════════════════════════════════════════
+---
 
 # DAY 3: Merge Operations & Interval Patterns
 
 ## Pattern Map: Interval Processing
 
+
+```mermaid
+flowchart TD
+    R["INTERVAL & MERGE PATTERNS"]
+    R --> N1["Fundamentals"]
+    N1 --> N2["Interval Definition & Overlap"]
+    N1 --> N3["Sorting Strategies"]
+    N1 --> N4["Comparison Operators"]
+    R --> N5["Merge Operations"]
+    N5 --> N6["Merge Overlapping Intervals"]
+    N5 --> N7["Merge K Sorted Lists"]
+    N5 --> N8["Insert Interval"]
+    R --> N9["Scheduling Problems"]
+    N9 --> N10["Meeting Rooms"]
+    N9 --> N11["Meeting Rooms II"]
+    N9 --> N12["Resource Allocation"]
+    R --> N13["Advanced"]
+    N13 --> N14["Interval Partition"]
+    N13 --> N15["Employee Schedule Conflicts"]
+    N13 --> N16["Weighted Job Scheduling"]
+    R --> N17["Failure Modes"]
+    N17 --> N18["Off-by-One Boundary Errors"]
+    N17 --> N19["Overlapping vs Adjacent Confusion"]
+    N17 --> N20["Unsorted Input Assumptions"]
 ```
-INTERVAL & MERGE PATTERNS
-├── Fundamentals
-│   ├── Interval Definition & Overlap
-│   ├── Sorting Strategies
-│   └── Comparison Operators
-├── Merge Operations
-│   ├── Merge Overlapping Intervals
-│   ├── Merge K Sorted Lists
-│   └── Insert Interval
-├── Scheduling Problems
-│   ├── Meeting Rooms
-│   ├── Meeting Rooms II
-│   └── Resource Allocation
-├── Advanced
-│   ├── Interval Partition
-│   ├── Employee Schedule Conflicts
-│   └── Weighted Job Scheduling
-└── Failure Modes
-    ├── Off-by-One Boundary Errors
-    ├── Overlapping vs Adjacent Confusion
-    └── Unsorted Input Assumptions
-```
+
 
 ### Why Interval Problems?
 
@@ -518,58 +486,45 @@ Given intervals, merge all overlapping ones. Example: `[[1,3], [2,6], [8,10], [1
 
 ### Visual 1: Merge Process
 
+
+```mermaid
+flowchart TD
+    R["Input [[1,3], [2,6], [8,10], [15,18]]"]
+    R --> N1["Already sorted: [[1,3], [2,6], [8,10], [15,18]]"]
+    R --> N2["(If unsorted, sort first)"]
+    R --> N3["merged = [[1,3]]"]
+    R --> N4["last_end = 3"]
+    R --> N5["current_start = 2, current_end = 6"]
+    R --> N6["2 <= 3 (overlaps with last_end)?"]
+    R --> N7["Yes → extend: last_end = max(3, 6) = 6"]
+    R --> N8["merged = [[1,6]]"]
+    R --> N9["(Merge by replacing last interval)"]
+    R --> N10["current_start = 8, current_end = 10"]
+    R --> N11["8 <= 6 (overlaps)?"]
+    R --> N12["No → add new interval"]
+    R --> N13["merged = [[1,6], [8,10]]"]
+    R --> N14["last_end = 10"]
+    R --> N15["current_start = 15, current_end = 18"]
+    R --> N16["15 <= 10 (overlaps)?"]
+    R --> N17["No → add new interval"]
+    R --> N18["merged = [[1,6], [8,10], [15,18]]"]
+    R --> N19["last_end = 18"]
 ```
-Input: [[1,3], [2,6], [8,10], [15,18]]
 
-STEP 1: Sort by start
-  ├─ Already sorted: [[1,3], [2,6], [8,10], [15,18]]
-  └─ (If unsorted, sort first)
-
-STEP 2: Initialize result with first interval
-  ├─ merged = [[1,3]]
-  └─ last_end = 3
-
-STEP 3: Process [2,6]
-  ├─ current_start = 2, current_end = 6
-  ├─ 2 <= 3 (overlaps with last_end)?
-  ├─ Yes → extend: last_end = max(3, 6) = 6
-  ├─ merged = [[1,6]]
-  └─ (Merge by replacing last interval)
-
-STEP 4: Process [8,10]
-  ├─ current_start = 8, current_end = 10
-  ├─ 8 <= 6 (overlaps)?
-  ├─ No → add new interval
-  ├─ merged = [[1,6], [8,10]]
-  └─ last_end = 10
-
-STEP 5: Process [15,18]
-  ├─ current_start = 15, current_end = 18
-  ├─ 15 <= 10 (overlaps)?
-  ├─ No → add new interval
-  ├─ merged = [[1,6], [8,10], [15,18]]
-  └─ last_end = 18
-
-OUTPUT: [[1,6], [8,10], [15,18]]
-COMPLEXITY: O(n log n) sort + O(n) merge = O(n log n)
-```
 
 ### Visual 2: Overlap Detection Logic
 
+
+```mermaid
+flowchart TD
+    R["Two intervals [a1, b1] and [a2, b2] overlap if"]
+    R --> N1["[1,3] and [2,6]: 2 <= 3? Yes → OVERLAP"]
+    R --> N2["[1,3] and [4,5]: 4 <= 3? No → NO OVERLAP"]
+    R --> N3["[1,3] and [3,5]: 3 <= 3? Yes → OVERLAP (touching)"]
+    R --> N4["[1,3] + [2,6] = [1, max(3,6)] = [1,6]"]
+    R --> N5["[1,3] + [3,5] = [1, max(3,5)] = [1,5]"]
 ```
-Two intervals [a1, b1] and [a2, b2] overlap if:
 
-CONDITION 1: a2 <= b1
-  ├─ [1,3] and [2,6]: 2 <= 3? Yes → OVERLAP
-  ├─ [1,3] and [4,5]: 4 <= 3? No → NO OVERLAP
-  └─ [1,3] and [3,5]: 3 <= 3? Yes → OVERLAP (touching)
-
-MERGE RESULT: [a1, max(b1, b2)]
-  ├─ [1,3] + [2,6] = [1, max(3,6)] = [1,6]
-  └─ [1,3] + [3,5] = [1, max(3,5)] = [1,5]
-
-KEY: current_start <= last_end means overlap
-```
 
 ---
 
@@ -583,30 +538,23 @@ Given non-overlapping sorted intervals and a new interval, insert it and merge o
 
 ### Visual 1: Insert and Merge Execution
 
+
+```mermaid
+flowchart TD
+    R["Existing (sorted, non-overlapping) [[1,2], [3,5], [6,9]]"]
+    R --> N1["[1,2]: 2 < 4 (new start)? Yes → Add to result"]
+    R --> N2["Result so far: [[1,2]]"]
+    R --> N3["[3,5]: 5 < 4? No → Stop phase 1"]
+    R --> N4["Merge [3,5] with [4,8]"]
+    N4 --> N5["Overlap check: 4 <= 5? Yes"]
+    N4 --> N6["New merged: [3, max(5,8)] = [3,8]"]
+    R --> N7["Check [6,9] with [3,8]"]
+    N7 --> N8["Overlap check: 6 <= 8? Yes"]
+    N7 --> N9["Merge: [3, max(8,9)] = [3,9]"]
+    R --> N10["No more intervals to process"]
+    R --> N11["Add merged result: [[1,2], [3,9]]"]
 ```
-Existing (sorted, non-overlapping): [[1,2], [3,5], [6,9]]
-New interval: [4,8]
 
-PHASE 1: Add all intervals ending before new start
-  ├─ [1,2]: 2 < 4 (new start)? Yes → Add to result
-  ├─ Result so far: [[1,2]]
-  ├─ [3,5]: 5 < 4? No → Stop phase 1
-
-PHASE 2: Merge overlapping intervals with new one
-  ├─ Merge [3,5] with [4,8]
-  │  ├─ Overlap check: 4 <= 5? Yes
-  │  ├─ New merged: [3, max(5,8)] = [3,8]
-  ├─ Check [6,9] with [3,8]
-  │  ├─ Overlap check: 6 <= 8? Yes
-  │  ├─ Merge: [3, max(8,9)] = [3,9]
-  ├─ No more intervals to process
-  └─ Add merged result: [[1,2], [3,9]]
-
-PHASE 3: Add remaining intervals (none in this case)
-
-OUTPUT: [[1,2], [3,9]]
-COMPLEXITY: O(n) single pass, no sorting needed
-```
 
 ---
 
@@ -622,29 +570,24 @@ Given meeting intervals, determine if one person can attend all of them (no over
 
 ### Visual 1: Overlapping Count (Room Allocation)
 
+
+```mermaid
+flowchart TD
+    R["Meetings [[0,30], [5,10], [15,20]]"]
+    R --> N1["Event at 0: person enters (start)"]
+    R --> N2["Event at 5: person enters (start)"]
+    R --> N3["Event at 10: person leaves (end)"]
+    R --> N4["Event at 15: person enters (start)"]
+    R --> N5["Event at 20: person leaves (end)"]
+    R --> N6["Event at 30: person leaves (end)"]
+    R --> N7["0 (start) → count = 1"]
+    R --> N8["5 (start) → count = 2"]
+    R --> N9["10 (end) → count = 1"]
+    R --> N10["15 (start) → count = 2"]
+    R --> N11["20 (end) → count = 1"]
+    R --> N12["30 (end) → count = 0"]
 ```
-Meetings: [[0,30], [5,10], [15,20]]
 
-TIMELINE APPROACH (sweep line):
-  ├─ Event at 0: person enters (start)
-  ├─ Event at 5: person enters (start)
-  ├─ Event at 10: person leaves (end)
-  ├─ Event at 15: person enters (start)
-  ├─ Event at 20: person leaves (end)
-  ├─ Event at 30: person leaves (end)
-
-SORTED EVENTS (start before end at same time):
-  ├─ 0 (start) → count = 1
-  ├─ 5 (start) → count = 2
-  ├─ 10 (end) → count = 1
-  ├─ 15 (start) → count = 2
-  ├─ 20 (end) → count = 1
-  ├─ 30 (end) → count = 0
-
-MAX COUNT: 2 rooms needed
-
-COMPLEXITY: O(n log n) sort + O(n) count = O(n log n)
-```
 
 ---
 
@@ -668,18 +611,13 @@ LESSON: Use <= not < for overlap detection (inclusive endpoints)
 
 #### Failure 3.2: Forgetting to Sort
 
-```
-WRONG:
-  Input: [[2,3], [0,1], [1,2]]
-  Assume already sorted, merge directly
-  └─ Would miss merging [0,1] and [1,2]
 
-CORRECT:
-  Sort first: [[0,1], [1,2], [2,3]]
-  Then merge: [[0,3]]
-
-LESSON: Always sort intervals by start time first
+```mermaid
+flowchart TD
+    R["WRONG"]
+    R --> N1["Would miss merging [0,1] and [1,2]"]
 ```
+
 
 #### Failure 3.3: Adjacent Intervals Confusion
 
@@ -712,35 +650,38 @@ If you have 100 meetings and 99 use room A, 1 uses room B, how many rooms are ne
 
 ---
 
-## ═══════════════════════════════════════════════════════════════════════════════
+---
 
 # DAY 4: Partition & Kadane's Algorithm
 
 ## Pattern Map: Array Reorganization & Optimization
 
+
+```mermaid
+flowchart TD
+    R["PARTITION & KADANE PATTERNS"]
+    R --> N1["Partition Fundamentals"]
+    N1 --> N2["Dutch National Flag (0s, 1s, 2s)"]
+    N1 --> N3["In-Place Segregation"]
+    N1 --> N4["Move Zeroes / Remove Elements"]
+    R --> N5["Cyclic Sort"]
+    N5 --> N6["Position-Based Rearrangement"]
+    N5 --> N7["Finding Missing Numbers"]
+    N5 --> N8["Duplicate Detection"]
+    R --> N9["Kadane's Algorithm"]
+    N9 --> N10["Maximum Subarray Sum"]
+    N9 --> N11["Maximum Product Subarray"]
+    N9 --> N12["Circular Arrays"]
+    R --> N13["Advanced Variants"]
+    N13 --> N14["Two-Pass Optimization"]
+    N13 --> N15["Prefix Sums"]
+    N13 --> N16["Constraint Satisfaction"]
+    R --> N17["Failure Modes"]
+    N17 --> N18["Pointer Management Bugs"]
+    N17 --> N19["Circular Edge Cases"]
+    N17 --> N20["State Machine Errors"]
 ```
-PARTITION & KADANE PATTERNS
-├── Partition Fundamentals
-│   ├── Dutch National Flag (0s, 1s, 2s)
-│   ├── In-Place Segregation
-│   └── Move Zeroes / Remove Elements
-├── Cyclic Sort
-│   ├── Position-Based Rearrangement
-│   ├── Finding Missing Numbers
-│   └── Duplicate Detection
-├── Kadane's Algorithm
-│   ├── Maximum Subarray Sum
-│   ├── Maximum Product Subarray
-│   └── Circular Arrays
-├── Advanced Variants
-│   ├── Two-Pass Optimization
-│   ├── Prefix Sums
-│   └── Constraint Satisfaction
-└── Failure Modes
-    ├── Pointer Management Bugs
-    ├── Circular Edge Cases
-    └── State Machine Errors
-```
+
 
 ### Why Partition Matters
 
@@ -763,57 +704,43 @@ Given an array with elements 0, 1, 2, rearrange so all 0s come first, then 1s, t
 
 ### Visual 1: Three-Partition Execution
 
+
+```mermaid
+flowchart TD
+    R["Array [2, 0, 2, 1, 1, 0]"]
+    R --> N1["left = 0 (start of region for 0s)"]
+    R --> N2["mid = 0 (current position)"]
+    R --> N3["right = 5 (start of region for 2s, from end)"]
+    R --> N4["(Region of 1s is between left and right)"]
+    R --> N5["2 == 2? Yes → swap with right (mid=0, right=5)"]
+    R --> N6["After swap: [0, 0, 2, 1, 1, 2]"]
+    R --> N7["right--, but don't move mid (swapped unknown element)"]
+    R --> N8["right = 4"]
+    R --> N9["State: [0, 0, 2, 1, 1 | 2] (right side settled)"]
+    R --> N10["Actually, arr[mid=0]=0 from swap"]
+    R --> N11["0 == 0? Yes → swap with left (mid=0, left=0)"]
+    R --> N12["After swap: [0, 0, 2, 1, 1, 2]"]
+    R --> N13["left++, mid++"]
+    R --> N14["left = 1, mid = 1"]
+    R --> N15["State: [0 | 0, 2, 1, 1 | 2]"]
+    R --> N16["0 == 0? Yes → swap with left (mid=1, left=1)"]
+    R --> N17["After swap: [0, 0, 2, 1, 1, 2]"]
+    R --> N18["left++, mid++"]
+    R --> N19["left = 2, mid = 2"]
+    R --> N20["State: [0, 0 | 2, 1, 1 | 2]"]
+    R --> N21["2 == 2? Yes → swap with right (mid=2, right=4)"]
+    R --> N22["After swap: [0, 0, 1, 1, 2, 2]"]
+    R --> N23["right--, don't move mid"]
+    R --> N24["right = 3"]
+    R --> N25["State: [0, 0 | 1, 1, 2 | 2]"]
+    R --> N26["1 == 1? Yes (in middle region) → no swap, just move mid"]
+    R --> N27["mid++"]
+    R --> N28["mid = 3"]
+    R --> N29["State: [0, 0 | 1, 1, 2 | 2]"]
+    R --> N30["mid=3, right=3 → mid reaches right, STOP"]
+    R --> N31["All elements processed"]
 ```
-Array: [2, 0, 2, 1, 1, 0]
 
-Initialize:
-  ├─ left = 0 (start of region for 0s)
-  ├─ mid = 0 (current position)
-  ├─ right = 5 (start of region for 2s, from end)
-  └─ (Region of 1s is between left and right)
-
-STEP 1: arr[0]=2
-  ├─ 2 == 2? Yes → swap with right (mid=0, right=5)
-  ├─ After swap: [0, 0, 2, 1, 1, 2]
-  ├─ right--, but don't move mid (swapped unknown element)
-  ├─ right = 4
-  └─ State: [0, 0, 2, 1, 1 | 2] (right side settled)
-
-STEP 2: arr[0]=0 (but we already processed, mid was 0)
-  ├─ Actually, arr[mid=0]=0 from swap
-  ├─ 0 == 0? Yes → swap with left (mid=0, left=0)
-  ├─ After swap: [0, 0, 2, 1, 1, 2]
-  ├─ left++, mid++
-  ├─ left = 1, mid = 1
-  └─ State: [0 | 0, 2, 1, 1 | 2]
-
-STEP 3: arr[1]=0
-  ├─ 0 == 0? Yes → swap with left (mid=1, left=1)
-  ├─ After swap: [0, 0, 2, 1, 1, 2]
-  ├─ left++, mid++
-  ├─ left = 2, mid = 2
-  └─ State: [0, 0 | 2, 1, 1 | 2]
-
-STEP 4: arr[2]=2
-  ├─ 2 == 2? Yes → swap with right (mid=2, right=4)
-  ├─ After swap: [0, 0, 1, 1, 2, 2]
-  ├─ right--, don't move mid
-  ├─ right = 3
-  └─ State: [0, 0 | 1, 1, 2 | 2]
-
-STEP 5: arr[2]=1
-  ├─ 1 == 1? Yes (in middle region) → no swap, just move mid
-  ├─ mid++
-  ├─ mid = 3
-  └─ State: [0, 0 | 1, 1, 2 | 2]
-
-STEP 6: arr[3]=1
-  ├─ mid=3, right=3 → mid reaches right, STOP
-  └─ All elements processed
-
-RESULT: [0, 0, 1, 1, 2, 2]
-COMPLEXITY: O(n) time, O(1) space (only pointers)
-```
 
 ---
 
@@ -827,88 +754,55 @@ Find the **contiguous subarray with the largest sum**. Naive is O(n²); Kadane's
 
 ### Visual 1: Kadane's State Transitions
 
+
+```mermaid
+flowchart TD
+    R["Array [-2, 1, -3, 4, -1, 2, 1, -5, 4]"]
+    R --> N1["max_current = 0 (best ending at current position)"]
+    R --> N2["max_global = -infinity (overall best)"]
+    R --> N3["(We'll track best subarray and its indices)"]
+    R --> N4["max_current = max(-2, 0 + (-2)) = max(-2, -2) = -2"]
+    R --> N5["max_global = max(-inf, -2) = -2"]
+    R --> N6["Current subarray: [-2]"]
+    R --> N7["max_current = max(1, -2 + 1) = max(1, -1) = 1"]
+    R --> N8["max_global = max(-2, 1) = 1"]
+    R --> N9["Current subarray: [1]"]
+    R --> N10["max_current = max(-3, 1 + (-3)) = max(-3, -2) = -2"]
+    R --> N11["max_global = 1 (unchanged)"]
+    R --> N12["Current subarray: [1, -3]"]
+    R --> N13["max_current = max(4, -2 + 4) = max(4, 2) = 4"]
+    R --> N14["max_global = max(1, 4) = 4"]
+    R --> N15["Current subarray: [4] (started fresh)"]
+    R --> N16["max_current = max(-1, 4 + (-1)) = max(-1, 3) = 3"]
+    R --> N17["max_global = 4 (unchanged)"]
+    R --> N18["Current subarray: [4, -1]"]
+    R --> N19["max_current = max(2, 3 + 2) = max(2, 5) = 5"]
+    R --> N20["max_global = max(4, 5) = 5"]
+    R --> N21["Current subarray: [4, -1, 2]"]
+    R --> N22["max_current = max(1, 5 + 1) = max(1, 6) = 6"]
+    R --> N23["max_global = max(5, 6) = 6"]
+    R --> N24["Current subarray: [4, -1, 2, 1]"]
+    R --> N25["max_current = max(-5, 6 + (-5)) = max(-5, 1) = 1"]
+    R --> N26["max_global = 6 (unchanged)"]
+    R --> N27["Current subarray: [4, -1, 2, 1, -5]"]
+    R --> N28["max_current = max(4, 1 + 4) = max(4, 5) = 5"]
+    R --> N29["max_global = 6 (unchanged)"]
+    R --> N30["Current subarray: [4] (started fresh? No, extended from 1)"]
+    R --> N31["max_global = 6"]
+    R --> N32["Best subarray: [4, -1, 2, 1] at indices [3, 6]"]
+    R --> N33["Sum: 4 - 1 + 2 + 1 = 6"]
 ```
-Array: [-2, 1, -3, 4, -1, 2, 1, -5, 4]
 
-Initialize:
-  ├─ max_current = 0 (best ending at current position)
-  ├─ max_global = -infinity (overall best)
-  └─ (We'll track best subarray and its indices)
-
-STEP 1: val=-2
-  ├─ max_current = max(-2, 0 + (-2)) = max(-2, -2) = -2
-  ├─ max_global = max(-inf, -2) = -2
-  ├─ Current subarray: [-2]
-
-STEP 2: val=1
-  ├─ max_current = max(1, -2 + 1) = max(1, -1) = 1
-  ├─ max_global = max(-2, 1) = 1
-  ├─ Current subarray: [1]
-
-STEP 3: val=-3
-  ├─ max_current = max(-3, 1 + (-3)) = max(-3, -2) = -2
-  ├─ max_global = 1 (unchanged)
-  ├─ Current subarray: [1, -3]
-
-STEP 4: val=4
-  ├─ max_current = max(4, -2 + 4) = max(4, 2) = 4
-  ├─ max_global = max(1, 4) = 4
-  ├─ Current subarray: [4] (started fresh)
-
-STEP 5: val=-1
-  ├─ max_current = max(-1, 4 + (-1)) = max(-1, 3) = 3
-  ├─ max_global = 4 (unchanged)
-  ├─ Current subarray: [4, -1]
-
-STEP 6: val=2
-  ├─ max_current = max(2, 3 + 2) = max(2, 5) = 5
-  ├─ max_global = max(4, 5) = 5
-  ├─ Current subarray: [4, -1, 2]
-
-STEP 7: val=1
-  ├─ max_current = max(1, 5 + 1) = max(1, 6) = 6
-  ├─ max_global = max(5, 6) = 6
-  ├─ Current subarray: [4, -1, 2, 1]
-
-STEP 8: val=-5
-  ├─ max_current = max(-5, 6 + (-5)) = max(-5, 1) = 1
-  ├─ max_global = 6 (unchanged)
-  ├─ Current subarray: [4, -1, 2, 1, -5]
-
-STEP 9: val=4
-  ├─ max_current = max(4, 1 + 4) = max(4, 5) = 5
-  ├─ max_global = 6 (unchanged)
-  ├─ Current subarray: [4] (started fresh? No, extended from 1)
-
-FINAL RESULT:
-  ├─ max_global = 6
-  ├─ Best subarray: [4, -1, 2, 1] at indices [3, 6]
-  └─ Sum: 4 - 1 + 2 + 1 = 6
-
-COMPLEXITY: O(n) time, O(1) space
-```
 
 ### Visual 2: Decision Tree at Each Position
 
-```
-At position i with value arr[i]:
 
-Decision: extend or restart?
-
-                    max_current
-                         |
-            ______________|______________
-           |                              |
-      extend              OR          restart
-   (max_current +                     (value
-    arr[i])                            itself)
-      |                                   |
-      └─ Choose max of both ─────────────┘
-                 |
-         update max_current
-                 |
-         update max_global if better
+```mermaid
+flowchart TD
+    R["At position i with value arr[i]"]
+    R --> N1["Choose max of both "]
 ```
+
 
 ---
 
@@ -922,48 +816,37 @@ Like maximum sum, but with **products**. The twist: negative numbers flip signs,
 
 ### Visual 1: Max & Min Product Tracking
 
+
+```mermaid
+flowchart TD
+    R["Array [2, 3, -2, 4]"]
+    R --> N1["max_current = 0 (best product ending here)"]
+    R --> N2["min_current = 0 (worst product ending here)"]
+    R --> N3["max_global = -infinity"]
+    R --> N4["Choices: 2 (restart), 0*2=0 (extend), 0*2=0 (extend min)"]
+    R --> N5["max_current = max(2, 0, 0) = 2"]
+    R --> N6["min_current = min(2, 0, 0) = 0"]
+    R --> N7["max_global = 2"]
+    R --> N8["Choices: 3 (restart), max(2)*3=6 (extend max), min(0)*3=0 (extend min)"]
+    R --> N9["max_current = max(3, 6, 0) = 6"]
+    R --> N10["min_current = min(3, 6, 0) = 0"]
+    R --> N11["max_global = 6"]
+    R --> N12["KEY: min_current is 0, which when multiplied by -2 gives 0"]
+    R --> N13["But max_current is 6, which when multiplied by -2 gives -12"]
+    R --> N14["Choices: -2 (restart), 6*(-2)=-12, 0*(-2)=0"]
+    R --> N15["max_current = max(-2, -12, 0) = 0"]
+    R --> N16["min_current = min(-2, -12, 0) = -12"]
+    R --> N17["max_global = 6 (unchanged)"]
+    R --> N18["max_current is 0, min_current is -12"]
+    R --> N19["Choices: 4, 0*4=0, (-12)*4=-48"]
+    R --> N20["max_current = max(4, 0, -48) = 4"]
+    R --> N21["min_current = min(4, 0, -48) = -48"]
+    R --> N22["max_global = 6 (unchanged)"]
+    R --> N23["max_global = 6"]
+    R --> N24["Best subarray: [2, 3]"]
+    R --> N25["Product: 2 * 3 = 6"]
 ```
-Array: [2, 3, -2, 4]
 
-Initialize:
-  ├─ max_current = 0 (best product ending here)
-  ├─ min_current = 0 (worst product ending here)
-  └─ max_global = -infinity
-
-STEP 1: val=2
-  ├─ Choices: 2 (restart), 0*2=0 (extend), 0*2=0 (extend min)
-  ├─ max_current = max(2, 0, 0) = 2
-  ├─ min_current = min(2, 0, 0) = 0
-  ├─ max_global = 2
-
-STEP 2: val=3
-  ├─ Choices: 3 (restart), max(2)*3=6 (extend max), min(0)*3=0 (extend min)
-  ├─ max_current = max(3, 6, 0) = 6
-  ├─ min_current = min(3, 6, 0) = 0
-  ├─ max_global = 6
-
-STEP 3: val=-2
-  ├─ KEY: min_current is 0, which when multiplied by -2 gives 0
-  ├─ But max_current is 6, which when multiplied by -2 gives -12
-  ├─ Choices: -2 (restart), 6*(-2)=-12, 0*(-2)=0
-  ├─ max_current = max(-2, -12, 0) = 0
-  ├─ min_current = min(-2, -12, 0) = -12
-  ├─ max_global = 6 (unchanged)
-
-STEP 4: val=4
-  ├─ max_current is 0, min_current is -12
-  ├─ Choices: 4, 0*4=0, (-12)*4=-48
-  ├─ max_current = max(4, 0, -48) = 4
-  ├─ min_current = min(4, 0, -48) = -48
-  ├─ max_global = 6 (unchanged)
-
-RESULT:
-  ├─ max_global = 6
-  ├─ Best subarray: [2, 3]
-  └─ Product: 2 * 3 = 6
-
-COMPLEXITY: O(n) time, O(1) space
-```
 
 ---
 
@@ -971,63 +854,48 @@ COMPLEXITY: O(n) time, O(1) space
 
 #### Failure 4.1: Kadane With All Negatives
 
-```
-WRONG:
-  Array: [-5, -2, -8]
-  max_current = -infinity initially
-  At each step, max_current becomes more negative
-  ├─ max_current = -5 → -2 (wait, max(-5, 0 + (-2))?)
-  └─ This breaks if we don't initialize correctly
 
-CORRECT:
-  Initialize max_current = arr[0] (first element)
-  Then update from index 1
-  ├─ max_current = -5
-  ├─ i=1: max_current = max(-2, -5 + (-2)) = max(-2, -7) = -2
-  ├─ i=2: max_current = max(-8, -2 + (-8)) = max(-8, -10) = -8
-  ├─ max_global = -2 (best single element: -2)
-
-LESSON: Kadane must initialize with first element or handle negatives
+```mermaid
+flowchart TD
+    R["WRONG"]
+    R --> N1["max_current = -5 → -2 (wait, max(-5, 0 + (-2))?)"]
+    R --> N2["This breaks if we don't initialize correctly"]
+    R --> N3["max_current = -5"]
+    R --> N4["i=1: max_current = max(-2, -5 + (-2)) = max(-2, -7) = -2"]
+    R --> N5["i=2: max_current = max(-8, -2 + (-8)) = max(-8, -10) = -8"]
+    R --> N6["max_global = -2 (best single element: -2)"]
 ```
+
 
 #### Failure 4.2: Three-Partition Pointer Confusion
 
-```
-WRONG:
-  Moving mid after any swap:
-  ├─ arr[mid] = 2, swap with right
-  ├─ After swap, we moved mid without knowing what came from right
-  └─ The new arr[mid] is unknown, can't classify it yet
 
-CORRECT:
-  ├─ arr[mid] = 0 → swap left, move mid (we put a 0 in correct spot)
-  ├─ arr[mid] = 1 → no swap, just move mid (1 is in correct region)
-  ├─ arr[mid] = 2 → swap right, DON'T move mid (unknown came from right)
-
-LESSON: Only move mid when you've classified the element or region
+```mermaid
+flowchart TD
+    R["WRONG"]
+    R --> N1["arr[mid] = 2, swap with right"]
+    R --> N2["After swap, we moved mid without knowing what came from right"]
+    R --> N3["The new arr[mid] is unknown, can't classify it yet"]
+    R --> N4["arr[mid] = 0 → swap left, move mid (we put a 0 in correct spot)"]
+    R --> N5["arr[mid] = 1 → no swap, just move mid (1 is in correct region)"]
+    R --> N6["arr[mid] = 2 → swap right, DON'T move mid (unknown came from right)"]
 ```
+
 
 #### Failure 4.3: Circular Subarray in Kadane
 
+
+```mermaid
+flowchart TD
+    R["WRONG"]
+    R --> N1["Find max subarray sum (standard)"]
+    R --> N2["Find min subarray sum (Kadane with min)"]
+    R --> N3["Circular max = total_sum - min_sum"]
+    R --> N4["Return max(max_linear, max_circular)"]
+    R --> N5["Extend from start and end"]
+    R --> N6["Track carefully to avoid double-counting"]
 ```
-WRONG:
-  Circular array: [3, -1, 2, -1, 3]
-  Kadane finds [3, -1, 2] = 4
-  But wrapping [3] + [3] = 6 is better
-  Standard Kadane misses this
 
-CORRECT (Option 1 - Two Pass):
-  ├─ Find max subarray sum (standard)
-  ├─ Find min subarray sum (Kadane with min)
-  ├─ Circular max = total_sum - min_sum
-  └─ Return max(max_linear, max_circular)
-
-CORRECT (Option 2 - Try Both Ends):
-  ├─ Extend from start and end
-  ├─ Track carefully to avoid double-counting
-
-LESSON: Circular variants need special handling
-```
 
 ---
 
@@ -1044,35 +912,38 @@ You're given integers 1 to n with one missing and one duplicate. Why is cyclic s
 
 ---
 
-## ═══════════════════════════════════════════════════════════════════════════════
+---
 
 # DAY 5: Fast-Slow Pointers
 
 ## Pattern Map: Pointer-Based Traversal
 
+
+```mermaid
+flowchart TD
+    R["FAST-SLOW POINTER PATTERNS"]
+    R --> N1["Cycle Detection"]
+    N1 --> N2["Floyd's Algorithm"]
+    N1 --> N3["Finding Cycle Start"]
+    N1 --> N4["Linked List Cycles"]
+    R --> N5["List Splitting & Midpoint"]
+    N5 --> N6["Find Middle Element"]
+    N5 --> N7["Split List in Half"]
+    N5 --> N8["Merge Sorted Lists"]
+    R --> N9["Number Sequences"]
+    N9 --> N10["Happy Number"]
+    N9 --> N11["Detect Cycles in Sequences"]
+    N9 --> N12["Chain Termination"]
+    R --> N13["Advanced Variations"]
+    N13 --> N14["Palindrome Detection"]
+    N13 --> N15["K-Distance Apart"]
+    N13 --> N16["Remove Nth Node"]
+    R --> N17["Failure Modes"]
+    N17 --> N18["Pointer Initialization"]
+    N17 --> N19["Loop Condition Bugs"]
+    N17 --> N20["Null Pointer Dereferencing"]
 ```
-FAST-SLOW POINTER PATTERNS
-├── Cycle Detection
-│   ├── Floyd's Algorithm
-│   ├── Finding Cycle Start
-│   └── Linked List Cycles
-├── List Splitting & Midpoint
-│   ├── Find Middle Element
-│   ├── Split List in Half
-│   └── Merge Sorted Lists
-├── Number Sequences
-│   ├── Happy Number
-│   ├── Detect Cycles in Sequences
-│   └── Chain Termination
-├── Advanced Variations
-│   ├── Palindrome Detection
-│   ├── K-Distance Apart
-│   └── Remove Nth Node
-└── Failure Modes
-    ├── Pointer Initialization
-    ├── Loop Condition Bugs
-    └── Null Pointer Dereferencing
-```
+
 
 ### Why Fast-Slow Pointers?
 
@@ -1092,76 +963,47 @@ Detect if a linked list has a cycle using **O(1) space**. Two pointers: slow mov
 
 ### Visual 1: Cycle Detection Execution
 
+
+```mermaid
+flowchart TD
+    R["Linked List with Cycle"]
+    R --> N1["State"]
+    R --> N2["slow moves to 2"]
+    R --> N3["fast moves to 3"]
+    R --> N4["2 ≠ 3, continue"]
+    R --> N5["slow moves to 3"]
+    R --> N6["fast moves to 5"]
+    R --> N7["3 ≠ 5, continue"]
+    R --> N8["slow moves to 4"]
+    R --> N9["fast moves to 3 (wraps: 5→4→3)"]
+    R --> N10["4 ≠ 3, continue"]
+    R --> N11["slow moves to 5"]
+    R --> N12["fast moves to 5 (wraps: 3→4→5)"]
+    R --> N13["5 = 5, CYCLE DETECTED!"]
 ```
-Linked List with Cycle:
-1 → 2 → 3 → 4 → 5
-         ↑       ↓
-         └───────┘
 
-STEP 1: slow=1, fast=1
-  ├─ slow moves to 2
-  ├─ fast moves to 3
-  └─ 2 ≠ 3, continue
-
-STEP 2: slow=2, fast=3
-  ├─ slow moves to 3
-  ├─ fast moves to 5
-  └─ 3 ≠ 5, continue
-
-STEP 3: slow=3, fast=5
-  ├─ slow moves to 4
-  ├─ fast moves to 3 (wraps: 5→4→3)
-  └─ 4 ≠ 3, continue
-
-STEP 4: slow=4, fast=3
-  ├─ slow moves to 5
-  ├─ fast moves to 5 (wraps: 3→4→5)
-  └─ 5 = 5, CYCLE DETECTED!
-
-RESULT: Cycle exists
-COMPLEXITY: O(n) time, O(1) space
-```
 
 ### Visual 2: Finding Cycle Start
 
+
+```mermaid
+flowchart TD
+    R["After detecting cycle at meeting point, find the start"]
+    R --> N1["State"]
+    R --> N2["slow = 1 (back to head)"]
+    R --> N3["fast = meeting point (5)"]
+    R --> N4["Iteration 1: slow=2, fast=1 (5→1 wraps around)"]
+    R --> N5["Iteration 2: slow=3, fast=2"]
+    R --> N6["Iteration 3: slow=4, fast=3"]
+    R --> N7["Iteration 4: slow=5, fast=4"]
+    R --> N8["Iteration 5: slow=3, fast=5"]
+    R --> N9["Wait, that's not right. Let me recalculate..."]
+    R --> N10["slow = head (1)"]
+    R --> N11["fast = meeting point"]
+    R --> N12["Move both 1 step at a time"]
+    R --> N13["They meet at cycle start (3)"]
 ```
-After detecting cycle at meeting point, find the start:
 
-List: 1 → 2 → 3 → 4 → 5
-             ↑       ↓
-             └───────┘
-         (Cycle starts at 3)
-
-Step 1: Reset one pointer (say slow) to head (1)
-  ├─ slow = 1 (back to head)
-  └─ fast = meeting point (5)
-
-Step 2: Move both at same speed (1 step each)
-  ├─ Iteration 1: slow=2, fast=1 (5→1 wraps around)
-  ├─ Iteration 2: slow=3, fast=2
-  ├─ Iteration 3: slow=4, fast=3
-  ├─ Iteration 4: slow=5, fast=4
-  ├─ Iteration 5: slow=3, fast=5
-  └─ Wait, that's not right. Let me recalculate...
-
-Actually, in a linked list (not array), the fast pointer at meeting 
-point needs careful tracking. The math:
-  - Distance from head to cycle start: a
-  - Distance from cycle start to meeting point: b
-  - Remaining cycle: c
-  - When they meet: slow has traveled a+b, fast has traveled a+b+kc
-  - Slow pointer position: a steps into cycle
-  - Moving both from meeting point at slow speed will meet at a again
-
-Step 2 (Correct):
-  ├─ slow = head (1)
-  ├─ fast = meeting point
-  ├─ Move both 1 step at a time
-  ├─ They meet at cycle start (3)
-
-INSIGHT: Meeting point's distance to cycle start equals
-         head's distance to cycle start
-```
 
 ---
 
@@ -1175,42 +1017,27 @@ Find the **middle element** of a linked list (or split into two halves). Fast-sl
 
 ### Visual 1: Midpoint Finding
 
+
+```mermaid
+flowchart TD
+    R["List 1 → 2 → 3 → 4 → 5 → null"]
+    R --> N1["slow moves to 2"]
+    R --> N2["fast moves to 3"]
+    R --> N3["fast != null, continue"]
+    R --> N4["slow moves to 3"]
+    R --> N5["fast moves to 5"]
+    R --> N6["fast != null, continue"]
+    R --> N7["slow moves to 4"]
+    R --> N8["fast moves to null (5.next.next)"]
+    R --> N9["fast == null, STOP"]
+    R --> N10["Cut after slow: 1→2→null, 3→4→5→null"]
+    R --> N11["Perfect split for merge sort"]
+    R --> N12["slow → 2, fast → 3"]
+    R --> N13["fast != null"]
+    R --> N14["slow → 3, fast → null"]
+    R --> N15["fast == null, STOP"]
 ```
-List: 1 → 2 → 3 → 4 → 5 → null
 
-STEP 1: slow=1, fast=1
-  ├─ slow moves to 2
-  ├─ fast moves to 3
-  └─ fast != null, continue
-
-STEP 2: slow=2, fast=3
-  ├─ slow moves to 3
-  ├─ fast moves to 5
-  └─ fast != null, continue
-
-STEP 3: slow=3, fast=5
-  ├─ slow moves to 4
-  ├─ fast moves to null (5.next.next)
-  └─ fast == null, STOP
-
-MIDDLE: slow = 3 (middle node)
-
-For splitting: [1, 2] and [3, 4, 5]
-  ├─ Cut after slow: 1→2→null, 3→4→5→null
-  └─ Perfect split for merge sort
-
-List with Even Length: 1 → 2 → 3 → 4 → null
-
-STEP 1: slow=1, fast=1
-  ├─ slow → 2, fast → 3
-  ├─ fast != null
-
-STEP 2: slow=2, fast=3
-  ├─ slow → 3, fast → null
-  ├─ fast == null, STOP
-
-MIDDLE: slow = 3 (first half ends at 2, second starts at 3)
-```
 
 ---
 
@@ -1226,48 +1053,35 @@ Example: 19 → 1²+9² = 82 → 8²+2² = 68 → ... → eventually 1 (happy)
 
 ### Visual 1: Happy Number Detection
 
+
+```mermaid
+flowchart TD
+    R["Number 19"]
+    R --> N1["slow = 19"]
+    R --> N2["fast = 19"]
+    R --> N3["sum = 1² + 9² = 82"]
+    R --> N4["slow_next(19) = 82"]
+    R --> N5["fast_next(19) = 1² + 9² = 82"]
+    R --> N6["fast_next(82) = 8² + 2² = 68"]
+    R --> N7["slow = 82, fast = 68"]
+    R --> N8["82 ≠ 68"]
+    R --> N9["slow_next(82) = 68"]
+    R --> N10["fast_next(68) = 6² + 8² = 100"]
+    R --> N11["fast_next(100) = 1² + 0² + 0² = 1"]
+    R --> N12["slow = 68, fast = 1"]
+    R --> N13["68 ≠ 1"]
+    R --> N14["slow_next(68) = 100"]
+    R --> N15["fast_next(1) = 1"]
+    R --> N16["fast_next(1) = 1"]
+    R --> N17["slow = 100, fast = 1"]
+    R --> N18["100 ≠ 1"]
+    R --> N19["slow_next(100) = 1"]
+    R --> N20["fast already at 1"]
+    R --> N21["slow = 1, fast = 1"]
+    R --> N22["MATCH! Slow reached 1 → HAPPY NUMBER"]
+    R --> N23["Check if meeting point == 1; if not, unhappy"]
 ```
-Number: 19
 
-Step 1: n=19, digits 1,9
-  ├─ slow = 19
-  ├─ fast = 19
-  └─ sum = 1² + 9² = 82
-
-Step 2: 
-  ├─ slow_next(19) = 82
-  ├─ fast_next(19) = 1² + 9² = 82
-  ├─ fast_next(82) = 8² + 2² = 68
-  ├─ slow = 82, fast = 68
-  └─ 82 ≠ 68
-
-Step 3:
-  ├─ slow_next(82) = 68
-  ├─ fast_next(68) = 6² + 8² = 100
-  ├─ fast_next(100) = 1² + 0² + 0² = 1
-  ├─ slow = 68, fast = 1
-  └─ 68 ≠ 1
-
-Step 4:
-  ├─ slow_next(68) = 100
-  ├─ fast_next(1) = 1
-  ├─ fast_next(1) = 1
-  ├─ slow = 100, fast = 1
-  └─ 100 ≠ 1
-
-Step 5:
-  ├─ slow_next(100) = 1
-  ├─ fast already at 1
-  ├─ slow = 1, fast = 1
-  └─ MATCH! Slow reached 1 → HAPPY NUMBER
-
-Alternative (if reaches cycle):
-  Cycle like 4 → 16 → 37 → 58 → 89 → 145 → 42 → 20 → 4
-  Eventually fast and slow would meet at same point in cycle
-  └─ Check if meeting point == 1; if not, unhappy
-
-COMPLEXITY: O(log n) iterations, O(1) space
-```
 
 ---
 
@@ -1275,64 +1089,35 @@ COMPLEXITY: O(log n) iterations, O(1) space
 
 #### Failure 5.1: Null Pointer in Fast Pointer
 
+
+```mermaid
+flowchart TD
+    R["WRONG"]
+    R --> N1["If fast.next is null, fast.next.next will crash"]
+    R --> N2["Null pointer dereference error"]
 ```
-WRONG:
-  while fast != null and fast.next != null:
-      slow = slow.next
-      fast = fast.next.next
 
-  But accessing fast.next.next without checking fast.next first:
-  ├─ If fast.next is null, fast.next.next will crash
-  └─ Null pointer dereference error
-
-CORRECT:
-  while fast != null and fast.next != null:
-      slow = slow.next
-      fast = fast.next.next  # Now safe because checked fast.next
-
-LESSON: Check intermediate pointers before chaining access
-```
 
 #### Failure 5.2: Incorrect Loop Condition
 
-```
-WRONG (for cycle detection):
-  while slow != fast:
-      ... (never checks if fast == null)
-  
-  If no cycle, fast reaches null first
-  └─ Infinite loop or null pointer error
 
-CORRECT:
-  while fast != null and fast.next != null:
-      slow = slow.next
-      fast = fast.next.next
-      if slow == fast:
-          return true (cycle found)
-  return false (no cycle, fast reached end)
-
-LESSON: Loop must have escape condition besides pointer equality
+```mermaid
+flowchart TD
+    R["WRONG (for cycle detection)"]
+    R --> N1["Infinite loop or null pointer error"]
 ```
+
 
 #### Failure 5.3: Cycle Start Calculation Error
 
+
+```mermaid
+flowchart TD
+    R["WRONG"]
+    R --> N1["Meeting point is NOT necessarily cycle start"]
+    R --> N2["You found a point in the cycle, not where it starts"]
 ```
-WRONG:
-  After detecting cycle, immediately return meeting point
-  ├─ Meeting point is NOT necessarily cycle start
-  └─ You found a point in the cycle, not where it starts
 
-CORRECT:
-  Step 1: Detect cycle (fast/slow meet)
-  Step 2: Reset slow to head
-  Step 3: Move both slowly until they meet again
-  Step 4: That meeting point IS the cycle start
-
-REASON: Math! The meeting point's distance to cycle start
-        equals the head's distance to cycle start
-
-LESSON: Cycle start requires second phase of movement
-```
 
 ---
 
@@ -1349,7 +1134,7 @@ You have a singly linked list. Using fast-slow to find the middle, how would you
 
 ---
 
-## ═══════════════════════════════════════════════════════════════════════════════
+---
 
 # 📊 Week 05 Complexity Reference
 
@@ -1484,24 +1269,19 @@ graph TD
 
 ## Week 05 Position in Your Journey
 
+
+```mermaid
+flowchart TD
+    R["TIER 1 Foundation (Weeks 1-3)"]
+    R --> N1["Week 1-3: Data structures & analysis fundamentals"]
+    R --> N2["Week 4: Two-Pointers, Sliding Windows, Divide-Conquer"]
+    R --> N3["Week 5: Hash, Stack, Intervals, Partition, Kadane, Fast-Slow ⭐"]
+    R --> N4["Week 6: String patterns, palindromes, parentheses"]
+    R --> N5["Trees, graphs, advanced traversals"]
+    R --> N6["Dynamic programming, greedy algorithms"]
+    R --> N7["Matrices, strings, segment trees, probabilistic structures"]
 ```
-TIER 1: Foundation (Weeks 1-3)
-  └─ Week 1-3: Data structures & analysis fundamentals
 
-TIER 2: Pattern Recognition (Weeks 4-6) ← YOU ARE HERE
-  ├─ Week 4: Two-Pointers, Sliding Windows, Divide-Conquer
-  ├─ Week 5: Hash, Stack, Intervals, Partition, Kadane, Fast-Slow ⭐
-  └─ Week 6: String patterns, palindromes, parentheses
-
-TIER 3: Complex Structures (Weeks 7-9)
-  ├─ Trees, graphs, advanced traversals
-
-TIER 4: Optimization (Weeks 10-13)
-  ├─ Dynamic programming, greedy algorithms
-
-TIER 5: Specialized Topics (Weeks 14-19)
-  └─ Matrices, strings, segment trees, probabilistic structures
-```
 
 ## What You Can Do With Week 05 Patterns
 
@@ -1546,3 +1326,7 @@ This playbook is designed for **mastery, not memorization**. Each pattern teache
 Master these mental models, and the code becomes implementation detail.
 
 ---
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

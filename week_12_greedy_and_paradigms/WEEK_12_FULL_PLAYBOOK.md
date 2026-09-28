@@ -1,4 +1,10 @@
 # 🟧 WEEK 12: GREEDY ALGORITHMS & PROOFS
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Comprehensive Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
+
+---
+
 ## Complete Course Playbook | No-Code Concept Mastery
 **Duration:** 25 hours | **Focus:** Concept Understanding & Visual Reasoning
 
@@ -47,25 +53,19 @@ Understand the greedy algorithm paradigm, when it guarantees optimality, and how
 
 **Definition:** A greedy algorithm makes locally optimal choices at each step, hoping to find a globally optimal solution.
 
+
+```mermaid
+flowchart TD
+    R["GREEDY ALGORITHM STRUCTURE"]
+    R --> N1["At each step, make the choice that looks best RIGHT NOW"]
+    R --> N2["Don't consider future consequences"]
+    R --> N3["Make irreversible decision"]
+    R --> N4["Problem reduced to smaller instance"]
+    R --> N5["Continue until problem is solved"]
+    R --> N6["Ensure choice doesn't violate constraints"]
+    R --> N7["Backtrack if necessary (but rarely)"]
 ```
-GREEDY ALGORITHM STRUCTURE:
-═════════════════════════════════════════════════════
 
-1. CHOICE PHASE
-   └─ At each step, make the choice that looks best RIGHT NOW
-   └─ Don't consider future consequences
-   └─ Make irreversible decision
-
-2. REDUCTION PHASE
-   └─ Problem reduced to smaller instance
-   └─ Continue until problem is solved
-
-3. FEASIBILITY CHECK
-   └─ Ensure choice doesn't violate constraints
-   └─ Backtrack if necessary (but rarely)
-
-REPEAT until solution complete
-```
 
 ### Why "Greedy"?
 
@@ -77,34 +77,23 @@ The algorithm is **greedy** because it **greedily chooses** the best option avai
 
 ### Greedy vs Dynamic Programming
 
-```
-COMPARISON MATRIX:
-═════════════════════════════════════════════════════
 
-DIMENSION          │ GREEDY              │ DYNAMIC PROGRAMMING
-───────────────────┼─────────────────────┼────────────────────
-Decision-making    │ Local (current)     │ Global (future)
-Subproblems        │ Don't solve before  │ Solve all first
-Memoization        │ Not needed          │ Essential
-Proof of optimality│ Must prove          │ Recurrence relation
-Time complexity    │ Usually O(n log n)  │ Usually O(n²) or more
-Space complexity   │ O(1) typically      │ O(n) for memo
-When to use        │ Limited problems    │ Optimal substructure
+| DIMENSION | GREEDY | DYNAMIC PROGRAMMING |
+| :--- | :--- | :--- |
+| Decision-making | Local (current) | Global (future) |
+| Subproblems | Don't solve before | Solve all first |
+| Memoization | Not needed | Essential |
+| Proof of optimality | Must prove | Recurrence relation |
+| Time complexity | Usually O(n log n) | Usually O(n²) or more |
+| Space complexity | O(1) typically | O(n) for memo |
+| When to use | Limited problems | Optimal substructure |
 
-EXAMPLE: Coin Changing
-Greedy: Always pick largest coin → Wrong! (e.g., 1¢, 10¢, 25¢)
-DP: Try all coins systematically → Correct!
-
-EXAMPLE: Activity Selection
-Greedy: Sort by finish time → Correct! ✓
-DP: Also works but overkill (slower)
-```
 
 ### ASCll Flowchart: Greedy Algorithm Decision
 
 ```
                     START
-                      │
+                      |
                       ▼
             Is problem feasible?
                     /  \
@@ -137,44 +126,22 @@ For a greedy algorithm to guarantee the optimal solution, the problem MUST have 
 **What it means:** If you have an optimal solution to the whole problem, removing the first greedy choice leaves you with an optimal solution to the remaining subproblem.
 
 **Visual Explanation:**
-```
-OPTIMAL SOLUTION for entire problem
-═════════════════════════════════════════════════════
 
-┌──────────────┬────────────────────────────┐
-│  GREEDY      │  REMAINING PROBLEM         │
-│  CHOICE      │  (must also be optimal)    │
-├──────────────┼────────────────────────────┤
-│   Choice A   │   Remaining choices B,C,D  │
-└──────────────┴────────────────────────────┘
-   (step 1)          (steps 2, 3, 4...)
+| GREEDY | REMAINING PROBLEM |
+| :--- | :--- |
+| CHOICE | (must also be optimal) |
+| Choice A | Remaining choices B,C,D |
 
-KEY: The remaining problem B,C,D MUST also be optimal
-     Otherwise the whole solution wouldn't be optimal
-```
 
 **Real Example: Activity Selection**
 
+
+```mermaid
+flowchart TD
+    R["Activities (start, finish)"]
+    R --> N1["Leaves earliest finish time"]
 ```
-Activities: (start, finish)
-(1,4), (3,5), (0,6), (5,7), (3,8), (5,9), (6,10), (8,11), (8,12), (2,14), (12,16)
 
-Sort by finish time: (1,4), (3,5), (0,6), (5,7), (6,10), (8,11), (12,16)
-
-OPTIMAL SOLUTION (selecting by finish time):
-═════════════════════════════════════════════════════
-Activity 1: (1,4)      ← GREEDY CHOICE
-           └─ Leaves earliest finish time
-                         ▼
-Activity 2: (5,7)      ← REMAINS OPTIMAL for rest
-Activity 3: (8,11)
-Activity 4: (12,16)
-
-Remove first choice (1,4):
-Problem: Select max from (3,5), (0,6), (5,7), (6,10), (8,11), (12,16)
-Best solution: (5,7), (8,11), (12,16)
-✓ This is indeed optimal for the subproblem
-```
 
 #### ✅ Condition 2: Greedy Choice Property
 
@@ -183,13 +150,13 @@ Best solution: (5,7), (8,11), (12,16)
 **Visual Explanation:**
 ```
 MULTIPLE POSSIBLE OPTIMAL SOLUTIONS
-═════════════════════════════════════════════════════
+=====================================================
 
                  OPTIMAL 1
                  /        \
          Greedy Choice  Choice B
          (Finish 1st)   (Different)
-            │              │
+            |              |
             ▼              ▼
     Sub-optimal 1A    Sub-optimal 1B
     (still optimal)   (still optimal)
@@ -231,7 +198,7 @@ Proof:
 
 ```
 EXCHANGE ARGUMENT PROOF
-═════════════════════════════════════════════════════
+=====================================================
 
 THEOREM: Greedy algorithm produces optimal solution
 
@@ -263,29 +230,13 @@ PROOF:
 
 ### Why This Works: Intuitive Explanation
 
-```
-VISUAL EXCHANGE PROCESS:
-═════════════════════════════════════════════════════
 
-Optimal Solution OPT:
-┌────────┬────────┬────────┬────────┐
-│ BAD    │ CHOICE │ CHOICE │ CHOICE │
-│ CHOICE │   2    │   3    │   4    │
-└────────┴────────┴────────┴────────┘
-  (not greedy)
+| BAD | CHOICE | CHOICE | CHOICE |
+| :--- | :--- | :--- | :--- |
+| CHOICE | 2 | 3 | 4 |
+| GREEDY | CHOICE | CHOICE | CHOICE |
+| CHOICE | 2 | 3 | 4 |
 
-Replace with GREEDY choice:
-┌────────┬────────┬────────┬────────┐
-│GREEDY  │ CHOICE │ CHOICE │ CHOICE │
-│CHOICE  │   2    │   3    │   4    │
-└────────┴────────┴────────┴────────┘
-
-If cost same or better: Continue ✓
-If cost worse: Contradiction! (OPT wasn't optimal)
-
-Repeat for positions 2, 3, 4...
-Final result: Greedy solution with same cost as OPT
-```
 
 ### Example: Activity Selection Exchange Argument
 
@@ -297,7 +248,7 @@ PROBLEM: Select maximum non-overlapping activities
 THEOREM: Greedy produces optimal selection
 
 PROOF:
-═════════════════════════════════════════════════════
+=====================================================
 
 1. Let OPT = optimal solution of size k
    OPT = (a₁, a₂, ..., aₖ) sorted by finish
@@ -330,32 +281,22 @@ CONCLUSION: Greedy produces optimal solution ✓
 
 ### The Generic Structure
 
+
+```mermaid
+flowchart TD
+    R["GREEDY ALGORITHM TEMPLATE"]
+    R --> N1["Sort input (usually by some criteria)"]
+    R --> N2["Initialize data structures"]
+    R --> N3["Set baseline/empty solution"]
+    R --> N4["Return accumulated solution"]
 ```
-GREEDY ALGORITHM TEMPLATE
-═════════════════════════════════════════════════════
 
-STEP 1: PREPROCESSING
-   └─ Sort input (usually by some criteria)
-   └─ Initialize data structures
-   └─ Set baseline/empty solution
-
-STEP 2: GREEDY SELECTION LOOP
-   for each element in sorted input:
-       if element can be added to solution:
-           ADD element to solution
-           UPDATE relevant tracking data
-       endif
-   endfor
-
-STEP 3: RETURN SOLUTION
-   └─ Return accumulated solution
-```
 
 ### Key Design Choices
 
 ```
 WHEN IMPLEMENTING GREEDY, DECIDE:
-═════════════════════════════════════════════════════
+=====================================================
 
 1. SORTING CRITERION
    - By value? By weight? By ratio?
@@ -383,31 +324,18 @@ WHEN IMPLEMENTING GREEDY, DECIDE:
 
 ### Visualization: Template in Action
 
+
+```mermaid
+flowchart TD
+    R["INPUT Collection of items with properties"]
+    R --> N1["Is item feasible?"]
+    N1 --> N2["Check constraints"]
+    R --> N3["Can add to solution?"]
+    N3 --> N4["Check space/capacity/validity"]
+    R --> N5["If feasible:"]
+    N5 --> N6["Add to solution"]
 ```
-INPUT: Collection of items with properties
 
-PREPROCESSING:
-   Sort by criterion
-   │
-   ▼
-   sorted_items = [item1, item2, item3, ...]
-
-GREEDY LOOP:
-   solution = []
-   
-   for each item in sorted_items:
-       ├─ Is item feasible?
-       │  └─ Check constraints
-       │
-       ├─ Can add to solution?
-       │  └─ Check space/capacity/validity
-       │
-       └─ If feasible:
-          └─ Add to solution
-             solution.append(item)
-
-RETURN: solution with greedy selections
-```
 
 ---
 
@@ -415,35 +343,27 @@ RETURN: solution with greedy selections
 
 ### Five-Step Proof Structure
 
+
+```mermaid
+flowchart TD
+    R["PROVING GREEDY IS CORRECT"]
+    R --> N1["Assume optimal solution exists"]
+    R --> N2["Remove first greedy choice"]
+    R --> N3["Show remainder is optimal for subproblem"]
+    R --> N4["Show greedy choice in SOME optimal solution"]
+    R --> N5["Use exchange argument"]
+    R --> N6["Prove: can always exchange non-greedy for greedy"]
+    R --> N7["After greedy choice, subproblem is same type"]
+    R --> N8["Subproblem is independent (no cross-constraints)"]
+    R --> N9["Can apply greedy to subproblem"]
+    R --> N10["Base case: 1 element → greedy obviously optimal"]
+    R --> N11["Inductive step: if greedy works for k, works for k+1"]
+    R --> N12["Conclusion: works for all n elements"]
+    R --> N13["Time complexity of greedy"]
+    R --> N14["Compare to known lower bounds"]
+    R --> N15["Confirm greedy achieves optimality"]
 ```
-PROVING GREEDY IS CORRECT
-═════════════════════════════════════════════════════
 
-STEP 1: Show Problem has OPTIMAL SUBSTRUCTURE
-        ├─ Assume optimal solution exists
-        ├─ Remove first greedy choice
-        └─ Show remainder is optimal for subproblem
-
-STEP 2: Show Problem has GREEDY CHOICE PROPERTY
-        ├─ Show greedy choice in SOME optimal solution
-        ├─ Use exchange argument
-        └─ Prove: can always exchange non-greedy for greedy
-
-STEP 3: Prove GREEDY LEAVES OPTIMAL SUBPROBLEM
-        ├─ After greedy choice, subproblem is same type
-        ├─ Subproblem is independent (no cross-constraints)
-        └─ Can apply greedy to subproblem
-
-STEP 4: Use INDUCTION or EXCHANGE ARGUMENT
-        ├─ Base case: 1 element → greedy obviously optimal
-        ├─ Inductive step: if greedy works for k, works for k+1
-        └─ Conclusion: works for all n elements
-
-STEP 5: Compute COMPLEXITY & OPTIMALITY BOUND
-        ├─ Time complexity of greedy
-        ├─ Compare to known lower bounds
-        └─ Confirm greedy achieves optimality
-```
 
 ### Example: Correctness Proof for Activity Selection
 
@@ -451,7 +371,7 @@ STEP 5: Compute COMPLEXITY & OPTIMALITY BOUND
 THEOREM: Greedy Activity Selection is Optimal
 
 PROOF:
-═════════════════════════════════════════════════════
+=====================================================
 
 Notation:
   - Activities: (start_i, finish_i) for i = 1..n
@@ -459,7 +379,7 @@ Notation:
   - Greedy: repeatedly pick activity with earliest finish time
 
 PART 1: OPTIMAL SUBSTRUCTURE ✓
-────────────────────────────────
+--------------------------------
 If OPT = optimal selection including activity 1:
   Then OPT - {activity 1} = optimal selection from
        {activities starting after finish(activity 1)}
@@ -468,7 +388,7 @@ Why: If remainder wasn't optimal, could replace with better
      selection, making OPT not optimal (contradiction)
 
 PART 2: GREEDY CHOICE PROPERTY ✓
-────────────────────────────────
+--------------------------------
 Greedy picks activity 1 (earliest finish)
 
 Claim: Activity 1 is in SOME optimal solution
@@ -485,14 +405,14 @@ Proof by Exchange:
      - So 1 is in optimal solution ✓
 
 PART 3: GREEDY LEAVES OPTIMAL SUBPROBLEM ✓
-──────────────────────────────────────────
+------------------------------------------
 After choosing activity i:
   Subproblem: activities starting after finish(i)
   Same structure: can recursively apply greedy
   No constraints link chosen to unchosen
 
 PART 4: INDUCTION ✓
-───────────────────
+-------------------
 Base case: n=1 → greedy picks it → optimal (1 activity)
 
 Inductive step: Assume greedy optimal for n-1 activities
@@ -524,22 +444,11 @@ CONCLUSION: Greedy Activity Selection produces optimal solution
 
 ### Key Concepts Map
 
-```
-                  GREEDY ALGORITHM
-                        │
-                ┌───────┼───────┐
-                ▼       ▼       ▼
-            WHEN WORKS  PROOF   STRUCTURE
-                │        │        │
-         ┌──────┴──┐     │        │
-         ▼         ▼     ▼        ▼
-      OPTIMAL   GREEDY  EXCHANGE SORT
-      SUBST     CHOICE  ARGUMENT │
-                         │      SELECT
-              ┌──────────┴──────┐ │
-              ▼                 ▼ ▼
-         INDUCTION        REPEAT
-```
+
+|  |  |
+| :--- | :--- |
+| +------|--+ |  |
+
 
 ### Critical Insights
 
@@ -570,7 +479,7 @@ Master interval scheduling problems, understand "greedy stays ahead" technique, 
 
 ```
 ACTIVITY SELECTION PROBLEM (Classic)
-═════════════════════════════════════════════════════
+=====================================================
 
 INPUT:
   - n activities
@@ -598,7 +507,7 @@ EXAMPLE:
 
 ```
 ALTERNATIVE APPROACH: Dynamic Programming
-═════════════════════════════════════════════════════
+=====================================================
 
 Could solve with DP:
   dp[i] = max activities from first i activities
@@ -625,7 +534,7 @@ Why is greedy better?
 
 ```
 WHY SORT BY FINISH TIME?
-═════════════════════════════════════════════════════
+=====================================================
 
 The key insight: Once you pick an activity, you want
                 to leave as much time as possible
@@ -637,53 +546,33 @@ REASONING:
   - Activity with earliest finish allows most future picks
 
 VISUALIZATION:
-  Time:  0──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬──16
+  Time:  0--|--|--|--|--|--|--|--|--|--|--|--|--|--|--16
             1  2  3  4  5  6  7  8  9 10 11 12 13 14 15
 
-  Activity A: [1──────4]          ← Finishes early
-  Activity B: [3────────────5]    ← Finishes later
+  Activity A: [1------4]          ← Finishes early
+  Activity B: [3------------5]    ← Finishes later
 
-  If pick A: Time [4──────────16] = 12 units left
-  If pick B: Time [5──────────16] = 11 units left
+  If pick A: Time [4----------16] = 12 units left
+  If pick B: Time [5----------16] = 11 units left
 
   Greedy picks A to maximize future opportunities
 ```
 
 ### The Algorithm in Action
 
+
+```mermaid
+flowchart TD
+    R["ALGORITHM GREEDY ACTIVITY SELECTION"]
+    R --> N1["If tied, sort by start time"]
 ```
-ALGORITHM: GREEDY ACTIVITY SELECTION
-═════════════════════════════════════════════════════
 
-INPUT: Activities with (start, finish) times
-
-STEP 1: SORT by finish time (ascending)
-        └─ If tied, sort by start time
-
-STEP 2: INITIALIZE
-        selected = []
-        last_finish = 0   (nothing selected yet)
-
-STEP 3: LOOP through sorted activities
-        for each activity i (in finish order):
-            if start(i) ≥ last_finish:
-                selected.append(i)
-                last_finish = finish(i)
-            endif
-        endfor
-
-STEP 4: RETURN selected activities
-
-COMPLEXITY:
-  Time: O(n log n) due to sorting
-  Space: O(1) extra space (excluding input/output)
-```
 
 ### Step-by-Step Example
 
 ```
 EXAMPLE EXECUTION
-═════════════════════════════════════════════════════
+=====================================================
 
 Input Activities: (1,4), (3,5), (0,6), (5,7), (3,8), (5,9), (6,10), (8,11), (8,12), (2,14), (12,16)
 
@@ -755,7 +644,7 @@ RESULT: 4 activities selected ✓
 
 ```
 DEFINITION: "GREEDY STAYS AHEAD"
-═════════════════════════════════════════════════════
+=====================================================
 
 The greedy algorithm (or greedy solution) "stays ahead" of
 any other solution by maintaining the earliest possible finish
@@ -768,7 +657,7 @@ This guarantees greedy can accommodate anything optimal can.
 
 ```
 THEOREM: Greedy Stays Ahead for Activity Selection
-═════════════════════════════════════════════════════
+=====================================================
 
 Let G = (g₁, g₂, ..., gₖ) = greedy selection (sorted by finish)
 Let O = (o₁, o₂, ..., oₘ) = any other valid selection (sorted by finish)
@@ -783,7 +672,7 @@ In other words: At each step, greedy finishes ≤ optimal
 
 ```
 PROOF: GREEDY STAYS AHEAD
-═════════════════════════════════════════════════════
+=====================================================
 
 Base Case (i=1):
   g₁ = activity with earliest finish time overall
@@ -812,7 +701,7 @@ By induction: finish(gᵢ) ≤ finish(oᵢ) for all i ✓
 
 ```
 IMPLICATION: GREEDY IS OPTIMAL
-═════════════════════════════════════════════════════
+=====================================================
 
 Since greedy stays ahead:
 
@@ -822,15 +711,15 @@ Since greedy stays ahead:
 4. No solution can beat greedy
 
 Visual Proof:
-═════════════════════════════════════════════════════
+=====================================================
 
-Timeline 0────┬────┬────┬────┬────┬────┬────┬────100
+Timeline 0----|----|----|----|----|----|----|----100
 
 Greedy:   [g₁]  [g₂]  [g₃]  [g₄]
-          0─4   5─7   8─11  12─16
+          0-4   5-7   8-11  12-16
 
 Optimal:  [o₁]  [o₂]  [o₃]
-          0─6   7─9   10─15
+          0-6   7-9   10-15
 
 Greedy finishes g₁ at 4 ≤ optimal finishes o₁ at 6
                 ↓
@@ -849,7 +738,7 @@ Same reasoning for g₂ vs o₂, g₃ vs o₃, etc.
 
 ```
 VARIATION 1: MAXIMIZE TOTAL WEIGHT (Not Count)
-═════════════════════════════════════════════════════
+=====================================================
 
 Difference from original:
   Original: Maximize NUMBER of activities
@@ -857,7 +746,7 @@ Difference from original:
             Maximize TOTAL VALUE of selected
 
 KEY INSIGHT: Greedy DOESN'T work here!
-═════════════════════════════════════════════════════
+=====================================================
 
 Counterexample:
   Activity A: time [0,10], weight 10
@@ -892,7 +781,7 @@ SOLUTION: Use Dynamic Programming
 
 ```
 VARIATION 2: MINIMIZE ROOMS NEEDED
-═════════════════════════════════════════════════════
+=====================================================
 
 Problem:
   - Each activity needs a room during its time
@@ -909,7 +798,7 @@ Example:
   Minimum rooms needed: 3
 
 KEY INSIGHT: Use SWEEP LINE / INTERVAL GRAPH algorithm
-═════════════════════════════════════════════════════
+=====================================================
 
 Algorithm:
 1. Create events for each activity:
@@ -928,7 +817,7 @@ Algorithm:
 
 Visualization:
 
-Time:  0──┬──┬──┬──┬──┬──┬──6
+Time:  0--|--|--|--|--|--|--6
        1  2  3  4  5
 
 Activity (1,3):  START at 1, END at 3
@@ -955,7 +844,7 @@ Space: O(n)
 
 ```
 VARIATION 3: MAXIMIZE PROFIT (Different Deadline Variant)
-═════════════════════════════════════════════════════
+=====================================================
 
 Problem: Same as Activity Selection but with WEIGHTS
          Select non-overlapping activities to maximize total weight
@@ -986,66 +875,13 @@ WHY NOT GREEDY:
 
 ### Variation 4: Job Sequencing with Deadlines
 
+
+```mermaid
+flowchart TD
+    R["VARIATION 4 JOBS WITH DEADLINES AND PROFITS"]
+    R --> N1["Step"]
 ```
-VARIATION 4: JOBS WITH DEADLINES AND PROFITS
-═════════════════════════════════════════════════════
 
-Problem:
-  - n jobs, each with:
-    * deadline (by when it must complete)
-    * profit (revenue if completed)
-  - Each job takes 1 unit time
-  - One job at a time
-  - Job must complete by deadline to earn profit
-  - Maximize total profit
-
-Example:
-  Job 1: deadline=2, profit=100
-  Job 2: deadline=1, profit=19
-  Job 3: deadline=2, profit=27
-  Job 4: deadline=1, profit=25
-  Job 5: deadline=3, profit=15
-  Job 6: deadline=3, profit=20
-
-Schedule to maximize profit:
-
-GREEDY APPROACH:
-1. Sort jobs by PROFIT (descending)
-2. For each job, place as late as possible before deadline
-
-Execution:
-  Jobs sorted by profit: 1(100,d=2), 3(27,d=2), 6(20,d=3), 4(25,d=1), 5(15,d=3), 2(19,d=1)
-  
-  Jobs: [_, _, _]  (time slots 1, 2, 3)
-  
-  Job 1 (deadline=2): Place at time 2
-  Jobs: [_, 1, _]
-  
-  Job 3 (deadline=2): Place at time 1
-  Jobs: [3, 1, _]
-  
-  Job 6 (deadline=3): Place at time 3
-  Jobs: [3, 1, 6]
-  
-  Job 4 (deadline=1): Can't place (slot 1 full) ✗
-  
-  Job 5 (deadline=3): Can't place (all slots full) ✗
-  
-  Job 2 (deadline=1): Can't place ✗
-  
-  Total profit: 100 + 27 + 20 = 147
-
-Visualization:
-
-Time:  1    2    3
-      ┌────┬────┬────┐
-Slot: │ 3  │ 1  │ 6  │
-      └────┴────┴────┘
-       27   100  20  = 147 profit
-
-Time: O(n² ) or O(n log n) with better data structure
-Space: O(n)
-```
 
 ---
 
@@ -1065,15 +901,15 @@ Space: O(n)
 
 ### Comparison Table: Interval Problems
 
-```
-PROBLEM           │ CRITERION     │ APPROACH      │ COMPLEXITY
-──────────────────┼───────────────┼───────────────┼──────────
-Max Activities    │ Count         │ Greedy        │ O(n log n)
-Max Weight        │ Total Value   │ DP            │ O(n²)
-Min Rooms         │ Rooms needed  │ Sweep line    │ O(n log n)
-Job Scheduling    │ Total Profit  │ Greedy        │ O(n²)
-Weighted Interval │ Max Value     │ DP            │ O(n log n)
-```
+
+| PROBLEM | CRITERION | APPROACH | COMPLEXITY |
+| :--- | :--- | :--- | :--- |
+| Max Activities | Count | Greedy | O(n log n) |
+| Max Weight | Total Value | DP | O(n²) |
+| Min Rooms | Rooms needed | Sweep line | O(n log n) |
+| Job Scheduling | Total Profit | Greedy | O(n²) |
+| Weighted Interval | Max Value | DP | O(n log n) |
+
 
 ---
 
@@ -1096,7 +932,7 @@ Understand optimal prefix codes, Huffman algorithm, and tree construction proof.
 
 ```
 DEFINITION: PREFIX CODE
-═════════════════════════════════════════════════════
+=====================================================
 
 A prefix code is a set of binary strings (codewords) where
 NO codeword is a prefix of any other codeword.
@@ -1137,7 +973,7 @@ UNAMBIGUOUS! Decode left to right
 
 ```
 REPRESENTING CODES AS A BINARY TREE
-═════════════════════════════════════════════════════
+=====================================================
 
 Each prefix code can be represented as a BINARY TREE:
   - Leaf nodes = characters to encode
@@ -1181,7 +1017,7 @@ Decoded: A, C, D
 
 ```
 COMPARISON: FIXED vs VARIABLE LENGTH
-═════════════════════════════════════════════════════
+=====================================================
 
 Problem: Encode text with characters {A, B, C, D}
 
@@ -1211,39 +1047,16 @@ BUT: Need to know frequencies in advance!
 
 ### Optimal Prefix Code Problem
 
-```
-OPTIMAL PREFIX CODE PROBLEM
-═════════════════════════════════════════════════════
 
-INPUT:
-  - n characters
-  - frequency f[c] = how often character c appears
+| Character | Frequency | Ideal code length |
+| :--- | :--- | :--- |
+| A | 0.45 | 1 (short) |
+| B | 0.13 | 3-4 (long) |
+| C | 0.12 | 3-4 (long) |
+| D | 0.16 | 3 |
+| E | 0.09 | 4 (longer) |
+| F | 0.05 | 4 (longest) |
 
-OUTPUT:
-  - Prefix code (represented as binary tree)
-  - Minimizes TOTAL BITS needed to encode all text
-
-FORMULATION:
-  Minimize: Σ(f[c] × length[code(c)])
-            for all characters c
-  
-  Subject to: Codes form prefix-free set
-
-INSIGHT:
-  - More frequent character → shorter code
-  - Less frequent character → longer code
-  - This minimizes total bits
-
-Example with frequencies:
-  Character | Frequency | Ideal code length
-  ──────────┼───────────┼─────────────────
-  A         | 0.45      | 1 (short)
-  B         | 0.13      | 3-4 (long)
-  C         | 0.12      | 3-4 (long)
-  D         | 0.16      | 3
-  E         | 0.09      | 4 (longer)
-  F         | 0.05      | 4 (longest)
-```
 
 ---
 
@@ -1253,7 +1066,7 @@ Example with frequencies:
 
 ```
 HUFFMAN CODING ALGORITHM
-═════════════════════════════════════════════════════
+=====================================================
 
 INPUT: n characters with frequencies
 
@@ -1280,93 +1093,23 @@ DATA STRUCTURE: Priority Queue (Min-Heap)
 
 ### Step-by-Step Example
 
-```
-HUFFMAN ALGORITHM EXECUTION
-═════════════════════════════════════════════════════
 
-Characters with frequencies:
-  A:5  B:9  C:12  D:13  E:16  F:45
+| char | freq | code | length | freq×length |
+| :--- | :--- | :--- | :--- | :--- |
+| A | 5 | 1100 | 4 | 20 |
+| B | 9 | 1101 | 4 | 36 |
+| C | 12 | 100 | 3 | 36 |
+| D | 13 | 101 | 3 | 39 |
+| E | 16 | 111 | 3 | 48 |
+| F | 45 | 0 | 1 | 45 |
+| Total: | 100 | 224 bits for encoding |  |  |
 
-Step 0 - Initialize:
-Heap (priority = frequency):
-  [A:5, B:9, C:12, D:13, E:16, F:45]
-
-Step 1 - Extract 2 minimums: A:5, B:9
-Create new node AB:14 = 5+9
-Heap: [C:12, D:13, AB:14, E:16, F:45]
-
-Step 2 - Extract 2 minimums: C:12, D:13
-Create new node CD:25 = 12+13
-Heap: [AB:14, E:16, CD:25, F:45]
-
-Step 3 - Extract 2 minimums: AB:14, E:16
-Create new node ABE:30 = 14+16
-Heap: [CD:25, ABE:30, F:45]
-
-Step 4 - Extract 2 minimums: CD:25, ABE:30
-Create new node CDABE:55 = 25+30
-Heap: [F:45, CDABE:55]
-
-Step 5 - Extract 2 minimums: F:45, CDABE:55
-Create new node ROOT:100 = 45+55
-Heap: [ROOT:100]
-
-Done! ROOT is final tree
-
-RESULTING TREE:
-═════════════════════════════════════════════════════
-
-              ROOT:100
-              /        \
-            0/          \1
-            /            \
-          F:45       CDABE:55
-                      /     \
-                    0/       \1
-                    /         \
-                CD:25      ABE:30
-                /   \      /     \
-              0/     \1  0/       \1
-              /       \  /         \
-            C:12   D:13 AB:14    E:16
-                        /  \
-                      0/    \1
-                      /      \
-                    A:5     B:9
-
-RESULTING CODES:
-  F = 0 (length 1)
-  C = 100 (length 3)
-  D = 101 (length 3)
-  A = 1100 (length 4)
-  B = 1101 (length 4)
-  E = 111 (length 3)
-
-CODE LENGTH VERIFICATION:
-  char | freq | code     | length | freq×length
-  ─────┼──────┼──────────┼────────┼───────────
-  A    | 5    | 1100     | 4      | 20
-  B    | 9    | 1101     | 4      | 36
-  C    | 12   | 100      | 3      | 36
-  D    | 13   | 101      | 3      | 39
-  E    | 16   | 111      | 3      | 48
-  F    | 45   | 0        | 1      | 45
-      ───────────────────────────────────
-      Total: |100              | 224 bits for encoding
-
-Average bits per character: 224/100 = 2.24 bits
-
-Comparison:
-  Fixed-length (for 6 chars): 3 bits each = 300 bits total
-  Huffman: 2.24 bits average = 224 bits total
-  Savings: 25% reduction!
-```
 
 ### Visualization: Building Tree Step-by-Step
 
 ```
 VISUAL TREE CONSTRUCTION
-═════════════════════════════════════════════════════
+=====================================================
 
 Initial: 6 separate nodes (each character)
 
@@ -1433,12 +1176,12 @@ FINAL TREE ✓
 
 ```
 THEOREM: HUFFMAN CODING PRODUCES OPTIMAL PREFIX CODE
-═════════════════════════════════════════════════════
+=====================================================
 
 PROOF STRATEGY: Exchange Argument + Greedy Choice Property
 
 LEMMA 1: GREEDY CHOICE PROPERTY
-────────────────────────────────
+--------------------------------
 
 Claim: In optimal solution, two nodes with minimum frequencies
        should be combined first (deepest in tree, longest paths)
@@ -1461,7 +1204,7 @@ Exchange Argument:
   6. Therefore optimal must combine min nodes ✓
 
 LEMMA 2: OPTIMAL SUBSTRUCTURE
-──────────────────────────────
+------------------------------
 
 Claim: After combining two minimum-frequency nodes into parent,
        remaining problem (minus those two, plus parent) is same structure
@@ -1475,7 +1218,7 @@ Proof:
   - Otherwise, could improve original (contradiction)
 
 MAIN THEOREM:
-─────────────
+-------------
 
 Huffman procedure:
 1. By LEMMA 1: Combines optimal pair at each step
@@ -1488,7 +1231,7 @@ Huffman procedure:
 4. Therefore Huffman produces optimal tree ✓
 
 FORMAL INDUCTION:
-─────────────────
+-----------------
 
 Let n = number of characters
 
@@ -1509,7 +1252,7 @@ Inductive: Assume Huffman optimal for n-1 characters
 By induction: Huffman optimal for all n ✓
 
 COST ANALYSIS:
-──────────────
+--------------
 
 Why is minimizing Σ(freq × depth) optimal?
 
@@ -1526,7 +1269,7 @@ Result: minimum total cost ✓
 
 ```
 WHY HUFFMAN WORKS: INTUITIVE EXPLANATION
-═════════════════════════════════════════════════════
+=====================================================
 
 Core Insight:
   "Expensive" nodes (high frequency) should have SHORT paths
@@ -1564,7 +1307,7 @@ Greedy property:
 
 ```
 APPLICATIONS OF HUFFMAN CODING
-═════════════════════════════════════════════════════
+=====================================================
 
 1. TEXT COMPRESSION
    - Used in ZIP, GZIP, BZIP2
@@ -1602,7 +1345,7 @@ APPLICATIONS OF HUFFMAN CODING
 
 ```
 COMPARISON: HUFFMAN vs ARITHMETIC CODING
-═════════════════════════════════════════════════════
+=====================================================
 
 HUFFMAN CODING:
   - Each character gets exact integer number of bits
@@ -1679,40 +1422,27 @@ Master knapsack variants, scheduling problems, and understand why greedy works f
 
 ### The Three Variants
 
+
+```mermaid
+flowchart TD
+    R["KNAPSACK PROBLEM VARIANTS"]
+    R --> N1["Unlimited copies of each item"]
+    R --> N2["Can take same item multiple times"]
+    R --> N3["Solution: DP"]
+    R --> N4["Time: O(n×W)"]
+    R --> N5["Greedy: FAILS (might need multiple copies)"]
+    R --> N6["Can take FRACTION of each item"]
+    R --> N7["Can take 0.5 kg of 1 kg item"]
+    R --> N8["Solution: GREEDY works!"]
+    R --> N9["Time: O(n log n)"]
+    R --> N10["Greedy: Sort by value/weight ratio, pick greedily"]
+    R --> N11["Either take entire item or leave it"]
+    R --> N12["Can't split items"]
+    R --> N13["Solution: DP"]
+    R --> N14["Time: O(n×W)"]
+    R --> N15["Greedy: FAILS (can't split, decisions complex)"]
 ```
-KNAPSACK PROBLEM VARIANTS
-═════════════════════════════════════════════════════
 
-Imagine: Hiker with knapsack capacity W
-         Items with weight w[i] and value v[i]
-         Maximize total value without exceeding capacity
-
-THREE VARIANTS:
-
-1. UNBOUNDED KNAPSACK
-   ├─ Unlimited copies of each item
-   ├─ Can take same item multiple times
-   ├─ Solution: DP
-   ├─ Time: O(n×W)
-   └─ Greedy: FAILS (might need multiple copies)
-
-2. FRACTIONAL KNAPSACK
-   ├─ Can take FRACTION of each item
-   ├─ Can take 0.5 kg of 1 kg item
-   ├─ Solution: GREEDY works!
-   ├─ Time: O(n log n)
-   └─ Greedy: Sort by value/weight ratio, pick greedily
-
-3. 0-1 KNAPSACK (Most famous)
-   ├─ Either take entire item or leave it
-   ├─ Can't split items
-   ├─ Solution: DP
-   ├─ Time: O(n×W)
-   └─ Greedy: FAILS (can't split, decisions complex)
-
-KEY DIFFERENCE: Fractional allows splitting → greedy works!
-                0-1 doesn't allow splitting → DP needed
-```
 
 ### Visual Comparison
 
@@ -1759,7 +1489,7 @@ FRACTIONAL KNAPSACK:
 
 ```
 FRACTIONAL KNAPSACK ALGORITHM
-═════════════════════════════════════════════════════
+=====================================================
 
 INPUT:
   - n items with weight w[i] and value v[i]
@@ -1802,7 +1532,7 @@ SPACE: O(n)
 
 ```
 FRACTIONAL KNAPSACK EXAMPLE
-═════════════════════════════════════════════════════
+=====================================================
 
 Items:
   Item A: weight=2, value=10    → ratio=5.0
@@ -1865,10 +1595,10 @@ VERIFICATION: This is indeed optimal for fractional knapsack
 
 ```
 THEOREM: GREEDY IS OPTIMAL FOR FRACTIONAL KNAPSACK
-═════════════════════════════════════════════════════
+=====================================================
 
 PROOF:
-─────
+-----
 
 Claim: Greedy algorithm produces maximum value
 
@@ -1892,7 +1622,7 @@ Proof by contradiction using Exchange Argument:
    Actually, let's think differently...
    
 CLEANER PROOF:
-──────────────
+--------------
 
 Consider ANY optimal solution O
 
@@ -1920,7 +1650,7 @@ Therefore: O cannot have higher value than G ✓
 Greedy is optimal!
 
 INTUITION:
-──────────
+----------
 
 Why is this intuitive?
   - Fractional means no "packing problem"
@@ -1941,7 +1671,7 @@ Why is this intuitive?
 
 ```
 JOB SCHEDULING WITH DEADLINES
-═════════════════════════════════════════════════════
+=====================================================
 
 PROBLEM STATEMENT:
 
@@ -1996,7 +1726,7 @@ Schedule 2 is better! But how to find it?
 
 ```
 JOB SCHEDULING GREEDY ALGORITHM
-═════════════════════════════════════════════════════
+=====================================================
 
 INTUITION:
   - Profit is what we want to maximize
@@ -2029,7 +1759,7 @@ SPACE: O(n)
 
 ```
 JOB SCHEDULING EXECUTION
-═════════════════════════════════════════════════════
+=====================================================
 
 Jobs:
   Job 1: deadline=2, profit=100
@@ -2114,10 +1844,10 @@ VERIFICATION: Is this optimal?
 
 ```
 THEOREM: GREEDY JOB SCHEDULING IS OPTIMAL
-═════════════════════════════════════════════════════
+=====================================================
 
 PROOF:
-─────
+-----
 
 Key Observation: Maximum jobs = number of distinct deadlines
                  (or less, if conflicts)
@@ -2153,7 +1883,7 @@ Why greedy by profit works:
 6. Therefore: greedy produces optimal schedule ✓
 
 Exchange Argument:
-─────────────────
+-----------------
 
 Suppose optimal solution O doesn't include highest-profit job J
 
@@ -2182,62 +1912,38 @@ Greedy is optimal!
 
 ### When Greedy Works vs Fails
 
-```
-GREEDY ALGORITHM EFFECTIVENESS MATRIX
-═════════════════════════════════════════════════════
 
-PROBLEM TYPE              │ GREEDY WORKS? │ REASON/NOTES
-──────────────────────────┼───────────────┼─────────────────────
-Activity Selection        │ ✓ YES         │ Greedy stays ahead
-Huffman Coding            │ ✓ YES         │ Optimal substructure
-Fractional Knapsack       │ ✓ YES         │ Can fill to capacity
-Job Scheduling (deadline) │ ✓ YES         │ Choose high profit
-0-1 Knapsack              │ ✗ NO          │ Can't split items
-Weighted Interval Sched.  │ ✗ NO          │ Complex dependencies
-MST (Kruskal, Prim)       │ ✓ YES         │ Matroid properties
-Dijkstra Shortest Path    │ ✓ YES         │ Triangle inequality
-Coin Change (any denoms)  │ ✗ NO          │ Not always optimal
-Coin Change (canonical)   │ ✓ YES         │ By design
-```
+| PROBLEM TYPE | GREEDY WORKS? | REASON/NOTES |
+| :--- | :--- | :--- |
+| Activity Selection | ✓ YES | Greedy stays ahead |
+| Huffman Coding | ✓ YES | Optimal substructure |
+| Fractional Knapsack | ✓ YES | Can fill to capacity |
+| Job Scheduling (deadline) | ✓ YES | Choose high profit |
+| 0-1 Knapsack | ✗ NO | Can't split items |
+| Weighted Interval Sched. | ✗ NO | Complex dependencies |
+| MST (Kruskal, Prim) | ✓ YES | Matroid properties |
+| Dijkstra Shortest Path | ✓ YES | Triangle inequality |
+| Coin Change (any denoms) | ✗ NO | Not always optimal |
+| Coin Change (canonical) | ✓ YES | By design |
+
 
 ### Key Differences: Fractional vs 0-1
 
-```
-FRACTIONAL vs 0-1 KNAPSACK: DETAILED COMPARISON
-═════════════════════════════════════════════════════
 
-DIMENSION              │ FRACTIONAL     │ 0-1 KNAPSACK
-──────────────────────┼────────────────┼──────────────
-Splitting items       │ ✓ Allowed      │ ✗ Not allowed
-Greedy works?         │ ✓ YES          │ ✗ NO
-Algorithm             │ Greedy         │ Dynamic Programming
-Time complexity       │ O(n log n)     │ O(n × W)
-Space complexity      │ O(n)           │ O(n × W)
-Why greedy works      │ Fill exactly   │ Can't fill exactly
-                      │ to capacity    │ due to discrete items
-Optimal value         │ Always fills   │ May leave space
-                      │ to W           │
-Mathematical proof    │ Exchange arg   │ Complex recurrence
-Best solution quality │ Always optimal │ Always optimal
-Easy to implement     │ ✓ Very easy    │ ✓ Medium difficulty
+| DIMENSION | FRACTIONAL | 0-1 KNAPSACK |
+| :--- | :--- | :--- |
+| Splitting items | ✓ Allowed | ✗ Not allowed |
+| Greedy works? | ✓ YES | ✗ NO |
+| Algorithm | Greedy | Dynamic Programming |
+| Time complexity | O(n log n) | O(n × W) |
+| Space complexity | O(n) | O(n × W) |
+| Why greedy works | Fill exactly | Can't fill exactly |
+| to capacity | due to discrete items |  |
+| Optimal value | Always fills | May leave space |
+| Mathematical proof | Exchange arg | Complex recurrence |
+| Best solution quality | Always optimal | Always optimal |
+| Easy to implement | ✓ Very easy | ✓ Medium difficulty |
 
-EXAMPLE: Capacity 10, items A(w=6,v=30), B(w=5,v=25), C(w=5,v=24)
-
-FRACTIONAL:
-  - Ratios: A(5.0), B(5.0), C(4.8)
-  - Take A fully: w=6, v=30
-  - Take B fully: w=11... TOO HEAVY, but take 4/5 of B: w=10, v=30+20=50
-  - Fractional optimal: 50
-
-0-1:
-  - Try A+B: w=11... TOO HEAVY
-  - Try A alone: w=6, v=30
-  - Try B+C: w=10, v=49
-  - Try others...
-  - 0-1 optimal: 49 (not fractional 50)
-  
-Difference: 50 vs 49 (fractional allows optimal filling)
-```
 
 ---
 
@@ -2292,7 +1998,7 @@ Understand greedy in networks, caching, approximation algorithms, and when greed
 
 ```
 MINIMUM SPANNING TREE (MST)
-═════════════════════════════════════════════════════
+=====================================================
 
 INPUT:
   - Connected graph G with weighted edges
@@ -2330,7 +2036,7 @@ Minimum spanning tree: Option A (weight 9)
 
 ```
 KRUSKAL'S ALGORITHM (Greedy approach)
-═════════════════════════════════════════════════════
+=====================================================
 
 ALGORITHM:
 1. Sort all edges by weight (ascending)
@@ -2361,88 +2067,21 @@ WHY IT'S GREEDY:
 
 ### Step-by-Step Kruskal Example
 
-```
-KRUSKAL'S ALGORITHM EXECUTION
-═════════════════════════════════════════════════════
 
-Graph:
-      1
-     /|\
-    7 | 5
-   /  |  \
-  2 - 2 - 3
-   \     /
-    6   4
+| / | \ |
+| :--- | :--- |
+| 7 | 5 |
+| / | \ |
 
-Edges and weights:
-  2-3: weight 2
-  1-3: weight 4
-  1-2: weight 5
-  1-3: weight 5
-  2-1: weight 6
-  1-2: weight 7
-
-Sorted edges by weight:
-  2-3:2, 1-3:4, 1-3:5, 2-1:6, 1-2:7
-
-STEP 1: Sort done (listed above)
-
-STEP 2: Initialize
-        Components: {1}, {2}, {3}
-        MST edges: []
-        Weight: 0
-
-STEP 3: Process each edge
-
-Edge 2-3 (weight 2):
-  - Vertices 2,3 in different components? YES ({2} and {3})
-  - Add to MST
-  - Merge components: {1}, {2,3}
-  - MST edges: [2-3]
-  - Weight: 2
-
-Edge 1-3 (weight 4):
-  - Vertices 1,3 in different components? YES ({1} and {2,3})
-  - Add to MST
-  - Merge components: {1,2,3}
-  - MST edges: [2-3, 1-3]
-  - Weight: 6
-
-Edge 1-3 (weight 5):
-  - Vertices 1,3 in different components? NO (both in {1,2,3})
-  - Skip (would create cycle)
-
-Edge 2-1 (weight 6):
-  - Vertices 2,1 in different components? NO (both in {1,2,3})
-  - Skip (would create cycle)
-
-Edge 1-2 (weight 7):
-  - Vertices 1,2 in different components? NO (both in {1,2,3})
-  - Skip (would create cycle)
-
-DONE: 3 vertices need 2 edges, we have 2 edges
-
-FINAL MST:
-  Edges: 2-3, 1-3
-  Total weight: 2 + 4 = 6
-  
-Visual MST:
-      1
-      |
-      | (weight 4)
-    3 -
-      | (weight 2)
-      2
-```
 
 ### Why Kruskal is Optimal
 
 ```
 THEOREM: KRUSKAL'S ALGORITHM IS OPTIMAL (Produces MST)
-═════════════════════════════════════════════════════
+=====================================================
 
 PROOF: Exchange Argument
-────────────────────────
+------------------------
 
 Key Insight: Greedy choice (cheapest edge not creating cycle)
              is in SOME optimal solution
@@ -2483,7 +2122,7 @@ Conclusion by Induction:
 
 ```
 PRIM'S ALGORITHM (Alternative greedy MST)
-═════════════════════════════════════════════════════
+=====================================================
 
 ALGORITHM:
 1. Start with any vertex (e.g., vertex 1)
@@ -2507,7 +2146,7 @@ WHY IT'S GREEDY:
   - Always adds best next edge to extend tree
 
 COMPARISON: Kruskal vs Prim
-─────────────────────────────
+-----------------------------
 Kruskal:
   ✓ Works on disconnected graphs
   ✓ Easier to understand and code
@@ -2530,7 +2169,7 @@ Choose based on graph properties and efficiency needs
 
 ```
 CACHING PROBLEM
-═════════════════════════════════════════════════════
+=====================================================
 
 SITUATION:
   - Limited cache (memory) of size k
@@ -2560,7 +2199,7 @@ Different eviction policies lead to different hit rates
 
 ```
 LRU (Least Recently Used) CACHING
-═════════════════════════════════════════════════════
+=====================================================
 
 POLICY: When cache full and need to evict:
         Remove page that was LEAST RECENTLY USED
@@ -2624,7 +2263,7 @@ But LRU is practical and works well in real systems
 
 ```
 LRU vs OPTIMAL CACHING
-═════════════════════════════════════════════════════
+=====================================================
 
 Optimal policy (with future knowledge):
   When must evict, remove page needed FURTHEST in future
@@ -2679,7 +2318,7 @@ In real systems without future knowledge:
 
 ```
 APPROXIMATION ALGORITHMS
-═════════════════════════════════════════════════════
+=====================================================
 
 PROBLEM: Some problems are NP-hard
         Computing optimal solution is intractable
@@ -2708,7 +2347,7 @@ GOALS:
 
 ```
 SET COVER PROBLEM (NP-hard)
-═════════════════════════════════════════════════════
+=====================================================
 
 PROBLEM:
   - Universe U of n elements
@@ -2740,7 +2379,7 @@ Actually optimal: S1 + S2 + S3 + S7 = {1..9} ∪ {10} = all, cost 16
 
 ```
 GREEDY SET COVER ALGORITHM
-═════════════════════════════════════════════════════
+=====================================================
 
 ALGORITHM:
 1. While not all elements covered:
@@ -2834,7 +2473,7 @@ Greedy Set Cover has O(log n) approximation ratio
 
 ```
 THEORETICAL GUARANTEE: GREEDY SET COVER
-═════════════════════════════════════════════════════
+=====================================================
 
 THEOREM: Greedy Set Cover achieves O(log n) approximation
          where n = number of elements
@@ -2874,7 +2513,7 @@ PRACTICAL QUALITY:
 
 ```
 SITUATIONS WHERE GREEDY FAILS
-═════════════════════════════════════════════════════
+=====================================================
 
 1. 0-1 KNAPSACK
    Greedy: Sort by value/weight, pick highest ratio
@@ -2946,10 +2585,10 @@ SITUATIONS WHERE GREEDY FAILS
 
 ```
 ROOT CAUSES OF GREEDY FAILURE
-═════════════════════════════════════════════════════
+=====================================================
 
 CAUSE 1: No Optimal Substructure
-──────────────────────────────────
+----------------------------------
   Greedy choice doesn't guarantee subproblem is optimal
   
   Example: 0-1 Knapsack
@@ -2959,7 +2598,7 @@ CAUSE 1: No Optimal Substructure
   (because A takes space)
 
 CAUSE 2: No Greedy Choice Property
-────────────────────────────────────
+------------------------------------
   Greedy choice not guaranteed in ANY optimal solution
   
   Example: TSP Nearest Neighbor
@@ -2967,7 +2606,7 @@ CAUSE 2: No Greedy Choice Property
   Could be in some, but no guarantee
   
 CAUSE 3: Discrete/Combinatorial Constraints
-─────────────────────────────────────────────
+---------------------------------------------
   Can't split items, must make binary choices
   
   Example: 0-1 Knapsack
@@ -2975,7 +2614,7 @@ CAUSE 3: Discrete/Combinatorial Constraints
   Greedy needs flexibility (fractional knapsack has it)
 
 CAUSE 4: Multiple Objectives or Constraints
-─────────────────────────────────────────────
+---------------------------------------------
   Different criteria conflict
   
   Example: Scheduling with deadlines AND weights
@@ -2984,7 +2623,7 @@ CAUSE 4: Multiple Objectives or Constraints
   Greedy can't balance both well
 
 CAUSE 5: Future Dependence
-──────────────────────────
+--------------------------
   Current choice affects future options badly
   
   Example: Graph Coloring (wrong order)
@@ -2997,7 +2636,7 @@ CAUSE 5: Future Dependence
 
 ```
 CHECKLIST: WILL GREEDY WORK?
-═════════════════════════════════════════════════════
+=====================================================
 
 Before implementing greedy, ask:
 
@@ -3054,41 +2693,15 @@ RESULT:
 
 ### Week 12 Complete Mastery Map
 
-```
-GREEDY ALGORITHMS COMPLETE FRAMEWORK
-═════════════════════════════════════════════════════
 
-                    GREEDY ALGORITHMS
-                           │
-            ┌──────────────┬┴──────────────┐
-            ▼              ▼               ▼
-        WHEN WORKS    ALGORITHM          FAILURES
-            │         TEMPLATES              │
-        ┌───┴───┐         │            ┌────┴────┐
-        │       │         │            │         │
-      OPT SUB  GREEDY     │        NO OPT    NO GREEDY
-      STRUCT  CHOICE      │        SUBST    CHOICE
-        │       │         ▼            │         │
-        │       │    ┌─────────────┐   │         │
-        │       │    │1. SORT      │   │     0-1 KNP
-        │       │    │2. INIT      │   │     TSP
-        └───┬───┘    │3. LOOP      │   │     Graph Color
-            ▼        │4. SELECT    │   │     Weighted Sched
-         PROOF       │5. RETURN    │   │
-            │        └─────────────┘   │
-        ┌───┴──────┬──────────────┐    └─────────┘
-        ▼          ▼              ▼
-     EXCHANGE  INDUCTION    GREEDY STAYS
-     ARGUMENT             AHEAD TECHNIQUE
-
-APPLICATIONS:
-Activity Selection → Exchange Argument
-Huffman → Optimal substructure
-Fractional KNP → Greedy by ratio
-Job Scheduling → Greedy by profit
-MST → Exchange Argument (both algorithms)
-Set Cover → O(log n) approximation
+```mermaid
+flowchart TD
+    R["GREEDY ALGORITHMS COMPLETE FRAMEWORK"]
+    R --> N1["|    3. LOOP              Graph Color"]
+    N1 --> N2["State"]
+    R --> N3["State"]
 ```
+
 
 ---
 
@@ -3279,3 +2892,7 @@ By end of Week 12, you should be able to:
 
 
 **Generate Week 13 in next prompt**
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

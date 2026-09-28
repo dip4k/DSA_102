@@ -1,4 +1,10 @@
 # 📚 WEEK 04: TIER 1 CORE PROBLEM-SOLVING PATTERNS I
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Comprehensive Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
+
+---
+
 ## Two-Pointers, Sliding Windows (Fixed & Variable), Divide & Conquer, Binary Search as Pattern
 
 **Phase:** B (Patterns)  
@@ -75,47 +81,30 @@ Week 04 teaches **5 fundamental problem-solving patterns** that appear in 70%+ o
 ### Two-Pointer Pattern Framework
 
 **Pattern 1: Same-Direction Pointers**
+
+```mermaid
+flowchart TD
+    R["Goal Process array sequentially with two advancing positions"]
+    R --> N1["Removing duplicates in-place"]
+    R --> N2["Merging sorted lists"]
+    R --> N3["Partitioning based on criteria"]
 ```
-Goal: Process array sequentially with two advancing positions
-├─ Removing duplicates in-place
-├─ Merging sorted lists
-└─ Partitioning based on criteria
 
-Array: [1, 1, 2, 2, 3]
-Goal: Remove duplicates in-place
-
-i (write position) = 0
-j (read position) = 1
-
-j=1: nums[1]=1 == nums[0]=1, skip
-j=2: nums[2]=2 != nums[0]=1, write: nums[1]=2, i=1
-j=3: nums[3]=2 == nums[1]=2, skip
-j=4: nums[4]=3 != nums[1]=2, write: nums[2]=3, i=2
-
-Result: [1, 2, 3] (first i+1 elements are unique)
-```
 
 **Pattern 2: Opposite-Direction Pointers**
+
+```mermaid
+flowchart TD
+    R["Goal Process from both ends, meeting in middle"]
+    R --> N1["Container with most water"]
+    R --> N2["Two-sum in sorted array"]
+    R --> N3["Partition array around pivot"]
+    R --> N4["width=8, height=min(1,7)=1, area=8"]
+    R --> N5["height[0] < height[8], move left++"]
+    R --> N6["width=7, height=min(8,7)=7, area=49 ✓"]
+    R --> N7["height[1] > height[8], move right--"]
 ```
-Goal: Process from both ends, meeting in middle
-├─ Container with most water
-├─ Two-sum in sorted array
-└─ Partition array around pivot
 
-Array: [1, 8, 6, 2, 5, 4, 8, 3, 7]
-Goal: Container with most water
-
-left=0 (1), right=8 (7)
-├─ width=8, height=min(1,7)=1, area=8
-├─ height[0] < height[8], move left++
-
-left=1 (8), right=8 (7)
-├─ width=7, height=min(8,7)=7, area=49 ✓
-├─ height[1] > height[8], move right--
-
-Continue until left >= right
-Result: Maximum area = 49
-```
 
 ---
 
@@ -127,17 +116,18 @@ Result: Maximum area = 49
 - **Invariant:** What's guaranteed between pointers?
 - **Movement:** Based on what we want to achieve
 
-```
-Opposite-direction scissors:
-├─ Spread wide: Check full span
-├─ Close together: Focus on small region
-└─ Converge: When condition met
 
-Same-direction motion:
-├─ Both move right
-├─ i always <= j
-├─ i marks valid region, j explores new items
+```mermaid
+flowchart TD
+    R["Opposite-direction scissors"]
+    R --> N1["Spread wide: Check full span"]
+    R --> N2["Close together: Focus on small region"]
+    R --> N3["Converge: When condition met"]
+    R --> N4["Both move right"]
+    R --> N5["i always <= j"]
+    R --> N6["i marks valid region, j explores new items"]
 ```
+
 
 ---
 
@@ -420,15 +410,17 @@ if (nums[j] != nums[i]) {
 
 **System:** PostgreSQL merge during migration
 
+
+```mermaid
+flowchart TD
+    R["Two sorted tables 500M records each"]
+    R --> N1["Read from both tables"]
+    R --> N2["Write smaller value first"]
+    R --> N3["Continue until one exhausted"]
+    R --> N4["Copy remaining from other"]
+    R --> N5["Result: O(N) merge, O(1) extra space"]
 ```
-Two sorted tables: 500M records each
-Merge in-place using two-pointer pattern:
-├─ Read from both tables
-├─ Write smaller value first
-├─ Continue until one exhausted
-├─ Copy remaining from other
-└─ Result: O(N) merge, O(1) extra space
-```
+
 
 ---
 
@@ -762,17 +754,17 @@ deque.AddLast(i);
 
 **System:** Real-time stock analysis
 
-```
-1B price ticks per day
-100-tick moving average must update instantly
 
-Fixed window sliding:
-├─ Window of 100 prices
-├─ Compute initial average
-├─ For each new tick: remove oldest, add newest
-├─ Average updated in O(1)
-└─ Millions of stocks analyzed per second
+```mermaid
+flowchart TD
+    R["1B price ticks per day"]
+    R --> N1["Window of 100 prices"]
+    R --> N2["Compute initial average"]
+    R --> N3["For each new tick: remove oldest, add newest"]
+    R --> N4["Average updated in O(1)"]
+    R --> N5["Millions of stocks analyzed per second"]
 ```
+
 
 ---
 
@@ -1124,17 +1116,17 @@ if (charFreq[s[left]] == 0)
 
 **System:** Full-text search engine
 
-```
-Query: Find documents with "database", "optimization", "algorithm"
-(all three terms required)
 
-Variable window sliding:
-├─ Expand: Add characters until all terms found
-├─ Check: All required characters present?
-├─ Shrink: Remove front until no longer valid
-├─ Record: Minimum window found
-└─ Efficiency: O(N) for each document
+```mermaid
+flowchart TD
+    R["Query Find documents with "database", "optimization", "algorithm""]
+    R --> N1["Expand: Add characters until all terms found"]
+    R --> N2["Check: All required characters present?"]
+    R --> N3["Shrink: Remove front until no longer valid"]
+    R --> N4["Record: Minimum window found"]
+    R --> N5["Efficiency: O(N) for each document"]
 ```
+
 
 ---
 
@@ -1497,17 +1489,17 @@ public long CountInversions(int[] arr) {
 
 **System:** Volatility measurement
 
-```
-1M daily prices over 10 years
-Count inversions = measure of disorder
 
-Divide & Conquer:
-├─ Split price history in half
-├─ Count inversions in each half
-├─ Count inversions across halves
-├─ Combine results
-└─ O(N log N) efficiency
+```mermaid
+flowchart TD
+    R["1M daily prices over 10 years"]
+    R --> N1["Split price history in half"]
+    R --> N2["Count inversions in each half"]
+    R --> N3["Count inversions across halves"]
+    R --> N4["Combine results"]
+    R --> N5["O(N log N) efficiency"]
 ```
+
 
 ---
 
@@ -1565,24 +1557,23 @@ Divide & Conquer:
 ### Binary Search Pattern Framework
 
 **Beyond sorted arrays:**
-```
-Traditional binary search:
-├─ Input: Sorted array
-├─ Goal: Find element
-└─ Complexity: O(log N)
 
-Pattern-based binary search:
-├─ Input: Problem space (not necessarily array)
-├─ Goal: Find optimal answer satisfying constraints
-├─ Method: Feasibility check guides search
-└─ Complexity: O(log(answer range) · feasibility_cost)
-
-Examples:
-├─ Machine scheduling: Search capacity [1, max_job]
-├─ Aggressive cows: Search distance [1, max_distance]
-├─ Library books: Search days [1, max_days]
-└─ Binary tree search: Search index [1, N]
+```mermaid
+flowchart TD
+    R["Traditional binary search"]
+    R --> N1["Input: Sorted array"]
+    R --> N2["Goal: Find element"]
+    R --> N3["Complexity: O(log N)"]
+    R --> N4["Input: Problem space (not necessarily array)"]
+    R --> N5["Goal: Find optimal answer satisfying constraints"]
+    R --> N6["Method: Feasibility check guides search"]
+    R --> N7["Complexity: O(log(answer range) · feasibility_cost)"]
+    R --> N8["Machine scheduling: Search capacity [1, max_job]"]
+    R --> N9["Aggressive cows: Search distance [1, max_distance]"]
+    R --> N10["Library books: Search days [1, max_days]"]
+    R --> N11["Binary tree search: Search index [1, N]"]
 ```
+
 
 ---
 
@@ -1891,18 +1882,17 @@ if (CanScheduleWithCapacity(jobs, mid)) {
 
 **System:** Auto-scaler determining minimum VM capacity
 
-```
-Jobs to schedule: [10, 20, 30, 40]
-Available VMs: 3
-Min capacity per VM needed?
 
-Binary search [40, 100]:
-├─ Try 70: 10+20+40=70 (VM1), 30 (VM2) ✓ Works
-├─ Try 55: 10+20+30=60 > 55 ✗ Doesn't work
-├─ Try 60: 10+20+30=60 (VM1), 40 (VM2) ✓ Works
-├─ Try 57: Need to check...
-└─ Result: Minimum 60
+```mermaid
+flowchart TD
+    R["Jobs to schedule [10, 20, 30, 40]"]
+    R --> N1["Try 70: 10+20+40=70 (VM1), 30 (VM2) ✓ Works"]
+    R --> N2["Try 55: 10+20+30=60 > 55 ✗ Doesn't work"]
+    R --> N3["Try 60: 10+20+30=60 (VM1), 40 (VM2) ✓ Works"]
+    R --> N4["Try 57: Need to check..."]
+    R --> N5["Result: Minimum 60"]
 ```
+
 
 ---
 
@@ -1996,41 +1986,37 @@ Binary search [40, 100]:
 
 ## 🎯 Pattern Selection Decision Tree - COMPLETE
 
-```
-WEEK 04 PATTERN SELECTION:
 
-Start: What's the problem type?
-│
-├─ Array manipulation with pointers?
-│  └─ Two-Pointer Pattern
-│     ├─ Same direction (write, read)
-│     ├─ Opposite direction (converge)
-│     └─ Maintain invariants
-│
-├─ Fixed-size window needed?
-│  └─ Sliding Window Fixed
-│     ├─ Compute initial window
-│     ├─ Slide by one position
-│     └─ Monotonic deque for max/min
-│
-├─ Variable constraint window?
-│  └─ Sliding Window Variable
-│     ├─ Expand to satisfy
-│     ├─ Shrink to minimize
-│     └─ Frequency map tracking
-│
-├─ Problem solvable recursively?
-│  └─ Divide & Conquer Pattern
-│     ├─ Split into subproblems
-│     ├─ Solve independently
-│     └─ Combine results
-│
-└─ Searching answer space?
-   └─ Binary Search Pattern
-      ├─ Define feasibility
-      ├─ Narrow answer range
-      └─ Find optimal answer
+```mermaid
+flowchart TD
+    R["WEEK 04 PATTERN SELECTION"]
+    R --> N1["Array manipulation with pointers?"]
+    N1 --> N2["Two-Pointer Pattern"]
+    N2 --> N3["Same direction (write, read)"]
+    N2 --> N4["Opposite direction (converge)"]
+    N2 --> N5["Maintain invariants"]
+    R --> N6["Fixed-size window needed?"]
+    N6 --> N7["Sliding Window Fixed"]
+    N7 --> N8["Compute initial window"]
+    N7 --> N9["Slide by one position"]
+    N7 --> N10["Monotonic deque for max/min"]
+    R --> N11["Variable constraint window?"]
+    N11 --> N12["Sliding Window Variable"]
+    N12 --> N13["Expand to satisfy"]
+    N12 --> N14["Shrink to minimize"]
+    N12 --> N15["Frequency map tracking"]
+    R --> N16["Problem solvable recursively?"]
+    N16 --> N17["Divide & Conquer Pattern"]
+    N17 --> N18["Split into subproblems"]
+    N17 --> N19["Solve independently"]
+    N17 --> N20["Combine results"]
+    R --> N21["Searching answer space?"]
+    N21 --> N22["Binary Search Pattern"]
+    N22 --> N23["Define feasibility"]
+    N22 --> N24["Narrow answer range"]
+    N22 --> N25["Find optimal answer"]
 ```
+
 
 ---
 
@@ -2137,3 +2123,7 @@ Week 4 is where **problems become tractable**:
 **Next Recommended:** Week 05 - Critical Patterns
 
 **END OF WEEK 04 COMPLETE PLAYBOOK - CORRECTED EDITION**
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

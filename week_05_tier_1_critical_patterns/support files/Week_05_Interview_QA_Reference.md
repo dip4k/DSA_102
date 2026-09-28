@@ -1,5 +1,11 @@
 # 🎙️ Week 05 Interview Q&A Reference: 40+ Questions by Pattern
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Audience:** Students preparing for technical interviews  
 **Format:** Questions only (no answers) + follow-ups to force deeper thinking  
 **How to Use:** Pick 3-5 questions daily, attempt before looking up answers, discuss with partner
@@ -244,3 +250,7 @@
 
 **Total Questions:** 40+ (8 per day × 5 + 4 cross-pattern)  
 **Interview Prep Time:** 2-3 hours daily during interview week
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

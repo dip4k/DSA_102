@@ -1,5 +1,11 @@
 # 📚 Week 08 Summary – Key Concepts & Mental Models
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 Filename: `Week_08_Summary_Key_Concepts.md`  
 Week: 08 – Graph Fundamentals: Representations, BFS, DFS & Topological Sort
 
@@ -105,30 +111,25 @@ Intuition:
 
 ## 🔁 3. Concept Map – How Ideas Connect
 
-```text
-Trees (Week 07)
-   │
-   ▼
-Graph Fundamentals (Week 08)
-   ├── Graph Types & Representations (Day 1)
-   │      ├── Directed / Undirected
-   │      ├── Weighted / Unweighted
-   │      └── Explicit / Implicit
-   │
-   ├── Traversals (Day 2 & 3)
-   │      ├── BFS → Shortest Paths (Unweighted), Layers
-   │      └── DFS → Structure (Cycles, Orders)
-   │             └── Topological Sort (DAGs)
-   │
-   ├── Structure Queries (Day 4)
-   │      ├── Connected Components (Islands)
-   │      └── Bipartite Graphs (2-Colorability)
-   │
-   └── Advanced Structure (Day 5)
-          └── SCCs → Condensation DAG
 
-Next: Week 09 – Weighted Graph Algorithms (Dijkstra, Bellman–Ford, MST)
+```mermaid
+flowchart TD
+    R["Trees (Week 07)"]
+    R --> N1["Graph Types & Representations (Day 1)"]
+    N1 --> N2["Directed / Undirected"]
+    N1 --> N3["Weighted / Unweighted"]
+    N1 --> N4["Explicit / Implicit"]
+    R --> N5["Traversals (Day 2 & 3)"]
+    N5 --> N6["BFS → Shortest Paths (Unweighted), Layers"]
+    N5 --> N7["DFS → Structure (Cycles, Orders)"]
+    N7 --> N8["Topological Sort (DAGs)"]
+    R --> N9["Structure Queries (Day 4)"]
+    N9 --> N10["Connected Components (Islands)"]
+    N9 --> N11["Bipartite Graphs (2-Colorability)"]
+    R --> N12["Advanced Structure (Day 5)"]
+    N12 --> N13["SCCs → Condensation DAG"]
 ```
+
 
 Takeaway: **representation → traversal → structure** is the flow of Week 08.
 
@@ -221,3 +222,7 @@ These are not core to Week 08 but connect directly:
 - **Network flow and matching:** flows on directed graphs; rely heavily on BFS (Edmonds–Karp) and graph modeling skills.
 
 Use these as pointers for **curiosity-driven exploration** once the Week 08 core feels solid.
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

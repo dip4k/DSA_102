@@ -1,4 +1,10 @@
 # 📚 WEEK 03: FOUNDATIONS III - SORTING, HEAPS & HASHING
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Comprehensive Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
+
+---
+
 ## Elementary Sorts, Merge Sort, Quick Sort, Heaps, Hash Tables, Rolling Hash & Rabin-Karp
 
 **Phase:** A (Foundations)  
@@ -78,69 +84,45 @@ These aren't just algorithms—they're **essential infrastructure** that:
 ### Elementary Sort Concepts
 
 **Pattern 1: Bubble Sort**
+
+```mermaid
+flowchart TD
+    R["Idea Compare adjacent pairs, swap if wrong order"]
+    R --> N1["[5, 2, 8, 1, 9] → swap 5,2 → [2, 5, 8, 1, 9]"]
+    R --> N2["[2, 5, 8, 1, 9] → no swap 5,8 → [2, 5, 8, 1, 9]"]
+    R --> N3["[2, 5, 8, 1, 9] → swap 8,1 → [2, 5, 1, 8, 9]"]
+    R --> N4["[2, 5, 1, 8, 9] → swap 8,9? No → [2, 5, 1, 8, 9]"]
+    R --> N5["[2, 5, 1, 8, 9] → swap 2,5? No → [2, 5, 1, 8, 9]"]
+    R --> N6["[2, 5, 1, 8, 9] → swap 5,1 → [2, 1, 5, 8, 9]"]
+    R --> N7["[2, 1, 5, 8, 9] → stop (8 in position)"]
 ```
-Idea: Compare adjacent pairs, swap if wrong order
-      Largest element "bubbles" to end each pass
 
-Array: [5, 2, 8, 1, 9]
-
-Pass 1: Compare and swap adjacent pairs
-├─ [5, 2, 8, 1, 9] → swap 5,2 → [2, 5, 8, 1, 9]
-├─ [2, 5, 8, 1, 9] → no swap 5,8 → [2, 5, 8, 1, 9]
-├─ [2, 5, 8, 1, 9] → swap 8,1 → [2, 5, 1, 8, 9]
-└─ [2, 5, 1, 8, 9] → swap 8,9? No → [2, 5, 1, 8, 9]
-                     (9 is in final position)
-
-Pass 2: Repeat for first N-1 elements
-├─ [2, 5, 1, 8, 9] → swap 2,5? No → [2, 5, 1, 8, 9]
-├─ [2, 5, 1, 8, 9] → swap 5,1 → [2, 1, 5, 8, 9]
-└─ [2, 1, 5, 8, 9] → stop (8 in position)
-
-Continue until sorted
-```
 
 **Pattern 2: Selection Sort**
+
+```mermaid
+flowchart TD
+    R["Idea Find minimum, place at start"]
+    R --> N1["min = 1 (at index 3)"]
+    R --> N2["Swap with first: [1, 2, 8, 5, 9]"]
+    R --> N3["min = 2 (already at index 1)"]
+    R --> N4["No swap: [1, 2, 8, 5, 9]"]
+    R --> N5["min = 5 (at index 3)"]
+    R --> N6["Swap: [1, 2, 5, 8, 9]"]
 ```
-Idea: Find minimum, place at start
-      Grow sorted prefix by one each iteration
 
-Array: [5, 2, 8, 1, 9]
-
-Pass 1: Find minimum in [5, 2, 8, 1, 9]
-├─ min = 1 (at index 3)
-└─ Swap with first: [1, 2, 8, 5, 9]
-
-Pass 2: Find minimum in [2, 8, 5, 9]
-├─ min = 2 (already at index 1)
-└─ No swap: [1, 2, 8, 5, 9]
-
-Pass 3: Find minimum in [8, 5, 9]
-├─ min = 5 (at index 3)
-└─ Swap: [1, 2, 5, 8, 9]
-
-Result: [1, 2, 5, 8, 9] (sorted)
-```
 
 **Pattern 3: Insertion Sort**
+
+```mermaid
+flowchart TD
+    R["Idea Grow sorted prefix by inserting next element"]
+    R --> N1["Insert 2: Shift 5 right, place 2 → [2, 5]"]
+    R --> N2["8 > 5, just append → [2, 5, 8]"]
+    R --> N3["1 < 2, shift all, place 1 → [1, 2, 5, 8]"]
+    R --> N4["9 > 8, just append → [1, 2, 5, 8, 9]"]
 ```
-Idea: Grow sorted prefix by inserting next element
 
-Array: [5, 2, 8, 1, 9]
-
-Sorted: [5], Unsorted: [2, 8, 1, 9]
-├─ Insert 2: Shift 5 right, place 2 → [2, 5]
-
-Sorted: [2, 5], Unsorted: [8, 1, 9]
-├─ 8 > 5, just append → [2, 5, 8]
-
-Sorted: [2, 5, 8], Unsorted: [1, 9]
-├─ 1 < 2, shift all, place 1 → [1, 2, 5, 8]
-
-Sorted: [1, 2, 5, 8], Unsorted: [9]
-├─ 9 > 8, just append → [1, 2, 5, 8, 9]
-
-Result: [1, 2, 5, 8, 9] (sorted)
-```
 
 ---
 
@@ -405,19 +387,18 @@ if (i != minIdx)
 
 **System:** Java's `Arrays.sort()` uses TimSort (combination)
 
-```
-For small arrays (< 64): Insertion sort
-├─ Fast constants for small N
-└─ Stable
 
-For medium arrays: Merge sort + Insertion
-├─ Merge for O(N log N) worst case
-└─ Insertion for small chunks
-
-For large arrays: Optimized with memory patterns
-├─ Exploits CPU caches
-└─ Maintains stability
+```mermaid
+flowchart TD
+    R["For small arrays (< 64) Insertion sort"]
+    R --> N1["Fast constants for small N"]
+    R --> N2["Stable"]
+    R --> N3["Merge for O(N log N) worst case"]
+    R --> N4["Insertion for small chunks"]
+    R --> N5["Exploits CPU caches"]
+    R --> N6["Maintains stability"]
 ```
+
 
 ---
 
@@ -475,42 +456,28 @@ For large arrays: Optimized with memory patterns
 ### Merge Sort Concept
 
 **Pattern: Divide-Conquer-Combine**
+
+```mermaid
+flowchart TD
+    R["Array [5, 2, 8, 1, 3, 9, 4, 7]"]
+    R --> N1["[5, 2, 8, 1] | [3, 9, 4, 7]"]
+    R --> N2["Continue dividing"]
+    R --> N3["[2, 5] [1, 8] | [3, 9] [4, 7]"]
+    R --> N4["[1, 2, 5, 8] | [3, 4, 7, 9]"]
+    R --> N5["[1, 2, 3, 4, 5, 7, 8, 9] ✓"]
 ```
-Array: [5, 2, 8, 1, 3, 9, 4, 7]
 
-Divide: Split in half
-├─ [5, 2, 8, 1] | [3, 9, 4, 7]
-└─ Continue dividing
-
-Base cases: [5] [2] [8] [1] | [3] [9] [4] [7]
-
-Merge pairs:
-├─ [2, 5] [1, 8] | [3, 9] [4, 7]
-├─ [1, 2, 5, 8] | [3, 4, 7, 9]
-└─ [1, 2, 3, 4, 5, 7, 8, 9] ✓
-
-T(N) = 2·T(N/2) + O(N)
-     = O(N log N) by Master Theorem
-```
 
 ### Quick Sort Concept
 
 **Pattern: Partition-Recursively-Solve**
+
+```mermaid
+flowchart TD
+    R["Array [5, 2, 8, 1, 3, 9, 4, 7]"]
+    R --> N1["Partition: [2, 1, 3, 4] [5] [8, 9, 7]"]
 ```
-Array: [5, 2, 8, 1, 3, 9, 4, 7]
 
-Pick pivot (e.g., 5):
-├─ Partition: [2, 1, 3, 4] [5] [8, 9, 7]
-│  (elements < 5) (pivot) (elements > 5)
-
-Recursively sort left: [1, 2, 3, 4]
-Recursively sort right: [7, 8, 9]
-
-Result: [1, 2, 3, 4, 5, 7, 8, 9] ✓
-
-Expected: O(N log N)
-Worst case: O(N²) if pivot always wrong
-```
 
 ---
 
@@ -795,21 +762,20 @@ while (j <= right)
 
 **System:** Hybrid sort combining Merge + Insertion
 
-```
-For chunks < 64: Insertion sort
-├─ Fast constants
 
-For larger arrays: Galloping merge
-├─ Detects runs
-├─ Merges efficiently
-└─ Stable!
-
-Benefits:
-├─ O(N) best case (already sorted)
-├─ O(N log N) worst case
-├─ Stable
-└─ Cache efficient
+```mermaid
+flowchart TD
+    R["For chunks < 64 Insertion sort"]
+    R --> N1["Fast constants"]
+    R --> N2["Detects runs"]
+    R --> N3["Merges efficiently"]
+    R --> N4["Stable!"]
+    R --> N5["O(N) best case (already sorted)"]
+    R --> N6["O(N log N) worst case"]
+    R --> N7["Stable"]
+    R --> N8["Cache efficient"]
 ```
+
 
 ---
 
@@ -867,25 +833,15 @@ Benefits:
 ### Heap Concepts
 
 **Binary Heap Model:**
+
+```mermaid
+flowchart TD
+    R["Array representation of complete binary tree"]
+    R --> N1["Parent of index i: (i-1)/2"]
+    R --> N2["Left child of index i: 2i + 1"]
+    R --> N3["Right child of index i: 2i + 2"]
 ```
-Array representation of complete binary tree
 
-      1 (index 0)
-    /   \
-   2     3
-  / \   /
- 4   5 6
-
-Array: [1, 2, 3, 4, 5, 6]
-
-Relationships:
-├─ Parent of index i: (i-1)/2
-├─ Left child of index i: 2i + 1
-└─ Right child of index i: 2i + 2
-
-Max-Heap: Parent >= children (root is maximum)
-Min-Heap: Parent <= children (root is minimum)
-```
 
 **Core Operations:**
 
@@ -1231,9 +1187,9 @@ public class PriorityQueue<T> where T : IComparable<T>
 }
 
 // Real use: Dijkstra's algorithm
-// ├─ Enqueue: Add node with distance
-// ├─ Dequeue: Get next closest unvisited node
-// └─ Total: O((V+E) log V)
+// +- Enqueue: Add node with distance
+// +- Dequeue: Get next closest unvisited node
+// +- Total: O((V+E) log V)
 ```
 
 ---
@@ -1311,19 +1267,17 @@ for (int i = n - 1; i >= 1; i--)
 
 **System:** Discrete event simulator
 
-```
-Events: [(time=5, action), (time=2, action), (time=8, action)]
-Min-heap by time
 
-Process:
-├─ Dequeue min time event: 2
-├─ Execute action
-├─ Possibly add new events
-├─ Dequeue next: 5
-└─ Continue until done
-
-Efficiency: O(log N) per event vs O(N) without heap
+```mermaid
+flowchart TD
+    R["Events [(time=5, action), (time=2, action), (time=8, action)]"]
+    R --> N1["Dequeue min time event: 2"]
+    R --> N2["Execute action"]
+    R --> N3["Possibly add new events"]
+    R --> N4["Dequeue next: 5"]
+    R --> N5["Continue until done"]
 ```
+
 
 ---
 
@@ -1382,57 +1336,42 @@ Efficiency: O(log N) per event vs O(N) without heap
 ### Hash Table Concepts
 
 **Hash Function:**
+
+```mermaid
+flowchart TD
+    R["Purpose Map key to bucket index"]
+    R --> N1["Uniformity: All buckets equally likely"]
+    R --> N2["Cheap: O(1) to compute"]
+    R --> N3["Deterministic: Same key always same hash"]
 ```
-Purpose: Map key to bucket index
 
-Goal: Distribute keys uniformly across buckets
-                     ↓
-            hash(key) = index
-
-Example: hash(key) = key % tableSize
-
-Desiderata:
-├─ Uniformity: All buckets equally likely
-├─ Cheap: O(1) to compute
-└─ Deterministic: Same key always same hash
-```
 
 **Separate Chaining:**
+
+```mermaid
+flowchart TD
+    R["Hash table with chains (linked lists)"]
+    R --> N1["Just add to chain"]
+    R --> N2["Expected chain length = N/M (load factor)"]
+    R --> N3["Insert: hash, find bucket, add to chain O(1) avg"]
+    R --> N4["Lookup: hash, find bucket, search chain O(1) avg"]
+    R --> N5["Delete: hash, find bucket, remove O(1) avg"]
 ```
-Hash table with chains (linked lists)
 
-Collisions (multiple keys hash to same bucket):
-├─ Just add to chain
-└─ Expected chain length = N/M (load factor)
-
-Array of buckets (each is a linked list):
-
-Index 0: [key1, key2] → [val1, val2]
-Index 1: [key3] → [val3]
-Index 2: []
-Index 3: [key4] → [val4]
-...
-
-Operations:
-├─ Insert: hash, find bucket, add to chain O(1) avg
-├─ Lookup: hash, find bucket, search chain O(1) avg
-└─ Delete: hash, find bucket, remove O(1) avg
-```
 
 **Load Factor:**
-```
-α = N / M (average chain length)
 
-Performance:
-├─ α ≈ 1: Good performance
-├─ α > 2: Chains getting long, consider resizing
-├─ α >> 1: O(1) becomes O(N) worst case
-
-Resizing:
-├─ When α > threshold: Create larger table
-├─ Rehash all elements: hash into new table
-├─ O(N) operation but amortized O(1) per insertion
+```mermaid
+flowchart TD
+    R["α = N / M (average chain length)"]
+    R --> N1["α ≈ 1: Good performance"]
+    R --> N2["α > 2: Chains getting long, consider resizing"]
+    R --> N3["α >> 1: O(1) becomes O(N) worst case"]
+    R --> N4["When α > threshold: Create larger table"]
+    R --> N5["Rehash all elements: hash into new table"]
+    R --> N6["O(N) operation but amortized O(1) per insertion"]
 ```
+
 
 ---
 
@@ -1595,22 +1534,23 @@ public class HashTable<K, V>
 
 ### Pattern 2: Amortized Analysis of Resizing
 
-```
-Insert operations with doubling:
-├─ Insert 1-8 items (capacity 16): O(1) each = O(8)
-├─ 9th insert triggers resize:
-│  ├─ Create new table (capacity 32): O(1)
-│  ├─ Rehash 8 items: O(8)
-│  └─ Total: O(9)
-└─ Amortized per insert: O(9)/9 = O(1)
 
-For N insertions:
-├─ Resizes at: 1, 2, 4, 8, 16, ..., N
-├─ Total rehash cost: 1+2+4+...+N = O(N)
-├─ Plus N insert operations
-└─ Total: O(2N) = O(N)
-└─ Amortized per insert: O(N)/N = O(1)
+```mermaid
+flowchart TD
+    R["Insert operations with doubling"]
+    R --> N1["Insert 1-8 items (capacity 16): O(1) each = O(8)"]
+    R --> N2["9th insert triggers resize:"]
+    N2 --> N3["Create new table (capacity 32): O(1)"]
+    N2 --> N4["Rehash 8 items: O(8)"]
+    N2 --> N5["Total: O(9)"]
+    R --> N6["Amortized per insert: O(9)/9 = O(1)"]
+    R --> N7["Resizes at: 1, 2, 4, 8, 16, ..., N"]
+    R --> N8["Total rehash cost: 1+2+4+...+N = O(N)"]
+    R --> N9["Plus N insert operations"]
+    R --> N10["Total: O(2N) = O(N)"]
+    R --> N11["Amortized per insert: O(N)/N = O(1)"]
 ```
+
 
 ---
 
@@ -1704,12 +1644,15 @@ public void Insert(K key, V value)
 
 **System:** Python's dict uses open addressing (next day)
 
+
+```mermaid
+flowchart TD
+    R["But concept same Hash, collision handling, resizing"]
+    R --> N1["Python optimizations: compact representation"]
+    R --> N2["Specialized hash functions per type"]
+    R --> N3["Resizing strategy: 2/3 to 1/3"]
 ```
-But concept same: Hash, collision handling, resizing
-├─ Python optimizations: compact representation
-├─ Specialized hash functions per type
-└─ Resizing strategy: 2/3 to 1/3
-```
+
 
 ---
 
@@ -1768,65 +1711,56 @@ But concept same: Hash, collision handling, resizing
 ### Open Addressing Concepts
 
 **Pattern: Linear Probing**
+
+```mermaid
+flowchart TD
+    R["Hash collision resolution Try next positions"]
+    R --> N1["Try index 5: occupied, probe next"]
+    R --> N2["Try index 6: empty, insert!"]
+    R --> N3["table[6] = 42"]
+    R --> N4["Hash to 5: wrong key, probe"]
+    R --> N5["Check 6: found! ✓"]
+    R --> N6["Consecutive filled slots slow down probes"]
+    R --> N7["All insertions after collision use same path"]
 ```
-Hash collision resolution: Try next positions
 
-Insert key=42 (hash=5, collision at 5):
-├─ Try index 5: occupied, probe next
-├─ Try index 6: empty, insert!
-└─ table[6] = 42
-
-Lookup key=42:
-├─ Hash to 5: wrong key, probe
-├─ Check 6: found! ✓
-
-Problem: Primary clustering
-├─ Consecutive filled slots slow down probes
-├─ All insertions after collision use same path
-```
 
 **Pattern: Quadratic Probing**
-```
-Instead of +1, +2, +3, ...: Try +1, +4, +9, +16, ...
 
-Insert key (hash=5, collision):
-├─ Try 5: occupied
-├─ Try 5+1=6: occupied
-├─ Try 5+4=9: empty, insert!
-└─ Spreads probes more evenly
-
-Better clustering properties
+```mermaid
+flowchart TD
+    R["Instead of +1, +2, +3, ... Try +1, +4, +9, +16, ..."]
+    R --> N1["Try 5: occupied"]
+    R --> N2["Try 5+1=6: occupied"]
+    R --> N3["Try 5+4=9: empty, insert!"]
+    R --> N4["Spreads probes more evenly"]
 ```
+
 
 **Pattern: Double Hashing**
+
+```mermaid
+flowchart TD
+    R["Use two independent hash functions"]
+    R --> N1["Less clustering"]
+    R --> N2["More uniform probing"]
+    R --> N3["Requires good h2"]
 ```
-Use two independent hash functions:
 
-index = (h1(key) + i * h2(key)) % capacity
-
-For each probe i, use different offset
-
-Best theoretical properties:
-├─ Less clustering
-├─ More uniform probing
-└─ Requires good h2
-```
 
 ### Rabin-Karp Rolling Hash
 
 **Concept: Polynomial Hash on Strings**
-```
-Hash string as polynomial evaluated at prime base:
 
-hash("abc") = (a · B² + b · B¹ + c · B⁰) mod P
-            = (97 · 256 + 98 · 256 + 99) mod (10^9+7)
-
-Rolling window: Slide right by one character
-├─ Remove leftmost: hash - (a · B^(L-1))
-├─ Shift down: result * B
-├─ Add rightmost: result + newChar
-└─ O(1) per slide after O(L) preprocessing
+```mermaid
+flowchart TD
+    R["Hash string as polynomial evaluated at prime base"]
+    R --> N1["Remove leftmost: hash - (a · B^(L-1))"]
+    R --> N2["Shift down: result * B"]
+    R --> N3["Add rightmost: result + newChar"]
+    R --> N4["O(1) per slide after O(L) preprocessing"]
 ```
+
 
 ---
 
@@ -2211,18 +2145,17 @@ hashValue = (hashValue - (oldChar * basePower) % MOD + MOD) % MOD;
 
 **System:** Genomics research lab
 
-```
-Reference DNA: 3 billion base pairs
-Query sequences: 10,000 × 1M bases
 
-Find all matches:
-├─ Rabin-Karp rolling hash:
-│  ├─ Precompute patterns: 10,000 × O(1M) = O(10M)
-│  ├─ Roll through reference: O(3B)
-│  └─ Total: O(3B + 10M) ≈ instant
-│
-└─ Without rolling hash: O(3B × 10K × 1M) = infeasible
+```mermaid
+flowchart TD
+    R["Reference DNA 3 billion base pairs"]
+    R --> N1["Rabin-Karp rolling hash:"]
+    N1 --> N2["Precompute patterns: 10,000 × O(1M) = O(10M)"]
+    N1 --> N3["Roll through reference: O(3B)"]
+    N1 --> N4["Total: O(3B + 10M) ≈ instant"]
+    R --> N5["Without rolling hash: O(3B × 10K × 1M) = infeasible"]
 ```
+
 
 ---
 
@@ -2309,35 +2242,28 @@ Find all matches:
 
 ## 🎯 Pattern Recognition Guide - Week 3
 
+
+```mermaid
+flowchart TD
+    R["SORTING PROBLEM CLASSIFICATION"]
+    R --> N1["Small N (< 100) → Insertion sort or library"]
+    R --> N2["Already nearly sorted → Insertion sort"]
+    R --> N3["Need guaranteed O(N log N) → Merge sort"]
+    R --> N4["Memory available, cache matters → Quick sort"]
+    R --> N5["Need priority operations → Heap sort"]
+    R --> N6["Default: Use library (Timsort, Introsort)"]
+    R --> N7["Dictionary/map operations → Separate chaining"]
+    R --> N8["Memory critical → Open addressing"]
+    R --> N9["Pattern matching needed → Rolling hash (Rabin-Karp)"]
+    R --> N10["Integer keys only → Direct addressing"]
+    R --> N11["Distributed system → Consistent hashing"]
+    R --> N12["Shortest paths → Min-heap (Dijkstra)"]
+    R --> N13["Task scheduling → Priority queue"]
+    R --> N14["Finding K largest → Min-heap of size K"]
+    R --> N15["Top K frequent → Max-heap or other structure"]
+    R --> N16["Event simulation → Priority queue"]
 ```
-SORTING PROBLEM CLASSIFICATION:
 
-Need to sort data?
-├─ Small N (< 100) → Insertion sort or library
-├─ Already nearly sorted → Insertion sort
-├─ Need guaranteed O(N log N) → Merge sort
-├─ Memory available, cache matters → Quick sort
-├─ Need priority operations → Heap sort
-└─ Default: Use library (Timsort, Introsort)
-
-HASHING PROBLEM CLASSIFICATION:
-
-Need fast lookup?
-├─ Dictionary/map operations → Separate chaining
-├─ Memory critical → Open addressing
-├─ Pattern matching needed → Rolling hash (Rabin-Karp)
-├─ Integer keys only → Direct addressing
-└─ Distributed system → Consistent hashing
-
-HEAP PROBLEM CLASSIFICATION:
-
-Need priority management?
-├─ Shortest paths → Min-heap (Dijkstra)
-├─ Task scheduling → Priority queue
-├─ Finding K largest → Min-heap of size K
-├─ Top K frequent → Max-heap or other structure
-└─ Event simulation → Priority queue
-```
 
 ---
 
@@ -2438,3 +2364,7 @@ Week 3 teaches the **essential primitives** that every computer system uses:
 **Next Recommended:** Week 04 - Problem-Solving Patterns
 
 **END OF WEEK 03 COMPLETE PLAYBOOK - CORRECTED EDITION**
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

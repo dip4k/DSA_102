@@ -1,5 +1,11 @@
 # 📘 WEEK 11 FULL PLAYBOOK: DYNAMIC PROGRAMMING II — TREES, DAGS & ADVANCED
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Comprehensive Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
+
+---
+
 **Week:** 11 | **Phase:** D — Intermediate Advanced  
 **Duration:** 5 days (120 min each) | **Total:** 600 minutes (10 hours)  
 **Difficulty Level:** 🔴 Advanced  
@@ -30,19 +36,22 @@ By end of Week 11, you'll:
 
 ## 📚 WEEK 11 STRUCTURE
 
+
+```mermaid
+flowchart TD
+    R["WEEK 11 DYNAMIC PROGRAMMING II"]
+    R --> N1["DAY 1: DP ON TREES (120 min)"]
+    N1 --> N2["Post-order traversal, independent set, tree diameter, coloring, rerooting"]
+    R --> N3["DAY 2: DP ON DAGS (120 min)"]
+    N3 --> N4["Topological ordering, longest/shortest paths, critical paths"]
+    R --> N5["DAY 3: BITMASK & SUBSET DP (120 min)"]
+    N5 --> N6["Bitmask representation, TSP, subset sum, independent set (small graphs)"]
+    R --> N7["DAY 4: STATE COMPRESSION & OPTIMIZATIONS (90 min) [OPTIONAL]"]
+    N7 --> N8["Sliding window, dimension reduction, memoization vs tabulation, pruning"]
+    R --> N9["DAY 5: MIXED DP PROBLEMS (90 min) [OPTIONAL]"]
+    N9 --> N10["Recognition framework, multi-concept problems, problem-solving strategy"]
 ```
-WEEK 11: DYNAMIC PROGRAMMING II
-├─ DAY 1: DP ON TREES (120 min)
-│  └─ Post-order traversal, independent set, tree diameter, coloring, rerooting
-├─ DAY 2: DP ON DAGS (120 min)
-│  └─ Topological ordering, longest/shortest paths, critical paths
-├─ DAY 3: BITMASK & SUBSET DP (120 min)
-│  └─ Bitmask representation, TSP, subset sum, independent set (small graphs)
-├─ DAY 4: STATE COMPRESSION & OPTIMIZATIONS (90 min) [OPTIONAL]
-│  └─ Sliding window, dimension reduction, memoization vs tabulation, pruning
-└─ DAY 5: MIXED DP PROBLEMS (90 min) [OPTIONAL]
-   └─ Recognition framework, multi-concept problems, problem-solving strategy
-```
+
 
 ---
 
@@ -1405,3 +1414,6 @@ After Week 11, you're ready for:
 **Format:** Markdown (.md)  
 **Verified:** ✅ All sections complete, self-check passed
 
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

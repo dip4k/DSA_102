@@ -1,5 +1,11 @@
 # 📝 Week 14 Summary & Key Concepts
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 This document summarizes the core mathematical and algorithmic concepts covered in Week 14.
 
 ---
@@ -20,7 +26,7 @@ This document summarizes the core mathematical and algorithmic concepts covered 
 ---
 
 ## 📅 Day 3: Primes Factoring & Modular Inverse Powers
-*   **Greatest Common Divisor (GCD)**: The Euclidean greatest common divisor (GCD) algorithm replaces the larger number with its modular remainder recursively: gcd(a, b) = gcd(b, a \bmod b).
+*   **Greatest Common Divisor (GCD)**: The Euclidean greatest common divisor (GCD) algorithm replaces the larger number with its modular remainder recursively: gcd(a, b) = gcd(b, a % b).
 *   **Sieve of Eratosthenes**: Mark multiples of primes starting from p^2 to find all prime numbers up to N.
 *   **Logarithmic exponentiation**: Square the base and halve the exponent in each step to calculate modular exponents in O(log e) time.
 *   **Modular Multiplicative Inverse**: Compute the modular inverse of a number modulo a prime using Fermat's Little Theorem: A^{-1} == A^{P-2} +/-od P.
@@ -38,3 +44,7 @@ This document summarizes the core mathematical and algorithmic concepts covered 
 ## 📅 Day 5: Advanced Totients & Modulo Solvers
 *   **Euler's Totient phi(N)**: Count coprime integers up to N using the prime factor allocation product formula.
 *   **Chinese Remainder Theorem**: Find a unique, high-precision solution for a system of multiple congruent mod equation channels.
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

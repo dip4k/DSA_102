@@ -1,11 +1,12 @@
 # 📘 Week 8 Day 2: Breadth-First Search (BFS) — Engineering Guide
 
-**Metadata:**
-- **Week:** 8 | **Day:** 2  
-- **Category:** Graph Algorithms  
-- **Difficulty:** 🟡 Intermediate  
-- **Real-World Impact:** BFS is the foundation for shortest-path finding in unweighted graphs, level-order traversal, connected component discovery, and bipartite checking. It powers everything from social network breadth analysis to network broadcasting to puzzle solving.  
-- **Prerequisites:** Week 8 Day 1 (Graph Representations), Week 2 Day 4 (Queues & Deques)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_08_Day_01_Graph_Models_and_Representations_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_08_Day_03_DFS_Topological_Sort_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -954,4 +955,6 @@ In Week 8 Day 3, you'll learn DFS, which explores differently but has similar st
 - ✅ Smooth transitions between chapters
 - ✅ No code except pseudocode; logic in plain English
 - ✅ Ready for immediate use in instruction
+---
 
+> 🧭 **Navigation:** [← Previous Day](Week_08_Day_01_Graph_Models_and_Representations_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_08_Day_03_DFS_Topological_Sort_Instructional.md)

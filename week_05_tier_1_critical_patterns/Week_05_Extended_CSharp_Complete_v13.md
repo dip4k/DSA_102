@@ -1,5 +1,11 @@
 # 🗺️ Week_05_Extended_CSharp_Problem_Solving_Implementation — COMPLETE v13
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This C# (.NET 8/9) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 **Week:** 5 – Tier 1 Critical Patterns: Hash, Monotonic Stack, Intervals, Partition & Kadane, Fast/Slow  
 **Purpose:** Master high-frequency patterns covering large fraction of interview problem space  
 **Target:** Transform Week 5 critical patterns into interview-ready C# coding skills  
@@ -1145,3 +1151,7 @@ This file combines:
 - ✅ **Progressive learning** (v11 strength) — Practice from easy to hard
 - ✅ **Interview readiness** (v13 integration) — Pass technical interviews
 - ✅ **Complete coverage** (WEEK 5 TOPICS) — All Tier 1 critical patterns
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

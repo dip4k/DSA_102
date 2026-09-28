@@ -1,4 +1,10 @@
 # 📚 WEEK 06: TIER 1 ADVANCED STRING PATTERNS
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Comprehensive Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
+
+---
+
 ## Palindromes, Substring Problems, Parentheses Matching, Advanced String Techniques
 
 **Phase:** B (Patterns)  
@@ -440,28 +446,19 @@ DNA analysis needs longest palindromic region in 500-character sequence (1M sequ
 - **Expansion:** Add characters on both sides while matching
 - **Maximum:** When bubble pops (characters don't match)
 
+
+```mermaid
+flowchart TD
+    R["Finding longest palindrome in "babad""]
+    R --> N1["'a' is palindrome ✅"]
+    R --> N2["Expand: b[a]d"]
+    R --> N3["Longest so far: 'a'"]
+    R --> N4["'b' is palindrome ✅"]
+    R --> N5["Expand: a[b]a"]
+    R --> N6["Expand: ?[a]b[a]?"]
+    R --> N7["Longest: 'aba' (length 3)"]
 ```
-Finding longest palindrome in "babad":
 
-Center at 'a' (index 1):
-Expand: b[a]d
-├─ 'a' is palindrome ✅
-├─ Expand: b[a]d
-│  'b' != 'd'? NO match
-└─ Longest so far: "a"
-
-Center at 'b' (index 2):
-Expand: a[b]a
-├─ 'b' is palindrome ✅
-├─ Expand: a[b]a
-│  'a' == 'a'? YES ✅
-│  "aba" is palindrome
-├─ Expand: ?[a]b[a]?
-│  No more characters
-└─ Longest: "aba" (length 3)
-
-Result: "aba" or "bab"
-```
 
 ---
 
@@ -1621,19 +1618,15 @@ Password validator needs to check:
 3. **Early termination:** Stop if first check fails
 4. **Optimize structure:** Choose data structures carefully
 
-```
-Sequential checks (wrong):
-Check 1: O(N) palindrome
-Check 2: O(N) balanced
-Check 3: O(N) pattern
-Total: O(3N) = O(N) but 3× slowdown
 
-Combined pass (right):
-├─ Check palindrome property
-├─ Check bracket balance (stack)
-├─ Check pattern (hash table)
-Total: O(N) single pass
+```mermaid
+flowchart TD
+    R["Sequential checks (wrong)"]
+    R --> N1["Check palindrome property"]
+    R --> N2["Check bracket balance (stack)"]
+    R --> N3["Check pattern (hash table)"]
 ```
+
 
 ---
 
@@ -1645,13 +1638,15 @@ Total: O(N) single pass
 - **Track state:** Maintain variables for each check
 - **Result:** All checks complete in single pass
 
+
+```mermaid
+flowchart TD
+    R["Processing "a(b(c)b)a""]
+    R --> N1["Palindrome check: Track if symmetrical"]
+    R --> N2["Bracket check: Stack operations"]
+    R --> N3["Pattern check: Hash table lookups"]
 ```
-Processing "a(b(c)b)a":
-├─ Palindrome check: Track if symmetrical
-├─ Bracket check: Stack operations
-├─ Pattern check: Hash table lookups
-All in ONE pass through string
-```
+
 
 ---
 
@@ -2087,27 +2082,22 @@ D) Stack-based parsing
 
 ## 🎯 Pattern Selection Decision Tree
 
+
+```mermaid
+flowchart TD
+    R["String problem classification"]
+    R --> N1["Check if palindrome: O(N) two-pointer"]
+    R --> N2["Find longest: O(N²) expand-center"]
+    R --> N3["Generate all: O(Catalan) recursive"]
+    R --> N4["All substrings: O(N²) nested loops"]
+    R --> N5["Pattern search: O(N+M) hashing"]
+    R --> N6["Common substring: O(N·M) DP"]
+    R --> N7["Check valid: O(N) stack"]
+    R --> N8["Min removals: O(N) counter"]
+    R --> N9["Generate valid: O(Catalan) recursion"]
+    R --> N10["Combine: O(N) single pass"]
 ```
-String problem classification:
 
-Palindrome needed?
-├─ Check if palindrome: O(N) two-pointer
-├─ Find longest: O(N²) expand-center
-└─ Generate all: O(Catalan) recursive
-
-Substring operations?
-├─ All substrings: O(N²) nested loops
-├─ Pattern search: O(N+M) hashing
-└─ Common substring: O(N·M) DP
-
-Bracket validation?
-├─ Check valid: O(N) stack
-├─ Min removals: O(N) counter
-└─ Generate valid: O(Catalan) recursion
-
-Multi-requirement?
-└─ Combine: O(N) single pass
-```
 
 ---
 
@@ -2200,3 +2190,7 @@ Master Week 6 and you'll recognize these patterns everywhere.
 **Ready for Deployment:** YES ✅  
 **Quality Score:** 9.5/10 ⭐⭐⭐⭐⭐  
 **Next:** Week 07 - Core Binary Trees
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

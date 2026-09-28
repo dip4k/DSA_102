@@ -1,13 +1,12 @@
 # Week 13 Day 04: Amortized Analysis — Engineering Guide
 
-**📂 Metadata**
-- **Week:** 13  
-- **Day:** 04  
-- **Phase:** 🟧 Algorithm Paradigms  
-- **Category:** Complexity Analysis & Data Structure Design  
-- **Difficulty:** Advanced  
-- **Real-World Impact:** Essential for understanding the true cost of data structure operations in production systems (dynamic arrays, hash tables, self-adjusting trees, union-find). Enables accurate performance prediction for systems handling billions of operations.  
-- **Prerequisites:** Week 1-3 (Complexity Analysis), Week 4-6 (Arrays, Linked Lists, Stacks, Queues), Week 7-8 (Trees), Week 9-10 (Graphs)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_13_Day_03_Branch_And_Bound_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_13_Day_05_Mixed_Paradigm_Problems_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -93,18 +92,18 @@ Cost per Insert
  n  ┃     ┃              ┃                    ┃
     ┃     ┃              ┃                    ┃
     ┃     ┃              ┃                    ┃
-    ┃ ════╬══════════════╬════════════════════╬═══ Amortized Cost (O(1))
-    ┃  │  ┃  │  │  │  │  ┃  │  │  │  │  │  │  ┃
- 1  ┃  │  │  │  │  │  │  │  │  │  │  │  │  │  │
+    ┃ ====+==============+====================+=== Amortized Cost (O(1))
+    ┃  |  ┃  |  |  |  |  ┃  |  |  |  |  |  |  ┃
+ 1  ┃  |  |  |  |  |  |  |  |  |  |  |  |  |  |
     ┗━━┻━━┻━━┻━━┻━━┻━━┻━━┻━━┻━━┻━━┻━━┻━━┻━━┻━━➜ Operations
       1  2  3  4  5  6  7  8  9 10 11 12 13 14
 
 Legend:
-│ = O(1) insertion (array has space)
+| = O(1) insertion (array has space)
 ┃ = O(n) resize operation (rare)
-══ = Amortized cost line (average of both)
+== = Amortized cost line (average of both)
 
-Observation: Expensive operations (┃) are rare, cheap operations (│) are common.
+Observation: Expensive operations (┃) are rare, cheap operations (|) are common.
 ```
 
 ### The Innovation: Three Proof Techniques
@@ -312,9 +311,9 @@ Binary:
        1 flip  2 flips 1 flip  3 flips 1 flip  2 flips 1 flip  4 flips
 
 Bit 0: ████████ (8 flips in 8 increments)
-Bit 1: ████──── (4 flips)
-Bit 2: ██────── (2 flips)
-Bit 3: █─────── (1 flip)
+Bit 1: ████---- (4 flips)
+Bit 2: ██------ (2 flips)
+Bit 3: █------- (1 flip)
 
 Total: 8 + 4 + 2 + 1 = 15 flips for 8 increments
 Amortized: 15/8 ≈ 1.875 ≈ O(1)
@@ -391,32 +390,14 @@ Amortized cost: O(1)
 
 **Visual: Credit Flow**
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│         Credit Accumulation (Dynamic Array)                 │
-└─────────────────────────────────────────────────────────────┘
 
-Timeline: Insert elements into dynamic array
+| Charge: 3 | Use: 1 (insert) | Bank: 2 | Balance: 2 |
+| :--- | :--- | :--- | :--- |
+| Charge: 3 | Use: 1 (copy element 1) + 1 (insert) = 2 | Bank: 1 | Balance: 1 |
+| Charge: 3 | Use: 2 (copy elements 1,2) + 1 (insert) = 3 | Bank: 0 | Balance: 1 |
+| Charge: 3 | Use: 1 (insert) | Bank: 2 | Balance: 3 |
+| Charge: 3 | Use: 4 (copy elements 1-4) + 1 (insert) = 5 | Bank: -2 | Balance: 3-2=1 |
 
-Capacity: 1 → 2 → 4 → 8 → 16
-
-Insert 1 (capacity 1):
-  Charge: 3 | Use: 1 (insert) | Bank: 2 | Balance: 2
-
-Insert 2 (resize to 2):
-  Charge: 3 | Use: 1 (copy element 1) + 1 (insert) = 2 | Bank: 1 | Balance: 1
-
-Insert 3 (capacity 2, resize to 4):
-  Charge: 3 | Use: 2 (copy elements 1,2) + 1 (insert) = 3 | Bank: 0 | Balance: 1
-
-Insert 4 (capacity 4):
-  Charge: 3 | Use: 1 (insert) | Bank: 2 | Balance: 3
-
-Insert 5 (capacity 4, resize to 8):
-  Charge: 3 | Use: 4 (copy elements 1-4) + 1 (insert) = 5 | Bank: -2 | Balance: 3-2=1
-
-Key Insight: Pre-paid credits from earlier insertions fund expensive resizes!
-```
 
 ### Example 2: Incrementing Binary Counter
 
@@ -1748,29 +1729,22 @@ Equivalent Potential:
 
 ## Decision Framework: Should I Use Amortized Analysis?
 
+
+```mermaid
+flowchart TD
+    R["Checklist"]
+    R --> N1["No → Standard worst-case analysis sufficient"]
+    R --> N2["Yes → Continue"]
+    R --> N3["No → Amortized won't help much"]
+    R --> N4["Yes → Continue"]
+    R --> N5["No → Amortized analysis may not apply"]
+    R --> N6["Yes → Continue"]
+    R --> N7["No → Use average-case analysis"]
+    R --> N8["Yes → Use amortized analysis"]
+    R --> N9["Yes → Amortized analysis provides rigorous proof"]
+    R --> N10["No → Back-of-envelope estimate may suffice"]
 ```
-Checklist:
 
-□ Do operations have varying costs (some cheap, some expensive)?
-  ├─ No → Standard worst-case analysis sufficient
-  └─ Yes → Continue
-
-□ Are expensive operations rare?
-  ├─ No → Amortized won't help much
-  └─ Yes → Continue
-
-□ Can expensive operations be "pre-paid" by cheap ones?
-  ├─ No → Amortized analysis may not apply
-  └─ Yes → Continue
-
-□ Is operation sequence adversarial (no probability distribution)?
-  ├─ No → Use average-case analysis
-  └─ Yes → Use amortized analysis
-
-□ Do I need to convince stakeholders/interviewers of true cost?
-  ├─ Yes → Amortized analysis provides rigorous proof
-  └─ No → Back-of-envelope estimate may suffice
-```
 
 ## Real-World Design Patterns
 
@@ -2071,4 +2045,6 @@ If you can complete 3/4 challenges, you're ready for **Day 5: Mixed Paradigm Pro
 
 - Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
 - Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+---
 
+> 🧭 **Navigation:** [← Previous Day](Week_13_Day_03_Branch_And_Bound_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_13_Day_05_Mixed_Paradigm_Problems_Instructional.md)

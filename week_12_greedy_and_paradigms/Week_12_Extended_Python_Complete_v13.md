@@ -1,5 +1,11 @@
 # Week 12 Extended Python Complete v13
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Python (3.11+) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 Purpose: build Python fluency for greedy algorithm implementation patterns and proof-aware coding habits.
 
 ## Focus tags
@@ -75,3 +81,7 @@ def huffman_cost(freqs):
 - State the greedy rule explicitly.
 - Name the proof style: exchange argument, stays-ahead, or induction.
 - Give one counterexample when a tempting greedy rule fails.
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

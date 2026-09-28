@@ -1,12 +1,12 @@
 # 📘 Week 01 Day 04: Recursion I – Call Stack & Basic Patterns — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 1 | **Day:** 4
-- **Category:** Foundations / Recursion & Stack Semantics
-- **Difficulty:** 🟢 Basic (but conceptually dense)
-- **Real-World Impact:** Every function call in every program that's ever run manages state through a call stack. Recursion is not a special case—it's the direct consequence of how this stack works. Understanding it transforms recursion from "witchcraft" to "inevitable."
-- **Prerequisites:** Week 1 Days 1–3 (RAM model, asymptotics, space complexity)
-- **MIT Alignment:** Call stack mechanics from 6.006; recursion depth and amortized analysis from 6.046
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_01_Day_03_Space_Complexity_Memory_Usage_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_01_Day_05_Recursion_II_Memoization_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -78,44 +78,26 @@ Now let's call `Factorial(4)` and freeze-frame the stack at key moments.
 
 **Moment 1: Just after `Factorial(4)` is called (before recursion dives deeper)**
 
+
+```mermaid
+flowchart TD
+    R["Stack (Memory grows upward)"]
+    R --> N1["State"]
+    R --> N2["State"]
 ```
-Stack (Memory grows upward)
-┌─────────────────────────────────────┐
-│ Factorial(n=4)  frame               │ ← Top of stack
-│  - n = 4                            │
-│  - sub_result = [uninitialized]     │
-│  - Return address = [somewhere]     │
-├─────────────────────────────────────┤
-│ Main() frame                        │
-│  - (Local variables of Main)        │
-└─────────────────────────────────────┘
-```
+
 
 At this point, `Factorial(4)` has started executing. It checks `if (n == 0)` (false), then makes a recursive call to `Factorial(3)`.
 
 **Moment 2: After `Factorial(4)` calls `Factorial(3)`, which calls `Factorial(2)`, which calls `Factorial(1)`**
 
-```
-┌─────────────────────────────────────┐
-│ Factorial(n=1)  frame               │ ← Top (currently executing)
-│  - n = 1                            │
-│  - Return address = 0x2xxx          │
-├─────────────────────────────────────┤
-│ Factorial(n=2)  frame               │ (waiting for Factorial(1) to return)
-│  - n = 2                            │
-│  - Return address = 0x2yyy          │
-├─────────────────────────────────────┤
-│ Factorial(n=3)  frame               │ (waiting for Factorial(2) to return)
-│  - n = 3                            │
-│  - Return address = 0x2zzz          │
-├─────────────────────────────────────┤
-│ Factorial(n=4)  frame               │ (waiting for Factorial(3) to return)
-│  - n = 4                            │
-│  - Return address = 0x1000          │
-├─────────────────────────────────────┤
-│ Main()                              │
-└─────────────────────────────────────┘
-```
+
+| Factorial(n=1)  frame | ← Top (currently executing) |
+| :--- | :--- |
+| Factorial(n=2)  frame | (waiting for Factorial(1) to return) |
+| Factorial(n=3)  frame | (waiting for Factorial(2) to return) |
+| Factorial(n=4)  frame | (waiting for Factorial(3) to return) |
+
 
 Notice: the stack has grown. Four frames are stacked on top of each other. Each has its own copy of `n` (1, 2, 3, 4). None of them can access each other's locals directly. They're isolated.
 
@@ -123,13 +105,13 @@ Notice: the stack has grown. Four frames are stacked on top of each other. Each 
 
 When `Factorial(1)` calls `Factorial(0)`, the base case triggers:
 
+
+```mermaid
+flowchart TD
+    R["State"]
+    R --> N1["State"]
 ```
-┌─────────────────────────────────────┐
-│ Factorial(n=0)  frame               │ ← Top (currently executing)
-│  - n = 0                            │
-│  - Returns 1 immediately            │
-└─────────────────────────────────────┘
-```
+
 
 The condition `if (n == 0)` is true, so it executes `return 1` without making another recursive call. This is the **base case**—the termination point.
 
@@ -137,20 +119,14 @@ The condition `if (n == 0)` is true, so it executes `return 1` without making an
 
 After `Factorial(0)` returns, its frame is popped:
 
+
+```mermaid
+flowchart TD
+    R["State"]
+    R --> N1["State"]
+    R --> N2["State"]
 ```
-┌─────────────────────────────────────┐
-│ Factorial(n=1)  frame               │ ← Top (resumes execution)
-│  - n = 1                            │
-│  - sub_result = 1 (from Factorial(0) return) │
-│  - Now computes: 1 * 1 = 1          │
-│  - Returns 1                        │
-├─────────────────────────────────────┤
-│ Factorial(n=2)  frame               │
-│ Factorial(n=3)  frame               │
-│ Factorial(n=4)  frame               │
-│ Main()                              │
-└─────────────────────────────────────┘
-```
+
 
 Execution resumes in `Factorial(1)`. It now has the return value from `Factorial(0)` (which is 1). It computes `1 * 1 = 1` and returns.
 
@@ -214,19 +190,14 @@ Recursion appears in several structural forms. Recognizing the pattern helps you
 
 When a function is called, the runtime creates an **activation record** (or **stack frame**) that holds:
 
-```
-┌────────────────────────────────────────┐
-│ 1. Return Address                      │  Where the CPU should jump when this function returns
-├────────────────────────────────────────┤
-│ 2. Previous Frame Pointer              │  Address of the previous frame on the stack
-├────────────────────────────────────────┤
-│ 3. Local Variables                     │  All variables declared inside this function
-├────────────────────────────────────────┤
-│ 4. Parameters                          │  Arguments passed to this function
-├────────────────────────────────────────┤
-│ 5. Saved Registers (ABI-dependent)     │  Values the function must preserve for its caller
-└────────────────────────────────────────┘
-```
+
+| 1. Return Address | Where the CPU should jump when this function returns |
+| :--- | :--- |
+| 2. Previous Frame Pointer | Address of the previous frame on the stack |
+| 3. Local Variables | All variables declared inside this function |
+| 4. Parameters | Arguments passed to this function |
+| 5. Saved Registers (ABI-dependent) | Values the function must preserve for its caller |
+
 
 The **stack pointer (SP)** register always points to (or just past) the top of the stack. As functions call and return, SP moves up and down. The **frame pointer (FP)** register points to a fixed location within the current frame, making it easy to access locals and parameters using fixed offsets.
 
@@ -259,19 +230,19 @@ Main is executing at address `0x1000` and reaches a `call Factorial` instruction
 
 ```
 BEFORE CALL (Main executing at 0x1000):
-─────────────────────────────────
+---------------------------------
 PC = 0x1000
 SP = 0x3000 (top of Main's frame)
 Stack = [ ... Main's locals ... ]
 
 DURING CALL (Return address pushed, CPU about to jump):
-─────────────────────────────────
+---------------------------------
 PC = still at call instruction
 SP = 0x3008 (return address 0x1004 pushed)
 Stack = [ ... Main's locals ... | Return Addr 0x1004 ]
 
 AFTER JUMP (Now inside Factorial):
-─────────────────────────────────
+---------------------------------
 PC = 0x2000 (first instruction of Factorial)
 SP = 0x3020 (Factorial's locals allocated)
 Stack = [ ... Main's locals ... | 0x1004 | Factorial(n=3) locals ... ]
@@ -307,20 +278,20 @@ The value `1` is placed in the return register (rax). The current frame (Factori
 
 ```
 INSIDE Factorial(0) (about to return 1):
-─────────────────────────────────
+---------------------------------
 PC = inside Factorial(0), at return statement
 SP = 0x3018 (Factorial(0)'s frame)
 rax = 1 (return value computed)
 Stack = [ Main | 0x1004 | Fact(3) | 0x2xxx | Fact(2) | 0x2yyy | Fact(1) | 0x2zzz | Fact(0) ]
 
 RETURN INSTRUCTION EXECUTES:
-─────────────────────────────────
+---------------------------------
 Load return address from stack: 0x2zzz (inside Factorial(1))
 Deallocate Factorial(0)'s frame: SP moves down
 PC = 0x2zzz
 
 NOW INSIDE Factorial(1) (resuming after recursive call):
-─────────────────────────────────
+---------------------------------
 PC = 0x2zzz (just after the Factorial(0) call in Factorial(1))
 SP = 0x3020 (back to Factorial(1)'s frame top)
 rax = 1 (still contains return value from Factorial(0))
@@ -344,73 +315,16 @@ int Sum(int[] arr, int i) {
 
 **Full Stack Trace:**
 
-```
-Call Stack Evolution
-═════════════════════════════════════════════════════════════
 
-1. Sum(arr, i=0):
-   ┌─────────────────────────────┐
-   │ Sum(i=0)                    │
-   │ - arr = [10, 20, 30]        │
-   │ - i = 0                     │
-   └─────────────────────────────┘
-   Execute: arr[0] + Sum(arr, 1) ← Need to evaluate Sum(arr, 1)
+| Sum(i=1) | ← Top (currently executing) |
+| :--- | :--- |
+| Sum(i=0) | (waiting) |
+| Sum(i=2) | ← Top |
+| Sum(i=3) | ← Top |
+| Sum(i=2) | ← Now top, computes 30 + 0 = 30 |
+| Sum(i=1) | ← Now top, computes 20 + 30 = 50 |
+| Sum(i=0) | ← Now top, computes 10 + 50 = 60 |
 
-2. Sum(arr, i=1):
-   ┌─────────────────────────────┐
-   │ Sum(i=1)                    │  ← Top (currently executing)
-   │ - i = 1                     │
-   ├─────────────────────────────┤
-   │ Sum(i=0)                    │  (waiting)
-   └─────────────────────────────┘
-   Execute: arr[1] + Sum(arr, 2) ← Need to evaluate Sum(arr, 2)
-
-3. Sum(arr, i=2):
-   ┌─────────────────────────────┐
-   │ Sum(i=2)                    │  ← Top
-   ├─────────────────────────────┤
-   │ Sum(i=1)                    │
-   ├─────────────────────────────┤
-   │ Sum(i=0)                    │
-   └─────────────────────────────┘
-   Execute: arr[2] + Sum(arr, 3) ← Need to evaluate Sum(arr, 3)
-
-4. Sum(arr, i=3):  [BASE CASE]
-   ┌─────────────────────────────┐
-   │ Sum(i=3)                    │  ← Top
-   ├─────────────────────────────┤
-   │ Sum(i=2)                    │
-   ├─────────────────────────────┤
-   │ Sum(i=1)                    │
-   ├─────────────────────────────┤
-   │ Sum(i=0)                    │
-   └─────────────────────────────┘
-   i == arr.Length (3 == 3), so return 0
-
-5. Unwinding:  Sum(i=3) returns 0
-   ┌─────────────────────────────┐
-   │ Sum(i=2)                    │  ← Now top, computes 30 + 0 = 30
-   ├─────────────────────────────┤
-   │ Sum(i=1)                    │
-   ├─────────────────────────────┤
-   │ Sum(i=0)                    │
-   └─────────────────────────────┘
-
-6. Unwinding:  Sum(i=2) returns 30
-   ┌─────────────────────────────┐
-   │ Sum(i=1)                    │  ← Now top, computes 20 + 30 = 50
-   ├─────────────────────────────┤
-   │ Sum(i=0)                    │
-   └─────────────────────────────┘
-
-7. Unwinding:  Sum(i=1) returns 50
-   ┌─────────────────────────────┐
-   │ Sum(i=0)                    │  ← Now top, computes 10 + 50 = 60
-   └─────────────────────────────┘
-
-8. Final:  Sum(i=0) returns 60
-   Result = 60 ✓
-```
 
 The trace shows the key pattern: **the stack accumulates as we recurse deeper, then shrinks as we unwind back up, combining results along the way**.
 
@@ -806,4 +720,6 @@ The call stack is the foundation of how all programs execute. Master it, and rec
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—comprehensive theory and practical application  
 **Batch Status:** ✅ COMPLETE — Ready for "Continue" signal or next file generation
+---
 
+> 🧭 **Navigation:** [← Previous Day](Week_01_Day_03_Space_Complexity_Memory_Usage_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_01_Day_05_Recursion_II_Memoization_Instructional.md)

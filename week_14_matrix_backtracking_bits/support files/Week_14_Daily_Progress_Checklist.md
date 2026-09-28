@@ -1,5 +1,11 @@
 # ✅ Week 14 Daily Progress Checklist
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 Track your progress for each study day. Verify that you understand the concepts and can implement the algorithms before moving forward.
 
 ---
@@ -65,3 +71,7 @@ Track your progress for each study day. Verify that you understand the concepts 
     *   [ ] Build a Chinese Remainder Theorem (CRT) solver for K modular equations with pairwise coprime moduli.
 *   **Error Prevention Check**:
     *   [ ] Verify that all moduli are pairwise coprime before starting your CRT engine to ensure consistent systems have unique solutions.
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

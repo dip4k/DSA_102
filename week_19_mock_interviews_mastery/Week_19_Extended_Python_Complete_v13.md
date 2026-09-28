@@ -1,5 +1,11 @@
 # Week 19 Extended Python Complete v13
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Python (3.11+) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 Purpose: give Python-focused execution guidance for mock interviews, communication, and timed practice.
 
 ## Focus tags
@@ -32,3 +38,7 @@ Purpose: give Python-focused execution guidance for mock interviews, communicati
 - What bug class cost me the most time?
 - Did I explain trade-offs before coding?
 - Did I overfit to one memorized pattern instead of matching the signal?
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

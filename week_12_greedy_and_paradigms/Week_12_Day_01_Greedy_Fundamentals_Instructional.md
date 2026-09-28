@@ -1,11 +1,14 @@
 # 📘 WEEK 12 DAY 1: GREEDY FUNDAMENTALS — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 12 | **Day:** 1
-- **Category:** Algorithm Paradigms
-- **Difficulty:** 🟡 Intermediate
-- **Real-World Impact:** Greedy algorithms power task schedulers, compression algorithms, network routing, and resource allocation in systems like Linux kernel, Huffman coding (ZIP files), and Dijkstra's shortest path.
-- **Prerequisites:** Week 10-11 (Dynamic Programming fundamentals), Week 9 (Graph algorithms)
+
+
+
+
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_12_Day_02_Activity_Selection_And_Interval_Problems_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
+
+---
 
 ---
 
@@ -659,14 +662,7 @@ The term "greedy" was popularized in the 1970s as algorithm analysis formalized.
 
 **End of Week 12 Day 1 Instructional File**
 
-
-**Next:** Week 12 Day 2 — Activity Selection & Interval Problems
-
-
+---
 ---
 
-## 📊 Complexity Recap
-
-- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
-- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
-
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_12_Day_02_Activity_Selection_And_Interval_Problems_Instructional.md)

@@ -1,5 +1,11 @@
 # 🗺️ WEEK 13 PROBLEM SOLVING ROADMAP
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Phase:** D – Algorithm Paradigms  
 **Week Theme:** Backtracking & Branch & Bound  
 **Syllabus Source:** COMPLETE_SYLLABUS_v13_FINAL.md  
@@ -799,3 +805,7 @@ Analyze n-bit binary counter increment using potential method.
 
 **Format:** 3-Stage Progressive Problem Ladder  
 **Next:** Week_13_Daily_Progress_Checklist.md
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

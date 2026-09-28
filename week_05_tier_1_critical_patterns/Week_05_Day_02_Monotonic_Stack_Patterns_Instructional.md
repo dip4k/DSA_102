@@ -1,9 +1,12 @@
 # 📚 Week 05 Day 02: Monotonic Stack Patterns (Engineering Guide)
 
-**Week:** 5 | **Day:** 2 | **Tier:** Tier 1 Critical Patterns  
-**Category:** Stack-Based Optimization & Problem-Solving  
-**Real-World Impact:** Enables single-pass solutions for "next/previous greater/smaller" problems; powers financial systems, temperature tracking, and building height analysis  
-**Prerequisites:** Week 1-4 fundamentals + Day 1 hash patterns (stack operations, array processing)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_05_Day_01_Hash_Map_Hash_Set_Patterns_Instructional_EXPANDED.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_05_Day_03_Merge_Operations_Interval_Patterns_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -948,3 +951,6 @@ This principle—maintaining invariants, popping when violated—will appear aga
 By mastering monotonic stacks on Day 2, you're building the intuition for a whole category of O(n) algorithms.
 
 ---
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_05_Day_01_Hash_Map_Hash_Set_Patterns_Instructional_EXPANDED.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_05_Day_03_Merge_Operations_Interval_Patterns_Instructional.md)

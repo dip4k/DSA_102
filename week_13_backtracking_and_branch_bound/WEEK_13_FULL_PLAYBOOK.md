@@ -1,4 +1,10 @@
 # 🔵 WEEK 13: BACKTRACKING & BRANCH & BOUND
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Comprehensive Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
+
+---
+
 ## Complete Course Playbook | No-Code Concept Mastery
 **Duration:** 25 hours | **Focus:** Search Paradigm & Optimization
 
@@ -47,101 +53,50 @@ Master backtracking algorithm structure, state space trees, and systematic explo
 
 ### Core Definition
 
+
+```mermaid
+flowchart TD
+    R["BACKTRACKING ALGORITHM"]
+    R --> N1["Current partial solution"]
+    R --> N2["What's been decided"]
+    R --> N3["What's still to decide"]
+    R --> N4["At each step: what are next options?"]
+    R --> N5["What decisions can we make?"]
+    R --> N6["Different choices = different branches"]
+    R --> N7["Is this choice valid?"]
+    R --> N8["Doesn't violate constraints?"]
+    R --> N9["Could lead to solution?"]
+    R --> N10["If valid: recurse with new state"]
+    R --> N11["If recursion finds solution: return"]
+    R --> N12["If not: try next choice"]
+    R --> N13["If no choice works: undo last decision"]
+    R --> N14["Return to previous state"]
+    R --> N15["Try alternative"]
 ```
-BACKTRACKING ALGORITHM
-═════════════════════════════════════════════════════
 
-Definition: Backtracking is a general-purpose algorithm technique for
-            finding solutions to problems that satisfy constraints
-
-Key Principle: Build solution incrementally, one piece at a time
-              - If current partial solution CAN'T lead to valid solution
-              - UNDO last choice (backtrack)
-              - TRY next alternative
-
-Paradigm: Depth-First Search (DFS) on solution tree
-         - Explore deeply into partial solutions
-         - When stuck, backtrack to try alternatives
-         - Systematic exploration with pruning
-
-ALGORITHM STRUCTURE:
-═════════════════════════════════════════════════════
-
-1. STATE REPRESENTATION
-   └─ Current partial solution
-   └─ What's been decided
-   └─ What's still to decide
-
-2. CHOICE POINT
-   └─ At each step: what are next options?
-   └─ What decisions can we make?
-   └─ Different choices = different branches
-
-3. CONSTRAINT CHECK
-   └─ Is this choice valid?
-   └─ Doesn't violate constraints?
-   └─ Could lead to solution?
-
-4. RECURSIVE EXPLORATION
-   └─ If valid: recurse with new state
-   └─ If recursion finds solution: return
-   └─ If not: try next choice
-
-5. BACKTRACK
-   └─ If no choice works: undo last decision
-   └─ Return to previous state
-   └─ Try alternative
-
-WHY "BACKTRACKING"?
-  - Move forward: make choice, recurse
-  - Get stuck: no valid choices
-  - Move backward: undo last choice (backtrack)
-  - Try next: different choice
-```
 
 ### Comparison: Backtracking vs Brute Force
 
+
+```mermaid
+flowchart TD
+    R["BRUTE FORCE"]
+    R --> N1["Generate ALL possible solutions"]
+    R --> N2["Check each one to see if valid"]
+    R --> N3["Return valid ones"]
+    R --> N4["Time: Worst case (exponential all)"]
+    R --> N5["Build solution incrementally"]
+    R --> N6["PRUNE when can't possibly be valid"]
+    R --> N7["Skip entire subtrees of invalid solutions"]
+    R --> N8["Time: Better than brute force (pruning helps)"]
 ```
-BRUTE FORCE:
-  └─ Generate ALL possible solutions
-  └─ Check each one to see if valid
-  └─ Return valid ones
-  └─ Time: Worst case (exponential all)
 
-BACKTRACKING:
-  └─ Build solution incrementally
-  └─ PRUNE when can't possibly be valid
-  └─ Skip entire subtrees of invalid solutions
-  └─ Time: Better than brute force (pruning helps)
-
-EXAMPLE: Find all permutations of [1,2,3] valid under constraints
-
-Brute force:
-  Generate all sequences: [1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,1,2], [3,2,1]
-  6 sequences, check each
-
-Backtracking:
-  Build one at a time:
-    Place 1: [1, ?, ?]
-      Place 2: [1, 2, ?]
-        Place 3: [1, 2, 3] ← Valid? Check
-      Place 3: [1, 3, ?]
-        Place 2: [1, 3, 2] ← Valid? Check
-    Place 2: [2, ?, ?]
-      Similar...
-    Place 3: [3, ?, ?]
-      Similar...
-  
-  If at some point: [X, Y, ?] violates constraints
-  Skip all completions of [X, Y, ?]
-  Huge savings if many pruned
-```
 
 ### When to Use Backtracking
 
 ```
 IDEAL PROBLEMS FOR BACKTRACKING
-═════════════════════════════════════════════════════
+=====================================================
 
 CHARACTERISTICS:
   ✓ Need to find solutions among large search space
@@ -174,102 +129,40 @@ NOT IDEAL:
 
 ### Understanding State Space Tree
 
-```
-STATE SPACE TREE CONCEPT
-═════════════════════════════════════════════════════
 
-Definition: Tree representing all possible states during search
-           - Nodes = partial solutions
-           - Edges = choices/decisions
-           - Path from root to node = current state
-           - Leaves = complete solutions (valid or invalid)
+|  | +- Leaf: Complete solution [A,1] |
+| :--- | :--- |
+|  | +- Leaf: Complete solution [A,2] |
 
-STRUCTURE:
-  Root: Initial (empty) state
-  │
-  ├─ Branch 1: First choice = "A"
-  │  ├─ Branch 1.1: Second choice = "1"
-  │  │  ├─ Leaf: Complete solution [A,1]
-  │  │  └─ Leaf: Complete solution [A,2]
-  │  └─ Branch 1.2: Second choice = "2"
-  │     └─ Leaf: Complete solution [A,3]
-  │
-  └─ Branch 2: First choice = "B"
-     ├─ Leaf: Complete solution [B,1]
-     └─ Leaf: Complete solution [B,2]
-
-TREE TRAVERSAL:
-  Backtracking = DFS traversal of this tree
-  With pruning: skip branches that can't work
-```
 
 ### Visualizing State Space
 
-```
-EXAMPLE: Generate all permutations of [1, 2, 3]
-═════════════════════════════════════════════════════
 
-                         ROOT: []
-                    (no choices made yet)
-                    /            |            \
-                   /             |             \
-              1st=1          1st=2          1st=3
-               /              |              \
-              [1]            [2]             [3]
-             /  \           /  \            /  \
-        2nd=2  2nd=3   2nd=1  2nd=3    2nd=1  2nd=2
-         /      \       /      \        /       \
-      [1,2]   [1,3]  [2,1]   [2,3]  [3,1]   [3,2]
-       /        |      |       |      |       |
-    3rd=3    3rd=2  3rd=3  3rd=1  3rd=2  3rd=1
-     /         |      |       |      |       |
-  [1,2,3]  [1,3,2]  [2,1,3] [2,3,1] [3,1,2] [3,2,1]
-  VALID    VALID    VALID   VALID   VALID   VALID
+| / | \ |
+| :--- | :--- |
+| / | \ |
+| / | \ |
+| / |  |
+| / |  |
 
-EXECUTION TRACE (DFS):
-1. [1] → [1,2] → [1,2,3] FOUND → backtrack
-2. [1] → [1,2] no more 3rd choices → backtrack
-3. [1] → [1,3] → [1,3,2] FOUND → backtrack
-4. [1] → [1,3] no more 3rd choices → backtrack
-5. [1] no more 2nd choices → backtrack
-6. [2] → [2,1] → [2,1,3] FOUND → backtrack
-... (continue for all branches)
-
-TIME COMPLEXITY:
-  n! nodes in tree (one per permutation)
-  DFS visits each node: O(n!)
-  Work per node: O(n) to check
-  Total: O(n! × n)
-```
 
 ### Depth vs Breadth in State Space
 
+
+```mermaid
+flowchart TD
+    R["DEPTH-FIRST (Backtracking) vs BREADTH-FIRST"]
+    R --> N1["Go deep into solution quickly"]
+    R --> N2["Find first solution fast"]
+    R --> N3["Space: O(depth) in recursion stack"]
+    R --> N4["Can use backtracking/pruning"]
+    R --> N5["Find one solution, then continue for others"]
+    R --> N6["Explore all at current level"]
+    R --> N7["Find shortest solution first"]
+    R --> N8["Space: O(width) in queue"]
+    R --> N9["Can use bounding (if have limits)"]
 ```
-DEPTH-FIRST (Backtracking) vs BREADTH-FIRST
-═════════════════════════════════════════════════════
 
-DEPTH-FIRST (Backtracking):
-  └─ Go deep into solution quickly
-  └─ Find first solution fast
-  └─ Space: O(depth) in recursion stack
-  └─ Can use backtracking/pruning
-  └─ Find one solution, then continue for others
-  
-  Execution order for [1,2,3] permutations:
-    [1,2,3] → [1,3,2] → [2,1,3] → [2,3,1] → [3,1,2] → [3,2,1]
-
-BREADTH-FIRST:
-  └─ Explore all at current level
-  └─ Find shortest solution first
-  └─ Space: O(width) in queue
-  └─ Can use bounding (if have limits)
-  
-  Execution order for [1,2,3] permutations:
-    All [1,?,?] → All [2,?,?] → All [3,?,?]
-
-FOR BACKTRACKING: Always DFS (naturally recursive)
-FOR BRANCH & BOUND: Can use best-first (priority queue)
-```
 
 ---
 
@@ -277,49 +170,21 @@ FOR BRANCH & BOUND: Can use best-first (priority queue)
 
 ### What is Pruning?
 
-```
-PRUNING CONCEPT
-═════════════════════════════════════════════════════
 
-Pruning: Eliminating branches of search tree that CAN'T
-         possibly lead to valid solutions
+| / |  | \ |
+| :--- | :--- | :--- |
+| / | \ | ... search continues |
+| / | \ |  |
 
-Impact: Skips exploring entire subtrees
-       Reduces time exponentially
-       Key to making backtracking practical
-
-VISUALIZATION:
-
-Full tree (no pruning):
-                 ROOT
-              /  |  |  \
-            A   B   C   D
-          / | \ | ... search continues
-
-Pruned tree:
-                 ROOT
-              /  |     \
-            A   B       (C pruned)
-          / \         (no D, E subtrees)
-
-Pruning decided at B, so all B's children pruned
-
-PRUNING RULE:
-  If at current state S:
-    - Constraint will NEVER be satisfied
-    - Or solution IMPOSSIBLE
-    - Or condition is UNMET
-  Then: PRUNE (don't explore S's children)
-```
 
 ### Types of Pruning
 
 ```
 PRUNING STRATEGIES
-═════════════════════════════════════════════════════
+=====================================================
 
 TYPE 1: CONSTRAINT VIOLATION CHECK
-────────────────────────────────────
+------------------------------------
   If current partial solution violates hard constraint:
     Prune immediately
   
@@ -330,7 +195,7 @@ TYPE 1: CONSTRAINT VIOLATION CHECK
     If NO: Continue
 
 TYPE 2: FEASIBILITY CHECK
-──────────────────────────
+--------------------------
   If remaining options CAN'T complete solution:
     Prune
   
@@ -340,7 +205,7 @@ TYPE 2: FEASIBILITY CHECK
     If NO valid numbers left: Prune
 
 TYPE 3: BOUNDING (OPTIMIZATION)
-─────────────────────────────────
+---------------------------------
   If best possible from current state ≤ current best known:
     Prune
   
@@ -351,7 +216,7 @@ TYPE 3: BOUNDING (OPTIMIZATION)
     If 50 + 15 ≥ 60: Prune (can't beat current best)
 
 TYPE 4: SYMMETRY BREAKING
-──────────────────────────
+--------------------------
   If current state equivalent to already-explored state:
     Prune
   
@@ -361,7 +226,7 @@ TYPE 4: SYMMETRY BREAKING
     Skip one of them
 
 TYPE 5: EARLY TERMINATION
-──────────────────────────
+--------------------------
   If found valid solution and only need one:
     Stop immediately
   
@@ -374,7 +239,7 @@ TYPE 5: EARLY TERMINATION
 
 ```
 PRUNING IMPACT ON PERFORMANCE
-═════════════════════════════════════════════════════
+=====================================================
 
 NO PRUNING:
   Permutations of 10 items: 10! = 3,628,800 nodes
@@ -422,7 +287,7 @@ EXAMPLE:
 
 ```
 BACKTRACKING TEMPLATE
-═════════════════════════════════════════════════════
+=====================================================
 
 // Main entry point
 function Solve(problem):
@@ -485,7 +350,7 @@ function RemoveChoice(partial, choice):
 
 ```
 BACKTRACKING TEMPLATE IN ACTION
-═════════════════════════════════════════════════════
+=====================================================
 
 Backtrack([]):
   IsSolution([])? No (need 3 digits)
@@ -601,7 +466,7 @@ Master N-Queens, Sudoku, permutations, combinations, and word search problems.
 
 ```
 N-QUEENS PROBLEM
-═════════════════════════════════════════════════════
+=====================================================
 
 Classic puzzle: Place n queens on n×n chessboard
                Such that NO two queens attack each other
@@ -648,7 +513,7 @@ EXAMPLES:
 
 ```
 N-QUEENS BACKTRACKING APPROACH
-═════════════════════════════════════════════════════
+=====================================================
 
 KEY OBSERVATION:
   In any valid solution, each row has exactly 1 queen
@@ -715,7 +580,7 @@ function SolveNQueens(n):
 
 ```
 N-QUEENS 4: STEP-BY-STEP EXECUTION
-═════════════════════════════════════════════════════
+=====================================================
 
 Backtrack(row=0):
   Try col=0:
@@ -793,7 +658,7 @@ For 8-Queens: 92 solutions total
 
 ```
 N-QUEENS COMPLEXITY
-═════════════════════════════════════════════════════
+=====================================================
 
 WITHOUT PRUNING:
   n^n possibilities (n choices for each row)
@@ -829,54 +694,33 @@ OPTIMIZATION:
 
 ### Sudoku Problem Structure
 
-```
-SUDOKU PUZZLE
-═════════════════════════════════════════════════════
 
-Grid: 9×9 board divided into 9 3×3 boxes
+| 5 3 . | . 7 . | . . . |
+| :--- | :--- | :--- |
+| 6 . . | 1 9 5 | . . . |
+| . 9 8 | . . . | . 6 . |
+| 8 . . | . 6 . | . . 3 |
+| 4 . . | 8 . 3 | . . 1 |
+| 7 . . | . 2 . | . . 6 |
+| . 6 . | . . . | 2 8 . |
+| . . . | 4 1 9 | . . 5 |
+| . . . | . 8 . | . 7 9 |
+| 5 3 4 | 6 7 8 | 9 1 2 |
+| 6 7 2 | 1 9 5 | 3 4 8 |
+| 1 9 8 | 3 4 2 | 5 6 7 |
+| 8 5 9 | 7 6 1 | 4 2 3 |
+| 4 2 6 | 8 5 3 | 7 9 1 |
+| 7 1 3 | 9 2 4 | 8 5 6 |
+| 9 6 1 | 5 3 7 | 2 8 4 |
+| 2 8 7 | 4 1 9 | 6 3 5 |
+| 3 4 5 | 2 8 6 | 1 7 9 |
 
-Constraints:
-  1. Each row must contain digits 1-9 exactly once
-  2. Each column must contain digits 1-9 exactly once
-  3. Each 3×3 box must contain digits 1-9 exactly once
-
-Given: Some cells pre-filled (clues)
-Goal: Fill remaining cells satisfying constraints
-
-EXAMPLE:
-
-Given puzzle:
-  5 3 . | . 7 . | . . .
-  6 . . | 1 9 5 | . . .
-  . 9 8 | . . . | . 6 .
-  ------+-------+------
-  8 . . | . 6 . | . . 3
-  4 . . | 8 . 3 | . . 1
-  7 . . | . 2 . | . . 6
-  ------+-------+------
-  . 6 . | . . . | 2 8 .
-  . . . | 4 1 9 | . . 5
-  . . . | . 8 . | . 7 9
-
-Solution:
-  5 3 4 | 6 7 8 | 9 1 2
-  6 7 2 | 1 9 5 | 3 4 8
-  1 9 8 | 3 4 2 | 5 6 7
-  ------+-------+------
-  8 5 9 | 7 6 1 | 4 2 3
-  4 2 6 | 8 5 3 | 7 9 1
-  7 1 3 | 9 2 4 | 8 5 6
-  ------+-------+------
-  9 6 1 | 5 3 7 | 2 8 4
-  2 8 7 | 4 1 9 | 6 3 5
-  3 4 5 | 2 8 6 | 1 7 9
-```
 
 ### Sudoku Backtracking Approach
 
 ```
 SUDOKU SOLVER BACKTRACKING
-═════════════════════════════════════════════════════
+=====================================================
 
 STRATEGY:
   Find empty cell
@@ -954,7 +798,7 @@ function FindEmptyCell():
 
 ```
 OPTIMIZATION: MOST CONSTRAINED VARIABLE (MCV)
-═════════════════════════════════════════════════════
+=====================================================
 
 BASIC APPROACH:
   Find ANY empty cell
@@ -1018,7 +862,7 @@ This heuristic dramatically speeds up solver
 
 ```
 PERMUTATIONS VIA BACKTRACKING
-═════════════════════════════════════════════════════
+=====================================================
 
 PERMUTATION: All orderings of elements where each element used once
 
@@ -1027,7 +871,7 @@ Example: Permutations of [1, 2, 3]
   Total: 3! = 6
 
 BACKTRACKING APPROACH 1: Using position
-───────────────────────────────
+-------------------------------
 
 function GeneratePermutations(elements):
     permutations = []
@@ -1047,7 +891,7 @@ function GeneratePermutations(elements):
     return permutations
 
 BACKTRACKING APPROACH 2: Using indices
-──────────────────────────────────────
+--------------------------------------
 
 function GeneratePermutations(elements):
     permutations = []
@@ -1079,7 +923,7 @@ APPROACH 2 BETTER because:
 
 ```
 COMBINATIONS VIA BACKTRACKING
-═════════════════════════════════════════════════════
+=====================================================
 
 COMBINATION: Subset of k elements (order doesn't matter)
 
@@ -1138,35 +982,15 @@ Result: [1,2], [1,3], [2,3]  ✓
 
 ### Combinations vs Permutations
 
-```
-COMPARISON: PERMUTATIONS vs COMBINATIONS
-═════════════════════════════════════════════════════
 
-DIMENSION          │ PERMUTATION      │ COMBINATION
-───────────────────┼──────────────────┼─────────────────
-Order matters      │ YES (A,B ≠ B,A)  │ NO (A,B = B,A)
-Total count        │ P(n,k) = n!/(n-k)│ C(n,k) = n!/(k!(n-k)!)
-Backtracking       │ Try all unused   │ Try all ≥ current
-skip duplicates    │ Using set/used[] │ Using start_index
-Example (n=3,k=2)  │ 6 total          │ 3 total
+| DIMENSION | PERMUTATION | COMBINATION |
+| :--- | :--- | :--- |
+| Order matters | YES (A,B ≠ B,A) | NO (A,B = B,A) |
+| Total count | P(n,k) = n!/(n-k) | C(n,k) = n!/(k!(n-k)!) |
+| Backtracking | Try all unused | Try all ≥ current |
+| skip duplicates | Using set/used[] | Using start_index |
+| Example (n=3,k=2) | 6 total | 3 total |
 
-ALGORITHM DIFFERENCE:
-
-Permutation:
-  for each element not yet used:
-      add element
-      recurse (all remaining unused)
-
-Combination:
-  for each element from start_index onward:
-      add element
-      recurse (start from next index)
-
-Subsets (all combinations):
-  k ranges from 0 to n
-  Generate all C(n,0) + C(n,1) + ... + C(n,n)
-  Algorithm: Similar to combinations but try k=0,1,2,...,n
-```
 
 ---
 
@@ -1176,7 +1000,7 @@ Subsets (all combinations):
 
 ```
 WORD SEARCH PROBLEM
-═════════════════════════════════════════════════════
+=====================================================
 
 Problem: Given word and 2D grid of letters
          Find if word exists in grid
@@ -1244,7 +1068,7 @@ function Backtrack(grid, word, char_index, row, col, visited):
 
 ```
 MAZE SOLVING VIA BACKTRACKING
-═════════════════════════════════════════════════════
+=====================================================
 
 Problem: 2D grid where 0=path, 1=wall
          Find path from start (s,s) to end (e,e)
@@ -1375,7 +1199,7 @@ Master branch & bound technique for optimization problems with bounding strategi
 
 ```
 BRANCH & BOUND ALGORITHM
-═════════════════════════════════════════════════════
+=====================================================
 
 Definition: Optimization algorithm using systematic search
            BRANCH: explore solution space (like backtracking)
@@ -1401,7 +1225,7 @@ WHEN TO USE:
 
 ```
 BACKTRACKING vs BRANCH & BOUND
-═════════════════════════════════════════════════════
+=====================================================
 
 BACKTRACKING:
   Goal: Find ANY valid solution or ALL solutions
@@ -1436,7 +1260,7 @@ The second condition is powerful for optimization
 
 ```
 BRANCH & BOUND TEMPLATE
-═════════════════════════════════════════════════════
+=====================================================
 
 function BranchAndBound(problem):
     best_solution = null
@@ -1490,7 +1314,7 @@ KEY COMPONENTS:
 
 ```
 BOUND TYPES IN OPTIMIZATION
-═════════════════════════════════════════════════════
+=====================================================
 
 For MINIMIZATION problem:
 
@@ -1542,14 +1366,14 @@ For partial tour 1→3:
 
 ```
 TRAVELING SALESMAN PROBLEM (TSP) BOUNDING
-═════════════════════════════════════════════════════
+=====================================================
 
 PROBLEM: Find minimum-cost tour visiting all cities once
 
 BOUNDS FOR PRUNING:
 
 1. MINIMUM SPANNING TREE (MST) BOUND
-   ───────────────────────────────────
+   -----------------------------------
    MST connects all cities with minimum edges
    But MST isn't a tour (may have degree > 2)
    
@@ -1560,7 +1384,7 @@ BOUNDS FOR PRUNING:
    Better bound: MST + cheapest edge from low-degree vertex
 
 2. REDUCED COST BOUND
-   ────────────────────
+   --------------------
    For partial tour:
      Cost = edges already selected
      Lower bound = cost + minimum to complete
@@ -1571,7 +1395,7 @@ BOUNDS FOR PRUNING:
      - Minimum: sum of cheapest outgoing edges
 
 3. HOLDING'S BOUND
-   ────────────────
+   ----------------
    Similar idea but more sophisticated
    For each city: if not visited, reserve cheapest edge to reach
 
@@ -1597,7 +1421,7 @@ PRUNE this branch! Can't beat current best.
 
 ```
 KNAPSACK BOUND VIA FRACTIONAL RELAXATION
-═════════════════════════════════════════════════════
+=====================================================
 
 0-1 KNAPSACK:
   Select items to maximize value subject to weight ≤ W
@@ -1647,59 +1471,26 @@ So DON'T prune this branch
 
 ### Priority Queue Strategy
 
+
+```mermaid
+flowchart TD
+    R["BEST-FIRST SEARCH in BRANCH & BOUND"]
+    R --> N1["Goes deep quickly"]
+    R --> N2["Uses stack (implicit recursion)"]
+    R --> N3["Space: O(depth)"]
+    R --> N4["Time: varies, may explore many dead ends"]
+    R --> N5["Explores promising branches first"]
+    R --> N6["Uses priority queue"]
+    R --> N7["Space: O(width)"]
+    R --> N8["Time: Often faster for optimization"]
 ```
-BEST-FIRST SEARCH in BRANCH & BOUND
-═════════════════════════════════════════════════════
 
-Unlike DFS (backtracking):
-  Explores most promising states first
-  Uses priority queue (min-heap)
-  Best bound = highest priority
-
-ADVANTAGES:
-  1. Find good solutions early
-  2. Better pruning in later stages
-  3. Can often find near-optimal quick
-  4. Better anytime performance
-
-DISADVANTAGES:
-  1. More memory (queue vs stack)
-  2. More overhead (heap operations)
-  3. Slower for feasibility (DFS better)
-
-BEST-FIRST vs DEPTH-FIRST:
-
-DFS (Backtracking):
-  └─ Goes deep quickly
-  └─ Uses stack (implicit recursion)
-  └─ Space: O(depth)
-  └─ Time: varies, may explore many dead ends
-
-BFS (Best-First):
-  └─ Explores promising branches first
-  └─ Uses priority queue
-  └─ Space: O(width)
-  └─ Time: Often faster for optimization
-
-EXAMPLE COMPARISON (TSP):
-
-DFS approach:
-  1 → 2 → 3 → 4 → ...
-  Get solution early, update bound
-  But may explore many bad branches first
-
-BFS approach:
-  Explore states by bound value
-  Process: most promising → least promising
-  Find good solutions faster
-  Better bound pruning later
-```
 
 ### Implementation Strategy
 
 ```
 BEST-FIRST BRANCH & BOUND IMPLEMENTATION
-═════════════════════════════════════════════════════
+=====================================================
 
 Data Structure: Min-Heap Priority Queue
 
@@ -1744,7 +1535,7 @@ KEY: Process by bound value, not depth
 
 ```
 TSP: TRAVELING SALESMAN PROBLEM
-═════════════════════════════════════════════════════
+=====================================================
 
 BRANCH:
   Partial tour: 1 → i₁ → i₂ → ...
@@ -1806,7 +1597,7 @@ COMPLEXITY:
 
 ```
 0-1 KNAPSACK: BRANCH & BOUND
-═════════════════════════════════════════════════════
+=====================================================
 
 BRANCH:
   For each item: include or exclude
@@ -1929,7 +1720,7 @@ Master three amortized analysis methods: aggregate, accounting, and potential.
 
 ```
 AMORTIZED COMPLEXITY ANALYSIS
-═════════════════════════════════════════════════════
+=====================================================
 
 Definition: Analyze AVERAGE cost per operation over a SEQUENCE
            Some operations expensive, many cheap
@@ -1963,31 +1754,20 @@ KEY INSIGHT:
 
 ### When Expensive Meets Frequent
 
+
+```mermaid
+flowchart TD
+    R["AMORTIZED vs WORST CASE"]
+    R --> N1["Amortized analysis applies"]
+    R --> N2["Example: Dynamic array doubling"]
+    R --> N3["Explains why arrays are practical despite occasional realloc"]
+    R --> N4["Amortized analysis doesn't help"]
+    R --> N5["Example: Linked list iteration"]
+    R --> N6["No averaging possible, linear is fundamental"]
+    R --> N7["Amortized analysis useful"]
+    R --> N8["Example: Splay trees"]
 ```
-AMORTIZED vs WORST CASE
-═════════════════════════════════════════════════════
 
-SCENARIO 1: Expensive but INFREQUENT
-  └─ Amortized analysis applies
-  └─ Example: Dynamic array doubling
-               Operations: mostly O(1), rare O(n)
-               Amortized: O(1)
-  └─ Explains why arrays are practical despite occasional realloc
-
-SCENARIO 2: Expensive and FREQUENT
-  └─ Amortized analysis doesn't help
-  └─ Example: Linked list iteration
-               Operations: mostly O(1), but EACH node
-               Amortized: O(1) per traversal, but total O(n)
-  └─ No averaging possible, linear is fundamental
-
-SCENARIO 3: Variable cost, need guarantee
-  └─ Amortized analysis useful
-  └─ Example: Splay trees
-               Operations: O(log n) amortized
-               Some O(n), but rare
-               Guaranteed good average over sequence
-```
 
 ---
 
@@ -1997,7 +1777,7 @@ SCENARIO 3: Variable cost, need guarantee
 
 ```
 AGGREGATE METHOD
-═════════════════════════════════════════════════════
+=====================================================
 
 Technique: Calculate TOTAL cost for n operations
           Divide by n for average cost per operation
@@ -2009,7 +1789,7 @@ PROCESS:
 3. Amortized cost = T(n) / n
 
 EXAMPLE 1: DYNAMIC ARRAY WITH DOUBLING
-───────────────────────────────────────
+---------------------------------------
 
 Append to dynamic array:
   Size n, capacity c
@@ -2019,21 +1799,21 @@ Append to dynamic array:
 
 Sequence of n appends starting from empty array:
 
-Appends 1-1: $1 each, no reallocation (cost 1)
-Appends 2-2: $1 + reallocate ($2 to copy + alloc) = $3
-Appends 3-4: $1 each, no reallocation (cost 2)
-Appends 5-8: $1 each until append 5
-             Append 5: $1 + reallocate ($4 copy) = $5
+Appends 1-1: \\$1 each, no reallocation (cost 1)
+Appends 2-2: \\$1 + reallocate (\\$2 to copy + alloc) = \\$3
+Appends 3-4: \\$1 each, no reallocation (cost 2)
+Appends 5-8: \\$1 each until append 5
+             Append 5: \\$1 + reallocate (\\$4 copy) = \\$5
              (costs 2+5 = 7)
-Appends 9-16: $1 each until append 9
-              Append 9: $1 + reallocate ($8 copy) = $9
+Appends 9-16: \\$1 each until append 9
+              Append 9: \\$1 + reallocate (\\$8 copy) = \\$9
 ...
 
 Pattern:
   Without realloc: 1+1+1+1 = 4 (appends 3-4)
-  With realloc: $5 (append 5, includes doubling 4→8)
-               $9 (append 9, includes doubling 8→16)
-               $17 (append 17, includes doubling 16→32)
+  With realloc: \\$5 (append 5, includes doubling 4→8)
+               \\$9 (append 9, includes doubling 8→16)
+               \\$17 (append 17, includes doubling 16→32)
 
 Total cost for n appends:
   Expensive appends: 3 + 5 + 9 + 17 + ... + (2^k)
@@ -2048,7 +1828,7 @@ Total cost for n appends:
 Amortized cost: 3n / n = O(1) per append ✓
 
 EXAMPLE 2: BINARY COUNTER
-──────────────────────────
+--------------------------
 
 Counter using array of bits
 Increment operation:
@@ -2077,7 +1857,7 @@ Amortized cost: 2n / n = O(1) per increment
 
 ```
 AGGREGATE METHOD STRENGTHS & WEAKNESSES
-═════════════════════════════════════════════════════
+=====================================================
 
 STRENGTHS:
   ✓ Simple to apply
@@ -2109,7 +1889,7 @@ USE WITH CAUTION:
 
 ```
 ACCOUNTING METHOD
-═════════════════════════════════════════════════════
+=====================================================
 
 Idea: Assign (possibly fictitious) costs to operations
      "Bank account" of prepaid work
@@ -2153,7 +1933,7 @@ Then:
 
 ```
 DYNAMIC ARRAY ACCOUNTING ANALYSIS
-═════════════════════════════════════════════════════
+=====================================================
 
 Operations: Append and Delete
 
@@ -2167,10 +1947,10 @@ Array state tracking:
   load factor = size / capacity
 
 Actual costs:
-  Append when not full: $1
-  Append when full: $size (copy all elements)
-  Delete when above threshold: $1 (or reallocate if shrinking)
-  Delete when below threshold: $size (reallocate)
+  Append when not full: \\$1
+  Append when full: \\$size (copy all elements)
+  Delete when above threshold: \\$1 (or reallocate if shrinking)
+  Delete when below threshold: \\$size (reallocate)
 
 ANALYSIS:
 
@@ -2205,7 +1985,7 @@ Conclusion: Account never negative
 
 ```
 ACCOUNTING METHOD ADVANTAGES
-═════════════════════════════════════════════════════
+=====================================================
 
 STRENGTHS:
   ✓ Operation-specific costs
@@ -2239,7 +2019,7 @@ EXAMPLES:
 
 ```
 POTENTIAL METHOD
-═════════════════════════════════════════════════════
+=====================================================
 
 Idea: Define potential function Φ(state)
      Measures "readiness" for future expensive operations
@@ -2275,7 +2055,7 @@ Amortized per operation: (Σ ĉᵢ) / n
 
 ```
 DYNAMIC ARRAY POTENTIAL ANALYSIS
-═════════════════════════════════════════════════════
+=====================================================
 
 Define potential function:
   Φ(state) = 2 × size - capacity
@@ -2331,7 +2111,7 @@ Key insight:
 
 ```
 POTENTIAL FUNCTION DESIGN
-═════════════════════════════════════════════════════
+=====================================================
 
 GOOD POTENTIAL FUNCTIONS:
 
@@ -2361,7 +2141,7 @@ Stack with Multipop:
   Push: Φ increases by 1
   Pop: Φ decreases by 1
   Multipop(k): Φ decreases by k
-  Amortized: Push $1, Multipop $0 (draw from potential)
+  Amortized: Push \\$1, Multipop \\$0 (draw from potential)
 
 Splay Trees:
   Φ = Σ rank(v) where rank(v) = log(subtree_size(v))
@@ -2376,7 +2156,7 @@ Splay Trees:
 
 ```
 SPLAY TREES: AMORTIZED ANALYSIS
-═════════════════════════════════════════════════════
+=====================================================
 
 Self-adjusting binary search tree
 Move accessed elements to root
@@ -2407,40 +2187,20 @@ Why expensive operations are infrequent:
 
 ### Fibonacci Heaps
 
-```
-FIBONACCI HEAPS: AMORTIZED BOUNDS
-═════════════════════════════════════════════════════
 
-Advanced data structure with excellent amortized bounds:
+| Operation | Worst Case | Amortized |
+| :--- | :--- | :--- |
+| Insert | O(1) | O(1) |
+| Decrease-Key | O(log n) | O(1) |
+| Extract-Min | O(n) | O(log n) |
+| Delete | O(n) | O(log n) |
 
-Operation          │ Worst Case    │ Amortized
-───────────────────┼───────────────┼──────────
-Insert             │ O(1)          │ O(1)
-Decrease-Key       │ O(log n)      │ O(1)
-Extract-Min        │ O(n)          │ O(log n)
-Delete             │ O(n)          │ O(log n)
-
-Key insight: Decrease-Key is O(1) amortized!
-             Most operations cheap, extract-min expensive but rare
-
-Used in Dijkstra's shortest path:
-  n inserts + m decrease-keys + n extract-mins
-  Heap approach: O((n+m) log n)
-  Fibonacci: O(m + n log n)
-             
-             Huge improvement for sparse graphs!
-
-The trick: Lazy consolidation
-  When extract-min: consolidate trees (O(log n))
-  Decrease-key: just mark (O(1))
-  Cost of consolidation amortized over many operations
-```
 
 ### Self-Adjusting Structures
 
 ```
 SELF-ADJUSTING DATA STRUCTURE PATTERN
-═════════════════════════════════════════════════════
+=====================================================
 
 Many data structures use amortized analysis:
 
@@ -2541,93 +2301,75 @@ Understand how to combine backtracking, branch & bound, and other paradigms for 
 
 ### Decision Framework
 
+
+```mermaid
+flowchart TD
+    R["ALGORITHM PARADIGM SELECTION"]
+    R --> N1["Feasibility (find ANY solution)"]
+    N1 --> N2["BACKTRACKING likely good"]
+    R --> N3["Optimization (find BEST solution)"]
+    N3 --> N4["BRANCH & BOUND or DP"]
+    R --> N5["Enumeration (find ALL solutions)"]
+    N5 --> N6["BACKTRACKING with tracking"]
+    R --> N7["Counting (HOW MANY solutions)"]
+    N7 --> N8["DP with counting or backtracking"]
+    R --> N9["Hard constraints (must satisfy)"]
+    N9 --> N10["Use constraint checking (backtracking)"]
+    R --> N11["Soft constraints (optimization criterion)"]
+    N11 --> N12["Use bounding (branch & bound)"]
+    R --> N13["Mixed constraints"]
+    N13 --> N14["Hybrid approach"]
+    R --> N15["Small (< 2^20)"]
+    N15 --> N16["Backtracking might work"]
+    R --> N17["Medium (2^20 to 2^40)"]
+    N17 --> N18["Need good pruning"]
+    R --> N19["Large (> 2^40)"]
+    N19 --> N20["Must use heuristics or approximation"]
+    R --> N21["Polynomial (< n^4)"]
+    N21 --> N22["DP or greedy"]
+    R --> N23["Incremental (build piece by piece)"]
+    N23 --> N24["BACKTRACKING natural"]
+    R --> N25["Stateless (solution independent of path)"]
+    N25 --> N26["DP or greedy"]
+    R --> N27["Recursive with overlap"]
+    N27 --> N28["DP or memoization"]
+    R --> N29["No clear structure"]
+    N29 --> N30["May need heuristics"]
+    R --> N31["Strong (many branches prunable)"]
+    N31 --> N32["Backtracking or B&B good"]
+    R --> N33["Medium (some pruning possible)"]
+    N33 --> N34["May work, or try DP"]
+    R --> N35["Weak (little pruning possible)"]
+    N35 --> N36["Probably need DP or approximation"]
+    R --> N37["Unknown"]
+    N37 --> N38["Experiment with multiple approaches"]
 ```
-ALGORITHM PARADIGM SELECTION
-═════════════════════════════════════════════════════
 
-When given a problem, ask:
-
-1. PROBLEM TYPE?
-   ├─ Feasibility (find ANY solution)
-   │  └─ BACKTRACKING likely good
-   ├─ Optimization (find BEST solution)
-   │  └─ BRANCH & BOUND or DP
-   ├─ Enumeration (find ALL solutions)
-   │  └─ BACKTRACKING with tracking
-   └─ Counting (HOW MANY solutions)
-      └─ DP with counting or backtracking
-
-2. CONSTRAINTS STRUCTURE?
-   ├─ Hard constraints (must satisfy)
-   │  └─ Use constraint checking (backtracking)
-   ├─ Soft constraints (optimization criterion)
-   │  └─ Use bounding (branch & bound)
-   └─ Mixed constraints
-      └─ Hybrid approach
-
-3. SEARCH SPACE SIZE?
-   ├─ Small (< 2^20)
-   │  └─ Backtracking might work
-   ├─ Medium (2^20 to 2^40)
-   │  └─ Need good pruning
-   ├─ Large (> 2^40)
-   │  └─ Must use heuristics or approximation
-   └─ Polynomial (< n^4)
-      └─ DP or greedy
-
-4. SOLUTION STRUCTURE?
-   ├─ Incremental (build piece by piece)
-   │  └─ BACKTRACKING natural
-   ├─ Stateless (solution independent of path)
-   │  └─ DP or greedy
-   ├─ Recursive with overlap
-   │  └─ DP or memoization
-   └─ No clear structure
-      └─ May need heuristics
-
-5. PRUNING POTENTIAL?
-   ├─ Strong (many branches prunable)
-   │  └─ Backtracking or B&B good
-   ├─ Medium (some pruning possible)
-   │  └─ May work, or try DP
-   ├─ Weak (little pruning possible)
-   │  └─ Probably need DP or approximation
-   └─ Unknown
-      └─ Experiment with multiple approaches
-```
 
 ### Paradigm Characteristics
 
-```
-ALGORITHM PARADIGM COMPARISON MATRIX
-═════════════════════════════════════════════════════
 
-PARADIGM          │ BEST FOR        │ WORST FOR      │ TIME
-──────────────────┼─────────────────┼────────────────┼──────────
-Backtracking      │ Feasibility     │ Dense search   │ O(2^n)
-                  │ Constraint sat  │ Minimal pruning│
-                  │ All solutions   │                │
-──────────────────┼─────────────────┼────────────────┼──────────
-Branch & Bound    │ Optimization    │ Complex bounds │ O(2^n)
-                  │ Best solution   │ Weak pruning   │
-                  │ Some solutions  │                │
-──────────────────┼─────────────────┼────────────────┼──────────
-Dynamic Prog      │ Opt substructure│ No overlap     │ O(n*W)
-                  │ Overlapping     │ Discrete only  │
-                  │ Polynomial time │ High memory    │
-──────────────────┼─────────────────┼────────────────┼──────────
-Greedy            │ Optimal subst   │ Greedy choice  │ O(nlogn)
-                  │ Greedy property │ Complex depend │
-                  │ Simple solution │                │
-──────────────────┼─────────────────┼────────────────┼──────────
-BFS/DFS           │ Shortest path   │ Exponential    │ O(V+E)
-                  │ Connected?      │ Not sparse     │
-                  │ Graph traversal │                │
-──────────────────┼─────────────────┼────────────────┼──────────
-Divide & Conquer  │ Independent     │ Overlap        │ O(n*logn)
-                  │ Merging easy    │ Merge complex  │
-                  │ Balanced splits │                │
-```
+| PARADIGM | BEST FOR | WORST FOR | TIME |
+| :--- | :--- | :--- | :--- |
+| Backtracking | Feasibility | Dense search | O(2^n) |
+| Constraint sat | Minimal pruning |  |  |
+| All solutions |  |  |  |
+| Branch & Bound | Optimization | Complex bounds | O(2^n) |
+| Best solution | Weak pruning |  |  |
+| Some solutions |  |  |  |
+| Dynamic Prog | Opt substructure | No overlap | O(n*W) |
+| Overlapping | Discrete only |  |  |
+| Polynomial time | High memory |  |  |
+| Greedy | Optimal subst | Greedy choice | O(nlogn) |
+| Greedy property | Complex depend |  |  |
+| Simple solution |  |  |  |
+| BFS/DFS | Shortest path | Exponential | O(V+E) |
+| Connected? | Not sparse |  |  |
+| Graph traversal |  |  |  |
+| Divide & Conquer | Independent | Overlap | O(n*logn) |
+| Merging easy | Merge complex |  |  |
+| Balanced splits |  |  |  |
+
 
 ---
 
@@ -2637,7 +2379,7 @@ Divide & Conquer  │ Independent     │ Overlap        │ O(n*logn)
 
 ```
 BACKTRACKING + GREEDY HEURISTIC PRUNING
-═════════════════════════════════════════════════════
+=====================================================
 
 Pattern: Use greedy choice to guide backtracking
 
@@ -2690,7 +2432,7 @@ GREEDY ORDERINGS:
 
 ```
 BRANCH & BOUND + DP FOR BOUNDS
-═════════════════════════════════════════════════════
+=====================================================
 
 Pattern: Use DP to compute tight bounds for B&B
 
@@ -2723,7 +2465,7 @@ ADVANTAGE:
 
 ```
 BACKTRACKING + LOCAL SEARCH (Hybrid Heuristic)
-═════════════════════════════════════════════════════
+=====================================================
 
 Pattern: Combine exact search with heuristic refinement
 
@@ -2761,10 +2503,10 @@ HYBRID ADVANTAGES:
 
 ```
 MIXED PARADIGM APPLICATIONS
-═════════════════════════════════════════════════════
+=====================================================
 
 PROBLEM 1: CONSTRAINT SATISFACTION (CSP)
-──────────────────────────────────────────
+------------------------------------------
 
 Problem: Assign values to variables satisfying constraints
 
@@ -2779,7 +2521,7 @@ Approach:
 Result: Hybrid solver is state-of-the-art
 
 PROBLEM 2: INTEGER LINEAR PROGRAMMING (ILP)
-────────────────────────────────────────────
+--------------------------------------------
 
 Problem: Optimize linear objective subject to linear constraints
 
@@ -2794,7 +2536,7 @@ Approach:
 Result: Solvers like CPLEX use hybrid strategy
 
 PROBLEM 3: TRAVELING SALESMAN (TSP)
-───────────────────────────────────
+-----------------------------------
 
 Problem: Find minimum tour visiting all cities
 
@@ -2807,7 +2549,7 @@ Approaches:
 Challenge: NP-hard, need practical solutions
 
 PROBLEM 4: GRAPH COLORING
-──────────────────────────
+--------------------------
 
 Problem: Color vertices with minimum colors, no conflicts
 
@@ -2824,7 +2566,7 @@ Challenge: NP-hard, heuristics give practical results
 
 ```
 INDUSTRIAL OPTIMIZATION SYSTEMS
-═════════════════════════════════════════════════════
+=====================================================
 
 CPLEX (IBM):
   BRANCH & CUT: B&B + cutting planes + LP relaxation
@@ -2866,17 +2608,17 @@ COMMON PATTERN:
 
 ```
 PROBLEM-SOLVING METHODOLOGY
-═════════════════════════════════════════════════════
+=====================================================
 
 STEP 1: UNDERSTAND PROBLEM
-────────────────────────────
+----------------------------
 □ Read carefully, understand constraints
 □ Identify objective (feasibility, optimization, counting)
 □ Estimate search space size
 □ Check for special structure
 
 STEP 2: CLASSIFY PROBLEM TYPE
-──────────────────────────────
+------------------------------
 □ Graph problem? (BFS/DFS, MST, shortest path)
 □ Optimization problem? (DP, greedy, B&B)
 □ Feasibility problem? (CSP, backtracking)
@@ -2884,7 +2626,7 @@ STEP 2: CLASSIFY PROBLEM TYPE
 □ Polynomial? (Efficient exact algorithm)
 
 STEP 3: ANALYZE STRUCTURE
-──────────────────────────
+--------------------------
 □ Optimal substructure? (DP candidate)
 □ Greedy choice property? (Greedy candidate)
 □ Constraints prunable? (Backtracking candidate)
@@ -2892,28 +2634,28 @@ STEP 3: ANALYZE STRUCTURE
 □ Independent subproblems? (D&C candidate)
 
 STEP 4: CHOOSE INITIAL APPROACH
-────────────────────────────────
+--------------------------------
 □ Clear polynomial solution? Implement it
 □ NP-hard, small instance? Try exact (backtracking/B&B)
 □ NP-hard, large instance? Try heuristic
 □ Unsure? Start with backtracking (general purpose)
 
 STEP 5: OPTIMIZE CHOSEN APPROACH
-─────────────────────────────────
+---------------------------------
 □ Add pruning/bounding rules
 □ Add heuristics for ordering choices
 □ Add preprocessing to simplify
 □ Measure performance, identify bottlenecks
 
 STEP 6: HYBRID IF NEEDED
-────────────────────────
+------------------------
 □ If slow: add heuristics for initial solution
 □ If inaccurate: add exact phase after heuristic
 □ If branches explode: add smarter bounds
 □ If feasible solution expensive: try approximation
 
 STEP 7: VALIDATE
-────────────────
+----------------
 □ Test on provided examples
 □ Test on edge cases
 □ Verify correctness
@@ -2923,62 +2665,32 @@ STEP 7: VALIDATE
 
 ### Common Problem Patterns
 
+
+```mermaid
+flowchart TD
+    R["RECOGNITION PATTERNS FOR COMMON PROBLEMS"]
+    R --> N1["BACKTRACKING: Build incrementally, check constraints"]
+    R --> N2["Example: Subset sum, N-Queens, Sudoku"]
+    R --> N3["BRANCH & BOUND: Systematic search with bounding"]
+    R --> N4["DP: If optimal substructure"]
+    R --> N5["GREEDY: If greedy choice property"]
+    R --> N6["Example: TSP, Knapsack, Scheduling"]
+    R --> N7["BACKTRACKING: Count valid solutions"]
+    R --> N8["DP: If counting overlaps possible"]
+    R --> N9["COMBINATORICS: If closed-form formula"]
+    R --> N10["Example: Permutations with constraints"]
+    R --> N11["BRANCH & BOUND: Guaranteed optimal"]
+    R --> N12["DP: If overlapping subproblems"]
+    R --> N13["GREEDY: If choice property"]
+    R --> N14["HEURISTIC: If too hard or large"]
+    R --> N15["Example: General optimization"]
+    R --> N16["BFS/DFS: If unweighted or simple"]
+    R --> N17["Dijkstra: If non-negative weights"]
+    R --> N18["A*: If goal known, heuristic available"]
+    R --> N19["B&B: If optimization on path property"]
+    R --> N20["Example: Routing, navigation, maze"]
 ```
-RECOGNITION PATTERNS FOR COMMON PROBLEMS
-═════════════════════════════════════════════════════
 
-PATTERN 1: "Find [subset/arrangement] satisfying [constraints]"
-  └─ BACKTRACKING: Build incrementally, check constraints
-  └─ Example: Subset sum, N-Queens, Sudoku
-
-PATTERN 2: "Find [best] [subset/arrangement] of [objective]"
-  └─ BRANCH & BOUND: Systematic search with bounding
-  └─ DP: If optimal substructure
-  └─ GREEDY: If greedy choice property
-  └─ Example: TSP, Knapsack, Scheduling
-
-PATTERN 3: "Count [solutions/arrangements] satisfying [constraints]"
-  └─ BACKTRACKING: Count valid solutions
-  └─ DP: If counting overlaps possible
-  └─ COMBINATORICS: If closed-form formula
-  └─ Example: Permutations with constraints
-
-PATTERN 4: "Maximize/minimize [objective] subject to [constraints]"
-  └─ BRANCH & BOUND: Guaranteed optimal
-  └─ DP: If overlapping subproblems
-  └─ GREEDY: If choice property
-  └─ HEURISTIC: If too hard or large
-  └─ Example: General optimization
-
-PATTERN 5: "[Path/tour/route] from [start] to [goal]"
-  └─ BFS/DFS: If unweighted or simple
-  └─ Dijkstra: If non-negative weights
-  └─ A*: If goal known, heuristic available
-  └─ B&B: If optimization on path property
-  └─ Example: Routing, navigation, maze
-
-DECISION FLOWCHART:
-  
-  Is polynomial-time solution known?
-    YES → Implement exact algorithm
-    NO → Problem likely NP-hard, continue
-  
-  Is search space small (< 2^20)?
-    YES → Try backtracking/B&B
-    NO → Continue
-  
-  Does problem have optimal substructure?
-    YES → Try DP
-    NO → Continue
-  
-  Does problem have greedy choice property?
-    YES → Try greedy
-    NO → Continue
-  
-  Must find optimal solution?
-    YES → Try B&B with heuristics
-    NO → Use heuristic/approximation
-```
 
 ---
 
@@ -3141,22 +2853,22 @@ INSIGHT 7: HEURISTICS MAKE THINGS PRACTICAL
 
 ## 💡 Algorithm Selection Quick Reference
 
-```
-PROBLEM TYPE         │ BEST APPROACH         │ COMPLEXITY
-─────────────────────┼──────────────────────┼─────────────
-Feasibility (CSP)    │ Backtracking + MCV   │ O(2^n)
-All solutions (enum) │ Backtracking         │ O(n!)
-Optimization         │ B&B or DP            │ O(2^n) or O(n*W)
-Shortest path        │ Dijkstra, A*         │ O(n log n)
-Minimum spanning tree│ Kruskal, Prim        │ O(n log n)
-Sorting              │ QuickSort, MergeSort │ O(n log n)
-Searching            │ Binary search, hash  │ O(log n), O(1)
-String matching      │ KMP, Boyer-Moore     │ O(n+m)
-Pattern matching     │ Regex, Trie          │ Varies
-DP subproblems       │ Memoization, tables  │ O(subproblems)
-Linear system        │ Gaussian elimination │ O(n³)
-Linear program       │ Simplex              │ O(n³) avg
-```
+
+| PROBLEM TYPE | BEST APPROACH | COMPLEXITY |
+| :--- | :--- | :--- |
+| Feasibility (CSP) | Backtracking + MCV | O(2^n) |
+| All solutions (enum) | Backtracking | O(n!) |
+| Optimization | B&B or DP | O(2^n) or O(n*W) |
+| Shortest path | Dijkstra, A* | O(n log n) |
+| Minimum spanning tree | Kruskal, Prim | O(n log n) |
+| Sorting | QuickSort, MergeSort | O(n log n) |
+| Searching | Binary search, hash | O(log n), O(1) |
+| String matching | KMP, Boyer-Moore | O(n+m) |
+| Pattern matching | Regex, Trie | Varies |
+| DP subproblems | Memoization, tables | O(subproblems) |
+| Linear system | Gaussian elimination | O(n³) |
+| Linear program | Simplex | O(n³) avg |
+
 
 ---
 
@@ -3222,3 +2934,7 @@ By end of Week 13, you should be able to:
 **PHASE D (Weeks 12-13) COMPLETE: ALGORITHM PARADIGMS MASTERED**
 
 **50 HOURS OF CONTENT DELIVERED ACROSS 10 DAYS**
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

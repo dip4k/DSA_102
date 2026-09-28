@@ -1,10 +1,12 @@
 # 📘 Week 05 Day 04 Part B: Kadane's Algorithm & Dynamic Programming — Engineering Guide
 
-**Week:** 5 | **Day:** 4 Part B | **Tier:** Tier 1 Critical Patterns  
-**Category:** Dynamic Programming & Optimal Substructure  
-**Difficulty:** 🟡 Intermediate  
-**Real-World Impact:** Powers financial analysis (portfolio optimization, risk detection), real-time price monitoring, and resource allocation; enables O(n) solutions where brute force is O(n²)  
-**Prerequisites:** Week 1-4 + Days 1-4A (array processing, DP thinking, optimization)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_05_Day_04_Part_A_Partition_Cyclic_Sort_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_05_Day_05_Fast_Slow_Pointers_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -607,3 +609,6 @@ These principles extend to 30+ interview problems. Master Kadane's on Day 4B, an
 By the end of Week 5, you'll have mastered 8 critical patterns—hash, stack, intervals, partition, Kadane, and more. Together, they cover 60% of interview problems. The remaining 40% are variations of these patterns or require graph/tree concepts (Week 7+).
 
 ---
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_05_Day_04_Part_A_Partition_Cyclic_Sort_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_05_Day_05_Fast_Slow_Pointers_Instructional.md)

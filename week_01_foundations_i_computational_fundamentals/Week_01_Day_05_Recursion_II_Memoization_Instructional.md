@@ -1,12 +1,12 @@
 # 📘 Week 01 Day 05: Recursion II – Patterns & Memoization Intro — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 1 | **Day:** 5
-- **Category:** Foundations / Recursion Patterns & Optimization
-- **Difficulty:** 🟡 Intermediate (builds on Day 4 foundation)
-- **Real-World Impact:** Understanding recursion patterns transforms you from "I can write recursion" to "I know when and how recursion is useful." Memoization is your first step into dynamic programming—the most powerful optimization technique in computer science.
-- **Prerequisites:** Week 1 Day 4 (Call stack, basic recursion), Days 1–3 (fundamentals)
-- **MIT Alignment:** Recursion patterns and memoization from 6.006; advanced memoization analysis from 6.046
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_01_Day_04_Recursion_I_Call_Stack_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_01_Day_06_Peak_Finding_Algorithmic_Thinking_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -303,7 +303,7 @@ Here's a trace showing the difference visually:
 
 ```
 WITHOUT Memoization (Fib(5)):
-─────────────────────────────────
+---------------------------------
                     Fib(5) ← Call 1
                    /      \
               Fib(4)        Fib(3) ← Call 2 & 7 (computed twice!)
@@ -319,7 +319,7 @@ For Fib(40): ~1 trillion calls
 
 
 WITH Memoization (FibMemo(5)):
-─────────────────────────────────
+---------------------------------
 First call to FibMemo(5):
   → FibMemo(4)
     → FibMemo(3)
@@ -839,4 +839,6 @@ With memoization mastered, you're now ready for dynamic programming (Week 10), w
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—comprehensive theory, practical patterns, and real systems  
 **Batch Status:** ✅ COMPLETE — Ready for "Continue" signal or next file generation
+---
 
+> 🧭 **Navigation:** [← Previous Day](Week_01_Day_04_Recursion_I_Call_Stack_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_01_Day_06_Peak_Finding_Algorithmic_Thinking_Instructional.md)

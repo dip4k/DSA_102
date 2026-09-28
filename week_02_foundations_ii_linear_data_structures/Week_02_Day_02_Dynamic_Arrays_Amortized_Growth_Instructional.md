@@ -1,12 +1,12 @@
 # 📘 Week 02 Day 02: Dynamic Arrays & Amortized Growth — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 2 | **Day:** 2
-- **Category:** Foundations / Linear Data Structures
-- **Difficulty:** 🟡 Intermediate (builds on Day 1 array memory layout)
-- **Real-World Impact:** Dynamic arrays (List<T> in C#, vector in C++, ArrayList in Java) power nearly every collection in modern programming. Understanding why push is O(1) amortized—not O(n) per operation—is fundamental to reasoning about performance. This is your first encounter with amortized analysis, a powerful technique for analyzing average-case behavior.
-- **Prerequisites:** Week 1 (asymptotics, Big-O), Week 2 Day 1 (arrays, memory layout)
-- **MIT Alignment:** Dynamic arrays and amortized analysis intro from MIT 6.006
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_02_Day_01_Arrays_Memory_Layout_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_02_Day_03_Linked_Lists_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -69,12 +69,12 @@ public void Push(int value) {
 Imagine you have a savings account that earns interest on every deposit (analogy for the "free" operations between resizes).
 
 **Scenario 1: Strict accounting (pay upfront)**
-- Deposit $1, withdraw $1 for "future resizing tax" → net $0 gained.
-- Do this n times → net $0 after n deposits.
+- Deposit \$1, withdraw \$1 for "future resizing tax" → net \$0 gained.
+- Do this n times → net \$0 after n deposits.
 - When you resize, you have enough "credits" saved up to pay for the reallocation.
 
 **Scenario 2: Doubling strategy (amortized)**
-- Deposit $1.
+- Deposit \$1.
 - Every few deposits, pay a large "tax" upfront (during resize).
 - On average, the tax is small per deposit (amortized).
 
@@ -620,3 +620,6 @@ This pattern—**structure enabling efficiency**—appears in every advanced dat
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers amortized analysis fundamentals  
 **Batch Status:** ✅ COMPLETE — Week 02 Day 02 Final
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_02_Day_01_Arrays_Memory_Layout_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_02_Day_03_Linked_Lists_Instructional.md)

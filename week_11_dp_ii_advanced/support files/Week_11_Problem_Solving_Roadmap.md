@@ -1,5 +1,11 @@
 # 🗺️ WEEK 11 PROBLEM-SOLVING ROADMAP
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Week:** 11 | **Purpose:** Structured problem-solving progression from basic to advanced  
 **Format:** Problem list organized by day, difficulty, and concept
 
@@ -683,3 +689,6 @@ For each problem, verify:
 
 **File Status:** ✅ Complete | **Last Updated:** January 26, 2026
 
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

@@ -1,12 +1,12 @@
 # 📘 Week 03 Day 05: Hash Tables II — Open Addressing & Rolling Hash (Rabin-Karp) — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 3 | **Day:** 5
-- **Category:** Foundations / Advanced Data Structures & Algorithms
-- **Difficulty:** 🟠 Advanced (builds on Week 3 Day 4, strings, polynomial math)
-- **Real-World Impact:** Open addressing hash tables are ubiquitous in performance-critical systems (SwissTable-style maps, dense hash maps, high-frequency trading). Rabin-Karp rolling hash powers plagiarism detection, DNA sequence matching, and substring search. Understanding both collision resolution strategies and advanced hashing techniques is essential for systems programming, competitive programming, and security-aware application design.
-- **Prerequisites:** Week 3 Day 4 (hash tables, load factor), Week 2 (arrays, strings)
-- **MIT Alignment:** Open addressing from MIT 6.006 Lecture 10; Rabin-Karp and universal hashing from MIT 6.006–6.046
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_03_Day_04_Hash_Tables_Separate_Chaining_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_03_FULL_PLAYBOOK.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -879,3 +879,6 @@ Master open addressing, rolling hash, and universal hashing—their mechanics, t
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers mechanics, analysis, and applications  
 **Batch Status:** ✅ COMPLETE — Week 03 Day 05 Final
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_03_Day_04_Hash_Tables_Separate_Chaining_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_03_FULL_PLAYBOOK.md)

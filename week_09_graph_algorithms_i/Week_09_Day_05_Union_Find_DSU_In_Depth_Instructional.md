@@ -1,11 +1,12 @@
 # 📘 Week 09 Day 05: Disjoint Set Union (DSU) / Union–Find in Depth — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 09 | **Day:** 05
-- **Category:** Graph Algorithms / Disjoint Sets & Connectivity
-- **Difficulty:** 🟡 Intermediate (Optional Advanced)
-- **Real-World Impact:** Powers connectivity queries in dynamic graphs (social networks, communication networks), backbone of Kruskal's MST algorithm, enables efficient offline LCA (Lowest Common Ancestor) queries, detects cycles in forests, and solves bipartite checking problems at scale with near-constant-time operations.
-- **Prerequisites:** Week 08 (Graph fundamentals: representations, connectivity), Week 01 (RAM model, complexity analysis, pointers)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_09_Day_04_Minimum_Spanning_Trees_Kruskal_Prim_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_09_FULL_PLAYBOOK.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -247,19 +248,16 @@ Given a dynamic set of elements, support three operations:
 ### The State Machine & Memory Layout
 
 **Disjoint Set Union State:**
-```
-State Variables:
-├─ parent[0..n-1]   : Parent pointer; parent[i] is i's parent in tree
-├─ rank[0..n-1]     : Rank (approximate height) of subtree rooted at i
-└─ n                 : Number of elements
 
-Memory Layout:
-┌──────────────────────────────────────────┐
-│ parent[0..n-1]    : int[] (or size_t[]) │
-│ rank[0..n-1]      : byte[] (rank ≤ log n)
-└──────────────────────────────────────────┘
-Total Space: O(n)
+```mermaid
+flowchart TD
+    R["State Variables"]
+    R --> N1["parent[0..n-1]   : Parent pointer; parent[i] is i's parent in tree"]
+    R --> N2["rank[0..n-1]     : Rank (approximate height) of subtree rooted at i"]
+    R --> N3["n                 : Number of elements"]
+    R --> N4["State"]
 ```
+
 
 ### 🔧 Operation 1: Make-Set — Initialize a Disjoint Set
 
@@ -1012,4 +1010,6 @@ This analogy extends to single-link clustering: DSU implicitly computes the clus
 **Overall Result:** ✅ ALL CHECKS PASSED — Content verified for accuracy and ready for delivery.
 
 ---
+---
 
+> 🧭 **Navigation:** [← Previous Day](Week_09_Day_04_Minimum_Spanning_Trees_Kruskal_Prim_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_09_FULL_PLAYBOOK.md)

@@ -1,5 +1,11 @@
 # Week 12 Summary & Key Concepts — Greedy Algorithms & Proofs
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Week:** 12  
 **Phase:** 🟧 Algorithm Paradigms  
 **Focus:** Greedy algorithm design, correctness proofs, and when greedy is guaranteed (or not) to be optimal.
@@ -280,3 +286,7 @@ Use these prompts to test yourself without looking at notes:
 7. When reading a new problem, what signals make you suspect a greedy solution might exist?
 
 If you can answer these fluently, you’ve internalized the **key concepts of Week 12**.
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

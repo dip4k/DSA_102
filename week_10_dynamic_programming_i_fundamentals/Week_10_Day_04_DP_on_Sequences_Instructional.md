@@ -1,11 +1,12 @@
 # 📖 WEEK 10 DAY 04: DYNAMIC PROGRAMMING ON SEQUENCES — COMPREHENSIVE ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 10 | **Day:** 04
-- **Category:** Algorithm Paradigms / Sequence Optimization / Advanced DP Patterns
-- **Difficulty:** 🟡 Intermediate to 🔴 Advanced
-- **Real-World Impact:** Powers data compression (LIS), stock trading algorithms, DNA sequence analysis, activity scheduling, palindrome detection, and subsequence matching in bioinformatics
-- **Prerequisites:** Week 10 Day 01-03 (DP fundamentals, 1D/2D DP, state design, recurrence relations)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_10_Day_03_2D_DP_Grids_Edit_Distance_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_10_Day_05_Story_Driven_DP_Advanced_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -1541,3 +1542,6 @@ The connection: Both DP and neural methods solve optimization on sequences. DP g
 ---
 
 **End of Week 10 Day 04 Comprehensive Instructional Content**
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_10_Day_03_2D_DP_Grids_Edit_Distance_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_10_Day_05_Story_Driven_DP_Advanced_Instructional.md)

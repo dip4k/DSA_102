@@ -1,5 +1,11 @@
 # 📘 WEEK 13 GUIDELINES — BACKTRACKING & BRANCH & BOUND
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Phase:** D – Algorithm Paradigms  
 **Week Theme:** Backtracking & Branch & Bound  
 **Syllabus Source:** COMPLETE_SYLLABUS_v13_FINAL.md  
@@ -738,3 +744,7 @@ If time-constrained, focus on high-impact topics:
 **Remember:** Backtracking is about systematic exploration with state restoration. Branch & bound adds bounds for optimization. Amortized analysis smooths occasional expensive operations over sequences. Master these paradigms and you'll have powerful problem-solving tools for constraint satisfaction, optimization, and performance analysis.
 
 **Next:** Week_13_Summary_Key_Concepts.md
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

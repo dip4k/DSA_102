@@ -1,5 +1,11 @@
 # Week 05 Extended Python Complete v13
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Python (3.11+) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 Purpose: build Python fluency for the highest-frequency interview patterns: hash maps, monotonic stack, intervals, partition/cyclic sort, Kadane, and fast/slow pointers.
 
 ## Focus tags
@@ -99,3 +105,7 @@ def has_cycle(head):
 - Forgetting to sort intervals before merging.
 - Using list operations that accidentally make a supposedly O(n) solution quadratic.
 - Confusing value equality with node identity in fast/slow linked-list logic.
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

@@ -1,5 +1,11 @@
 # ✅ Week 09 Daily Progress Checklist — Graph Algorithms I
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Purpose:** Track daily progress and ensure complete coverage of all Week 09 topics  
 
 ---
@@ -518,3 +524,6 @@ This checklist helps you track:
 
 ---
 
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

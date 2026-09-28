@@ -1,5 +1,14 @@
 # 📅 Week 14, Day 4: Advanced Preprocessed Strings, KMP Matching, Tries & Radix Sorting
 
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_14_Day_03_Number_Theory_Basics_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_14_Day_05_Advanced_Number_Theory_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
+
+---
+
 Welcome to Day 4. Today, we bridge the gap between high-level string manipulation patterns and low-level physical byte stream engines. We study non-backtracking text searches, prefix tree representations, suffix-based index arrays, non-comparison radix sorting layouts, and multi-pattern concurrent compilation state automatons.
 
 ---
@@ -484,3 +493,6 @@ To minimize this memory footprint, high-performance systems use:
 ### Misconceptions and Corrections
 *   *Incorrect Idea*: Assuming that Tries are always faster than Hash Tables for word searches.
     *   *Correction*: While Tries are faster for prefix matching, they use significantly more memory because they store pointers for each character transition. In some cases, Hash Tables search routines are faster because of better cache locality.
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_14_Day_03_Number_Theory_Basics_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_14_Day_05_Advanced_Number_Theory_Instructional.md)

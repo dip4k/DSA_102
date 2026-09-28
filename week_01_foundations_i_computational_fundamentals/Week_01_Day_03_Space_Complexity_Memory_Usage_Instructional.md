@@ -1,11 +1,12 @@
 # 📘 Week 1 Day 3: Space Complexity & Memory Usage
 
-**Metadata:**
-- **Week:** 1 | **Day:** 3
-- **Category:** Foundations & Resource Management
-- **Difficulty:** 🟡 Intermediate (builds on Days 1-2)
-- **Real-World Impact:** The difference between an algorithm that fits in memory and one that causes out-of-memory crashes. Space is as critical as time in production systems, especially in cloud computing where memory = cost.
-- **Prerequisites:** Week 1 Day 1 (RAM Model & Pointers), Week 1 Day 2 (Asymptotic Analysis)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_01_Day_02_Asymptotic_Analysis_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_01_Day_04_Recursion_I_Call_Stack_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -543,7 +544,7 @@ Allocating memory can have hidden costs:
 2. **Allocation Overhead:** Creating large arrays has setup time.
 3. **GC Pressure:** In managed languages, more allocations = more work for garbage collector.
 4. **Page Faults:** If your program exceeds physical RAM, pages get swapped to disk (1,000,000x slower).
-5. **Cost:** In cloud computing, memory costs ~$0.10 per GB per month. A 10 GB cache costs ~$1/month per instance.
+5. **Cost:** In cloud computing, memory costs ~\$0.10 per GB per month. A 10 GB cache costs ~\$1/month per instance.
 
 ### 🏭 Real-World Systems: Where Space Matters
 
@@ -864,3 +865,6 @@ In the 1980s-90s, memory was expensive and scarce. Systems obsessed over space. 
 
 
 **Next:** Week 1 Day 4 (Recursion I: Call Stack & Basic Patterns)
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_01_Day_02_Asymptotic_Analysis_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_01_Day_04_Recursion_I_Call_Stack_Instructional.md)

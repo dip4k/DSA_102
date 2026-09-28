@@ -1,5 +1,11 @@
 # 📘 WEEK 11 GUIDELINES & BEST PRACTICES
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Week:** 11 | **Category:** Dynamic Programming II — Trees, DAGs & Advanced  
 **Purpose:** Structured guidance for mastering Week 11 content  
 **Last Updated:** January 26, 2026
@@ -492,3 +498,6 @@ End each day, answer:
 
 **File Status:** ✅ Complete | **Last Updated:** January 26, 2026
 
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

@@ -1,5 +1,11 @@
 # 🎨 Week 14 Visual Concepts Playbook (Hybrid): Matrices, Bitmasks & Number Theory
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Visual Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
+
+---
+
 This playbook provides high-fidelity visual maps, step-by-step trace diagrams, and ASCII art representations of coordinate transformations, bit-register filters, modular arithmetic wrapping, and prefix state fallbacks. Use this guide to build structural models of Week 14's core mechanics.
 
 ---
@@ -154,3 +160,7 @@ The Aho-Corasick automaton extends a normal prefix Trie by adding **Failure Poin
 ```
 
 The dashed failure link connects node `i` to node `s` (since "H" is not a suffix match, but a path suffix of "i" exists at another state). This allows multi-pattern search in a single pass.
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

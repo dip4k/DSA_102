@@ -1,5 +1,11 @@
 # 📋 Week 02 Guidelines: Linear Data Structures & Binary Search Foundations
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Week Overview:** Foundations II — Understanding arrays, dynamic arrays, linked lists, stacks, queues, deques, binary search, and character string/number conversions.  
 **Primary Goal:** Master fundamental linear data structures, their low-level memory implications, and invariant-driven algorithms.  
 **Time Allocation:** 24-28 hours core learning + deep practice.  
@@ -108,7 +114,7 @@ This week, you move from abstract computational fundamentals (Week 01: memory hi
 *   *Fix*: Always pre-allocate temporary pointer references (e.g. `next = current.next`) before rewiring.
 
 ### Pitfall 4: Queueing inside Lists
-*   *Wrong*: Using `List<T>.RemoveAt(0)` to dequeue from a queue. This forces $O(N)$ index shifts on every pop.
+*   *Wrong*: Using `List<T>.RemoveAt(0)` to dequeue from a queue. This forces O(N) index shifts on every pop.
 *   *Fix*: Use a `Queue<T>` with a circular buffer or a linked list backend.
 
 ### Pitfall 5: Binary Search Overflow
@@ -130,3 +136,7 @@ You've mastered Week 02 when:
 4.  **You implement circular structures**: You can code circular arrays and queues with modular wraparound indices cleanly.
 5.  **You handle binary search variants**: You can explain lower bounds, upper bounds, and binary search on answer spaces.
 6.  **You understand low-level representations**: You can explain immutability, UTF-16 surrogate pairs, two's complement negation, and convert string-to-integer (`atoi`) and integer-to-string (`itoa`) from scratch with proper overflow checks.
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

@@ -1,5 +1,11 @@
 # 📋 Week 01 Guidelines: Computational Fundamentals & Algorithmic Thinking
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Week Overview:** Foundations I — Understanding memory, cost models, recursion, and your first algorithm design story  
 **Primary Goal:** Build rock-solid mental models before diving into data structures and algorithms  
 **Time Allocation:** 20-24 hours core learning + deep practice  
@@ -198,16 +204,18 @@ Example: `vector<int>` with 100 ints
 
 **Call Stack Mechanics**
 
+
+```mermaid
+flowchart TD
+    R["Call fact(3)"]
+    R --> N1["fact(2)"]
+    N1 --> N2["fact(1)"]
+    N2 --> N3["fact(0) → return 1"]
+    N1 --> N4["return 1 * 1 = 1"]
+    R --> N5["return 2 * 1 = 2"]
+    R --> N6["return 3 * 2 = 6"]
 ```
-Call: fact(3)
-  ┌─ fact(3)
-  │  ├─ fact(2)
-  │  │  ├─ fact(1)
-  │  │  │  └─ fact(0) → return 1
-  │  │  └─ return 1 * 1 = 1
-  │  └─ return 2 * 1 = 2
-  └─ return 3 * 2 = 6
-```
+
 
 Each call pushes a frame. When return statement executes, frame pops.
 
@@ -477,39 +485,37 @@ Work through examples on paper:
 
 ## 📊 Concept Map: Week 01 Foundations
 
-```
-Week 01: Computational Fundamentals
 
-├─ MEMORY MODEL
-│  ├─ RAM (abstract constant-time access)
-│  ├─ Virtual Memory (pages, TLB, page faults)
-│  ├─ Process Address Space (code, data, heap, stack)
-│  └─ Memory Hierarchy (registers → L1/L2/L3 → DRAM → disk)
-│
-├─ COMPLEXITY ANALYSIS
-│  ├─ Big-O, Big-Ω, Big-Θ (upper, lower, tight)
-│  ├─ Common classes (O(1) to O(n!))
-│  ├─ Recurrence analysis (recurrence trees)
-│  └─ Constants and break-even points
-│
-├─ SPACE COMPLEXITY
-│  ├─ Stack (activation records, depth limits)
-│  ├─ Heap (allocation, fragmentation)
-│  ├─ Auxiliary space
-│  └─ Time-space trade-offs
-│
-├─ RECURSION
-│  ├─ Call stack mechanics
-│  ├─ Patterns (linear, tree, divide-conquer)
-│  ├─ Memoization (overlapping subproblems)
-│  └─ Stack overflow concerns
-│
-└─ ALGORITHMIC THINKING
-   ├─ Peak finding (1D and 2D)
-   ├─ Divide-and-conquer
-   ├─ Exploiting structure
-   └─ Better-than-brute-force mindset
+```mermaid
+flowchart TD
+    R["Week 01 Computational Fundamentals"]
+    R --> N1["MEMORY MODEL"]
+    N1 --> N2["RAM (abstract constant-time access)"]
+    N1 --> N3["Virtual Memory (pages, TLB, page faults)"]
+    N1 --> N4["Process Address Space (code, data, heap, stack)"]
+    N1 --> N5["Memory Hierarchy (registers → L1/L2/L3 → DRAM → disk)"]
+    R --> N6["COMPLEXITY ANALYSIS"]
+    N6 --> N7["Big-O, Big-Ω, Big-Θ (upper, lower, tight)"]
+    N6 --> N8["Common classes (O(1) to O(n!))"]
+    N6 --> N9["Recurrence analysis (recurrence trees)"]
+    N6 --> N10["Constants and break-even points"]
+    R --> N11["SPACE COMPLEXITY"]
+    N11 --> N12["Stack (activation records, depth limits)"]
+    N11 --> N13["Heap (allocation, fragmentation)"]
+    N11 --> N14["Auxiliary space"]
+    N11 --> N15["Time-space trade-offs"]
+    R --> N16["RECURSION"]
+    N16 --> N17["Call stack mechanics"]
+    N16 --> N18["Patterns (linear, tree, divide-conquer)"]
+    N16 --> N19["Memoization (overlapping subproblems)"]
+    N16 --> N20["Stack overflow concerns"]
+    R --> N21["ALGORITHMIC THINKING"]
+    N21 --> N22["Peak finding (1D and 2D)"]
+    N21 --> N23["Divide-and-conquer"]
+    N21 --> N24["Exploiting structure"]
+    N21 --> N25["Better-than-brute-force mindset"]
 ```
+
 
 ---
 
@@ -594,3 +600,7 @@ You've mastered Week 01 when:
 
 **Next:** Week 01 Summary & Key Concepts  
 **Time to Completion:** 20+ hours for full mastery
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

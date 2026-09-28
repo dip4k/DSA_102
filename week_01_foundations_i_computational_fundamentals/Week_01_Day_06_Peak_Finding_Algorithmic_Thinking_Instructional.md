@@ -1,12 +1,12 @@
 # 📘 Week 01 Day 06: Peak Finding & Algorithmic Thinking — ENGINEERING GUIDE (Optional Advanced - MIT 6.006)
 
-**Metadata:**
-- **Week:** 1 | **Day:** 6
-- **Category:** Foundations / Algorithmic Design & Problem-Solving
-- **Difficulty:** 🟡 Intermediate–Advanced (Optional; MIT 6.006 Signature Problem)
-- **Real-World Impact:** Peak finding is your first full algorithm design story. It teaches the mindset of "exploiting problem structure for exponential speedup." This same mindset applies to billions of real problems: finding breakpoints in sorted data, detecting anomalies, localizing maxima in sensor networks.
-- **Prerequisites:** Week 1 Days 1–5 (fundamentals, recursion, memoization)
-- **MIT Alignment:** Directly from MIT 6.006 course (peak finding as opening lecture design problem)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_01_Day_05_Recursion_II_Memoization_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_01_FULL_PLAYBOOK.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -321,7 +321,7 @@ Array: `[2, 1, 3, 5, 4, 8, 6, 7]`
 
 ```
 Initial: low=0, high=7
-─────────────────────────
+-------------------------
 
 Iteration 1:
   mid = (0 + 7) / 2 = 3
@@ -616,4 +616,6 @@ Often, the answers lead to elegant, efficient solutions.
 
 - Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
 - Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+---
 
+> 🧭 **Navigation:** [← Previous Day](Week_01_Day_05_Recursion_II_Memoization_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_01_FULL_PLAYBOOK.md)

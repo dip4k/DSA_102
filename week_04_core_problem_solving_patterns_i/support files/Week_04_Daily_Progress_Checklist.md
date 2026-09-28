@@ -1,5 +1,11 @@
 # ✅ Week 04 Daily Progress Checklist: Action Plan for Mastery
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Audience:** Self-directed learners  
 **Purpose:** Track daily progress, ensure depth not just breadth
 
@@ -349,3 +355,7 @@
 **Total Time Investment:** 15-18 hours (core)  
 **Pattern Mastery Level:** ______ / 100  
 **Ready for Week 05?** ☐ YES (Move forward) ☐ REVIEW (One more day)
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

@@ -1,13 +1,12 @@
 # Week 13 Day 02: Backtracking Problems — Engineering Guide
 
-**📂 Metadata**
-- **Week:** 13  
-- **Day:** 02  
-- **Phase:** 🟧 Algorithm Paradigms  
-- **Category:** Constraint Satisfaction & Combinatorial Optimization  
-- **Difficulty:** Advanced  
-- **Real-World Impact:** Core techniques for puzzle solvers, game AI, scheduling systems, configuration validators, and constraint satisfaction in enterprise software.  
-- **Prerequisites:** Week 13 Day 01 (Backtracking Fundamentals), Tree Traversal (Week 7-8), DFS (Week 9), Recursion (Week 1)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_13_Day_01_Backtracking_Fundamentals_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_13_Day_03_Branch_And_Bound_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -187,34 +186,16 @@ Level k: Path completes (word found or goal reached)
 
 ## Visual: The Five Archetypes
 
+
+```mermaid
+flowchart TD
+    R["State"]
+    R --> N1["State"]
+    N1 --> N2["State"]
+    N2 --> N3["State"]
+    N3 --> N4["State"]
 ```
-┌─────────────────────────────────────────────────────────────┐
-│              Backtracking Problem Archetypes                │
-└─────────────────────────────────────────────────────────────┘
-                            │
-        ┌───────────────────┼───────────────────┐
-        │                   │                   │
-   Placement           Grid Filling       Sequence Gen
-   (N-Queens)           (Sudoku)         (Permutations)
-        │                   │                   │
-  ┌─────────┐         ┌──────────┐       ┌──────────┐
-  │ Row-by- │         │ Cell-by- │       │ Element- │
-  │  row    │         │  cell    │       │ by-elem  │
-  │ pruning │         │ with MRV │       │ tracking │
-  └─────────┘         └──────────┘       └──────────┘
-        │                   │                   │
-        └───────────────────┼───────────────────┘
-                            │
-                    ┌───────┴───────┐
-                    │               │
-              Path Explore    Optimization
-              (Word Search)   (Branch & Bound)
-                    │               │
-              ┌──────────┐    ┌──────────┐
-              │ Visited  │    │ Bound    │
-              │ tracking │    │ pruning  │
-              └──────────┘    └──────────┘
-```
+
 
 ---
 
@@ -440,95 +421,50 @@ class Program
 
 Let's trace the first few recursive calls to understand the flow:
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│ Step-by-Step Execution for N=4 (First Solution)            │
-└─────────────────────────────────────────────────────────────┘
 
-INITIAL STATE:
-Board:        Used:
-. . . .       Cols: {}
-. . . .       Diag1: {}
-. . . .       Diag2: {}
-. . . .
+|  | Board:        Used: |
+| :--- | :--- |
+|  | Q . . .       Cols: {0} |
+|  | . . . .       Diag1: {3} |
+|  | . . . .       Diag2: {0} |
+|  | . . . . |
+|  | Check: col=1 ✓, diag1=1 ✓, diag2=2 ✓ |
+|  | Wait, let's recalculate: |
+|  | row=1, col=1: diag1 = 1-1+3 = 3 (CONFLICT! 3 in usedDiag1) ❌ |
+|  | +- row=1, col=2: diag1=1-2+3=2, diag2=1+2=3 |
+|  | +- Constraints: col=2 ✓, diag1=2 ✓, diag2=3 ✓ |
+|  | +- MAKE CHOICE: |
+|  |  |
+|  |  |
+|  |  |
+|  |  |
+|  |  |
+|  |  |
+|  | +- CALL: Backtrack(row=2) |
+|  | +- Try col=0: diag1=2-0+3=5, diag2=2+0=2 |
+|  |  |
+|  | +- Try col=1: diag1=2-1+3=4, diag2=2+1=3 |
+|  |  |
+|  | +- Try col=2: col=2❌ (in usedCols) |
+|  | +- Try col=3: diag1=2-3+3=2, diag2=2+3=5 |
+|  |  |
+|  |  |
+|  | +- NO VALID COLUMN → Backtrack to row=1 |
+|  | Board:        Used: |
+|  | Q . . .       Cols: {0, 3} |
+|  | . . . Q       Diag1: {3, 1} |
+|  | . . . .       Diag2: {0, 4} |
+|  | . . . . |
+|  | Constraints: col=0❌ (in usedCols) |
+|  | Constraints: col=1✓, diag1=4✓, diag2=3✓ |
+|  | MAKE CHOICE: |
+|  | Board:        Used: |
+|  | Q . . .       Cols: {0, 3, 1} |
+|  | . . . Q       Diag1: {3, 1, 4} |
+|  | . Q . .       Diag2: {0, 4, 3} |
+|  | . . . . |
+|  | Constraints: col=2✓, diag1=4❌ (in usedDiag1) |
 
-CALL: Backtrack(row=0)
-├─ Try col=0:
-│  ├─ Constraints: col=0 ✓, diag1=3 ✓, diag2=0 ✓ (all free)
-│  ├─ MAKE CHOICE:
-│  │  Board:        Used:
-│  │  Q . . .       Cols: {0}
-│  │  . . . .       Diag1: {3}
-│  │  . . . .       Diag2: {0}
-│  │  . . . .
-│  │
-│  └─ CALL: Backtrack(row=1)
-│     ├─ Try col=0: SKIP (col=0 in usedCols) ❌
-│     ├─ Try col=1: SKIP (diag2=2 would be, but check diag1=1, diag2=2)
-│     │              Check: col=1 ✓, diag1=1 ✓, diag2=2 ✓
-│     │              Wait, let's recalculate:
-│     │              row=1, col=1: diag1 = 1-1+3 = 3 (CONFLICT! 3 in usedDiag1) ❌
-│     │
-│     ├─ Try col=2:
-│     │  ├─ row=1, col=2: diag1=1-2+3=2, diag2=1+2=3
-│     │  ├─ Constraints: col=2 ✓, diag1=2 ✓, diag2=3 ✓
-│     │  ├─ MAKE CHOICE:
-│     │  │  Board:        Used:
-│     │  │  Q . . .       Cols: {0, 2}
-│     │  │  . . Q .       Diag1: {3, 2}
-│     │  │  . . . .       Diag2: {0, 3}
-│     │  │  . . . .
-│     │  │
-│     │  └─ CALL: Backtrack(row=2)
-│     │     ├─ Try col=0: diag1=2-0+3=5, diag2=2+0=2
-│     │     │              Constraints: col=0❌ (in usedCols)
-│     │     ├─ Try col=1: diag1=2-1+3=4, diag2=2+1=3
-│     │     │              Constraints: col=1✓, diag1=4✓, diag2=3❌ (in usedDiag2)
-│     │     ├─ Try col=2: col=2❌ (in usedCols)
-│     │     ├─ Try col=3: diag1=2-3+3=2, diag2=2+3=5
-│     │     │              Constraints: col=3✓, diag1=2❌ (in usedDiag1)
-│     │     │
-│     │     └─ NO VALID COLUMN → Backtrack to row=1
-│     │
-│     └─ UNDO col=2 choice, try col=3:
-│        ├─ row=1, col=3: diag1=1-3+3=1, diag2=1+3=4
-│        ├─ Constraints: col=3✓, diag1=1✓, diag2=4✓
-│        ├─ MAKE CHOICE:
-│        │  Board:        Used:
-│        │  Q . . .       Cols: {0, 3}
-│        │  . . . Q       Diag1: {3, 1}
-│        │  . . . .       Diag2: {0, 4}
-│        │  . . . .
-│        │
-│        └─ CALL: Backtrack(row=2)
-│           ├─ Try col=0: diag1=2-0+3=5, diag2=2+0=2
-│           │              Constraints: col=0❌ (in usedCols)
-│           ├─ Try col=1: diag1=2-1+3=4, diag2=2+1=3
-│           │              Constraints: col=1✓, diag1=4✓, diag2=3✓
-│           │              MAKE CHOICE:
-│           │              Board:        Used:
-│           │              Q . . .       Cols: {0, 3, 1}
-│           │              . . . Q       Diag1: {3, 1, 4}
-│           │              . Q . .       Diag2: {0, 4, 3}
-│           │              . . . .
-│           │
-│           └─ CALL: Backtrack(row=3)
-│              ├─ Try col=0: col=0❌
-│              ├─ Try col=1: col=1❌
-│              ├─ Try col=2: diag1=3-2+3=4, diag2=3+2=5
-│              │              Constraints: col=2✓, diag1=4❌ (in usedDiag1)
-│              ├─ Try col=3: col=3❌
-│              │
-│              └─ NO VALID COLUMN → Backtrack to row=2
-│
-└─ (Continue exploration... eventually finds solution at col=1 for row=0)
-
-FIRST SOLUTION FOUND:
-. Q . .    (row 0, col 1)
-. . . Q    (row 1, col 3)
-Q . . .    (row 2, col 0)
-. . Q .    (row 3, col 2)
-```
 
 ### Complexity Analysis
 
@@ -1745,24 +1681,21 @@ public void TestDiagonalConstraint()
 
 ### Decision Tree: Which Pattern to Apply?
 
+
+```mermaid
+flowchart TD
+    R["Problem asks for "all solutions"?"]
+    R --> N1["Yes → Enumeration (Permutations/Subsets pattern)"]
+    R --> N2["No → Continue"]
+    R --> N3["Yes → Do items have geometric constraints (attacks, adjacency)?"]
+    N3 --> N4["Yes → N-Queens pattern"]
+    N3 --> N5["No → Sudoku pattern (fill constraints)"]
+    R --> N6["No → Continue"]
+    R --> N7["Yes → Word Search / Maze pattern"]
+    R --> N8["No → Continue"]
+    R --> N9["Yes → Branch & Bound (Day 3 content)"]
 ```
-Problem asks for "all solutions"?
-├─ Yes → Enumeration (Permutations/Subsets pattern)
-└─ No → Continue
 
-Problem involves placing items on grid/board?
-├─ Yes → Do items have geometric constraints (attacks, adjacency)?
-│   ├─ Yes → N-Queens pattern
-│   └─ No → Sudoku pattern (fill constraints)
-└─ No → Continue
-
-Problem involves finding path in grid/maze?
-├─ Yes → Word Search / Maze pattern
-└─ No → Continue
-
-Problem involves optimizing objective function?
-└─ Yes → Branch & Bound (Day 3 content)
-```
 
 ### Mapping Variants to Core Problems
 
@@ -2034,3 +1967,6 @@ Before moving to Day 3 (Branch & Bound), ensure you can:
 If you can complete 3/4 challenges, you're ready for **Day 3: Branch & Bound** (optimization with backtracking).
 
 ---
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_13_Day_01_Backtracking_Fundamentals_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_13_Day_03_Branch_And_Bound_Instructional.md)

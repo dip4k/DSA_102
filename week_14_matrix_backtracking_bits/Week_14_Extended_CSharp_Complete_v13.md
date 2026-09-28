@@ -1,5 +1,11 @@
 # 🗄️ Week 14 Extended C# Complete Reference v13
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This C# (.NET 8/9) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 This reference guide provides production-grade, highly optimized, and memory-safe C# implementations for Week 14's core algorithm patterns. All code blocks are written to minimize GC allocation and use idiomatic modern C# structures.
 
 ---
@@ -741,3 +747,7 @@ public static class CrtSolver {
     }
 }
 ```
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

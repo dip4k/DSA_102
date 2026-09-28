@@ -1,10 +1,12 @@
 # 📘 Week 05 Day 05: Fast/Slow Pointers & Cycle Detection — Engineering Guide
 
-**Week:** 5 | **Day:** 5 | **Tier:** Tier 1 Critical Patterns  
-**Category:** Two-Pointer Traversal & Cycle Detection  
-**Difficulty:** 🟡 Intermediate  
-**Real-World Impact:** Powers cycle detection in file systems, memory leak detection, duplicate detection in linked structures, and efficient list operations; enables O(1) space cycle detection where naive approaches require O(n) storage  
-**Prerequisites:** Week 1-4 + Days 1-4 (linked lists, two-pointer thinking, sequence analysis)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_05_Day_04_Part_B_Kadane_Algorithm_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_05_FULL_PLAYBOOK.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -582,3 +584,6 @@ Together, these 6 patterns cover **65% of interview problems**. The remaining 35
 Week 5 represents the culmination of **Tier 1 Critical Patterns**. You're now equipped to recognize and solve the majority of coding interview problems with confidence and efficiency.
 
 ---
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_05_Day_04_Part_B_Kadane_Algorithm_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_05_FULL_PLAYBOOK.md)

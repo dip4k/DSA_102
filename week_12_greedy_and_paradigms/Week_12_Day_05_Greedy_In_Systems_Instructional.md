@@ -1,14 +1,14 @@
 # 📘 WEEK 12 DAY 5: GREEDY IN SYSTEMS — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 12 | **Day:** 05 (Optional Systems Day)
-- **Category:** Algorithm Paradigms (Greedy in Practice)
-- **Difficulty:** 🟡 Intermediate → 🔴 Advanced (systems & theory blend)
-- **Real-World Impact:** Greedy thinking underlies how networks are built (MST), how packets are routed, how caches behave, and how we approximate hard optimization problems in production.
-- **Prerequisites:**
-  - Week 12 Days 01–04 (greedy fundamentals, intervals, Huffman, knapsack, scheduling)
-  - Week 9 (Minimum Spanning Trees, Dijkstra) — for MST and network context
-  - Basic understanding of caches (from OS / systems background)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_12_Day_04_Fractional_Knapsack_And_Scheduling_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_12_FULL_PLAYBOOK.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
+
+---
 
 ---
 
@@ -628,4 +628,9 @@ Understanding greedy’s behavior in these contexts helps in debugging and optim
 
 ---
 
-**End of Week 12 Day 05 Instructional File**  
+**End of Week 12 Day 05 Instructional File**
+
+---
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_12_Day_04_Fractional_Knapsack_And_Scheduling_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_12_FULL_PLAYBOOK.md)

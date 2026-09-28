@@ -1,12 +1,12 @@
 # 📘 Week 02 Day 04: Stacks, Queues & Deques — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 2 | **Day:** 4
-- **Category:** Foundations / Linear Data Structures
-- **Difficulty:** 🟢 Intermediate (builds on previous linear data structures)
-- **Real-World Impact:** Stacks and queues are among the most fundamental data structures in computer science. They appear everywhere: function calls (stack), task scheduling (queue), undo/redo (stack), breadth-first search (queue), CPU instruction pipelines (both), and memory management. Understanding their properties and implementations is essential for systems programming and algorithm design.
-- **Prerequisites:** Week 2 Days 1–3 (arrays, linked lists, memory layout)
-- **MIT Alignment:** Stacks, queues, and deques from MIT 6.006 Lecture 4–5
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_02_Day_03_Linked_Lists_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_02_Day_05_Binary_Search_Invariants_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -62,50 +62,14 @@ Both arrays and linked lists allow arbitrary access: get any element at any time
 
 ### 🖼 Visualizing Stack Operations
 
-```
-Initial (empty):
-┌───┐
-│   │
-└───┘
 
-Push(10):
-┌───┐
-│10 │
-└───┘
+| 20 | ← top |
+| :--- | :--- |
+| 30 | ← top (most recent) |
+| 20 | ← top |
+| 10 | ← top |
+|  | (empty) |
 
-Push(20):
-┌───┐
-│20 │ ← top
-├───┤
-│10 │
-└───┘
-
-Push(30):
-┌───┐
-│30 │ ← top (most recent)
-├───┤
-│20 │
-├───┤
-│10 │
-└───┘
-
-Pop() returns 30:
-┌───┐
-│20 │ ← top
-├───┤
-│10 │
-└───┘
-
-Pop() returns 20:
-┌───┐
-│10 │ ← top
-└───┘
-
-Pop() returns 10:
-┌───┐
-│   │ (empty)
-└───┘
-```
 
 ### 🖼 Visualizing Queue Operations
 
@@ -709,3 +673,6 @@ The lesson transcends data structures: constraining your interface options often
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers implementations and design patterns  
 **Batch Status:** ✅ COMPLETE — Week 02 Day 04 Final
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_02_Day_03_Linked_Lists_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_02_Day_05_Binary_Search_Invariants_Instructional.md)

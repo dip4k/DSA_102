@@ -1,14 +1,14 @@
 # 📘 WEEK 12 DAY 2: ACTIVITY SELECTION & INTERVAL PROBLEMS — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 12 | **Day:** 02
-- **Category:** Algorithm Paradigms (Greedy)
-- **Difficulty:** 🟡 Intermediate
-- **Real-World Impact:** Interval scheduling and greedy selection underpin meeting schedulers, CPU allocation, airline gate assignment, ad slot bidding, and video streaming resource management.
-- **Prerequisites:**
-  - Week 12 Day 01 — Greedy Fundamentals (greedy choice property, exchange arguments)
-  - Week 03 — Sorting and heaps basics
-  - Week 09 — Basic graph and shortest path intuition (optional but helpful)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_12_Day_01_Greedy_Fundamentals_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_12_Day_03_Huffman_Coding_And_Optimal_Trees_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
+
+---
 
 ---
 
@@ -791,13 +791,9 @@ The meeting room / interval partitioning variant emerges naturally from operatio
 
 ---
 
-**End of Week 12 Day 02 Instructional File**  
-
+**End of Week 12 Day 02 Instructional File**
 
 ---
+---
 
-## 📊 Complexity Recap
-
-- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
-- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
-
+> 🧭 **Navigation:** [← Previous Day](Week_12_Day_01_Greedy_Fundamentals_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_12_Day_03_Huffman_Coding_And_Optimal_Trees_Instructional.md)

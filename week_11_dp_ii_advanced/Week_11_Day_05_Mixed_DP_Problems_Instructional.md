@@ -1,11 +1,12 @@
 # 📘 WEEK 11 DAY 05: MIXED DP PROBLEMS — SYNTHESIS & MASTERY GUIDE
 
-**Metadata:**
-- **Week:** 11 | **Day:** 05
-- **Category:** Dynamic Programming & Problem Recognition
-- **Difficulty:** 🔴 Advanced (Synthesis & Integration)
-- **Real-World Impact:** Ability to recognize and combine DP techniques is the hallmark of expert problem-solvers; separates top engineers from the rest
-- **Prerequisites:** Mastery of all DP techniques from Weeks 10-11 (basic DP, tree DP, DAG DP, bitmask DP, optimizations)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_11_Day_04_State_Compression_And_Optimizations_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_11_FULL_PLAYBOOK.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -82,55 +83,14 @@ If **all three answer YES**, DP is likely the right approach (or at least a viab
 
 DP problems fall into recognizable categories:
 
+
+```mermaid
+flowchart TD
+    R["State"]
+    R --> N1["State"]
+    R --> N2["State"]
 ```
-┌─────────────────────────────────────────────────┐
-│         DP PROBLEM TAXONOMY                      │
-├─────────────────────────────────────────────────┤
-│                                                  │
-│  1. OPTIMIZATION (Maximize/Minimize)             │
-│     • Longest increasing subsequence             │
-│     • Maximum sum rectangle in matrix            │
-│     • Minimum edit distance                      │
-│     → State: position/configuration              │
-│     → Transition: extend or exclude              │
-│                                                  │
-│  2. COUNTING (Count ways/configurations)         │
-│     • Paths in grid with obstacles               │
-│     • Distinct subsequences                      │
-│     • Number of ways to partition                │
-│     → State: position/subset                     │
-│     → Transition: sum counts from choices        │
-│                                                  │
-│  3. DECISION (Yes/No, Feasibility)               │
-│     • Can we make sum S from array?              │
-│     • Can we partition into equal subsets?       │
-│     • Can we complete all tasks by deadline?     │
-│     → State: partial solution + remaining       │
-│     → Transition: feasible moves                 │
-│                                                  │
-│  4. ORDERING (Sequence with constraints)         │
-│     • Optimal matrix chain multiplication        │
-│     • Burst balloons                             │
-│     • Remove k digits for largest number         │
-│     → State: interval [i, j]                     │
-│     → Transition: where to split                 │
-│                                                  │
-│  5. GRAPH (Paths, cycles, substructure)          │
-│     • Shortest/longest path in DAG               │
-│     • TSP with DP                                │
-│     • Maximum independent set (small graph)      │
-│     → State: position + visited/state            │
-│     → Transition: valid next moves               │
-│                                                  │
-│  6. HYBRID (Multi-concept combinations)          │
-│     • DP + greedy (interval scheduling)          │
-│     • DP + binary search (optimization)          │
-│     • DP + graph algorithms (shortest path)      │
-│     → Recognize sub-problem structure            │
-│     → Apply appropriate technique to each part   │
-│                                                  │
-└─────────────────────────────────────────────────┘
-```
+
 
 ### Invariants & Properties: Confidence Signals
 
@@ -755,4 +715,6 @@ DP emerged from Bellman's principle of optimality (1950s). It's not new, but it'
 
 - Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
 - Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+---
 
+> 🧭 **Navigation:** [← Previous Day](Week_11_Day_04_State_Compression_And_Optimizations_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_11_FULL_PLAYBOOK.md)

@@ -1,5 +1,11 @@
 # Week 03 Extended Python Complete v13
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Python (3.11+) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 Purpose: turn Week 03 sorting, heap, and hashing theory into Python implementation fluency.
 
 ## Week 03 Python focus
@@ -197,3 +203,7 @@ Should:
 Optional:
 - compare `heapq` solution vs full sort solution
 - experiment with custom objects and sort keys
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

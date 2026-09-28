@@ -1,5 +1,11 @@
 # Week 08 Extended Python Complete v13
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Python (3.11+) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 Purpose: build Python fluency for graph representations, BFS, DFS, topological sort, connectivity, and SCC intuition.
 
 ## Focus tags
@@ -102,3 +108,7 @@ def topo_sort(n, edges):
 - Must: number of islands, flood fill, provinces, bipartite, course schedule basics
 - Should: word ladder, open the lock, eventual safe states, SCC conceptual tracing
 - Optional: Tarjan/Kosaraju implementation follow-up
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

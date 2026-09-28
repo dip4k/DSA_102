@@ -1,5 +1,11 @@
 # Week 07 Extended Python Complete v13
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Python (3.11+) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 Purpose: build Python fluency for binary trees, BSTs, balanced-tree reasoning, and common tree patterns.
 
 ## Focus tags
@@ -105,3 +111,7 @@ def lca(root, p, q):
 - Using recursion on highly skewed trees without considering depth.
 - Forgetting that inorder is sorted only for BSTs.
 - Mixing node identity and node value when solving LCA/intersection-style questions.
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

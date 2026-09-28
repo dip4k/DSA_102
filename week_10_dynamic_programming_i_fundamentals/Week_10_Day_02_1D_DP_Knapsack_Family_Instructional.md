@@ -1,11 +1,12 @@
 # 📖 WEEK 10 DAY 02: 1D DYNAMIC PROGRAMMING & KNAPSACK FAMILY — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 10 | **Day:** 02
-- **Category:** Algorithm Paradigms / Optimization Techniques / Classical DP Patterns
-- **Difficulty:** 🟡 Intermediate
-- **Real-World Impact:** Powers resource allocation in cloud infrastructure (AWS), inventory optimization (Amazon), pricing engines (Airbnb), and financial portfolio optimization (trading systems)
-- **Prerequisites:** Week 10 Day 01 (DP fundamentals, memoization, optimal substructure)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_10_Day_01_DP_Recursion_Memoization_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_10_Day_03_2D_DP_Grids_Edit_Distance_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -554,7 +555,7 @@ For Amazon's inventory optimization (unbounded knapsack with capacities up to 10
 
 For coin change in payment systems (e.g., Stripe processing):
 - Theoretical: O(amount × coins.length)
-- Practical: Amount typically < $10k, coins.length < 100 → ~10^6 operations
+- Practical: Amount typically < \\$10k, coins.length < 100 → ~10^6 operations
 - Runs in microseconds
 
 ### 🏭 Real-World Systems: From Theory to Production
@@ -634,12 +635,12 @@ Netflix runs this for each region hourly, balancing quality vs CDN costs. The DP
 
 **Failure Mode 1: Integer Overflow in Unbounded Knapsack**
 
-If item values are large (e.g., revenue in cents per transaction), repeatedly adding them can overflow. At Amazon scale with 10 million items and revenues up to $1M each:
+If item values are large (e.g., revenue in cents per transaction), repeatedly adding them can overflow. At Amazon scale with 10 million items and revenues up to \\$1M each:
 
 ```
 dp[W] = max value
-If we sum unbounded items: 10M items × $1M = $10 trillion
-Exceeds 64-bit integer range (2^63 ≈ 10^18, but $10T is in that range, barely)
+If we sum unbounded items: 10M items × \\$1M = \\$10 trillion
+Exceeds 64-bit integer range (2^63 ≈ 10^18, but \\$10T is in that range, barely)
 
 Solution: Use 128-bit integers or capped values (once total exceeds expected maximum, stop computing)
 ```
@@ -998,3 +999,6 @@ By the 1970s-80s, DP had been applied to bioinformatics (sequence alignment—ed
 ---
 
 **End of Week 10 Day 02 Instructional Content**
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_10_Day_01_DP_Recursion_Memoization_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_10_Day_03_2D_DP_Grids_Edit_Distance_Instructional.md)

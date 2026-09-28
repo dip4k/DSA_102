@@ -1,13 +1,12 @@
 # Week 13 Day 03: Branch & Bound — Engineering Guide
 
-**📂 Metadata**
-- **Week:** 13  
-- **Day:** 03  
-- **Phase:** 🟧 Algorithm Paradigms  
-- **Category:** Optimization & Systematic Search  
-- **Difficulty:** Advanced  
-- **Real-World Impact:** Core technique for solving NP-hard optimization problems (TSP, knapsack, job scheduling, circuit design, resource allocation) where approximate or optimal solutions are needed within practical time bounds.  
-- **Prerequisites:** Week 13 Day 01-02 (Backtracking), Graph Algorithms (Week 9-10), Dynamic Programming (Week 11-12), Priority Queues (Week 6)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_13_Day_02_Backtracking_Problems_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_13_Day_04_Amortized_Analysis_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -181,29 +180,11 @@ State:
 
 ## Visual: The Branch & Bound Tree
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│          Branch & Bound State Space Tree (TSP)              │
-└─────────────────────────────────────────────────────────────┘
 
-                      ○ Root
-                   /  |  \  \
-              To:1  To:2  To:3  To:4
-              Bound:45  Bound:50  Bound:48  Bound:60
-                /         |         \
-           To:2        To:1      PRUNED (48 already > bestSoFar=45)
-         Bound:42    Bound:55
-            /          PRUNED (55 > bestSoFar=42)
-        To:3
-      Bound:40
-      Complete!
-      bestSoFar = 40
+| / | \  \ |
+| :--- | :--- |
+| / | \ |
 
-Legend:
-○ = State (node)
-Bound = Lower bound on tour length from this state
-PRUNED = Branch skipped because bound exceeds current best
-```
 
 **Key Observations**:
 1. **Early best solutions**: Finding a good complete solution early improves pruning
@@ -233,23 +214,16 @@ PRUNED = Branch skipped because bound exceeds current best
 
 **Visual: Bound Tightness Spectrum**
 
+
+```mermaid
+flowchart TD
+    R["Problem TSP with actual optimal tour = 100"]
+    R --> N1["Bound = 0 (always admissible, never prunes)"]
+    R --> N2["Bound = 50 (admissible, prunes half of bad branches)"]
+    R --> N3["Bound = 95 (admissible, prunes 95% of bad branches)"]
+    R --> N4["Bound = 100 (perfect, but too expensive to compute)"]
 ```
-Problem: TSP with actual optimal tour = 100
 
-Trivial Bound (useless):
-└─ Bound = 0 (always admissible, never prunes)
-
-Loose Bound:
-└─ Bound = 50 (admissible, prunes half of bad branches)
-
-Tight Bound:
-└─ Bound = 95 (admissible, prunes 95% of bad branches)
-
-Exact Solution (defeats the purpose):
-└─ Bound = 100 (perfect, but too expensive to compute)
-
-Sweet Spot: Tight enough to prune well, fast enough to compute
-```
 
 ### Common Bounding Techniques
 
@@ -631,106 +605,13 @@ class Program
 
 ### Detailed Execution Trace (4 Cities)
 
+
+```mermaid
+flowchart TD
+    R["State"]
+    R --> N1["State"]
 ```
-┌─────────────────────────────────────────────────────────────┐
-│        TSP Branch & Bound Execution (4 cities)              │
-└─────────────────────────────────────────────────────────────┘
 
-Distance Matrix:
-     0   1   2   3
-0 [  0  10  15  20 ]
-1 [ 10   0  35  25 ]
-2 [ 15  35   0  30 ]
-3 [ 20  25  30   0 ]
-
-STEP 1: Initialize
-Priority Queue: [(Path:[0], Cost:0, Bound:60)]
-BestSoFar: ∞
-
-STEP 2: Expand [0]
-Current: [0], Cost:0, Bound:60
-Branch to: 1, 2, 3
-
-New States:
-- [0,1]: Cost=10, Bound=10+MST(2,3)+min(1→{2,3})+min({2,3}→0)
-        = 10 + 30 + 25 + 15 = 80
-- [0,2]: Cost=15, Bound=15+30+15+10 = 70
-- [0,3]: Cost=20, Bound=20+30+20+10 = 80
-
-Priority Queue: [(Path:[0,2], Bound:70), (Path:[0,1], Bound:80), (Path:[0,3], Bound:80)]
-BestSoFar: ∞
-
-STEP 3: Expand [0,2] (best bound)
-Current: [0,2], Cost:15, Bound:70
-Branch to: 1, 3
-
-New States:
-- [0,2,1]: Cost=15+35=50, Bound=50+dist(1,3)+dist(3,0) = 50+25+20 = 95
-- [0,2,3]: Cost=15+30=45, Bound=45+dist(3,1)+dist(1,0) = 45+25+10 = 80
-
-Priority Queue: [(Path:[0,1], Bound:80), (Path:[0,3], Bound:80), 
-                 (Path:[0,2,3], Bound:80), (Path:[0,2,1], Bound:95)]
-BestSoFar: ∞
-
-STEP 4: Expand [0,1] (same bound, but chosen)
-Current: [0,1], Cost:10, Bound:80
-Branch to: 2, 3
-
-New States:
-- [0,1,2]: Cost=10+35=45, Bound=45+30+15 = 90
-- [0,1,3]: Cost=10+25=35, Bound=35+30+15 = 80
-
-Priority Queue: [(Path:[0,3], Bound:80), (Path:[0,2,3], Bound:80), 
-                 (Path:[0,1,3], Bound:80), (Path:[0,1,2], Bound:90), 
-                 (Path:[0,2,1], Bound:95)]
-BestSoFar: ∞
-
-STEP 5: Expand [0,3] (ties broken by implementation)
-Current: [0,3], Cost:20, Bound:80
-Branch to: 1, 2
-
-New States:
-- [0,3,1]: Cost=20+25=45, Bound=45+35+15 = 95
-- [0,3,2]: Cost=20+30=50, Bound=50+35+10 = 95
-
-Priority Queue: [(Path:[0,2,3], Bound:80), (Path:[0,1,3], Bound:80), 
-                 (Path:[0,1,2], Bound:90), (Path:[0,2,1], Bound:95), 
-                 (Path:[0,3,1], Bound:95), (Path:[0,3,2], Bound:95)]
-BestSoFar: ∞
-
-STEP 6: Expand [0,2,3]
-Current: [0,2,3], Cost:45, Bound:80
-Branch to: 1
-
-New State:
-- [0,2,3,1]: Cost=45+25=70, Bound=70+dist(1,0) = 70+10 = 80
-  COMPLETE TOUR: 0→2→3→1→0, Total: 70+10 = 80
-
-Priority Queue: [(Path:[0,1,3], Bound:80), (Path:[0,2,3,1], Bound:80), 
-                 (Path:[0,1,2], Bound:90), ...]
-BestSoFar: 80 ✓
-
-STEP 7: Expand [0,1,3]
-Current: [0,1,3], Cost:35, Bound:80
-Branch to: 2
-
-New State:
-- [0,1,3,2]: Cost=35+30=65, Bound=65+dist(2,0) = 65+15 = 80
-  COMPLETE TOUR: 0→1→3→2→0, Total: 65+15 = 80
-
-BestSoFar: 80 (no improvement)
-
-STEP 8: Expand [0,2,3,1]
-Already complete, skip.
-
-STEP 9: Process remaining states
-All remaining states have Bound ≥ 80, PRUNE!
-
-FINAL RESULT:
-Optimal Tour: 0→1→3→2→0 (or 0→2→3→1→0, both cost 80)
-Nodes Explored: ~8-10 (vs. 12 exhaustive)
-Pruning: ~20-30%
-```
 
 ### Complexity Analysis
 
@@ -1068,35 +949,13 @@ class Program
 
 ### Visualization: Search Tree
 
+
+```mermaid
+flowchart TD
+    R["State"]
+    R --> N1["State"]
 ```
-┌─────────────────────────────────────────────────────────────┐
-│         Knapsack Branch & Bound Tree (Capacity=10)          │
-└─────────────────────────────────────────────────────────────┘
 
-Items sorted by ratio: [0(w=2,v=10), 1(w=3,v=15), 2(w=5,v=21), 3(w=7,v=28)]
-
-                           Root
-                    (W=0, V=0, B=56.8)
-                     /              \
-              Include 0           Exclude 0
-           (W=2,V=10,B=56.8)    (W=0,V=0,B=46.8)
-              /        \            /        \
-         Include 1  Exclude 1  Include 1  Exclude 1
-       (W=5,V=25,B=56.8)  ...       ...        ...
-          /        \
-     Include 2  Exclude 2
-   (W=10,V=46,B=46)  (W=5,V=25,B=51)
-      LEAF!          /        \
-   bestValue=46  Include 2  Exclude 2
-              (W=10,V=46,B=46)  (W=5,V=25,B=43)
-                 LEAF!         PRUNED (43≤46)
-               no improvement
-
-Legend:
-W = Weight, V = Value, B = Bound
-PRUNED = Bound ≤ bestValue, skip subtree
-LEAF = All items considered, update best if better
-```
 
 **Key Observations**:
 1. **Fractional bound**: Root bound (56.8) assumes we can take 70% of item 3
@@ -1475,32 +1334,25 @@ class Program
 
 ## When to Use Branch & Bound: Decision Framework
 
+
+```mermaid
+flowchart TD
+    R["Problem Characteristics Checklist"]
+    R --> N1["No → Use backtracking or greedy"]
+    R --> N2["Yes → Continue"]
+    R --> N3["Yes → Use DP (usually faster)"]
+    R --> N4["No → Continue"]
+    R --> N5["N ≤ 20 → B&B feasible, try it"]
+    R --> N6["20 < N ≤ 50 → B&B possible with tight bounds"]
+    R --> N7["50 < N ≤ 100 → B&B + heuristics (hybrid)"]
+    R --> N8["N > 100 → Use approximation algorithms (greedy, local search)"]
+    R --> N9["Yes (tight, fast) → B&B likely effective"]
+    R --> N10["No (loose, slow) → B&B may degrade to exhaustive"]
+    R --> N11["Can wait minutes/hours → Pure B&B"]
+    R --> N12["Need answer in seconds → B&B with timeout → greedy"]
+    R --> N13["Real-time (milliseconds) → Skip B&B, use heuristics"]
 ```
-Problem Characteristics Checklist:
 
-□ Need optimal solution (not just feasible)?
-  ├─ No → Use backtracking or greedy
-  └─ Yes → Continue
-
-□ DP applicable (optimal substructure + overlapping subproblems)?
-  ├─ Yes → Use DP (usually faster)
-  └─ No → Continue
-
-□ Problem size N?
-  ├─ N ≤ 20 → B&B feasible, try it
-  ├─ 20 < N ≤ 50 → B&B possible with tight bounds
-  ├─ 50 < N ≤ 100 → B&B + heuristics (hybrid)
-  └─ N > 100 → Use approximation algorithms (greedy, local search)
-
-□ Can you design good bounding function?
-  ├─ Yes (tight, fast) → B&B likely effective
-  └─ No (loose, slow) → B&B may degrade to exhaustive
-
-□ Time constraints?
-  ├─ Can wait minutes/hours → Pure B&B
-  ├─ Need answer in seconds → B&B with timeout → greedy
-  └─ Real-time (milliseconds) → Skip B&B, use heuristics
-```
 
 ## Designing Custom Bounding Functions
 
@@ -1829,3 +1681,6 @@ If you can complete 3/4 challenges, you're ready for **Day 4: Amortized Analysis
 - Week 14 shifts to string algorithms (pattern matching, tries, suffix structures)
 
 **Congratulations on mastering branch & bound optimization!** 🎉
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_13_Day_02_Backtracking_Problems_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_13_Day_04_Amortized_Analysis_Instructional.md)

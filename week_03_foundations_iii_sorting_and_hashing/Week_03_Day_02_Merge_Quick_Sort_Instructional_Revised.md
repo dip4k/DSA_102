@@ -1,12 +1,12 @@
 # 📘 Week 03 Day 02: Merge Sort & Quick Sort — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 3 | **Day:** 2
-- **Category:** Foundations / Core Sorting Algorithms
-- **Difficulty:** 🟡 Intermediate (builds on Week 1 recursion, Week 2 arrays)
-- **Real-World Impact:** Merge sort and quick sort are the workhorses of modern systems. Every language uses variants (Timsort, Introsort, pdqsort). Understanding divide-and-conquer, pivot strategies, and why quick sort dominates in practice is essential for systems design, competitive programming, and interview preparation. This day bridges theory (O(n log n) average) and practice (constant factors, cache behavior, pivot selection).
-- **Prerequisites:** Week 1 (recursion, asymptotics), Week 2 (arrays)
-- **MIT Alignment:** Merge sort and quick sort from MIT 6.006 Lecture 8–10
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_03_Day_01_Sorting_Fundamentals_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_03_Day_03_Heaps_Heapify_Heap_Sort_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -691,3 +691,6 @@ Master both algorithms, understand their trade-offs, and you understand a princi
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers mechanics, analysis, and systems thinking  
 **Batch Status:** ✅ COMPLETE — Week 03 Day 02 (Revised) Final
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_03_Day_01_Sorting_Fundamentals_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_03_Day_03_Heaps_Heapify_Heap_Sort_Instructional.md)

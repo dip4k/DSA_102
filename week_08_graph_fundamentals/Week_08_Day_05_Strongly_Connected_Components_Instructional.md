@@ -1,11 +1,12 @@
 # 📘 Week 8 Day 5: Strongly Connected Components (SCC) — Engineering Guide
 
-**Metadata:**
-- **Week:** 08 | **Day:** 05  
-- **Category:** Graph Algorithms (Directed Graph Structure)  
-- **Difficulty:** 🔴 Advanced (Optional, 6.046-style depth)  
-- **Real-World Impact:** Strongly connected components reveal tightly interdependent subsystems: circular dependencies in builds, mutually reachable services in microservice meshes, feedback loops in control systems, and clusters in the web graph. They are a foundation for advanced algorithms like 2-SAT, program analysis, and optimization on DAGs.  
-- **Prerequisites:** Week 8 Days 1–4 (Graph Models & Representations, BFS, DFS & Topological Sort, Connectivity & Bipartite Graphs)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_08_Day_04_Connectivity_and_Bipartite_Graphs_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_08_FULL_PLAYBOOK.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -42,21 +43,25 @@ Consider a microservice architecture:
 
 In graph form:
 
+
+```mermaid
+flowchart TD
+    R["A → B → C"]
+    R --> N1["State"]
 ```
-A → B → C
-↑       ↓
-└───────┘
-```
+
 
 A, B, and C form a **cycle**: each can eventually reach the others. They behave like a tightly coupled cluster. If you try to reason about deployments, failures, or refactors, you cannot treat them as independent components.
 
 Meanwhile, maybe D is a logging service used by C only:
 
+
+```mermaid
+flowchart TD
+    R["A → B → C → D"]
+    R --> N1["State"]
 ```
-A → B → C → D
-↑       ↓
-└───────┘
-```
+
 
 D is not in the same mutual cycle: C can reach D, but D cannot reach back to C. Intuitively, A–B–C are one tightly interlocked unit; D hangs off the side.
 
@@ -123,16 +128,13 @@ A **strongly connected component (SCC)** is a **maximal** set of vertices C ⊆ 
 
 Consider this directed graph:
 
-```
-   1 → 2 → 3 → 4
-   ↑   ↓   ↑
-   |   └→ 5
-   └──────┘
 
-   6 → 7
-
-   8
+```mermaid
+flowchart TD
+    R["1 → 2 → 3 → 4"]
+    R --> N1["State"]
 ```
+
 
 Let’s identify SCCs:
 
@@ -255,15 +257,13 @@ Consider a graph with two SCCs A and B, with an edge A → B.
 
 ASCII sketch:
 
-```
-A SCC:              B SCC:
 
-  1 → 2 → 3         4 → 5
-  ↑       ↓         ↑   ↓
-  └───────┘         └───┘
-
-Cross edge: 3 → 4
+```mermaid
+flowchart TD
+    R["A SCC              B SCC"]
+    R --> N1["State"]
 ```
+
 
 - First DFS on original graph:  
   - Starting from some node in A, DFS will fully explore SCC A before finishing those nodes (thanks to mutual reachability).  
@@ -459,12 +459,13 @@ For each vertex u:
 
 ASCII trace for a small component is helpful:
 
+
+```mermaid
+flowchart TD
+    R["Indices   0   1   2"]
+    R --> N1["State"]
 ```
-Indices:   0   1   2
-Vertices:  A → B → C
-             ↑   ↓
-             └───┘
-```
+
 
 DFS might visit A (index 0), then B (index 1), then C (index 2). From C, there is an edge back to B (onStack with index 1), so lowLink[C] = 1, then lowLink[B] = min(1, lowLink[C]=1) = 1, and lowLink[A] = min(0, lowLink[B]=1) = 0. If there are no additional connections, each vertex could become its own SCC depending on connections. Where `lowLink[u] == index[u]` marks SCC roots.
 
@@ -1001,3 +1002,6 @@ SCCs are not an isolated trick; they are a fundamental lens for understanding an
 - Which problems become easier once I collapse SCCs and work on the DAG?
 
 With this, your mental model of graphs now covers the full 6.006-style foundation: representations, basic traversals, topological structure, connectivity, and strongly connected components. You are ready to step into Week 9, where weights enter the picture and paths gain cost—shortest paths and minimum spanning trees build directly on the intuition you’ve developed here.
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_08_Day_04_Connectivity_and_Bipartite_Graphs_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_08_FULL_PLAYBOOK.md)

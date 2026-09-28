@@ -1,5 +1,11 @@
 # WEEK 08 VISUAL CONCEPTS PLAYBOOK HYBRID
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Visual Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
+
+---
+
 **Filename:** `Week_08_Visual_Concepts_Playbook_HYBRID.md`  
 **Syllabus Source:** `COMPLETE_SYLLABUS_v13_FINAL.md`  
 **Week:** 08 – 🌐 Graph Fundamentals: Representations, BFS, DFS & Topological Sort  
@@ -61,52 +67,39 @@ When using these tools: always **recreate** at least one ASCII diagram from this
 
 ### 1.1 Pattern Map – Graph Representation Family Tree 🌳
 
-```text
-GRAPH MODELS & REPRESENTATIONS
-├── Graph Types
-│   ├── Undirected
-│   └── Directed
-│
-├── Edge Weights
-│   ├── Unweighted
-│   └── Weighted
-│
-├── Explicit Representations
-│   ├── Adjacency List
-│   ├── Adjacency Matrix
-│   └── Edge List
-│
-└── Implicit Graphs
-    ├── Grids
-    ├── Puzzles
-    └── State Spaces
+
+```mermaid
+flowchart TD
+    R["GRAPH MODELS & REPRESENTATIONS"]
+    R --> N1["Graph Types"]
+    N1 --> N2["Undirected"]
+    N1 --> N3["Directed"]
+    R --> N4["Edge Weights"]
+    N4 --> N5["Unweighted"]
+    N4 --> N6["Weighted"]
+    R --> N7["Explicit Representations"]
+    N7 --> N8["Adjacency List"]
+    N7 --> N9["Adjacency Matrix"]
+    N7 --> N10["Edge List"]
+    R --> N11["Implicit Graphs"]
+    N11 --> N12["Grids"]
+    N11 --> N13["Puzzles"]
+    N11 --> N14["State Spaces"]
 ```
+
 
 Key idea: **representation choice depends on density (sparse vs dense), operations (lookups vs traversal), and memory constraints.**
 
 ### 1.2 Visual 1 – Graph Types & Directions 🔀
 
-```text
-Undirected vs Directed vs Weighted
 
-Undirected (friendship):
-
-   A ----- B
-   |       |
-   C ----- D
-
-Directed (follows, calls):
-
-   A → B → C
-        ↑   \
-        └────D
-
-Weighted (roads with travel times):
-
-   X --5→ Y --3→ Z
-   |             ↑
-   └----10------┘
+```mermaid
+flowchart TD
+    R["Undirected vs Directed vs Weighted"]
+    R --> N1["D"]
+    R --> N2["10------"]
 ```
+
 
 - In undirected graphs, edges **do not have direction** and connectivity is symmetric.  
 - In directed graphs, arrows encode **dependencies or flow**.  
@@ -230,22 +223,23 @@ No adjacency matrix stored; neighbors computed on-the-fly.
 
 ### 2.1 Pattern Map – BFS Family Tree 🌳
 
-```text
-BREADTH-FIRST SEARCH
-├── Mechanics
-│   ├── Queue frontier
-│   ├── Layered exploration
-│   └── Visited marking
-│
-├── Distance
-│   ├── Unweighted shortest path
-│   └── Parent pointers (path recovery)
-│
-└── Applications
-    ├── Social network hop-distance
-    ├── Level order in trees
-    └── Components & bipartite (conceptually)
+
+```mermaid
+flowchart TD
+    R["BREADTH-FIRST SEARCH"]
+    R --> N1["Mechanics"]
+    N1 --> N2["Queue frontier"]
+    N1 --> N3["Layered exploration"]
+    N1 --> N4["Visited marking"]
+    R --> N5["Distance"]
+    N5 --> N6["Unweighted shortest path"]
+    N5 --> N7["Parent pointers (path recovery)"]
+    R --> N8["Applications"]
+    N8 --> N9["Social network hop-distance"]
+    N8 --> N10["Level order in trees"]
+    N8 --> N11["Components & bipartite (conceptually)"]
 ```
+
 
 ### 2.2 Visual 1 – BFS Frontier & Layers 🎯
 
@@ -397,20 +391,21 @@ You can imagine a “water fill” from S; BFS finds the **shortest number of st
 
 ### 3.1 Pattern Map – DFS & Topo Sort 🌳
 
-```text
-DFS & TOPOLOGICAL SORT
-├── DFS Mechanics
-│   ├── Recursion / Stack
-│   ├── Discovery & Finish times
-│   └── Edge classification
-│
-├── Cycle Detection (Directed)
-│   └── Back edges (ancestor on stack)
-│
-└── Topological Sort
-    ├── DFS post-order
-    └── Kahn's algorithm (in-degree + queue)
+
+```mermaid
+flowchart TD
+    R["DFS & TOPOLOGICAL SORT"]
+    R --> N1["DFS Mechanics"]
+    N1 --> N2["Recursion / Stack"]
+    N1 --> N3["Discovery & Finish times"]
+    N1 --> N4["Edge classification"]
+    R --> N5["Cycle Detection (Directed)"]
+    N5 --> N6["Back edges (ancestor on stack)"]
+    R --> N7["Topological Sort"]
+    N7 --> N8["DFS post-order"]
+    N7 --> N9["Kahn's algorithm (in-degree + queue)"]
 ```
+
 
 ### 3.2 Visual 1 – DFS Recursion Tree 🌲
 
@@ -575,20 +570,21 @@ If at the end some vertices remain with non-zero in-degree, the graph has a **cy
 
 ### 4.1 Pattern Map – Connectivity & Bipartite 🌳
 
-```text
-CONNECTIVITY & BIPARTITE GRAPHS
-├── Connected Components
-│   ├── BFS/DFS labeling
-│   └── Island counting
-│
-├── Bipartite Testing
-│   ├── Two-coloring
-│   └── Odd cycle detection
-│
-└── Union–Find / DSU
-    ├── Offline connectivity
-    └── Dynamic merging of components
+
+```mermaid
+flowchart TD
+    R["CONNECTIVITY & BIPARTITE GRAPHS"]
+    R --> N1["Connected Components"]
+    N1 --> N2["BFS/DFS labeling"]
+    N1 --> N3["Island counting"]
+    R --> N4["Bipartite Testing"]
+    N4 --> N5["Two-coloring"]
+    N4 --> N6["Odd cycle detection"]
+    R --> N7["Union–Find / DSU"]
+    N7 --> N8["Offline connectivity"]
+    N7 --> N9["Dynamic merging of components"]
 ```
+
 
 ### 4.2 Visual 1 – Components as Islands 🏝️
 
@@ -748,34 +744,32 @@ Union–Find answers “are these in the same component?” quickly without trav
 
 ### 5.1 Pattern Map – SCC & Component DAG 🌳
 
-```text
-STRONGLY CONNECTED COMPONENTS
-├── Strong Connectivity
-│   └── Mutual reachability (u⇄v)
-│
-├── Algorithms
-│   ├── Kosaraju (2 DFS + transpose)
-│   └── Tarjan (1 DFS + low-link)
-│
-└── Component DAG
-    ├── Collapse SCCs into nodes
-    └── Result is always a DAG
+
+```mermaid
+flowchart TD
+    R["STRONGLY CONNECTED COMPONENTS"]
+    R --> N1["Strong Connectivity"]
+    N1 --> N2["Mutual reachability (u⇄v)"]
+    R --> N3["Algorithms"]
+    N3 --> N4["Kosaraju (2 DFS + transpose)"]
+    N3 --> N5["Tarjan (1 DFS + low-link)"]
+    R --> N6["Component DAG"]
+    N6 --> N7["Collapse SCCs into nodes"]
+    N6 --> N8["Result is always a DAG"]
 ```
+
 
 ### 5.2 Visual 1 – SCC Decomposition ♻️
 
 Directed graph:
 
-```text
-  1 → 2 → 3 → 4
-  ↑   ↓   ↑
-  |   └→ 5
-  └──────┘
 
-  6 → 7
-
-  8
+```mermaid
+flowchart TD
+    R["1 → 2 → 3 → 4"]
+    R --> N1["State"]
 ```
+
 
 SCCs:
 
@@ -926,3 +920,7 @@ becomes SCC root.
 - **Feeds into SCC-based topics later:** 2-SAT, advanced program analysis, and strongly connected region reasoning begin from Day 5.
 
 Think of Week 08 as the **visual operating system** for all graph algorithms you learn later.
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

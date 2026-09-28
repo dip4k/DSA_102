@@ -1,5 +1,11 @@
 # 🗺️ Week_09_Extended_CSharp_Complete_v13
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This C# (.NET 8/9) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 **Week:** 9 – Graph Algorithms I: Shortest Paths, MST & Union-Find  
 **Purpose:** Master Week 9 graph patterns through pattern recognition, understanding, and practice  
 **Target:** Transform Week 9 knowledge into interview-ready C# coding skills  
@@ -885,3 +891,7 @@ This file is self-contained. You have:
 
 
 This file covers all 6 algorithms (Dijkstra, Bellman-Ford, Floyd-Warshall, Kruskal, Prim, DSU) with pattern recognition, anti-patterns, production code, progressive problems, and interview prep.
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

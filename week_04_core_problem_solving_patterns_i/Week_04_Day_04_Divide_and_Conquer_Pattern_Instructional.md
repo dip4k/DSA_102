@@ -1,12 +1,12 @@
 # 📘 Week 04 Day 04: Divide & Conquer Pattern — Recursive Problem Decomposition
 
-**Metadata:**
-- **Week:** 4 | **Day:** 4
-- **Category:** Core Problem-Solving Patterns
-- **Difficulty:** 🟡 Intermediate (builds on recursion from Week 1, arrays from Weeks 2-3)
-- **Real-World Impact:** Divide & conquer powers the fastest sorting algorithms, enables efficient parallel computation, and forms the basis of many database and systems algorithms. Google's MapReduce framework is divide & conquer at infrastructure scale; merge sort enables efficient external sorting for terabyte-scale datasets; quicksort is the default in nearly every language; counting inversions detects data anomalies; finding majority elements validates data integrity.
-- **Prerequisites:** Week 1 (Recursion, call stack), Week 2-3 (Arrays, sorting foundations)
-- **MIT Alignment:** Divide & conquer from MIT 6.006; Master Theorem from 6.046J; recurrence relations and analysis
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_04_Day_03_Sliding_Window_Variable_Size_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_04_Day_05_Binary_Search_as_Pattern_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -540,3 +540,6 @@ The problems we solve in this chapter—sorting, counting inversions, finding ma
 **Inline Visuals:** 8 (recursion trees, trace tables, comparison matrices)  
 **Real-World Stories:** 3 (Database sorting, MapReduce, Inversion counting)  
 **Interview-Ready:** Yes — covers mechanics, recurrence analysis, and production scenarios
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_04_Day_03_Sliding_Window_Variable_Size_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_04_Day_05_Binary_Search_as_Pattern_Instructional.md)

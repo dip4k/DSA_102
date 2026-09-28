@@ -1,14 +1,14 @@
 # 📘 WEEK 12 DAY 4: FRACTIONAL KNAPSACK & SCHEDULING — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 12 | **Day:** 04
-- **Category:** Algorithm Paradigms (Greedy)
-- **Difficulty:** 🟡 Intermediate
-- **Real-World Impact:** Fractional knapsack and greedy scheduling ideas are core to resource allocation, bandwidth throttling, job scheduling, and finance-style portfolio slices.
-- **Prerequisites:**
-  - Week 12 Day 01 – Greedy Fundamentals (greedy template, exchange arguments)
-  - Comfort with arrays, sorting, and basic complexity analysis
-  - Basic understanding of 0/1 knapsack as a DP problem (prior DP week)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_12_Day_03_Huffman_Coding_And_Optimal_Trees_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_12_Day_05_Greedy_In_Systems_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
+
+---
 
 ---
 
@@ -691,4 +691,9 @@ Clarity on **constraints** (fractional vs whole, deadlines vs none) is key.
 
 ---
 
-**End of Week 12 Day 04 Instructional File**  
+**End of Week 12 Day 04 Instructional File**
+
+---
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_12_Day_03_Huffman_Coding_And_Optimal_Trees_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_12_Day_05_Greedy_In_Systems_Instructional.md)

@@ -1,5 +1,11 @@
 # 🗺️ Week 06 Problem-Solving Roadmap: Strategy & Progressive Ladder
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Audience:** Students working through Week 06 practice problems  
 **Purpose:** Guide systematic problem-solving progression and pattern application  
 **Focus:** From canonical problems → variations → integration
@@ -408,3 +414,6 @@ For each position:
 **Next:** Week 06 Daily Progress Checklist  
 **Review Time:** 1 hour (overview) + 20-30 hours (practice problems)
 
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

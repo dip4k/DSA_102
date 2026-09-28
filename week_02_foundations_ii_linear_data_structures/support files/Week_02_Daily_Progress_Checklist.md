@@ -1,5 +1,11 @@
 # ✅ Week 02 Daily Progress Checklist: Detailed Execution Plan
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Purpose:** Track daily learning milestones, verify structural mechanics, and maintain steady progress through 6 structured study days.
 
 ---
@@ -49,7 +55,7 @@
     *   [ ] Visual check: show prev, current, and next pointer re-wirings step-by-step.
 *   **Code & Implement (60 min)**:
     *   [ ] Implement singly and doubly linked list node operations.
-    *   [ ] Implement iterative linked list reversal ($O(N)$ time, $O(1)$ space).
+    *   [ ] Implement iterative linked list reversal (O(N) time, O(1) space).
     *   [ ] Implement middle node search using slow/fast pointers.
 *   **Review & Verify**:
     *   [ ] Are you saving adjacent references before updating pointer links to prevent lost nodes? ☐ Yes
@@ -117,3 +123,7 @@ By the end of Week 02, verify:
 *   [ ] You can implement binary search, lower bounds, upper bounds, and answer space.
 *   [ ] You can implement `atoi` and `itoa` with complete overflow protections.
 *   [ ] You can explain why String builders are linear O(N) when repeated string concatenations are quadratic O(N^2).
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

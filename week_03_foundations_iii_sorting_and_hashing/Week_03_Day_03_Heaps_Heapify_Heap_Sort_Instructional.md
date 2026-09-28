@@ -1,12 +1,12 @@
 # 📘 Week 03 Day 03: Heaps, Heapify & Heap Sort — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 3 | **Day:** 3
-- **Category:** Foundations / Advanced Data Structures
-- **Difficulty:** 🟡 Intermediate (builds on Week 2 arrays, Week 3 Days 1–2 sorting)
-- **Real-World Impact:** Heaps are among the most fundamental data structures in systems programming. They power priority queues (task scheduling, Dijkstra's algorithm, event simulation), heap sort (guaranteed O(n log n) worst-case), Huffman coding (compression), median finding in streams, and load balancing. More importantly, heaps teach implicit tree structures in arrays—a technique that bridges arrays and trees while maintaining cache locality.
-- **Prerequisites:** Week 2 (arrays, memory layout), Week 3 Days 1–2 (sorting motivation)
-- **MIT Alignment:** Heaps and priority queues from MIT 6.006 Lecture 6–7
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_03_Day_02_Merge_Quick_Sort_Instructional_Revised.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_03_Day_04_Hash_Tables_Separate_Chaining_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -699,3 +699,6 @@ Master heaps—their structure, their operations, their real-world applications�
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers mechanics, analysis, and advanced applications  
 **Batch Status:** ✅ COMPLETE — Week 03 Day 03 Final
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_03_Day_02_Merge_Quick_Sort_Instructional_Revised.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_03_Day_04_Hash_Tables_Separate_Chaining_Instructional.md)

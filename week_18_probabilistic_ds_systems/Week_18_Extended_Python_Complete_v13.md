@@ -1,5 +1,11 @@
 # Week 18 Extended Python Complete v13
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Python (3.11+) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 Purpose: build Python intuition for meet-in-the-middle, decomposition strategies, and advanced contest-style range/path techniques.
 
 ## Focus tags
@@ -28,3 +34,7 @@ def subset_sums(nums):
 - Must: subset-sum half splitting, block decomposition reasoning, HLD path decomposition explanation
 - Should: query/update trade-off analysis
 - Optional: implementation-heavy contest structures
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

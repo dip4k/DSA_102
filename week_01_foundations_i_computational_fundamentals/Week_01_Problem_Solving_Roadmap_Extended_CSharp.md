@@ -1,5 +1,11 @@
 # 🗺️ Week 01 Problem-Solving Roadmap Extended C# — Production-Grade Implementations
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This C# (.NET 8/9) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 **Purpose:** Week 01–specific C# problem-solving playbook for Foundations (RAM, Asymptotics, Space, Recursion)  
 **Target:** Transform mental models into C# coding fluency  
 **Prerequisites:** Week 01 instructional files + standard support files complete  
@@ -656,3 +662,6 @@ By week's end, you should be able to:
 
 **Next:** Proceed to Week 01 Daily Progress Checklist or move to Week 02 content
 
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

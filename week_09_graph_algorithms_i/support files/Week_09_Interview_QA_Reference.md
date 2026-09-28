@@ -1,5 +1,11 @@
 # 🎙️ Week 09 Interview QA Reference — Complete Question Bank & Solutions
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Purpose:** Comprehensive interview question bank with model answers and follow-ups  
 **Audience:** Intermediate-Advanced students preparing for technical interviews
 
@@ -2105,3 +2111,6 @@ DSU_WithSize:
 
 ---
 
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

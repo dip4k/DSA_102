@@ -1,5 +1,11 @@
 # 🗺️ Week_06_Extended_CSharp_Problem_Solving_Implementation — COMPLETE v13
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This C# (.NET 8/9) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 **Week:** 6 – Tier 1.5 String Manipulation Patterns  
 **Purpose:** Master practical string patterns for palindromes, substrings, parentheses, and transformations  
 **Target:** Transform Week 6 string patterns into interview-ready C# coding skills  
@@ -1105,3 +1111,7 @@ This file combines:
 - ✅ **Progressive learning** (v11 strength) — Practice from easy to hard
 - ✅ **Interview readiness** (v13 integration) — Pass technical interviews
 - ✅ **Complete coverage** (WEEK 6 TOPICS) — All string manipulation patterns
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

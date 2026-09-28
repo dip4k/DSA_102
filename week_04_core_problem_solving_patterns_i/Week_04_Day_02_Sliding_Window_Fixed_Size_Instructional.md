@@ -1,12 +1,12 @@
 # 📘 Week 04 Day 02: Sliding Window (Fixed Size) — Efficient Sequential Processing
 
-**Metadata:**
-- **Week:** 4 | **Day:** 2
-- **Category:** Core Problem-Solving Patterns
-- **Difficulty:** 🟡 Intermediate (builds on two-pointer from Day 1)
-- **Real-World Impact:** Fixed-size sliding windows power real-time monitoring systems, moving average calculations, stream processing, and performance monitoring. Stock market systems use them for technical indicators (50-day moving average); network monitoring uses them for bandwidth throttling; video streaming uses them for buffer optimization; time-series databases use them for aggregation queries.
-- **Prerequisites:** Week 2 (Arrays, understanding sequential access), Week 4 Day 1 (two-pointer intuition)
-- **MIT Alignment:** Pattern-based optimization from 6.006; efficiency improvements from understanding problem structure
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_04_Day_01_Two_Pointer_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_04_Day_03_Sliding_Window_Variable_Size_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -536,3 +536,6 @@ Master fixed-size sliding windows, and you're ready for variable-size windows (t
 **Inline Visuals:** 9 (ASCII diagrams, trace tables, comparison matrices)  
 **Real-World Stories:** 3 (Trading platforms, CDN monitoring, Netflix streaming)  
 **Interview-Ready:** Yes — covers mechanics, data structures, trade-offs, and applications
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_04_Day_01_Two_Pointer_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_04_Day_03_Sliding_Window_Variable_Size_Instructional.md)

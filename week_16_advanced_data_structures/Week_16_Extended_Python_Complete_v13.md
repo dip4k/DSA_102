@@ -1,5 +1,11 @@
 # Week 16 Extended Python Complete v13
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Python (3.11+) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 Purpose: build Python intuition for advanced data structures beyond standard interview-core choices.
 
 ## Focus tags
@@ -37,3 +43,7 @@ def rotate_right(root):
 - Must: explain skip list levels, treap heap-on-priority invariant, persistence by path copying
 - Should: hand-trace randomized insertions and rotations
 - Optional: dynamic tree/query structures and cache-oblivious motivation
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

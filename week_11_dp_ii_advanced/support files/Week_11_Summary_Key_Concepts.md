@@ -1,5 +1,11 @@
 # 📘 WEEK 11 SUMMARY: KEY CONCEPTS & QUICK REFERENCE
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Week:** 11 | **Purpose:** One-page reference for all Week 11 concepts  
 **For:** Quick lookup during problem-solving or review
 
@@ -238,23 +244,19 @@ Use: LIS, coin change, knapsack
 
 ## 📊 COMPLEXITY CHEAT SHEET
 
-```
-┌─────────────────────────────────────────────────────────┐
-│           DP COMPLEXITY QUICK REFERENCE                 │
-├─────────────────────────┬───────────┬──────────────────┤
-│ Problem                 │ Time      │ Space            │
-├─────────────────────────┼───────────┼──────────────────┤
-│ Tree DP (n nodes)       │ O(n)      │ O(h)             │
-│ DAG DP (V,E)            │ O(V+E)    │ O(V)             │
-│ Bitmask DP (n≤20)       │ O(2^n·n²) │ O(2^n·n)         │
-│ LCS (m,n lengths)       │ O(m·n)    │ O(min(m,n)) opt  │
-│ 0/1 Knapsack (n,W)      │ O(n·W)    │ O(W) optimized   │
-│ Coin change (n,W)       │ O(n·W)    │ O(W)             │
-│ LIS (n elements)        │ O(n²)     │ O(n)             │
-│ Fibonacci (n)           │ O(n)      │ O(1) optimized   │
-│ Tree coloring (n,k)     │ O(n·k)    │ O(n·k)           │
-└─────────────────────────┴───────────┴──────────────────┘
-```
+
+| Problem | Time | Space |
+| :--- | :--- | :--- |
+| Tree DP (n nodes) | O(n) | O(h) |
+| DAG DP (V,E) | O(V+E) | O(V) |
+| Bitmask DP (n≤20) | O(2^n·n²) | O(2^n·n) |
+| LCS (m,n lengths) | O(m·n) | O(min(m,n)) opt |
+| 0/1 Knapsack (n,W) | O(n·W) | O(W) optimized |
+| Coin change (n,W) | O(n·W) | O(W) |
+| LIS (n elements) | O(n²) | O(n) |
+| Fibonacci (n) | O(n) | O(1) optimized |
+| Tree coloring (n,k) | O(n·k) | O(n·k) |
+
 
 ---
 
@@ -410,3 +412,6 @@ Use: LIS, coin change, knapsack
 
 ---
 
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

@@ -1,5 +1,11 @@
 # 🐍 Week 14 Extended Python Complete Reference v13
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Python (3.11+) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 This reference guide provides highly optimized, readable, and idiomatic Python implementations for Week 14's core algorithm patterns. All code blocks leverage built-in Python optimization operations and conform to strict static-typing standards.
 
 ---
@@ -633,3 +639,7 @@ def solve_crt(a: list[int], m: list[int]) -> int:
 ```
 
 ```
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

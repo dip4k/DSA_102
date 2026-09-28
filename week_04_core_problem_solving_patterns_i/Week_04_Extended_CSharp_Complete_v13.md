@@ -1,5 +1,11 @@
 # 🗺️ Week_04_Extended_CSharp_Problem_Solving_Implementation — COMPLETE v13
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This C# (.NET 8/9) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 **Week:** 4 – Core Problem-Solving Patterns I: Two Pointers, Sliding Windows, Divide & Conquer, Binary Search  
 **Purpose:** Master foundational array/sequence patterns that drastically simplify many problems  
 **Target:** Transform Week 4 patterns into interview-ready C# coding skills  
@@ -1208,3 +1214,7 @@ This file combines:
 - ✅ **Progressive learning** (v11 strength) — Practice from easy to hard
 - ✅ **Interview readiness** (v13 integration) — Pass technical interviews
 - ✅ **Complete coverage** (WEEK 4 TOPICS) — All core problem-solving patterns
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

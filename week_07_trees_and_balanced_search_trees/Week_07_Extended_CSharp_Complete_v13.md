@@ -1,5 +1,11 @@
 # 🗺️ Week_07_Extended_CSharp_Problem_Solving_Implementation
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This C# (.NET 8/9) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 **Purpose:** Master Week 7 tree patterns through recognition, understanding, and production-ready implementation  
 **Target:** Transform tree knowledge into interview-ready C# coding skills  
 **Prerequisites:** Week 7 instructional files complete + understanding of tree fundamentals
@@ -808,3 +814,6 @@ public class Solution {
 - ✅ Interview quick reference with 10 patterns
 - ✅ Completion checklist for mastery
 
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

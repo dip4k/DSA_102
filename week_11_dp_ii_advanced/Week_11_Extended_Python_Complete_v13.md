@@ -1,5 +1,11 @@
 # Week 11 Extended Python Complete v13
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Python (3.11+) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 Purpose: build Python fluency for advanced DP structures: trees, DAGs, bitmasking, and state compression.
 
 ## Focus tags
@@ -73,3 +79,7 @@ def tsp_dp(dist):
 - Must: tree diameter / tree robber style DP, DAG longest path, subset DP basics
 - Should: all paths in DAG, rerooting intuition, TSP subset DP
 - Optional: aggressive state compression and mixed-constraint DP
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

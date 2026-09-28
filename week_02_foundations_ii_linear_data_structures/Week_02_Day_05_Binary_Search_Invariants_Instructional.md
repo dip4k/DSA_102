@@ -1,12 +1,12 @@
 # 📘 Week 02 Day 05: Binary Search & Invariants — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 2 | **Day:** 5
-- **Category:** Foundations / Search Algorithms & Problem-Solving
-- **Difficulty:** 🟡 Intermediate–Advanced (synthesizes Days 1–4)
-- **Real-World Impact:** Binary search is the gateway algorithm—the first "clever" technique that shows how problem structure (sorted data) enables exponential speedup. It appears everywhere: databases, memory allocation, configuration tuning, machine learning hyperparameter search. More importantly, binary search on "answer space" teaches a design pattern that transcends simple lookup: convert optimization problems into feasibility checks.
-- **Prerequisites:** Week 2 Days 1–4 (arrays, memory, pointers, stacks/queues), Week 1 (asymptotics)
-- **MIT Alignment:** Binary search and invariants from MIT 6.006 Lecture 5–6
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_02_Day_04_Stacks_Queues_Deques_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_02_Day_06_Strings_Numbers_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -632,3 +632,6 @@ Master binary search, and you master a fundamental pattern that appears througho
 **Real-World Stories:** 3 detailed case studies  
 **Interview-Ready:** Yes—covers mechanics, variants, and answer-space pattern  
 **Batch Status:** ✅ COMPLETE — Week 02 Day 05 Final
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_02_Day_04_Stacks_Queues_Deques_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_02_Day_06_Strings_Numbers_Instructional.md)

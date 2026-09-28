@@ -1,5 +1,11 @@
 # Week 10 Extended Python Complete v13
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Python (3.11+) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 Purpose: build Python fluency for core DP patterns: memoization, tabulation, 1D/2D DP, and sequence problems.
 
 ## Focus tags
@@ -74,3 +80,7 @@ def lis(nums):
 - Must: climb stairs, house robber, coin change, unique paths, edit distance, LCS/LIS
 - Should: weighted interval scheduling, max subarray, matrix chain multiplication intuition
 - Optional: story-driven DP formulations and path reconstruction
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

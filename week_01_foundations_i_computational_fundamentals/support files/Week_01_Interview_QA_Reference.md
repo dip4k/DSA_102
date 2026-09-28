@@ -1,5 +1,11 @@
 # 🎙️ Week 01 Interview Q&A Reference: 50+ Questions by Topic
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Format:** Questions only + follow-ups to force deeper thinking  
 **How to Use:** 5-6 questions daily, attempt before looking up answers
 
@@ -275,3 +281,7 @@
 
 **Total Questions:** 50 (8-10 per topic)  
 **Interview Prep Time:** 4-5 hours for all questions
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

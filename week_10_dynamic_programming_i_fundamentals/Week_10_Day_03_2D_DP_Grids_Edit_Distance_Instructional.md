@@ -1,11 +1,12 @@
 # 📖 WEEK 10 DAY 03: 2D DYNAMIC PROGRAMMING — GRIDS & EDIT DISTANCE — COMPREHENSIVE ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 10 | **Day:** 03
-- **Category:** Algorithm Paradigms / 2D Optimization / String Processing
-- **Difficulty:** 🟡 Intermediate to 🔴 Advanced
-- **Real-World Impact:** Powers spell-checkers (edit distance), DNA sequence alignment (bioinformatics), robot path planning (grid DP), optical character recognition (OCR), and natural language processing (LCS variants)
-- **Prerequisites:** Week 10 Day 01-02 (1D DP fundamentals, state definition, recurrence relations)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_10_Day_02_1D_DP_Knapsack_Family_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_10_Day_04_DP_on_Sequences_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -1245,9 +1246,9 @@ Solutions:
 
 Grid DP with high costs:
 - Grid size: 1000 × 1000
-- Cell cost: up to $10,000 (e.g., distance costs in delivery routing)
-- Maximum path cost: 2000 cells × $10k = $20 million
-- In 64-bit signed integer: max ≈ 9 × 10^18, so $20M fits fine
+- Cell cost: up to \\$10,000 (e.g., distance costs in delivery routing)
+- Maximum path cost: 2000 cells × \\$10k = \\$20 million
+- In 64-bit signed integer: max ≈ 9 × 10^18, so \\$20M fits fine
 - But if costs are floating-point: precision errors accumulate
 
 Solutions:
@@ -1675,4 +1676,6 @@ The connection: Both DP and neural models solve alignment problems by comparing 
 
 - Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
 - Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+---
 
+> 🧭 **Navigation:** [← Previous Day](Week_10_Day_02_1D_DP_Knapsack_Family_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_10_Day_04_DP_on_Sequences_Instructional.md)

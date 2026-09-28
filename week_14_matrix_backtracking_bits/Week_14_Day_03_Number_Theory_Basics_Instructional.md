@@ -1,5 +1,14 @@
 # 📅 Week 14, Day 3: Number Theory Basics, GCD, LCM, Primes & Modular Exponentiation
 
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_14_Day_02_Bitwise_Operations_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_14_Day_04_Advanced_Strings_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
+
+---
+
 Welcome to Day 3. Today, we build practical number theory tools for coding interviews: GCD/LCM, prime generation, modular arithmetic, fast power, and modular inverse.
 
 ---
@@ -16,13 +25,13 @@ Welcome to Day 3. Today, we build practical number theory tools for coding inter
 
 ### 1. The Core Engineering Challenge
 In algorithmic problems, values can become enormous quickly. Computing powers or combinations like N! can overflow fixed-width integers.
-To control growth, problems ask for answers modulo a value (often a large prime like 10^9 + 7).
 But modular arithmetic changes the rules for division:
-\frac{A}{B} +/-od M \neq \frac{A \bmod M}{B \bmod M}
+`(A / B) % M != (A % M) / (B % M)`
+
 So we need number theory to compute safely and correctly.
 
 ### 2. Naive Pitfalls
-The naive way to compute modular powers like b^e \bmod m is to multiply b by itself e times in a loop:
+The naive way to compute modular powers like `b^e % m` is to multiply `b` by itself `e` times in a loop:
 ```csharp
 long res = 1;
 for (int i = 0; i < e; i++) { res = (res * b) % m; }
@@ -53,8 +62,8 @@ n = p_1^{a_1} p_2^{a_2} *s p_k^{a_k}
 This is the foundation for many number-theory shortcuts.
 
 #### 📐 Core Modulo Mechanics
-*   **Addition**: (A + B) \bmod M = ((A \bmod M) + (B \bmod M)) \bmod M
-*   **Multiplication**: (A x B) \bmod M = ((A \bmod M) x (B \bmod M)) \bmod M
+*   **Addition**: (A + B) % M = ((A % M) + (B % M)) % M
+*   **Multiplication**: (A x B) % M = ((A % M) x (B % M)) % M
 *   *Caveat*: Division is not direct. Use inverse only if denominator and modulus are coprime.
 
 ---
@@ -63,9 +72,9 @@ This is the foundation for many number-theory shortcuts.
 
 ### 1. Euclidean GCD and LCM
 The Euclidean Greatest Common Divisor (GCD) algorithm replaces the larger number with its modular remainder recursively until it reaches 0:
-gcd(a, b) = gcd(b, a \bmod b)
+gcd(a, b) = gcd(b, a % b)
 
-Invariant: the set of common divisors of (a, b) is identical to that of (b, a \bmod b), so the GCD stays unchanged each step.
+Invariant: the set of common divisors of (a, b) is identical to that of (b, a % b), so the GCD stays unchanged each step.
 
 ```csharp
 public static long Gcd(long a, long b) {
@@ -198,7 +207,7 @@ For composite modulus, use Extended Euclidean Algorithm and require gcd(A, M) = 
 *   *Use the Euclidean Algorithm when*: You need to simplify fraction ratios, check coprime relations, or compute periodicities.
 *   *Use Trial Division when*: You need primality for one or few numbers.
 *   *Use the Sieve of Eratosthenes when*: You need to handle dense primality checks on numbers smaller than 10^7 repeatedly.
-*   *Use Modular Multiplicative Inverses when*: You need division under modulo arithmetic, such as C(N, K) \bmod P.
+*   *Use Modular Multiplicative Inverses when*: You need division under modulo arithmetic, such as C(N, K) % P.
 
 ### 2. Beginner to Advanced Progression
 1. Beginner: implement `Gcd`, `Lcm`, and single-number prime check.
@@ -211,7 +220,7 @@ For composite modulus, use Extended Euclidean Algorithm and require gcd(A, M) = 
 
 ### Practice Problems
 1.  **Count Primes**: Find the number of primes smaller than N.
-2.  **Modular Combinations**: Calculate combinations C(N, K) \bmod P.
+2.  **Modular Combinations**: Calculate combinations C(N, K) % P.
 3.  **Euclidean GCD recursion**: Implement recursive Greatest Common Divisor checks.
 4.  **Greatest Common Divisor of Strings**: Generalize numeric GCD to string repeating substrings.
 5.  **Modular Inverse (Composite Modulus)**: Use Extended Euclid to compute inverse where possible.
@@ -221,3 +230,6 @@ For composite modulus, use Extended Euclidean Algorithm and require gcd(A, M) = 
     *   *Correction*: Fermat's Little Theorem only applies to prime moduli. For composite moduli, you must use the **Extended Euclidean Algorithm** to find the inverse.
 *   *Incorrect Idea*: Assuming `(a * b) % m` is always safe with `long`.
     *   *Correction*: It is safe for common small moduli, but for very large moduli you must use overflow-safe multiplication.
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_14_Day_02_Bitwise_Operations_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_14_Day_04_Advanced_Strings_Instructional.md)

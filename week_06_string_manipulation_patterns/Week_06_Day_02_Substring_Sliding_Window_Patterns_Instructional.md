@@ -1,11 +1,12 @@
 # 📘 Week 06 Day 2: Substring Sliding Window Patterns — Engineering Guide
 
-**Metadata:**
-- **Week:** 06 | **Day:** 2
-- **Category:** String Patterns
-- **Difficulty:** 🟡 Intermediate
-- **Real-World Impact:** Substring pattern matching powers search engines, text editors, plagiarism detection, malware scanning, and real-time network packet filtering—anywhere efficiency of finding patterns matters.
-- **Prerequisites:** Week 02 (Strings), Week 04 (Two-Pointers, Sliding Windows), Week 06 Day 1 (Palindrome logic)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_06_Day_01_Palindrome_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_06_Day_03_Parentheses_Bracket_Matching_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -57,55 +58,14 @@ This "caterpillar" motion—expanding the right edge, contracting the left edge�
 
 Let's see how the window moves for "longest substring without repeating characters":
 
+
+```mermaid
+flowchart TD
+    R["String "abcabcbb""]
+    R --> N1["State"]
+    R --> N2["State"]
 ```
-String: "abcabcbb"
 
-PHASE 1: Growing phase (building window)
-┌─────────────────────────────────────────┐
-│ Step | Left Right Substring  Freq Map    │
-├─────────────────────────────────────────┤
-│  0   │  0   0    "a"        {a:1}       │
-│  1   │  0   1    "ab"       {a:1, b:1}  │
-│  2   │  0   2    "abc"      {a:1, b:1, c:1} │
-│  3   │  0   3    "abca"     {a:2, b:1, c:1} │
-│      │                      (repeat detected!)
-└─────────────────────────────────────────┘
-
-PHASE 2: Shrinking phase (removing conflict)
-│  4   │  1   3    "bca"      {a:1, b:1, c:1} │ (removed 'a' from left)
-│      │                      (constraint satisfied!)
-
-PHASE 3: Growing again
-│  5   │  1   4    "bcab"     {a:1, b:2, c:1} │
-│      │                      (repeat 'b' detected!)
-
-PHASE 4: Shrinking
-│  6   │  2   4    "cab"      {a:1, b:1, c:1} │
-│  7   │  3   5    "abc"      {a:1, b:1, c:1} │ (removed 'b', wait...)
-│      │      Actually, let's recalculate more carefully:
-│      │      After step 5, we're at "bcab" with repeat 'b'
-│      │  6   │  2   5    "cab"      {c:1, a:1, b:1} │ (right moves, left moves to 2)
-│      │      Wait, I need to be more careful.
-│      │
-│      │ When we detect "bcab" has duplicate 'b':
-│      │   left is at 1 (char 'b')
-│      │   We remove the left 'b': left++
-│      │   Now left = 2, window is "cab"
-│      │   Continue expanding right
-│
-│  6   │  2   5    "cabc"     {c:2, a:1, b:1} │ (repeat 'c')
-│  7   │  3   5    "abc"      {a:1, b:1, c:1} │ (removed left 'c')
-│  8   │  3   6    "abcb"     {a:1, b:2, c:1} │ (repeat 'b')
-│  9   │  4   6    "bcb"      {b:2, c:1}      │ (removed left 'a')
-│ 10   │  5   6    "cb"       {b:1, c:1}      │ (removed left 'b')
-│ 11   │  5   7    "cbb"      {b:2, c:1}      │ (repeat 'b')
-│ 12   │  6   7    "bb"       {b:2}           │ (removed 'c', still repeat)
-│ 13   │  7   7    "b"        {b:1}           │ (removed left 'b')
-│ (right exhausted, done)
-
-Maximum window size seen: 3 (from "abc")
-Result: "abc" (length 3)
-```
 
 The key insight: **we never go backward**. Left only moves right, right only moves right. This ensures O(n) total iterations.
 
@@ -535,20 +495,22 @@ CORRECT:
 
 **Decision Framework:**
 
-```
-Is the problem about SUBSTRINGS (contiguous)?
-├─ Yes, with CONSTRAINTS on characters:
-│  ├─ Fixed-size window? (constant substring length needed)
-│  │  └─ Use fixed-size sliding window
-│  └─ Variable-size window? (constraint-based)
-│     ├─ Optimize? (shrink to find minimum)
-│     │  └─ Use variable-size with hashmap, two-pointer
-│     └─ Constraint: frequency-based
-│        └─ Frequency map to track counts
 
-└─ No, is it about SUBSEQUENCES or PATTERNS?
-   └─ Different approach (DP or advanced string algorithms)
+```mermaid
+flowchart TD
+    R["Is the problem about SUBSTRINGS (contiguous)?"]
+    R --> N1["Yes, with CONSTRAINTS on characters:"]
+    N1 --> N2["Fixed-size window? (constant substring length needed)"]
+    N2 --> N3["Use fixed-size sliding window"]
+    N1 --> N4["Variable-size window? (constraint-based)"]
+    N4 --> N5["Optimize? (shrink to find minimum)"]
+    N5 --> N6["Use variable-size with hashmap, two-pointer"]
+    N4 --> N7["Constraint: frequency-based"]
+    N7 --> N8["Frequency map to track counts"]
+    R --> N9["No, is it about SUBSEQUENCES or PATTERNS?"]
+    N9 --> N10["Different approach (DP or advanced string algorithms)"]
 ```
+
 
 - **✅ Use when:** Finding substrings with character constraints, frequency limits, pattern containment
 - **🛑 Avoid when:** Subsequences (non-contiguous), permutations beyond order, or tree-like structures
@@ -728,3 +690,6 @@ This pattern isn't limited to strings. You'll encounter similar adaptive-window 
 When you see a problem involving sequences and constraints, pause. Ask: **"Can I maintain a sliding window to solve this?"** More often than not, the answer is yes, and the solution is elegant.
 
 ---
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_06_Day_01_Palindrome_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_06_Day_03_Parentheses_Bracket_Matching_Instructional.md)

@@ -1,5 +1,11 @@
 # 🗓️ Week 01 Problem-Solving Roadmap: Structured Practice & Progression
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Purpose:** Guide problem selection, progression, and pattern recognition
 
 ---
@@ -165,26 +171,23 @@
 
 ## 🔄 Algorithm Selection Decision Matrix
 
+
+```mermaid
+flowchart TD
+    R["Choosing the Right Approach"]
+    R --> N1["Sorted array? → Binary search (O(log n))"]
+    R --> N2["Graph? → BFS/DFS"]
+    R --> N3["Tree? → Tree traversal + structure"]
+    R --> N4["Unsorted? → Scan (O(n))"]
+    R --> N5["Overlapping subproblems? → Memoization"]
+    R --> N6["Divide-and-conquer? → Split and combine"]
+    R --> N7["No overlap? → Direct recursion OK"]
+    R --> N8["Depth concern? → Convert to iteration"]
+    R --> N9["Can exploit monotonicity? → Binary search or similar"]
+    R --> N10["Can divide and conquer? → Reduce complexity class"]
+    R --> N11["Can precompute? → Trade space for speed"]
 ```
-Choosing the Right Approach:
 
-Problem involves search in structure?
-├─ Sorted array? → Binary search (O(log n))
-├─ Graph? → BFS/DFS
-├─ Tree? → Tree traversal + structure
-└─ Unsorted? → Scan (O(n))
-
-Recursive structure possible?
-├─ Overlapping subproblems? → Memoization
-├─ Divide-and-conquer? → Split and combine
-├─ No overlap? → Direct recursion OK
-└─ Depth concern? → Convert to iteration
-
-Optimize further?
-├─ Can exploit monotonicity? → Binary search or similar
-├─ Can divide and conquer? → Reduce complexity class
-└─ Can precompute? → Trade space for speed
-```
 
 ---
 
@@ -258,3 +261,7 @@ Optimize further?
 ---
 
 **Practice Time:** 15-18 hours for 20-25 problems and exercises
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

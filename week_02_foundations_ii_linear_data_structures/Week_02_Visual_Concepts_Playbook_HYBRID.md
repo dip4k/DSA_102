@@ -1,5 +1,11 @@
 # 📊 WEEK 02 VISUAL CONCEPTS PLAYBOOK (HYBRID)
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Visual Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
+
+---
+
 **Week:** 2 | **Tier:** Foundations II – Linear Structures, Binary Search  
 **Theme:** Static/Dynamic Arrays, Linked Lists, Stacks/Queues/Deques, Binary Search Invariants  
 **Format:** Hybrid (Enhanced ASCII + Web Resource Links + Reference Tools)  
@@ -16,7 +22,7 @@
 | `→` | Pointer or next reference |
 | `i`, `j` | Index pointers |
 | `lo`, `hi`, `mid` | Binary search bounds |
-| `┌─┐` | Node or memory cell |
+| `[]` | Node or memory cell |
 | `███` | Allocated/active memory |
 | `░░░` | Unallocated/empty |
 | `⇄` | Operation or transition |
@@ -41,23 +47,24 @@
 
 ### Pattern Map: Array Family Tree
 
+
+```mermaid
+flowchart TD
+    R["ARRAY STRUCTURES"]
+    R --> N1["Static Arrays (Fixed Size)"]
+    N1 --> N2["Contiguous memory"]
+    N1 --> N3["O(1) random access"]
+    N1 --> N4["O(n) for insert/delete"]
+    R --> N5["Dynamic Arrays (Resizable)"]
+    N5 --> N6["Doubling strategy"]
+    N5 --> N7["Amortized O(1) append"]
+    N5 --> N8["O(n) for reallocation"]
+    R --> N9["Multi-Dimensional"]
+    N9 --> N10["Row-major layout"]
+    N9 --> N11["Column-major layout"]
+    N9 --> N12["Cache implications"]
 ```
-ARRAY STRUCTURES
-├─ Static Arrays (Fixed Size)
-│  ├─ Contiguous memory
-│  ├─ O(1) random access
-│  └─ O(n) for insert/delete
-│
-├─ Dynamic Arrays (Resizable)
-│  ├─ Doubling strategy
-│  ├─ Amortized O(1) append
-│  └─ O(n) for reallocation
-│
-└─ Multi-Dimensional
-   ├─ Row-major layout
-   ├─ Column-major layout
-   └─ Cache implications
-```
+
 
 ---
 
@@ -67,44 +74,15 @@ ARRAY STRUCTURES
 
 #### Visual 1: Contiguous Memory Representation
 
-```
-ARRAY: [10, 20, 30, 40, 50]
-SIZE: 5 elements
 
-MEMORY LAYOUT (Base Address = 1000):
-─────────────────────────────────────
+| Address | Value | Index |
+| :--- | :--- | :--- |
+| 1000 | 10 | [0] |
+| 1004 | 20 | [1] |
+| 1008 | 30 | [2] |
+| 1012 | 40 | [3] |
+| 1016 | 50 | [4] |
 
-Address │ Value │ Index
-────────┼───────┼──────
-1000    │  10   │  [0]
-1004    │  20   │  [1]
-1008    │  30   │  [2]
-1012    │  40   │  [3]
-1016    │  50   │  [4]
-
-(Each element: 4 bytes, contiguous)
-
-INDEX TO ADDRESS FORMULA:
-┌──────────────────────────────┐
-│ address = base + index × size│
-│                              │
-│ For index 2:                 │
-│ address = 1000 + 2×4 = 1008 ✓│
-│ value at 1008 = 30 ✓         │
-└──────────────────────────────┘
-
-CACHE ADVANTAGE:
-Sequential access (prefetch):
-  Access [0] → [1] → [2]
-  Same cache line, no misses!
-
-Random access:
-  Access [0] → [4] → [2]
-  Different cache lines, misses
-
-TIME: O(1) random access
-SPACE: O(n) total
-```
 
 ---
 
@@ -112,41 +90,22 @@ SPACE: O(n) total
 
 #### Visual 1: Matrix Memory Ordering
 
+
+```mermaid
+flowchart TD
+    R["MATRIX (3×3)"]
+    R --> N1["State"]
+    R --> N2["Rows stored sequentially"]
+    R --> N3["Memory: [1,2,3, 4,5,6, 7,8,9]"]
+    R --> N4["Iterate rows for cache efficiency"]
+    R --> N5["Formula: address = base + (row×cols + col)×size"]
+    R --> N6["Columns stored sequentially"]
+    R --> N7["Memory: [1,4,7, 2,5,8, 3,6,9]"]
+    R --> N8["Iterate columns for cache efficiency"]
+    R --> N9["Formula: address = base + (col×rows + row)×size"]
+    R --> N10["State"]
 ```
-MATRIX (3×3):
-┌─────────────┐
-│ 1  2  3    │
-│ 4  5  6    │
-│ 7  8  9    │
-└─────────────┘
 
-ROW-MAJOR (C-style):
-├─ Rows stored sequentially
-├─ Memory: [1,2,3, 4,5,6, 7,8,9]
-├─ Iterate rows for cache efficiency
-└─ Formula: address = base + (row×cols + col)×size
-
-COLUMN-MAJOR (Fortran-style):
-├─ Columns stored sequentially
-├─ Memory: [1,4,7, 2,5,8, 3,6,9]
-├─ Iterate columns for cache efficiency
-└─ Formula: address = base + (col×rows + row)×size
-
-PERFORMANCE IMPACT:
-┌──────────────────────────────────┐
-│ Row-major traversal:            │
-│ for row in range(n):            │
-│   for col in range(m):          │
-│     access matrix[row][col]  ✓  │
-│ Sequential → Fast!              │
-│                                  │
-│ Column-major traversal (bad):   │
-│ for row in range(n):            │
-│   for col in range(m):          │
-│     access matrix[row][col]  ✗  │
-│ Random jumps → Slow!            │
-└──────────────────────────────────┘
-```
 
 ---
 
@@ -154,23 +113,24 @@ PERFORMANCE IMPACT:
 
 ### Pattern Map: Dynamic Array Growth
 
+
+```mermaid
+flowchart TD
+    R["DYNAMIC ARRAY PATTERNS"]
+    R --> N1["Capacity vs Size"]
+    N1 --> N2["Logical size (elements)"]
+    N1 --> N3["Physical capacity (allocated)"]
+    N1 --> N4["Load factor (size/capacity)"]
+    R --> N5["Resize Strategy"]
+    N5 --> N6["Doubling (2×)"]
+    N5 --> N7["Linear growth (+ constant)"]
+    N5 --> N8["Fibonacci growth"]
+    R --> N9["Amortized Cost"]
+    N9 --> N10["Average per operation"]
+    N9 --> N11["Expensive reallocation rare"]
+    N9 --> N12["O(1) amortized append"]
 ```
-DYNAMIC ARRAY PATTERNS
-├─ Capacity vs Size
-│  ├─ Logical size (elements)
-│  ├─ Physical capacity (allocated)
-│  └─ Load factor (size/capacity)
-│
-├─ Resize Strategy
-│  ├─ Doubling (2×)
-│  ├─ Linear growth (+ constant)
-│  └─ Fibonacci growth
-│
-└─ Amortized Cost
-   ├─ Average per operation
-   ├─ Expensive reallocation rare
-   └─ O(1) amortized append
-```
+
 
 ---
 
@@ -180,64 +140,28 @@ DYNAMIC ARRAY PATTERNS
 
 #### Visual 1: Capacity Growing Process
 
+
+```mermaid
+flowchart TD
+    R["DYNAMIC ARRAY Starting with []"]
+    R --> N1["Capacity full (1 == 1)"]
+    R --> N2["Reallocate: capacity = 2×1 = 2"]
+    R --> N3["Copy: [10, 20]"]
+    R --> N4["Size: 2, Capacity: 2"]
+    R --> N5["Capacity full (2 == 2)"]
+    R --> N6["Reallocate: capacity = 2×2 = 4"]
+    R --> N7["Copy: [10, 20, 30, _, ]"]
+    R --> N8["Size: 3, Capacity: 4"]
+    R --> N9["Room available (3 < 4)"]
+    R --> N10["[10, 20, 30, 40]"]
+    R --> N11["Size: 4, Capacity: 4"]
+    R --> N12["Capacity full (4 == 4)"]
+    R --> N13["Reallocate: capacity = 2×4 = 8"]
+    R --> N14["Copy: [10, 20, 30, 40, 50, _, _, _]"]
+    R --> N15["Size: 5, Capacity: 8"]
+    R --> N16["State"]
 ```
-DYNAMIC ARRAY: Starting with []
 
-OPERATION SEQUENCE (with doubling):
-─────────────────────────────────
-
-Step 1: Insert 10
-[10]
-Size: 1, Capacity: 1
-
-Step 2: Insert 20
-├─ Capacity full (1 == 1)
-├─ Reallocate: capacity = 2×1 = 2
-├─ Copy: [10, 20]
-└─ Size: 2, Capacity: 2
-
-Step 3: Insert 30
-├─ Capacity full (2 == 2)
-├─ Reallocate: capacity = 2×2 = 4
-├─ Copy: [10, 20, 30, _, ]
-└─ Size: 3, Capacity: 4
-
-Step 4: Insert 40
-├─ Room available (3 < 4)
-├─ [10, 20, 30, 40]
-└─ Size: 4, Capacity: 4
-
-Step 5: Insert 50
-├─ Capacity full (4 == 4)
-├─ Reallocate: capacity = 2×4 = 8
-├─ Copy: [10, 20, 30, 40, 50, _, _, _]
-└─ Size: 5, Capacity: 8
-
-GROWTH PATTERN:
-Capacity: 1 → 2 → 4 → 8 → 16 → ...
-
-COST ANALYSIS:
-┌───────────────────────────────────┐
-│ Insert sequence [1..n]:          │
-│                                  │
-│ Cheap inserts: 1+2+3+4+...+(n-1) │
-│ = O(n) total cheap work          │
-│                                  │
-│ Expensive reallocations:         │
-│ Realloc at 1: copy 0 items      │
-│ Realloc at 2: copy 1 item       │
-│ Realloc at 4: copy 2 items      │
-│ Realloc at 8: copy 4 items      │
-│ ...                              │
-│ Total: 1+2+4+8+... < 2n = O(n)  │
-│                                  │
-│ Total cost: O(n) for n inserts   │
-│ Amortized: O(n)/n = O(1) each!  │
-└───────────────────────────────────┘
-
-TIME: O(1) amortized per append
-SPACE: O(n) at capacity
-```
 
 ---
 
@@ -245,34 +169,13 @@ SPACE: O(n) at capacity
 
 #### Visual 1: Accumulator Model
 
+
+```mermaid
+flowchart TD
+    R["AMORTIZED ANALYSIS (Aggregate Method)"]
+    R --> N1["State"]
 ```
-AMORTIZED ANALYSIS (Aggregate Method):
 
-n=10 appends:
-─────────────
-
-Work done per operation:
-Op 1: Push 1 item (1 unit)
-Op 2: Push 1 item → REALLOCATE (1 item copy, 1 new)
-Op 3: Push 1 item (1 unit)
-Op 4: Push 1 item (1 unit)
-Op 5: Push 1 item → REALLOCATE (3 items copy, 1 new)
-...
-
-Total work = 10 (cheap ops) + 8 (reallocation work) = 18 units
-For n operations: Total < 3n units
-Amortized cost: 3n / n = 3 = O(1) per operation
-
-KEY INSIGHT:
-┌──────────────────────────────────┐
-│ Even though ONE operation       │
-│ (reallocate) is expensive O(n),  │
-│ it happens RARELY (log n times)  │
-│                                  │
-│ Average over many ops: O(1)     │
-│ This is amortized analysis!     │
-└──────────────────────────────────┘
-```
 
 ---
 
@@ -280,23 +183,24 @@ KEY INSIGHT:
 
 ### Pattern Map: Linked List Variants
 
+
+```mermaid
+flowchart TD
+    R["LINKED LIST PATTERNS"]
+    R --> N1["Singly Linked List"]
+    N1 --> N2["One directional link"]
+    N1 --> N3["Forward traversal only"]
+    N1 --> N4["O(n) search, O(1) insert/delete"]
+    R --> N5["Doubly Linked List"]
+    N5 --> N6["Bidirectional links"]
+    N5 --> N7["Forward & backward traversal"]
+    N5 --> N8["More memory, flexible"]
+    R --> N9["Circular Linked List"]
+    N9 --> N10["Last node points to first"]
+    N9 --> N11["No null terminator"]
+    N9 --> N12["Use case: round-robin"]
 ```
-LINKED LIST PATTERNS
-├─ Singly Linked List
-│  ├─ One directional link
-│  ├─ Forward traversal only
-│  └─ O(n) search, O(1) insert/delete
-│
-├─ Doubly Linked List
-│  ├─ Bidirectional links
-│  ├─ Forward & backward traversal
-│  └─ More memory, flexible
-│
-└─ Circular Linked List
-   ├─ Last node points to first
-   ├─ No null terminator
-   └─ Use case: round-robin
-```
+
 
 ---
 
@@ -306,67 +210,19 @@ LINKED LIST PATTERNS
 
 #### Visual 1: Singly Linked List in Heap
 
+
+```mermaid
+flowchart TD
+    R["LINKED LIST [10] → [20] → [30] → null"]
+    R --> N1["State"]
+    R --> N2["State"]
+    R --> N3["State"]
+    R --> N4["State"]
+    R --> N5["State"]
+    R --> N6["State"]
+    R --> N7["State"]
 ```
-LINKED LIST: [10] → [20] → [30] → null
 
-MEMORY REPRESENTATION (Heap):
-─────────────────────────────
-
-┌──────────────────┐
-│ Node 0 (10)      │
-├──────────────────┤
-│ value: 10        │
-│ next: ──────────────┐
-└──────────────────┘  │
-                      ▼
-┌──────────────────┐
-│ Node 1 (20)      │
-├──────────────────┤
-│ value: 20        │
-│ next: ──────────────┐
-└──────────────────┘  │
-                      ▼
-┌──────────────────┐
-│ Node 2 (30)      │
-├──────────────────┤
-│ value: 30        │
-│ next: null       │
-└──────────────────┘
-
-TRAVERSAL (Starting at head):
-─────────────────────────────
-
-current = head (points to Node 0)
-print(current.value)  → 10
-current = current.next
-
-current = Node 1
-print(current.value)  → 20
-current = current.next
-
-current = Node 2
-print(current.value)  → 30
-current = current.next
-
-current = null
-STOP
-
-OUTPUT: 10 → 20 → 30 ✓
-
-OPERATIONS:
-┌──────────────────────────────┐
-│ Search: O(n) - must traverse │
-│ Insert at head: O(1)         │
-│ Insert after node: O(1)      │
-│ Delete after node: O(1)      │
-│ Delete by value: O(n)        │
-│ Find middle: O(n)            │
-└──────────────────────────────┘
-
-VS ARRAY:
-Array: O(1) search, O(n) insert
-List: O(n) search, O(1) insert (at known node)
-```
 
 ---
 
@@ -374,54 +230,13 @@ List: O(n) search, O(1) insert (at known node)
 
 #### Visual 1: Pointer Manipulation
 
+
+```mermaid
+flowchart TD
+    R["INSERT 15 AT HEAD"]
+    R --> N1["State"]
 ```
-INSERT 15 AT HEAD:
 
-BEFORE:
-head ──→ [10] → [20] → [30]
-
-CREATE NEW NODE:
-new_node = Node(15)
-new_node.next = head
-head = new_node
-
-AFTER:
-head ──→ [15] ──→ [10] → [20] → [30]
-
-TIME: O(1) constant!
-
-INSERT 25 AFTER NODE [20]:
-
-BEFORE:
-[10] → [20] → [30]
-       ↑
-    given node
-
-CREATE NEW NODE:
-new_node = Node(25)
-new_node.next = given_node.next  (points to [30])
-given_node.next = new_node        (point to new node)
-
-AFTER:
-[10] → [20] → [25] → [30]
-            ↑    ↑
-         inserted
-
-TIME: O(1) - just pointer changes!
-
-KEY OPERATIONS:
-┌─────────────────────────────────┐
-│ Insertion at known node:        │
-│ 1. Create new node              │
-│ 2. new_node.next = node.next   │
-│ 3. node.next = new_node        │
-│ = O(1) - no shifting!          │
-│                                │
-│ Vs Array:                      │
-│ Need to shift all elements     │
-│ after insertion point = O(n)   │
-└─────────────────────────────────┘
-```
 
 ---
 
@@ -429,23 +244,24 @@ KEY OPERATIONS:
 
 ### Pattern Map: Linear Structures
 
+
+```mermaid
+flowchart TD
+    R["STACK/QUEUE/DEQUE PATTERNS"]
+    R --> N1["Stack (LIFO)"]
+    N1 --> N2["Last-In-First-Out"]
+    N1 --> N3["Push/Pop from end"]
+    N1 --> N4["Use: DFS, undo/redo, parsing"]
+    R --> N5["Queue (FIFO)"]
+    N5 --> N6["First-In-First-Out"]
+    N5 --> N7["Enqueue/Dequeue"]
+    N5 --> N8["Use: BFS, task scheduling"]
+    R --> N9["Deque (Double-Ended)"]
+    N9 --> N10["Both ends operations"]
+    N9 --> N11["Push/pop front & back"]
+    N9 --> N12["Use: Sliding window, rotate"]
 ```
-STACK/QUEUE/DEQUE PATTERNS
-├─ Stack (LIFO)
-│  ├─ Last-In-First-Out
-│  ├─ Push/Pop from end
-│  └─ Use: DFS, undo/redo, parsing
-│
-├─ Queue (FIFO)
-│  ├─ First-In-First-Out
-│  ├─ Enqueue/Dequeue
-│  └─ Use: BFS, task scheduling
-│
-└─ Deque (Double-Ended)
-   ├─ Both ends operations
-   ├─ Push/pop front & back
-   └─ Use: Sliding window, rotate
-```
+
 
 ---
 
@@ -453,61 +269,14 @@ STACK/QUEUE/DEQUE PATTERNS
 
 #### Visual 1: Push/Pop Storyboard
 
-```
-STACK OPERATIONS:
-─────────────────
 
-Initial: []
+| 10 | ← Top |
+| :--- | :--- |
+| 20 | ← Top |
+| 30 | ← Top |
+| 20 | ← Top |
+| 10 | ← Top |
 
-Push 10:
-┌──┐
-│10│ ← Top
-└──┘
-
-Push 20:
-┌──┐
-│20│ ← Top
-├──┤
-│10│
-└──┘
-
-Push 30:
-┌──┐
-│30│ ← Top
-├──┤
-│20│
-├──┤
-│10│
-└──┘
-
-Pop (remove 30):
-┌──┐
-│20│ ← Top
-├──┤
-│10│
-└──┘
-
-Pop (remove 20):
-┌──┐
-│10│ ← Top
-└──┘
-
-IMPLEMENTATION OPTIONS:
-┌──────────────────────────────┐
-│ Array-based Stack:          │
-│ - items = []                │
-│ - top = -1                  │
-│ - Push: items[++top] = x    │
-│ - Pop: return items[top--]  │
-│ - O(1) amortized            │
-│                             │
-│ Linked List Stack:          │
-│ - head = null               │
-│ - Push: new node at head    │
-│ - Pop: remove head          │
-│ - O(1) guaranteed           │
-└──────────────────────────────┘
-```
 
 ---
 
@@ -517,7 +286,7 @@ IMPLEMENTATION OPTIONS:
 
 ```
 QUEUE (Array-based, Circular):
-──────────────────────────────
+------------------------------
 
 Array: [_, _, _, _, _]  (capacity 5)
 Front: 0, Back: 0 (empty)
@@ -565,47 +334,14 @@ SPACE: O(n) for capacity items
 
 #### Visual 1: Deque Operations from Both Ends
 
+
+```mermaid
+flowchart TD
+    R["DEQUE [10, 20, 30, 40, 50]"]
+    R --> N1["State"]
+    R --> N2["State"]
 ```
-DEQUE: [10, 20, 30, 40, 50]
-        ↑                   ↑
-      Front                Back
 
-PUSH_BACK 60 (add to back):
-[10, 20, 30, 40, 50, 60]
-
-PUSH_FRONT 5 (add to front):
-[5, 10, 20, 30, 40, 50, 60]
-
-POP_BACK (remove 60):
-[5, 10, 20, 30, 40, 50]
-
-POP_FRONT (remove 5):
-[10, 20, 30, 40, 50]
-
-ACCESS_FRONT: 10
-ACCESS_BACK: 50
-
-IMPLEMENTATION:
-┌──────────────────────────────────┐
-│ Doubly Linked List:             │
-│ - Head + Tail pointers          │
-│ - All operations O(1)           │
-│ - Extra memory (next + prev)    │
-│                                  │
-│ Circular Buffer Array:          │
-│ - Front + Back indices          │
-│ - All operations O(1)           │
-│ - Efficient memory              │
-└──────────────────────────────────┘
-
-USE CASES:
-┌──────────────────────────────────┐
-│ Sliding window (add/remove)     │
-│ LRU cache                        │
-│ Undo/Redo systems              │
-│ Scheduling (round-robin)        │
-└──────────────────────────────────┘
-```
 
 ---
 
@@ -613,23 +349,24 @@ USE CASES:
 
 ### Pattern Map: Binary Search Variants
 
+
+```mermaid
+flowchart TD
+    R["BINARY SEARCH PATTERNS"]
+    R --> N1["Classic Search"]
+    N1 --> N2["Standard target find"]
+    N1 --> N3["First occurrence"]
+    N1 --> N4["Last occurrence"]
+    R --> N5["Bounded Search"]
+    N5 --> N6["Lower bound"]
+    N5 --> N7["Upper bound"]
+    N5 --> N8["Range queries"]
+    R --> N9["Answer Space Search"]
+    N9 --> N10["Feasibility check"]
+    N9 --> N11["Minimize/maximize"]
+    N9 --> N12["Continuous search"]
 ```
-BINARY SEARCH PATTERNS
-├─ Classic Search
-│  ├─ Standard target find
-│  ├─ First occurrence
-│  └─ Last occurrence
-│
-├─ Bounded Search
-│  ├─ Lower bound
-│  ├─ Upper bound
-│  └─ Range queries
-│
-└─ Answer Space Search
-   ├─ Feasibility check
-   ├─ Minimize/maximize
-   └─ Continuous search
-```
+
 
 ---
 
@@ -639,61 +376,13 @@ BINARY SEARCH PATTERNS
 
 #### Visual 1: Search Range Halving
 
+
+```mermaid
+flowchart TD
+    R["BINARY SEARCH FOR 7 IN SORTED ARRAY"]
+    R --> N1["State"]
 ```
-BINARY SEARCH FOR 7 IN SORTED ARRAY:
-─────────────────────────────────────
 
-Array: [1, 3, 5, 7, 9, 11, 13]
-Index: [0, 1, 2, 3, 4, 5,  6]
-
-ITERATION 1:
-lo=0, hi=6
-mid = lo + (hi-lo)/2 = 0 + 3 = 3
-
-Array[3] = 7 == TARGET ✓
-FOUND at index 3!
-
-ITERATION 1 (Not found immediately):
-lo=0, hi=6
-mid = 0 + 3 = 3
-Array[3] = 7 < TARGET (looking for 9)
-
-Target is to the right:
-lo = mid + 1 = 4
-
-ITERATION 2:
-lo=4, hi=6
-mid = 4 + (6-4)/2 = 4 + 1 = 5
-
-Array[5] = 11 > TARGET (looking for 9)
-
-Target is to the left:
-hi = mid - 1 = 4
-
-ITERATION 3:
-lo=4, hi=4
-mid = 4 + (4-4)/2 = 4
-
-Array[4] = 9 == TARGET ✓
-FOUND at index 4!
-
-INVARIANT MAINTAINED:
-┌────────────────────────────────┐
-│ After each iteration:         │
-│ Target (if exists) is in     │
-│ [lo, hi]                     │
-│                              │
-│ Search space halves each time│
-│ = O(log n) iterations max    │
-└────────────────────────────────┘
-
-SAFE MID CALCULATION:
-❌ WRONG: mid = (lo + hi) / 2
-   Can overflow if lo + hi > MAX_INT
-
-✓ CORRECT: mid = lo + (hi - lo) / 2
-   Prevents overflow safely
-```
 
 ---
 
@@ -701,67 +390,23 @@ SAFE MID CALCULATION:
 
 #### Visual 1: Find Boundaries
 
+
+```mermaid
+flowchart TD
+    R["FIND FIRST OCCURRENCE OF 5"]
+    R --> N1["Found a match! Record it: result = 3"]
+    R --> N2["But check if leftmost: search left half"]
+    R --> N3["hi = mid - 1 = 2"]
+    R --> N4["lo = mid + 1 = 2"]
+    R --> N5["Found! Record it: result = 2"]
+    R --> N6["Check left again (might be more)"]
+    R --> N7["hi = mid - 1 = 1"]
+    R --> N8["Found! Record: result = 3"]
+    R --> N9["Check if rightmost: search right half"]
+    R --> N10["lo = mid + 1 = 4"]
+    R --> N11["State"]
 ```
-FIND FIRST OCCURRENCE OF 5:
-Array: [1, 3, 5, 5, 5, 7, 9]
-Index: [0, 1, 2, 3, 4, 5, 6]
 
-Standard binary search finds ANY 5 (e.g., index 3).
-We want the LEFTMOST (index 2).
-
-TEMPLATE (First Occurrence):
-────────────────────────────
-
-lo = 0, hi = 6, result = -1
-
-ITERATION 1:
-mid = 3, Array[3] = 5 == target
-├─ Found a match! Record it: result = 3
-├─ But check if leftmost: search left half
-└─ hi = mid - 1 = 2
-
-ITERATION 2:
-mid = 1, Array[1] = 3 < target
-└─ lo = mid + 1 = 2
-
-ITERATION 3:
-mid = 2, Array[2] = 5 == target
-├─ Found! Record it: result = 2
-├─ Check left again (might be more)
-└─ hi = mid - 1 = 1
-
-ITERATION 4:
-lo = 2, hi = 1
-lo > hi, STOP
-
-RESULT: Index 2 (LEFTMOST occurrence) ✓
-
-FIND LAST OCCURRENCE OF 5:
-────────────────────────
-
-TEMPLATE (Last Occurrence):
-Always move to check right half when found
-
-mid = 3, Array[3] = 5 == target
-├─ Found! Record: result = 3
-├─ Check if rightmost: search right half
-└─ lo = mid + 1 = 4
-
-Continue until lo > hi
-
-RESULT: Index 4 (RIGHTMOST occurrence) ✓
-
-TEMPLATE DIFFERENCE:
-┌─────────────────────────────┐
-│ First occurrence:          │
-│ if (arr[mid] >= target)    │
-│   hi = mid - 1  (go left) │
-│                            │
-│ Last occurrence:           │
-│ if (arr[mid] <= target)    │
-│   lo = mid + 1  (go right)│
-└─────────────────────────────┘
-```
 
 ---
 
@@ -811,30 +456,12 @@ Result: All elements checked
 
 #### Visual 1: Naive String Concatenation heap mutations
 
-```
-Before concatenation:
-s1 at Address 0x1000: "Hi"
-s2 at Address 0x2000: "!!!"
 
-Concat: s3 = s1 + s2
+| Address 0x1000: "Hi" | ← Still allocated in heap (garbage until GC collects) |
+| :--- | :--- |
+| Address 0x2000: "!!!" | ← Still allocated in heap (garbage until GC collects) |
+| Address 0x3000: "Hi!!!" | ← New string object created |
 
-Heap mutations trace:
-1. Allocate contiguous block of size (s1.Length + s2.Length) at Address 0x3000
-2. Copy "Hi" characters (2 chars) from 0x1000 into 0x3000
-3. Copy "!!!" characters (3 chars) from 0x2000 into 0x3014
-Result (s3) is a brand new object pointing to Address 0x3000
-
-Memory Allocation Trace:
-┌────────────────────────┐
-│ Address 0x1000: "Hi"   │  ← Still allocated in heap (garbage until GC collects)
-├────────────────────────┤
-│ Address 0x2000: "!!!"   │  ← Still allocated in heap (garbage until GC collects)
-├────────────────────────┤
-│ Address 0x3000: "Hi!!!"│  ← New string object created
-└────────────────────────┘
-
-TIME: O(N) where N is total combined characters size.
-```
 
 ---
 
@@ -861,51 +488,47 @@ Step 2: Add 1:
 
 ## 🎯 WEEK 02 VISUAL SUMMARY TABLE
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│ DAY │ TOPIC         │ Complexity       │ Key Feature │
-├──────────────────────────────────────────────────────────────┤
-│ 1   │ Static Arrays │ O(1) access      │ Contiguous  │
-│     │ Memory Layout │ O(n) insert      │ memory      │
-│     │               │ O(1) space       │             │
-│     │               │                  │             │
-│ 2   │ Dynamic Array │ O(1) amortiz.    │ Doubling    │
-│     │ Amortized     │ O(n) reallocate  │ strategy    │
-│     │ Analysis      │ O(n) capacity    │             │
-│     │               │                  │             │
-│ 3   │ Linked Lists  │ O(n) search      │ Pointer     │
-│     │ Pointer Chain │ O(1) insert      │ chaining    │
-│     │               │ O(n) space       │ at head     │
-│     │               │                  │             │
-│ 4   │ Stack/Queue   │ O(1) ops         │ LIFO/FIFO   │
-│     │ Deques        │ O(1) space       │ circular    │
-│     │               │                  │ buffer      │
-│     │               │                  │             │
-│ 5   │ Binary Search │ O(log n)         │ Invariant   │
-│     │ Invariants    │ O(1) space       │ halving     │
-│     │               │                  │             │
-│ 6   │ Strings/Nums  │ Conversions O(N) │ Encoding &  │
-│     │ Representations│ StringBuilder O(N)│ Immutability│
-└──────────────────────────────────────────────────────────────┘
-```
+
+| DAY | TOPIC | Complexity | Key Feature |
+| :--- | :--- | :--- | :--- |
+| 1 | Static Arrays | O(1) access | Contiguous |
+|  | Memory Layout | O(n) insert | memory |
+|  |  | O(1) space |  |
+|  |  |  |  |
+| 2 | Dynamic Array | O(1) amortiz. | Doubling |
+|  | Amortized | O(n) reallocate | strategy |
+|  | Analysis | O(n) capacity |  |
+|  |  |  |  |
+| 3 | Linked Lists | O(n) search | Pointer |
+|  | Pointer Chain | O(1) insert | chaining |
+|  |  | O(n) space | at head |
+|  |  |  |  |
+| 4 | Stack/Queue | O(1) ops | LIFO/FIFO |
+|  | Deques | O(1) space | circular |
+|  |  |  | buffer |
+|  |  |  |  |
+| 5 | Binary Search | O(log n) | Invariant |
+|  | Invariants | O(1) space | halving |
+|  |  |  |  |
+| 6 | Strings/Nums | Conversions O(N) | Encoding & |
+|  | Representations | StringBuilder O(N) | Immutability |
+
 
 ---
 
 ## 📋 COMMON PATTERNS QUICK REFERENCE
 
-```
-Structure           │ Access │ Insert │ Delete │ Space │ Use Case
-────────────────────┼────────┼────────┼────────┼───────┼──────────
-Array (Static)      │ O(1)   │ O(n)   │ O(n)   │ O(n)  │ Fixed
-Array (Dynamic)     │ O(1)   │ O(1)* │ O(n)   │ O(n)  │ Growing
-Linked List         │ O(n)   │ O(1)† │ O(1)† │ O(n)  │ Insert/Del
-Stack               │ Top    │ O(1)   │ O(1)   │ O(n)  │ LIFO
-Queue               │ Front  │ O(1)   │ O(1)   │ O(n)  │ FIFO
-Deque               │ Both   │ O(1)   │ O(1)   │ O(n)  │ Flexible
-Binary Search Tree  │ O(logn)│ O(logn)│ O(logn)│ O(n)  │ Ordered
 
-* Amortized  † At known node position
-```
+| Structure | Access | Insert | Delete | Space | Use Case |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Array (Static) | O(1) | O(n) | O(n) | O(n) | Fixed |
+| Array (Dynamic) | O(1) | O(1)* | O(n) | O(n) | Growing |
+| Linked List | O(n) | O(1)† | O(1)† | O(n) | Insert/Del |
+| Stack | Top | O(1) | O(1) | O(n) | LIFO |
+| Queue | Front | O(1) | O(1) | O(n) | FIFO |
+| Deque | Both | O(1) | O(1) | O(n) | Flexible |
+| Binary Search Tree | O(logn) | O(logn) | O(logn) | O(n) | Ordered |
+
 
 ---
 
@@ -949,3 +572,7 @@ Binary Search Tree  │ O(logn)│ O(logn)│ O(logn)│ O(n)  │ Ordered
 ---
 
 **Use web resource links for interactive visualizations while studying!**
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

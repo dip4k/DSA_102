@@ -1,5 +1,11 @@
 # 📋 Week_03_Problem_Solving_Roadmap — Sorting, Heaps & Hashing
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Week:** 3 – Foundations III: Sorting, Heaps & Hashing  
 **Purpose:** Transform Week 3 sorting, heaps, and hashing knowledge into problem-solving fluency  
 **Target Audience:** Learners progressing from Week 2 linear structures to Week 3 advanced data structures  
@@ -434,4 +440,6 @@ Push through the tracing exercises. They're not busy work. They're how your brai
 
 *End of Week 03 Problem Solving Roadmap — Version 12.0 FINAL*
 
+---
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

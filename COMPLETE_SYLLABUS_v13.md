@@ -1,6 +1,14 @@
 # 📘 DATA STRUCTURES & ALGORITHMS COMPLETE CURRICULUM v13
 ## Comprehensive 19-Week Professional Syllabus
 
+> 🧭 **Quick Phase Navigation:**  
+> [Phase A: Foundations (W1–3)](#-phase-a-foundations--computational-thinking) • [Phase B: Core Patterns (W4–6)](#-phase-b-core-patterns--string-manipulation) • [Phase C: Trees, Graphs & DP (W7–11)](#-phase-c-trees-graphs--dynamic-programming) • [Phase D: Paradigms (W12–13)](#-phase-d-algorithm-paradigms) • [Phase E: Integration (W14–15)](#-phase-e-integration--extensions) • [Phase F: Deep Dives (W16–18)](#-phase-f-advanced-deep-dives-optional) • [Phase G: Mocks (W19)](#-phase-g-mock-interviews--final-review)
+
+---
+
+> 💡 **Instructor Guidance Note:**  
+> *Not all sections or topics are mandatory. As a learner, you can adapt your pace freely. If you are preparing on an accelerated interview timeline or already feel confident with specific foundational concepts, feel free to skip or skim optional topics and prioritize high-yield patterns based on your personal interview goals.*
+
 ---
 
 # 🎓 CURRICULUM OVERVIEW

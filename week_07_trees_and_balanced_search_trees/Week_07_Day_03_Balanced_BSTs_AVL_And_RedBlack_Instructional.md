@@ -1,11 +1,12 @@
 # 📘 WEEK 7 DAY 3: Balanced BSTs — AVL & Red-Black Trees — Engineering Guide
 
-**Metadata:**
-- **Week:** 7 | **Day:** 3
-- **Category:** Data Structures / Trees
-- **Difficulty:** 🔴 Advanced
-- **Real-World Impact:** Balanced BSTs power every production system requiring ordered data with guaranteed performance. Java's TreeMap, C++'s std::map, Python's collections.OrderedDict, database indexes, and file system hierarchies all depend on self-balancing trees. Understanding why balance matters and how rotations maintain invariants is essential for systems engineering. The difference between a degenerate O(n) tree and a balanced O(log n) tree can be the difference between a system that works and one that collapses under load.
-- **Prerequisites:** Week 7 Day 2 (BST operations, invariant), Week 7 Day 1 (traversals), Week 1 (recursion), Week 2 (pointers, dynamic memory)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_07_Day_02_Binary_Search_Trees_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_07_Day_04_Tree_Patterns_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -803,4 +804,6 @@ This file follows the Unified v13 Narrative-First architecture:
 
 - Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
 - Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+---
 
+> 🧭 **Navigation:** [← Previous Day](Week_07_Day_02_Binary_Search_Trees_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_07_Day_04_Tree_Patterns_Instructional.md)

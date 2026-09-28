@@ -1,5 +1,11 @@
 # ✅ WEEK 11 DAILY PROGRESS CHECKLIST
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Week:** 11 | **Purpose:** Track daily progress and problem-solving skills  
 **Use:** Check off as you complete items, identify weak areas
 
@@ -488,3 +494,6 @@ For each novel problem, complete in 20-25 minutes:
 **Checklist Status:** Ready to track daily progress  
 **Last Updated:** January 26, 2026
 
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

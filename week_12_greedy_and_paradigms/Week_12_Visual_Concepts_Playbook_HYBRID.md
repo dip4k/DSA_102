@@ -1,5 +1,11 @@
 # 🧭 WEEK 12 VISUAL CONCEPTS PLAYBOOK (HYBRID)
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Visual Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
+
+---
+
 **Filename:** `Week_12_Visual_Concepts_Playbook_HYBRID.md`  
 **Week:** 12  
 **Theme:** Greedy Algorithms & Proofs  
@@ -18,21 +24,13 @@
 
 ### 0.1 Topic Map
 
-```text
-           ┌─────────────────────────┐
-           │  WEEK 12: GREEDY & PROOFS│
-           └────────────┬────────────┘
-                        │
-        ┌───────────────┼────────────────┬────────────────┐
-        │               │                │                │
-   Day 1:           Day 2:           Day 3:           Day 4:
-   Greedy           Intervals        Huffman          Knapsack &
-   Fundamentals     & Rooms          Coding           Scheduling
-                                         │                │
-                                         ▼                ▼
-                                      Day 5 (Opt.): Greedy in Systems
-                                      MST · Routing · Caching · Set Cover
+
+```mermaid
+flowchart TD
+    R["State"]
+    R --> N1["Step"]
 ```
+
 
 - **Day 1:** What is greedy? How do we prove it is correct? (templates, exchange argument)
 - **Day 2:** Visual time-lines and sweeplines for interval problems.
@@ -58,11 +56,13 @@
 
 Draw a left-to-right pipeline with 4 main stages:
 
-```text
-┌────────────┐   ┌───────────────────┐   ┌──────────────────────┐   ┌──────────────────┐
-│  INPUT     │ → │  PREPROCESSING    │ → │  GREEDY CHOICE LOOP  │ → │  OUTPUT / CHECK  │
-└────────────┘   └───────────────────┘   └──────────────────────┘   └──────────────────┘
+
+```mermaid
+flowchart TD
+    R["State"]
+    R --> N1["State"]
 ```
+
 
 Below each box, annotate:
 
@@ -79,24 +79,14 @@ Add arrows above the pipeline to show which *proof technique* is typically used:
 
 ### 1.2 Greedy vs DP: Decision Flowchart
 
-```text
-                    ┌────────────────────────┐
-                    │ Optimization Problem?  │
-                    └───────────┬────────────┘
-                                │ yes
-                                ▼
-                 ┌────────────────────────────────┐
-                 │ Can we take fractional pieces? │
-                 └───────────┬────────────────────┘
-                             │
-               yes           │ no
-               ▼             ▼
-     Fractional, linear?   0/1, combinatorial? 
-         (Knapsack)            (Knapsack, etc.)
-               │                    │
-         Greedy by ratio       Try DP / other
-         often optimal         non-greedy tools
+
+```mermaid
+flowchart TD
+    R["State"]
+    R --> N1["Step"]
+    R --> N2["Step"]
 ```
+
 
 Augment flowchart with MST/Huffman branch:
 
@@ -143,13 +133,13 @@ Draw a vertical ladder representing proof steps:
 ```text
 Step 4: Induction on size of problem
    ▲
-   │
+   |
 Step 3: Greedy leaves subproblems of same type
    ▲
-   │
+   |
 Step 2: Show optimal substructure
    ▲
-   │
+   |
 Step 1: Prove greedy choice property
 ```
 
@@ -212,16 +202,13 @@ Optimal O:  o1   o2   o3   ...   ok
 
 For each position `i`, draw a vertical line down comparing end times:
 
-```text
-time
- ↑
- │   end(g1)
- │       end(o1)
- │
- │         end(g2)
- │            end(o2)
- └────────────────────────→ index i
+
+```mermaid
+flowchart TD
+    R["time"]
+    R --> N1["→ index i"]
 ```
+
 
 Goal: show `end(gi) ≤ end(oi)` for all i.  
 Explain visually:
@@ -290,18 +277,16 @@ The **peak of Active Count** visually shows the **minimum number of rooms** requ
 
 Create a 2×2 comparison table diagram:
 
-```text
-┌──────────────────────────────┬────────────────────────────────┐
-│  Interval Selection          │  Interval Partitioning         │
-│  (Activity Selection)        │  (Min Rooms / Meeting Rooms)   │
-├──────────────────────────────┼────────────────────────────────┤
-│ Max # of non-overlapping     │ Min # of "tracks" so no       │
-│ intervals in a single room   │ track has overlapping intervals│
-│                              │                                │
-│ Visual: choose disjoint      │ Visual: stack overlapping      │
-│ bars on 1 timeline           │ bars into multiple timelines   │
-└──────────────────────────────┴────────────────────────────────┘
-```
+
+| Interval Selection | Interval Partitioning |
+| :--- | :--- |
+| (Activity Selection) | (Min Rooms / Meeting Rooms) |
+| Max # of non-overlapping | Min # of "tracks" so no |
+| intervals in a single room | track has overlapping intervals |
+|  |  |
+| Visual: choose disjoint | Visual: stack overlapping |
+| bars on 1 timeline | bars into multiple timelines |
+
 
 Use colored timelines on slides to emphasize the difference.
 
@@ -841,3 +826,7 @@ Before finalizing this visual playbook, the following checks were conceptually a
    - All numeric examples cross-checked so capacities, counts, and profits align with diagrams.
 
 With these checks satisfied, this file serves as the **Week 12 Visual Concepts Playbook (Hybrid)**.
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

@@ -1,11 +1,12 @@
 # 📘 WEEK 03 DAY 01: SORTING FUNDAMENTALS — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 03 | **Day:** 01
-- **Category:** Algorithms / Sorting
-- **Difficulty:** 🟢 Basic (with 🟡 engineering depth)
-- **Real-World Impact:** Elementary sorts power the “last-mile” of real production sort pipelines (small partitions, nearly-sorted data, and stability-sensitive multi-key sorting).
-- **Prerequisites:** Week 02 arrays & memory layout, Week 01 Big-O intuition, basic loops and comparisons.
+
+
+
+
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_03_Day_02_Merge_Quick_Sort_Instructional_Revised.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -928,3 +929,6 @@ When should you reach for these algorithms?
 - CLRS (Introduction to Algorithms): Sorting basics and stability discussion.
 - Visualgo: Sorting visualizations for intuition.
 - Official language/runtime docs: Check stability guarantees of built-in sorting APIs.
+---
+
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_03_Day_02_Merge_Quick_Sort_Instructional_Revised.md)

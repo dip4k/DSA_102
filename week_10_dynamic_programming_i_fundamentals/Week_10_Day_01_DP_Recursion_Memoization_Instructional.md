@@ -1,11 +1,12 @@
 # 📖 WEEK 10 DAY 01: DYNAMIC PROGRAMMING AS RECURSION + MEMOIZATION — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 10 | **Day:** 01
-- **Category:** Algorithm Paradigms / Optimization Techniques
-- **Difficulty:** 🟡 Intermediate
-- **Real-World Impact:** Powers recommendation systems, resource allocation, and optimization in real-time systems like Netflix, Uber, and trading platforms
-- **Prerequisites:** Week 2-3 (Recursion fundamentals), Week 4-5 (Problem decomposition patterns)
+
+
+
+
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_10_Day_02_1D_DP_Knapsack_Family_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -94,24 +95,24 @@ For fib(50), the redundancy is catastrophic.
 
 With memoization, we build a cache of results:
 
-```
-Call fib(5):
-  └─ fib(5) not in cache, compute:
-     ├─ Call fib(4):
-     │  └─ fib(4) not in cache, compute:
-     │     ├─ Call fib(3):
-     │     │  └─ fib(3) not in cache, compute:
-     │     │     ├─ Call fib(2): fib(2) = 1 (cached or computed)
-     │     │     ├─ Call fib(1): fib(1) = 1 (base case)
-     │     │     └─ fib(3) = fib(2) + fib(1) = 2 → Cache[3] = 2
-     │     ├─ Call fib(2): fib(2) in cache → return 1 ✓ (no recomputation!)
-     │     └─ fib(4) = fib(3) + fib(2) = 3 → Cache[4] = 3
-     └─ Call fib(3): fib(3) in cache → return 2 ✓ (no recomputation!)
-  └─ fib(5) = fib(4) + fib(3) = 5 → Cache[5] = 5
 
-Total function calls: 9 (for fib(5)) instead of 15 (without cache).
-For fib(50): 99 calls instead of 10^10+ calls.
+```mermaid
+flowchart TD
+    R["Call fib(5)"]
+    R --> N1["fib(5) not in cache, compute:"]
+    N1 --> N2["Call fib(4):"]
+    N2 --> N3["fib(4) not in cache, compute:"]
+    N3 --> N4["Call fib(3):"]
+    N4 --> N5["fib(3) not in cache, compute:"]
+    N5 --> N6["Call fib(2): fib(2) = 1 (cached or computed)"]
+    N5 --> N7["Call fib(1): fib(1) = 1 (base case)"]
+    N5 --> N8["fib(3) = fib(2) + fib(1) = 2 → Cache[3] = 2"]
+    N3 --> N9["Call fib(2): fib(2) in cache → return 1 ✓ (no recomputation!)"]
+    N3 --> N10["fib(4) = fib(3) + fib(2) = 3 → Cache[4] = 3"]
+    N1 --> N11["Call fib(3): fib(3) in cache → return 2 ✓ (no recomputation!)"]
+    R --> N12["fib(5) = fib(4) + fib(3) = 5 → Cache[5] = 5"]
 ```
+
 
 ### The Mental Model: State and Transitions
 
@@ -732,3 +733,6 @@ The term "memoization" (not "memorization") was coined by Donald Michie in 1968,
 ---
 
 **End of Week 10 Day 01 Instructional Content**
+---
+
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_10_Day_02_1D_DP_Knapsack_Family_Instructional.md)

@@ -1,5 +1,11 @@
 # 📊 WEEK 04 VISUAL CONCEPTS PLAYBOOK (HYBRID)
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Visual Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
+
+---
+
 **Week:** 4 | **Tier:** Core Problem-Solving Patterns I  
 **Theme:** Two Pointers, Sliding Windows, Divide & Conquer, Binary Search  
 **Format:** Hybrid (Enhanced ASCII + Web Resource Links + Reference Tools)  
@@ -36,23 +42,24 @@
 
 ### Pattern Map: Two-Pointer Family Tree
 
+
+```mermaid
+flowchart TD
+    R["TWO-POINTER PATTERNS"]
+    R --> N1["Same-Direction (Read-Write)"]
+    N1 --> N2["Move Zeroes / Remove Duplicates"]
+    N1 --> N3["Partition Operations"]
+    N1 --> N4["In-place array transformations"]
+    R --> N5["Opposite-Direction (Converging)"]
+    N5 --> N6["Two-Sum (sorted array)"]
+    N5 --> N7["Container with Most Water"]
+    N5 --> N8["Three-Sum family"]
+    R --> N9["Slow-Fast (Cycle Detection)"]
+    N9 --> N10["Linked list cycles"]
+    N9 --> N11["Happy numbers"]
+    N9 --> N12["Floyd's algorithm"]
 ```
-TWO-POINTER PATTERNS
-├─ Same-Direction (Read-Write)
-│  ├─ Move Zeroes / Remove Duplicates
-│  ├─ Partition Operations
-│  └─ In-place array transformations
-│
-├─ Opposite-Direction (Converging)
-│  ├─ Two-Sum (sorted array)
-│  ├─ Container with Most Water
-│  └─ Three-Sum family
-│
-└─ Slow-Fast (Cycle Detection)
-   ├─ Linked list cycles
-   ├─ Happy numbers
-   └─ Floyd's algorithm
-```
+
 
 ---
 
@@ -62,69 +69,26 @@ TWO-POINTER PATTERNS
 
 #### Visual 1: Array State Evolution
 
+
+```mermaid
+flowchart TD
+    R["INITIAL  [1, 0, 2, 0, 3]"]
+    R --> N1["Write pointer (not yet moved)"]
+    R --> N2["Write pointer (stays at 1)"]
+    R --> N3["Write pointer (now at 1)"]
+    R --> N4["State"]
 ```
-INITIAL:  [1, 0, 2, 0, 3]
-          
-STEP 1: Read pointer at 0 (value=1)
-        ┌─ Read pointer
-        ▼
-        [1, 0, 2, 0, 3]
-        ▲
-        └─ Write pointer (not yet moved)
-        
-        1 ≠ 0, so advance both pointers
-        
-STEP 2: Read pointer at 1 (value=0)
-           ┌─ Read pointer
-           ▼
-        [1, 0, 2, 0, 3]
-        ▲
-        └─ Write pointer (stays at 1)
-        
-        0 == 0, so read++ but write stays
 
-STEP 3: Read pointer at 2 (value=2)
-              ┌─ Read pointer
-              ▼
-        [1, 2, 0, 0, 3]    ← After swap
-        ▲
-        └─ Write pointer (now at 1)
-        
-        2 ≠ 0, so swap and advance both
-
-STEP 4: Continue until read reaches end
-
-FINAL:     [1, 2, 3, 0, 0]
-
-INVARIANT:
-┌─────────────────────────────────────────────────┐
-│ [0..writePos)  = All non-zero elements (processed)
-│ [writePos..end] = All zero elements (pushed back)
-└─────────────────────────────────────────────────┘
-
-TIME: O(n) | SPACE: O(1)
-```
 
 #### Visual 2: Write Pointer as Safe Zone Boundary
 
-```
-CONCEPT: Write pointer tracks "where next non-zero goes"
 
-ZONE DEFINITION:
-┌─────────────────────────────────────────────────┐
-│ [0..writePos-1]  ││ [writePos..readPos]  ││ [readPos+1..n]
-│  SAFE (all non-0) ││ BUFFER (mixed)      ││ TO PROCESS
-└─────────────────────────────────────────────────┘
-                      ↑
-                 Write pointer position
-                 
-When readPos element is non-zero:
-  - Copy to writePos
-  - Increment writePos
-  - Readd is now guaranteed non-zero in final position
-
-This guarantees O(1) space: in-place rearrangement
+```mermaid
+flowchart TD
+    R["CONCEPT Write pointer tracks "where next non-zero goes""]
+    R --> N1["State"]
 ```
+
 
 ---
 
@@ -134,63 +98,30 @@ This guarantees O(1) space: in-place rearrangement
 
 #### Visual 1: Greedy Pointer Movement Proof
 
+
+```mermaid
+flowchart TD
+    R["PROBLEM Find max water container [heights], pointers at ends"]
+    R --> N1["State"]
+    N1 --> N2["→ MOVE LEFT (not right!)"]
+    R --> N3["State"]
 ```
-PROBLEM: Find max water container [heights], pointers at ends
 
-PRINCIPLE: Always move the SHORTER pointer inward
-
-ARRAY: [1, 8, 6, 2, 5, 4, 8, 3, 7]
-        0  1  2  3  4  5  6  7  8  (indices)
-
-Initial:
-L=0(h=1)                           R=8(h=7)
-├─────────────────────────────────────┤
-Area = min(1, 7) × 8 = 8  ← Current
-
-Decision Tree:
-h[L]=1 < h[R]=7  (LEFT is shorter)
-  └─→ MOVE LEFT (not right!)
-
-WHY NOT MOVE RIGHT?
-  If we move R to 7:
-    New area = min(1, 3) × 7 = 7  ← WORSE or EQUAL
-  
-  If we move L to 1:
-    New area = min(8, 7) × 7 = 49  ← BETTER!
-
-INSIGHT:
-┌────────────────────────────────────────┐
-│ Moving shorter pointer:                │
-│  - Width decreases by 1                │
-│  - Height might increase (GAIN!)       │
-│  - Worth the risk                      │
-│                                        │
-│ Moving taller pointer:                 │
-│  - Width decreases by 1                │
-│  - Height CANNOT increase (LOSS!)      │
-│  - Guaranteed to be worse or same      │
-└────────────────────────────────────────┘
-
-TIME: O(n) | SPACE: O(1)
-```
 
 #### Visual 2: Iteration Trace
 
-```
-STATE TRACE:
-Iteration │ L  │ h[L] │ R  │ h[R] │ Area │ Action
-──────────┼────┼──────┼────┼──────┼──────┼─────────────
-0         │ 0  │ 1    │ 8  │ 7    │ 8    │ L<R, move L→
-1         │ 1  │ 8    │ 8  │ 7    │ 49   │ L>R, move R←
-2         │ 1  │ 8    │ 7  │ 3    │ 24   │ L>R, move R←
-3         │ 1  │ 8    │ 6  │ 8    │ 40   │ L<R, move L→
-4         │ 2  │ 6    │ 6  │ 8    │ 30   │ L<R, move L→
-5         │ 3  │ 2    │ 6  │ 8    │ 10   │ L<R, move L→
-6         │ 4  │ 5    │ 6  │ 8    │ 8    │ L<R, move L→
-7         │ 5  │ 4    │ 6  │ 8    │ 4    │ L≥R, STOP
 
-RESULT: MAX = 49 (when L=1, R=8)
-```
+| Iteration | L | h[L] | R | h[R] | Area | Action |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| 0 | 0 | 1 | 8 | 7 | 8 | L<R, move L→ |
+| 1 | 1 | 8 | 8 | 7 | 49 | L>R, move R← |
+| 2 | 1 | 8 | 7 | 3 | 24 | L>R, move R← |
+| 3 | 1 | 8 | 6 | 8 | 40 | L<R, move L→ |
+| 4 | 2 | 6 | 6 | 8 | 30 | L<R, move L→ |
+| 5 | 3 | 2 | 6 | 8 | 10 | L<R, move L→ |
+| 6 | 4 | 5 | 6 | 8 | 8 | L<R, move L→ |
+| 7 | 5 | 4 | 6 | 8 | 4 | L≥R, STOP |
+
 
 ---
 
@@ -296,23 +227,24 @@ D) Makes code shorter
 
 ### Pattern Map: Fixed Window Family
 
+
+```mermaid
+flowchart TD
+    R["FIXED WINDOW PATTERNS"]
+    R --> N1["Simple Aggregation"]
+    N1 --> N2["Max/Min sum k consecutive"]
+    N1 --> N3["Average of k elements"]
+    N1 --> N4["Counting patterns in window"]
+    R --> N5["Complex Aggregation"]
+    N5 --> N6["Max sliding window (with deque)"]
+    N5 --> N7["Min sliding window (with deque)"]
+    N5 --> N8["Constraint checking (state machine)"]
+    R --> N9["Multi-Window Queries"]
+    N9 --> N10["All windows of size k"]
+    N9 --> N11["Prefix/suffix cache pre-computation"]
+    N9 --> N12["Range aggregate queries"]
 ```
-FIXED WINDOW PATTERNS
-├─ Simple Aggregation
-│  ├─ Max/Min sum k consecutive
-│  ├─ Average of k elements
-│  └─ Counting patterns in window
-│
-├─ Complex Aggregation
-│  ├─ Max sliding window (with deque)
-│  ├─ Min sliding window (with deque)
-│  └─ Constraint checking (state machine)
-│
-└─ Multi-Window Queries
-   ├─ All windows of size k
-   ├─ Prefix/suffix cache pre-computation
-   └─ Range aggregate queries
-```
+
 
 ---
 
@@ -322,92 +254,21 @@ FIXED WINDOW PATTERNS
 
 #### Visual 1: Window Slide Storyboard
 
-```
-ARRAY: [1, 2, 3, 4, 5]  k=3  (find max sum k consecutive)
 
-═══════════════════════════════════════════════════════
-FRAME 1: BUILD INITIAL WINDOW
-═══════════════════════════════════════════════════════
+| 1  2  3 | 4  5 |
+| :--- | :--- |
+| 1 | 2  3  4 |
+| 1  2 | 3  4  5 |
 
-┌──────────┐
-│ 1  2  3 │ 4  5
-└──────────┘
- ↑window[0,2]
- 
-Initial sum = 1+2+3 = 6
-Record: MAX = 6
-
-═══════════════════════════════════════════════════════
-FRAME 2: SLIDE RIGHT (remove 1, add 4)
-═══════════════════════════════════════════════════════
-
-     ┌──────────┐
- 1 │ 2  3  4 │ 5
-     └──────────┘
-    window[1,3]
-    
-New sum = 6 - 1 + 4 = 9
-Update: MAX = 9
-
-═══════════════════════════════════════════════════════
-FRAME 3: SLIDE RIGHT (remove 2, add 5)
-═══════════════════════════════════════════════════════
-
-        ┌──────────┐
- 1  2 │ 3  4  5 │
-        └──────────┘
-       window[2,4]
-       
-New sum = 9 - 2 + 5 = 12
-Update: MAX = 12
-
-═══════════════════════════════════════════════════════
-
-RESULT: Maximum sum = 12
-
-KEY OPERATION:
-┌─────────────────────────────────┐
-│ newSum = oldSum - A[i-k] + A[i] │
-│ (remove left, add right)        │
-└─────────────────────────────────┘
-
-TIME: O(n) vs O(n*k) naive!
-SPACE: O(1)
-```
 
 #### Visual 2: Complexity Comparison
 
-```
-APPROACH COMPARISON:
 
-NAIVE O(n*k):
-┌──────────────────────┐
-│ for i=0 to n-1:      │
-│   sum = 0            │
-│   for j=i to i+k-1:  │ ← Recalculate every time!
-│     sum += A[j]      │
-│   update max         │
-└──────────────────────┘
-Redundant work: recompute shared elements
+| for j=i to i+k-1: | ← Recalculate every time! |
+| :--- | :--- |
+| sum -= A[i-k] | ← 2 operations |
+| sum += A[i] | ← per position |
 
-SLIDING WINDOW O(n):
-┌──────────────────────┐
-│ sum = initial[0..k]  │
-│ for i=k to n-1:      │
-│   sum -= A[i-k]      │ ← 2 operations
-│   sum += A[i]        │ ← per position
-│   update max         │
-└──────────────────────┘
-Efficient: reuse previous sum
-
-TIME SAVED:
-┌─────────────────────────┐
-│ n=1000, k=100          │
-│ Naive: 1000 × 100 = 100K ops
-│ Sliding: 1000 ops       │
-│ Speedup: 100× FASTER!   │
-└─────────────────────────┘
-```
 
 ---
 
@@ -417,68 +278,15 @@ TIME SAVED:
 
 #### Visual 1: Monotonic Deque State Evolution
 
+
+```mermaid
+flowchart TD
+    R["PROBLEM Find max value in every window [1,3,-1,-3,5,3,6,7], k=3"]
+    R --> N1["Front = current window's maximum"]
+    R --> N2["Back = candidates for future windows"]
+    R --> N3["State"]
 ```
-PROBLEM: Find max value in every window [1,3,-1,-3,5,3,6,7], k=3
 
-KEY INSIGHT: Deque maintains DECREASING order by VALUE
-  └─ Front = current window's maximum
-  └─ Back = candidates for future windows
-
-TRACE:
-
-Window [1, 3, -1]:
-  Process 1: deque=[1]
-  Process 3: 3>1, remove 1, deque=[3]
-  Process -1: -1<3, append, deque=[3,-1]
-  Output: 3 (front of deque)
-
-Window [3, -1, -3]:
-  Remove 1 (out of window)
-  deque=[3,-1]
-  Process -3: -3<-1, append, deque=[3,-1,-3]
-  Output: 3
-
-Window [-1, -3, 5]:
-  Remove 3 (out of window)
-  deque=[-1,-3]
-  Process 5: 5>-3, 5>-1, clear, deque=[5]
-  Output: 5
-
-Window [-3, 5, 3]:
-  deque=[5]
-  Process 3: 3<5, append, deque=[5,3]
-  Output: 5
-
-Window [5, 3, 6]:
-  Remove -3
-  deque=[5,3]
-  Process 6: 6>3, 6>5, clear, deque=[6]
-  Output: 6
-
-Window [3, 6, 7]:
-  Remove 5
-  deque=[6]
-  Process 7: 7>6, remove 6, deque=[7]
-  Output: 7
-
-RESULT: [3, 3, 5, 5, 6, 7]
-
-DEQUE INVARIANT:
-┌──────────────────────────────┐
-│ All elements in decreasing   │
-│ order by VALUE               │
-│ Front = current window max   │
-│ Back = future candidates     │
-└──────────────────────────────┘
-
-WHY IT WORKS:
-  If X is smaller than Y and enters after Y,
-  X can never be max before Y leaves
-  → Safe to remove X from consideration
-  
-TIME: O(n) amortized
-SPACE: O(k) for deque
-```
 
 ---
 
@@ -540,17 +348,15 @@ Result: Maintains strict decreasing order properly
 
 ### Performance Comparison Table (Day 2)
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│ Algorithm                 │ Time       │ Space │ Best For   │
-├──────────────────────────────────────────────────────────────┤
-│ Naive (recalc each)       │ O(n×k)     │ O(1)  │ k very small
-│ Fixed window sum          │ O(n)       │ O(1)  │ Aggregation 
-│ Prefix sum + queries      │ O(n+q)     │ O(n)  │ Batch queries
-│ Monotonic deque           │ O(n)       │ O(k)  │ Max/min window
-│ Segment tree              │ O(n log n) │ O(n)  │ Range queries
-└──────────────────────────────────────────────────────────────┘
-```
+
+| Algorithm | Time | Space | Best For |
+| :--- | :--- | :--- | :--- |
+| Naive (recalc each) | O(n×k) | O(1) | k very small |
+| Fixed window sum | O(n) | O(1) | Aggregation |
+| Prefix sum + queries | O(n+q) | O(n) | Batch queries |
+| Monotonic deque | O(n) | O(k) | Max/min window |
+| Segment tree | O(n log n) | O(n) | Range queries |
+
 
 ---
 
@@ -558,24 +364,25 @@ Result: Maintains strict decreasing order properly
 
 ### Pattern Map: Variable Window Family
 
+
+```mermaid
+flowchart TD
+    R["VARIABLE WINDOW PATTERNS"]
+    R --> N1["Expand/Contract Mechanics"]
+    N1 --> N2["At most K distinct"]
+    N1 --> N3["Min window substring"]
+    N1 --> N4["Longest subarray constraint"]
+    N1 --> N5["Permutation/anagram search"]
+    R --> N6["Frequency-Based Constraints"]
+    N6 --> N7["Exactly K distinct = AtMost(K) - AtMost(K-1)"]
+    N6 --> N8["Character count matching"]
+    N6 --> N9["Duplicate handling"]
+    R --> N10["Optimization Goals"]
+    N10 --> N11["Maximize valid window (longest)"]
+    N10 --> N12["Minimize valid window (shortest)"]
+    N10 --> N13["Find first occurrence"]
 ```
-VARIABLE WINDOW PATTERNS
-├─ Expand/Contract Mechanics
-│  ├─ At most K distinct
-│  ├─ Min window substring
-│  ├─ Longest subarray constraint
-│  └─ Permutation/anagram search
-│
-├─ Frequency-Based Constraints
-│  ├─ Exactly K distinct = AtMost(K) - AtMost(K-1)
-│  ├─ Character count matching
-│  └─ Duplicate handling
-│
-└─ Optimization Goals
-   ├─ Maximize valid window (longest)
-   ├─ Minimize valid window (shortest)
-   └─ Find first occurrence
-```
+
 
 ---
 
@@ -585,50 +392,16 @@ VARIABLE WINDOW PATTERNS
 
 #### Visual 1: Two-Phase Decision Flow
 
+
+```mermaid
+flowchart TD
+    R["PROBLEM "Minimum window substring""]
+    R --> N1["State"]
+    R --> N2["State"]
+    R --> N3["State"]
+    R --> N4["State"]
 ```
-PROBLEM: "Minimum window substring"
-Target: "ABC", String: "ADOBECODEBANC"
 
-PHASE 1: EXPAND (move right)
-┌─────────────────────────────┐
-│ EXPAND until VALID:        │
-│                             │
-│ right = 0: "A" (need B,C)   │
-│ right = 1: "AD" (need B,C)  │
-│ right = 2: "ADO" (need B,C) │
-│ right = 3: "ADOB" (need C)  │
-│ right = 4: "ADOBE" (have all!) ✓ VALID
-└─────────────────────────────┘
-
-PHASE 2: CONTRACT (move left)
-┌─────────────────────────────┐
-│ While VALID, shrink:        │
-│                             │
-│ left=0: "ADOBE" (have all) ✓
-│   → Remove A? "DOBE" (lost A) ✗ INVALID
-└─────────────────────────────┘
-
-Back to PHASE 1: EXPAND
-┌─────────────────────────────┐
-│ right = 5: "DOBEC" ✓ VALID  │
-│ CONTRACT: Remove D? "OBEC" ✓ Still valid!
-│ CONTRACT: Remove O? "BEC" ✗ Lost B
-│ Back to EXPAND              │
-└─────────────────────────────┘
-
-Continue until right reaches end...
-
-RESULT: MIN WINDOW = "BANC"
-
-DECISION LOGIC:
-┌──────────────────────────────┐
-│ if valid:                   │
-│   record result             │
-│   try shrink (left++)       │
-│ else:                       │
-│   expand (right++)          │
-└──────────────────────────────┘
-```
 
 ---
 
@@ -636,39 +409,13 @@ DECISION LOGIC:
 
 #### Visual 1: Constraint Zones
 
+
+```mermaid
+flowchart TD
+    R["PROBLEM Longest substring with AT MOST k=2 distinct chars"]
+    R --> N1["State"]
 ```
-PROBLEM: Longest substring with AT MOST k=2 distinct chars
-STRING: "eceba"
 
-ZONE VISUALIZATION:
-
-[0:0] "e" (1 distinct) ✓
-[0:1] "ec" (2 distinct) ✓  MAX so far = 2
-[0:2] "ece" (2 distinct) ✓  MAX so far = 3
-[0:3] "eceb" (3 distinct) ✗ TOO MANY!
-
-Shrink: Remove "e" from left
-[1:3] "ceb" (3 distinct) ✗ Still too many
-
-Shrink: Remove "c"
-[2:3] "eb" (2 distinct) ✓  Can expand again
-
-[2:4] "eba" (3 distinct) ✗ Too many again
-
-Shrink: Remove "e"
-[3:4] "ba" (2 distinct) ✓
-
-RESULT: Longest = 3 (substring "ece")
-
-CONTRACT CONDITION:
-┌──────────────────────────────┐
-│ while distinct_count > k:    │
-│   remove A[left]             │
-│   if count becomes 0:        │
-│     remove from map          │
-│   left++                     │
-└──────────────────────────────┘
-```
 
 ---
 
@@ -728,23 +475,24 @@ Result: charCount always accurate
 
 ### Pattern Map: D&C Family
 
+
+```mermaid
+flowchart TD
+    R["DIVIDE & CONQUER PATTERNS"]
+    R --> N1["Sorting & Merging"]
+    N1 --> N2["Merge Sort"]
+    N1 --> N3["Counting Inversions"]
+    N1 --> N4["Merge K Lists"]
+    R --> N5["Search & Selection"]
+    N5 --> N6["Binary Search Variants"]
+    N5 --> N7["Kth Smallest"]
+    N5 --> N8["Majority Element"]
+    R --> N9["Computation"]
+    N9 --> N10["Expression Evaluation"]
+    N9 --> N11["Matrix Multiplication"]
+    N9 --> N12["Closest Pair Problem"]
 ```
-DIVIDE & CONQUER PATTERNS
-├─ Sorting & Merging
-│  ├─ Merge Sort
-│  ├─ Counting Inversions
-│  └─ Merge K Lists
-│
-├─ Search & Selection
-│  ├─ Binary Search Variants
-│  ├─ Kth Smallest
-│  └─ Majority Element
-│
-└─ Computation
-   ├─ Expression Evaluation
-   ├─ Matrix Multiplication
-   └─ Closest Pair Problem
-```
+
 
 ---
 
@@ -752,49 +500,15 @@ DIVIDE & CONQUER PATTERNS
 
 #### Visual 1: Tree Structure & Levels
 
+
+```mermaid
+flowchart TD
+    R["ARRAY [38, 27, 43, 3, 9, 82, 10]"]
+    R --> N1["Step"]
+    R --> N2["Step"]
+    R --> N3["State"]
 ```
-ARRAY: [38, 27, 43, 3, 9, 82, 10]
 
-                [38,27,43,3,9,82,10]
-                /                 \
-              /                     \
-        [38,27,43,3]          [9,82,10]
-        /         \            /      \
-      /             \        /          \
-    [38,27]    [43,3]   [9,82]      [10]
-    /    \      /    \   /    \       |
-  [38]  [27]  [43]  [3][9]  [82]  (base)
-
-MERGE PHASE:
-  [27,38]  [3,43]    [9,82]   [10]
-     |        |         |       |
-     └────────┴─────────┴───────┘
-     |
-  [3,27,38,43]   [9,10,82]
-     |              |
-     └──────┬───────┘
-            |
-        [3,9,10,27,38,43,82]
-
-LEVEL ANALYSIS:
-  Level 0 (unsorted): 1 array of n elements, work = n
-  Level 1: 2 arrays of n/2 each, total work = 2×(n/2) = n
-  Level 2: 4 arrays of n/4 each, total work = 4×(n/4) = n
-  ...
-  Level log₂(n): n base cases, each O(1)
-
-TOTAL WORK: n × log₂(n) = O(n log n)
-
-KEY INSIGHT:
-┌───────────────────────────────┐
-│ Each level does O(n) work    │
-│ There are O(log n) levels    │
-│ Total: O(n log n) GUARANTEED │
-│ (unlike quicksort worst case)│
-└───────────────────────────────┘
-
-TIME: O(n log n) | SPACE: O(n)
-```
 
 ---
 
@@ -802,57 +516,13 @@ TIME: O(n log n) | SPACE: O(n)
 
 #### Visual 1: Inversion Detection
 
+
+```mermaid
+flowchart TD
+    R["PROBLEM Count pairs (i,j) where i<j but arr[i]>arr[j]"]
+    R --> N1["State"]
 ```
-PROBLEM: Count pairs (i,j) where i<j but arr[i]>arr[j]
-ARRAY: [2, 4, 1, 3, 5]
 
-MERGE SORT + COUNT:
-
-[2,4,1,3,5]
-  |     |
-  ↓     ↓
-[2,4]  [1,3,5]  ← Split
-  |     |
-  ↓     ↓
-[2][4] [1][3][5]
-
-MERGE [2] and [4]:
-  → No inversions, result [2,4]
-
-MERGE [1] and [3]:
-  → No inversions, result [1,3]
-
-MERGE [2,4] and [1]:
-  When 1 < 2:
-    → 1 is smaller, take 1
-    → 2 and 4 remain, both > 1
-    → Add 2 inversions: (2,1) and (4,1)
-  Result: [1,2,4], inversions = 2
-
-MERGE [1,2,4] and [3,5]:
-  Compare 1 vs 3: 1<3, take 1
-  Compare 2 vs 3: 2<3, take 2
-  Compare 4 vs 3: 4>3, take 3
-    → 4 and remaining elements > 3
-    → Add 1 inversion: (4,3)
-  Continue...
-
-TOTAL INVERSIONS: 2 + 1 + ... = 4
-
-THE MAGIC:
-┌──────────────────────────────┐
-│ When right < left during     │
-│ merge, ALL remaining left    │
-│ elements are inversions:     │
-│                              │
-│ inversions += (mid - i + 1)  │
-│                              │
-│ This counts efficiently in   │
-│ O(n log n) vs O(n²) brute   │
-└──────────────────────────────┘
-
-TIME: O(n log n) | SPACE: O(n)
-```
 
 ---
 
@@ -860,23 +530,24 @@ TIME: O(n log n) | SPACE: O(n)
 
 ### Pattern Map: Binary Search Variants
 
+
+```mermaid
+flowchart TD
+    R["BINARY SEARCH PATTERNS"]
+    R --> N1["Classic Search"]
+    N1 --> N2["Standard binary search"]
+    N1 --> N3["First/last occurrence"]
+    N1 --> N4["Rotated sorted array"]
+    R --> N5["Answer Space Search (Feasibility)"]
+    N5 --> N6["Minimize capacity needed"]
+    N5 --> N7["Maximize minimum distance"]
+    N5 --> N8["Minimize maximum load"]
+    R --> N9["Geometric Search"]
+    N9 --> N10["Peak finding"]
+    N9 --> N11["Bitonic search"]
+    N9 --> N12["Closest value"]
 ```
-BINARY SEARCH PATTERNS
-├─ Classic Search
-│  ├─ Standard binary search
-│  ├─ First/last occurrence
-│  └─ Rotated sorted array
-│
-├─ Answer Space Search (Feasibility)
-│  ├─ Minimize capacity needed
-│  ├─ Maximize minimum distance
-│  └─ Minimize maximum load
-│
-└─ Geometric Search
-   ├─ Peak finding
-   ├─ Bitonic search
-   └─ Closest value
-```
+
 
 ---
 
@@ -884,49 +555,16 @@ BINARY SEARCH PATTERNS
 
 #### Visual 1: Range Narrows at Each Step
 
+
+```mermaid
+flowchart TD
+    R["ARRAY [-3, -1, 0, 2, 4, 6, 8, 10]"]
+    R --> N1["State"]
+    N1 --> N2["State"]
+    N1 --> N3["State"]
+    R --> N4["State"]
 ```
-ARRAY: [-3, -1, 0, 2, 4, 6, 8, 10]
-TARGET: 4
 
-ITERATION 0:
-lo=0                                hi=7
-├────────────────────────────────────┤
-mid = 0 + (7-0)/2 = 3
-arr[3] = 2 < 4 → target is to the right
-lo = 4  (mid+1, not mid!)
-
-ITERATION 1:
-           lo=4           hi=7
-           ├──────────────┤
-           mid = 4 + (7-4)/2 = 5
-           arr[5] = 6 > 4 → target is to the left
-           hi = 4  (mid-1, not mid!)
-
-ITERATION 2:
-           lo=4   hi=4
-           ├──────┤
-           mid = 4 + (4-4)/2 = 4
-           arr[4] = 4 == 4 → FOUND!
-
-INVARIANT MAINTAINED:
-┌────────────────────────────────┐
-│ Target always in [lo, hi]      │
-│ Each step: range shrinks to 1/2│
-│ Total steps: O(log n)          │
-└────────────────────────────────┘
-
-OVERFLOW SAFETY:
-❌ WRONG: mid = (lo + hi) / 2
-   If lo=2^31-1, hi=2^31-1:
-     lo+hi = 2^32-2 → OVERFLOW!
-
-✓ CORRECT: mid = lo + (hi - lo) / 2
-   If lo=2^31-1, hi=2^31-1:
-     hi-lo = 0
-     mid = 2^31-1 + 0 = 2^31-1 → Safe!
-
-TIME: O(log n) | SPACE: O(1)
-```
 
 ---
 
@@ -934,61 +572,25 @@ TIME: O(log n) | SPACE: O(1)
 
 #### Visual 1: Feasibility Curve (Monotonic Property)
 
-```
-PROBLEM: Minimum capacity to ship packages in k days
-PACKAGES: [1,2,3,4,5]  DAYS: 3
 
-FEASIBILITY vs CAPACITY:
-Capacity │ Feasible in 3 days?
-──────────┼─────────────────
-1        │ ✗ (can't ship [1,2,3,4,5] at all)
-2        │ ✗ (need multiple days for each)
-3        │ ✗
-4        │ ✗
-5        │ ✗
-6        │ ✗
-7        │ ✗
-8        │ ✗
-9        │ ✗
-10       │ ✗
-11       │ ✗
-12       │ ✗
-13       │ ✗
-14       │ ✗
-15 (total)│ ✓  ← Can ship everything in 1 day
+| Capacity | Feasible in 3 days? |
+| :--- | :--- |
+| 1 | ✗ (can't ship [1,2,3,4,5] at all) |
+| 2 | ✗ (need multiple days for each) |
+| 3 | ✗ |
+| 4 | ✗ |
+| 5 | ✗ |
+| 6 | ✗ |
+| 7 | ✗ |
+| 8 | ✗ |
+| 9 | ✗ |
+| 10 | ✗ |
+| 11 | ✗ |
+| 12 | ✗ |
+| 13 | ✗ |
+| 14 | ✗ |
+| 15 (total) | ✓  ← Can ship everything in 1 day |
 
-MONOTONIC PROPERTY:
-┌──────────────────────────────────┐
-│ ✗ ✗ ✗ ✗ ✗ ✗ ✓ ✓ ✓ ✓ ✓       │
-│              ↑ Boundary!        │
-│                                 │
-│ Once feasible, all larger also  │
-│ feasible → Monotonic increasing │
-└──────────────────────────────────┘
-
-BINARY SEARCH FINDS BOUNDARY:
-lo = 1  (too small)
-hi = 15 (sum of all)
-
-mid = 1 + (15-1)/2 = 8
-  Can ship in 3 days with capacity 8?
-    [1,2,3],[4],[5] = 2 days ✓
-  → Answer might be smaller, hi = 7
-
-mid = 1 + (7-1)/2 = 4
-  Can ship in 3 days with capacity 4?
-    [1,2],[3],[4],[5] = 4 days ✗
-  → Answer is larger, lo = 5
-
-mid = 5 + (7-5)/2 = 6
-  Can ship in 3 days with capacity 6?
-    [1,2,3],[4],[5] = 2 days ✓
-  → Answer might be smaller, hi = 5
-
-lo >= hi → ANSWER = 5
-
-This is why binary search on answer space works!
-```
 
 ---
 
@@ -1074,50 +676,48 @@ Find last: if (arr[mid] <= target) lo = mid+1
 
 ## 🎯 WEEK 04 VISUAL SUMMARY TABLE
 
-```
-┌────────────────────────────────────────────────────────────────┐
-│ DAY │ PATTERN            │ Key Visual Type  │ Complexity       │
-├────────────────────────────────────────────────────────────────┤
-│ 1   │ Two-Pointer        │ Pointer zones    │ O(n) / O(1)      │
-│     │ Opposite-dir/      │ Convergence      │ space            │
-│     │ Same-dir           │ diagrams         │                  │
-│     │                    │                  │                  │
-│ 2   │ Sliding Window     │ Window slide     │ O(n) / O(k)      │
-│     │ Fixed Size         │ storyboard       │ space            │
-│     │ + Deque            │ Monotonic deque  │                  │
-│     │                    │                  │                  │
-│ 3   │ Sliding Window     │ Expand-contract  │ O(n) /           │
-│     │ Variable Size      │ Frequency map    │ O(charset)       │
-│     │                    │ Constraint zones │ space            │
-│     │                    │                  │                  │
-│ 4   │ Divide & Conquer   │ Recursion tree   │ O(n log n) /     │
-│     │ (Merge Sort,       │ Level analysis   │ O(n) space       │
-│     │ Inversions)        │ Inversion count  │                  │
-│     │                    │                  │                  │
-│ 5   │ Binary Search      │ Range narrowing  │ O(log n) /       │
-│     │ (Classic +         │ Feasibility      │ O(1) space       │
-│     │ Answer Space)      │ curve            │                  │
-│     │                    │ Peak finding     │                  │
-└────────────────────────────────────────────────────────────────┘
-```
+
+| DAY | PATTERN | Key Visual Type | Complexity |
+| :--- | :--- | :--- | :--- |
+| 1 | Two-Pointer | Pointer zones | O(n) / O(1) |
+|  | Opposite-dir/ | Convergence | space |
+|  | Same-dir | diagrams |  |
+|  |  |  |  |
+| 2 | Sliding Window | Window slide | O(n) / O(k) |
+|  | Fixed Size | storyboard | space |
+|  | + Deque | Monotonic deque |  |
+|  |  |  |  |
+| 3 | Sliding Window | Expand-contract | O(n) / |
+|  | Variable Size | Frequency map | O(charset) |
+|  |  | Constraint zones | space |
+|  |  |  |  |
+| 4 | Divide & Conquer | Recursion tree | O(n log n) / |
+|  | (Merge Sort, | Level analysis | O(n) space |
+|  | Inversions) | Inversion count |  |
+|  |  |  |  |
+| 5 | Binary Search | Range narrowing | O(log n) / |
+|  | (Classic + | Feasibility | O(1) space |
+|  | Answer Space) | curve |  |
+|  |  | Peak finding |  |
+
 
 ---
 
 ## 📋 COMMON PATTERNS QUICK REFERENCE
 
-```
-Pattern              │ Use When                           │ Time/Space
-─────────────────────┼────────────────────────────────────┼──────────────
-Two-pointer opposite │ Find pair sum, container, 3-sum    │ O(n) / O(1)
-Two-pointer same-dir │ In-place remove/partition          │ O(n) / O(1)
-Fixed window         │ Max/min k consecutive              │ O(n) / O(k)
-Monotonic deque      │ Sliding max/min with all values    │ O(n) / O(k)
-Variable window      │ At most k distinct, min window     │ O(n) / O(k)
-Merge sort           │ Sort + count inversions            │ O(n logn)/O(n)
-Partition sort       │ Find kth smallest, sort            │ O(n) avg/O(n)
-Binary search        │ Search in sorted, answer space     │ Time O(log n), Space O(1)
-Peak finding         │ Local max in unsorted array        │ Time O(log n), Space O(1)
-```
+
+| Pattern | Use When | Time/Space |
+| :--- | :--- | :--- |
+| Two-pointer opposite | Find pair sum, container, 3-sum | O(n) / O(1) |
+| Two-pointer same-dir | In-place remove/partition | O(n) / O(1) |
+| Fixed window | Max/min k consecutive | O(n) / O(k) |
+| Monotonic deque | Sliding max/min with all values | O(n) / O(k) |
+| Variable window | At most k distinct, min window | O(n) / O(k) |
+| Merge sort | Sort + count inversions | O(n logn)/O(n) |
+| Partition sort | Find kth smallest, sort | O(n) avg/O(n) |
+| Binary search | Search in sorted, answer space | Time O(log n), Space O(1) |
+| Peak finding | Local max in unsorted array | Time O(log n), Space O(1) |
+
 
 ---
 
@@ -1163,3 +763,7 @@ Peak finding         │ Local max in unsorted array        │ Time O(log n), S
 ---
 
 **Use web resource links for interactive visualizations while studying!**
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

@@ -1,11 +1,12 @@
 # 📘 Week 09 Day 02: Bellman–Ford & Negative Weights — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 09 | **Day:** 02
-- **Category:** Graph Algorithms / Shortest Paths
-- **Difficulty:** 🟡 Intermediate
-- **Real-World Impact:** Enables shortest-path computations on graphs with negative-weight edges (currency arbitrage, route optimization with cost credits, network routing with credits/debits), and detects negative-cost cycles that indicate profitable exploits or anomalies.
-- **Prerequisites:** Week 09 Day 01 (Dijkstra & single-source shortest paths), Week 08 (Graph fundamentals: representations, BFS/DFS), Week 01 (RAM model, complexity analysis)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_09_Day_01_Dijkstra_Single_Source_Shortest_Paths_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_09_Day_03_Floyd_Warshall_All_Pairs_Shortest_Paths_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -198,21 +199,17 @@ Given a directed graph G = (V, E) with a weight function w: E → ℝ (allowing 
 ### The State Machine & Memory Layout
 
 **Bellman–Ford State:**
-```
-State Variables:
-├─ distance[0..V-1]  : Shortest distance from source to each vertex
-├─ predecessor[0..V-1]: For path reconstruction
-├─ source            : Starting vertex
-└─ edges[]           : All edges in graph (u, v, w)
 
-Memory Layout:
-┌──────────────────────────────────────────┐
-│ distance[0..V-1]       : long[] or int[] │
-│ predecessor[0..V-1]    : int[]           │
-│ edges[0..E-1]          : Edge[] (u, v, w)│
-└──────────────────────────────────────────┘
-Total Space: O(V + E)
+```mermaid
+flowchart TD
+    R["State Variables"]
+    R --> N1["distance[0..V-1]  : Shortest distance from source to each vertex"]
+    R --> N2["predecessor[0..V-1]: For path reconstruction"]
+    R --> N3["source            : Starting vertex"]
+    R --> N4["edges[]           : All edges in graph (u, v, w)"]
+    R --> N5["State"]
 ```
+
 
 ### 🔧 Operation 1: Bellman–Ford Algorithm — Detailed Walkthrough
 
@@ -254,111 +251,47 @@ BellmanFord(Graph G with V vertices, E edges, source vertex s):
 
 **Detailed Trace (Using Our Example Graph):**
 
+
+```mermaid
+flowchart TD
+    R["Graph"]
+    R --> N1["distance[A] = 0 (not ∞)"]
+    R --> N2["Check: 0 + 4 < ∞? YES"]
+    R --> N3["Update: distance[B] = 4"]
+    R --> N4["predecessor[B] = A"]
+    R --> N5["distance[A] = 0 (not ∞)"]
+    R --> N6["Check: 0 + 2 < ∞? YES"]
+    R --> N7["Update: distance[C] = 2"]
+    R --> N8["predecessor[C] = A"]
+    R --> N9["distance[B] = 4 (not ∞)"]
+    R --> N10["Check: 4 + 1 < ∞? YES"]
+    R --> N11["Update: distance[D] = 5"]
+    R --> N12["predecessor[D] = B"]
+    R --> N13["distance[C] = 2 (not ∞)"]
+    R --> N14["Check: 2 + (-3) < 4? YES (because -1 < 4)"]
+    R --> N15["Update: distance[B] = -1"]
+    R --> N16["predecessor[B] = C"]
+    R --> N17["distance[C] = 2 (not ∞)"]
+    R --> N18["Check: 2 + 5 < 5? NO (because 7 ≮ 5)"]
+    R --> N19["No update"]
+    R --> N20["distance[A] = 0"]
+    R --> N21["Check: 0 + 4 < -1? NO"]
+    R --> N22["No update"]
+    R --> N23["distance[A] = 0"]
+    R --> N24["Check: 0 + 2 < 2? NO"]
+    R --> N25["No update"]
+    R --> N26["distance[B] = -1"]
+    R --> N27["Check: -1 + 1 < 5? YES (because 0 < 5)"]
+    R --> N28["Update: distance[D] = 0"]
+    R --> N29["predecessor[D] = B"]
+    R --> N30["distance[C] = 2"]
+    R --> N31["Check: 2 + (-3) < -1? NO (because -1 ≮ -1)"]
+    R --> N32["No update"]
+    R --> N33["distance[C] = 2"]
+    R --> N34["Check: 2 + 5 < 0? NO"]
+    R --> N35["No update"]
 ```
-Graph:
-A → B: 4
-A → C: 2
-B → D: 1
-C → B: -3 (negative!)
-C → D: 5
 
-Source: A
-V = 4 vertices, so V-1 = 3 passes required.
-
-===== INITIALIZATION =====
-distance = [0, ∞, ∞, ∞]  (indexed by A, B, C, D)
-predecessor = [-1, -1, -1, -1]
-
-===== PASS 1: Process all edges =====
-
-Edge A→B (weight 4):
-├─ distance[A] = 0 (not ∞)
-├─ Check: 0 + 4 < ∞? YES
-├─ Update: distance[B] = 4
-└─ predecessor[B] = A
-
-Edge A→C (weight 2):
-├─ distance[A] = 0 (not ∞)
-├─ Check: 0 + 2 < ∞? YES
-├─ Update: distance[C] = 2
-└─ predecessor[C] = A
-
-Edge B→D (weight 1):
-├─ distance[B] = 4 (not ∞)
-├─ Check: 4 + 1 < ∞? YES
-├─ Update: distance[D] = 5
-└─ predecessor[D] = B
-
-Edge C→B (weight -3):
-├─ distance[C] = 2 (not ∞)
-├─ Check: 2 + (-3) < 4? YES (because -1 < 4)
-├─ Update: distance[B] = -1
-└─ predecessor[B] = C
-
-Edge C→D (weight 5):
-├─ distance[C] = 2 (not ∞)
-├─ Check: 2 + 5 < 5? NO (because 7 ≮ 5)
-└─ No update
-
-After Pass 1:
-distance = [0, -1, 2, 5]
-predecessor = [-1, C, A, B]
-
-===== PASS 2: Process all edges again =====
-
-Edge A→B (weight 4):
-├─ distance[A] = 0
-├─ Check: 0 + 4 < -1? NO
-└─ No update
-
-Edge A→C (weight 2):
-├─ distance[A] = 0
-├─ Check: 0 + 2 < 2? NO
-└─ No update
-
-Edge B→D (weight 1):
-├─ distance[B] = -1
-├─ Check: -1 + 1 < 5? YES (because 0 < 5)
-├─ Update: distance[D] = 0
-└─ predecessor[D] = B
-
-Edge C→B (weight -3):
-├─ distance[C] = 2
-├─ Check: 2 + (-3) < -1? NO (because -1 ≮ -1)
-└─ No update
-
-Edge C→D (weight 5):
-├─ distance[C] = 2
-├─ Check: 2 + 5 < 0? NO
-└─ No update
-
-After Pass 2:
-distance = [0, -1, 2, 0]
-predecessor = [-1, C, A, B]
-
-===== PASS 3: Process all edges a third time =====
-
-Edge A→B: 0 + 4 < -1? NO
-Edge A→C: 0 + 2 < 2? NO
-Edge B→D: -1 + 1 < 0? NO
-Edge C→B: 2 + (-3) < -1? NO
-Edge C→D: 2 + 5 < 0? NO
-
-After Pass 3:
-distance = [0, -1, 2, 0]
-(no changes, as expected)
-
-===== NEGATIVE CYCLE CHECK (Optional Pass 4) =====
-Process all edges once more to verify no further improvement:
-(All checks above show no improvement, so NO negative cycle) ✓
-
-Final Result:
-Shortest distances from A:
-  A: 0
-  B: -1 (path: A→C→B)
-  C: 2 (path: A→C)
-  D: 0 (path: A→C→B→D)
-```
 
 **Critical Implementation Details:**
 
@@ -836,4 +769,6 @@ This analogy breaks down for nonconvex optimization, but it highlights the diffe
 
 - Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
 - Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+---
 
+> 🧭 **Navigation:** [← Previous Day](Week_09_Day_01_Dijkstra_Single_Source_Shortest_Paths_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_09_Day_03_Floyd_Warshall_All_Pairs_Shortest_Paths_Instructional.md)

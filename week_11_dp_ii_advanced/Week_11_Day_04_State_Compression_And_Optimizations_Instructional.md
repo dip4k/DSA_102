@@ -1,11 +1,12 @@
 # 📘 WEEK 11 DAY 04: STATE COMPRESSION & OPTIMIZATIONS — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 11 | **Day:** 04
-- **Category:** Dynamic Programming & Space Optimization
-- **Difficulty:** 🔴 Advanced
-- **Real-World Impact:** State compression enables solving problems on massive datasets (1GB+ DP tables reduced to MB), and optimization techniques directly impact latency in real-time systems
-- **Prerequisites:** Mastery of DP from Weeks 10-11, understanding of space-time tradeoffs
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_11_Day_03_Bitmask_And_Subset_DP_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_11_Day_05_Mixed_DP_Problems_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -773,4 +774,6 @@ Space optimization has evolved from necessity (computers had kilobytes in the 19
 
 - Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
 - Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+---
 
+> 🧭 **Navigation:** [← Previous Day](Week_11_Day_03_Bitmask_And_Subset_DP_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_11_Day_05_Mixed_DP_Problems_Instructional.md)

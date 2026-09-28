@@ -1,5 +1,11 @@
 # 🎤 Week 14 Interview Q&A Comprehensive Reference
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 This guide provides high-frequency interview questions, architectural drill-downs, and communication answers designed to help you explain low-level mathematical structures, string preprocessing state transitions, and grid transformations.
 
 ---
@@ -98,3 +104,7 @@ This guide provides high-frequency interview questions, architectural drill-down
     Real-world systems use two optimization techniques:
     1.  **Compressed Tries (Radix Trees)**: Merges adjacent nodes with single children into a single string path, reducing the total node count.
     2.  **Double-Array Tries**: Pack transition values into two parallel arrays (`base` and `check`) to represent the entire Trie as a flat memory space, replacing pointer tree walks with fast index lookups."
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

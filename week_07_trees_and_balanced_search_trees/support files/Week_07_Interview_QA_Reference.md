@@ -1,5 +1,11 @@
 # 🎙️ Week_07_Interview_QA_Reference.md
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 **Purpose:** Interview preparation with 50+ questions, follow-ups, and strategic answers  
 **Audience:** Interview prep, mock interview practice  
 
@@ -463,3 +469,6 @@
 
 ---
 
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

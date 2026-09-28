@@ -1,9 +1,12 @@
 # 📚 Week 05 Day 01: Hash Map / Hash Set Patterns (Engineering Guide)
 
-**Week:** 5 | **Day:** 1 | **Tier:** Tier 1 Critical Patterns  
-**Category:** High-Frequency Patterns & Problem-Solving  
-**Real-World Impact:** Enables constant-time lookups in 25-30% of real-world problems; powers caching, deduplication, and frequency-based algorithms  
-**Prerequisites:** Week 1-4 fundamentals (arrays, complexity analysis, basic algorithm patterns)
+
+
+
+
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_05_Day_02_Monotonic_Stack_Patterns_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -991,3 +994,6 @@ By mastering this week, you're learning to think like a systems engineer. You're
 Each sub-problem has a pattern. Hash patterns are the first bucket of patterns you'll solve again and again throughout your career.
 
 ---
+---
+
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_05_Day_02_Monotonic_Stack_Patterns_Instructional.md)

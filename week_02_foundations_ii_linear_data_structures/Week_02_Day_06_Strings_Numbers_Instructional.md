@@ -1,11 +1,12 @@
 # 📘 WEEK 02, DAY 06: STRINGS & NUMBERS: CONCEPTUAL UNDERSTANDING — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 02 | **Day:** 06
-- **Category:** Fundamentals & Data Representation
-- **Difficulty:** 🟡 Intermediate
-- **Real-World Impact:** Understanding string and number representations prevents bugs (overflow, memory leaks), optimizes performance (StringBuilder), and powers every system that processes text or performs arithmetic.
-- **Prerequisites:** Week 2 Days 1-5 (Arrays, Dynamic Arrays, Linked Lists, Stacks/Queues, Binary Search); Week 1 (Memory Model, Complexity Analysis)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_02_Day_05_Binary_Search_Invariants_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_02_FULL_PLAYBOOK.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -65,66 +66,21 @@ This analogy explains everything:
 
 #### String Object Memory Layout
 
-```
-String s = "Hello";
 
-┌──────────────────────────────────────────┐
-│  OBJECT HEADER (16 bytes)                │
-│  ├─ Type metadata (8 bytes)              │
-│  ├─ GC flags (4 bytes)                   │
-│  └─ Sync block (4 bytes)                 │
-├──────────────────────────────────────────┤
-│  Length (4 bytes)        │  5             │
-├──────────────────────────────────────────┤
-│  Hash Code (4 bytes)     │  cached_hash   │
-├──────────────────────────────────────────┤
-│  Character Array (UTF-16, 10 bytes)      │
-│  Index 0: 'H' (0x0048 in UTF-16)         │
-│  Index 1: 'e' (0x0065 in UTF-16)         │
-│  Index 2: 'l' (0x006C in UTF-16)         │
-│  Index 3: 'l' (0x006C in UTF-16)         │
-│  Index 4: 'o' (0x006F in UTF-16)         │
-└──────────────────────────────────────────┘
+| Length (4 bytes) | 5 |
+| :--- | :--- |
+| Hash Code (4 bytes) | cached_hash |
 
-Total: 38 bytes for a 5-character string
-      (16 + 4 + 4 + 10 + 4 padding for alignment)
-```
 
 #### String Concatenation: Memory Evolution
 
+
+```mermaid
+flowchart TD
+    R["Before concatenation"]
+    R --> N1["State"]
 ```
-Before concatenation:
-s1 at 0x1000: "Hello"
-s2 at 0x2000: "World"
 
-s3 = s1 + " " + s2;
-
-Step 1: Allocate new memory
-┌─────────────────────────────┐
-│ Request: 11 chars + header  │
-│ Runtime checks: length OK   │
-│ Allocate at 0x3000          │
-└─────────────────────────────┘
-
-Step 2: Copy s1 characters to new memory
-0x3000: H e l l o [space]
-
-Step 3: Copy space character
-0x3000: H e l l o [space]
-
-Step 4: Copy s2 characters to new memory
-0x3000: H e l l o [space] W o r l d
-
-Step 5: Create new string object
-s3 → 0x3000 (new object)
-s1 → 0x1000 (still exists if referenced)
-s2 → 0x2000 (still exists if referenced)
-
-Heap after:
-0x1000: "Hello" (may be GC'd if s1 unreferenced)
-0x2000: "World" (may be GC'd if s2 unreferenced)
-0x3000: "Hello World" ← s3 points here
-```
 
 ### Invariants & Properties
 
@@ -221,24 +177,15 @@ The CPU fetches the 2 bytes at 0x501E. If that memory is in L1 cache (likely for
 
 **Inline Trace:**
 
-```
-String s = "Hello";
-Access: s[3]
 
-┌────────────────────────────┐
-│ Step │ Operation │ State   │ Cycles
-├────────────────────────────┤
-│  0   │ Get s.address   │ 0x5000 │   ~1
-│  1   │ Add header size │ 0x5018 │   ~1
-│  2   │ Add index*size  │ 0x501E │   ~1
-│  3   │ Fetch 2 bytes   │ 'l'    │   1-100
-│  4   │ Return result   │ 'l'    │   ~1
-└────────────────────────────┘
+| Step | Operation | State | Cycles |
+| :--- | :--- | :--- | :--- |
+| 0 | Get s.address | 0x5000 | ~1 |
+| 1 | Add header size | 0x5018 | ~1 |
+| 2 | Add index*size | 0x501E | ~1 |
+| 3 | Fetch 2 bytes | 'l' | 1-100 |
+| 4 | Return result | 'l' | ~1 |
 
-Total: 1-100 cycles depending on cache status
-Theoretical: O(1)
-Real: 1-2 cycles (L1 hit), 10 cycles (L2 hit), 100+ (memory)
-```
 
 **Bounds Checking:** Modern runtimes often optimize away bounds checks in debug builds or use bounds-check elimination when provably safe.
 
@@ -258,30 +205,21 @@ Each step touches memory, triggers allocation/deallocation, and possibly invokes
 
 **Inline Trace:**
 
-```
-s1 = "Hi" (length 2)
-s2 = "!!!" (length 3)
-s3 = s1 + s2
 
-┌──────────────────────────────────────────────┐
-│ Step│ Operation│ Memory│ Cycles│ Notes      │
-├──────────────────────────────────────────────┤
-│ 0  │ Check lengths│ s1=2, s2=3│ ~10│ Cache hit
-│ 1  │ Calculate total│ 5+24=29│ ~5│ Include header
-│ 2  │ Call allocator│ allocate│ ~100│ System call
-│ 3  │ Get pointer│ 0x7000│ ~5│ Return value
-│ 4  │ Write header│ 0x7000│ ~10│ Type, flags
-│ 5  │ Write length│ 0x7010│ ~2│ Value: 5
-│ 6  │ Write hash│ 0x7014│ ~2│ Compute hash
-│ 7  │ Copy s1[0]│ 0x7018│ ~20│ 'H' + 'i'
-│ 8  │ Copy s2[0:3]│ 0x701C│ ~40│ '!', '!', '!'
-│ 9  │ Create object│ s3 ref│ ~5│ Point to 0x7000
-│ 10 │ Mark old GC│ 0x1000, 0x2000│ ~20│ Unreference
-└──────────────────────────────────────────────┘
+| Step | Operation | Memory | Cycles | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| 0 | Check lengths | s1=2, s2=3 | ~10 | Cache hit |
+| 1 | Calculate total | 5+24=29 | ~5 | Include header |
+| 2 | Call allocator | allocate | ~100 | System call |
+| 3 | Get pointer | 0x7000 | ~5 | Return value |
+| 4 | Write header | 0x7000 | ~10 | Type, flags |
+| 5 | Write length | 0x7010 | ~2 | Value: 5 |
+| 6 | Write hash | 0x7014 | ~2 | Compute hash |
+| 7 | Copy s1[0] | 0x7018 | ~20 | 'H' + 'i' |
+| 8 | Copy s2[0:3] | 0x701C | ~40 | '!', '!', '!' |
+| 9 | Create object | s3 ref | ~5 | Point to 0x7000 |
+| 10 | Mark old GC | 0x1000, 0x2000 | ~20 | Unreference |
 
-Total: ~220 cycles for 5-character result
-Real: 10-100 nanoseconds per character
-```
 
 **The Loop Trap:**
 
@@ -425,28 +363,13 @@ Digits: 0-9 → values 0-9; A-F → values 10-15
 
 ### Unsigned Integers (8-bit Example)
 
-```
-Range: 0 to 255 (2⁸ - 1)
 
-Representation (each bit = power of 2):
-  0 = 0000 0000
-  1 = 0000 0001
- 127 = 0111 1111
- 128 = 1000 0000
- 255 = 1111 1111
-
-Overflow behavior:
-  255 + 1 = 256, exceeds 8-bit range
-  Result: 256 mod 256 = 0 (wraps silently)
-  
-  In binary:
-    1111 1111 (255)
-  +       1
-  -----------
-  1 0000 0000 (9-bit result, but only 8 bits kept)
-    └───────── discard (overflow, no exception)
-    0000 0000 (result = 0)
+```mermaid
+flowchart TD
+    R["Range 0 to 255 (2⁸ - 1)"]
+    R --> N1["discard (overflow, no exception)"]
 ```
+
 
 ### Signed Integers (8-bit, Two's Complement)
 
@@ -491,19 +414,13 @@ Verify: 5 + (-5) should equal 0
 ### Integer Overflow & Underflow
 
 **What Happens:**
-```
-int max = 2147483647;  // 2³¹ - 1 (max 32-bit signed int)
-int result = max + 1;
 
-Binary:
-  0111 1111 ... 1111 1111 (max)
-+                      1
----------------------------------
-  1000 0000 ... 0000 0000 (interpreted as -2147483648)
-  └─────────── MSB now 1, negative in two's complement
-
-Result: -2147483648 (wrapped silently, no exception)
+```mermaid
+flowchart TD
+    R["int max = 2147483647;  // 2³¹ - 1 (max 32-bit signed int)"]
+    R --> N1["MSB now 1, negative in two's complement"]
 ```
+
 
 **Real-World Consequences:**
 - **Y2K Bug:** 2-digit year "00" interpreted as 1900 instead of 2000
@@ -547,19 +464,13 @@ Value = (-1)^Sign × 1.Mantissa × 2^(Exponent-127)
 ```
 
 **Example: 0.5**
-```
-0.5 = 1.0 × 2^(-1)
 
-Decompose:
-- Sign = 0 (positive)
-- Mantissa = 0 (represents 1.0)
-- Exponent = 126 (126 - 127 = -1)
-
-Bit pattern:
-  0 01111110 00000000000000000000000
-  └─────────────────────────────────┘
-  0x3F000000 (hex)
+```mermaid
+flowchart TD
+    R["0.5 = 1.0 × 2^(-1)"]
+    R --> N1["State"]
 ```
+
 
 **Precision Issues:**
 
@@ -645,25 +556,21 @@ function atoi(string s):
 
 **Detailed Example: "  -42abc"**
 
-```
-┌───────────────────────────────────────────┐
-│ Step│ s[index]│ Action        │ result│sign
-├───────────────────────────────────────────┤
-│  0  │ ' '     │ Skip space    │  0   │ 1
-│  1  │ ' '     │ Skip space    │  0   │ 1
-│  2  │ '-'     │ Set sign = -1 │  0   │ -1
-│  3  │ '4'     │ digit = 4     │  4   │ -1
-│     │         │ Check overflow│      │
-│     │         │ 4 ≤ (MAX-4)/10│  OK  │
-│  4  │ '2'     │ digit = 2     │ 42   │ -1
-│     │         │ Check overflow│      │
-│     │         │ 42 ≤ (MAX-2)/10│ OK  │
-│  5  │ 'a'     │ Not digit, stop│ 42  │ -1
-│  6  │ EOF     │ Return 42 × -1│     │
-└───────────────────────────────────────────┘
 
-Result: -42 ✓
-```
+| Step | s[index] | Action | result | sign |
+| :--- | :--- | :--- | :--- | :--- |
+| 0 | ' ' | Skip space | 0 | 1 |
+| 1 | ' ' | Skip space | 0 | 1 |
+| 2 | '-' | Set sign = -1 | 0 | -1 |
+| 3 | '4' | digit = 4 | 4 | -1 |
+|  |  | Check overflow |  |  |
+|  |  | 4 ≤ (MAX-4)/10 | OK |  |
+| 4 | '2' | digit = 2 | 42 | -1 |
+|  |  | Check overflow |  |  |
+|  |  | 42 ≤ (MAX-2)/10 | OK |  |
+| 5 | 'a' | Not digit, stop | 42 | -1 |
+| 6 | EOF | Return 42 × -1 |  |  |
+
 
 **Edge Cases:**
 
@@ -709,24 +616,20 @@ function itoa(integer n):
 
 **Detailed Example: -12345**
 
-```
-┌────────────────────────────────────┐
-│ Step│ n     │ digit│ result        │
-├────────────────────────────────────┤
-│  0  │-12345 │ —   │ negative=true │
-│     │ 12345 │ —   │ n=abs         │
-│  1  │ 1234  │ 5   │ [5]           │
-│  2  │  123  │ 4   │ [5,4]         │
-│  3  │   12  │ 3   │ [5,4,3]       │
-│  4  │    1  │ 2   │ [5,4,3,2]     │
-│  5  │    0  │ 1   │ [5,4,3,2,1]   │
-│     │       │     │ reverse → [1,2,3,4,5]
-│     │       │     │ prepend '-'   │
-│     │       │     │ [−,1,2,3,4,5] │
-└────────────────────────────────────┘
 
-Result: "-12345" ✓
-```
+| Step | n | digit | result |
+| :--- | :--- | :--- | :--- |
+| 0 | -12345 | — | negative=true |
+|  | 12345 | — | n=abs |
+| 1 | 1234 | 5 | [5] |
+| 2 | 123 | 4 | [5,4] |
+| 3 | 12 | 3 | [5,4,3] |
+| 4 | 1 | 2 | [5,4,3,2] |
+| 5 | 0 | 1 | [5,4,3,2,1] |
+|  |  |  | reverse → [1,2,3,4,5] |
+|  |  |  | prepend '-' |
+|  |  |  | [−,1,2,3,4,5] |
+
 
 ### Base Conversions: Decimal ↔ Binary ↔ Hex
 
@@ -794,17 +697,17 @@ function decimalToBase(n, base):
 
 ```
 String Concatenation Trace (Real Timing):
-───────────────────────────────────────────
+-------------------------------------------
 
 Operation              Time (ns)    Reason
-─────────────────────────────────────────
+-----------------------------------------
 1. Check lengths      ~5-10        L1 cache hits
 2. Allocate memory    ~50-200      Malloc/new overhead
 3. Initialize header  ~10          Write to new memory
 4. Copy s1 chars      ~10-20×n₁    Per-char bandwidth
 5. Copy s2 chars      ~10-20×n₂    Per-char bandwidth
 6. GC mark (minor)    ~10-50       Bookkeeping
-──────────────────────────────────
+----------------------------------
 Total: 100 + (30×(n₁+n₂)) ns
 
 For 1000-char result: ~30 microseconds
@@ -1161,3 +1064,6 @@ You've mastered this chapter when you can:
 *Engineering Guide – Phase A: Foundations*  
 *DSA Mastery Curriculum v13*  
 *Comprehensive, production-grade, interview-ready*
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_02_Day_05_Binary_Search_Invariants_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_02_FULL_PLAYBOOK.md)

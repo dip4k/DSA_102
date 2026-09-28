@@ -1,11 +1,12 @@
 # 📘 Week 1 Day 2: Asymptotic Analysis — Big-O, Big-Ω, Big-Θ
 
-**Metadata:**
-- **Week:** 1 | **Day:** 2
-- **Category:** Foundations & Complexity Analysis
-- **Difficulty:** 🟡 Intermediate (builds on Day 1)
-- **Real-World Impact:** The difference between an algorithm that scales to production and one that collapses at 10x data volume. Complexity analysis is how we predict failure before deployment.
-- **Prerequisites:** Week 1 Day 1 (RAM Model & Pointers)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_01_Day_01_RAM_Model_Pointers_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_01_Day_03_Space_Complexity_Memory_Usage_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -763,3 +764,6 @@ In the 1970s-80s, algorithms (sorting, searching) were the frontier. Computer sc
 
 
 **Next:** Week 1 Day 3 (Space Complexity & Memory Usage)
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_01_Day_01_RAM_Model_Pointers_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_01_Day_03_Space_Complexity_Memory_Usage_Instructional.md)

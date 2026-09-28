@@ -1,5 +1,11 @@
 # 🧩 WEEK 12 EXTENDED C# PROBLEM SOLVING & IMPLEMENTATION – GREEDY ALGORITHMS
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This C# (.NET 8/9) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 **Filename:** `Week_12_Extended_CSharp_Complete_v13.md`  
 **Week:** 12  
 **Theme:** Greedy Algorithms & Proofs (C#-focused implementation support)
@@ -938,3 +944,7 @@ Following the **Generic AI Self-Check & Correction** guidelines:
    - LRU ensures dictionary and linked list remain in sync.
 
 This file now serves as the **Week 12 C# Extended Support** reference for greedy algorithms, ready to be integrated into your DSA mastery workflow.
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

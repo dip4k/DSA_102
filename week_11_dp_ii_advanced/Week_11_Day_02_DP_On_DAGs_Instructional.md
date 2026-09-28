@@ -1,11 +1,12 @@
 # 📘 WEEK 11 DAY 02: DP ON DAGS — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 11 | **Day:** 02
-- **Category:** Dynamic Programming & Graphs
-- **Difficulty:** 🟡 Intermediate to 🔴 Advanced
-- **Real-World Impact:** DAG DP powers project scheduling in construction/manufacturing, dependency resolution in package managers, and critical path analysis in billion-dollar infrastructure projects
-- **Prerequisites:** Tree DP, topological sorting, graph traversal, basic DP concepts
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_11_Day_01_DP_on_Trees_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_11_Day_03_Bitmask_And_Subset_DP_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -68,7 +69,7 @@ Project dependency graph (arrows show "must finish before"):
       ↓
     Task_B (3 days)        Task_E (1 day)
       ↓                        ↓
-    Task_C (4 days) ←────── Task_F (2 days)
+    Task_C (4 days) ←------ Task_F (2 days)
       ↓
     Task_D (5 days)
       ↓
@@ -366,49 +367,13 @@ This is essentially Dijkstra's without the priority queue, because topological o
 
 **Inline Trace**: Network routing with negative weights:
 
+
+```mermaid
+flowchart TD
+    R["DAG (airline routes with cost)"]
+    R --> N1["(3)→ B (2)"]
 ```
-DAG (airline routes with cost):
-    A ──(5)──→ C ──(-2)──→ D
-    │                       ↑
-    └────(3)────→ B ────(2)─┘
 
-Source: A
-
-Topological order: A, B, C, D (or A, C, B, D; both valid)
-Let's use: A, B, C, D
-
-Initialize:
-  dp[A] = 0
-  dp[B] = ∞
-  dp[C] = ∞
-  dp[D] = ∞
-
-Process A:
-  A has outgoing edges to B (cost 3) and C (cost 5)
-  (No incoming edges, so dp[A] remains 0)
-
-Process B (now that A is done):
-  Incoming edge: A → B (cost 3)
-  dp[B] = dp[A] + 3 = 0 + 3 = 3
-
-Process C:
-  Incoming edge: A → C (cost 5)
-  dp[C] = dp[A] + 5 = 0 + 5 = 5
-
-Process D:
-  Incoming edges: C → D (cost -2), B → D (cost 2)
-  dp[D] = min(dp[C] + (-2), dp[B] + 2)
-        = min(5 + (-2), 3 + 2)
-        = min(3, 5)
-        = 3
-
-Result:
-  Shortest paths from A:
-    A → A: 0
-    A → B: 3 (direct)
-    A → C: 5 (direct)
-    A → D: 3 (via C: A → C → D = 5 + (-2) = 3)
-```
 
 Notice the negative edge (C → D: -2) enabled a lower-cost path to D. A general graph with negative cycles would be problematic, but DAGs have no cycles, so no issues.
 
@@ -435,51 +400,13 @@ Process in **forward topological order** (source first):
 
 **Inline Trace**: Website navigation paths:
 
+
+```mermaid
+flowchart TD
+    R["Navigation graph (pages and hyperlinks)"]
+    R --> N1["→ Blog "]
 ```
-Navigation graph (pages and hyperlinks):
 
-    Home ──→ About ──→ Contact
-      │        ↓         ↑
-      └────→ Blog ────────┘
-                ↓
-              Archive
-
-Count paths from Home to Contact:
-
-Topological order: Home, About, Blog, Archive, Contact (or other valid orders)
-
-Initialize:
-  dp[Home] = 1
-  All others = 0
-
-Process Home:
-  Home has outgoing edges (we process in edges not out-edges for counting)
-  (Just confirms dp[Home] = 1)
-
-Process About:
-  Incoming edges: Home → About
-  dp[About] = dp[Home] = 1
-
-Process Blog:
-  Incoming edges: Home → Blog
-  dp[Blog] = dp[Home] = 1
-
-Process Archive:
-  Incoming edges: Blog → Archive
-  dp[Archive] = dp[Blog] = 1
-
-Process Contact:
-  Incoming edges: About → Contact, Blog → Contact
-  dp[Contact] = dp[About] + dp[Blog]
-              = 1 + 1
-              = 2
-
-Paths:
-  1. Home → About → Contact
-  2. Home → Blog → Contact
-
-Count = 2 ✓
-```
 
 ---
 
@@ -897,4 +824,6 @@ DAG DP formalized in the 1960s-70s during operations research boom. Early applic
 **Total Word Count:** 18,456 words
 
 **File Status:** ✅ COMPLETE — Meets 12,000-18,000 word guideline (extended beyond to 18,456 due to complexity), includes 5 cognitive lenses, 7 inline visuals (DAG diagrams and traces), 4 real-world case studies, 5-chapter narrative arc, and comprehensive supplementary outcomes. All Week 11 Day 02 syllabus topics covered in detail without skipping subsections.
+---
 
+> 🧭 **Navigation:** [← Previous Day](Week_11_Day_01_DP_on_Trees_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_11_Day_03_Bitmask_And_Subset_DP_Instructional.md)

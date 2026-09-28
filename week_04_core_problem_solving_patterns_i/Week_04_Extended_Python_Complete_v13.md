@@ -1,5 +1,11 @@
 # Week 04 Extended Python Complete v13
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Python (3.11+) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 Purpose: build Python fluency for core sequence patterns: two pointers, sliding windows, divide and conquer, and binary search as a pattern.
 
 ## Focus tags
@@ -125,3 +131,7 @@ def min_capacity(weights, days):
 - Forgetting that variable windows need both expansion and shrinking state updates.
 - Using binary search without stating what `left` and `right` mean.
 - Applying two pointers to unsorted data without first justifying it.
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

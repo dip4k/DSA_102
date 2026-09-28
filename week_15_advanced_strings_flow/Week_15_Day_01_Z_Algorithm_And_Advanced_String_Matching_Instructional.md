@@ -1,11 +1,12 @@
 # 📘 WEEK 15 DAY 01: Z-ALGORITHM & ADVANCED STRING MATCHING — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 15 | **Day:** 01
-- **Category:** Advanced Strings / Pattern Matching Algorithms
-- **Difficulty:** 🔴 Advanced
-- **Real-World Impact:** The Z-algorithm and its linear-time relatives power "find in file," DNA repeat detection, plagiarism scanners, and log-scanning tools — anywhere a substring must be located instantly inside gigabytes of text without re-scanning from scratch.
-- **Prerequisites:** String basics (Week 6: palindromes, substrings, sliding window), Hashing & rolling hash (Week 3 Day 5), Big-O analysis and amortized reasoning (Week 1), KMP-style failure function intuition (informally introduced here for comparison).
+
+
+
+
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_15_Day_02_Segment_Trees_Range_Queries_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -503,4 +504,6 @@ Neither is "strictly better" — they are two different mental models converging
 - *Algorithms on Strings, Trees, and Sequences* by Dan Gusfield — the classical, rigorous reference covering Z-algorithm, KMP, and suffix structures with full correctness proofs.
 - CP-Algorithms (cp-algorithms.com) "Z-function" article — a widely used, implementation-focused reference with clear pseudocode and common competitive-programming applications.
 - CLRS (*Introduction to Algorithms*) — covers KMP's failure function in depth as a comparative reference point for the discussion in this chapter.
+---
 
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_15_Day_02_Segment_Trees_Range_Queries_Instructional.md)

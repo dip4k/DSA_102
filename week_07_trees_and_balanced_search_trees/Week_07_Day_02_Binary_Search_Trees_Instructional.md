@@ -1,11 +1,13 @@
 # 📘 WEEK 7 DAY 2: Binary Search Trees (BSTs) — Engineering Guide
 
-**Metadata:**
-- **Week:** 7 | **Day:** 2
-- **Category:** Data Structures / Trees
-- **Difficulty:** 🟡 Intermediate
-- **Real-World Impact:** Binary Search Trees are fundamental to countless production systems: databases use BSTs for indexes and sorted key-value stores, file systems use them for inode management, compilers use them for symbol tables, and every language's standard library includes TreeMap/TreeSet variants. Understanding BST mechanics (especially insertion, deletion, and the catastrophic failure case) is essential for building systems that handle ordered data at scale.
-- **Prerequisites:** Week 7 Day 1 (tree traversals, recursion), Week 2 (pointers, dynamic memory), Week 3 (sorting intuition)
+
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_07_Day_01_Binary_Trees_And_Traversals_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_07_Day_03_Balanced_BSTs_AVL_And_RedBlack_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -65,12 +67,14 @@ Or think of a BST as a **sorted filing system where file folders are arranged hi
 
 Here's a concrete BST containing the values [5, 3, 7, 2, 4, 6, 8]:
 
-```
-        5
-       / \
-      3   7
-     / \ / \
-    2  4 6  8
+```mermaid
+flowchart TD
+    n5["5"] --> n3["3"]
+    n5 --> n7["7"]
+    n3 --> n2["2"]
+    n3 --> n4["4"]
+    n7 --> n6["6"]
+    n7 --> n8["8"]
 ```
 
 Notice the invariant at every node:
@@ -173,32 +177,30 @@ Why does this work? The BST property guarantees that if the value exists, it mus
 
 Search for value 4 in the tree:
 
-```
-        5
-       / \
-      3   7
-     / \ / \
-    2  4 6  8
+```mermaid
+flowchart TD
+    n5["5"] --> n3["3"]
+    n5 --> n7["7"]
+    n3 --> n2["2"]
+    n3 --> n4["4 (Target)"]
+    n7 --> n6["6"]
+    n7 --> n8["8"]
 ```
 
-```
 | Step | Node | Target | Comparison | Decision | Output |
 |------|------|--------|------------|----------|--------|
 | 1    | 5    | 4      | 4 < 5      | Go left to 3 | - |
 | 2    | 3    | 4      | 4 > 3      | Go right to 4 | - |
 | 3    | 4    | 4      | 4 == 4     | Found! | True |
-```
 
 **Search for value 9 (doesn't exist):**
 
-```
 | Step | Node | Target | Comparison | Decision | Output |
 |------|------|--------|------------|----------|--------|
 | 1    | 5    | 9      | 9 > 5      | Go right to 7 | - |
 | 2    | 7    | 9      | 9 > 7      | Go right to 8 | - |
 | 3    | 8    | 9      | 9 > 8      | Go right (NULL) | - |
 | 4    | NULL | 9      | N/A        | Base case: not found | False |
-```
 
 **Iterative version—the same logic without recursion:**
 
@@ -240,15 +242,16 @@ Why does this work? By always inserting smaller values to the left and larger va
 
 Insert value 1 into the tree:
 
-```
-        5           
-       / \
-      3   7         (Start: before inserting 1)
-     / \ / \
-    2  4 6  8
+```mermaid
+flowchart TD
+    n5["5"] --> n3["3"]
+    n5 --> n7["7"]
+    n3 --> n2["2"]
+    n3 --> n4["4"]
+    n7 --> n6["6"]
+    n7 --> n8["8"]
 ```
 
-```
 | Step | Node | Value | Comparison | Decision | Action |
 |------|------|-------|------------|----------|--------|
 | 1    | 5    | 1     | 1 < 5      | Go left to 3 | Recurse |
@@ -258,23 +261,22 @@ Insert value 1 into the tree:
 | 5    | 2    | (up)  | Set left child | 2.left = Node(1) | Return updated 2 |
 | 6    | 3    | (up)  | Set left child | 3.left = 2 (unchanged) | Return updated 3 |
 | 7    | 5    | (up)  | Set left child | 5.left = 3 (unchanged) | Return updated 5 |
-```
 
 Result after insertion:
 
-```
-        5
-       / \
-      3   7
-     / \ / \
-    1  4 6  8  ← New node 1 inserted
-   /
-  (NULL)
+```mermaid
+flowchart TD
+    n5["5"] --> n3["3"]
+    n5 --> n7["7"]
+    n3 --> n2["2"]
+    n3 --> n4["4"]
+    n2 --> n1["1 (New)"]
+    n7 --> n6["6"]
+    n7 --> n8["8"]
 ```
 
 **Insert value 9:**
 
-```
 | Step | Node | Value | Comparison | Decision | Action |
 |------|------|-------|------------|----------|--------|
 | 1    | 5    | 9     | 9 > 5      | Go right to 7 | Recurse |
@@ -282,7 +284,6 @@ Result after insertion:
 | 3    | 8    | 9     | 9 > 8      | Go right to NULL | Recurse |
 | 4    | NULL | 9     | Leaf found | Create new node | Node(9) created |
 | 5    | 8    | (up)  | Set right child | 8.right = Node(9) | Return updated 8 |
-```
 
 Result: 9 becomes the right child of 8.
 
@@ -319,34 +320,44 @@ Loop 4: current = NULL
 
 The simplest case. Just remove the node; nothing else needs updating.
 
-```
-    Delete 1:
-        5              5
-       / \            / \
-      3   7     →     3   7
-     / \ / \         / \ / \
-    1  4 6  8       4  6 8
+```mermaid
+flowchart LR
+    subgraph Before["Before (Delete Leaf 1)"]
+        b5["5"] --> b3["3"] & b7["7"]
+        b3 --> b1["1"] & b4["4"]
+        b7 --> b6["6"] & b8["8"]
+    end
+    subgraph After["After Deletion"]
+        a5["5"] --> a3["3"] & a7["7"]
+        a3 --> a4["4"]
+        a7 --> a6["6"] & a8["8"]
+    end
 ```
 
-The parent's pointer (3.left) simply becomes NULL.
+The parent's pointer (`3.left`) simply becomes `NULL`.
 
 **Case 2: Deleting a node with one child**
 
 Remove the node and replace it with its single child (the child is promoted up).
 
+```mermaid
+flowchart LR
+    subgraph Before2["Before (Delete 3)"]
+        bb5["5"] --> bb3["3"] & bb7["7"]
+        bb3 --> bb2["2"] & bb4["4"]
+        bb7 --> bb6["6"] & bb8["8"]
+    end
+    subgraph After2["After Promotion"]
+        aa5["5"] --> aa4["4"] & aa7["7"]
+        aa4 --> aa2["2"]
+        aa7 --> aa6["6"] & aa8["8"]
+    end
 ```
-    Delete 3 (has only right child):
-        5              5
-       / \            / \
-      3   7     →     4   7
-     / \ / \         / \ / \
-    2  4 6  8       2  6 8
 
-    Why: 4 is the direct replacement for 3.
-    - All values in 4's left subtree (2) are still < 5. ✓
-    - All values in 4's right subtree (none) are still > 5. ✓
-    BST property maintained!
-```
+Why: `4` is the direct replacement for `3`.
+- All values in `4`'s left subtree (`2`) are still `< 5`.
+- All values in `4`'s right subtree are still `> 5`.
+- The BST property is fully maintained.
 
 **Case 3: Deleting a node with two children (hardest case)**
 
@@ -356,39 +367,24 @@ This requires choosing a replacement node. Two strategies:
 
 Find the smallest node in the right subtree (go right once, then left as far as possible). This node has no left child (by definition of "leftmost"), making it easy to remove from its current position. Promote it to replace the deleted node.
 
-```
-    Delete 5 (has two children):
-    
-    Step 1: Find in-order successor
-            The smallest value in right subtree (7, 6, 8)
-            Go right to 7, go left to 6 (leftmost)
-            In-order successor = 6
-
-    Step 2: Replace 5 with 6
-            Move 6 up (remove it from its current position)
-            6's only child (if any) gets promoted
-
-    Result:
-        6           (6 replaces 5)
-       / \
-      3   7         (everything else stays connected)
-     / \ / \
-    2  4 ∅ 8        (6's left child is 3, right child is 7)
+```mermaid
+flowchart LR
+    subgraph Before3["Before (Delete 5)"]
+        c5["5 (Root)"] --> c3["3"] & c7["7"]
+        c3 --> c2["2"] & c4["4"]
+        c7 --> c6["6 (Successor)"] & c8["8"]
+    end
+    subgraph After3["After Successor Swap"]
+        r6["6 (New Root)"] --> r3["3"] & r7["7"]
+        r3 --> r2["2"] & r4["4"]
+        r7 --> r8["8"]
+    end
 ```
 
 Why does this work? The in-order successor is the next-largest value in the tree. Replacing the deleted node with the successor maintains the BST property: all values in the left subtree are still smaller, all values in the right subtree are still larger.
 
 **Inline trace 🧪—delete 5 (two children), using in-order successor:**
 
-```
-        5
-       / \
-      3   7
-     / \ / \
-    2  4 6  8
-```
-
-```
 | Step | Action | Node | Reason | Result |
 |------|--------|------|--------|--------|
 | 1    | Find target | 5 | Target node | Found at root |
@@ -396,18 +392,7 @@ Why does this work? The in-order successor is the next-largest value in the tree
 | 3    | Find successor | Go right to 7, left to 6 | Smallest in right subtree | Successor = 6 |
 | 4    | Delete successor | Remove 6 from its position | 6 has no left child | 6.right (∅) promoted |
 | 5    | Replace | Put 6 where 5 was | 6 becomes new root | 6.left = 3, 6.right = 7 |
-| 6    | Verify invariant | Check all nodes | left < parent < right? | ✓ Valid BST |
-```
-
-Result:
-
-```
-        6
-       / \
-      3   7
-     / \ / \
-    2  4 ∅ 8
-```
+| 6    | Verify invariant | Check all nodes | left < parent < right? | Valid BST |
 
 **Recursive implementation—narrative walkthrough:**
 
@@ -445,86 +430,31 @@ delete(node, target):
 
 Let's build a BST step-by-step from the insertion sequence [5, 3, 7, 2, 4, 6, 8], then perform operations:
 
-```
-Step 1: Insert 5
-        5
+| Step | Insert Key | Comparison Path | Resulting Position | Tree Balance |
+|:----:|:----------:|:----------------|:-------------------|:------------:|
+| 1 | 5 | Root empty | Root = 5 | Balanced |
+| 2 | 3 | 3 < 5 | Left child of 5 | Balanced |
+| 3 | 7 | 7 > 5 | Right child of 5 | Balanced |
+| 4 | 2 | 2 < 5 → 2 < 3 | Left child of 3 | Balanced |
+| 5 | 4 | 4 < 5 → 4 > 3 | Right child of 3 | Balanced |
+| 6 | 6 | 6 > 5 → 6 < 7 | Left child of 7 | Balanced |
+| 7 | 8 | 8 > 5 → 8 > 7 | Right child of 7 | Balanced |
 
-Step 2: Insert 3 (3 < 5, goes left)
-        5
-       /
-      3
+Now contrast what happens when keys arrive in balanced order versus sorted order `[1, 2, 3, 4, 5]`:
 
-Step 3: Insert 7 (7 > 5, goes right)
-        5
-       / \
-      3   7
-
-Step 4: Insert 2 (2 < 5, go left to 3; 2 < 3, go left)
-        5
-       / \
-      3   7
-     /
-    2
-
-Step 5: Insert 4 (4 < 5, go left to 3; 4 > 3, go right)
-        5
-       / \
-      3   7
-     / \
-    2   4
-
-Step 6: Insert 6 (6 > 5, go right to 7; 6 < 7, go left)
-        5
-       / \
-      3   7
-     / \ /
-    2  4 6
-
-Step 7: Insert 8 (8 > 5, go right to 7; 8 > 7, go right)
-        5
-       / \
-      3   7
-     / \ / \
-    2  4 6  8
-```
-
-Now, what if we inserted in a different order? Insert [1, 2, 3, 4, 5]:
-
-```
-Step 1: Insert 1
-        1
-
-Step 2: Insert 2 (2 > 1, goes right)
-        1
-         \
-          2
-
-Step 3: Insert 3 (3 > 1, go right to 2; 3 > 2, go right)
-        1
-         \
-          2
-           \
-            3
-
-Step 4: Insert 4
-        1
-         \
-          2
-           \
-            3
-             \
-              4
-
-Step 5: Insert 5
-        1
-         \
-          2
-           \
-            3
-             \
-              4
-               \
-                5
+```mermaid
+flowchart TD
+    subgraph Balanced["Balanced BST: Insert [5, 3, 7, 2, 4, 6, 8] — Height: O(log N)"]
+        b5["5"] --> b3["3"] & b7["7"]
+        b3 --> b2["2"] & b4["4"]
+        b7 --> b6["6"] & b8["8"]
+    end
+    subgraph Degenerate["Degenerate Skewed Tree: Insert [1, 2, 3, 4, 5] — Height: O(N)"]
+        d1["1"] --> d2["2"]
+        d2 --> d3["3"]
+        d3 --> d4["4"]
+        d4 --> d5["5"]
+    end
 ```
 
 This is a **degenerate BST**—a right-skewed chain. Search for 5 requires 5 comparisons (1, 2, 3, 4, 5), making it O(n) instead of O(log n). This is the nightmare scenario: you have the overhead of a tree but the performance of a linked list.
@@ -568,9 +498,9 @@ Java's standard library includes TreeMap (ordered key-value map) and TreeSet (or
 
 **The problem:** AVL trees are strictly height-balanced (every subtree's height difference ≤ 1), requiring frequent rebalancing. For some workloads (lots of insertions, few searches), rebalancing overhead dominates.
 
-**The solution:** Red-Black trees are more loosely balanced (coloring-based constraints guarantee height ≤ 2 * log(n)). This allows more flexibility, reducing rebalancing operations while maintaining O(log n) guarantees.
+**The solution:** Red-Black trees are more loosely balanced (coloring-based constraints guarantee height <= 2 * log(n)). This allows more flexibility, reducing rebalancing operations while maintaining O(log n) guarantees.
 
-**Impact:** Java applications handling large datasets rely on TreeMap for sorted collections. A naive unbalanced BST would degenerate into a linked list on many insertion patterns, making applications 100× slower. Red-Black balancing keeps operations consistent.
+Impact: Java applications handling large datasets rely on TreeMap for sorted collections. A naive unbalanced BST would degenerate into a linked list on many insertion patterns, making applications 100x slower. Red-Black balancing keeps operations consistent.
 
 #### Story 2: File Systems & Inode Management
 
@@ -580,11 +510,11 @@ Modern file systems (NTFS, ext4) use B-trees (a generalization of BSTs with mult
 
 **The solution:** B-trees balance automatically during insertions/deletions. A B-tree node fits a 4KB disk page, so each disk access reads multiple keys simultaneously. A 4-level B-tree with 100 children per node can index 100 billion inodes with only 4 disk accesses per lookup.
 
-**Impact:** File system performance depends on inode lookup efficiency. Unbalanced BSTs would make file access 1000× slower. B-tree balancing guarantees consistent performance regardless of file creation order.
+**Impact:** File system performance depends on inode lookup efficiency. Unbalanced BSTs would make file access 1000x slower. B-tree balancing guarantees consistent performance regardless of file creation order.
 
 #### Story 3: Database Indexing
 
-Databases (MySQL, PostgreSQL) use B+ trees (a variant optimizing for range queries) to index columns. Users query: "Find all transactions with amount > $1000 and < $5000."
+Databases (MySQL, PostgreSQL) use B+ trees (a variant optimizing for range queries) to index columns. Users query: "Find all transactions with amount > \$1,000 and < \$5,000."
 
 **The problem:** A simple sequential scan would check every row. For 1 billion rows, this takes minutes. An unbalanced BST on the amount column would be unpredictable—might be fast (O(log n)) or slow (O(n)).
 
@@ -812,27 +742,15 @@ BSTs were formalized in the 1960s as computer scientists moved from arrays to dy
 
 ---
 
-**Total Word Count: 16,200 words**
-
-**Visual Elements: 12 diagrams (BST structures, insertion/deletion sequences, execution traces, complexity tables)**
-
-
-This file follows the Unified v13 Narrative-First architecture:
-- ✅ 5-chapter arc: Context → Mental Model → Mechanics → Reality → Mastery
-- ✅ Inline visuals placed exactly where concepts introduced (12 diagrams)
-- ✅ Production case studies (5 detailed stories: Java TreeMap, file systems, databases, compilers, Redis)
-- ✅ Flowing prose with natural transitions
-- ✅ Mechanical understanding through execution traces and progressive examples
-- ✅ All three deletion cases explained in detail
-- ✅ Real systems grounding (production systems relying on BSTs)
-- ✅ Interview-focused supplementary outcomes with edge cases
-
-
-
----
-
 ## 📊 Complexity Recap
 
-- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
-- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+- **Time Complexity:**
+  - Search, Insertion, Deletion: `O(H)` where `H` is the height of the tree.
+  - Balanced BST: `O(log N)` average case.
+  - Degenerate (Skewed) BST: `O(N)` worst case.
+- **Auxiliary Space:** `O(H)` for recursive implementations due to call stack frames (`O(1)` auxiliary for iterative search and insertion).
 
+---
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_07_Day_01_Binary_Trees_And_Traversals_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_07_Day_03_Balanced_BSTs_AVL_And_RedBlack_Instructional.md)

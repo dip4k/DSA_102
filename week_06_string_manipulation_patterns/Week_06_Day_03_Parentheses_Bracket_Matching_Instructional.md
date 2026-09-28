@@ -1,11 +1,12 @@
 # 📘 Week 06 Day 3: Parentheses & Bracket Matching — Engineering Guide
 
-**Metadata:**
-- **Week:** 06 | **Day:** 3
-- **Category:** String Patterns
-- **Difficulty:** 🟡 Intermediate
-- **Real-World Impact:** Parentheses validation powers every compiler, code editor, JSON parser, and expression evaluator. Mismatched brackets cause syntax errors in billions of lines of code daily; correct matching is foundational to programming language parsing.
-- **Prerequisites:** Week 02 (Strings), Week 02 (Stacks), Week 06 Days 1-2 (Palindromes, Sliding Windows)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_06_Day_02_Substring_Sliding_Window_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_06_Day_04_String_Transformations_Building_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -219,35 +220,22 @@ We maintain a stack of opening brackets. As we traverse the string, we push each
 
 **Inline Trace:**
 
-```
-String: "{[()]}"  (length 6)
 
-Step | Char | Action            | Stack       | Status
------|------|------------------|-------------|---------
-  0  │  {   │ Push {           │ [{]         │ OK
-  1  │  [   │ Push [           │ [{, []      │ OK
-  2  │  (   │ Push (           │ [{, [, (]  │ OK
-  3  │  )   │ Pop (? Match! Yes │ [{, []      │ OK
-  4  │  ]   │ Pop []? Match! Yes│ [{]         │ OK
-  5  │  }   │ Pop {}? Match! Yes│ []          │ OK
+| Step | Char | Action | Stack | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| 0 | { | Push { | [{] | OK |
+| 1 | [ | Push [ | [{, [] | OK |
+| 2 | ( | Push ( | [{, [, (] | OK |
+| 3 | ) | Pop (? Match! Yes | [{, [] | OK |
+| 4 | ] | Pop []? Match! Yes | [{] | OK |
+| 5 | } | Pop {}? Match! Yes | [] | OK |
+| Step | Char | Action | Stack | Status |
+| 0 | ( | Push ( | [(] | OK |
+| 1 | { | Push { | [(, {] | OK |
+| 2 | [ | Push [ | [(, {, [] | OK |
+| 3 | } | Top is [, expect } | N/A | Mismatch! |
+|  | Types don't match |  | INVALID ✗ |  |
 
-After loop: Stack empty? Yes
-Result: VALID ✓
-
----
-
-String: "({[}])"  (length 6, INVALID)
-
-Step | Char | Action            | Stack        | Status
------|------|------------------|--------------|----------
-  0  │  (   │ Push (           │ [(]          │ OK
-  1  │  {   │ Push {           │ [(, {]       │ OK
-  2  │  [   │ Push [           │ [(, {, []    │ OK
-  3  │  }   │ Top is [, expect }│ N/A         │ Mismatch!
-     │      │ Types don't match │              │ INVALID ✗
-
-Result: INVALID (detected at position 3)
-```
 
 The trace shows the stack perfectly capturing nesting. Mismatch is caught immediately.
 
@@ -273,21 +261,21 @@ Stack: [-1]
 
 Index | Char | Action                    | Stack        | Valid Length
 ------|------|---------------------------|--------------|---------------
-  0   │  (   │ Push index 0              │ [-1, 0]      │ 0
-  1   │  )   │ Match! Pop 0, calc length│ [-1]         │ length = 1-(-1)-1 = 1
-      │      │ Longest so far: 1        │              │
-  2   │  )   │ Top is -1, no match       │ [-1]         │ Push 2
-      │      │                           │ [-1, 2]      │
-  3   │  (   │ Push index 3              │ [-1, 2, 3]   │
-  4   │  (   │ Push index 4              │ [-1, 2, 3, 4] │
-  5   │  )   │ Match! Pop 4              │ [-1, 2, 3]   │ length = 5-3-1 = 1
-      │      │ Longest so far: 1        │              │
-  6   │  )   │ Match! Pop 3              │ [-1, 2]      │ length = 6-2-1 = 3
-      │      │ Longest so far: 3 (subst │              │ "(()")
-      │      │ from 3 to 6)              │              │
-  7   │  )   │ Top is 2, no match        │ [-1, 2]      │ Push 7
-      │      │                           │ [-1, 2, 7]   │
-  8   │  (   │ Push index 8              │ [-1, 2, 7, 8] │
+  0   |  (   | Push index 0              | [-1, 0]      | 0
+  1   |  )   | Match! Pop 0, calc length| [-1]         | length = 1-(-1)-1 = 1
+      |      | Longest so far: 1        |              |
+  2   |  )   | Top is -1, no match       | [-1]         | Push 2
+      |      |                           | [-1, 2]      |
+  3   |  (   | Push index 3              | [-1, 2, 3]   |
+  4   |  (   | Push index 4              | [-1, 2, 3, 4] |
+  5   |  )   | Match! Pop 4              | [-1, 2, 3]   | length = 5-3-1 = 1
+      |      | Longest so far: 1        |              |
+  6   |  )   | Match! Pop 3              | [-1, 2]      | length = 6-2-1 = 3
+      |      | Longest so far: 3 (subst |              | "(()")
+      |      | from 3 to 6)              |              |
+  7   |  )   | Top is 2, no match        | [-1, 2]      | Push 7
+      |      |                           | [-1, 2, 7]   |
+  8   |  (   | Push index 8              | [-1, 2, 7, 8] |
 
 End: Longest valid = 3 (substring "(())" from indices 3-6)
 ```
@@ -530,25 +518,23 @@ CORRECT (if possible):
 
 **Decision Tree:**
 
-```
-Is the problem about BRACKET VALIDATION?
 
-├─ Yes, simple valid check?
-│  └─ Use stack-based validation: O(n) time, O(n) space
-│
-├─ Yes, find longest valid substring?
-│  ├─ Use DP: O(n) time, O(n) space
-│  └─ Or stack with index tracking
-│
-├─ Yes, remove minimum to make valid?
-│  └─ Use stack + greedy removal
-│
-├─ Yes, generate all valid combinations?
-│  └─ Use backtracking/recursion
-│
-└─ No, different bracket problem?
-   └─ Clarify constraints
+```mermaid
+flowchart TD
+    R["Is the problem about BRACKET VALIDATION?"]
+    R --> N1["Yes, simple valid check?"]
+    N1 --> N2["Use stack-based validation: O(n) time, O(n) space"]
+    R --> N3["Yes, find longest valid substring?"]
+    N3 --> N4["Use DP: O(n) time, O(n) space"]
+    N3 --> N5["Or stack with index tracking"]
+    R --> N6["Yes, remove minimum to make valid?"]
+    N6 --> N7["Use stack + greedy removal"]
+    R --> N8["Yes, generate all valid combinations?"]
+    N8 --> N9["Use backtracking/recursion"]
+    R --> N10["No, different bracket problem?"]
+    N10 --> N11["Clarify constraints"]
 ```
+
 
 - **✅ Use when:** Validating syntax, finding bracket pairs, checking nesting
 - **🛑 Avoid when:** Not actually about brackets (e.g., arithmetic evaluation without brackets)
@@ -726,3 +712,6 @@ This principle extends far beyond brackets:
 When you encounter a problem involving nesting, hierarchies, or "last-in-first-out" semantics, pause. Ask: **"Can I model this as a stack problem?"** More often than not, the answer is yes, and the solution becomes clear.
 
 ---
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_06_Day_02_Substring_Sliding_Window_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_06_Day_04_String_Transformations_Building_Instructional.md)

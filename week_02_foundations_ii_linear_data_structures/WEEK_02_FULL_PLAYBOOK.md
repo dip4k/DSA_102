@@ -1,4 +1,10 @@
 # 📚 WEEK 02: FOUNDATIONS II - LINEAR DATA STRUCTURES
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Comprehensive Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
+
+---
+
 ## Arrays, Dynamic Arrays, Linked Lists, Stacks, Queues, Binary Search
 
 **Phase:** A (Foundations)  
@@ -632,15 +638,13 @@ Music player maintains playlist. User inserts song at arbitrary position:
 - **No contiguity:** Nodes scattered in memory
 - **Sequential access:** Follow pointers from head
 
-```
-Linked List: 10 → 20 → 30 → 40 → null
 
-Node structure:
-┌─────────────────┐
-│ data: 10        │
-│ next: ────────────────→ [Next Node]
-└─────────────────┘
+```mermaid
+flowchart TD
+    R["Linked List 10 → 20 → 30 → 40 → null"]
+    R --> N1["State"]
 ```
+
 
 ---
 
@@ -1336,17 +1340,18 @@ tasks.Enqueue("Task3");
 3. **Recursion:** Each call pushes frame, depth limited by stack size
 
 **Example: Recursive Fibonacci**
-```
-fib(4) call → Push frame
-├─ fib(3) call → Push frame
-│  ├─ fib(2) call → Push frame
-│  │  ├─ fib(1) → Return 1 (pop)
-│  │  └─ fib(0) → Return 0 (pop)
-│  └─ Return 1 (pop)
-└─ Return 2 (pop)
 
-Stack usage: Function calls stored, unwound in reverse (LIFO)
+```mermaid
+flowchart TD
+    R["fib(4) call → Push frame"]
+    R --> N1["fib(3) call → Push frame"]
+    N1 --> N2["fib(2) call → Push frame"]
+    N2 --> N3["fib(1) → Return 1 (pop)"]
+    N2 --> N4["fib(0) → Return 0 (pop)"]
+    N1 --> N5["Return 1 (pop)"]
+    R --> N6["Return 2 (pop)"]
 ```
+
 
 ---
 
@@ -1664,7 +1669,7 @@ D) left / right
 ### Engineering Problem: Preventing Overflow & Corruption
 In virtual machines, text editors, and database engines, data is physically represented as contiguous bytes. When converting user inputs (like a port number string "8080" or lines count "150000") into numeric register variables, we must understand representations to protect against:
 - **Integer Overflow**: Values exceeding register limits wrap across positive/negative axes.
-- **Concatenation Memory Bloat**: Repeatedly appending characters to immutable string objects triggers high-frequency heap allocations and $O(N^2)$ copying costs.
+- **Concatenation Memory Bloat**: Repeatedly appending characters to immutable string objects triggers high-frequency heap allocations and `O(N^2)` copying costs.
 
 ### What are Strings and Numbers?
 - **String**: A stable sequence of characters stored in memory. In runtimes like .NET and Java, strings are immutable and encoded in UTF-16 (2 bytes per character).
@@ -1679,11 +1684,11 @@ Think of an immutable string like a sealed glass case with fixed compartments. T
 1. Allocate a brand new, larger display case.
 2. Copy all character items from the old case over.
 3. Discard the old case (leaving work for the Garbage Collector).
-To avoid this $O(N^2)$ overhead during repeated modifications, use a `StringBuilder` growable array buffer, which allocates memory geometrically and appends items in O(1) amortized time.
+To avoid this `O(N^2)` overhead during repeated modifications, use a `StringBuilder` growable array buffer, which allocates memory geometrically and appends items in `O(1)` amortized time.
 
 ### 2. Two's Complement Parity Scale
-Signed numbers allocate their most significant bit (MSB) as a sign marker. Negating $X$ is performed by inverting all register bits (NOT) and adding 1:
-$$-X = \sim X + 1$$
+Signed numbers allocate their most significant bit (MSB) as a sign marker. Negating `X` is performed by inverting all register bits (NOT) and adding 1:
+`-X = ~X + 1`
 
 ---
 
@@ -1745,7 +1750,7 @@ def itoa(n: int) -> str:
 
 ## 📘 Chapter 4: Performance and Systems
 
-*   **String Concatenation Cost**: Modifying strings directly inside loops copies characters repeatedly, compounding to $O(N^2)$ work.
+*   **String Concatenation Cost**: Modifying strings directly inside loops copies characters repeatedly, compounding to `O(N^2)` work.
 *   **Encodings Overhead**:
     *   **ASCII**: 7-bit values (1 byte per char), English only.
     *   **UTF-8**: Variable-length (1 to 4 bytes), backward-compatible with ASCII, standard for web payloads.
@@ -1846,24 +1851,23 @@ D) 8 bytes
 
 ## 🎯 Pattern Selection Decision Tree
 
+
+```mermaid
+flowchart TD
+    R["Need to store data?"]
+    R --> N1["Size known upfront?"]
+    N1 --> N2["Yes → Array (fast access)"]
+    N1 --> N3["No → Dynamic Array (grows as needed)"]
+    R --> N4["Frequent middle insertions?"]
+    N4 --> N5["Yes → Linked List"]
+    R --> N6["LIFO access (last in first out)?"]
+    N6 --> N7["Stack"]
+    R --> N8["FIFO access (first in first out)?"]
+    N8 --> N9["Queue"]
+    R --> N10["Search sorted data?"]
+    N10 --> N11["Binary Search (O(log N))"]
 ```
-Need to store data?
-├─ Size known upfront?
-│  ├─ Yes → Array (fast access)
-│  └─ No → Dynamic Array (grows as needed)
-│
-├─ Frequent middle insertions?
-│  └─ Yes → Linked List
-│
-├─ LIFO access (last in first out)?
-│  └─ Stack
-│
-├─ FIFO access (first in first out)?
-│  └─ Queue
-│
-└─ Search sorted data?
-   └─ Binary Search (O(log N))
-```
+
 
 ---
 
@@ -1954,3 +1958,7 @@ Master implementation details (pointer manipulation, boundary conditions) and yo
 **Ready for Deployment:** YES ✅  
 **Quality Score:** 9.5/10 ⭐⭐⭐⭐⭐  
 **Next:** Week 03 - Sorting and Hashing
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)

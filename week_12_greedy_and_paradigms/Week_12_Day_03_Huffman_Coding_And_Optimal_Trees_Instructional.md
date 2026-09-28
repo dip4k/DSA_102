@@ -1,14 +1,14 @@
 # 📘 WEEK 12 DAY 3: HUFFMAN CODING & OPTIMAL TREES — ENGINEERING GUIDE
 
-**Metadata:**
-- **Week:** 12 | **Day:** 03
-- **Category:** Algorithm Paradigms (Greedy)
-- **Difficulty:** 🟡 Intermediate → 🔴 Advanced (theory side)
-- **Real-World Impact:** Huffman coding powers the core compression stage of formats like ZIP, GZIP, PNG, many image/audio codecs, and countless custom protocols. Understanding it gives you a concrete example where greedy is *provably* optimal.
-- **Prerequisites:**
-  - Week 12 Day 01 – Greedy Fundamentals (greedy choice property, exchange argument)
-  - Basic understanding of trees and priority queues (Weeks 3 & 7)
-  - Comfort with binary representations and bits
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_12_Day_02_Activity_Selection_And_Interval_Problems_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_12_Day_04_Fractional_Knapsack_And_Scheduling_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
+
+---
 
 ---
 
@@ -825,4 +825,9 @@ In ML and data compression research, Huffman coding is often used as a simple en
 
 ---
 
-**End of Week 12 Day 03 Instructional File**  
+**End of Week 12 Day 03 Instructional File**
+
+---
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_12_Day_02_Activity_Selection_And_Interval_Problems_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_12_Day_04_Fractional_Knapsack_And_Scheduling_Instructional.md)

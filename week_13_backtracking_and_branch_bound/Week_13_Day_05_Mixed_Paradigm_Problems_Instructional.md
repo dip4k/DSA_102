@@ -1,13 +1,12 @@
 # Week 13 Day 05: Mixed Paradigm Problems — Engineering Guide
 
-**📂 Metadata**
-- **Week:** 13  
-- **Day:** 05  
-- **Phase:** 🟧 Algorithm Paradigms  
-- **Category:** Hybrid Algorithm Design & Optimization  
-- **Difficulty:** Advanced  
-- **Real-World Impact:** Most production systems combine multiple algorithmic paradigms—pure implementations are rare. Mastering hybrid approaches enables solving complex optimization problems where single-paradigm solutions fail. Critical for competitive programming, system design interviews, and high-performance computing.  
-- **Prerequisites:** Week 1-12 (All previous topics), Week 13 Day 1-4 (Backtracking, Branch & Bound, Amortized Analysis)
+
+
+
+
+> 🧭 **Navigation:** [← Previous Day](Week_13_Day_04_Amortized_Analysis_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_13_FULL_PLAYBOOK.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -249,34 +248,15 @@ Layer 3: DP for subpath optimization (Held-Karp)
 ```
 
 **Visual: Layered TSP Hybrid**
-```
-┌─────────────────────────────────────────────────────────────┐
-│ LAYER 1: Greedy (Nearest Neighbor)                         │
-│ Input: Graph G = (V, E)                                     │
-│ Output: Tour T with cost U (upper bound)                   │
-│ Time: O(n²)                                                 │
-└──────────────────────┬──────────────────────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────────────────────┐
-│ LAYER 2: Branch & Bound                                     │
-│ Branch: Explore permutations                                │
-│ Bound: MST lower bound + greedy upper bound U              │
-│ Prune: Skip branch if LB > U                                │
-│ Update: If tour better than U, update U                     │
-└──────────────────────┬──────────────────────────────────────┘
-                       │
-                       ▼ (for subproblems)
-┌─────────────────────────────────────────────────────────────┐
-│ LAYER 3: Dynamic Programming (Held-Karp)                    │
-│ State: dp[S][v] = min cost to visit set S, end at v        │
-│ Transition: dp[S∪{w}][w] = min(dp[S][v] + dist[v][w])      │
-│ Memo: Avoid recomputing same (S, v)                         │
-│ Time: O(n² × 2^n)                                           │
-└─────────────────────────────────────────────────────────────┘
 
-Result: Optimal tour found faster than pure DP (pruning reduces effective state space)
+```mermaid
+flowchart TD
+    R["State"]
+    R --> N1["Step"]
+    R --> N2["Step"]
+    R --> N3["State"]
 ```
+
 
 ---
 
@@ -382,38 +362,11 @@ Result: UPS ORION system uses this decomposition, saves 100M miles/year
 ```
 
 **Visual: VRP Decomposition**
-```
-┌──────────────────────────────────────────────────────────┐
-│ INPUT: Customers (locations, demands), Vehicles          │
-└────────────────────┬─────────────────────────────────────┘
-                     │
-        ┌────────────┴────────────┐
-        │                         │
-┌───────▼─────────┐      ┌────────▼────────┐
-│ CLUSTERING      │      │ INITIAL ROUTES  │
-│ (Greedy K-Means)│      │ (Use centroids) │
-└───────┬─────────┘      └────────┬────────┘
-        │                         │
-        └────────────┬────────────┘
-                     │
-            ┌────────▼────────┐
-            │ ROUTING PER     │
-            │ CLUSTER (DP/B&B)│
-            └────────┬────────┘
-                     │
-            ┌────────▼────────┐
-            │ LOCAL REFINEMENT│
-            │ (2-Opt Search)  │
-            └────────┬────────┘
-                     │
-                     ▼
-┌──────────────────────────────────────────────────────────┐
-│ OUTPUT: Optimized routes (sequence per vehicle)          │
-└──────────────────────────────────────────────────────────┘
 
-Each stage uses paradigm matching its structure.
-Weak coupling allows iteration for global improvement.
-```
+| CLUSTERING |  | INITIAL ROUTES |
+| :--- | :--- | :--- |
+| (Greedy K-Means) |  | (Use centroids) |
+
 
 ---
 
@@ -723,7 +676,7 @@ Pure Backtracking (2^6 = 64 subsets):
 
 Total nodes explored: 64
 
-═══════════════════════════════════════════════════════════
+===========================================================
 
 Hybrid Approach (Meet-in-the-Middle):
 
@@ -1051,56 +1004,17 @@ class Program
 
 ### Visual: Hybrid Pipeline
 
-```
-┌────────────────────────────────────────────────────────────┐
-│ INPUT: Jobs + Dependency Graph                             │
-│                                                             │
-│ Jobs: J0(d=3,p=50,dl=10), J1(d=2,p=30,dl=8),              │
-│       J2(d=4,p=70,dl=12), J3(d=1,p=20,dl=6),              │
-│       J4(d=2,p=40,dl=9)                                    │
-│                                                             │
-│ Dependencies: J0→J2, J1→J3, J3→J4                         │
-└──────────────────────┬─────────────────────────────────────┘
-                       │
-            ┌──────────▼──────────┐
-            │ STAGE 1: TOPO SORT  │
-            │ (Graph Algorithm)   │
-            └──────────┬──────────┘
-                       │
-           Valid orderings respecting deps:
-           [J0, J1, J3, J4, J2] or
-           [J1, J3, J0, J4, J2] or ...
-                       │
-            ┌──────────▼──────────┐
-            │ STAGE 2: GREEDY     │
-            │ (Profit/Duration)   │
-            └──────────┬──────────┘
-                       │
-           Order within topo constraints:
-           J2(70/4=17.5), J4(40/2=20), J0(50/3=16.7),
-           J1(30/2=15), J3(20/1=20)
-                       │
-           Reordered: [J4, J3, J2, J0, J1]
-           (but must respect deps!)
-                       │
-            ┌──────────▼──────────┐
-            │ STAGE 3: DP         │
-            │ (Knapsack on Time)  │
-            └──────────┬──────────┘
-                       │
-           Select subset maximizing profit:
-           - Constraint: time ≤ deadline
-           - Constraint: respect topo order
-                       │
-                       ▼
-┌────────────────────────────────────────────────────────────┐
-│ OUTPUT: Optimal Schedule                                   │
-│ [J1, J3, J4] → Profit = 30 + 20 + 40 = 90                 │
-│ Time: 2 + 1 + 2 = 5 (within all deadlines)                │
-└────────────────────────────────────────────────────────────┘
 
-Key: Each stage contributes essential constraint/optimization
+```mermaid
+flowchart TD
+    R["State"]
+    R --> N1["Step"]
+    N1 --> N2["Step"]
+    N1 --> N3["Step"]
+    N1 --> N4["Step"]
+    R --> N5["State"]
 ```
+
 
 ---
 
@@ -1645,48 +1559,18 @@ public class TSP_Hybrid
 
 ### Visual: Hybrid Sudoku Strategy
 
-```
-Initial Grid:
-┌─────────┬─────────┬─────────┐
-│ 5 3 · │ · 7 · │ · · · │
-│ 6 · · │ 1 9 5 │ · · · │
-│ · 9 8 │ · · · │ · 6 · │
-├─────────┼─────────┼─────────┤
-│ 8 · · │ · 6 · │ · · 3 │
-│ 4 · · │ 8 · 3 │ · · 1 │
-│ 7 · · │ · 2 · │ · · 6 │
-├─────────┼─────────┼─────────┤
-│ · 6 · │ · · · │ 2 8 · │
-│ · · · │ 4 1 9 │ · · 5 │
-│ · · · │ · 8 · │ · 7 9 │
-└─────────┴─────────┴─────────┘
 
-HYBRID EXECUTION:
+| 5 3 · | · 7 · | · · · |
+| :--- | :--- | :--- |
+| 6 · · | 1 9 5 | · · · |
+| · 9 8 | · · · | · 6 · |
+| 8 · · | · 6 · | · · 3 |
+| 4 · · | 8 · 3 | · · 1 |
+| 7 · · | · 2 · | · · 6 |
+| · 6 · | · · · | 2 8 · |
+| · · · | 4 1 9 | · · 5 |
+| · · · | · 8 · | · 7 9 |
 
-Step 1: CONSTRAINT PROPAGATION (Greedy)
-- For each filled cell: eliminate its value from row/col/box
-- Result: Reduce possible values for empty cells
-- Example: Cell (0,2) can't be 5, 3, 6, 9, 8, 7
-           Remaining: {1, 2, 4}
-
-Step 2: MRV HEURISTIC (Greedy Ordering)
-- Find cell with minimum possible values
-- Example: Cell (0,2) has only {1, 2, 4}
-- Choose this cell next (reduces branching)
-
-Step 3: BACKTRACKING (Systematic Search)
-- Try value from possible set
-- If leads to conflict: backtrack
-- Propagate constraints after each assignment
-
-Step 4: ARC CONSISTENCY (Pruning)
-- Check if each value in domain has supporting value in neighbors
-- If not: remove from domain
-- Example: If (0,2)=1 leaves cell (0,5) with no valid values
-           Then (0,2)≠1, skip this branch
-
-Result: Solve in ~100 backtracks (pure BT: ~10,000)
-```
 
 ---
 
@@ -1768,61 +1652,45 @@ Amortized Analysis:
 
 ## Decision Tree: Choosing Hybrid Paradigms
 
+
+```mermaid
+flowchart TD
+    R["Problem Analysis"]
+    R --> N1["Is solution constructive (build incrementally)?"]
+    N1 --> N2["YES → Consider Backtracking/Branch & Bound"]
+    N2 --> N3["Are there overlapping subproblems?"]
+    N3 --> N4["YES → ADD DP Memoization"]
+    N3 --> N5["NO → Pure Backtracking"]
+    N2 --> N6["Can you compute bounds cheaply?"]
+    N6 --> N7["YES → ADD Greedy Bounds (Branch & Bound)"]
+    N6 --> N8["NO → Use DP for exact bounds"]
+    N2 --> N9["Are there good heuristics for ordering choices?"]
+    N9 --> N10["YES → ADD Greedy Ordering"]
+    N9 --> N11["NO → Use random/arbitrary ordering"]
+    N1 --> N12["NO → Continue"]
+    R --> N13["Does problem have optimal substructure?"]
+    N13 --> N14["YES → Base: DP"]
+    N14 --> N15["Are DP transitions expensive?"]
+    N15 --> N16["YES → ADD Amortized Data Structures"]
+    N15 --> N17["NO → Pure DP"]
+    N14 --> N18["Is state space large but sparse?"]
+    N18 --> N19["YES → ADD Branch & Bound pruning"]
+    N18 --> N20["NO → Pure DP"]
+    N13 --> N21["NO → Continue"]
+    R --> N22["Is greedy choice property present?"]
+    N22 --> N23["YES → Base: Greedy"]
+    N23 --> N24["Is greedy solution suboptimal?"]
+    N24 --> N25["YES → ADD Local Search or Backtracking refinement"]
+    N24 --> N26["NO → Pure Greedy"]
+    N23 --> N27["Can greedy provide bounds?"]
+    N27 --> N28["YES → Use as bound in Branch & Bound"]
+    N27 --> N29["NO → Standalone Greedy"]
+    N22 --> N30["NO → Continue"]
+    R --> N31["Is problem NP-hard requiring approximation?"]
+    N31 --> N32["YES → Hybrid Strategy:"]
+    N31 --> N33["NO → Revisit problem structure"]
 ```
-Problem Analysis:
-    │
-    ├─ Is solution constructive (build incrementally)?
-    │  ├─ YES → Consider Backtracking/Branch & Bound
-    │  │   │
-    │  │   ├─ Are there overlapping subproblems?
-    │  │   │  ├─ YES → ADD DP Memoization
-    │  │   │  └─ NO → Pure Backtracking
-    │  │   │
-    │  │   ├─ Can you compute bounds cheaply?
-    │  │   │  ├─ YES → ADD Greedy Bounds (Branch & Bound)
-    │  │   │  └─ NO → Use DP for exact bounds
-    │  │   │
-    │  │   └─ Are there good heuristics for ordering choices?
-    │  │      ├─ YES → ADD Greedy Ordering
-    │  │      └─ NO → Use random/arbitrary ordering
-    │  │
-    │  └─ NO → Continue
-    │
-    ├─ Does problem have optimal substructure?
-    │  ├─ YES → Base: DP
-    │  │   │
-    │  │   ├─ Are DP transitions expensive?
-    │  │   │  ├─ YES → ADD Amortized Data Structures
-    │  │   │  │           (Priority Queue, Union-Find, etc.)
-    │  │   │  └─ NO → Pure DP
-    │  │   │
-    │  │   └─ Is state space large but sparse?
-    │  │      ├─ YES → ADD Branch & Bound pruning
-    │  │      └─ NO → Pure DP
-    │  │
-    │  └─ NO → Continue
-    │
-    ├─ Is greedy choice property present?
-    │  ├─ YES → Base: Greedy
-    │  │   │
-    │  │   ├─ Is greedy solution suboptimal?
-    │  │   │  ├─ YES → ADD Local Search or Backtracking refinement
-    │  │   │  └─ NO → Pure Greedy
-    │  │   │
-    │  │   └─ Can greedy provide bounds?
-    │  │      ├─ YES → Use as bound in Branch & Bound
-    │  │      └─ NO → Standalone Greedy
-    │  │
-    │  └─ NO → Continue
-    │
-    └─ Is problem NP-hard requiring approximation?
-       ├─ YES → Hybrid Strategy:
-       │        1. Greedy for initial solution
-       │        2. Local Search for refinement
-       │        3. Metaheuristic (SA, GA) if needed
-       │
-       └─ NO → Revisit problem structure
-```
+
 
 ---
 
@@ -1926,22 +1794,15 @@ Key: Hybrid doesn't change worst-case (still exponential),
 ## 2. The Trade-off Lens: Optimality vs Speed
 
 **Spectrum**:
-```
-Pure Greedy ←──────────────────────→ Pure Exact
-(Fast, Approximate)            (Slow, Optimal)
-     │
-     ├─ Greedy + Local Search (Medium, Good)
-     │
-     ├─ Greedy + Branch & Bound (Medium-Slow, Optimal)
-     │
-     └─ DP + Greedy Bounds (Slow, Optimal)
 
-Decision Factors:
-- Deadline: Tight → Greedy
-- Quality requirement: Optimal → Exact
-- Problem size: Large → Greedy/Approximate
-- Recurrence: Frequent → Cache DP results
+```mermaid
+flowchart TD
+    R["Pure Greedy ←→ Pure Exact"]
+    R --> N1["Greedy + Local Search (Medium, Good)"]
+    R --> N2["Greedy + Branch & Bound (Medium-Slow, Optimal)"]
+    R --> N3["DP + Greedy Bounds (Slow, Optimal)"]
 ```
+
 
 ## 3. The Learning Lens: Common Mistakes
 
@@ -2204,4 +2065,6 @@ These techniques form the foundation for tackling NP-hard problems in interviews
 
 - Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
 - Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
+---
 
+> 🧭 **Navigation:** [← Previous Day](Week_13_Day_04_Amortized_Analysis_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Week Playbook →](WEEK_13_FULL_PLAYBOOK.md)

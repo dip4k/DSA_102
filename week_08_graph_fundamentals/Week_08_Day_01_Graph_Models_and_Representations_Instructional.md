@@ -1,11 +1,12 @@
 # 📘 Week 8 Day 1: Graph Models & Representations — Engineering Guide
 
-**Metadata:**
-- **Week:** 8 | **Day:** 1  
-- **Category:** Graph Algorithms  
-- **Difficulty:** 🟡 Intermediate  
-- **Real-World Impact:** Graphs model everything from social networks to recommendation engines to compiler design; how you represent them determines whether your algorithm runs in milliseconds or hours.  
-- **Prerequisites:** Week 2 (Arrays, Linked Lists), Week 3 (Hash Tables)
+
+
+
+
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_08_Day_02_Breadth_First_Search_Instructional.md)
+> 
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
@@ -802,4 +803,6 @@ Each choice reflects understanding: understanding the data, understanding the al
 - ✅ MIT-level depth with production insights
 - ✅ Smooth transitions between chapters
 - ✅ Ready for immediate use in instruction
+---
 
+> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md) • [Next Day →](Week_08_Day_02_Breadth_First_Search_Instructional.md)

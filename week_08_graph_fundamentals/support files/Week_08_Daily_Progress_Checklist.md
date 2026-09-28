@@ -1,5 +1,11 @@
 # ✅ Week 08 Daily Progress Checklist – Graph Fundamentals
 
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *Support files are modular reference tools. Use them flexibly to self-assess, review key formulas, or prepare for verbal interviews.*
+
+---
+
 Filename: `Week_08_Daily_Progress_Checklist.md`  
 Week: 08 – Graph Fundamentals: Representations, BFS, DFS & Topological Sort
 
@@ -195,3 +201,7 @@ Answer these at the end of the week (in a notebook or doc):
 - [ ] I can explain at least two **real-world scenarios** where these graph concepts appear.
 
 If you can check most of these, you are ready to move into Week 09’s **graph algorithms** with confidence.
+
+---
+
+> 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS_v13.md)

@@ -1,5 +1,11 @@
 # Week 06 Extended Python Complete v13
 
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
+> 
+> 💡 **Instructor Note:** *This Python (3.11+) guide provides reference implementations, zero-allocation patterns, and test verification drills. Use it alongside daily study as a practical code blueprint.*
+
+---
+
 Purpose: build Python fluency for string-specific patterns: palindromes, windows, parentheses, transformations, and pattern matching.
 
 ## Focus tags
@@ -100,3 +106,7 @@ def rabin_karp(text, pattern):
 - O(n^2) concatenation in loops instead of list-plus-join.
 - Forgetting to shrink window state when moving the left boundary.
 - Hash-match false positives if Rabin-Karp results are not verified.
+
+---
+
+> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS_v13.md)
