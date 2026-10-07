@@ -1,4 +1,4 @@
----
+﻿---
 name: dsa-pedagogy-verifier
 description: Verify, audit, and refine DSA learning materials to ensure beginner-accessible fluency, progressive scaffolding, intuitive mental models, and zero academic jargon for FAANG interview preparation.
 ---
@@ -135,12 +135,12 @@ flowchart LR
 
     Start["🟢 Start: Left=0, Right=N-1"]:::startNode
     Check{"🔍 Sum == Target?"}:::actionNode
-    ShrinkLeft["👉 Sum < Target: Move Left"]:::warnNode
+    ShrinkLeft["👉 Sum &lt; Target: Move Left"]:::warnNode
     ShrinkRight["👈 Sum > Target: Move Right"]:::warnNode
     Success["✅ Found Pair: Return Indices"]:::successNode
 
     Start --> Check
-    Check -->|"Sum < Target"| ShrinkLeft
+    Check -->|"Sum &lt; Target"| ShrinkLeft
     Check -->|"Sum > Target"| ShrinkRight
     Check -->|"Equal"| Success
 ```

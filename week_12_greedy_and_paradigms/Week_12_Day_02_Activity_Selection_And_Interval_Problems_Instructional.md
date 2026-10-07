@@ -1,23 +1,20 @@
 # 📘 WEEK 12 DAY 2: ACTIVITY SELECTION & INTERVAL PROBLEMS — ENGINEERING GUIDE
 
-
-
-
-
 > 🧭 **Navigation:** [← Previous Day](Week_12_Day_01_Greedy_Fundamentals_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_12_Day_03_Huffman_Coding_And_Optimal_Trees_Instructional.md)
 > 
-> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
+> 💡 **Instructor Note:** *Interval problems form one of the highest-frequency patterns in engineering loops. Master the distinction between interval selection (greedy earliest finish time), interval partitioning (sweep-line or min-heap), and weighted intervals (dynamic programming).*
 
 ---
+
 ## 🎯 LEARNING OBJECTIVES
 
 *By the end of this chapter, you will be able to:*
 
-- 🎯 **Internalize** the core structure of interval scheduling problems and recognize when they are greedy-friendly.
-- ⚙️ **Implement** the classic activity selection algorithm and several interval scheduling variants using the greedy template.
-- ⚖️ **Differentiate** between problems where greedy is optimal (unweighted) and where dynamic programming is required (weighted).
-- 🧪 **Prove** correctness of greedy interval algorithms using exchange arguments and "greedy stays ahead" reasoning.
-- 🏭 **Connect** interval scheduling to real systems like meeting room schedulers, CPU cores, and load balancers.
+- 🎯 **Disambiguate** the 4 core interval problem archetypes instantly in interview settings.
+- ⚙️ **Implement** production-grade solutions for Activity Selection and Meeting Rooms in C# (.NET 8/9 with `PriorityQueue`) and Python (3.11+ with `heapq`).
+- ⚖️ **Explain** why sorting by start time or duration fails, while sorting by earliest finish time is provably optimal.
+- 🧠 **Defend** interval selection using a clean, intuitive Exchange Argument.
+- 🏭 **Architect** resource schedulers for calendar backends, cloud worker pools, and video ad slots.
 
 ---
 
@@ -25,764 +22,507 @@
 
 ### The Engineering Challenge
 
-Imagine you are building the backend service for a calendar system used by a large organization. Each day, hundreds of meeting requests arrive for a limited number of conference rooms. Each request has a **start time** and an **end time**. Some requests overlap, and rooms are scarce.
+You are building a resource scheduling service for a cloud platform. Customers submit compute jobs defined by an interval `[start, end)`.
+Depending on the customer's tier, you face different operational objectives:
 
-Different teams ask for conflicting things:
+1. **Dedicated Worker (Single Machine):** Maximize the total count of non-overlapping jobs that can execute on one CPU core.
+2. **Cluster Autoscaler:** Calculate the minimum number of worker nodes required to execute *all* incoming jobs without conflict.
+3. **Revenue Maximization:** If each job pays a custom monetary rate, maximize total dollar payout.
 
-- The **Facilities team** wants to **maximize the number of meetings** that actually get scheduled in a single room.
-- The **Operations team** wants to know the **minimum number of rooms** needed to host all meetings without conflicts.
-- The **Business team** wants to **maximize total value** (e.g., meetings from executives are more important than casual syncs).
+If you attack all three with the same approach, you will fail.
+- Objective 1 is **Activity Selection** -> Solved by **Greedy (Earliest Finish Time)** in `O(N log N)` time and `O(1)` auxiliary space.
+- Objective 2 is **Interval Partitioning (Meeting Rooms II)** -> Solved by **Sweep-Line** or **Min-Heap** in `O(N log N)` time and `O(N)` space.
+- Objective 3 is **Weighted Interval Scheduling** -> Greedy fails; requires **Dynamic Programming** with Binary Search in `O(N log N)` time and `O(N)` space.
 
-At first glance, these all sound like "scheduling problems." But under the hood, these are subtly different optimization problems over **intervals on a timeline**.
-
-If you try to attack all of these with a single algorithm, you will quickly get stuck. Some are perfectly suited for a greedy solution; others **cannot** be solved optimally by greedy and need dynamic programming.
-
-Your job as an engineer is not just to "implement something that works" but to pick the right algorithmic paradigm:
-
-- **Greedy** for "maximize number of intervals" type problems
-- **Sweep line** for "find maximum overlap / minimum rooms"
-- **Dynamic Programming** for "maximize total weight/value" with overlaps
-
-Today, the focus is on understanding **exactly where greedy works** for interval problems—and why.
-
-### The Solution: Activity Selection & Interval Scheduling
-
-The prototypical problem that unlocks this entire family is **Activity Selection**:
-
-> Given `n` activities, each with a start and finish time, select the **maximum number** of mutually non-overlapping activities.
-
-This problem admits a beautiful greedy solution:
-
-- Sort activities by their **finish time** (earliest finish first).
-- Scan the list once, always taking the first activity that does not overlap with the last chosen one.
-
-This algorithm is:
-
-- **Simple:** One sort + one linear scan
-- **Efficient:** O(n log n) time, O(1) extra space
-- **Provably optimal:** It always finds a maximum-sized subset of non-overlapping activities
-
-From this foundation, you can adapt the model to:
-
-- Schedule as many tasks as possible on a single machine (activity selection)
-- Compute the **minimum number of rooms** (interval partitioning / meeting rooms)
-- Identify which problems require **weights** and hence switch to DP
-
-> **💡 Insight:** Many scheduling problems are secretly the **same interval problem** with different objective functions. Recognizing the pattern lets you reach for the right greedy or DP tool instantly.
+```
+THE INTERVAL DECISION MATRIX:
++-----------------------------------+-----------------------------------+
+| Problem Archetype                 | Optimal Algorithmic Paradigm      |
++-----------------------------------+-----------------------------------+
+| 1. Max Non-Overlapping Count      | Greedy (Sort by Finish Time)      |
+| 2. Min Resource Allocation (Rooms)| Greedy Sweep-Line / Min-Heap      |
+| 3. Merge Overlapping Ranges       | Two-Pointer Scan (Sort by Start)  |
+| 4. Maximize Weighted Profit       | Dynamic Programming + Bisect      |
++-----------------------------------+-----------------------------------+
+```
 
 ---
 
-## 🧠 CHAPTER 2: BUILDING THE MENTAL MODEL
+## 🧠 CHAPTER 2: THE GREEDY INTERVAL MENTAL MODEL
 
-### The Core Analogy: Reserving a Single Resource
+### Why Earliest Finish Time (EFT) Wins
 
-Think of a single conference room as a **one-dimensional resource over time**. Each meeting request is an interval `[start, end)` on that timeline.
-
-You want to place as many non-overlapping intervals as possible into that room.
-
-Two core observations:
-
-1. **Conflict:** Two meetings conflict if their intervals overlap in time.
-2. **Capacity:** The room can host at most one meeting at any moment.
-
-If you draw these on a timeline, the problem becomes visual.
-
-### 🖼 Visualizing Intervals on a Timeline
-
-Consider these activities:
+Consider 3 candidate greedy rules for selecting the maximum number of non-overlapping intervals:
 
 ```
-Activity    Start   End
-A           1       4
-B           3       5
-C           0       6
-D           5       7
-E           3       9
-F           5       9
-G           6       10
-H           8       11
-I           8       12
-J           2       14
-K           12      16
+Candidate Rule 1: Earliest Start Time
+Counterexample:
+  Job A: [0 ---------------------------------------------------- 100]
+  Job B:   [1 --- 3]
+  Job C:              [4 --- 6]
+  Rule 1 picks Job A first, blocking Jobs B and C. Optimal = 2, Rule 1 = 1. (FAILS)
+
+Candidate Rule 2: Shortest Duration
+Counterexample:
+  Job A: [0 ---- 5]
+  Job B:       [4 - 6]   <-- Shortest duration (length = 2)
+  Job C:          [5 ---- 10]
+  Rule 2 picks Job B, blocking both Job A and Job C. Optimal = 2, Rule 2 = 1. (FAILS)
+
+Candidate Rule 3: Earliest Finish Time (WINNER)
+Physical Intuition:
+  By choosing the interval that finishes earliest, you leave the maximum possible
+  unallocated timeline for future tasks. You minimize "opportunity cost".
 ```
 
-Plot them:
+### Visualizing the Timeline Sweep
 
-```text
-Time: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
+```
+Activities:
+  A: [1, 4)
+  B: [3, 5)
+  C: [0, 6)
+  D: [5, 7)
+  E: [3, 9)
+  F: [8, 11)
 
-C:   [----------)
-A:     [-----)
-B:       [---)
-E:       [--------)
-J:      [--------------)
-D:           [---)
-F:           [--------)
-G:            [-----)
-H:               [---)
-I:               [-----)
-K:                          [----)
+Timeline: 0  1  2  3  4  5  6  7  8  9  10 11
+C:        [-----------)
+A:           [--------)
+B:                 [-----)
+D:                       [-----)
+E:                 [-----------------)
+F:                                   [--------)
+
+Greedy Pass Sorted by Finish Time:
+1. Sort by finish: A(4), B(5), C(6), D(7), E(9), F(11)
+2. Pick A(ends 4): Selected -> [A], LastEnd = 4
+3. Check B(starts 3): 3 < 4 (Conflict) -> Skip
+4. Check C(starts 0): 0 < 4 (Conflict) -> Skip
+5. Check D(starts 5): 5 >= 4 (Compatible!) -> Selected -> [A, D], LastEnd = 7
+6. Check E(starts 3): 3 < 7 (Conflict) -> Skip
+7. Check F(starts 8): 8 >= 7 (Compatible!) -> Selected -> [A, D, F], LastEnd = 11
+
+Final Selection: {A, D, F} -> Exactly 3 non-overlapping activities.
 ```
 
-You can "see" the problem: some intervals are long and block others; some are short and fit nicely.
+### The Simplified Exchange Argument
 
-The natural question: **What greedy rule chooses the "right" intervals?**
+```
+Exchange Proof for Activity Selection:
+1. Let G = [g1, g2, ..., gk] be the greedy schedule sorted by finish time.
+2. Let OPT = [o1, o2, ..., om] be any optimal schedule, sorted by finish time (m >= k).
+3. If G == OPT, greedy is optimal.
+4. If G != OPT, let the first difference occur at step 1:
+   - By greedy design, g1 has the earliest finish time among ALL valid activities.
+   - Therefore: Finish(g1) <= Finish(o1).
+5. Substitute o1 with g1 in OPT:
+   - Since g1 finishes at or before o1, g1 cannot conflict with o2, o3, ..., om.
+   - The modified schedule OPT' = [g1, o2, ..., om] is still valid and has size m.
+6. Repeat this substitution for all elements by induction.
+   OPT can be transformed entirely into G without reducing the activity count.
+   Therefore, k == m, proving G is globally optimal.
+```
 
-- **Earliest start time?**
-- **Shortest duration?**
-- **Fewest conflicts?**
-- **Earliest finish time?**
+---
 
-Only one of these reliably yields an optimal solution: **earliest finish time**.
+## ⚙️ CHAPTER 3: PRODUCTION IMPLEMENTATIONS
 
-### Invariants & Properties for Interval Scheduling
+### Pattern 1: Activity Selection (Maximum Non-Overlapping Intervals)
 
-For the unweighted activity selection problem (maximize number of non-overlapping intervals in one resource), three key properties hold:
+#### Production C# (.NET 8/9)
 
-1. **Optimal Substructure:**
-   - Once you pick an activity that finishes at time `t`, the remaining problem is: choose a maximum set of activities that start at or after `t`.
-   - This subproblem is structurally identical to the original problem.
+```csharp
+namespace DsaMastery.Intervals;
 
-2. **Greedy Choice Property (Finish Time):**
-   - There exists an optimal solution that includes the activity with **earliest finish time** among all activities.
-   - Intuitively, finishing early leaves the most "space" for future activities.
+using System;
+using System.Collections.Generic;
 
-3. **Exchange Argument Validity:**
-   - If an optimal solution `O` does **not** contain the earliest-finishing activity `A`, you can exchange one of its activities for `A` without reducing the number of activities.
-   - Repeating this exchange step transforms `O` into the greedy solution while preserving optimality.
+public readonly record struct Interval(int Start, int End);
 
-These properties justify the following invariant:
+public static class ActivitySelector
+{
+    /// <summary>
+    /// Returns the maximum count of non-overlapping intervals.
+    /// Time Complexity: O(N log N) dominated by sorting.
+    /// Space Complexity: O(1) auxiliary (in-place sort on Array/Span).
+    /// </summary>
+    public static int MaxNonOverlappingCount(Interval[] intervals)
+    {
+        ArgumentNullException.ThrowIfNull(intervals);
+        if (intervals.Length <= 1) return intervals.Length;
 
-> **Invariant:** After each greedy selection, there exists at least one optimal solution that contains all activities selected so far.
+        // Sort by end time ascending; tie-break by start time ascending
+        Array.Sort(intervals, static (a, b) =>
+        {
+            int cmp = a.End.CompareTo(b.End);
+            return cmp != 0 ? cmp : a.Start.CompareTo(b.Start);
+        });
 
-Maintaining this invariant across iterations is what proves correctness.
+        int count = 1;
+        int lastEnd = intervals[0].End;
 
-### 📐 Formal Problem Variants
+        for (int i = 1; i < intervals.Length; i++)
+        {
+            if (intervals[i].Start >= lastEnd)
+            {
+                count++;
+                lastEnd = intervals[i].End;
+            }
+        }
 
-Let us classify the main interval problems for this day:
+        return count;
+    }
 
-| Problem | Input | Objective | Greedy? | Technique |
+    /// <summary>
+    /// Returns the actual selected non-overlapping intervals.
+    /// Space Complexity: O(N) for result list.
+    /// </summary>
+    public static List<Interval> SelectMaxActivities(Interval[] intervals)
+    {
+        ArgumentNullException.ThrowIfNull(intervals);
+        if (intervals.Length == 0) return [];
+
+        Array.Sort(intervals, static (a, b) => a.End.CompareTo(b.End));
+
+        var selected = new List<Interval> { intervals[0] };
+        int lastEnd = intervals[0].End;
+
+        for (int i = 1; i < intervals.Length; i++)
+        {
+            if (intervals[i].Start >= lastEnd)
+            {
+                selected.Add(intervals[i]);
+                lastEnd = intervals[i].End;
+            }
+        }
+
+        return selected;
+    }
+}
+```
+
+#### Production Python (3.11+)
+
+```python
+from typing import List, Tuple
+
+def max_non_overlapping_count(intervals: List[Tuple[int, int]]) -> int:
+    """
+    Computes maximum non-overlapping intervals count using earliest finish time greedy rule.
+    Time Complexity: O(N log N)
+    Space Complexity: O(1) auxiliary memory
+    """
+    if not intervals:
+        return 0
+
+    # Sort in-place by finish time ascending
+    intervals.sort(key=lambda x: x[1])
+
+    count = 1
+    last_end = intervals[0][1]
+
+    for start, end in intervals[1:]:
+        if start >= last_end:
+            count += 1
+            last_end = end
+
+    return count
+
+def select_max_activities(intervals: List[Tuple[int, int]]) -> List[Tuple[int, int]]:
+    """
+    Returns the chosen subset of non-overlapping intervals.
+    """
+    if not intervals:
+        return []
+
+    sorted_intervals = sorted(intervals, key=lambda x: x[1])
+    selected = [sorted_intervals[0]]
+    last_end = sorted_intervals[0][1]
+
+    for start, end in sorted_intervals[1:]:
+        if start >= last_end:
+            selected.append((start, end))
+            last_end = end
+
+    return selected
+```
+
+---
+
+### Pattern 2: Meeting Rooms II (Interval Partitioning / Minimum Rooms)
+
+**Problem Statement:**
+Given an array of meeting time intervals `[[start_i, end_i]]`, find the minimum number of conference rooms required so that no two meetings overlap in the same room.
+
+**Greedy Mechanics: Min-Heap vs Sweep-Line**
+1. **Min-Heap Approach:**
+   - Sort intervals by **start time** ascending.
+   - Maintain a min-heap storing the `end` times of active rooms.
+   - For each new meeting:
+     - If `meeting.start >= heap.Peek()`: the earliest finishing room has freed up! Reuse it (`heap.Dequeue()`).
+     - Otherwise: allocate a new room.
+     - Enqueue `meeting.end` into the heap.
+   - Peak size of the heap is the answer.
+2. **Sweep-Line Approach:**
+   - Split each interval into two events: `(start, +1)` and `(end, -1)`.
+   - Sort events by timestamp. If timestamps match, process `end (-1)` before `start (+1)` so back-to-back meetings don't trigger a new room.
+   - Track running concurrency; record the peak concurrency.
+
+```
+ASCII Room Allocation Timeline:
+Meetings: M1 [1, 4), M2 [2, 5), M3 [5, 8), M4 [3, 6), M5 [7, 9)
+
+Sorted by Start: M1[1,4), M2[2,5), M4[3,6), M3[5,8), M5[7,9)
+
+Room 1: [ M1: 1-4 )        [ M3: 5-8 )
+Room 2:    [ M2: 2-5 )                [ M5: 7-9 )
+Room 3:       [ M4: 3-6 )
+
+Min-Heap State Evolution:
+Step 1 (M1 [1,4)): Heap = [4]                   (1 room)
+Step 2 (M2 [2,5)): Start 2 < 4. Heap = [4, 5]   (2 rooms)
+Step 3 (M4 [3,6)): Start 3 < 4. Heap = [4, 5, 6](3 rooms - Peak!)
+Step 4 (M3 [5,8)): Start 5 >= 4. Reuse R1. Pop 4, Push 8. Heap = [5, 6, 8]
+Step 5 (M5 [7,9)): Start 7 >= 5. Reuse R2. Pop 5, Push 9. Heap = [6, 8, 9]
+
+Total Rooms Needed = 3
+```
+
+#### Production C# (.NET 8/9 with `PriorityQueue`)
+
+```csharp
+namespace DsaMastery.Intervals;
+
+using System;
+using System.Collections.Generic;
+
+public static class MeetingRoomsScheduler
+{
+    /// <summary>
+    /// Approach 1: Min-Heap of room end times using PriorityQueue.
+    /// Time Complexity: O(N log N)
+    /// Space Complexity: O(N) auxiliary memory for heap
+    /// </summary>
+    public static int MinMeetingRoomsHeap(Interval[] intervals)
+    {
+        ArgumentNullException.ThrowIfNull(intervals);
+        if (intervals.Length <= 1) return intervals.Length;
+
+        // Sort by start time ascending
+        Array.Sort(intervals, static (a, b) => a.Start.CompareTo(b.Start));
+
+        // PriorityQueue acts as a min-heap storing end times
+        var roomEndHeap = new PriorityQueue<int, int>();
+        roomEndHeap.Enqueue(intervals[0].End, intervals[0].End);
+
+        for (int i = 1; i < intervals.Length; i++)
+        {
+            var current = intervals[i];
+            
+            // Check if earliest meeting has finished
+            if (roomEndHeap.TryPeek(out int earliestEnd, out _) && current.Start >= earliestEnd)
+            {
+                roomEndHeap.Dequeue(); // Reuse room
+            }
+
+            roomEndHeap.Enqueue(current.End, current.End);
+        }
+
+        return roomEndHeap.Count;
+    }
+
+    /// <summary>
+    /// Approach 2: Sweep-Line Event Sorting.
+    /// Time Complexity: O(N log N)
+    /// Space Complexity: O(N) auxiliary memory for events
+    /// </summary>
+    public static int MinMeetingRoomsSweepLine(Interval[] intervals)
+    {
+        ArgumentNullException.ThrowIfNull(intervals);
+        if (intervals.Length <= 1) return intervals.Length;
+
+        int n = intervals.Length;
+        var events = new (int Time, int Delta)[2 * n];
+        int idx = 0;
+
+        foreach (var interval in intervals)
+        {
+            events[idx++] = (interval.Start, 1);  // Room opens
+            events[idx++] = (interval.End, -1);   // Room frees
+        }
+
+        // Sort by Time ascending. If times match, -1 (end) comes before +1 (start)
+        Array.Sort(events, static (a, b) =>
+        {
+            int cmp = a.Time.CompareTo(b.Time);
+            return cmp != 0 ? cmp : a.Delta.CompareTo(b.Delta);
+        });
+
+        int activeRooms = 0;
+        int maxRooms = 0;
+
+        foreach (var evt in events)
+        {
+            activeRooms += evt.Delta;
+            if (activeRooms > maxRooms)
+            {
+                maxRooms = activeRooms;
+            }
+        }
+
+        return maxRooms;
+    }
+}
+```
+
+#### Production Python (3.11+ with `heapq`)
+
+```python
+import heapq
+from typing import List, Tuple
+
+def min_meeting_rooms_heap(intervals: List[Tuple[int, int]]) -> int:
+    """
+    Computes minimum meeting rooms using a min-heap of active room end times.
+    Time Complexity: O(N log N)
+    Space Complexity: O(N) for heap storage
+    """
+    if not intervals:
+        return 0
+
+    # Sort intervals by start time ascending
+    sorted_intervals = sorted(intervals, key=lambda x: x[0])
+
+    # Min-heap stores end times of ongoing meetings
+    end_heap: List[int] = []
+    heapq.heappush(end_heap, sorted_intervals[0][1])
+
+    for start, end in sorted_intervals[1:]:
+        # If earliest meeting ended before or at current start, reuse that room
+        if start >= end_heap[0]:
+            heapq.heappop(end_heap)
+
+        # Allocate room (either reused or new)
+        heapq.heappush(end_heap, end)
+
+    return len(end_heap)
+
+def min_meeting_rooms_sweep(intervals: List[Tuple[int, int]]) -> int:
+    """
+    Computes minimum meeting rooms using sweep-line event transformation.
+    Time Complexity: O(N log N)
+    Space Complexity: O(N) for event storage
+    """
+    events: List[Tuple[int, int]] = []
+    for start, end in intervals:
+        events.append((start, 1))   # Start meeting (+1 room)
+        events.append((end, -1))    # End meeting (-1 room)
+
+    # Sort by time. At matching time, -1 (end) precedes +1 (start)
+    events.sort(key=lambda x: (x[0], x[1]))
+
+    current_rooms = 0
+    max_rooms = 0
+
+    for _, delta in events:
+        current_rooms += delta
+        max_rooms = max(max_rooms, current_rooms)
+
+    return max_rooms
+```
+
+---
+
+## ⚖️ CHAPTER 4: PERFORMANCE & COMPLEXITY DECONSTRUCTION
+
+### Complexity Comparison
+
+| Problem | Primary Operation | Time Complexity | Auxiliary Space | Bottleneck |
 | :--- | :--- | :--- | :--- | :--- |
-| Activity Selection | Start & end times | Maximize number of non-overlapping intervals (single resource) | ✅ Yes | Greedy by earliest finish time |
-| Weighted Interval Scheduling | Start, end, weight | Maximize total weight of non-overlapping intervals | ❌ No (in general) | Dynamic Programming |
-| Interval Partitioning / Meeting Rooms | Start & end times | Minimize number of resources (rooms) to host all intervals | ✅ Yes | Greedy + sweep line (by start time) |
+| **Activity Selection** | Sort by End Time + Scan | `O(N log N)` | `O(1)` | Array sort comparisons |
+| **Meeting Rooms II (Heap)** | Sort by Start + Heap Ops | `O(N log N)` | `O(N)` | Heapify & sift-down ops |
+| **Meeting Rooms II (Sweep)** | Sort `2N` Events + Scan | `O(N log N)` | `O(N)` | 2N event sorting |
+| **Weighted Interval (DP)** | Sort + Bisect + DP Array | `O(N log N)` | `O(N)` | Binary search per index |
 
-This table encodes a crucial interview skill: **recognizing which interval problem you are facing and mapping it to the correct pattern.**
-
-### Taxonomy of Interval Scheduling Variations
-
-| Variation | Objective | Key Operation | Correct Strategy |
-| :--- | :--- | :--- | :--- |
-| Max-count scheduling (Activity Selection) | Maximize count | Select non-overlapping intervals | Greedy by earliest finish time |
-| Max-weight scheduling (Weighted) | Maximize total weight | Select weighted non-overlapping intervals | DP with binary search on previous compatible interval |
-| Resource minimization (Meeting Rooms) | Minimize rooms | Assign intervals to resources | Sweep line with min-heap; track maximum overlap |
+#### Critical Engineering Realities:
+- **Zero Allocations in C#:** For high-throughput schedulers, sort interval arrays in place via `Array.Sort` or `MemoryExtensions.Sort` using stack-allocated structs or spans to eliminate GC pressure.
+- **Cache Locality:** Sweep-line traverses contiguous arrays linearly (`O(N)` cache hits), whereas heap structures jump memory pointers during sift-downs. On inputs with `N > 10^5`, sweep-line often beats heaps in raw wall-clock time despite identical Big-O.
 
 ---
 
-## ⚙️ CHAPTER 3: MECHANICS & IMPLEMENTATION
+## 🎙️ CHAPTER 5: 45-MINUTE INTERVIEW VERBAL SCRIPT
 
-### The State Machine for Activity Selection
-
-For the unweighted activity selection:
-
-**Input:** Array of activities `A[i] = (start[i], end[i])`
-
-**State:**
-
-- `lastEndTime` — finish time of the last selected activity
-- `count` — number of selected activities
-- Optionally: `selectedIndices` — indices of chosen activities
-
-**Algorithm Skeleton:**
-
-1. Sort activities by `end[i]` (ascending)
-2. Initialize `lastEndTime = -∞`, `count = 0`
-3. For each activity in sorted order:
-   - If `start[i] >= lastEndTime` → select activity
-   - Update `lastEndTime = end[i]`, increment `count`
-4. Return `count` (and optionally the schedule)
-
-### 🔧 Operation 1: Activity Selection — Detailed Trace
-
-**Example Input:**
-
-```text
-Idx  Activity   Start   End
-0    A          1       4
-1    B          3       5
-2    C          0       6
-3    D          5       7
-4    E          3       9
-5    F          5       9
-6    G          6       10
-7    H          8       11
-8    I          8       12
-9    J          2       14
-10   K          12      16
 ```
+[00:00 - 05:00] Clarifying Interval Semantics
+"Let's clarify the boundary semantics:
+ 1. Are intervals half-open [start, end) or closed [start, end]?
+    If half-open, a meeting ending at 4 and another starting at 4 do NOT conflict.
+ 2. Can start and end times be negative or zero?
+ 3. Are intervals pre-sorted?
+ For Activity Selection, our goal is to maximize the count of jobs on one machine.
+ For Meeting Rooms, our goal is to minimize the total machines required for all jobs."
 
-**Step 1: Sort by finish time**
+[05:00 - 12:00] Proving the Greedy Criterion
+"Why does earliest finish time work for Activity Selection while earliest start fails?
+ If we sort by start time, a single long job like [0, 100] could prevent 20 shorter jobs.
+ If we sort by duration, [4, 6] could conflict with [0, 5] and [5, 10].
+ Earliest finish time is optimal because it minimizes the remaining timeline used.
+ An exchange argument formally confirms this: if any optimal solution picks a different
+ first job, swapping it with our earliest finisher preserves validity without reducing size."
 
-```text
-Order (by End):
-A(1,4)   → 4
-B(3,5)   → 5
-C(0,6)   → 6
-D(5,7)   → 7
-E(3,9)   → 9
-F(5,9)   → 9
-G(6,10)  → 10
-H(8,11)  → 11
-I(8,12)  → 12
-J(2,14)  → 14
-K(12,16) → 16
+[12:00 - 25:00] Explaining the Architecture: Min-Heap vs Sweep-Line
+"For Meeting Rooms II:
+ Option A: Min-Heap. Sort by start time. Maintain a min-heap of active end times.
+ If the next meeting starts after heap.Peek(), we pop and reuse that room.
+ Otherwise, we push and expand the room count.
+ 
+ Option B: Sweep-Line. Transform N intervals into 2N events (start = +1, end = -1).
+ Sort events chronologically. If timestamps tie, end events (-1) MUST precede start (+1)
+ so that a room is released before a new meeting claims it.
+ I will implement the Min-Heap approach first, as it allows returning active room assignments."
+
+[25:00 - 35:00] Clean Coding (Walk through the implementation)
+"In C#, I'll use PriorityQueue<int, int> available in .NET 6+.
+ In Python, I'll use heapq. Notice how we handle the empty input edge case..."
+
+[35:00 - 42:00] Complexity Verification
+"Time Complexity: Sorting takes O(N log N). In the heap approach, we do N heap insertions
+ and at most N deletions. Total time is O(N log N).
+ Space Complexity: The heap holds at most N elements, giving O(N) auxiliary space."
+
+[42:00 - 45:00] Edge Cases & Defenses
+"Edge cases covered:
+ - Empty or single interval -> Return 0 or 1 immediately.
+ - Identical intervals -> Stack concurrently, allocating separate rooms.
+ - Back-to-back meetings [1, 4) and [4, 7) -> Valid reuse of Room 1 because 4 >= 4."
 ```
-
-**Step 2: Greedy Selection Trace**
-
-```text
-Initial state:
-  lastEndTime = -∞
-  selected = []
-
-Iterate in sorted order:
-
-1) A(1, 4): 1 >= -∞ → select A
-   lastEndTime = 4
-   selected = [A]
-
-2) B(3, 5): 3 < 4 → conflict with A → skip B
-   lastEndTime = 4
-   selected = [A]
-
-3) C(0, 6): 0 < 4 → conflict → skip C
-   lastEndTime = 4
-   selected = [A]
-
-4) D(5, 7): 5 >= 4 → select D
-   lastEndTime = 7
-   selected = [A, D]
-
-5) E(3, 9): 3 < 7 → conflict → skip E
-   lastEndTime = 7
-   selected = [A, D]
-
-6) F(5, 9): 5 < 7 → conflict → skip F
-   lastEndTime = 7
-   selected = [A, D]
-
-7) G(6,10): 6 < 7 → conflict → skip G
-   lastEndTime = 7
-   selected = [A, D]
-
-8) H(8,11): 8 >= 7 → select H
-   lastEndTime = 11
-   selected = [A, D, H]
-
-9) I(8,12): 8 < 11 → conflict → skip I
-   lastEndTime = 11
-   selected = [A, D, H]
-
-10) J(2,14): 2 < 11 → conflict → skip J
-    lastEndTime = 11
-    selected = [A, D, H]
-
-11) K(12,16): 12 >= 11 → select K
-    lastEndTime = 16
-    selected = [A, D, H, K]
-
-Final:
-  selected = [A, D, H, K]
-  count = 4
-```
-
-**State Consistency Check:**
-- `lastEndTime` is always the end time of the last selected activity.
-- Only activities with `start >= lastEndTime` are selected.
-- Each step's state flows correctly from previous step.
-
-**Termination:**
-- Loop ends after `n` iterations (one per activity).
-- Final `selected` set is stable; there are no remaining activities after the last iteration.
-
-### Why Earliest Finish Time is the Right Greedy Choice
-
-Let `G` be the greedy algorithm's output and `O` be some optimal schedule with maximum number of activities.
-
-**Claim:** There exists an optimal schedule `O'` such that the first activity in `O'` is the first activity `g1` chosen by greedy.
-
-**Exchange Argument Sketch:**
-
-1. Let `g1` be the activity with earliest finish time (greedy's first choice).
-2. Consider any optimal solution `O` with first activity `o1`.
-3. Since `g1` finishes no later than any other activity, `end(g1) <= end(o1)`.
-4. Replace `o1` with `g1` in `O`. Call the new solution `O'`.
-   - `O'` still contains the same number of activities as `O` (swap one for one).
-   - `O'` is still feasible (no new overlaps), because:
-     - `g1` ends no later than `o1`, so any activity compatible with `o1` is also compatible with `g1`.
-5. Therefore, there exists an optimal solution `O'` which starts with `g1`.
-6. Remove `g1` from both `G` and `O'`, and restrict attention to activities starting at or after `end(g1)`. Apply induction on the remaining problem.
-
-This proves that greedy's first choice is always included in **some** optimal solution, and by repeating this reasoning, we show greedy constructs an optimal solution overall.
-
-> **Key invariant:** After each greedy choice, we can "repair" some optimal solution to agree with greedy without losing optimality.
-
-### 🔧 Operation 2: Interval Scheduling Variations
-
-The same input model (intervals with start/end times) can be used to express different objectives.
-
-#### 1. Maximize Number of Activities (Unweighted)
-
-- **Objective:** Select as many non-overlapping intervals as possible on a single resource.
-- **Greedy Strategy:** Sort by finish time; iterate and select if no overlap.
-- **Correctness:** Exchange argument as above.
-
-#### 2. Maximize Total Weight (Weighted Interval Scheduling)
-
-- **Objective:** Each interval has a weight (profit). Select non-overlapping intervals with **maximum total weight**.
-- **Greedy Attempt:** Sort by weight, or by weight/length, or any other local rule.
-- **Result:** Fails in general. Counterexamples are easy to construct.
-
-**Counterexample:**
-
-```text
-Interval  Start  End    Weight
-A         1      4      5
-B         4      7      5
-C         1      7      9
-```
-
-- Greedy by weight picks C (weight 9), total = 9
-- Optimal picks A and B (total weight 10)
-
-Greedy fails because local best choice (C) blocks a better combination (A+B).
-
-**Correct strategy:** Use dynamic programming with binary search over previous compatible intervals (covered in Week 10: DP on sequences).
-
-#### 3. Minimize Rooms Needed (Interval Partitioning / Meeting Rooms)
-
-- **Objective:** Given all intervals, assign them to the **minimum number of rooms** so that no two intervals in the same room overlap.
-- **Equivalent:** Find the **maximum number of intervals that overlap** at any time; that number is the minimum rooms needed.
-
-**Key idea:** Instead of maximizing non-overlapping intervals, you are now asking: "What is the peak congestion on the timeline?" This shifts from selection to **partitioning by overlap**.
-
-> **Greedy pattern:** Use a sweep line across time, tracking active intervals.
-
-### 🖼 Visual: Overlaps and Rooms
-
-Consider meetings:
-
-```text
-M1: [1, 4)
-M2: [2, 5)
-M3: [7, 9)
-M4: [3, 6)
-M5: [5, 8)
-```
-
-Plot them:
-
-```text
-Time: 1 2 3 4 5 6 7 8 9
-
-M1:  [-----)
-M2:    [------)
-M4:      [------)
-M5:           [------)
-M3:                [---)
-```
-
-Overlaps:
-
-- From 2 to 3: M1 + M2 (2 meetings)
-- From 3 to 4: M1 + M2 + M4 (3 meetings)
-- From 4 to 5: M2 + M4 (2 meetings)
-- From 5 to 6: M2 + M4 + M5 (3 meetings)
-- From 7 to 8: M3 + M5 (2 meetings)
-
-**Maximum overlap = 3**, so you need **at least 3 rooms**.
-
-### Sweep Line Mechanics (Meeting Rooms)
-
-**State:**
-
-- Transform each interval [start, end) into two events:
-  - `(time=start, type=+1)` — meeting starts
-  - `(time=end,   type=-1)` — meeting ends
-
-- Sort events by time; if times are equal, end events should be processed **before** start events (to avoid counting a back-to-back meeting as overlapping).
-
-- Maintain:
-  - `currentActive` — number of ongoing meetings at the current sweep position
-  - `maxActive` — maximum value of `currentActive` seen so far
-
-**Trace Table Example**
-
-```text
-Meetings:
-M1: [1, 4)
-M2: [2, 5)
-M3: [7, 9)
-M4: [3, 6)
-M5: [5, 8)
-
-Events (unsorted):
-(1, +1) M1 starts
-(4, -1) M1 ends
-(2, +1) M2 starts
-(5, -1) M2 ends
-(7, +1) M3 starts
-(9, -1) M3 ends
-(3, +1) M4 starts
-(6, -1) M4 ends
-(5, +1) M5 starts
-(8, -1) M5 ends
-
-Sort by (time, type): end(-1) before start(+1) at same time.
-
-Sorted events:
-(1, +1)
-(2, +1)
-(3, +1)
-(4, -1)
-(5, -1)
-(5, +1)
-(6, -1)
-(7, +1)
-(8, -1)
-(9, -1)
-```
-
-**State Evolution:**
-
-| Step | Event Point | Delta (`Δ`) | `currentActive` Rooms | `maxActive` Rooms Recorded |
-| :--- | :--- | :--- | :--- | :--- |
-| **0** | Start | - | 0 | 0 |
-| **1** | `(1, +1)` (Start) | `+1` | 1 | 1 |
-| **2** | `(2, +1)` (Start) | `+1` | 2 | 2 |
-| **3** | `(3, +1)` (Start) | `+1` | 3 | **3 (Peak)** |
-| **4** | `(4, -1)` (End) | `-1` | 2 | 3 |
-| **5** | `(5, -1)` (End) | `-1` | 1 | 3 |
-| **6** | `(5, +1)` (Start) | `+1` | 2 | 3 |
-| **7** | `(6, -1)` (End) | `-1` | 1 | 3 |
-| **8** | `(7, +1)` (Start) | `+1` | 2 | 3 |
-| **9** | `(8, -1)` (End) | `-1` | 1 | 3 |
-| **10** | `(9, -1)` (End) | `-1` | 0 | 3 |
-
-Final answer: `maxActive = 3` → **3 rooms needed**.
-
-**Invariant:** `currentActive` always equals the number of intervals overlapping the current sweep position.
-
-**Termination:** After the last event, `currentActive` must be 0 (all meetings ended). `maxActive` is well-defined and finite.
-
-> **Important detail:** Processing end events before start events at the same time ensures back-to-back intervals like [1, 2) and [2, 3) don't count as overlapping.
-
-### 📉 Interval Scheduling vs Interval Partitioning
-
-| Aspect | Activity Selection | Meeting Rooms |
-| :--- | :--- | :--- |
-| Objective | Maximize number of intervals that fit in **one** resource | Minimize number of resources to fit **all** intervals |
-| Greedy Criterion | Sort by finish time, take non-overlapping | Sort events by time, track overlap |
-| Key Operation | Check compatibility with `lastEndTime` | Increment/decrement `currentActive` |
-| Answer | Size of greedy-selected subset | Maximum value of `currentActive` |
-
-Although they work differently, both are "interval problems" and both use simple greedy or sweep line techniques.
-
-> **⚠️ Watch Out:** Mixing these up in interviews is common. Always restate the objective in your own words before choosing the algorithm.
-
----
-
-## ⚖️ CHAPTER 4: PERFORMANCE, TRADE-OFFS & REAL SYSTEMS
-
-### Complexity & Performance Reality
-
-**Activity Selection (Unweighted):**
-
-- Sort activities by finish time: O(n log n)
-- Single pass to select: O(n)
-- **Total Time:** O(n log n)
-- **Space:** O(1) extra (if sorting in place)
-
-**Meeting Rooms (Interval Partitioning):**
-
-- Extract 2 events per interval: O(n)
-- Sort 2n events: O(n log n)
-- Single pass to sweep: O(n)
-- **Total Time:** O(n log n)
-- **Space:** O(n) extra for events
-
-**Weighted Interval Scheduling (for contrast):**
-
-- Sort by finish time: O(n log n)
-- Binary search previous non-conflicting interval per index: O(log n) each
-- DP to compute optimum: O(n)
-- **Total Time:** O(n log n)
-- **Space:** O(n) for DP table
-
-**Practical implications:**
-
-- For large `n` (e.g., millions of intervals in logs or telemetry), the sorting step dominates.
-- Modern libraries use highly optimized O(n log n) sorts; your main responsibility is choosing the right key (finish vs start vs both).
-
-### 🏭 Real-World Systems Using Interval Scheduling
-
-#### Story 1: Calendar Backends & Meeting Rooms
-
-**Scenario:**
-
-A large enterprise uses a calendar service (like Google Calendar or Outlook) to manage thousands of meetings per day across many rooms and offices.
-
-**Problems solved with interval algorithms:**
-
-1. **Per-room utilization:** For each room, run activity selection to identify the maximum number of non-overlapping bookings (useful for conflict resolution or "how full is this room?").
-2. **Global capacity planning:** Use the meeting rooms algorithm (sweep line) over all meetings in a building to compute the minimum number of rooms needed during peak hours.
-
-**Engineering considerations:**
-
-- Meetings are often updated; incremental recomputation is needed rather than re-sorting everything.
-- Real systems store times as timestamps; sorting uses integer comparisons, which are extremely fast.
-- Time zones and daylight savings add complexity to **input parsing**, but not to the core greedy algorithm.
-
-#### Story 2: CPU Core Scheduling for Short Jobs
-
-**Scenario:**
-
-On a multi-core server, short background tasks (like log rotation, metric aggregation) need to be scheduled across cores. Each task has an estimated runtime window.
-
-**Use case:**
-
-- When assigning tasks to a **single core**, activity selection ensures the core is utilized as much as possible without overlapping tasks.
-- When taking **all cores into account**, meeting room-like logic helps estimate how many cores are needed at peak.
-
-**Why greedy fits:**
-
-- Tasks are often short and independent (no complex dependencies).
-- Start/end times are known or estimated reasonably.
-- You want maximized throughput (more tasks completed per core) and minimal core count for a given SLA.
-
-#### Story 3: Ad Slot Scheduling in Video Streams
-
-**Scenario:**
-
-In streaming platforms, advertisement slots are pre-defined time intervals inside content. Advertisers purchase ad campaigns that must appear within specific time windows. When placing ads, the system must:
-
-- Ensure ads do not conflict within a single ad slot
-- Decide which subset of ads to show when overlapping campaigns compete
-
-**Greedy involvement:**
-
-- For simple setups (same value per ad), selecting a maximum set of non-overlapping ads in a slot is just activity selection.
-- For more complex setups (different values per ad), it becomes more like weighted interval scheduling.
-
-**Trade-off:**
-
-- Greedy is used when contracts and constraints are simple (e.g., "any ad is fine").
-- DP or linear programming is used when there are multiple constraints (per-ad viewer caps, budgets, etc.).
-
-### Greedy Stays Ahead — Intuition
-
-The phrase **"greedy stays ahead"** captures the idea that, at every comparison point in time, the greedy solution is at least as good as any other solution (including optimal) on some progress metric.
-
-For activity selection:
-
-- Consider the greedy schedule `G` and some optimal schedule `O`.
-- Compare them step-by-step along the sorted-by-finish-time activities.
-- At each step `k`, the finish time of the `k`-th activity in `G` is **no later** than the finish time of the `k`-th activity in `O`.
-- Thus, `G` always "stays ahead" in terms of freeing up time for future activities.
-
-This "stays ahead" property is a mental model you will reuse in other greedy proofs (e.g., for Dijkstra, MST, fractional knapsack).
-
----
-
-## 🔗 CHAPTER 5: INTEGRATION & MASTERY
-
-### Connections (Precursors & Successors)
-
-**Builds on:**
-
-- Week 12 Day 01: Greedy fundamentals (template + exchange argument)
-- Week 03: Sorting and heaps (understanding O(n log n) behavior)
-- Week 10: DP on sequences (understanding weighted interval scheduling)
-
-**Prepares for:**
-
-- Week 12 Day 03: Huffman coding — another greedy algorithm combining minimal pieces.
-- Week 12 Day 04: Fractional knapsack & job sequencing — scheduling variants in different domains.
-- Week 13: Backtracking & branch-and-bound — alternatives when greedy fails.
-
-### 🧩 Pattern Recognition & Decision Framework for Interval Problems
-
-When you see a problem involving **start times and end times**, ask:
-
-1. **What is the goal?**
-   - Maximize number of non-overlapping intervals in one resource? → **Activity Selection** (Greedy by finish time)
-   - Minimize number of resources to host all intervals? → **Meeting Rooms / Interval Partitioning** (Sweep line)
-   - Maximize total weight/profit of chosen intervals? → **Weighted Interval Scheduling** (DP)
-
-2. **What is the input structure?**
-   - Just intervals? Or intervals plus weights? Or plus dependencies?
-
-3. **Is there a clear greedy ordering?**
-   - Finish time? Start time? Profit? Ratio? Length?
-   - Only finish time for unweighted max-count works reliably.
-
-**Decision cheat sheet:**
-
-- **✅ Use greedy (finish time) when:**
-  - Each interval has equal "value" (only existence matters, not weight)
-  - You want to maximize **count** of non-overlapping intervals
-
-- **✅ Use sweep line when:**
-  - You need to answer questions about overlaps
-  - Example: "How many intervals are active at peak?" → meeting rooms
-
-- **🛑 Use DP when:**
-  - Intervals have **weights** and you want maximum total weight
-  - Choices interact in non-trivial ways (e.g., skipping a heavy but long interval may allow several medium ones)
-
-> **Red Flag:** If the problem mentions profits/weights for intervals and asks for maximum total profit, treat greedy with suspicion and think of weighted interval scheduling DP.
-
-### 🧪 Socratic Reflection
-
-1. **Why does sorting by start time fail for activity selection?** Can you construct a small counterexample where greedy-by-start-time yields fewer activities than greedy-by-finish-time?
-
-2. **In the meeting rooms problem, why is it necessary to process "end" events before "start" events at the same time?** What happens if you reverse this order?
-
-3. **For a variant where each meeting has a weight and you want maximum total weight in a single room, what makes greedy fail?** How does dynamic programming fix this?
-
-### 📌 Retention Hook
-
-> **The Essence:** "For unweighted interval scheduling, the greedy strategy is: **finish as early as possible, as often as possible**. Sort by finish time, take what you can, and let optimality emerge from the timeline structure. For resource counting, sweep a line across time; the tallest pile of overlaps tells you how many rooms you truly need."
-
----
-
-## 🧠 5 COGNITIVE LENSES
-
-### 1. 💻 The Hardware Lens
-
-Interval algorithms are **cache-friendly**:
-
-- After sorting, intervals are in a contiguous array.
-- Activity selection: single linear scan → sequential memory access, great for prefetching.
-- Sweep line: events in a single array sorted by time → again, sequential access.
-
-No random access into large DP tables, minimal branching, and very few cache misses. On real machines, this can be orders of magnitude faster for large datasets.
-
-### 2. 📉 The Trade-off Lens
-
-**Greedy vs DP for intervals:**
-
-- **Greedy:**
-  - Time: O(n log n)
-  - Space: O(1) or O(n)
-  - Simplicity: very high
-  - Applicability: only unweighted max-count & resource-min problems
-
-- **DP:**
-  - Time: O(n log n) or O(n²) depending on variant
-  - Space: O(n)
-  - Complexity: higher (state design + transitions)
-  - Applicability: handles weights, complex objectives
-
-Trade-off: **Use greedy when structure allows; otherwise, pay the DP cost.**
-
-### 3. 👶 The Learning Lens
-
-Students often confuse the three main interval problems:
-
-- **"Maximize meetings"** (one room) → Activity selection
-- **"Minimize rooms"** (all meetings) → Meeting rooms
-- **"Maximize profit"** (weighted) → Weighted interval scheduling (DP)
-
-They sound similar, but aim at different objectives. A big learning milestone is being able to read a problem statement and immediately categorize it into one of these patterns.
-
-### 4. 🤖 The AI/ML Lens
-
-In time series prediction and event processing, intervals often represent **active states** (e.g., "user online", "service in maintenance"). Finding periods of maximum overlap is analogous to finding **peak load periods**, which is critical for anomaly detection and capacity planning.
-
-Greedy interval scheduling also appears in resource allocation in training pipelines (e.g., scheduling GPU jobs with known durations and no dependencies).
-
-### 5. 📜 The Historical Lens
-
-Interval scheduling and activity selection are staple examples in algorithm textbooks (e.g., CLRS, Kleinberg & Tardos) because they are one of the simplest non-trivial problems where greedy can be proven optimal via exchange argument. They set the stage historically for more advanced greedy proofs (MST, Dijkstra, Huffman).
-
-The meeting room / interval partitioning variant emerges naturally from operations research in the mid-20th century as companies sought to optimize resource utilization in factories and service organizations.
 
 ---
 
 ## ⚔️ SUPPLEMENTARY OUTCOMES
 
-### 🏋️ Practice Problems (8–10)
+### 🏋️ Practice Problems
 
 | # | Problem | Source | Difficulty | Key Concept |
 | :--- | :--- | :--- | :--- | :--- |
-| 1 | Non-overlapping Intervals | LeetCode 435 | Medium | Activity selection by finish time |
-| 2 | Minimum Number of Arrows to Burst Balloons | LeetCode 452 | Medium | Activity selection variant (finish-based) |
-| 3 | Meeting Rooms | LeetCode 252 | Easy | Basic overlap detection |
-| 4 | Meeting Rooms II | LeetCode 253 | Medium | Min rooms via sweep line / min-heap |
-| 5 | Interval List Intersections | LeetCode 986 | Medium | Two-pointer over sorted intervals |
-| 6 | Merge Intervals | LeetCode 56 | Medium | Sort by start, merge overlapping intervals |
-| 7 | Insert Interval | LeetCode 57 | Medium | Merging + insertion edge cases |
-| 8 | Employee Free Time | LeetCode 759 | Hard | Merge schedules + invert busy intervals |
-| 9 | Car Pooling | LeetCode 1094 | Medium | Capacity check via difference array / sweep line |
-| 10 | My Calendar I/II/III | LeetCode 729/731/732 | Medium–Hard | Incremental interval scheduling & counting |
+| 1 | Non-overlapping Intervals | LeetCode 435 | Medium | Activity Selection (`N - max_count`) |
+| 2 | Minimum Arrows to Burst Balloons | LeetCode 452 | Medium | Greedy coordinate overlap |
+| 3 | Meeting Rooms II | LeetCode 253 | Medium | Min-heap / Sweep-line |
+| 4 | Merge Intervals | LeetCode 56 | Medium | Two-pointer interval merging |
+| 5 | Insert Interval | LeetCode 57 | Medium | Ordered insertion & compaction |
+| 6 | Interval List Intersections | LeetCode 986 | Medium | Dual two-pointer sweep |
+| 7 | Car Pooling | LeetCode 1094 | Medium | Difference array / capacity check |
+| 8 | Employee Free Time | LeetCode 759 | Hard | Merge busy ranges, invert gaps |
 
-### 🎙️ Interview Questions (6–8)
+### 🎙️ Interview Questions
 
-1. **Q:** Explain why sorting by finish time yields an optimal solution for unweighted activity selection.
-   - **Follow-up:** Provide a counterexample where sorting by start time fails.
-
-2. **Q:** How would you compute the minimum number of meeting rooms given a list of intervals?
-   - **Follow-up:** Explain the difference between using a sweep line and using a min-heap of end times.
-
-3. **Q:** Given intervals with weights, why does greedy fail to maximize total weight? Walk through a concrete counterexample.
-   - **Follow-up:** Outline the DP solution and its state definition.
-
-4. **Q:** How does processing end events before start events at the same timestamp affect the meeting room computation?
-   - **Follow-up:** What real-world scenario corresponds to treating [1,2) and [2,3) as non-overlapping?
-
-5. **Q:** In an online system where intervals (bookings) keep arriving, how would you maintain the minimum rooms needed so far?
-   - **Follow-up:** What data structures would you choose and why?
-
-6. **Q:** Describe the "greedy stays ahead" proof idea in the context of activity selection.
-   - **Follow-up:** How would you adapt this intuition to minimum spanning trees or Dijkstra?
-
-7. **Q:** If meetings can be moved (slightly adjusted), does the interval scheduling model still apply directly?
-   - **Follow-up:** When does flexibility break the assumptions behind these greedy algorithms?
-
-### ❌ Common Misconceptions (3–5)
-
-1. **Myth:** All interval scheduling problems are solved by sorting and a single pass.
-   - **Reality:** Only certain objectives (max count, min rooms) admit simple greedy or sweep line solutions. Weighted objectives require DP.
-
-2. **Myth:** Sorting by start time is as good as sorting by finish time.
-   - **Reality:** Sorting by start time can lead to suboptimal choices that block shorter intervals that end earlier. Finish time is the crucial property for max-count scheduling.
-
-3. **Myth:** Meeting rooms and activity selection are the same problem.
-   - **Reality:** One maximizes activities on a single resource, the other minimizes resources for all activities. Algorithms, invariants, and answers differ.
-
-4. **Myth:** Overlaps are only important in meeting room problems.
-   - **Reality:** Overlaps drive resource contention everywhere: network links, CPU cores, database connections. Interval thinking generalizes far beyond calendars.
-
-### 🚀 Advanced Concepts (3–5)
-
-1. **Interval Trees and Segment Trees:** Data structures that support dynamic insertion/deletion of intervals and querying all intervals that intersect a point or another interval.
-
-2. **Difference Arrays & Prefix Sums for Intervals:** Technique to compute overlap counts in O(n + U) where U is the time universe size (useful when time is discretized and bounded).
-
-3. **K-Partitioning of Intervals:** Generalization where you want to schedule intervals into at most K machines/rooms without conflicts; related to coloring interval graphs.
-
-4. **Interval Graphs:** Graphs where vertices are intervals and edges represent overlaps. Many problems on interval graphs become easier than on general graphs.
-
-5. **Online Interval Scheduling:** Decisions must be made as intervals arrive, without knowledge of future requests; competitive analysis replaces classical optimality.
-
-### 📚 External Resources
-
-- **CLRS (Introduction to Algorithms), Chapter on Greedy Algorithms:** Detailed coverage of activity selection and interval partitioning.
-- **Algorithm Design (Kleinberg & Tardos), Chapter 4:** Excellent visual and proof-based treatment of interval scheduling and variants.
-- **MIT 6.046J Lecture Notes — Interval Scheduling:** Provides clean exchange argument proofs and ties to other greedy algorithms.
-- **Competitive Programming 3 (Steven Halim):** Contains many interval problems and patterns from a contest perspective.
-- **Online Tutorials (e.g., CP-Algorithms):** Practical, code-oriented explanations of sweep line patterns and interval trees.
+1. **Q:** How do you convert LeetCode 435 (Non-overlapping Intervals) to Activity Selection?
+   - *Answer:* The minimum intervals to remove equals `Total Intervals - Maximum Non-Overlapping Intervals`.
+2. **Q:** What happens in sweep-line if start (+1) is sorted before end (-1) at the same timestamp?
+   - *Answer:* It artificially spikes peak concurrency by 1, wrongly requiring an extra room for back-to-back meetings.
+3. **Q:** Why does weighted interval scheduling require dynamic programming?
+   - *Answer:* An interval with high profit might finish late, invalidating the greedy "earliest finish" advantage.
 
 ---
 

@@ -1,4 +1,4 @@
-# 07. Concurrency & Synchronization Patterns (Senior .NET Reference)
+﻿# 07. Concurrency & Synchronization Patterns (Senior .NET Reference)
 
 In Senior and Lead backend interviews, concurrency is the ultimate differentiator. Junior developers write code that works on a single thread; senior developers write code that survives high-throughput, multi-threaded contention without data corruption, deadlocks, or thread-pool starvation.
 
@@ -117,8 +117,8 @@ flowchart TD
     Q -->|Low Contention (Standard E-Commerce)| OCC["Optimistic Concurrency Control (OCC)"]
     Q -->|High Contention (Flash Sales, Ticket Drops)| PCC["Pessimistic Concurrency Control (PCC)"]
 
-    OCC --> OCC_Details["Use RowVersion / ConcurrencyToken.\nNo blocking locks.\nCatch DbUpdateConcurrencyException and retry."]
-    PCC --> PCC_Details["Use SELECT ... FOR UPDATE or Distributed Lock.\nBlock other threads up-front.\nGuarantees first-come-first-served."]
+    OCC --> OCC_Details["Use RowVersion / ConcurrencyToken.<br/>No blocking locks.<br/>Catch DbUpdateConcurrencyException and retry."]
+    PCC --> PCC_Details["Use SELECT ... FOR UPDATE or Distributed Lock.<br/>Block other threads up-front.<br/>Guarantees first-come-first-served."]
 ```
 
 ### In-Memory Optimistic Concurrency Pattern

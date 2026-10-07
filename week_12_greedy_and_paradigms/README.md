@@ -1,4 +1,4 @@
-# 📘 Greedy Algorithms & Exchange Arguments
+﻿# 📘 Greedy Algorithms & Exchange Arguments
 
 > 🧭 **Navigation:** [← Previous: Week 11](../week_11_dp_ii_advanced/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 13 →](../week_13_backtracking_and_branch_bound/README.md)
 
@@ -14,7 +14,7 @@
 Prove greedy choice properties: interval activity selection, Huffman coding optimal prefix trees, fractional knapsack, and identifying when greedy fails.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start["Week 12 Start"] --> Daily["Daily Invariant Deep Dives"]
     Daily --> Playbook["Consolidated Playbook & Visuals"]
     Playbook --> DualLang["Dual-Language Practice (C# & Python)"]

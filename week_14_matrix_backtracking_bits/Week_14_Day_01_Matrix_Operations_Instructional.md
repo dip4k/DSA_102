@@ -25,7 +25,7 @@ Welcome to Day 1. Today, we build a solid understanding of how coordinates are s
 
 ### 1. The Core Engineering Challenge
 In standard computer systems, hardware memory is a flat, 1D sequential span of byte addresses. Multi-dimensional tables are a high-level language abstraction. To access a cell at coordinates `[row][col]`, compilers must perform address arithmetic:
-{Address}(r, c) = {Base_Address} + (r x {Width} + c) x {Element_Size}
+`Address(r, c) = Base_Address + (r * Width + c) * Element_Size`
 This layout means that accessing adjacent cells inside a `row` is extremely fast (thanks to contiguous sequential cache-line prefetching), whereas jumping vertically down adjacent values within a `column` triggers repetitive cache misses. 
 When we perform complex rotations, transpositions, and traversals:
 *   We risk triggering high constant-factor penalties because of poor cache access patterns.
@@ -33,8 +33,8 @@ When we perform complex rotations, transpositions, and traversals:
 
 ### 2. Naive Pitfalls
 The standard way to rotate a grid is to allocate a secondary matrix of identical dimensions and project each item:
-{destination}[c][N - 1 - r] = {source}[r][c]
-While safe, this naive approach requires O(N^2) extra memory. For large matrices used in graphics pipelines, real-time image processing, and numerical physics simulations, this allocation causes heavy garbage collection stalls and excessive memory usage.
+`destination[c][N - 1 - r] = source[r][c]`
+While safe, this naive approach requires `O(N^2)` extra memory. For large matrices used in graphics pipelines, real-time image processing, and numerical physics simulations, this allocation causes heavy garbage collection stalls and excessive memory usage.
 
 ### 3. Real-world Anchor: Image Filters
 In digital engines, a bitmap or raw image is a grid of color values. Performing high-frequency operations, like rotating a landscape photo to portrait or rendering frame buffers in graphics engines, requires optimizing these data movements to run directly in CPU caches with zero auxiliary allocations.
@@ -45,8 +45,8 @@ In digital engines, a bitmap or raw image is a grid of color values. Performing 
 
 ### 1. Loop-Free Geometric Reflections
 Instead of tracking multi-variable coordinate projections, think of 2D grid operations as a series of simple reflection steps. Complex rotations can be decomposed into sequence compositions of two in-place swaps:
-*   **A Diagonal Reflection (Transpose)**: Reflections over the primary diagonal (y = x) swap coordinates swap row and column values:
-    M[i][j] \longleftrightarrow M[j][i]
+*   **A Diagonal Reflection (Transpose)**: Reflections over the primary diagonal (y = x) swap row and column coordinates:
+    `M[i][j] <-> M[j][i]`
 *   **A Horizontal/Vertical Reflection (Flips)**: Reversing rows or columns mirrors the values across a central axis.
 
 ```text
@@ -63,9 +63,9 @@ By advancing our pointers layer by layer, we shrink our search space safely inwa
 #### 📊 Matrix Transformation Taxonomy
 | Operation | Algebraic Index Mapping | Sequential Composition Method | Space Complexity | Best-use Case |
 | :--- | :--- | :--- | :--- | :--- |
-| **Transpose** | M[i][j] \longleftrightarrow M[j][i] | Symmetrical swap strictly above the diagonal (j > i) | O(1) | Symmetrical coordinate swap |
-| **Rotate Clockwise 90°** | M[i][j] arrow M[j][N-1-i] | Transpose arrow Reverse Rows | O(1) | Rotate color channels / grids |
-| **Rotate Counter-Clockwise 90°** | M[i][j] arrow M[N-1-j][i] | Reverse Rows arrow Transpose | O(1) | Counter-rotation algorithms |
+| **Transpose** | `M[i][j] <-> M[j][i]` | Symmetrical swap strictly above the diagonal (j > i) | O(1) | Symmetrical coordinate swap |
+| **Rotate Clockwise 90°** | `M[i][j] -> M[j][N - 1 - i]` | Transpose -> Reverse Rows | O(1) | Rotate color channels / grids |
+| **Rotate Counter-Clockwise 90°** | `M[i][j] -> M[N - 1 - j][i]` | Reverse Rows -> Transpose | O(1) | Counter-rotation algorithms |
 | **Spiral Walk** | Layer/Boundary step tracing | Step-by-step bounds shrinkage (T, B, L, R) | O(1) | Ordered sequence scans |
 
 ---
@@ -150,7 +150,7 @@ public static List<int> SpiralOrder(int[][] matrix) {
 
 ### 3. Strassen & Optimization Algorithms
 *   **Classic Matrix Multiplication**: Multiplies matrix A (P x Q) by matrix B (Q x R) to yield matrix C (P x R) in O(P * Q * R) operations using standard triple-nested loop iterations.
-*   **Strassen's Algorithm**: Discovers that standard 2 x 2 matrix multiplication can be calculated using only 7 multiplications instead of 8 by applying algebraic subdivisions recursively. This reduces the asymptotic time complexity from O(N^3) to O(N^{log2(7)}) approx. O(N^{2.81}).
+*   **Strassen's Algorithm**: Discovers that standard 2 x 2 matrix multiplication can be calculated using only 7 multiplications instead of 8 by applying algebraic subdivisions recursively. This reduces the asymptotic time complexity from `O(N^3)` to `O(N^(log2 7))` approx. `O(N^2.81)`.
 *   **Gaussian Elimination**: Converted a systems matrix to an Upper Triangular form by scaling rows and subtracting matching offsets sequentially. Determinants can then be calculated in O(N^3) time by multiplying the resulting diagonal pivot coordinates, while inverses are found using augmented identity arrays [M | I].
 
 ---
@@ -294,13 +294,101 @@ def set_zeroes(matrix: list[list[int]]) -> None:
 
 ---
 
-## 📘 Chapter 4: Performance and Systems
+## 📘 Chapter 4: Performance, Invariants & Systems Architecture
 
-*   **Algorithmic Complexities**:
-    *   Transpose: O(N^2) time, O(1) space.
-    *   In-Place Rotation: O(N^2) time, O(1) space.
-    *   Spiral traversal: O(R * C) time, O(1) space.
-*   **CPU L1/L2 Cache Impact**: In C# and C/C++, matrices are stored in **Row-Major** layout (sequential columns inside a row are contiguous in physical memory). Looping over indices via `matrix[r][c]` (with the column index moving fastest in the innermost loop) matches cache prefetching lines. Iterating down columns vertically (`matrix[r][c]` with row index moving fastest) causes frequent cache misses, which can slow down execution by up to 10x on large grids.
+### 1. Exact Governing Invariants
+
+*   **Matrix Transpose Invariant**: For every coordinate pair `(i, j)` where `0 <= i < j < N`, exchanging `matrix[i][j]` with `matrix[j][i]` visits every off-diagonal element exactly once. The diagonal elements `matrix[i][i]` remain stationary. The transformation guarantees:
+    `A^T[j][i] = A[i][j]`
+*   **90-Degree Clockwise Rotation Invariant**: A 90-degree clockwise rotation maps coordinate `(r, c)` to `(c, N - 1 - r)`. We decompose this into two orthogonal reflections:
+    1. Transpose: `(r, c) -> (c, r)`
+    2. Horizontal Row Reversal: `(c, r) -> (c, N - 1 - r)`
+    Because both operations are self-inverting reflections, the composition achieves strict rotation with `O(1)` auxiliary space and zero indexing drift.
+*   **Concentric Spiral Scan Invariant**: The matrix is decomposed into concentric rectangular perimeters bounded by four pointers: `top`, `bottom`, `left`, `right`. At each layer:
+    1. Traverse `left -> right` along `top`, then increment `top`.
+    2. Traverse `top -> bottom` along `right`, then decrement `right`.
+    3. If `top <= bottom`, traverse `right -> left` along `bottom`, then decrement `bottom`.
+    4. If `left <= right`, traverse `bottom -> top` along `left`, then increment `left`.
+    The boundary checks before steps 3 and 4 guarantee that single-row or single-column submatrices are never traversed twice.
+*   **Staircase Search Invariant**: Starting at the top-right corner `(0, C - 1)`:
+    - If `matrix[r][c] == target`, terminate with true.
+    - If `matrix[r][c] > target`, all elements in column `c` below row `r` are strictly greater than `target`; decrement `c` to eliminate column `c`.
+    - If `matrix[r][c] < target`, all elements in row `r` to the left of column `c` are strictly smaller than `target`; increment `r` to eliminate row `r`.
+    Each comparison eliminates at least one entire row or column.
+*   **In-Place Zero Marker Invariant**: Row 0 and Column 0 serve as sentinel bit arrays. For all `i >= 1` and `j >= 1`, `matrix[i][j] == 0` sets markers `matrix[i][0] = 0` and `matrix[0][j] = 0`. Evaluating internal cells before clearing sentinel lines prevents cascading zero corruption.
+
+---
+
+### 2. Explicit Complexity Deconstruction
+
+| Operation | Time (Best / Avg / Worst) | Auxiliary Space | Output Space | Mathematical Derivation |
+| :--- | :--- | :--- | :--- | :--- |
+| **Transpose (N x N)** | `O(N^2)` / `O(N^2)` / `O(N^2)` | `O(1)` | `O(1)` (In-place) | Exactly `N * (N - 1) / 2` swaps across the diagonal. |
+| **Rotate 90° Clockwise** | `O(N^2)` / `O(N^2)` / `O(N^2)` | `O(1)` | `O(1)` (In-place) | Transpose (`N * (N - 1) / 2` swaps) + Row Reversal (`N * floor(N / 2)` swaps). |
+| **Spiral Traversal (R x C)** | `O(R * C)` / `O(R * C)` / `O(R * C)` | `O(1)` | `O(R * C)` | Every cell is visited exactly once via boundary contractions. |
+| **Staircase Search** | `O(1)` / `O(R + C)` / `O(R + C)` | `O(1)` | `O(1)` | Best: target at `(0, C - 1)`. Worst: path traverses `R` rows and `C` columns. |
+| **Set Matrix Zeroes** | `O(R * C)` / `O(R * C)` / `O(R * C)` | `O(1)` | `O(1)` (In-place) | Two sequential full-grid scans; auxiliary memory limited to two boolean flags. |
+
+---
+
+### 3. Senior Interview Context: Hardware, Memory & Concurrency
+
+*   **Cache Line Prefetching & Spatial Locality**: Modern CPUs fetch RAM in 64-byte cache lines (16 contiguous 32-bit integers). In C# and C/C++, matrices are laid out in **Row-Major** format:
+    `Offset(r, c) = r * Width + c`
+    Traversing rows sequentially (`for r ... for c ... matrix[r][c]`) triggers hardware prefetching with near-zero cache miss stalls. Traversing columns vertically (`for c ... for r ... matrix[r][c]`) forces strided memory jumps of size `Width * 4` bytes. On grids with `Width >= 1024`, strided access causes L1/L2 cache thrashing, degrading throughput by 5x to 10x.
+*   **Jagged Arrays (`int[][]`) vs Flat Spans (`Span<int>`)**: In .NET, `int[][]` is an array of object pointers, where each row is a distinct heap allocation scattered across RAM. In latency-sensitive systems (high-frequency trading, game rendering), allocate a single flat buffer `int[R * C]` and wrap it in a `Span<int>` or `ReadOnlySpan<int>` to eliminate pointer indirection and GC heap fragmentation.
+*   **In-Place Mutation vs Idempotency**: In-place algorithms (`SetZeroes`, `Rotate`) eliminate allocation overhead, which is ideal in memory-constrained environments. However, in distributed microservices or concurrent actor models, mutating input matrices invalidates caller caches and violates idempotency. Always clarify whether the caller permits in-place mutation or requires an immutable pure function.
+
+---
+
+## 🎙️ Senior 45-Minute Verbal Talk Track
+
+When presenting matrix transformations in a senior technical screen, follow this calibrated 5-phase talk track:
+
+```text
++-------------------------------------------------------------------------------+
+| PHASE 1: Scope & Scale Constraints       (Minutes 00 - 05)                   |
+| - Clarify dimension limits (R, C <= 10^3), element ranges, and memory rules.  |
+| - Confirm if in-place mutation is allowed or if inputs must remain immutable. |
++-------------------------------------------------------------------------------+
+                                      │
+                                      ▼
++-------------------------------------------------------------------------------+
+| PHASE 2: Naive Solution & Bottleneck     (Minutes 05 - 10)                   |
+| - State naive O(R * C) out-of-place allocation (extra R x C matrix).          |
+| - Articulate the GC overhead, memory footprint, and L3 cache thrashing.       |
++-------------------------------------------------------------------------------+
+                                      │
+                                      ▼
++-------------------------------------------------------------------------------+
+| PHASE 3: Mathematical Invariants         (Minutes 10 - 20)                   |
+| - Derive geometric decomposition: Rotate90 = ReverseRows(Transpose(M)).       |
+| - Prove that Transpose + Row Reverse eliminates complex 4-way cyclic shifts.  |
+| - State the boundary contraction invariant for spiral traversal.              |
++-------------------------------------------------------------------------------+
+                                      │
+                                      ▼
++-------------------------------------------------------------------------------+
+| PHASE 4: Clean Production Implementation (Minutes 20 - 35)                   |
+| - Write clean, idiomatic code with zero auxiliary allocations.               |
+| - Enforce defensive guards: null checks, empty bounds, single-cell grids.    |
+| - Maintain strict row-major access patterns for CPU cache prefetchers.        |
++-------------------------------------------------------------------------------+
+                                      │
+                                      ▼
++-------------------------------------------------------------------------------+
+| PHASE 5: Complexity & Edge Verification  (Minutes 35 - 45)                   |
+| - Deconstruct Time: O(N^2), Auxiliary Space: O(1), Output Space: O(1).        |
+| - Step through tricky edges: 1x1 grid, 1xN strip, N x 1 tall matrix.         |
+| - Address follow-ups: rectangular in-place cycles, SIMD vectorization.        |
++-------------------------------------------------------------------------------+
+```
+
+### Verbal Script Excerpts
+
+*   **Opening (Minutes 00-05)**: *"Before writing code, let me clarify the constraints. Are we guaranteed a square matrix, or can it be rectangular? Is in-place mutation permitted, or is the caller expecting an immutable result? If in-place mutation is expected, our target is `O(N^2)` time with strict `O(1)` auxiliary space."*
+*   **Invariant Articulation (Minutes 10-20)**: *"A direct 4-way coordinate rotation requires tracking `(r, c) -> (c, N - 1 - r) -> (N - 1 - r, N - 1 - c) -> (N - 1 - c, r)`. That introduces high cognitive load and off-by-one risks. Instead, I decompose this into two linear algebra reflections: first, a diagonal transpose `M[i][j] <-> M[j][i]`, which reflects across `y = x`; second, a horizontal reversal of each row, which reflects across the vertical centerline. Mathematically, `(r, c) -> (c, r) -> (c, N - 1 - r)`. This guarantees exact rotation in `O(N^2)` time with zero auxiliary memory."*
+*   **Hardware Defense (Minutes 35-45)**: *"Notice the inner loop order in our row reversal: we iterate sequentially across contiguous columns within the same row. This matches the CPU L1 data cache line prefetcher, maximizing spatial locality and avoiding the strided cache miss penalties that column-major iterations would suffer."*
 
 ---
 
@@ -310,17 +398,18 @@ def set_zeroes(matrix: list[list[int]]) -> None:
 *   **Dungeon Game (Backward Grid DP)**:
     *   *The Problem*: Find the minimum health needed at the start to survive a grid path where cells can contain power-ups or traps.
     *   *The Trick*: Moving forward is impossible because the health needed at any cell depends on the path ahead. We must solve this using **Backward DP**, starting from the bottom-right corner and calculating the minimum health needed to survive the step:
-        DP[i][j] = max(1, min(DP[i+1][j], DP[i][j+1]) - M[i][j])
+        `DP[i][j] = max(1, min(DP[i+1][j], DP[i][j+1]) - M[i][j])`
 *   **Cherry Pickup (Dual Lockstep DP)**:
     *   *The Problem*: Maximize the cherries collected on a round-trip from top-left to bottom-right and back.
-    *   *The Trick*: Instead of simulating two separate paths sequentially, simulate two players moving simultaneously from the top-left corner in lockstep. Since both paths complete in the same number of steps (r_1 + c_1 = r_2 + c_2 = t), we define our state as DP[t][r1][r2] and solve the overlapping paths in polynomial time.
+    *   *The Trick*: Instead of simulating two separate paths sequentially, simulate two players moving simultaneously from the top-left corner in lockstep. Since both paths complete in the same number of steps (`r1 + c1 == r2 + c2 == t`), we define our state as `DP[t][r1][r2]` and solve the overlapping paths in polynomial time `O(N^3)`.
 
 ### 2. Pattern Selection Rules
 *   *Use Transpose + Row Reverse when*: You need to rotate a square grid 90 degrees with zero allocation constraints.
-*   *Use Four boundary Pointers when*: You need to traverse a matrix spirally or step-by-step along concentric boundaries.
+*   *Use Four Boundary Pointers when*: You need to traverse a matrix spirally or step-by-step along concentric boundaries.
+*   *Use Staircase Search when*: The matrix is sorted both row-wise and column-wise, allowing linear `O(R + C)` search from `(0, C - 1)`.
 
 ### 3. Follow-Up Variants
-*   **Rotate Image II**: Rotate a rectangular matrix. (Requires transposing a rectangular grid, which cannot be done in-place easily, making row transformations necessary).
+*   **Rotate Image II (Rectangular Matrix)**: Rotate an `M x N` rectangular matrix. Transposition changes dimensions from `M x N -> N x M`. Doing this in-place requires cycle leader algorithms on 1D memory indices; in practice, an `O(M * N)` auxiliary buffer is standard in production.
 *   **Diagonal Traverse**: Traverse a matrix diagonally. Track the current diagonal index (`row + col == diagonal_index`) and reverse directions dynamically on alternating cycles.
 
 ---
@@ -335,8 +424,11 @@ def set_zeroes(matrix: list[list[int]]) -> None:
 5.  **Cherry Pickup** ([LeetCode 741](https://leetcode.com/problems/cherry-pickup/)): Maximize paths in lockstep using combined index-grid states in 3D DP.
 
 ### Misconceptions and Corrections
-*   *Incorrect Idea*: Assuming you can transpose a rectangular matrix in-place inside an active rectangular grid boundaries.
-    *   *Correction*: Transposing a rectangular matrix changed our boundary sizes (e.g. 3 x 4 arrow 4 x 3), which alters coordinate positions in memory. Doing this in-place requires complex cyclic-shift swaps or auxiliary buffers.
+*   *Incorrect Idea*: Assuming you can transpose a rectangular matrix in-place inside an active rectangular grid buffer without reallocating.
+    *   *Correction*: Transposing a rectangular matrix changes boundary dimensions (e.g. `3 x 4 -> 4 x 3`), which shifts coordinate positions in memory. Doing this in-place requires complex cyclic-shift swaps; out-of-place allocation is standard.
+*   *Incorrect Idea*: Using `matrix[row][col] == 0` check during second pass before preserving sentinel flags in Set Matrix Zeroes.
+    *   *Correction*: If row 0 or col 0 are modified before interior cells are evaluated, the zero markers cascade and mistakenly wipe out the entire grid. Always update the inner grid `[1...R-1, 1...C-1]` first, then apply the sentinel row/col updates last.
+
 ---
 
 > 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_14_Day_02_Bitwise_Operations_Instructional.md)

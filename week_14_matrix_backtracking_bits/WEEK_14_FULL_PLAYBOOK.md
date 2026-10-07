@@ -28,7 +28,7 @@ Matrix operations test index tracking and boundary control. Because contiguous r
 *   **Vertical column traversal**: Triggers repetitive cache line misses.
 
 Decomposing grid rotations into composed steps prevents out-of-bounds errors and complex projection tracking.
-*   **Clockwise 90°** == Transpose diagonally arrow Reverse rows horizontally.
+*   **Clockwise 90°** == Transpose diagonally -> Reverse rows horizontally.
 
 ### 2. State Mechanics & Dry-Runs
 

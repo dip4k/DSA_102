@@ -1,4 +1,4 @@
-# 📘 Backtracking & Branch and Bound
+﻿# 📘 Backtracking & Branch and Bound
 
 > 🧭 **Navigation:** [← Previous: Week 12](../week_12_greedy_and_paradigms/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 14 →](../week_14_matrix_backtracking_bits/README.md)
 
@@ -14,7 +14,7 @@
 Combinatorial search spaces: N-Queens, Sudoku, permutation and subset pruning, state restoration, branch-and-bound bounds, and amortized cost analysis.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start["Week 13 Start"] --> Daily["Daily Invariant Deep Dives"]
     Daily --> Playbook["Consolidated Playbook & Visuals"]
     Playbook --> DualLang["Dual-Language Practice (C# & Python)"]

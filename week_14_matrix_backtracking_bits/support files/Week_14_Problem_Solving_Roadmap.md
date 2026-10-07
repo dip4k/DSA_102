@@ -1,4 +1,4 @@
-# 🗺️ Week 14 Problem Solving Roadmap
+﻿# 🗺️ Week 14 Problem Solving Roadmap
 
 > 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS.md)
 > 
@@ -20,7 +20,7 @@ graph TD
     C -->|Transforming| E[Use in-place Transpose & flips]
     C -->|Searching| F[Use Staircase Search or Matrix DP]
     B -->|No| G{Does it track combinations, subsets, or states?}
-    G -->|Yes| H{Is the size of the set <= 64?}
+    G -->|Yes| H{Is the size of the set &le; 64?}
     H -->|Yes| I[Use Bitwise Masks, Bit Tricks, or Submask Loops]
     H -->|No| J[Use standard sets/maps, Backtracking, or DFS]
     G -->|No| K{Does it use prime numbers, modular results, or divisibility?}

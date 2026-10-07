@@ -7,8 +7,8 @@
 ---
 
 **Theme:** Elementary Sorts, Merge/Quick Sort, Heaps, Hash Tables, String Hashing  
-**Format:** Hybrid (Enhanced ASCII + Web Resource Links + Reference Tools)  
-**Purpose:** Visual-first concept explanation with embedded professional resources
+**Format:** Hybrid (Enhanced ASCII + Architecture & State Diagrams)  
+**Purpose:** Visual-first concept explanation and deep algorithmic intuition
 
 ---
 
@@ -25,18 +25,6 @@
 | `⇄` | Swap operation |
 | `✓` | Valid state |
 | `✗` | Invalid state |
-| 🔗 | Link to interactive visualization |
-
-### Professional Visualization Resources
-
-| Tool | Resource | Best For |
-|------|----------|----------|
-| **VisuAlgo** | https://visualgo.net/en/sorting | Sorting algorithm animations |
-| **Sorting Visualizer** | https://www.toptal.com/developers/sorting-visualizer | Side-by-side sort comparison |
-| **Heap Visualizer** | https://www.cs.usfca.edu/~galles/visualization/Heap.html | Heap operations step-by-step |
-| **GeeksforGeeks Sorting** | https://www.geeksforgeeks.org/sorting-algorithms/ | Comprehensive sorting guide |
-| **GeeksforGeeks Heaps** | https://www.geeksforgeeks.org/heap-data-structure/ | Heap operations and problems |
-| **GeeksforGeeks Hashing** | https://www.geeksforgeeks.org/hashing-data-structure/ | Hash tables and functions |
 
 ---
 
@@ -66,17 +54,19 @@
 
 ### Pattern 1.1: Bubble Sort - Adjacent Comparisons
 
-**Interactive Resource:** 🔗 [VisuAlgo Sorting Visualization](https://visualgo.net/en/sorting)
-
 #### Visual 1: Pass-by-Pass Evolution
 
+```text
+Initial:  [ 5, 2, 8, 1, 9 ]
+Pass 1:   swap(5,2) -> [ 2, 5, 8, 1, 9 ]
+          ok(5,8)   -> [ 2, 5, 8, 1, 9 ]
+          swap(8,1) -> [ 2, 5, 1, 8, 9 ]
+          ok(8,9)   -> [ 2, 5, 1, 8 | 9 ]  (9 locked at end)
+          |--- unsorted ---|   |-sorted-|
 
-| 5 | 2 | 8 | 1 | 9 |
-| :--- | :--- | :--- | :--- | :--- |
-| 2 | 5 | 8 | 1 | 9 |
-| 2 | 5 | 8 | 1 | 9 |
-| 2 | 5 | 1 | 8 | 9 |
-| [unsorted] | [k largest sorted] |  |  |  |
+Pass 2:   swap(5,1) -> [ 2, 1, 5 | 8, 9 ]  (8 locked at end)
+Pass 3:   swap(2,1) -> [ 1 | 2, 5, 8, 9 ]  (Complete)
+```
 
 
 ---
@@ -85,11 +75,14 @@
 
 #### Visual 1: Selection Process
 
-
-| [1, | 2, 8, 5, 9 | ] |
-| :--- | :--- | :--- |
-| [1, 2, | 8, 5, 9 | ] |
-|  |  |  |
+```text
+Initial:  [ 5,  2,  8,  1,  9 ]  -> min in [0..4] is 1 (idx 3) -> swap(0, 3)
+Step 1:   [ 1 | 2,  8,  5,  9 ]  -> min in [1..4] is 2 (idx 1) -> in place
+Step 2:   [ 1,  2 | 8,  5,  9 ]  -> min in [2..4] is 5 (idx 3) -> swap(2, 3)
+Step 3:   [ 1,  2,  5 | 8,  9 ]  -> min in [3..4] is 8 (idx 3) -> in place
+Step 4:   [ 1,  2,  5,  8 | 9 ]  -> sorted
+          |-- sorted -|--rest-|
+```
 
 
 ---
@@ -98,16 +91,14 @@
 
 #### Visual 1: Insert into Sorted Prefix
 
-
-| Before: [ | 5 | 2  8  1  9] |
-| :--- | :--- | :--- |
-| [ | 2, 5 | 8  1  9] |
-| Before: [ | 2, 5 | 8  1  9] |
-| [ | 2, 5, 8 | 1  9] |
-| Before: [ | 2, 5, 8 | 1  9] |
-| [ | 1, 2, 5, 8 | 9] |
-| Before: [ | 1, 2, 5, 8 | 9] |
-| [ | 1, 2, 5, 8, 9 | ] |
+```text
+Initial:   [ 5 | 2, 8, 1, 9 ]
+Insert 2:  shift 5 -> [ 2, 5 | 8, 1, 9 ]
+Insert 8:  in place-> [ 2, 5, 8 | 1, 9 ]
+Insert 1:  shift 8,5,2 -> [ 1, 2, 5, 8 | 9 ]
+Insert 9:  in place-> [ 1, 2, 5, 8, 9 ]  (Complete)
+           |-- sorted prefix --|--unsorted--|
+```
 
 
 ---
@@ -218,8 +209,6 @@ D) All equally bad
 ---
 
 ### Pattern 2.1: Merge Sort Tree Structure
-
-**Interactive Resource:** 🔗 [VisuAlgo Merge Sort](https://visualgo.net/en/sorting)
 
 #### Visual 1: Recursion Tree with Merges
 
@@ -333,8 +322,6 @@ Probability of bad pivot decreases exponentially
 ---
 
 ### Pattern 3.1: Array Representation & Parent-Child
-
-**Interactive Resource:** 🔗 [Heap Visualizer](https://www.cs.usfca.edu/~galles/visualization/Heap.html)
 
 #### Visual 1: Array Index Mapping
 
@@ -469,8 +456,6 @@ flowchart LR
 
 ### Pattern 4.1: Hash Function & Collisions
 
-**Interactive Resource:** 🔗 [GeeksforGeeks Hashing](https://www.geeksforgeeks.org/hashing-data-structure/)
-
 #### Visual 1: Bucket Distribution
 
 
@@ -532,8 +517,6 @@ flowchart TD
 ---
 
 ### Pattern 5.1: Rolling Hash Window
-
-**Interactive Resource:** 🔗 [GeeksforGeeks Rabin-Karp](https://www.geeksforgeeks.org/rabin-karp-algorithm-for-pattern-searching/)
 
 #### Visual 1: Hash Update Formula
 
@@ -598,26 +581,13 @@ Ensures result always in range [0, q-1]
 ## 🎯 WEEK 03 VISUAL SUMMARY TABLE
 
 
-| DAY | PATTERN | Complexity | Best/Worst Use |
+| Day | Pattern | Complexity | Best/Worst Use |
 | :--- | :--- | :--- | :--- |
-| 1 | Elementary Sorts | O(n²) / O(1) | Small n, |
-|  | (Bubble, Select, | stable vary | nearly sorted |
-|  | Insertion) |  | (Insertion) |
-|  |  |  |  |
-| 2 | Merge Sort | O(n log n) / | Stability |
-|  | Quick Sort | O(n log n) av | needed / cache |
-|  |  | O(n²) worst | efficiency |
-|  |  |  |  |
-| 3 | Heaps & Heap | O(log n) each | Priority |
-|  | Sort | O(n log n) | queues, top-k |
-|  |  | sort, O(1) sp |  |
-|  |  |  |  |
-| 4 | Hash Tables | O(1) avg / | O(1) lookup, |
-|  | (Chaining) | O(n) worst | dynamic sets |
-|  |  |  |  |
-| 5 | Rolling Hash | O(n+m) exp / | Substring |
-|  | (Rabin-Karp) | O(nm) worst | search, pattern |
-|  |  |  | matching |
+| **Day 1** | Elementary Sorts (Bubble, Selection, Insertion) | `O(N^2)` time / `O(1)` space | Small `N`; Insertion is optimal `O(N)` for nearly sorted |
+| **Day 2** | Merge Sort & Quick Sort | `O(N log N)` time / `O(N)` or `O(log N)` space | Merge Sort for stability; Quick Sort for in-place cache locality |
+| **Day 3** | Heaps & Heap Sort | `O(log N)` push/pop, `O(N)` heapify | Priority queues, streaming top-k, `O(1)` extra space sort |
+| **Day 4** | Hash Tables (Separate Chaining) | `O(1)` average lookup, `O(N)` worst | Fast key-value association, load factor resizing |
+| **Day 5** | Rolling Hash (Rabin-Karp) | `O(N + M)` average, `O(N * M)` worst | Substring search & sliding window fingerprinting |
 
 
 ---
@@ -639,20 +609,18 @@ Ensures result always in range [0, q-1]
 
 ---
 
-## 🔗 RECOMMENDED LEARNING RESOURCES
+## 📚 CORE CONCEPT WALKTHROUGHS
 
-### Interactive Visualizations
-1. **VisuAlgo Sorting** (https://visualgo.net/en/sorting) — Compare all algorithms side-by-side
-2. **Toptal Sorting Visualizer** (https://www.toptal.com/developers/sorting-visualizer) — Hear the sorts!
-3. **Heap Visualizer** (https://www.cs.usfca.edu/~galles/visualization/Heap.html) — Step through heap ops
-4. **GeeksforGeeks Sorting** (https://www.geeksforgeeks.org/sorting-algorithms/) — Complete reference
-5. **GeeksforGeeks Heaps** (https://www.geeksforgeeks.org/heap-data-structure/) — Heap deep dive
-6. **GeeksforGeeks Hashing** (https://www.geeksforgeeks.org/hashing-data-structure/) — Hash concepts
+### Core Visualizations & Step Traces
+- **Comparison Sort Invariants:** Sinking bubble passes, selection minimum swaps, and insertion prefix shifting.
+- **Divide-and-Conquer Merge/Partition:** Tree recursion, auxiliary array merging, and Lomuto/Hoare pivots.
+- **Heap Tree Array Mapping:** Complete binary tree index invariants `2i+1` / `2i+2` and sift-down mechanics.
+- **Rabin-Karp Rolling Hash:** Polynomial rolling hash window sliding with Horner's rule.
 
-### Video Tutorials
-- "Sorting Algorithms Explained" — Visual walkthrough of all sorts
-- "Heap and Priority Queue" — Animations and use cases
-- "Hash Tables Explained" — Collision handling strategies
+### Conceptual Lecture Alignment
+- "Sorting Algorithms Explained" — Stability, adaptivity, and worst-case bounds
+- "Heap and Priority Queue" — Sift-down vs sift-up dynamics and array storage
+- "Hash Tables Explained" — Collision resolution, bucket distributions, and prime modulus selection
 
 ---
 
@@ -666,19 +634,19 @@ Ensures result always in range [0, q-1]
 
 ### Deep Learning (2-3 hours)
 1. Read playbook + extended subtopics guide
-2. Visit web resource links for interactive animations
+2. Hand-trace state transitions using visual diagrams
 3. Implement code from main instructional files
 4. Solve practice problems using visuals as reference
 
 ### Interview Prep
 1. Open playbook for quick pattern reminders
-2. Use resource links for visual refresh
+2. Review visual diagrams for structural refresh
 3. Mentally trace algorithm using playbook diagrams
 4. Code from memory with confidence
 
 ---
 
-**Use web resource links for interactive visualizations while studying!**
+**Review sorting passes and hash bucket diagrams visually while practicing!**
 
 ---
 

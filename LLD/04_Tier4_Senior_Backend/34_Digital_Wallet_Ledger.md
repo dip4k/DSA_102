@@ -1,4 +1,4 @@
-# 34. Digital Wallet & Double-Entry Ledger System (Fintech LLD)
+﻿# 34. Digital Wallet & Double-Entry Ledger System (Fintech LLD)
 
 ## 📌 Context
 Designing a digital wallet (like Stripe, Razorpay, or PhonePe) is the single most popular financial LLD problem in senior backend interviews. It evaluates your mastery of **Double-Entry Bookkeeping**, **Deadlock Avoidance**, **Idempotency**, and **Atomic Money Transfers** without floating-point inaccuracies.
@@ -9,7 +9,7 @@ Designing a digital wallet (like Stripe, Razorpay, or PhonePe) is the single mos
 
 ### Core Requirements
 1. **Double-Entry Accounting**: Money cannot appear or disappear. Every transfer generates a minimum of two immutable ledger entries: one **Debit** and one **Credit**, whose sum equals zero.
-2. **Deadlock Prevention**: When two users transfer money to each other simultaneously (User A $\rightarrow$ User B and User B $\rightarrow$ User A), circular lock acquisition must be prevented.
+2. **Deadlock Prevention**: When two users transfer money to each other simultaneously (User A -> User B and User B -> User A), circular lock acquisition must be prevented.
 3. **Idempotency**: Network retries sending the same `IdempotencyKey` must return the original transaction result without double-charging.
 4. **Data Integrity**: Never use `float` or `double` for currency. Always use `decimal`.
 
@@ -295,18 +295,18 @@ sequenceDiagram
     participant LockB as Lock(Account B)
     participant Ledger as Immutable Ledger
 
-    Client->>Service: Transfer(Key: "tx_123", A -> B, $50)
+    Client->>Service: Transfer(Key: "tx_123", A -> B, 50 USD)
     Service->>Idem: Check key "tx_123"
     alt Key already exists
         Service-->>Client: Replay cached result
     else First attempt
-        Service->>Service: Sort Locks: A.Id < B.Id
+        Service->>Service: Sort Locks: A.Id before B.Id (Deadlock Prevention)
         Service->>LockA: Acquire Lock A
         Service->>LockB: Acquire Lock B
-        Service->>Service: Validate Balance (A.Balance >= $50)
-        Service->>Service: A.Debit($50) & B.Credit($50)
-        Service->>Ledger: Append (Debit A $50, Credit B $50)
-        Service->>Idem: Store transaction result ("tx_123", Completed)
+        Service->>Service: Validate Balance (A.Balance >= 50)
+        Service->>Service: A.Debit(50) and B.Credit(50)
+        Service->>Ledger: Append (Debit A 50, Credit B 50)
+        Service->>Idem: Store transaction result (tx_123, Completed)
         Service->>LockB: Release Lock B
         Service->>LockA: Release Lock A
         Service-->>Client: Return Success (TxId)

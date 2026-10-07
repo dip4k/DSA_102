@@ -1,12 +1,8 @@
 # 📘 Week 05 Day 04 Part A: Partition & Cyclic Sort Patterns — Engineering Guide
 
-
-
-
-
 > 🧭 **Navigation:** [← Previous Day](Week_05_Day_03_Merge_Operations_Interval_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_05_Day_04_Part_B_Kadane_Algorithm_Instructional.md)
 > 
-> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Focus on the Dutch National Flag 3-pointer invariant and Cyclic Sort swap mechanics according to your interview timeline.*
 
 ---
 
@@ -14,44 +10,39 @@
 
 By the end of this chapter, you will be able to:
 
-- 🎯 **Internalize** the partition invariant: "Maintain regions where all elements satisfy a property" 
-- ⚙️ **Implement** Dutch National Flag, move zeroes, cyclic sort without referencing solutions
-- ⚖️ **Evaluate** trade-offs between partitioning approaches (two-pointer, swap-based, cyclic)
-- 🏭 **Connect** partitioning to real systems: quicksort optimizations, memory reorganization, duplicate detection
-- 🔄 **Recognize** when problems require in-place array transformation with O(1) space
+- 🎯 **Internalize** the partition invariant: maintaining designated array sub-regions through pointer boundaries allows in-place segregation with strictly `O(1)` auxiliary space.
+- ⚙️ **Implement** Sort Colors (Dutch National Flag), Move Zeroes, Missing Number, and Find Duplicate in production C# (.NET 8/9) and idiomatic Python (3.11+).
+- ⚖️ **Evaluate** trade-offs between comparative sorting (`O(N log N)`), hash sets (`O(N)` space), and cyclic sort (`O(N)` time, `O(1)` space).
+- 🏭 **Connect** partition patterns to real systems (in-place OS memory compaction, Quicksort pivot schemes, columnar database run-length encoding).
+- 🎙️ **Explain** pointer advancement rules and why Cyclic Sort performs at most `N` swaps across a 45-minute technical interview.
 
 ---
 
 ## 📖 CHAPTER 1: CONTEXT & MOTIVATION
 
-### The Engineering Challenge
+### The Engineering Problem
 
-Imagine you're building a data processing pipeline. Your system processes millions of sensor readings, each labeled as valid (1), warning (2), or critical (0). You need to reorganize the array so all criticals come first, then warnings, then valids: all in the same array, without allocating new space.
+In performance-critical software—such as database storage engines, operating system memory allocators, and embedded controllers—allocating secondary buffer arrays to filter, reorganize, or sort records is unacceptable. When millions of records arrive in a contiguous block, allocating an auxiliary `O(N)` buffer incurs heap fragmentation, garbage collector churn, and cache eviction.
 
-Raw data: `[1, 0, 2, 1, 2, 0, 0, 1]`  
-Desired: `[0, 0, 0, 1, 1, 1, 2, 2]`
+Consider segregating records by status flags: valid (`1`), pending (`2`), or corrupted (`0`). Or consider moving all inactive null pointers to the end of an array while retaining active pointer ordering. A naive approach allocates new arrays and filters elements, wasting memory.
 
-**Naive Approach:** Create three separate arrays, then concatenate → O(n) space.
+By using **partitioning and cyclic sort**, we manipulate elements directly in-place:
+1. **Three-Way Partitioning (Dutch National Flag):** Rearranges three distinct categories in a single pass with `O(1)` auxiliary space.
+2. **Cyclic Sort:** Uses the values themselves as indices when values reside within `[1..N]` or `[0..N]`, placing each number into its rightful memory slot in linear time.
 
-**Better Approach:** Partition in-place using the Dutch National Flag algorithm → O(1) extra space, O(n) time.
+> [!NOTE]
+> **Production Reality (Why FAANG Tests This):**
+> Operating system kernel allocators (Linux Slab/Buddy allocators) and garbage collectors (Java ZGC, .NET GC compacting phase) reorganize contiguous pages in-place using two-pointer and three-pointer partitions to defragment memory without allocating secondary buffers. FAANG interviewers test this pattern to verify you can execute tight, bug-free in-place pointer swaps without leaning on auxiliary memory.
 
-Here's what makes this elegant: You don't need to sort or use extra memory. You just need to understand **where each element belongs** and **maintain invariants** about regions of the array.
+### The Solution: Region Invariants
 
-Another real problem: You have an array of integers `[1, 0, 2, 0, 4, 0]`. Move all zeros to the end: `[1, 2, 4, 0, 0, 0]`. Again, in-place, no extra arrays.
+Instead of viewing the array as a monolithic list, we partition it into distinct semantic zones bounded by pointers:
+- Elements before `low` belong strictly to Region 0.
+- Elements between `low` and `mid` belong strictly to Region 1.
+- Elements between `mid` and `high` constitute unexplored territory.
+- Elements past `high` belong strictly to Region 2.
 
-The deeper insight: **Partitioning teaches a different way of thinking about arrays.** Instead of "rearrange everything," you think "maintain regions where elements satisfy a property." This unlocks O(1) space solutions where brute force would need O(n).
-
-### The Solution: Partition-Centric Thinking
-
-Partition problems solve:
-- **Dutch National Flag:** Segregate 3 values (0, 1, 2) into regions
-- **Move Zeroes:** Relocate elements satisfying a property to one end
-- **Cyclic Sort:** Place each element in its "correct" position (1..n)
-- **Duplicate Detection:** Find missing numbers or duplicates in 1..n arrays
-
-The elegant trick: **Maintain pointer(s) marking region boundaries. When you find an element in the wrong region, swap it to the correct region.**
-
-> **💡 Insight:** Partitioning is not sorting. You don't care about order within regions, only that elements are in the right region. This O(1) space perspective opens new solutions.
+By advancing pointers monotonically as elements are inspected or swapped, the unexplored region shrinks to zero in a single pass.
 
 ---
 
@@ -59,516 +50,429 @@ The elegant trick: **Maintain pointer(s) marking region boundaries. When you fin
 
 ### The Core Analogy
 
-Think of array partitioning like **dividing a classroom by grade level.** You have a mixed group of 1st, 2nd, and 3rd graders standing in a line. Your job: reorganize so all 1st graders stand in one section, 2nd graders in the next, and 3rd graders at the end. You can swap people (swap array elements), but you can't create new lines (can't use extra space).
+Imagine sorting physical colored balls (Red=0, White=1, Blue=2) on a single narrow rail. You place a left barrier (`low`) and a right barrier (`high`), and walk along with a selector (`mid`):
+- If you see a Red ball (0), you swap it behind the left barrier and advance both barriers.
+- If you see a White ball (1), it already belongs in the middle zone, so you step past it.
+- If you see a Blue ball (2), you throw it behind the right barrier and pull the right barrier inward. You do not step forward yet, because the ball that just arrived from behind the right barrier has not been inspected.
 
-As you walk down the line:
-- If you find a 3rd grader in the 1st section, move them right
-- If you find a 1st grader in the 3rd section, move them left
-- Gradually, the line segregates
-
-You maintain pointers: "end of 1st section," "end of 2nd section." Elements before the first pointer belong in the 1st section; between pointers are 2nd graders; after the second pointer are 3rd graders.
-
-### 🖼 Visualizing the Structure
+### 🖼 Visualizing Dutch National Flag Regions
 
 ```
-Initial mixed array:
-[1, 0, 2, 1, 0, 2, 1, 0]
- ^           ^           ^
- left        mid         right
- (all <1)    (all =1)    (all >1)
-
-Process each element by comparing with 1:
-[0, 0, 1, 1, 2, 2, 1, 0]
- ^     ^     ^           (pointers adjusted)
-
-Final (regions properly separated):
-[0, 0, 1, 1, 2, 2, 2, 0]
-     ^        ^
-    left     right
+Index:    0      low-1   low     mid-1   mid       high   high+1     N-1
+Array:  [ 0  0 ... 0  |  1  1 ... 1  |  ?  ? ... ?  |  2  2 ... 2  ]
+          ────────────   ────────────   ────────────   ────────────
+          Region 0       Region 1       Unexplored     Region 2
+          (Finalized)    (Finalized)    (Frontier)     (Finalized)
 ```
 
 ### Invariants & Properties
 
-**The Partition Invariants:**
-
-1. **Region Invariant:** All elements [0...left) should satisfy the "left" condition
-2. **Middle Invariant:** All elements [left...mid) should satisfy the "middle" condition  
-3. **Right Invariant:** All elements [mid...n) are unexplored or satisfy the "right" condition
-
-**Why It Matters:** The invariants guarantee that once we've processed all elements, the array is partitioned correctly. We never revisit regions—each element is processed exactly once.
-
-**What Breaks If Violated:** If we don't maintain these invariants, elements could end up in the wrong region, or we might process elements multiple times.
-
-### 📐 Mathematical & Theoretical Foundations
-
-**Partition Theorem:** For any array, we can partition it into k regions in O(n) time and O(1) space by maintaining k-1 pointers and processing each element exactly once.
-
-**Correctness Proof Sketch:** Since each element is visited once, we process n elements. Each visit either swaps (O(1)) or moves a pointer (O(1)). Total: O(n). The invariants guarantee the final result is correct.
-
-### Taxonomy of Partition Patterns
-
-| Problem | Goal | Key Operation | Time | Space | Example |
-|---------|------|----------------|------|-------|---------|
-| **Dutch Flag** | Segregate 0/1/2 | Three-pointer swap | O(n) | O(1) | [1,0,2,1,0] → [0,0,1,1,2,2] |
-| **Move Zeroes** | Shift property to end | Two-pointer scan | O(n) | O(1) | [1,0,2,0] → [1,2,0,0] |
-| **Cyclic Sort** | Place i at index i | Position-based swap | O(n) | O(1) | [3,2,1] → [1,2,3] |
-| **Missing Number** | Find 1..n gap | Cyclic sort + scan | O(n) | O(1) | [3,0,1] → missing is 2 |
+1. **Four-Zone Invariant (Dutch Flag):**
+   - `[0 .. low - 1]`: all elements equal 0
+   - `[low .. mid - 1]`: all elements equal 1
+   - `[mid .. high]`: unexamined elements
+   - `[high + 1 .. N - 1]`: all elements equal 2
+2. **Non-Advancement on High Swap Invariant:** When `nums[mid] == 2`, swapping `nums[mid]` with `nums[high]` decrements `high`, but `mid` **must NOT advance**. The element swapped from `high` was previously unexamined.
+3. **Cyclic Sort Swap Budget:** In an array of length `N`, each swap places at least one element into its permanent destination (`nums[nums[i] - 1] == nums[i]`). Since there are at most `N` elements, cyclic sort executes at most `N - 1` swaps total, guaranteeing `O(N)` overall runtime.
 
 ---
 
-## ⚙️ CHAPTER 3: MECHANICS & IMPLEMENTATION
+## 🔧 CHAPTER 3: CORE PATTERN MECHANICS & ASCII TRACES
 
-### The State Machine & Memory Layout
+### Cyclic Sort Swap Mechanics
 
-When partitioning, we maintain:
-- **Pointers:** Mark region boundaries (left, mid, right for Dutch Flag)
-- **Current Element:** Element being processed
-- **Invariants:** Guarantees about each region
-
-Memory layout remains the same array—no extra allocations. We only move pointers and swap elements.
-
-### 🔧 Operation 1: Dutch National Flag (Three-Way Partition)
-
-**Intent:** Segregate an array containing 0s, 1s, and 2s into three regions: all 0s first, then 1s, then 2s. Order within regions doesn't matter.
-
-**Step-by-step narrative:** We maintain three pointers: `left` marks the end of 0s region, `mid` marks the current position we're checking, and `right` marks the start of 2s region. We iterate `mid` from start to end. For each element at `mid`:
-
-- If it's 0, it belongs in the 0s region (left), so we swap with element at `left`, then increment both `left` and `mid`
-- If it's 1, it's already in the correct region (middle), so we just move `mid` forward
-- If it's 2, it belongs in the 2s region (right), so we swap with element at `right`, then decrement `right` (but don't move `mid` yet—the swapped element might be a 0)
-
-The key insight: When we swap a 2 to the right, we don't increment `mid` because the element we just swapped into `mid` needs to be checked.
-
-**Progressive Example with Full Walkthrough:**
+Given array `[3, 5, 2, 1, 4]` where values are in range `[1..5]`. Target index for value `X` is `X - 1`:
 
 ```
-Input: [1, 0, 2, 1, 2, 0]
-Goal: Segregate 0s, 1s, 2s
+Index:   0    1    2    3    4
+Array:  [3,   5,   2,   1,   4]
 
-Initial state: left=0, mid=0, right=5
+Step 0: i = 0, val = 3 -> Target index = 3 - 1 = 2
+        nums[0] != nums[2] (3 != 2) -> SWAP nums[0] <-> nums[2]
+        Array:  [2,   5,   3,   1,   4]   (Value 3 is now permanently at index 2!)
 
-mid=0: arr[0]=1
-  1 is in correct region (middle), increment mid
-  State: [1, 0, 2, 1, 2, 0], left=0, mid=1, right=5
+Step 1: i = 0 (re-evaluate!), val = 2 -> Target index = 2 - 1 = 1
+        nums[0] != nums[1] (2 != 5) -> SWAP nums[0] <-> nums[1]
+        Array:  [5,   2,   3,   1,   4]   (Value 2 is now permanently at index 1!)
 
-mid=1: arr[1]=0
-  0 belongs in left region, swap(left, mid)
-  State: [0, 1, 2, 1, 2, 0], left=1, mid=2, right=5
+Step 2: i = 0 (re-evaluate!), val = 5 -> Target index = 5 - 1 = 4
+        nums[0] != nums[4] (5 != 4) -> SWAP nums[0] <-> nums[4]
+        Array:  [4,   2,   3,   1,   5]   (Value 5 is now permanently at index 4!)
 
-mid=2: arr[2]=2
-  2 belongs in right region, swap(mid, right)
-  State: [0, 1, 0, 1, 2, 2], left=1, mid=2, right=4
-  (Note: mid stays same; arr[2] was swapped in and needs checking)
+Step 3: i = 0 (re-evaluate!), val = 4 -> Target index = 4 - 1 = 3
+        nums[0] != nums[3] (4 != 1) -> SWAP nums[0] <-> nums[3]
+        Array:  [1,   2,   3,   4,   5]   (Value 4 is now permanently at index 3!)
 
-mid=2: arr[2]=0
-  0 belongs in left region, swap(left, mid)
-  State: [0, 0, 1, 1, 2, 2], left=2, mid=3, right=4
-
-mid=3: arr[3]=1
-  1 is in correct region, increment mid
-  State: [0, 0, 1, 1, 2, 2], left=2, mid=4, right=4
-
-mid=4: mid >= right, stop
-
-Final: [0, 0, 1, 1, 2, 2] ✓
+Step 4: i = 0, val = 1 -> Target index = 0. nums[0] == 1 -> Correct! Increment i to 1.
+        Indices 1, 2, 3, 4 are already in their correct spots -> i increments to N.
+Final:  [1, 2, 3, 4, 5] sorted in O(N) time with O(1) auxiliary space!
 ```
 
-**Inline Trace Table:**
+---
 
-| mid | arr[mid] | Action | left | mid | right | Array |
-|-----|----------|--------|------|-----|-------|-------|
-| 0 | 1 | In place | 0 | 1 | 5 | [1,0,2,1,2,0] |
-| 1 | 0 | Swap(0,1) | 1 | 2 | 5 | [0,1,2,1,2,0] |
-| 2 | 2 | Swap(2,5) | 1 | 2 | 4 | [0,1,0,1,2,2] |
-| 2 | 0 | Swap(1,2) | 2 | 3 | 4 | [0,0,1,1,2,2] |
-| 3 | 1 | In place | 2 | 4 | 4 | [0,0,1,1,2,2] |
-| EOF | — | Stop | — | — | — | [0,0,1,1,2,2] |
+## 💻 CHAPTER 4: PRODUCTION-GRADE IMPLEMENTATIONS (C# & PYTHON)
 
-**C# Implementation:**
+### Problem 1: Sort Colors (LeetCode 75) — Dutch National Flag 3-Way Partition
 
+#### 🎙️ 45-Minute Interview Talk Track
+> *"To sort an array consisting strictly of 0s, 1s, and 2s in-place with `O(1)` space and a single pass, we use Dijkstra's Dutch National Flag three-way partition. We maintain three pointers: `low`, `mid`, and `high`. The invariant guarantees that elements in `[0..low-1]` are 0, elements in `[low..mid-1]` are 1, and elements in `[high+1..N-1]` are 2. The slice `[mid..high]` represents unexamined elements. When `nums[mid] == 0`, we swap `nums[low]` and `nums[mid]` and increment both pointers. When `nums[mid] == 1`, it belongs in the middle region, so we simply increment `mid`. When `nums[mid] == 2`, we swap `nums[mid]` with `nums[high]` and decrement `high`—critically without incrementing `mid`, because the swapped element from `high` has not yet been processed. The loop terminates when `mid > high` in `O(N)` time."*
+
+#### C# Primary Implementation (.NET 8/9 — Zero Allocation)
 ```csharp
-public void SortColors(int[] nums)
+using System;
+
+public static class SortColorsSolver
 {
-    int left = 0;      // End of 0s region
-    int mid = 0;       // Current element being checked
-    int right = nums.Length - 1;  // Start of 2s region
-    
-    while (mid <= right)
+    /// <summary>
+    /// Sorts an array containing 0s, 1s, and 2s in-place in a single pass.
+    /// Time Complexity: O(N) | Auxiliary Space: O(1) | Output Space: O(1) in-place
+    /// </summary>
+    public static void SortColors(int[] nums)
     {
-        if (nums[mid] == 0)
+        ArgumentNullException.ThrowIfNull(nums);
+        int low = 0;
+        int mid = 0;
+        int high = nums.Length - 1;
+
+        while (mid <= high)
         {
-            // Swap with left, both pointers move
-            (nums[left], nums[mid]) = (nums[mid], nums[left]);
-            left++;
-            mid++;
-        }
-        else if (nums[mid] == 1)
-        {
-            // Already in correct region, just move mid
-            mid++;
-        }
-        else // nums[mid] == 2
-        {
-            // Swap with right, only right moves back
-            (nums[mid], nums[right]) = (nums[right], nums[mid]);
-            right--;
-            // Don't increment mid; need to check swapped element
+            if (nums[mid] == 0)
+            {
+                (nums[low], nums[mid]) = (nums[mid], nums[low]);
+                low++;
+                mid++;
+            }
+            else if (nums[mid] == 1)
+            {
+                mid++;
+            }
+            else // nums[mid] == 2
+            {
+                (nums[mid], nums[high]) = (nums[high], nums[mid]);
+                high--;
+            }
         }
     }
 }
 ```
 
-**Key Insight:** When swapping a 2 to the right, we don't increment `mid` because we need to process the element that was swapped into `mid`. This is critical for correctness.
+#### Python Secondary Implementation (3.11+ — Clean & Idiomatic)
+```python
+def sort_colors(nums: list[int]) -> None:
+    """Sorts array containing 0s, 1s, and 2s in-place using Dutch National Flag.
 
-> **⚠️ Watch Out:** Common mistake—incrementing `mid` after swapping with right. This would skip checking the swapped element and potentially leave 0s in the middle region.
+    Time Complexity: O(N) | Auxiliary Space: O(1) | Output Space: O(1) in-place
+    """
+    low, mid, high = 0, 0, len(nums) - 1
+
+    while mid <= high:
+        if nums[mid] == 0:
+            nums[low], nums[mid] = nums[mid], nums[low]
+            low += 1
+            mid += 1
+        elif nums[mid] == 1:
+            mid += 1
+        else:
+            nums[mid], nums[high] = nums[high], nums[mid]
+            high -= 1
+```
+
+#### 📊 Explicit Complexity Deconstruction
+* **Time Complexity:** `O(N)` — In each iteration, either `mid` increments or `high` decrements. Since `mid` starts at 0 and `high` starts at `N - 1`, the loop executes at most `N` times.
+* **Auxiliary Space:** `O(1)` — Only three integer scalar pointers are maintained.
+* **Output Space:** `O(1)` in-place — Modifies the input array directly without allocations.
 
 ---
 
-### 🔧 Operation 2: Move Zeroes (Two-Pointer Partition)
+### Problem 2: Move Zeroes (LeetCode 283) — Two-Pointer Read/Write Partition
 
-**Intent:** Move all zeros to the end while maintaining relative order of non-zero elements.
+#### 🎙️ 45-Minute Interview Talk Track
+> *"To move all zeroes to the end of the array while maintaining the relative order of non-zero elements in-place, we use a two-pointer partition with a slow write pointer and a fast read pointer. The `write` pointer marks the boundary of compacted non-zero elements. We iterate `read` from 0 to `N - 1`. Whenever `nums[read] != 0`, we swap `nums[write]` with `nums[read]` and advance `write`. If all initial elements are non-zero, `write` and `read` match and swap in-place. The moment a zero appears, `write` halts while `read` advances to the next non-zero number, cleanly shifting zeroes backward in a single pass with `O(1)` auxiliary space."*
 
-**Step-by-step narrative:** We use a two-pointer approach. The `last_non_zero` pointer marks the position where the next non-zero element should go. We iterate through the array. When we find a non-zero element, we place it at `last_non_zero` and increment that pointer. At the end, all positions from `last_non_zero` onward are filled with zeros.
-
-**Progressive Example:**
-
-```
-Input: [0, 1, 0, 3, 12]
-Goal: [1, 3, 12, 0, 0]
-
-last_non_zero = 0
-
-i=0: arr[0]=0, skip
-i=1: arr[1]=1, non-zero
-     arr[last_non_zero=0] = 1
-     last_non_zero = 1
-     State: [1, 1, 0, 3, 12]
-
-i=2: arr[2]=0, skip
-
-i=3: arr[3]=3, non-zero
-     arr[last_non_zero=1] = 3
-     last_non_zero = 2
-     State: [1, 3, 0, 3, 12]
-
-i=4: arr[4]=12, non-zero
-     arr[last_non_zero=2] = 12
-     last_non_zero = 3
-     State: [1, 3, 12, 3, 12]
-
-Fill remaining with zeros:
-     State: [1, 3, 12, 0, 0] ✓
-```
-
-**C# Implementation:**
-
+#### C# Primary Implementation (.NET 8/9 — Zero Allocation)
 ```csharp
-public void MoveZeroes(int[] nums)
+using System;
+
+public static class MoveZeroesSolver
 {
-    int lastNonZero = 0;  // Position for next non-zero
-    
-    // Move all non-zero elements forward
-    for (int i = 0; i < nums.Length; i++)
+    /// <summary>
+    /// Moves zeroes to the array end in-place while preserving non-zero element order.
+    /// Time Complexity: O(N) | Auxiliary Space: O(1) | Output Space: O(1) in-place
+    /// </summary>
+    public static void MoveZeroes(int[] nums)
     {
-        if (nums[i] != 0)
+        ArgumentNullException.ThrowIfNull(nums);
+        int write = 0;
+
+        for (int read = 0; read < nums.Length; read++)
         {
-            nums[lastNonZero] = nums[i];
-            lastNonZero++;
+            if (nums[read] != 0)
+            {
+                if (read != write)
+                {
+                    (nums[write], nums[read]) = (nums[read], nums[write]);
+                }
+                write++;
+            }
         }
-    }
-    
-    // Fill remaining with zeros
-    for (int i = lastNonZero; i < nums.Length; i++)
-    {
-        nums[i] = 0;
     }
 }
 ```
 
-**Key Insight:** We don't use swaps here; we just shift non-zero elements forward. This maintains their relative order naturally.
+#### Python Secondary Implementation (3.11+ — Clean & Idiomatic)
+```python
+def move_zeroes(nums: list[int]) -> None:
+    """Moves all zeroes to end of nums in-place while maintaining order.
+
+    Time Complexity: O(N) | Auxiliary Space: O(1) | Output Space: O(1) in-place
+    """
+    write = 0
+    for read in range(len(nums)):
+        if nums[read] != 0:
+            if read != write:
+                nums[write], nums[read] = nums[read], nums[write]
+            write += 1
+```
+
+#### 📊 Explicit Complexity Deconstruction
+* **Time Complexity:** `O(N)` — Single pass where `read` visits all `N` elements exactly once.
+* **Auxiliary Space:** `O(1)` — Only two scalar index pointers are tracked.
+* **Output Space:** `O(1)` in-place — No new array memory allocated.
 
 ---
 
-### 🔧 Operation 3: Cyclic Sort (Position-Based Swap)
+### Problem 3: Missing Number (LeetCode 268) — Cyclic Sort In-Place Indexing
 
-**Intent:** For an array containing numbers 1 to n (each appearing once), place each number in its "home" position: number k should be at index k-1.
+#### 🎙️ 45-Minute Interview Talk Track
+> *"Given an array of `N` distinct numbers taken from the range `[0..N]`, one number is missing. While Gauss's sum formula solves this with arithmetic, cyclic sort provides a robust structural approach that generalizes to duplicate and multiple-missing problems. Each number `X` should reside at index `X`. While iterating through index `i`, if `nums[i] < N` and `nums[i] != nums[nums[i]]`, we swap `nums[i]` into its target index without advancing `i`. Otherwise, if `nums[i] == N` or already in place, we advance `i`. After the array is cyclic-sorted, a second linear pass checks which index `j` does not match `nums[j] == j`. That index is our missing number. If all match, `N` is missing."*
 
-**Step-by-step narrative:** We iterate through the array. For each position `i`, we check if `arr[i]` is in its correct home position. If not, we swap it with the element at its home position. We keep swapping until the correct element is at position `i`. Then we move to the next position.
-
-Why does this work? Because each number 1..n has exactly one correct position. When we place number k at position k-1, it's done—we never need to touch it again.
-
-**Progressive Example:**
-
-```
-Input: [3, 2, 1]
-Goal: [1, 2, 3] (1 at index 0, 2 at index 1, 3 at index 2)
-
-i=0: arr[0]=3, correct position is 2 (3-1=2)
-     Swap(0, 2): [1, 2, 3]
-     arr[0]=1, correct position is 0 ✓
-
-i=1: arr[1]=2, correct position is 1 (2-1=1) ✓
-
-i=2: arr[2]=3, correct position is 2 (3-1=2) ✓
-
-Result: [1, 2, 3] ✓
-```
-
-**C# Implementation:**
-
+#### C# Primary Implementation (.NET 8/9 — Production-Grade)
 ```csharp
-public void CyclicSort(int[] nums)
+using System;
+
+public static class MissingNumberSolver
 {
-    int i = 0;
-    while (i < nums.Length)
+    /// <summary>
+    /// Identifies the missing number in [0..N] using cyclic sort indexing.
+    /// Time Complexity: O(N) | Auxiliary Space: O(1) | Output Space: O(1)
+    /// </summary>
+    public static int MissingNumber(int[] nums)
     {
-        // Correct position for nums[i] is nums[i] - 1
-        int correctPos = nums[i] - 1;
-        
-        if (i != correctPos)
+        ArgumentNullException.ThrowIfNull(nums);
+        int i = 0;
+        int n = nums.Length;
+
+        while (i < n)
         {
-            // Swap to correct position
-            (nums[i], nums[correctPos]) = (nums[correctPos], nums[i]);
-            // Don't increment i; need to check swapped element
+            int targetIndex = nums[i];
+
+            // If value is within [0..n-1] and not yet at its target index, swap it
+            if (targetIndex < n && nums[i] != nums[targetIndex])
+            {
+                (nums[i], nums[targetIndex]) = (nums[targetIndex], nums[i]);
+            }
+            else
+            {
+                i++;
+            }
         }
-        else
+
+        // Find index mismatch
+        for (int j = 0; j < n; j++)
         {
-            // Already in correct position, move forward
-            i++;
+            if (nums[j] != j) return j;
         }
+
+        return n;
     }
 }
 ```
 
-**Key Insight:** We don't increment `i` after a swap; we re-check the same position because we just swapped a new element in. This ensures every element reaches its home position.
+#### Python Secondary Implementation (3.11+ — Clean & Idiomatic)
+```python
+def missing_number(nums: list[int]) -> int:
+    """Finds missing number in range [0..n] using cyclic sort.
 
----
+    Time Complexity: O(N) | Auxiliary Space: O(1) | Output Space: O(1)
+    """
+    i, n = 0, len(nums)
 
-### 📉 Progressive Example: Find Missing Number (Using Cyclic Sort)
+    while i < n:
+        target = nums[i]
+        if target < n and nums[i] != nums[target]:
+            nums[i], nums[target] = nums[target], nums[i]
+        else:
+            i += 1
 
-**Intent:** Given an array with n numbers from 1 to n+1 (one is missing), find the missing number.
+    for j in range(n):
+        if nums[j] != j:
+            return j
 
-**Approach:** Use cyclic sort to place each number in its position. Then scan: the position with the wrong number points to the missing number.
-
-**Example:**
-
+    return n
 ```
-Input: [3, 0, 1] (missing 2)
-After cyclic sort: [1, 0, 3]
-Position 1 has 0, but should have 2 (since we're 0-indexed)
-Missing: 2 ✓
-```
+
+#### 📊 Explicit Complexity Deconstruction
+* **Time Complexity:** `O(N)` — The cyclic sort loop executes at most `N` swaps because each swap places an element into its correct slot. The subsequent scan takes `O(N)`. Overall time is `O(N)`.
+* **Auxiliary Space:** `O(1)` — Only loop counter integers.
+* **Output Space:** `O(1)` — Returns a single integer scalar.
 
 ---
 
-## ⚖️ CHAPTER 4: PERFORMANCE, TRADE-OFFS & REAL SYSTEMS
+### Problem 4: Find the Duplicate Number (LeetCode 287) — Implicit Cycle Detection
 
-### Beyond Big-O: Performance Reality
+#### 🎙️ 45-Minute Interview Talk Track
+> *"Given an array of `N + 1` integers where each integer is between `1` and `N`, the Pigeonhole Principle guarantees at least one duplicate. If modifying the array were allowed, cyclic sort could solve this by detecting collision upon swap. However, the problem forbids array mutation. We model the array as an implicit directed graph where index `i` points to node `nums[i]`. Because each value is a valid index and a duplicate value exists, two distinct indices must point to the same next node, creating a cycle. We apply Floyd's Tortoise and Hare algorithm: `slow` advances 1 step (`nums[slow]`), `fast` advances 2 steps (`nums[nums[fast]]`). Once they meet, we reset `slow` to `nums[0]` and advance both at speed 1. They collide at the cycle entry, which corresponds to the duplicate number."*
 
-**Comparison Table:**
-
-| Approach | Time | Space | Swaps | Use Case |
-|----------|------|-------|-------|----------|
-| Counting sort | O(n) | O(k) | 0 | Few distinct values |
-| Dutch Flag | O(n) | O(1) | O(n) | 3 or few values |
-| Quick-partition | O(n) avg | O(1) | O(n) avg | Quicksort building block |
-| Cyclic sort | O(n) | O(1) | O(n) | Missing number, duplicates |
-
-All are O(n) time. Space is key differentiator: partitioning uses O(1), others use more.
-
-**Hidden Constants:** Swaps are expensive (3 assignments per swap). Movement-based approaches (like move zeroes) are faster because they use simple assignments.
-
----
-
-### 🏭 Real-World Systems
-
-**System 1: Quicksort Optimizations**
-
-Quicksort relies on partitioning. The Dutch National Flag variant (three-way partition) handles duplicate keys efficiently. When you have many duplicates (e.g., sorting 1 million strings but only 100 unique values), three-way partitioning ensures duplicates end up in the middle region and aren't re-sorted.
-
-Impact: Quicksort goes from O(n²) worst-case with duplicates to O(n log n) even with many duplicates.
-
-**System 2: Memory Reorganization in Databases**
-
-Databases reorganize data by physical location (e.g., moving hot data to fast storage). Cyclic sort concepts apply: each record has a "home location." Instead of O(n) extra space for copying, in-place partitioning minimizes memory overhead during reorganization.
-
-**System 3: Network Packet Prioritization**
-
-Routers receive packets with priority levels. They need to reorganize so high-priority packets are serviced first. Using partition logic (similar to Dutch Flag), packets are segregated by priority in-place, avoiding buffer allocation overhead.
-
-### Failure Modes & Robustness
-
-**1. Misunderstanding Cyclic Sort Correctness**
+#### C# Primary Implementation (.NET 8/9 — Immutable In-Place)
 ```csharp
-// WRONG: Increment i even after swap
-if (i != correctPos) {
-    Swap(i, correctPos);
-    i++;  // WRONG!
-}
+using System;
 
-// RIGHT: Only increment if already in correct position
-if (nums[i] != i + 1) {
-    Swap(i, correctPos);
-    // Don't increment; check the swapped element
-} else {
-    i++;
+public static class FindDuplicateSolver
+{
+    /// <summary>
+    /// Finds the duplicate number in an unmodifiable array using Floyd's cycle detection.
+    /// Time Complexity: O(N) | Auxiliary Space: O(1) | Output Space: O(1)
+    /// </summary>
+    public static int FindDuplicate(int[] nums)
+    {
+        ArgumentNullException.ThrowIfNull(nums);
+
+        // Phase 1: Detect cycle meeting point
+        int slow = nums[0];
+        int fast = nums[0];
+
+        do
+        {
+            slow = nums[slow];
+            fast = nums[nums[fast]];
+        } while (slow != fast);
+
+        // Phase 2: Find cycle entrance (the duplicate value)
+        slow = nums[0];
+        while (slow != fast)
+        {
+            slow = nums[slow];
+            fast = nums[fast];
+        }
+
+        return slow;
+    }
 }
 ```
 
-**2. Dutch Flag: Wrong Pointer Update**
-```csharp
-// WRONG: Always increment mid
-else if (nums[mid] == 2) {
-    Swap(mid, right);
-    right--;
-    mid++;  // WRONG! Should not increment
-}
+#### Python Secondary Implementation (3.11+ — Clean & Idiomatic)
+```python
+def find_duplicate(nums: list[int]) -> int:
+    """Finds duplicate number without modifying array via Floyd's cycle detection.
 
-// RIGHT: Don't increment mid after swapping with right
-else if (nums[mid] == 2) {
-    Swap(mid, right);
-    right--;
-}
+    Time Complexity: O(N) | Auxiliary Space: O(1) | Output Space: O(1)
+    """
+    slow = fast = nums[0]
+
+    # Phase 1: Locate meeting point in cycle
+    while True:
+        slow = nums[slow]
+        fast = nums[nums[fast]]
+        if slow == fast:
+            break
+
+    # Phase 2: Locate cycle start
+    slow = nums[0]
+    while slow != fast:
+        slow = nums[slow]
+        fast = nums[fast]
+
+    return slow
 ```
 
-**3. Move Zeroes: Not Filling Remaining with Zeros**
-Forgetting the second loop that fills positions `[lastNonZero...n)` with zeros.
+#### 📊 Explicit Complexity Deconstruction
+* **Time Complexity:** `O(N)` — The fast pointer traverses the cycle in at most `2N` operations; the cycle-finding convergence takes at most `N` steps.
+* **Auxiliary Space:** `O(1)` — Only two scalar pointer variables, leaving the input array completely immutable.
+* **Output Space:** `O(1)` — Returns a single integer scalar.
 
 ---
 
-## 🔗 CHAPTER 5: INTEGRATION & MASTERY
+## ⚖️ CHAPTER 5: PERFORMANCE, TRADE-OFFS & REAL SYSTEMS
 
-### Connections (Precursors & Successors)
+### Trade-Off Comparison
 
-**Precursors:** Week 4's two-pointer techniques and Day 3's swap-based reasoning directly feed into partitioning.
+| Algorithm | Time Complexity | Auxiliary Space | Mutates Input? | Canonical Scenario |
+| :--- | :--- | :--- | :--- | :--- |
+| **Dutch National Flag** | `O(N)` | `O(1)` | Yes (In-place) | 3-way segregation, pivot partitioning |
+| **Two-Pointer Read/Write** | `O(N)` | `O(1)` | Yes (In-place) | Filtering, compacting, zero relocation |
+| **Cyclic Sort** | `O(N)` | `O(1)` | Yes (In-place) | Numbers in bounded range `[1..N]` |
+| **Floyd Cycle Detection** | `O(N)` | `O(1)` | **No (Read-only)** | Duplicate finding when mutation forbidden |
 
-**Successors:** Day 4 Part B adds dynamic programming (Kadane's) on top of partition concepts. Week 6+ uses in-place transformations heavily for string and linked list problems.
+> [!NOTE]
+> **Production Reality (Why FAANG Tests This):**
+> High-performance Quicksort implementations (such as the Dual-Pivot Quicksort used in Java's `Arrays.sort()` and .NET's `Array.Sort()`) use three-way partitioning to avoid `O(N^2)` degradation on arrays with duplicate keys. Partitioning duplicate keys into a middle zone skips thousands of redundant recursive calls.
 
-### 🧩 Pattern Recognition & Decision Framework
+### Defensive Engineering & Failure Modes
 
-**Use Partitioning When:**
-
-✅ Need to segregate elements by property → Dutch Flag  
-✅ Move certain elements to end → Move zeroes  
-✅ Array is 1..n and needs reorganization → Cyclic sort  
-✅ Find missing/duplicate in 1..n range → Cyclic sort variant  
-✅ In-place is a hard constraint → All partition patterns  
-
-**Avoid When:**
-
-🛑 Order within regions matters → Use full sort  
-🛑 Multiple passes acceptable → Simpler algorithms might be clearer  
-🛑 Space is not constrained → Simpler approaches often clearer  
-
-**🚩 Interview Red Flags:**
-
-- "Move X to end..." → Move zeroes pattern
-- "Segregate..." → Dutch Flag
-- "Array contains 1..n..." → Cyclic sort
-- "Find missing/duplicate in 1..n..." → Cyclic sort
-- "In-place, O(1) space..." → Partition patterns
-
-### 🧪 Socratic Reflection
-
-1. In Dutch Flag, why don't we increment `mid` after swapping with `right`?
-2. Could you solve "move zeroes" using swaps instead of shifting? What's better?
-3. In cyclic sort, what if an element is already at its correct position? Do we skip it?
-4. How would you extend Dutch Flag to 4 colors?
-5. Can cyclic sort handle duplicates? Why or why not?
-
-### 📌 Retention Hook
-
-> **The Essence:** "Partition without sorting. Maintain region invariants. Swap to correct locations in-place, O(1) space. Each element processed once."
+1. **Advancing `mid` on High Swap:** In Dutch Flag, incrementing `mid` when swapping with `high` is a critical bug. The element arriving from `high` has never been evaluated and could be 0, 1, or 2.
+2. **Infinite Loops in Cyclic Sort:** If checking `nums[i] != i + 1` instead of `nums[i] != nums[correctIndex]`, duplicate elements will cause the algorithm to swap identical values infinitely. Always check `nums[i] != nums[targetIndex]`.
+3. **Loop Termination Boundary (`mid <= high` vs. `mid < high`):** Dutch Flag must continue while `mid <= high`. If it stops at `mid < high`, the element at index `high` remains unpartitioned.
 
 ---
 
-## 🧠 5 COGNITIVE LENSES
+## 🎯 CHAPTER 6: FAANG INTERVIEW PATTERN SIGNALS & EDGE CASES
 
-**1. 💻 The Hardware Lens**
+### 🎯 Pattern Recognition Signals
+- ✅ **"Sort array containing only 0, 1, 2"** -> Dutch National Flag (`low`, `mid`, `high`).
+- ✅ **"Move elements meeting property to end in-place"** -> Two-pointer Read/Write partition.
+- ✅ **"Find missing / duplicate numbers in array from 1 to N"** -> Cyclic Sort (`nums[i] <-> nums[target]`).
+- ✅ **"Find duplicate in 1..N array without modifying array"** -> Floyd's Tortoise & Hare cycle detection.
+- 🛑 **"General array sorting with arbitrary numbers"** -> Do NOT use Cyclic Sort. Use Comparison Sort (`O(N log N)`).
 
-Partitioning is cache-friendly (sequential scans) but swap-heavy (random writes). Modern CPUs penalize random writes. Move-based approaches (like move zeroes) that use sequential writes are actually faster than swap-heavy approaches despite both being O(n).
-
-**2. 📉 The Trade-off Lens**
-
-We trade sorting's generality for partitioning's space efficiency. Sorting works for any comparison; partitioning only works when you can define "region membership." But when you can define it, O(1) space is a huge win.
-
-**3. 👶 The Learning Lens**
-
-Partition challenges your instinct to "sort." Most learners naturally think "sort first." The insight: you don't need full sorting order—just region membership. This is a fundamental shift in problem-solving approach.
-
-**4. 🤖 The AI/ML Lens**
-
-Training data organization: Partition examples by difficulty level (hard, medium, easy). Then train on each partition sequentially. Partitioning enables curriculum learning without extra memory.
-
-**5. 📜 The Historical Lens**
-
-Quicksort's partitioning (Hoare partition) was invented in 1961. It revolutionized sorting from O(n²) quadratic to O(n log n) average. Partition-based thinking predates Big-O notation and remains fundamental.
+### 🧪 Concrete Edge-Case Checklist
+1. **Array with No Duplicates or Zeroes:** Verify pointer updates do not fail when no swaps are needed.
+2. **Array Already Completely Partitioned (`[0, 0, 1, 1, 2, 2]`):** Confirm algorithm runs in linear time without redundant writes.
+3. **Array with All Identical Elements (`[2, 2, 2, 2]`):** Ensure `high` pointer decrements without out-of-bounds index errors.
+4. **Single-Element Input (`N = 1`):** Guard clause must handle gracefully without infinite loops.
 
 ---
 
 ## ⚔️ SUPPLEMENTARY OUTCOMES
 
-### 🏋️ Practice Problems (8)
+### 🏋️ Practice Problems
 
 | # | Problem | Source | Difficulty | Key Concept |
-|---|---------|--------|-----------|------------|
-| 1 | Sort Colors (DNF) | LeetCode 75 | Medium | Three-pointer partition |
-| 2 | Move Zeroes | LeetCode 283 | Easy | Two-pointer partition |
-| 3 | Valid Palindrome | LeetCode 125 | Easy | Two-pointer (related) |
-| 4 | Missing Number | LeetCode 268 | Easy | Cyclic sort variant |
-| 5 | Find Duplicate | LeetCode 287 | Medium | Cyclic sort + cycle detection |
-| 6 | First Missing Positive | LeetCode 41 | Hard | Cyclic sort extension |
-| 7 | Partition List | LeetCode 86 | Medium | Linked list partition |
-| 8 | Array Partition I | LeetCode 561 | Easy | Partition logic |
+| :--- | :--- | :--- | :--- | :--- |
+| 1 | Sort Colors | LeetCode 75 | 🟡 Medium | Dutch National Flag 3-way partition |
+| 2 | Move Zeroes | LeetCode 283 | 🟢 Easy | Two-pointer read/write partition |
+| 3 | Missing Number | LeetCode 268 | 🟢 Easy | Cyclic sort / Gauss sum |
+| 4 | Find All Numbers Disappeared | LeetCode 448 | 🟢 Easy | Cyclic sort array range `[1..N]` |
+| 5 | Find the Duplicate Number | LeetCode 287 | 🟡 Medium | Implicit cycle detection / Pigeonhole |
+| 6 | First Missing Positive | LeetCode 41 | 🔴 Hard | Cyclic sort on unbounded positive range |
+| 7 | Partition Array According to Pivot | LeetCode 2161 | 🟡 Medium | 3-way stable partition |
+| 8 | Set Mismatch | LeetCode 645 | 🟢 Easy | Cyclic sort identifying duplicate & missing |
 
-### 🎙️ Interview Questions (6)
+### 🎙️ Interview Questions (Verbal Drills)
 
-1. **Q:** In Dutch Flag, why is the condition `mid <= right` (not `mid < right`)?
-   - **Follow-up:** What if array has size 1?
+1. **Q:** Why is Cyclic Sort guaranteed to take `O(N)` time even though the while loop doesn't always increment `i`?
+   - **Answer:** We use aggregate amortized analysis. Each swap places at least one number into its final, correct position. Once an element is at its correct index, it is never swapped again. Since there are `N` slots, at most `N` swaps can occur. When no swap occurs, `i` increments. Thus, total operations across the entire array cannot exceed `2N`.
+2. **Q:** In Dutch National Flag, why do we increment `mid` when swapping with `low`, but not when swapping with `high`?
+   - **Answer:** Because `mid` moves from left to right, we have already inspected every element between `low` and `mid - 1` (they are all 1s). Swapping `nums[mid]` with `nums[low]` brings a known 1 into index `mid`, so `mid` can safely advance. In contrast, the element arriving from `high` came from unexplored territory and could be 0, 1, or 2, so `mid` must re-evaluate it.
+3. **Q:** Why can't we use Cyclic Sort for LeetCode 287 if the problem statement specifies the array is read-only?
+   - **Answer:** Cyclic sort requires in-place element mutation to place numbers into matching indices. When the memory is read-only, we must interpret values as immutable pointer addresses and apply Floyd's cycle detection instead.
 
-2. **Q:** Can you solve move zeroes without using two passes?
-   - **Follow-up:** Would it be faster or slower?
+### ❌ Common Misconceptions
 
-3. **Q:** How would you find missing number using cyclic sort?
-   - **Follow-up:** What if there were duplicates?
+- **Myth:** Partitioning is the same as sorting.  
+  *Reality:* Partitioning only segregates elements into broad categorical groups; the internal ordering of elements within each group is undefined.
+- **Myth:** Cyclic sort can sort any array of integers.  
+  *Reality:* Cyclic sort strictly requires that elements map deterministically to valid index ranges (such as `[1..N]` or `[0..N]`). Arbitrary floating point numbers or negative numbers cannot be mapped directly to array indices.
 
-4. **Q:** Compare partition vs. sorting for segregation. When is each better?
-   - **Follow-up:** What if values aren't 0/1/2?
+### 🚀 Advanced Concepts
 
-5. **Q:** In cyclic sort, why do we not increment `i` after swapping?
-   - **Follow-up:** Can you trace through an example?
-
-6. **Q:** How would you find all duplicate numbers in 1..n array?
-   - **Follow-up:** Can you do it with O(1) space?
-
-### ❌ Common Misconceptions (4)
-
-- **Myth:** "Partitioning is sorting" → **Reality:** Partitioning only segregates; order within regions is undefined.
-- **Myth:** "Cyclic sort works for any array" → **Reality:** Only for 1..n (no duplicates, complete range).
-- **Myth:** "Swaps are always faster" → **Reality:** Movement/assignment can be faster; depends on data.
-- **Myth:** "In-place always saves memory" → **Reality:** Still uses O(n) for algorithm data, just not for output.
-
-### 🚀 Advanced Concepts (3)
-
-1. **Hoare Partition:** Original quicksort partitioning scheme; different pointer logic, fewer swaps.
-2. **Stable Partitioning:** Maintain relative order of elements (harder, usually requires extra space).
-3. **Quickselect:** Use partition to find k-th smallest in O(n) average time.
-
-### 📚 External Resources
-
-- **"Introduction to Algorithms" (CLRS) Ch. 7:** Quicksort and partitioning analysis
-- **"Algorithm Design Manual" (Skiena):** In-place algorithms
-- **LeetCode "Premium" videos:** Watch Dutch Flag explanation visually
+1. **Dual-Pivot Quicksort:** Yaroslavskiy's partitioning algorithm which divides an array into three regions using two pivots, achieving fewer memory writes than standard Hoare/Lomuto partitioning.
+2. **First Missing Positive (LeetCode 41):** Extending cyclic sort to unbounded integer inputs by ignoring negative numbers and values greater than `N`, achieving `O(N)` time and `O(1)` auxiliary space on Hard-tier constraints.
 
 ---
 
-## 🎯 FINAL REFLECTION
+## 📌 CLOSING REFLECTION
 
-Partitioning teaches you to think about **problem structure differently.** Instead of "rearrange optimally," you ask "what regions do I need?" This structural thinking is foundational for advanced algorithms.
-
-The in-place constraint forces elegance. You can't hide complexity in extra space—every operation must be minimal. This discipline trains you to write efficient code that matters in real systems.
-
-By the end of Day 4 (after Kadane's), you'll have mastered 8 critical patterns covering 50%+ of interview problems. These patterns—hash, stack, intervals, partitions—are the vocabulary of efficient algorithms.
+Partitioning and cyclic sort prove that **in-place constraints breed algorithmic elegance**. By treating array slots as designated pigeonholes and array indices as target destinations, you achieve the theoretical maximum efficiency: linear time and zero auxiliary memory. Master region invariants and swap counting, and you will tackle array transformation problems with complete mastery.
 
 ---
 > 🧭 **Navigation:** [← Previous Day](Week_05_Day_03_Merge_Operations_Interval_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_05_Day_04_Part_B_Kadane_Algorithm_Instructional.md)

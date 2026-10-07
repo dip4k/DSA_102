@@ -1,4 +1,4 @@
-# 🏢 Top 30 Product Companies LLD & Machine Coding Interview Master Guide
+﻿# 🏢 Top 30 Product Companies LLD & Machine Coding Interview Master Guide
 
 Welcome to the definitive interview preparation directory for **Low-Level Design (LLD)**, **Object-Oriented Design (OOD)**, and **Machine Coding Rounds** across the top 30 product companies worldwide.
 
@@ -14,11 +14,11 @@ Product companies evaluate LLD in one of two formats:
 flowchart TD
     Prompt["Interview Problem Prompt"] --> Format{"Round Type?"}
     
-    Format -->|"Machine Coding (90 Mins)"| MC["1. Requirement Mining (10m)\n2. Domain Entities & Interfaces (15m)\n3. Clean In-Memory Implementation (45m)\n4. Driver Loop & Concurrency Tests (20m)"]
-    Format -->|"OOD / Architecture (45 Mins)"| OOD["1. Clarify Scope & Constraints (5m)\n2. Core UML / Mermaid Diagram (10m)\n3. Key Class & Pattern Code (20m)\n4. Scaling & Senior Follow-ups (10m)"]
+    Format -->|"Machine Coding (90 Mins)"| MC["1. Requirement Mining (10m)<br/>2. Domain Entities & Interfaces (15m)<br/>3. Clean In-Memory Implementation (45m)<br/>4. Driver Loop & Concurrency Tests (20m)"]
+    Format -->|"OOD / Architecture (45 Mins)"| OOD["1. Clarify Scope & Constraints (5m)<br/>2. Core UML / Mermaid Diagram (10m)<br/>3. Key Class & Pattern Code (20m)<br/>4. Scaling & Senior Follow-ups (10m)"]
     
-    MC --> CompaniesMC["Favored by:\nFlipkart, Swiggy, Uber, PhonePe,\nRazorpay, Cred, Zepto, Atlassian"]
-    OOD --> CompaniesOOD["Favored by:\nGoogle, Microsoft, Amazon, Meta,\nApple, Netflix, Bloomberg, Stripe"]
+    MC --> CompaniesMC["Favored by:<br/>Flipkart, Swiggy, Uber, PhonePe,<br/>Razorpay, Cred, Zepto, Atlassian"]
+    OOD --> CompaniesOOD["Favored by:<br/>Google, Microsoft, Amazon, Meta,<br/>Apple, Netflix, Bloomberg, Stripe"]
 ```
 
 | Dimension | 90-Minute Machine Coding Round | 45-Minute OOD / Design Round |

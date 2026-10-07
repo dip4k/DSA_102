@@ -1,12 +1,8 @@
 # 📘 Week 05 Day 04 Part B: Kadane's Algorithm & Dynamic Programming — Engineering Guide
 
-
-
-
-
 > 🧭 **Navigation:** [← Previous Day](Week_05_Day_04_Part_A_Partition_Cyclic_Sort_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_05_Day_05_Fast_Slow_Pointers_Instructional.md)
 > 
-> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Focus on the local vs. global DP recurrence and the negative-swap product logic according to your interview timeline.*
 
 ---
 
@@ -14,41 +10,43 @@
 
 By the end of this chapter, you will be able to:
 
-- 🎯 **Internalize** the DP invariant: "Track best solution ending here" enables O(n) optimization
-- ⚙️ **Implement** Kadane's algorithm for maximum subarray, maximum product subarray, and circular variants without referencing solutions
-- ⚖️ **Evaluate** trade-offs between subproblem definitions (ending here vs. containing here) and their computational implications
-- 🏭 **Connect** Kadane's to real financial systems: portfolio analysis, volatility detection, risk management
-- 🔄 **Recognize** when problems decompose into "best solution with constraint" subproblems requiring DP
+- 🎯 **Internalize** the core DP invariant: tracking the optimal solution ending at the current index enables finding the global contiguous optimum in strict `O(N)` time and `O(1)` auxiliary space.
+- ⚙️ **Implement** Maximum Subarray, Maximum Product Subarray, and Circular Maximum Subarray in modern C# (.NET 8/9) and Python (3.11+).
+- ⚖️ **Evaluate** trade-offs between brute-force quadratic scans (`O(N^2)`), prefix sums with min-prefix tracking (`O(N)` time and space), and Kadane's space-optimized DP (`O(1)` auxiliary space).
+- 🏭 **Connect** Kadane's algorithm to real systems (financial max-drawdown monitoring, high-frequency signal burst detection, packet queue backlog optimization).
+- 🎙️ **Explain** the extend-versus-restart recurrence and circular complement subtraction with complete verbal clarity during a 45-minute technical interview.
 
 ---
 
 ## 📖 CHAPTER 1: CONTEXT & MOTIVATION
 
-### The Engineering Challenge
+### The Engineering Problem
 
-You're a quantitative analyst at a hedge fund managing $10 billion. Your job: find the most profitable consecutive trading period in a historical price series. If you bought at the lowest point in a window and sold at the highest, what's your maximum profit?
+Across financial market monitoring, audio signal analysis, and network packet monitoring, engineers frequently analyze continuous numerical series containing both positive and negative values. A key question is: "What is the maximum contiguous sum achievable across any contiguous subsegment?"
 
-Raw prices: `[7, 1, 5, 3, 6, 4]`
+In an array of length `N`, there are `N * (N + 1) / 2` possible contiguous subarrays. Evaluating every subarray naively takes `O(N^2)` time. For high-frequency trading streams processing hundreds of thousands of price ticks per second, quadratic complexity is catastrophic.
 
-Maximum profit: Buy at 1, sell at 6 → profit of 5.
+While precomputing prefix sums reduces each range sum to `O(1)`, finding the maximum still requires searching pairs or storing auxiliary arrays.
 
-**Naive Approach:** Check every possible buy-sell pair → O(n²) nested loops. For 252 trading days per year × 50 years of data = 126,000 prices → 16 billion operations. At 1GHz: 16 seconds per query. Unacceptable for real-time decision-making.
+Instead, **Kadane's Algorithm** solves the problem in a single linear pass with `O(1)` auxiliary space by recognizing optimal substructure: **at every index `i`, we decide whether to extend the previous subarray or start a new subarray fresh from `nums[i]`**.
 
-**Better Approach:** Use Kadane's algorithm concept: track the best profit achievable ending at each day → O(n). Same data → 126,000 operations → 0.0001 seconds. 160,000x faster.
+> [!NOTE]
+> **Production Reality (Why FAANG Tests This):**
+> Financial trading engines and telemetry systems (Datadog, Prometheus) compute maximum consecutive drawdowns and sustained burst loads across streaming metrics. Calculating these statistics must execute in `O(1)` memory without buffering unbounded historical streams. FAANG interviewers test Kadane's to see if you understand how space-optimized Dynamic Programming reduces complex history to two scalar state variables.
 
-But the deeper insight: This is about **tracking state as you process sequentially.** Instead of "explore all possibilities," you ask "what's the best way to reach this point?" This is the essence of dynamic programming—building solutions incrementally by tracking optimal prefixes.
+### The Solution: The DP Recurrence
 
-### The Solution: DP-Centric Thinking
+Kadane's algorithm maintains two quantities:
+1. `max_ending_here`: The maximum sum of any non-empty subarray that **ends exactly at index `i`**.
+2. `max_so_far`: The maximum subarray sum found anywhere across `nums[0..i]`.
 
-Kadane's solves:
-- **Maximum subarray sum:** Largest contiguous sum
-- **Maximum product subarray:** Largest product (tricky with negatives)
-- **Circular maximum:** Handle wrap-around arrays
-- **Maximum sum with constraint:** Time-windowed, threshold-based
+The recurrence relation is:
+```
+max_ending_here[i] = max(nums[i], max_ending_here[i - 1] + nums[i])
+max_so_far[i] = max(max_so_far[i - 1], max_ending_here[i])
+```
 
-The elegant trick: **Maintain the maximum sum ending at the current position. When extending, decide: extend the previous sum, or start fresh?**
-
-> **💡 Insight:** DP is about optimal substructure. The best subarray ending at position i either extends the best subarray ending at i-1, or starts fresh at i. Choose the better option.
+If `max_ending_here[i - 1]` is negative, adding it to `nums[i]` produces a sum smaller than `nums[i]` alone. Hence, starting fresh from `nums[i]` is strictly superior.
 
 ---
 
@@ -56,557 +54,494 @@ The elegant trick: **Maintain the maximum sum ending at the current position. Wh
 
 ### The Core Analogy
 
-Think of Kadane's like **deciding whether to continue a journey or start a new one.** You're hiking, accumulating elevation gain. At each step, you ask: "Should I continue from where I started, or should I begin a new journey from here?"
+Imagine hiking along an undulating trail while carrying an accumulated pack weight. At each step, you can either carry forward the momentum from your current march or drop the old march and declare the current spot as your brand new starting trailhead:
+- If your previous march has accumulated positive elevation gain, adding the current hill keeps your momentum growing.
+- If your previous march has plunged into a net-negative ditch, dragging that debt forward hurts your future prospects. You instantly abandon the old trail and begin a fresh journey from your current footing.
 
-If your accumulated elevation is negative (you've descended more than climbed), starting fresh makes sense. If it's positive, continuing is better. You track the best journey so far (global max) and the current journey (ending here).
-
-### 🖼 Visualizing the Structure
+### 🖼 Visualizing Kadane's Execution Trace
 
 ```
-Array: [−2, 1, −3, 4, −1, 2, 1, −5, 4]
-        
-Current sum: −2  → best ending here: −2
-Current sum: −2+1=−1 → best ending here: −1 (worse than 1, so restart)
-Current sum: 1 → best ending here: 1
-Current sum: 1+(−3)=−2 → best ending here: −2 (negative, consider restarting)
-Current sum: 4 → best ending here: 4 (fresh start better)
-Current sum: 4+(−1)=3 → best ending here: 3
-Current sum: 3+2=5 → best ending here: 5
-Current sum: 5+1=6 → best ending here: 6
-Current sum: 6+(−5)=1 → best ending here: 1
-Current sum: 1+4=5 → best ending here: 5
+Array: [ -2,   1,  -3,   4,  -1,   2,   1,  -5,   4 ]
 
-Global max: 6 (subarray [4, −1, 2, 1])
+Index 0 (x = -2):
+  max_ending = -2
+  max_so_far = -2
+
+Index 1 (x =  1):
+  max(1, -2 + 1) = 1  <-- RESTART FRESH AT INDEX 1!
+  max_so_far = max(-2, 1) = 1
+
+Index 2 (x = -3):
+  max(-3, 1 + -3) = -2 <-- EXTEND PREVIOUS
+  max_so_far = 1
+
+Index 3 (x =  4):
+  max(4, -2 + 4) = 4  <-- RESTART FRESH AT INDEX 3!
+  max_so_far = max(1, 4) = 4
+
+Index 4 (x = -1):
+  max(-1, 4 + -1) = 3  <-- EXTEND PREVIOUS
+  max_so_far = 4
+
+Index 5 (x =  2):
+  max(2, 3 + 2) = 5   <-- EXTEND PREVIOUS
+  max_so_far = max(4, 5) = 5
+
+Index 6 (x =  1):
+  max(1, 5 + 1) = 6   <-- EXTEND PREVIOUS
+  max_so_far = max(5, 6) = 6  <-- GLOBAL PEAK IDENTIFIED!
+
+Index 7 (x = -5):
+  max(-5, 6 + -5) = 1  <-- EXTEND PREVIOUS
+  max_so_far = 6
+
+Index 8 (x =  4):
+  max(4, 1 + 4) = 5   <-- EXTEND PREVIOUS
+  max_so_far = 6
+
+Final Answer: 6 (Subarray [4, -1, 2, 1])
 ```
 
 ### Invariants & Properties
 
-**The Kadane Invariants:**
-
-1. **Local Invariant:** `max_ending_here[i]` = maximum sum of subarray **ending at index i**
-2. **Global Invariant:** `max_so_far` = maximum sum of any subarray **seen so far**
-3. **Transition Invariant:** `max_ending_here[i] = max(arr[i], arr[i] + max_ending_here[i-1])`
-
-**Why It Matters:** The local invariant at each step tells us whether to extend or restart. The global invariant tracks the answer. Together, they guarantee O(n) solution.
-
-**What Breaks If Violated:** If we don't track local max, we can't make optimal extend/restart decisions. If we don't track global max, we might miss the true maximum (could be in the middle, not at the end).
-
-### 📐 Mathematical & Theoretical Foundations
-
-**The DP Recurrence:**
-```
-dp[i] = max(arr[i], arr[i] + dp[i-1])
-answer = max(dp[0], dp[1], ..., dp[n-1])
-```
-
-**Correctness by Optimal Substructure:** The maximum subarray in arr[0..i] either:
-1. Doesn't include arr[i] (answer is in arr[0..i-1])
-2. Includes arr[i] (it extends the maximum subarray ending at i-1)
-
-We choose option 2 if it's better, ensuring optimality.
-
-**Time Complexity:** O(n) — single pass through array  
-**Space Complexity:** O(1) — only track current/global max, no table
-
-### Taxonomy of Subarray Problems
-
-| Problem | Constraint | DP State | Time | Space | Example |
-|---------|-----------|----------|------|-------|---------|
-| **Max Sum** | Contiguous | Ending here | O(n) | O(1) | [−2,1,−3,4,−1,2,1,−5,4] → 6 |
-| **Max Product** | Contiguous | Min/max ending | O(n) | O(1) | [2,3,−2,4] → 6 (3×−2×4 negative) |
-| **Circular Max** | Wrap-around | Two Kadane passes | O(n) | O(1) | [5,−3,5] → 10 (wrap around) |
-| **Max K Sum** | Exactly k elements | Window tracking | O(nk) | O(1) | [1,4,0,7,1] k=3 → 11 |
+1. **Local Optimality Invariant:** At the conclusion of iteration `i`, `max_ending_here` holds the exact maximum sum of any contiguous subarray ending at index `i`.
+2. **Global Optimality Invariant:** At the conclusion of iteration `i`, `max_so_far` holds the maximum subarray sum among all valid contiguous subarrays in `nums[0..i]`.
+3. **Space Optimization Invariant:** Because computing `max_ending_here[i]` only depends on `max_ending_here[i - 1]`, we do not need a DP table of size `N`. A single integer scalar stores the required state, achieving strict `O(1)` auxiliary space.
 
 ---
 
-## ⚙️ CHAPTER 3: MECHANICS & IMPLEMENTATION
+## 🔧 CHAPTER 3: CORE PATTERN MECHANICS & ASCII TRACES
 
-### The State Machine & Memory Layout
+### 1. Maximum Product Subarray: Sign-Flip Mechanics
 
-Kadane's maintains:
-- **max_ending_here:** Best sum of subarray ending at current position
-- **max_so_far:** Best sum seen anywhere in array so far
-- **current_index (optional):** Track indices for subarray reconstruction
-
-Unlike partitioning (which modifies array), Kadane's only reads. We process sequentially, updating two scalar variables.
-
-### 🔧 Operation 1: Maximum Subarray Sum (Classic Kadane's)
-
-**Intent:** Find the maximum sum of any contiguous subarray.
-
-**Step-by-step narrative:** We iterate through the array. At each position i, we ask: "Should I extend the previous best ending, or start fresh here?" We compute `max_ending_here` by choosing the better option. We simultaneously track the global maximum. The answer is the global maximum at the end.
-
-Why is this correct? Because at each step, we're solving the subproblem optimally: "What's the best sum ending here?" By combining these optimal local solutions, we get the global optimal solution.
-
-**Progressive Example with Full Walkthrough:**
+With multiplication, negative numbers reverse ordering: multiplying a large negative number by another negative number produces a large positive number. To handle this, we track both `max_ending_here` and `min_ending_here`. When encountering a negative number, the maximum and minimum swap roles:
 
 ```
-Input: [−2, 1, −3, 4, −1, 2, 1, −5, 4]
+Array: [ 2, 3, -2, 4 ]
 
-i=0: arr[0]=−2
-  max_ending_here = max(−2, not applicable) = −2
-  max_so_far = −2
+i = 0 (x = 2):
+  max_prod = 2, min_prod = 2, global = 2
 
-i=1: arr[1]=1
-  max_ending_here = max(1, 1+(−2)) = max(1, −1) = 1 (restart better)
-  max_so_far = max(−2, 1) = 1
+i = 1 (x = 3):
+  max_prod = max(3, 2 * 3) = 6
+  min_prod = min(3, 2 * 3) = 3
+  global = 6
 
-i=2: arr[2]=−3
-  max_ending_here = max(−3, −3+1) = max(−3, −2) = −2 (extend)
-  max_so_far = max(1, −2) = 1
+i = 2 (x = -2):
+  Negative number encountered! Swap max_prod (6) and min_prod (3):
+  max_prod becomes 3, min_prod becomes 6
+  max_prod = max(-2, 3 * -2) = -2
+  min_prod = min(-2, 6 * -2) = -12
+  global = 6
 
-i=3: arr[3]=4
-  max_ending_here = max(4, 4+(−2)) = max(4, 2) = 4 (restart better)
-  max_so_far = max(1, 4) = 4
+i = 3 (x = 4):
+  max_prod = max(4, -2 * 4) = 4
+  min_prod = min(4, -12 * 4) = -48
+  global = 6
 
-i=4: arr[4]=−1
-  max_ending_here = max(−1, −1+4) = max(−1, 3) = 3 (extend)
-  max_so_far = max(4, 3) = 4
-
-i=5: arr[5]=2
-  max_ending_here = max(2, 2+3) = max(2, 5) = 5 (extend)
-  max_so_far = max(4, 5) = 5
-
-i=6: arr[6]=1
-  max_ending_here = max(1, 1+5) = max(1, 6) = 6 (extend)
-  max_so_far = max(5, 6) = 6
-
-i=7: arr[7]=−5
-  max_ending_here = max(−5, −5+6) = max(−5, 1) = 1 (extend)
-  max_so_far = max(6, 1) = 6
-
-i=8: arr[8]=4
-  max_ending_here = max(4, 4+1) = max(4, 5) = 5 (extend)
-  max_so_far = max(6, 5) = 6
-
-Result: max_so_far = 6 (subarray [4, −1, 2, 1] with sum 4−1+2+1=6)
+Result = 6
 ```
 
-**Inline Trace Table:**
+### 2. Circular Subarray: Complement Subtraction Mechanics
 
-| i | arr[i] | max_ending_here | Decision | max_so_far | Notes |
-|---|--------|-----------------|----------|-----------|-------|
-| 0 | −2 | −2 | Initialize | −2 | Single element |
-| 1 | 1 | 1 | Restart | 1 | −2+1=−1, so start fresh |
-| 2 | −3 | −2 | Extend | 1 | 1+(−3)=−2, better than −3 alone |
-| 3 | 4 | 4 | Restart | 4 | −2+4=2, so start fresh is better |
-| 4 | −1 | 3 | Extend | 4 | 4+(−1)=3, better than −1 alone |
-| 5 | 2 | 5 | Extend | 5 | 3+2=5, continuing pays off |
-| 6 | 1 | 6 | Extend | 6 | 5+1=6, global max! |
-| 7 | −5 | 1 | Extend | 6 | 6+(−5)=1, still positive so extend |
-| 8 | 4 | 5 | Extend | 6 | 1+4=5, continuing from before |
+In a circular array, a maximum subarray can either be contiguous within the linear bounds (standard Kadane) or wrap around the ends:
 
-**C# Implementation:**
+```
+Case 1: Standard Linear Subarray (No Wrap)
+[ ... [ Maximum Subarray ] ... ]
 
+Case 2: Wrap-Around Subarray
+[ Max Part 1 ] ... [ Minimum Subarray ] ... [ Max Part 2 ]
+ ────────────        ──────────────────        ────────────
+                     Minimizing this middle
+                     maximizes the wrap:
+                     Wrap Sum = Total Sum - Minimum Subarray
+```
+
+---
+
+## 💻 CHAPTER 4: PRODUCTION-GRADE IMPLEMENTATIONS (C# & PYTHON)
+
+### Problem 1: Maximum Subarray (LeetCode 53) — Core Kadane's Algorithm
+
+#### 🎙️ 45-Minute Interview Talk Track
+> *"To find the contiguous subarray with the largest sum, checking all subarrays naively takes `O(N^2)` time. We can solve this in `O(N)` time and `O(1)` auxiliary space using Kadane's algorithm. We maintain two variables: `max_ending_here`, which represents the maximum subarray sum ending at the current index, and `max_so_far`, which tracks the overall maximum seen. For each element, we determine whether to extend the previous subarray or start a new subarray fresh from the current number: `max_ending_here = max(nums[i], max_ending_here + nums[i])`. We then update `max_so_far`. This handles negative numbers seamlessly because if all numbers are negative, it correctly picks the single least-negative element."*
+
+#### C# Primary Implementation (.NET 8/9 — Production-Grade)
 ```csharp
-public int MaxSubArray(int[] nums)
+using System;
+
+public static class MaxSubArraySolver
 {
-    int max_ending_here = nums[0];
-    int max_so_far = nums[0];
-    
-    for (int i = 1; i < nums.Length; i++)
+    /// <summary>
+    /// Computes maximum contiguous subarray sum in O(N) time and O(1) space.
+    /// Time Complexity: O(N) | Auxiliary Space: O(1) | Output Space: O(1)
+    /// </summary>
+    public static int MaxSubArray(int[] nums)
     {
-        // Decide: extend previous or start fresh?
-        max_ending_here = Math.Max(nums[i], nums[i] + max_ending_here);
-        
-        // Update global maximum
-        max_so_far = Math.Max(max_so_far, max_ending_here);
+        ArgumentNullException.ThrowIfNull(nums);
+        if (nums.Length == 0) return 0;
+
+        int maxEndingHere = nums[0];
+        int maxSoFar = nums[0];
+
+        for (int i = 1; i < nums.Length; i++)
+        {
+            // Extend existing subarray or start fresh from current element
+            maxEndingHere = Math.Max(nums[i], maxEndingHere + nums[i]);
+            maxSoFar = Math.Max(maxSoFar, maxEndingHere);
+        }
+
+        return maxSoFar;
     }
-    
-    return max_so_far;
 }
 ```
 
-**Key Insight:** The decision `Math.Max(nums[i], nums[i] + max_ending_here)` is the essence of Kadane's. It captures the extend-or-restart choice.
+#### Python Secondary Implementation (3.11+ — Clean & Idiomatic)
+```python
+def max_sub_array(nums: list[int]) -> int:
+    """Finds maximum contiguous subarray sum using Kadane's algorithm.
 
-> **⚠️ Watch Out:** Common mistake—forgetting to update `max_so_far` inside the loop. If you only track `max_ending_here`, you miss the global maximum (which might end before the last element).
+    Time Complexity: O(N) | Auxiliary Space: O(1) | Output Space: O(1)
+    """
+    if not nums:
+        return 0
+
+    max_ending_here = max_so_far = nums[0]
+
+    for x in nums[1:]:
+        max_ending_here = max(x, max_ending_here + x)
+        max_so_far = max(max_so_far, max_ending_here)
+
+    return max_so_far
+```
+
+#### 📊 Explicit Complexity Deconstruction
+* **Time Complexity:** `O(N)` — Single pass evaluating each of the `N` array elements with constant arithmetic operations.
+* **Auxiliary Space:** `O(1)` — Only two scalar integer variables tracked in memory.
+* **Output Space:** `O(1)` — Returns a single integer scalar.
 
 ---
 
-### 🔧 Operation 2: Maximum Product Subarray (Variant)
+### Problem 2: Maximum Product Subarray (LeetCode 152) — Dual Min/Max Tracking
 
-**Intent:** Find the maximum product of any contiguous subarray (harder because negatives reverse signs).
+#### 🎙️ 45-Minute Interview Talk Track
+> *"Unlike addition, multiplication flips signs when negative numbers are involved: a very small negative product multiplied by another negative number becomes a large positive product. Therefore, tracking only the maximum product ending at each position is insufficient; we must also track the minimum product ending at each position. When the current number is negative, multiplying flips the maximum and minimum, so we swap `max_ending` and `min_ending` before multiplying. At each step, `max_ending` is `max(x, max_ending * x)` and `min_ending` is `min(x, min_ending * x)`. We record the global maximum product throughout the pass in `O(N)` time and `O(1)` space."*
 
-**Step-by-step narrative:** The challenge: negative numbers flip signs. A large negative product becomes small. We can't just track max like Kadane's; we need to track both max and min ending here. Why min? Because tomorrow's negative might flip min into max.
-
-At each position, we compute:
-- `max_ending_here` = best product ending here
-- `min_ending_here` = worst product ending here (might help tomorrow)
-
-Then we choose: extend max, extend min (gets flipped by negative), or start fresh.
-
-**Progressive Example:**
-
-```
-Input: [2, 3, −2, 4]
-
-i=0: arr[0]=2
-  max_ending_here = 2
-  min_ending_here = 2
-  global_max = 2
-
-i=1: arr[1]=3
-  max_ending_here = max(3, 3×2) = 6 (extend)
-  min_ending_here = min(3, 3×2) = 3
-  global_max = 6
-
-i=2: arr[2]=−2
-  max_ending_here = max(−2, −2×6, −2×3) = max(−2, −12, −6) = −2 (restart)
-  min_ending_here = min(−2, −2×6, −2×3) = min(−2, −12, −6) = −12 (extend min)
-  global_max = 6
-
-i=3: arr[3]=4
-  max_ending_here = max(4, 4×(−2), 4×(−12)) = max(4, −8, −48) = 4 (restart)
-  min_ending_here = min(4, 4×(−2), 4×(−12)) = min(4, −8, −48) = −48
-  global_max = 6
-
-Result: 6 (subarray [2, 3])
-
-But if input was [2, 3, −2, 4, 5]:
-  At i=4, max_ending_here = max(5, 5×(−2), 5×(−48)) = max(5, −10, −240) = 5
-  Wait, this doesn't capture [2,3,−2,4,5] = 120 ...
-  
-Actually, let me retrace with correct logic:
-  After i=3: max=4, min=−48
-  At i=4: arr[4]=5
-  max_ending_here = max(5, 5×4, 5×(−48)) = max(5, 20, −240) = 20
-  So we get 20, which is [4, 5]. But [2,3,−2,4,5] = 120.
-  
-This shows max product is NOT a simple subarray problem—it requires thinking differently.
-```
-
-**C# Implementation (State Tracking):**
-
+#### C# Primary Implementation (.NET 8/9 — Production-Grade)
 ```csharp
-public int MaxProduct(int[] nums)
+using System;
+
+public static class MaxProductSolver
 {
-    int max_ending_here = nums[0];
-    int min_ending_here = nums[0];
-    int global_max = nums[0];
-    
-    for (int i = 1; i < nums.Length; i++)
+    /// <summary>
+    /// Finds maximum contiguous product subarray by tracking both minimum and maximum products.
+    /// Time Complexity: O(N) | Auxiliary Space: O(1) | Output Space: O(1)
+    /// </summary>
+    public static int MaxProduct(int[] nums)
     {
-        int curr = nums[i];
-        
-        // Compute new max/min (temp because we use old values below)
-        int new_max = Math.Max(Math.Max(curr, curr * max_ending_here), curr * min_ending_here);
-        int new_min = Math.Min(Math.Min(curr, curr * max_ending_here), curr * min_ending_here);
-        
-        max_ending_here = new_max;
-        min_ending_here = new_min;
-        global_max = Math.Max(global_max, max_ending_here);
+        ArgumentNullException.ThrowIfNull(nums);
+        if (nums.Length == 0) return 0;
+
+        int maxEnding = nums[0];
+        int minEnding = nums[0];
+        int globalMax = nums[0];
+
+        for (int i = 1; i < nums.Length; i++)
+        {
+            int x = nums[i];
+
+            // Multiplying by a negative number swaps maximum and minimum
+            if (x < 0)
+            {
+                (maxEnding, minEnding) = (minEnding, maxEnding);
+            }
+
+            maxEnding = Math.Max(x, maxEnding * x);
+            minEnding = Math.Min(x, minEnding * x);
+
+            globalMax = Math.Max(globalMax, maxEnding);
+        }
+
+        return globalMax;
     }
-    
-    return global_max;
 }
 ```
 
-**Key Insight:** Tracking both max and min is crucial. Min today might become max tomorrow after a negative number.
+#### Python Secondary Implementation (3.11+ — Clean & Idiomatic)
+```python
+def max_product(nums: list[int]) -> int:
+    """Calculates maximum product subarray using sign-flip min/max tracking.
 
-> **⚠️ Watch Out:** Must compute new_max and new_min before updating the variables, otherwise you use stale values.
+    Time Complexity: O(N) | Auxiliary Space: O(1) | Output Space: O(1)
+    """
+    if not nums:
+        return 0
+
+    max_ending = min_ending = global_max = nums[0]
+
+    for x in nums[1:]:
+        if x < 0:
+            max_ending, min_ending = min_ending, max_ending
+
+        max_ending = max(x, max_ending * x)
+        min_ending = min(x, min_ending * x)
+
+        global_max = max(global_max, max_ending)
+
+    return global_max
+```
+
+#### 📊 Explicit Complexity Deconstruction
+* **Time Complexity:** `O(N)` — Single pass traversing `N` items with `O(1)` scalar comparisons per element.
+* **Auxiliary Space:** `O(1)` — Only three scalar variables maintained.
+* **Output Space:** `O(1)` — Returns a single integer scalar.
 
 ---
 
-### 🔧 Operation 3: Maximum Subarray in Circular Array
+### Problem 3: Maximum Sum Circular Subarray (LeetCode 918) — Complement Reduction
 
-**Intent:** Find maximum sum subarray when the array wraps around (element n-1 is adjacent to element 0).
+#### 🎙️ 45-Minute Interview Talk Track
+> *"In a circular array, the maximum contiguous subarray either does not wrap around (in which case it is solved by standard linear Kadane), or it wraps around the end and begins at the start. For the wrap-around case, notice that the elements not included form a contiguous minimum subarray in the middle. Therefore, the maximum wrap-around sum is simply `total_sum - minimum_subarray_sum`. In a single pass, we compute both the linear maximum subarray and the linear minimum subarray using dual Kadane trackers, while accumulating the total sum. There is one critical edge case: if every element is negative, `total_sum == minimum_subarray_sum`, which would result in an invalid empty subarray of sum 0. In that case, we simply return the linear maximum."*
 
-**Step-by-step narrative:** The challenge: a subarray could wrap. For example, in [5, −3, 5], the max is 5+5=10 wrapping around.
-
-Key insight: If the array is circular, the maximum subarray either:
-1. Doesn't wrap (regular Kadane's)
-2. Wraps (complement: total_sum − minimum_subarray)
-
-For case 2, we find the minimum subarray and subtract from total. This works because if the middle part is minimal, the wrap-around part is maximal.
-
-**C# Implementation:**
-
+#### C# Primary Implementation (.NET 8/9 — Production-Grade)
 ```csharp
-public int MaxSubarrayCircular(int[] nums)
+using System;
+
+public static class MaxSubarrayCircularSolver
 {
-    // Case 1: Regular Kadane's (no wrap)
-    int max_kadane = MaxSubArray(nums);
-    
-    // Case 2: Wrap-around (find min subarray, subtract from total)
-    int total_sum = 0;
-    foreach (var num in nums)
-        total_sum += num;
-    
-    // Find minimum subarray sum (Kadane's with min instead of max)
-    int min_ending_here = nums[0];
-    int min_so_far = nums[0];
-    for (int i = 1; i < nums.Length; i++)
+    /// <summary>
+    /// Computes maximum circular subarray sum in a single pass without mutating the array.
+    /// Time Complexity: O(N) | Auxiliary Space: O(1) | Output Space: O(1)
+    /// </summary>
+    public static int MaxSubarraySumCircular(int[] nums)
     {
-        min_ending_here = Math.Min(nums[i], nums[i] + min_ending_here);
-        min_so_far = Math.Min(min_so_far, min_ending_here);
+        ArgumentNullException.ThrowIfNull(nums);
+        if (nums.Length == 0) return 0;
+
+        int totalSum = 0;
+        int maxEnding = 0, maxSoFar = nums[0];
+        int minEnding = 0, minSoFar = nums[0];
+
+        foreach (int x in nums)
+        {
+            totalSum += x;
+
+            // Standard Kadane for maximum subarray
+            maxEnding = Math.Max(x, maxEnding + x);
+            maxSoFar = Math.Max(maxSoFar, maxEnding);
+
+            // Kadane variant for minimum subarray
+            minEnding = Math.Min(x, minEnding + x);
+            minSoFar = Math.Min(minSoFar, minEnding);
+        }
+
+        // Edge case: if all elements are negative, totalSum - minSoFar == 0 (empty set),
+        // so we must return maxSoFar (the maximum single negative number).
+        return maxSoFar < 0 ? maxSoFar : Math.Max(maxSoFar, totalSum - minSoFar);
     }
-    
-    int max_wrap = total_sum - min_so_far;
-    
-    // Return max of both cases (but avoid all-negative array special case)
-    if (max_wrap == 0)  // All elements are negative
-        return max_kadane;
-    
-    return Math.Max(max_kadane, max_wrap);
 }
 ```
 
-**Key Insight:** The circular case reduces to two Kadane's calls: find max (no wrap) and find max via complement (with wrap).
+#### Python Secondary Implementation (3.11+ — Clean & Idiomatic)
+```python
+def max_subarray_sum_circular(nums: list[int]) -> int:
+    """Finds maximum circular subarray sum via dual max/min Kadane complement reduction.
+
+    Time Complexity: O(N) | Auxiliary Space: O(1) | Output Space: O(1)
+    """
+    total_sum = 0
+    max_ending = 0
+    max_so_far = nums[0]
+    min_ending = 0
+    min_so_far = nums[0]
+
+    for x in nums:
+        total_sum += x
+        max_ending = max(x, max_ending + x)
+        max_so_far = max(max_so_far, max_ending)
+        min_ending = min(x, min_ending + x)
+        min_so_far = min(min_so_far, min_ending)
+
+    return (
+        max_so_far if max_so_far < 0 else max(max_so_far, total_sum - min_so_far)
+    )
+```
+
+#### 📊 Explicit Complexity Deconstruction
+* **Time Complexity:** `O(N)` — Single linear pass tracking both min and max recurrences simultaneously.
+* **Auxiliary Space:** `O(1)` — Only scalar accumulator variables used.
+* **Output Space:** `O(1)` — Returns a single integer scalar.
 
 ---
 
-### 📉 Progressive Example: Max Sum with Time Window Constraint
+### Problem 4: Maximum Subarray with Indices Reconstruction
 
-**Intent:** Find maximum sum of a subarray of exactly k elements (not covered by basic Kadane's, but important extension).
+#### 🎙️ 45-Minute Interview Talk Track
+> *"When an interviewer asks for the actual start and end indices of the maximum subarray rather than just the sum, we maintain two tracking pointers: `current_start` and `best_start`, along with `best_end`. Whenever `nums[i] > current_sum + nums[i]`, we restart the subarray, resetting `current_start = i`. When extending the previous subarray, `current_start` remains unchanged. Whenever `current_sum > max_so_far`, we update `max_so_far` and capture `best_start = current_start` and `best_end = i`. This reconstructs the optimal contiguous window in `O(N)` time and `O(1)` space."*
 
-**Approach:** Sliding window + tracking sum. Maintain a window of size k, track the maximum sum seen.
-
+#### C# Primary Implementation (.NET 8/9 — Zero Allocation)
 ```csharp
-public int MaxSumKConsecutive(int[] nums, int k)
+using System;
+
+public static class MaxSubArrayReconstructionSolver
 {
-    if (k > nums.Length) return 0;
-    
-    int current_sum = 0;
-    // Calculate sum of first window
-    for (int i = 0; i < k; i++)
-        current_sum += nums[i];
-    
-    int max_sum = current_sum;
-    
-    // Slide the window
-    for (int i = k; i < nums.Length; i++)
+    /// <summary>
+    /// Reconstructs maximum subarray sum along with inclusive [start, end] indices.
+    /// Time Complexity: O(N) | Auxiliary Space: O(1) | Output Space: O(1)
+    /// </summary>
+    public static (int MaxSum, int StartIndex, int EndIndex) FindMaxSubArrayWithIndices(int[] nums)
     {
-        current_sum = current_sum - nums[i - k] + nums[i];
-        max_sum = Math.Max(max_sum, current_sum);
+        ArgumentNullException.ThrowIfNull(nums);
+        if (nums.Length == 0) return (0, -1, -1);
+
+        int maxSoFar = nums[0];
+        int currentSum = nums[0];
+        int bestStart = 0;
+        int bestEnd = 0;
+        int currentStart = 0;
+
+        for (int i = 1; i < nums.Length; i++)
+        {
+            if (nums[i] > currentSum + nums[i])
+            {
+                currentSum = nums[i];
+                currentStart = i;
+            }
+            else
+            {
+                currentSum += nums[i];
+            }
+
+            if (currentSum > maxSoFar)
+            {
+                maxSoFar = currentSum;
+                bestStart = currentStart;
+                bestEnd = i;
+            }
+        }
+
+        return (maxSoFar, bestStart, bestEnd);
     }
-    
-    return max_sum;
 }
 ```
 
-This is NOT Kadane's (which doesn't constrain subarray length), but it's an important extension.
+#### Python Secondary Implementation (3.11+ — Clean & Idiomatic)
+```python
+def find_max_sub_array_with_indices(nums: list[int]) -> tuple[int, int, int]:
+    """Returns (max_sum, start_index, end_index) for optimal contiguous subarray.
 
----
+    Time Complexity: O(N) | Auxiliary Space: O(1) | Output Space: O(1)
+    """
+    if not nums:
+        return (0, -1, -1)
 
-## ⚖️ CHAPTER 4: PERFORMANCE, TRADE-OFFS & REAL SYSTEMS
+    max_so_far = current_sum = nums[0]
+    best_start = best_end = current_start = 0
 
-### Beyond Big-O: Performance Reality
+    for i in range(1, len(nums)):
+        if nums[i] > current_sum + nums[i]:
+            current_sum = nums[i]
+            current_start = i
+        else:
+            current_sum += nums[i]
 
-**Comparison Table:**
+        if current_sum > max_so_far:
+            max_so_far = current_sum
+            best_start = current_start
+            best_end = i
 
-| Approach | Time | Space | Constants | Real-world (n=100k) |
-|----------|------|-------|-----------|---------------------|
-| Brute force (check all pairs) | O(n²) | O(1) | 1.0 | 10 seconds |
-| Prefix sum preprocessing | O(n) | O(n) | 2.0 | 10 ms (with 100k space) |
-| Kadane's (streaming) | O(n) | O(1) | 1.1 | 0.1 ms (no extra space!) |
-
-Kadane's dominates: O(n) time, O(1) space, low constants. You process each element once with simple operations.
-
-**Memory Reality:** Prefix sums require O(n) extra space. Kadane's is truly space-optimal. For 100k prices, that's 800KB saved. At trading frequency (millions of queries), this compounds.
-
----
-
-### 🏭 Real-World Systems
-
-**System 1: Stock Portfolio Optimization**
-
-Hedge funds analyze historical prices to find best trading windows. A quant model might ask: "What's the maximum return achievable with any buy-hold strategy?"
-
-For $1 billion portfolio, analyzing 50 years of daily prices (13,000 data points) with brute force would take seconds. Kadane's: instant. They run this analysis thousands of times per day with real-time price updates.
-
-Impact: Kadane's enables real-time decision-making that would be impossible with brute force.
-
-**System 2: Risk Detection in Financial Time Series**
-
-Banks monitor volatility. They need to detect: "What's the largest contiguous loss we've experienced?" This is min-subarray Kadane's (not max, but same algorithm).
-
-If daily losses are tracked, Kadane's identifies worst drawdown periods in O(n).
-
-**System 3: Resource Allocation in Cloud**
-
-Cloud providers allocate CPU to maximize profit. They model: "Given variable demand over time, what's the best consecutive period to fully utilize our hardware?"
-
-Kadane's applies: find the subarray of utilization that maximizes profit.
-
-### Failure Modes & Robustness
-
-**1. Forgetting to Update Global Max in Loop**
-```csharp
-// WRONG: Only track max_ending_here
-for (int i = 1; i < nums.Length; i++)
-{
-    max_ending_here = Math.Max(nums[i], nums[i] + max_ending_here);
-    // NO global update!
-}
-return max_ending_here;  // Missing the actual max!
-
-// RIGHT: Update global max every iteration
-max_so_far = Math.Max(max_so_far, max_ending_here);
+    return (max_so_far, best_start, best_end)
 ```
 
-**2. Using Old Values Instead of New in Product Subarray**
-```csharp
-// WRONG: Update max, then use it for min
-max_ending_here = Math.Max(curr, curr * max_ending_here);
-min_ending_here = Math.Min(curr, curr * max_ending_here);  // Wrong!
-
-// RIGHT: Compute new values first, then update
-int new_max = Math.Max(curr, curr * max_ending_here);
-int new_min = Math.Min(curr, curr * min_ending_here);
-max_ending_here = new_max;
-min_ending_here = new_min;
-```
-
-**3. All-Negative Array in Circular**
-```csharp
-// Special case: if all negative, wrap-around solution is invalid
-// (total_sum - min_so_far = 0), so return regular Kadane's result
-if (max_wrap == 0)
-    return max_kadane;
-```
+#### 📊 Explicit Complexity Deconstruction
+* **Time Complexity:** `O(N)` — Single pass evaluating each index once.
+* **Auxiliary Space:** `O(1)` — Only index scalar variables tracked.
+* **Output Space:** `O(1)` — Returns a fixed 3-tuple.
 
 ---
 
-## 🔗 CHAPTER 5: INTEGRATION & MASTERY
+## ⚖️ CHAPTER 5: PERFORMANCE, TRADE-OFFS & REAL SYSTEMS
 
-### Connections (Precursors & Successors)
+### Trade-Off Comparison
 
-**Precursors:** Week 4's DP concepts and optimization thinking. Day 4A's partitioning teaches "maintain state," which Kadane's extends to "track optimal state."
+| Approach | Time Complexity | Auxiliary Space | Handles Negatives? | Memory Access Pattern |
+| :--- | :--- | :--- | :--- | :--- |
+| **Brute Force (Nested Loops)** | `O(N^2)` | `O(1)` | Yes | Repeated redundant scans |
+| **Prefix Sums + Min Prefix** | `O(N)` | `O(N)` | Yes | Contiguous array reads |
+| **Kadane's Algorithm** | `O(N)` | `O(1)` | Yes | Streamable single-pass, optimal cache hits |
+| **Divide and Conquer** | `O(N log N)` | `O(log N)` | Yes | Recursive stack frames |
 
-**Successors:** Weeks 6+ use DP heavily. House robber, coin change, longest increasing subsequence—all follow Kadane's pattern: track optimal solution ending here.
+> [!NOTE]
+> **Production Reality (Why FAANG Tests This):**
+> High-frequency algorithmic trading systems stream billions of price delta events daily. Calculating the maximum potential return of an intraday long position or detecting worst-case peak-to-trough drawdowns occurs directly in streaming network interface cards (NICs) using Kadane's recurrence in hardware registers with zero memory allocations.
 
-### 🧩 Pattern Recognition & Decision Framework
+### Defensive Engineering & Failure Modes
 
-**Use Kadane's When:**
-
-✅ Find max/min contiguous subarray  
-✅ Problem has optimal substructure (answer built from subproblems)  
-✅ "Find best window without constraint" → Natural for Kadane's  
-✅ Space efficiency critical  
-✅ Real-time streaming data  
-
-**Avoid When:**
-
-🛑 Need indices of optimal subarray (use extended tracking)  
-🛑 Constraint on subarray length (use sliding window)  
-🛑 Constraint on element values (use DP with different state)  
-
-**🚩 Interview Red Flags:**
-
-- "Maximum/minimum sum..." → Kadane's
-- "Best period with no skip..." → Kadane's
-- "Subarray, contiguous..." → Likely Kadane's
-- "Product, and handle negatives..." → Max product variant
-- "Circular array, wrap-around..." → Circular variant
-
-### 🧪 Socratic Reflection
-
-1. Why must we track both local and global maximum?
-2. In max product subarray, why do we track both max and min ending here?
-3. In circular subarray, why is the wrap-around solution total − min_subarray?
-4. Could you reconstruct the actual subarray (indices) using Kadane's? What extra tracking is needed?
-5. Can Kadane's be extended to 2D arrays? How would you modify the algorithm?
-
-### 📌 Retention Hook
-
-> **The Essence:** "Track optimal solution ending here. Decide: extend or restart. Update global best continuously. O(n) time, O(1) space—the efficiency sweet spot."
+1. **Initializing Global Max to 0 Instead of `nums[0]`:** If the input array consists entirely of negative numbers (e.g., `[-5, -2, -8]`), initializing `max_so_far = 0` incorrectly returns 0 rather than the true maximum `-2`. Always initialize `max_so_far = nums[0]`.
+2. **Product Subarray Overflow:** For large sequences of integers, product subarrays can rapidly exceed 32-bit and 64-bit limits. In production systems, check for arithmetic overflow or use logarithmic addition.
+3. **Circular Empty Subarray Edge Case:** When all numbers are negative, `totalSum - minSoFar == 0`. Returning this would yield an empty subarray, violating the non-empty constraint. Guard with `if (maxSoFar < 0) return maxSoFar;`.
 
 ---
 
-## 🧠 5 COGNITIVE LENSES
+## 🎯 CHAPTER 6: FAANG INTERVIEW PATTERN SIGNALS & EDGE CASES
 
-**1. 💻 The Hardware Lens**
+### 🎯 Pattern Recognition Signals
+- ✅ **"Maximum sum of a contiguous subarray"** -> Standard Kadane's (`O(N)` time, `O(1)` space).
+- ✅ **"Maximum product contiguous subarray"** -> Kadane with sign-flip min/max tracking.
+- ✅ **"Circular array maximum sum"** -> Dual Kadane (`max_so_far` vs. `total - min_so_far`).
+- ✅ **"Best time to buy and sell stock"** -> Kadane equivalent tracking `min_price_seen`.
+- 🛑 **"Maximum sum of a subarray of fixed size K"** -> Do NOT use Kadane's. Use a Fixed-Size Sliding Window.
 
-Kadane's is cache-optimal: single sequential pass, minimal memory access. No preprocessing, no extra arrays. Modern CPUs can prefetch the next elements. This is why Kadane's often outperforms even theoretically equivalent algorithms—it's designed for hardware.
-
-**2. 📉 The Trade-off Lens**
-
-Kadane's trades "exploring all possibilities" (O(n²)) for "smart local decision-making" (O(n)). At each step, you make a greedy local choice (extend or restart). Globally, this greedy choice leads to the optimal answer. This is the power of optimal substructure.
-
-**3. 👶 The Learning Lens**
-
-Most learners initially think: "check all subarrays" (brute force). The leap to Kadane's requires realizing: "I don't need to explore all subarrays; the optimal one builds from optimal prefixes." This is the DP mindshift.
-
-**4. 🤖 The AI/ML Lens**
-
-Neural network training uses gradient descent, which is about finding best solution in a high-dimensional space. Kadane's applies: track best loss seen so far; decide whether to "extend" current descent direction or "restart" in a new direction. Same principle at different scale.
-
-**5. 📜 The Historical Lens**
-
-Kadane's algorithm was published in 1984 by Jay Kadane for a finance problem (similar to our stock example). It revolutionized time-series analysis in quantitative finance. Before Kadane's, analyzing large price histories was computationally prohibitive. After, it became instant.
+### 🧪 Concrete Edge-Case Checklist
+1. **All Negative Numbers (`[-3, -1, -5]`):** Result must return the least negative number (`-1`), not 0.
+2. **Single Element (`nums = [7]`):** Must return `7` without index out of bounds.
+3. **Array with Zeroes (`[2, 0, -1, 3]`):** Zeroes must be processed without causing null division or premature termination.
+4. **All Identical Numbers (`[4, 4, 4]`):** Returns `4 * N` smoothly.
 
 ---
 
 ## ⚔️ SUPPLEMENTARY OUTCOMES
 
-### 🏋️ Practice Problems (8)
+### 🏋️ Practice Problems
 
 | # | Problem | Source | Difficulty | Key Concept |
-|---|---------|--------|-----------|------------|
-| 1 | Maximum Subarray | LeetCode 53 | Medium | Core Kadane's |
-| 2 | Max Product Subarray | LeetCode 152 | Medium | Min/max tracking |
-| 3 | Circular Array Max | LeetCode 918 | Medium | Wrap-around variant |
-| 4 | Max Sum of Subarray K | LeetCode 1425 | Medium | Window constraint |
-| 5 | Best Time to Buy/Sell | LeetCode 121 | Easy | Kadane variant (price tracking) |
-| 6 | House Robber | LeetCode 198 | Medium | DP (extends Kadane concept) |
-| 7 | Stock Cooldown | LeetCode 309 | Medium | DP with state machine |
-| 8 | Partition Equal Subset Sum | LeetCode 416 | Medium | DP (different substructure) |
+| :--- | :--- | :--- | :--- | :--- |
+| 1 | Maximum Subarray | LeetCode 53 | 🟡 Medium | Core Kadane's Algorithm |
+| 2 | Maximum Product Subarray | LeetCode 152 | 🟡 Medium | Dual min/max state tracking |
+| 3 | Maximum Sum Circular Subarray | LeetCode 918 | 🟡 Medium | Kadane complement subtraction |
+| 4 | Best Time to Buy and Sell Stock | LeetCode 121 | 🟢 Easy | One-pass minimum tracking |
+| 5 | Maximum Absolute Sum of Any Subarray | LeetCode 1749 | 🟡 Medium | Dual min/max Kadane |
+| 6 | Maximum Subarray Sum with One Deletion | LeetCode 1186 | 🟡 Medium | DP state machine variant |
+| 7 | Continuous Subarray Sum | LeetCode 523 | 🟡 Medium | Prefix sum + modulo hash map |
+| 8 | Subarray Sum Equals K | LeetCode 560 | 🟡 Medium | Prefix sum hash complement |
 
-### 🎙️ Interview Questions (6)
+### 🎙️ Interview Questions (Verbal Drills)
 
-1. **Q:** Can you reconstruct the actual subarray (start/end indices) using Kadane's?
-   - **Follow-up:** What extra variables would you need?
+1. **Q:** Why does Kadane's algorithm achieve `O(N)` time while checking all `O(N^2)` subarrays?
+   - **Answer:** By grouping all `O(N^2)` subarrays by their ending index `i`, we observe optimal substructure: the best subarray ending at `i` is either `nums[i]` alone or `nums[i]` appended to the best subarray ending at `i - 1`. This reduces the search space at each index from `O(i)` candidate subarrays to a single `O(1)` comparison.
+2. **Q:** How do you handle finding the maximum subarray in a 2D matrix?
+   - **Answer:** We fix two row boundaries `r1` and `r2`, compress the columns between them into a 1D array by summing column elements, and run 1D Kadane's on the compressed array. Running this over all `O(R^2)` row pairs solves 2D Maximum Subarray in `O(R^2 * C)` time.
+3. **Q:** Can Kadane's be used if the problem requires finding a subarray of length at least `K`?
+   - **Answer:** Yes, by combining prefix sums with a sliding window tracking `min(prefix[0..i - k])`. At index `i`, the maximum subarray of length at least `K` ending at `i` is `prefix[i] - min(prefix[0..i - k])`.
 
-2. **Q:** Why does max product subarray require tracking both min and max?
-   - **Follow-up:** Can you construct an example where this matters?
+### ❌ Common Misconceptions
 
-3. **Q:** How would you modify Kadane's for sum > target instead of max?
-   - **Follow-up:** What's the time complexity?
+- **Myth:** Kadane's algorithm only works for sums, not products.  
+  *Reality:* Kadane's generalized DP formulation applies to products by tracking both maximum and minimum states to account for negative sign inversions.
+- **Myth:** Kadane's requires an auxiliary array of size `N`.  
+  *Reality:* Because each step depends only on the immediately preceding local maximum, Kadane's requires strictly `O(1)` auxiliary space.
 
-4. **Q:** In circular subarray max, why is the special case check needed?
-   - **Follow-up:** What happens if all elements are negative?
+### 🚀 Advanced Concepts
 
-5. **Q:** How would you solve max sum subarray on a 2D grid?
-   - **Follow-up:** Can you extend Kadane's? What's the complexity?
-
-6. **Q:** Can Kadane's handle element-to-element constraints (e.g., adjacent elements must differ by <5)?
-   - **Follow-up:** How would you define the DP state differently?
-
-### ❌ Common Misconceptions (4)
-
-- **Myth:** "Kadane's only works for sum" → **Reality:** Works for any associative operation (product, max, min). Just adjust the recurrence.
-- **Myth:** "Must track indices during Kadane's" → **Reality:** Can track them afterward by replaying the algorithm. Only needed if reconstruction required during first pass.
-- **Myth:** "Circular variant requires different algorithm" → **Reality:** Clever reduction to two Kadane's calls (max and complement).
-- **Myth:** "DP always needs a table" → **Reality:** Space-optimized DP (like Kadane's) needs only O(1) storage. Tables are for tracking all subproblems.
-
-### 🚀 Advanced Concepts (4)
-
-1. **2D Kadane's:** For matrix subarrays. Use column compression to reduce to 1D problem, then apply Kadane's.
-2. **Generalized DP:** Kadane's is instance of DP. Learn to define `dp[i]` as "best solution ending/containing at i."
-3. **Streaming Algorithms:** Kadane's processes data in one pass—key for streaming applications where data doesn't fit in memory.
-4. **Maximum Subarray with Window:** Constraint subarray to [i, i+k) or [i, i+k]. Reduces to sliding window.
-
-### 📚 External Resources
-
-- **"Introduction to Algorithms" (CLRS) Ch. 15:** DP theory and optimal substructure
-- **"Competitive Programming" (Halim & Halim):** Kadane's extensions and variants
-- **Khan Academy:** DP foundations and recurrence relations
+1. **2D Kadane (Matrix Maximum Subarray):** Compressing row intervals and applying 1D Kadane's across column projections in `O(R^2 * C)` time.
+2. **Divide-and-Conquer Segment Tree (Subarray Queries):** Maintaining `(totalSum, maxPrefix, maxSuffix, maxSubarray)` in segment tree nodes to answer dynamic range maximum subarray queries in `O(log N)` time.
 
 ---
 
-## 🎯 FINAL REFLECTION
+## 📌 CLOSING REFLECTION
 
-Kadane's algorithm is deceptively simple (4 lines of code) but profoundly powerful. It teaches three lessons:
-
-1. **Optimal Substructure:** Not all problems need to explore all possibilities. Some have structure that lets you build global optimal from local optima.
-
-2. **State Tracking:** Instead of tables (DP), sometimes two variables suffice. This space optimization doesn't sacrifice correctness.
-
-3. **Greedy within Optimal:** At each step, make a greedy choice (extend or restart). Globally, this greedy sequence yields optimal solution.
-
-These principles extend to 30+ interview problems. Master Kadane's on Day 4B, and you've unlocked an entire class of DP solutions.
-
-By the end of Week 5, you'll have mastered 8 critical patterns—hash, stack, intervals, partition, Kadane, and more. Together, they cover 60% of interview problems. The remaining 40% are variations of these patterns or require graph/tree concepts (Week 7+).
+Kadane's algorithm illustrates the essence of **space-optimized Dynamic Programming**. Complex combinatorial problems often contain linear substructures where only immediate historical state matters. By distinguishing local state from global optimal tracking, you achieve maximum theoretical efficiency: a single pass, constant memory, and zero allocations.
 
 ---
 > 🧭 **Navigation:** [← Previous Day](Week_05_Day_04_Part_A_Partition_Cyclic_Sort_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_05_Day_05_Fast_Slow_Pointers_Instructional.md)

@@ -89,7 +89,7 @@ LPS:      [0, 0, 1, 2, 0]  <-- LPS table stores length of longest prefix matchin
 | :--- | :--- | :--- | :--- |
 | **KMP Matching** | O(N + M) | O(M) | Checks single pattern P iteratively without backing up text scan pointer |
 | **Trie (Prefix)** | Insertion: O(L) | O(sum L_i) | Preforms fast dictionary auto-complete and spell checks |
-| **Radix Sort** | O(N * L) | O(N + \Sigma) | Sorts fixed-width digits or strings stably without direct comparisons |
+| **Radix Sort** | O(N * L) | O(N + Sigma) | Sorts fixed-width digits or strings stably without direct comparisons |
 | **3-Way String Quicksort** | O(N * L) average | O(L + log N) | Recursive 3-way partitioning based on character column pivots |
 | **Suffix Array** | Construction: O(N log N) | O(N) | Compact index representing all sorted suffix positions in a document |
 | **Aho-Corasick** | O(N + sum(M_i) + Z) | O(sum(M_i)) | Matches multiple pattern candidates simultaneously in a single stream pass |
@@ -446,32 +446,102 @@ class AhoCorasick:
 
 ---
 
-## 📘 CHAPTER 4: PERFORMANCE & SYSTEMS
+---
 
-### 1. In-Depth Complexity Comparison
+## 📘 CHAPTER 4: PERFORMANCE, INVARIANTS & SYSTEMS ARCHITECTURE
 
-| Algorithm / Structure | Preprocessing Cost | Match Time Complexity | Space Overhead | Key Production Trade-off |
-| :--- | :--- | :--- | :--- | :--- |
-| **KMP** | O(M) | O(N) | O(M) | Minimal auxiliary index overhead; locks searching to a singular pattern |
-| **Trie** | O(sum L_i) insert | O(L) lookups | O(sum L_i * \Sigma) | Fast prefix searches; high memory footprint because of child pointer array sizes |
-| **Aho-Corasick**| O(sum(M_i)) states | O(N + Z) | O(sum(M_i)) | Matches multiple pattern candidates simultaneously in a single stream pass; relatively high compilation cost |
-| **Suffix Array** | O(N log N) sorting | O(M log N) | O(N) indices | Extremely compact; fits entire document strings into flat index spaces |
+### 1. Exact Governing Invariants
 
-### 2. Physical Memory Footprint Optimization (Double-Array Tries)
-Standard pointer-based Tries have a high memory overhead because each node stores pointers to its child nodes (e.g. 26 pointers for lowercase English, or a dynamic hash map). Each pointer takes 8 bytes on 64-bit systems, and node metadata adds significant overhead, resulting in poor cache performance.
-To minimize this memory footprint, high-performance systems use:
-1.  **Lexicographical Radix Tries (Double-Array Tries)**: Pack child node transitions into two parallel arrays (`base` and `check`) of size A. This represents the entire Trie as a flat memory space, replacing pointer tree walks with fast index lookups:
-    {pos\_child} = {base}[{pos\_parent}] + {code\_character}
-    {check}[{pos\_child}] == {pos\_parent}
-2.  **Compressed Paths (Radix Trees)**: Merges adjacent nodes with single children into a single string path, reducing the total node count and memory footprint. This is the primary routing structure used in core internet router switches.
+*   **KMP Longest Prefix Suffix (LPS) Invariant**: For pattern `P`, `lps[i]` stores the length of the longest proper prefix of `P[0...i]` that is also a suffix of `P[0...i]`. When a mismatch occurs between `P[p]` and `text[t]`, setting `p = lps[p - 1]` preserves the invariant that `P[0...p-1]` matches `text[t-p...t-1]`. The text pointer `t` moves monotonically forward; the pattern pointer `p` decreases at most as many times as it increases, guaranteeing strictly bounded `2 * (N + M)` comparisons.
+*   **Trie Prefix Tree Path Invariant**: Every directed path from root to a node at depth `d` corresponds to a unique string prefix of length `d`. For alphabet size `Sigma`, querying or inserting a word of length `L` takes exactly `L` edge transitions, executing in `O(L)` time completely independent of the number of existing keys `N`.
+*   **Suffix Array & Kasai LCP Invariant**: `SA[i]` stores the starting index of the `i`-th suffix in lexicographical order. Let `rank[k]` be the position of suffix `k` in `SA`. Kasai's theorem states: if the suffix starting at index `i` has an LCP of length `h` with its predecessor `SA[rank[i] - 1]`, then the suffix starting at `i + 1` must share an LCP of at least `h - 1` with its predecessor in `SA`. Because `h` decreases by at most 1 per outer step (at most `N` decrements), `h` can increase at most `2N` times, proving strictly `O(N)` LCP array construction.
+*   **Aho-Corasick Failure Link Invariant**: For any Trie node `u` representing prefix string `alpha`, its failure link `fail(u)` points to the unique Trie node representing the longest proper suffix of `alpha` present in the Trie. The output link chain enumerates every pattern matching a suffix of `alpha`, ensuring streaming multi-pattern matching terminates in `O(N + Z)` time where `Z` is the total count of emitted pattern matches.
+
+---
+
+### 2. Explicit Complexity Deconstruction
+
+| Algorithm / Structure | Preprocessing Time | Search Time | Auxiliary Space | Output Space | Mathematical Derivation |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **KMP Pattern Matcher** | `O(M)` | `O(N)` | `O(M)` | `O(Z)` | LPS table construction takes `2M` steps; text scan never decrements pointer `t`. |
+| **Prefix Trie** | Insertion: `O(L)` | `O(L)` | `O(Total Chars * Sigma)` | `O(1)` | Depth of tree equals word length `L`; space scales with tree node allocations. |
+| **3-Way String Quicksort** | - | `O(N * L)` avg / `O(N^2 * L)` worst | `O(L + log N)` stack | `O(1)` in-place | Character-level partitioning avoids full string comparisons on shared prefixes. |
+| **Suffix Array (Kasai LCP)** | `O(N log N)` sort | `O(M log N)` search | `O(N)` | `O(N)` | SA sorting takes `O(N log N)`; Kasai LCP runs in `O(N)` amortized time. |
+| **Aho-Corasick Automaton** | `O(sum M_i * Sigma)` | `O(N + Z)` | `O(sum M_i * Sigma)` | `O(Z)` | BFS builds fail transitions; text stream processes each character in `O(1)` amortized time. |
+
+---
+
+### 3. Senior Interview Context: Hardware, Memory & Concurrency
+
+*   **Trie Pointer Bloat & Garbage Collection Pressure**:
+    In 64-bit .NET and JVM runtimes, an object reference takes 8 bytes. A standard 26-element array for lowercase English child nodes consumes:
+    `26 * 8 bytes (pointers) + 16 bytes (object header) + 4 bytes (length) = 228 bytes per node`
+    A dictionary of 100,000 words with 500,000 trie nodes consumes over 114 MB of heap memory, triggering heavy Gen-0/1 garbage collection pressure.
+    - *Production Remedy 1*: **Double-Array Trie (DAT)**: Encodes all node transitions into two flat integer arrays (`base` and `check`):
+      `pos_child = base[pos_parent] + code_character`
+      `check[pos_child] == pos_parent`
+      This reduces memory by 75% and flattens memory into contiguous cache-friendly arrays.
+    - *Production Remedy 2*: **Radix Tree (Compressed Patricia Trie)**: Compresses single-child chains into a single edge string, reducing node count by up to 80%.
+*   **Streaming vs Batch Text Search**:
+    - Choose **KMP** or **Aho-Corasick** when text arrives as an unbounded network stream (e.g., IDS packet filtering, log analysis) where buffering the entire text is impossible.
+    - Choose **Suffix Arrays + LCP** when the document is static (e.g., genomic database, source code indexing) and queries arrive repeatedly in batch.
+
+---
+
+## 🎙️ Senior 45-Minute Verbal Talk Track
+
+```text
++-------------------------------------------------------------------------------+
+| PHASE 1: Pattern Scope & Ingestion Constraints (Minutes 00 - 05)              |
+| - Single pattern vs multi-pattern dictionary vs static text corpus.           |
+| - Alphabet size (ASCII, Unicode, binary), streaming vs memory-mapped input.   |
++-------------------------------------------------------------------------------+
+                                      │
+                                      ▼
++-------------------------------------------------------------------------------+
+| PHASE 2: Naive Scanning Bottleneck            (Minutes 05 - 10)               |
+| - Highlight naive O(N * M) worst-case degradation on repetitive text.         |
+| - Show how rolling back text pointers wastes prefix information already read. |
++-------------------------------------------------------------------------------+
+                                      │
+                                      ▼
++-------------------------------------------------------------------------------+
+| PHASE 3: Mathematical Invariant Formulation   (Minutes 10 - 20)               |
+| - Define LPS invariant: longest proper prefix that is also a suffix.          |
+| - Prove text pointer t moves monotonically forward (never backtracks).        |
+| - Explain fallback state transition: p = lps[p - 1].                          |
++-------------------------------------------------------------------------------+
+                                      │
+                                      ▼
++-------------------------------------------------------------------------------+
+| PHASE 4: Production Implementation & Guards   (Minutes 20 - 35)               |
+| - Implement LPS construction and KMP search in idiomatic C# / Python.         |
+| - Guard edge cases: empty pattern, empty text, pattern longer than text.      |
+| - Enforce clean boundary handling when matches overlap.                       |
++-------------------------------------------------------------------------------+
+                                      │
+                                      ▼
++-------------------------------------------------------------------------------+
+| PHASE 5: Complexity Proof & Architectural Scalability (Minutes 35 - 45)       |
+| - Rigorous amortized proof: comparisons <= 2 * (N + M).                       |
+| - Compare KMP vs Z-Algorithm vs Aho-Corasick vs Suffix Arrays.                |
+| - Address memory footprint optimization (Double-Array Trie, Radix Trees).     |
++-------------------------------------------------------------------------------+
+```
+
+### Verbal Script Excerpts
+
+*   **Opening (Minutes 00-05)**: *"Before selecting an algorithm, let me clarify the workload profile. Are we searching for a single pattern against streaming text, searching for thousands of dictionary patterns concurrently, or querying a static document repeatedly? For a single pattern against streaming data, KMP provides optimal `O(N + M)` time with `O(M)` space and strictly zero text buffer rollback."*
+*   **Invariant Articulation (Minutes 10-20)**: *"The core invariant of KMP is the Longest Prefix Suffix (LPS) table. At any point where `pattern[p]` mismatches `text[t]`, we know `pattern[0...p-1]` matches `text[t-p...t-1]`. Instead of rewinding `t` back to `t - p + 1`, we consult `lps[p - 1]`. This tells us the length of the longest prefix of `pattern` that already aligns with the suffix of text we just verified. We set `p = lps[p - 1]` and resume matching without ever decrementing `t`."*
+*   **Kasai's LCP Amortized Proof (Minutes 35-45)**: *"Kasai's algorithm computes the LCP array in `O(N)` time because of a powerful monotonicity invariant: when moving from suffix `i` to suffix `i + 1`, the length of the common prefix can decrease by at most 1 (since we only dropped the first character). Therefore, across all `N` suffixes, `h` can decrease at most `N` times. Because `h` cannot exceed `N`, the total number of character increments is bounded by `2N`, guaranteeing linear time."*
 
 ---
 
 ## 📘 CHAPTER 5: INTEGRATION & MASTERY
 
 ### 1. Multi-Pattern Matching Selection Rules
-*   *Use KMP when*: You need to find occurrences of a single string pattern P inside a streaming text.
-*   *Use Aho-Corasick when*: You have a static dictionary of words and need to scan input documents for any occurrences of those words simultaneously.
+*   *Use KMP when*: You need to find occurrences of a single string pattern `P` inside a streaming text without buffer rewinding.
+*   *Use Aho-Corasick when*: You have a static dictionary of words and need to scan input documents for any occurrences of those words simultaneously in a single linear pass.
 *   *Use Suffix Arrays & LCP Arrays when*: You need to analyze a large static document (like a chromosome string, or an old book index) to answer multiple custom substring queries efficiently.
 
 ### 🧗 Progressive Practice Ladder
@@ -487,12 +557,15 @@ To minimize this memory footprint, high-performance systems use:
 
 ### Practice Problems
 1.  **3-way String Quicksort**: Implement the MSD 3-way string quicksort.
-2.  **Design Add and Search Words Data Structure** ([LeetCode 211](https://leetcode.com/problems/design-add-and-search-words-data-structure/)): Implement prefix tries supporting wildcard wildcard characters.
+2.  **Design Add and Search Words Data Structure** ([LeetCode 211](https://leetcode.com/problems/design-add-and-search-words-data-structure/)): Implement prefix tries supporting wildcard characters.
 3.  **LSD Integers Radix Sort**: Write an LSD counting sorting algorithm to sort variable integers.
 
 ### Misconceptions and Corrections
 *   *Incorrect Idea*: Assuming that Tries are always faster than Hash Tables for word searches.
     *   *Correction*: While Tries are faster for prefix matching, they use significantly more memory because they store pointers for each character transition. In some cases, Hash Tables search routines are faster because of better cache locality.
+*   *Incorrect Idea*: Assuming KMP's text pointer ever moves backward.
+    *   *Correction*: The text pointer `t` in KMP moves strictly forward (`t++`). Only the pattern index `p` rewinds via `lps[p - 1]`.
+
 ---
 
 > 🧭 **Navigation:** [← Previous Day](Week_14_Day_03_Number_Theory_Basics_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_14_Day_05_Advanced_Number_Theory_Instructional.md)

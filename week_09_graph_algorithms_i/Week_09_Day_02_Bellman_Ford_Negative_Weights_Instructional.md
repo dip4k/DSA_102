@@ -1,765 +1,396 @@
-# 📘 Week 09 Day 02: Bellman–Ford & Negative Weights — ENGINEERING GUIDE
-
-
-
-
+# 📘 Week 09 Day 02: Bellman-Ford & Negative Weights — ENGINEERING GUIDE
 
 > 🧭 **Navigation:** [← Previous Day](Week_09_Day_01_Dijkstra_Single_Source_Shortest_Paths_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_09_Day_03_Floyd_Warshall_All_Pairs_Shortest_Paths_Instructional.md)
 > 
-> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Adapt your pace and focus on core mechanics, dual-language implementations, and the 45-minute verbal script based on your interview timeline.*
 
 ---
 
 ## 🎯 LEARNING OBJECTIVES
 
 *By the end of this chapter, you will be able to:*
-- 🎯 **Internalize** the Bellman–Ford algorithm as a sequence of edge relaxations and understand why V-1 passes suffice to find shortest paths.
-- ⚙️ **Implement** Bellman–Ford mechanically without memorization, trace its execution on examples with negative weights, and recognize the added cost of negative-weight tolerance.
-- ⚖️ **Evaluate** trade-offs between Dijkstra (O((V+E) log V), positive weights only) and Bellman–Ford (O(VE), works with negatives), and identify when each is appropriate.
-- 🏭 **Connect** shortest-path algorithms to real systems: currency exchange networks detecting arbitrage, ride-sharing platforms with cost credits, and network routing protocols handling bidirectional cost incentives.
+- 🎯 **Internalize** the single-source shortest path problem in the presence of negative edge weights and understand why `V - 1` relaxation passes are mathematically necessary and sufficient.
+- ⚙️ **Implement** production-grade Bellman-Ford in C# (.NET 8/9) and Python (3.11+) featuring early termination, path reconstruction, and negative-weight cycle detection.
+- ⚖️ **Evaluate** trade-offs between Dijkstra `O((V + E) log V)` (non-negative weights only) and Bellman-Ford `O(V * E)` (general weights with negative cycle detection).
+- 🏭 **Connect** negative-cycle detection to real production systems: foreign exchange arbitrage detection, ride-share incentive balancing, and distance-vector network routing protocols (RIP).
+- 🎙️ **Articulate** negative-cycle mechanics and algorithm selection during a 45-minute live technical interview using a structured verbal script.
 
 ---
 
 ## 📖 CHAPTER 1: CONTEXT & MOTIVATION
 
-### The Problem: Beyond Non-Negative Weights
+### The Problem: When Edge Costs Turn Negative
 
-For the past day, Dijkstra's greedy algorithm solved shortest-path problems beautifully—as long as all edge weights were non-negative. But real-world networks aren't always so cooperative.
+Dijkstra's algorithm relies on a greedy premise: once a vertex is finalized, no future path can reach it with lower cost. This invariant holds exclusively when edge weights are non-negative. In real-world graphs, negative weights occur naturally:
+- Financial trading: Exchange rates converted to `-log(rate)` create negative costs when favorable conversions or transaction bonuses occur.
+- Logistics and delivery: Promotions, toll rebates, or driver re-balancing subsidies introduce negative edge weights (credits) to specific route segments.
+- Game theory & network economics: Energy expenditure networks where specific nodes replenish fuel/battery power.
 
-Imagine you're an algorithmic trading system managing currency exchange. You have exchange rates between currencies: USD to EUR, EUR to JPY, JPY to CNY, and back to USD. These exchange rates fluctuate, but they're always positive. However, your system also tracks transaction costs and occasional arbitrage bonuses: "Whenever you convert USD to EUR through a particular exchange, you get a 2% bonus." Suddenly, some "edges" in your currency graph have negative effective costs.
+If negative weights exist, Dijkstra fails because a longer path in terms of hop count might encounter a large negative edge downstream, retroactively invalidating earlier "finalized" distances.
 
-Or consider a ride-sharing platform like Uber/Lyft. Most routes cost money (positive weights), but certain routes have surge-pricing credits or incentive promotions (negative offsets). Your algorithm needs to find the cheapest route from pickup to dropoff considering these credits, which might be globally cheaper even if they initially seem longer locally.
+```text
+Dijkstra:      Greedy frontier expansion. Cannot backtrack. Fails on negative weights.
+Bellman-Ford:  Dynamic programming relaxation. Robust to negative weights. Detects negative cycles.
+```
 
-Dijkstra's greedy approach breaks here. It assumes that once you've found the shortest path to a vertex, you can never improve it. But with negative weights, a later edge might flip that assumption. The 10-unit path you found to a vertex might become the 8-unit path if you later discover a negative edge that re-routes you through a different neighbor.
+### The Threat of Negative Cycles
 
-**The tension:** You need a shortest-path algorithm that:
-1. Handles negative-weight edges without breaking.
-2. Detects negative-cost cycles (they indicate either profitable opportunities or anomalies worth flagging).
-3. Has reasonable performance for practical graphs.
+A negative-weight cycle is a directed cycle whose total edge sum is strictly negative (`< 0`). If a path from source `s` can reach a negative cycle, and that cycle can reach destination `t`, you can traverse the cycle infinitely many times:
+`Cost = 10 -> 8 -> 6 -> 4 -> ... -> -infinity`
 
-Enter Bellman–Ford.
-
-### The Solution: Relaxation Over Multiple Passes
-
-Bellman–Ford trades Dijkstra's greediness for robustness. Instead of maintaining a priority queue and always processing the "current closest" vertex, Bellman–Ford performs V-1 passes over all edges, relaxing each one. In each pass, it asks: "Can I improve the shortest path to vertex v by using edge (u, v)?"
-
-If a negative-cost cycle exists, an extra pass will still find improvements—a signal that the problem is ill-defined (or exploitable, depending on context).
-
-> **💡 Insight:** Bellman–Ford replaces Dijkstra's priority queue greed with simple, repeated relaxation: process all edges multiple times, improving distances incrementally. This works because the shortest path in an acyclic graph has at most V-1 edges, so V-1 passes suffice to "propagate" the shortest paths to all vertices.
+In this case, the shortest path is mathematically undefined (diverges to negative infinity). Any valid shortest-path algorithm handling negative weights must:
+1. Correctly compute shortest paths when negative edges exist without negative cycles.
+2. Formally detect and report if a reachable negative-cost cycle exists.
 
 ---
 
 ## 🧠 CHAPTER 2: BUILDING THE MENTAL MODEL
 
-### The Core Analogy: Information Diffusion Through a Network
+### The Core Analogy: Multi-Wave Information Diffusion
 
-Think of shortest paths as a "cost diffusion" problem. Initially, the source vertex knows it costs 0 to reach itself; all others are unreachable (cost = ∞). With each "wave" of relaxation, vertices refine their understanding: "Oh, I can reach you via that vertex over there for cheaper than I thought."
+Think of shortest paths as waves of information radiating outward along edges. In an acyclic graph with `V` vertices, any simple path (a path with no repeated vertices) contains at most `V - 1` edges.
 
-Dijkstra uses priority-queue waves: always process the closest unexplored vertex first, ensuring certainty. But this requires non-negative weights to maintain the ordering guarantee.
+```text
+Pass 1: Computes optimal shortest paths using AT MOST 1 edge.
+Pass 2: Computes optimal shortest paths using AT MOST 2 edges.
+Pass 3: Computes optimal shortest paths using AT MOST 3 edges.
+...
+Pass V - 1: Computes optimal shortest paths using AT MOST V - 1 edges.
+```
 
-Bellman–Ford uses sequential waves: in each pass, allow every edge to try updating its endpoints. This is slower but more forgiving—you don't need to commit to "this vertex is finalized"; instead, you keep re-examining all edges, knowing that good paths will eventually propagate.
+Because any optimal path without negative cycles visits each vertex at most once, after `V - 1` relaxation passes over all edges, every reachable vertex has achieved its global shortest-path distance.
 
-The magic happens in V-1 passes. Why? Because:
-- The shortest path from source to any vertex visits at most V-1 edges (in an acyclic graph).
-- Each pass "extends" known shortest paths by one additional edge.
-- After V-1 passes, every vertex has received the best distance reachable via paths of length V-1 or fewer.
-
-If you perform a V-th pass and distances still improve, a negative-cost cycle exists.
+If we run a **`V`-th pass** and any edge can *still* be relaxed (`dist[u] + weight < dist[v]`), that path must contain at least `V` edges, implying a cycle. Since traversing this cycle reduced the total cost, the cycle must have negative cumulative weight!
 
 ### 🖼 Visualizing the Structure
 
-Let's trace Bellman–Ford on a concrete example:
+Consider a 4-vertex directed graph (`A`, `B`, `C`, `D`) with 5 weighted edges, containing a negative edge `C -> B`:
 
-```
-Graph with 4 vertices (A, B, C, D) and directed edges with weights:
-A → B: weight 4
-A → C: weight 2
-B → D: weight 1
-C → B: weight -3 (negative!)
-C → D: weight 5
-
-Task: Find shortest paths from A to all vertices.
-(With Dijkstra, the C → B negative edge would cause issues!)
-
-Initial state:
-distance[A] = 0
-distance[B] = ∞
-distance[C] = ∞
-distance[D] = ∞
-
-===== BELLMAN–FORD: PASS 1 =====
-Process edges in order:
-
-1. A → B (weight 4):
-   distance[B] = min(∞, 0 + 4) = 4 ✓ Update
-
-2. A → C (weight 2):
-   distance[C] = min(∞, 0 + 2) = 2 ✓ Update
-
-3. B → D (weight 1):
-   distance[D] = min(∞, 4 + 1) = 5 ✓ Update
-
-4. C → B (weight -3):
-   distance[B] = min(4, 2 + (-3)) = min(4, -1) = -1 ✓ Update (negative!)
-
-5. C → D (weight 5):
-   distance[D] = min(5, 2 + 5) = min(5, 7) = 5 (no update)
-
-After Pass 1:
-distance[A] = 0
-distance[B] = -1
-distance[C] = 2
-distance[D] = 5
-
-===== BELLMAN–FORD: PASS 2 =====
-Process edges again (distances can further improve):
-
-1. A → B (weight 4):
-   distance[B] = min(-1, 0 + 4) = -1 (no update)
-
-2. A → C (weight 2):
-   distance[C] = min(2, 0 + 2) = 2 (no update)
-
-3. B → D (weight 1):
-   distance[D] = min(5, -1 + 1) = min(5, 0) = 0 ✓ Update
-
-4. C → B (weight -3):
-   distance[B] = min(-1, 2 + (-3)) = -1 (no update)
-
-5. C → D (weight 5):
-   distance[D] = min(0, 2 + 5) = 0 (no update)
-
-After Pass 2:
-distance[A] = 0
-distance[B] = -1
-distance[C] = 2
-distance[D] = 0
-
-===== BELLMAN–FORD: PASS 3 (V-1 passes done, so algorithm complete) =====
-(We would do one more pass if V=5, but V=4, so 3 passes = V-1 ✓)
-
-For completeness, check Pass 3:
-1. A → B: min(-1, 0 + 4) = -1 (no change)
-2. A → C: min(2, 0 + 2) = 2 (no change)
-3. B → D: min(0, -1 + 1) = 0 (no change)
-4. C → B: min(-1, 2 + (-3)) = -1 (no change)
-5. C → D: min(0, 2 + 5) = 0 (no change)
-
-Final distances:
-A: 0 (source)
-B: -1 (via A→C→B)
-C: 2 (via A→C)
-D: 0 (via A→C→B→D)
+```text
+              (4)
+      +-----------------> [ B ] ----------+
+      |                     ^             |
+      |             (-3)    |             | (1)
+     [ A ] (Source)         |             v
+      |                 +---+           [ D ]
+      |                 |                 ^
+      +-------------> [ C ] --------------+
+            (2)              (5)
 ```
 
-**Key observation:** After Pass 1, distance[D] was 5 (via A→B→D). But in Pass 2, the C→B edge revealed a better path: A→C→B→D costs 0 instead. The negative edge propagated better distance information downstream. Dijkstra would have "finalized" distance[B]=4 and missed this!
+#### Graph Specification
+- Vertices: `A, B, C, D` (Source: `A`, `V = 4`, max simple edges = `V - 1 = 3`)
+- Directed Edges:
+  - `A -> B` (weight 4)
+  - `A -> C` (weight 2)
+  - `B -> D` (weight 1)
+  - `C -> B` (weight -3) — **Negative edge!**
+  - `C -> D` (weight 5)
 
-### Invariants & Properties: What Stays True
+#### Multi-Pass Distance Propagation Trace
 
-**Invariant 1: Non-Increasing Distances**
-Once a distance is set to a finite value, it never increases during subsequent passes. It can only stay the same or decrease when a better path is found.
+```text
+Edge List: [ (A->B, 4), (A->C, 2), (B->D, 1), (C->B, -3), (C->D, 5) ]
+Initial Distances: dist[A]=0, dist[B]=inf, dist[C]=inf, dist[D]=inf
+```
 
-**Invariant 2: V-1 Passes Suffice for Acyclic Graphs**
-In a DAG with V vertices, the longest simple path has at most V-1 edges. After V-1 passes of relaxation, every shortest path (which must be simple in DAGs and positive-weight general graphs) is finalized.
-
-**Invariant 3: Negative Cycles Cause Continued Improvement**
-If a negative-cost cycle is reachable from the source, distances to vertices in that cycle will keep improving in the V-th pass and beyond. This is how we detect them.
-
-**Invariant 4: Correctness Despite Order**
-Unlike Dijkstra, which depends on processing vertices in priority order, Bellman–Ford works regardless of the order you process edges. The V-1 passes guarantee convergence.
-
-### 📐 Mathematical & Theoretical Foundations
-
-**Formal Problem Definition:**
-Given a directed graph G = (V, E) with a weight function w: E → ℝ (allowing negative integers), find for each vertex v a shortest-path distance d[v] from a source s such that d[v] = minimum weight of any path from s to v, or report if a negative-cost cycle reachable from s exists.
-
-**Key Theorem: Correctness of Bellman–Ford**
-
-*Lemma (Subpath Shortest Paths):* If a path P from s to v is a shortest path, then any subpath of P is also a shortest path in the graph.
-
-*Theorem:* After i passes of Bellman–Ford relaxation over all edges, for every vertex v, d[v] equals the shortest-path distance to v using paths of at most i edges (or is ∞ if no such path exists).
-
-*Corollary:* After V-1 passes, all shortest-path distances are correct (since shortest paths are simple paths with at most V-1 edges, barring negative cycles).
-
-*Negative Cycle Detection:* If in the V-th pass any edge (u, v) still satisfies w(u, v) + d[u] < d[v], then a negative-cost cycle reachable from s exists.
-
-### Taxonomy of Variations
-
-| Variation | Key Difference | Time | Space | Best For |
+| Pass | Edge Evaluated | Calculation (`dist[u] + w < dist[v]`) | Action | Tentative Distances `[A, B, C, D]` |
 | :--- | :--- | :--- | :--- | :--- |
-| **Bellman–Ford (Standard)** | Process all edges V-1 times; detect negative cycles | O(VE) | O(V) | General graphs; negative weights; cycle detection |
-| **Optimized BF** | Early termination if no updates in a pass | O(VE) average, better in practice | O(V) | Practical sparse graphs |
-| **SLF (Shortest Label First)** | Queue-based variant using shortest-distance label to prioritize | O(VE) worst, often < Dijkstra in practice | O(V) | Sparse graphs with negatives |
-| **SPFA (Shortest Path Faster Algorithm)** | Queue variant (related to SLF) | O(VE) worst, O(E) average on practical graphs | O(V) | Implementation in competitive programming |
+| **Init** | - | Source initialized | Setup | `[0, inf, inf, inf]` |
+| **Pass 1** | `A -> B (4)` | `0 + 4 < inf` -> YES | `dist[B] = 4`, `pred[B] = A` | `[0, 4, inf, inf]` |
+| | `A -> C (2)` | `0 + 2 < inf` -> YES | `dist[C] = 2`, `pred[C] = A` | `[0, 4, 2, inf]` |
+| | `B -> D (1)` | `4 + 1 < inf` -> YES | `dist[D] = 5`, `pred[D] = B` | `[0, 4, 2, 5]` |
+| | `C -> B (-3)` | `2 + (-3) = -1 < 4` -> YES | `dist[B] = -1`, `pred[B] = C` | `[0, -1, 2, 5]` |
+| | `C -> D (5)` | `2 + 5 = 7 < 5` -> NO | No change | `[0, -1, 2, 5]` |
+| **Pass 2** | `A -> B (4)` | `0 + 4 = 4 < -1` -> NO | No change | `[0, -1, 2, 5]` |
+| | `A -> C (2)` | `0 + 2 = 2 < 2` -> NO | No change | `[0, -1, 2, 5]` |
+| | `B -> D (1)` | `-1 + 1 = 0 < 5` -> YES! | `dist[D] = 0`, `pred[D] = B` | `[0, -1, 2, 0]` |
+| | `C -> B (-3)` | `2 + (-3) = -1 < -1` -> NO | No change | `[0, -1, 2, 0]` |
+| | `C -> D (5)` | `2 + 5 = 7 < 0` -> NO | No change | `[0, -1, 2, 0]` |
+| **Pass 3** | All 5 edges | No distance improves | **Early termination triggered!** | `[0, -1, 2, 0]` |
+
+```text
+Final Shortest Paths from A:
+  A -> A: Cost  0 (Path: A)
+  A -> B: Cost -1 (Path: A -> C -> B)
+  A -> C: Cost  2 (Path: A -> C)
+  A -> D: Cost  0 (Path: A -> C -> B -> D)
+```
+
+**Key Observation:** In Pass 1, `dist[D]` was set to 5 via `A -> B -> D`. Later in Pass 1, the negative edge `C -> B` reduced `dist[B]` from 4 to -1. In Pass 2, this improvement propagated downstream to `D`, reducing `dist[D]` to 0. Dijkstra would have finalized `dist[B]=4` and missed this optimal route!
+
+#### Visualizing Negative Cycle Detection
+
+Now suppose edge `D -> C` exists with weight `-4`, creating cycle `B -> D -> C -> B`:
+- `B -> D`: `1`
+- `D -> C`: `-4`
+- `C -> B`: `-3`
+- Total Cycle Cost: `1 + (-4) + (-3) = -6` (Negative Cycle!)
+
+```text
+       (1)
+[ B ] -----> [ D ]
+  ^            |
+  | (-3)       | (-4)
+  |            v
+  +--------- [ C ]
+
+Pass 1: dist[B] = -1, dist[D] = 0, dist[C] = -4
+Pass 2: dist[B] = -7, dist[D] = -6, dist[C] = -10
+Pass 3: dist[B] = -13, dist[D] = -12, dist[C] = -16
+Pass 4 (V-th Pass): Edge (C->B) checks: dist[C] + (-3) = -19 < dist[B] (-13) -> TRUE!
+===> NEGATIVE CYCLE DETECTED! Distances diverge to -infinity.
+```
 
 ---
 
 ## ⚙️ CHAPTER 3: MECHANICS & IMPLEMENTATION
 
-### The State Machine & Memory Layout
+### Dual-Language Production Implementations
 
-**Bellman–Ford State:**
+#### C# (.NET 8/9) Production Implementation
 
-### 📌 ⚡ Bellman–Ford State Machine Variables
+```csharp
+using System;
+using System.Collections.Generic;
 
-- 📊 distance[0..V-1]: Shortest distance from source to each vertex
-- 🔗 predecessor[0..V-1]: Predecessor vertex for path reconstruction
-- 📍 source: Designated starting vertex (dist[source] = 0)
-- 📦 edges[]: Complete edge list (u, v, weight) relaxed V-1 times
+public static class BellmanFordEngine
+{
+    /// <summary>
+    /// Computes single-source shortest paths and detects negative-weight cycles.
+    /// Time Complexity: O(V * E) | Auxiliary Space: O(V)
+    /// </summary>
+    /// <param name="vertices">Total number of vertices (0 to vertices - 1).</param>
+    /// <param name="edges">List of directed edges (u, v, weight).</param>
+    /// <param name="source">Designated start vertex.</param>
+    /// <returns>
+    /// (distances, predecessors, hasNegativeCycle)
+    /// </returns>
+    public static (int[] distances, int[] predecessors, bool hasNegativeCycle) RunBellmanFord(
+        int vertices, 
+        List<(int from, int to, int weight)> edges, 
+        int source)
+    {
+        if (edges == null || source < 0 || source >= vertices || vertices <= 0)
+        {
+            throw new ArgumentException("Invalid graph parameters.");
+        }
 
+        int[] dist = new int[vertices];
+        int[] pred = new int[vertices];
+        Array.Fill(dist, int.MaxValue);
+        Array.Fill(pred, -1);
 
+        dist[source] = 0;
 
-### 🔧 Operation 1: Bellman–Ford Algorithm — Detailed Walkthrough
+        // Perform V - 1 relaxation passes
+        for (int iter = 0; iter < vertices - 1; iter++)
+        {
+            bool anyUpdate = false;
 
-**Narrative Walkthrough:**
+            foreach (var (u, v, weight) in edges)
+            {
+                // Guard against integer overflow when dist[u] == int.MaxValue
+                if (dist[u] != int.MaxValue && dist[u] + weight < dist[v])
+                {
+                    dist[v] = dist[u] + weight;
+                    pred[v] = u;
+                    anyUpdate = true;
+                }
+            }
 
-Bellman–Ford operates in two main phases:
+            // Early termination optimization: if no updates occur in a pass, terminate early
+            if (!anyUpdate)
+            {
+                break;
+            }
+        }
 
-**Phase 1 (Relaxation Passes):** Repeat V-1 times: iterate through all edges and update distances using the relaxation formula. The relaxation formula is simple: for edge (u, v) with weight w, update distance[v] = min(distance[v], distance[u] + w). This formula "relaxes" the constraint that the shortest path to v via u is at most distance[u] + w.
+        // V-th pass: detect negative cycles reachable from source
+        bool hasNegativeCycle = false;
+        foreach (var (u, v, weight) in edges)
+        {
+            if (dist[u] != int.MaxValue && dist[u] + weight < dist[v])
+            {
+                hasNegativeCycle = true;
+                break;
+            }
+        }
 
-**Phase 2 (Negative Cycle Detection):** Optionally, perform one more pass. If any distance still improves, a negative-cost cycle is reachable from the source.
+        return (dist, pred, hasNegativeCycle);
+    }
 
-The beauty of Bellman–Ford is its simplicity: no complex data structures, no greedy assumptions, just repeated updates until convergence.
-
-**Implementation (Detailed Pseudocode):**
-
+    /// <summary>
+    /// Reconstructs the shortest path from source to target using predecessor pointers.
+    /// </summary>
+    public static List<int> ReconstructPath(int target, int[] predecessors)
+    {
+        var path = new List<int>();
+        for (int curr = target; curr != -1; curr = predecessors[curr])
+        {
+            path.Add(curr);
+        }
+        path.Reverse();
+        return path;
+    }
+}
 ```
-BellmanFord(Graph G with V vertices, E edges, source vertex s):
-    // Phase 1: Initialize distances
-    distance[0..V-1] = ∞      // All unreachable initially
-    distance[s] = 0            // Source is 0 away from itself
-    predecessor[0..V-1] = -1   // No predecessors yet
+
+#### Python (3.11+) Production Implementation
+
+```python
+from typing import List, Tuple
+
+def bellman_ford(
+    vertices: int, 
+    edges: List[Tuple[int, int, int]], 
+    source: int
+) -> Tuple[List[float], List[int], bool]:
+    """
+    Computes single-source shortest paths and detects negative-weight cycles.
     
-    // Phase 2: Relax edges V-1 times
-    for pass = 1 to V-1:
-        for each edge (u, v, weight) in G.edges:
-            if distance[u] ≠ ∞ and distance[u] + weight < distance[v]:
-                distance[v] = distance[u] + weight
-                predecessor[v] = u
+    Time Complexity: O(V * E)
+    Auxiliary Space: O(V)
     
-    // Phase 3: Detect negative cycles (optional)
-    has_negative_cycle = false
-    for each edge (u, v, weight) in G.edges:
-        if distance[u] ≠ ∞ and distance[u] + weight < distance[v]:
-            has_negative_cycle = true
+    :param vertices: Total number of vertices (0 to vertices - 1).
+    :param edges: List of directed edges as tuples (u, v, weight).
+    :param source: Starting node index.
+    :return: (distances, predecessors, has_negative_cycle)
+    """
+    if source < 0 or source >= vertices or vertices <= 0:
+        raise ValueError("Invalid graph configuration or source vertex.")
+
+    dist: List[float] = [float('inf')] * vertices
+    pred: List[int] = [-1] * vertices
+    dist[source] = 0.0
+
+    # Relax all edges V - 1 times
+    for _ in range(vertices - 1):
+        updated = False
+        for u, v, weight in edges:
+            if dist[u] != float('inf') and dist[u] + weight < dist[v]:
+                dist[v] = dist[u] + weight
+                pred[v] = u
+                updated = True
+        
+        # Early termination: converged in fewer than V - 1 passes
+        if not updated:
             break
-    
-    return (distance, has_negative_cycle)
+
+    # V-th iteration: Check for negative-weight cycles
+    has_negative_cycle = False
+    for u, v, weight in edges:
+        if dist[u] != float('inf') and dist[u] + weight < dist[v]:
+            has_negative_cycle = True
+            break
+
+    return dist, pred, has_negative_cycle
+
+def reconstruct_path(target: int, predecessors: List[int]) -> List[int]:
+    """Reconstructs vertex sequence from source to target."""
+    path: List[int] = []
+    curr = target
+    while curr != -1:
+        path.append(curr)
+        curr = predecessors[curr]
+    path.reverse()
+    return path
 ```
-
-**Detailed Trace (Using Our Example Graph):**
-
-
-### 📌 Graph
-
-- distance[A] = 0 (not ∞)
-- Check: 0 + 4 < ∞? YES
-- Update: distance[B] = 4
-- predecessor[B] = A
-- distance[A] = 0 (not ∞)
-- Check: 0 + 2 < ∞? YES
-- Update: distance[C] = 2
-- predecessor[C] = A
-- distance[B] = 4 (not ∞)
-- Check: 4 + 1 < ∞? YES
-- Update: distance[D] = 5
-- predecessor[D] = B
-- distance[C] = 2 (not ∞)
-- Check: 2 + (-3) < 4? YES (because -1 < 4)
-- Update: distance[B] = -1
-- predecessor[B] = C
-- distance[C] = 2 (not ∞)
-- Check: 2 + 5 < 5? NO (because 7 ≮ 5)
-- No update
-- distance[A] = 0
-- Check: 0 + 4 < -1? NO
-- No update
-- distance[A] = 0
-- Check: 0 + 2 < 2? NO
-- No update
-- distance[B] = -1
-- Check: -1 + 1 < 5? YES (because 0 < 5)
-- Update: distance[D] = 0
-- predecessor[D] = B
-- distance[C] = 2
-- Check: 2 + (-3) < -1? NO (because -1 ≮ -1)
-- No update
-- distance[C] = 2
-- Check: 2 + 5 < 0? NO
-- No update
-
-
-
-**Critical Implementation Details:**
-
-1. **Infinity Handling:** Use a large constant or language-specific infinity. Before relaxing an edge (u, v), check if distance[u] is finite (not ∞). If u is unreachable, you can't relax its outgoing edges.
-
-2. **Early Termination:** If a pass makes no updates, all shortest paths are found; terminate early rather than always doing V-1 passes. This optimization is common in practice.
-
-3. **Edge Order:** Unlike Dijkstra, edge processing order doesn't affect correctness, only convergence speed. Some orderings lead to faster settling.
-
-4. **Negative Cycle Detection:** After V-1 passes, one more pass checks for improvement. If any distance improves, a negative cycle exists. In some applications, you mark affected vertices as "possibly ∞" (or "unreliable") since paths through negative cycles can be arbitrarily negative.
-
-### 📉 Progressive Example: A Graph with Negative Cycle
-
-Let's see what happens when a negative cycle is actually present:
-
-```
-Graph:
-A → B: 1
-B → C: -3
-C → B: 1
-
-This creates cycle B→C→B with total weight -3 + 1 = -2 (NEGATIVE!)
-
-Source: A
-V = 3 vertices, so V-1 = 2 passes required.
-
-===== PASS 1 =====
-distance[A] = 0
-distance[B] = 0 + 1 = 1
-distance[C] = 1 + (-3) = -2
-
-===== PASS 2 =====
-distance[B] = min(1, -2 + 1) = min(1, -1) = -1 ✓ Update
-distance[C] = min(-2, -1 + (-3)) = min(-2, -4) = -4 ✓ Update
-
-After Pass 2:
-distance = [0, -1, -4]
-
-===== NEGATIVE CYCLE DETECTION PASS =====
-distance[B] = min(-1, -4 + 1) = min(-1, -3) = -3 ✓ STILL IMPROVING!
-distance[C] = min(-4, -3 + (-3)) = min(-4, -6) = -6 ✓ STILL IMPROVING!
-
-Result: NEGATIVE CYCLE DETECTED ⚠️
-
-Interpretation:
-The cycle B→C→B keeps making both vertices cheaper. 
-This means:
-- There is no finite shortest path to B or C from A
-- Any algorithm that naively follows distances here would loop forever in the cycle
-- In practice, report that B and C are in a negative cycle
-```
-
-> **⚠️ Watch Out:** With negative cycles, shortest paths are not well-defined. Depending on the application, you might:
-> 1. Flag affected vertices as "reachable but in a negative-cost cycle" (arbitrage-free zone).
-> 2. Report an error (some algorithms require acyclic shortest paths).
-> 3. Use modified distance functions that cap path length or add cycle-breaking constraints.
 
 ---
 
 ## ⚖️ CHAPTER 4: PERFORMANCE, TRADE-OFFS & REAL SYSTEMS
 
-### Beyond Big-O: Performance Reality
+### Complexity Deconstruction
 
-**Bellman–Ford Complexity Analysis:**
+| Metric | Complexity | Exact Mathematical Rationale |
+| :--- | :--- | :--- |
+| **Time (Best Case)** | `O(E)` | When the graph is a topological line whose edge order matches relaxation order, all distances converge in Pass 1. Early termination exits immediately. |
+| **Time (Worst Case)** | `O(V * E)` | In a linear chain ordered backwards, each pass only propagates shortest path information forward by 1 edge, requiring all `V - 1` passes, each scanning all `E` edges. |
+| **Auxiliary Space** | `O(V)` | Distance array `dist` (`V` entries) and predecessor array `pred` (`V` entries). No priority queue or complex auxiliary heap required. |
+| **Output Space** | `O(V)` | Distance array of size `V`. Path reconstruction takes `O(L)` where `L <= V`. |
 
-1. **V-1 relaxation passes:** O(V) iterations
-2. **Per pass, process all E edges:** O(E) per iteration
-3. **Relaxation operation (update distance, check condition):** O(1)
-4. **Total:** O(V × E) = O(VE)
+### Algorithm Trade-Off Comparison
 
-5. **Negative cycle detection pass (optional):** O(E)
-6. **Overall:** O(VE)
-
-**Space Complexity:** O(V) for distance and predecessor arrays, plus O(E) to store the graph.
-
-**Comparison with Dijkstra:**
-
-| Algorithm | Time | Space | Negative Weights | Cycle Detection |
+| Algorithm | Time Complexity | Handles Negatives? | Detects Cycles? | Best Use Case |
 | :--- | :--- | :--- | :--- | :--- |
-| **Dijkstra** | O((V+E) log V) | O(V) | ❌ No | ❌ No |
-| **Bellman–Ford** | O(VE) | O(V) | ✅ Yes | ✅ Yes |
-| **Floyd–Warshall** | O(V³) | O(V²) | ✅ Yes | ✅ Yes |
+| **Dijkstra** | `O((V + E) log V)` | ❌ No | ❌ Silent failure | Positive-weight routing, real-time queries |
+| **Bellman-Ford** | `O(V * E)` | ✅ Yes | ✅ Yes | Sparse graphs with negative weights / cycle checks |
+| **SPFA (Queue-BF)** | `O(E)` avg / `O(V * E)` worst | ✅ Yes | ✅ Yes | Competitive programming / sparse networks |
+| **Floyd-Warshall** | `O(V^3)` | ✅ Yes | ✅ Yes | All-pairs on small dense graphs (`V <= 500`) |
 
-**When is Bellman–Ford competitive?**
+### Production Systems: Concise Interview Context Callouts
 
-For sparse graphs where E << V², Bellman–Ford's O(VE) can rival Dijkstra's O((V+E) log V):
-- E ≈ V: Bellman–Ford = O(V²), Dijkstra = O(V log V). Dijkstra wins.
-- E ≈ V²/2: Bellman–Ford = O(V³/2), Dijkstra = O(V² log V). Dijkstra still wins for large V, but Bellman–Ford is competitive for smaller V.
-- Dense graphs (E ≈ V²): Bellman–Ford = O(V³), same as Floyd–Warshall.
+> [!NOTE]
+> **System Design Context: Currency Exchange Arbitrage Detection**  
+> High-frequency trading systems maintain currency order books as a directed graph where nodes are currencies and edge weights are `-log(rate)`. A round-trip cycle `USD -> EUR -> JPY -> USD` yields a profit if the product of rates exceeds `1.0`, which corresponds to `sum(-log(rate)) < 0`. Running Bellman-Ford flags arbitrage cycles in `O(V * E)` time, allowing algorithmic traders to trigger instantaneous multi-leg trades.
 
-**Constant Factors & Early Termination:**
+> [!NOTE]
+> **Infrastructure Context: Routing Information Protocol (RIP)**  
+> RIP is a classical distance-vector routing protocol based on distributed Bellman-Ford. Every 30 seconds, routers broadcast their distance vectors to immediate neighbors. To mitigate the "count-to-infinity" problem caused by routing loops (which mirror negative cycles), RIP caps infinity at 16 hops, demonstrating how real-world protocols adapt Bellman-Ford convergence bounds.
 
-The theoretical O(VE) pessimistic but practical. In practice:
-- Most graphs settle in fewer than V-1 passes (early termination).
-- For random or sparse graphs, 1-3 passes often suffice, giving O(E) practical performance.
-- This is why variants like SPFA (Shortest Path Faster Algorithm) using a queue instead of iterating all edges each pass—can outperform Dijkstra on certain graph families.
-
-**Cache Behavior:**
-
-Bellman–Ford's performance depends on:
-- **Edge list representation:** Sequential access to edge list has good cache locality.
-- **Distance array updates:** Random access to distance array can cause cache misses.
-- **No priority queue:** Avoids heap overhead but sacrifices the ability to focus on "promising" vertices.
-
-### 🏭 Real-World Systems: Where Bellman–Ford Powers Operations
-
-#### Story 1: Currency Exchange Arbitrage Detection
-
-A financial firm monitors exchange rates for currency pairs: USD/EUR, EUR/JPY, JPY/GBP, GBP/USD, etc. Each edge represents an exchange rate; the weight is log(exchange_rate) (logarithmic to convert multiplication to addition).
-
-Normally, if you exchange USD → EUR → JPY → USD, the round-trip should break even (or lose money). But market inefficiencies sometimes create **arbitrage opportunities**: a sequence of exchanges that produces a profit.
-
-**The Algorithm:**
-- Graph: Vertices are currencies; edge (A, B) has weight -log(rate_A_to_B).
-- Run Bellman–Ford from USD (or any starting currency).
-- If a negative cycle is detected, an arbitrage exists.
-- Trace the cycle to identify the profitable sequence.
-
-**Why Bellman–Ford?**
-- Exchange rates can effectively become "negative" (profitable edges) when factoring in transaction credits or unusual market conditions.
-- Negative cycle detection is critical: it directly answers "Is there a profitable arbitrage?"
-- SPFA variants are often used in competitive programming for this reason.
-
-**Impact:** Detecting arbitrage nanoseconds before competitors can mean millions in profit. Firms use variants like SPFA to catch these opportunities in near-real-time.
-
-#### Story 2: Route Optimization with Credits and Debits
-
-Imagine Uber Eats optimizing delivery routes. Most edges (street segments) have positive costs (time/fuel). But certain segments have incentive credits: "Deliver via this route, and Uber reimburses 5 minutes." Or strategic loss-leaders: "Offer a $2 credit for UberEats+ members using this corridor to increase traffic there."
-
-**The Algorithm:**
-- Graph: Intersections as vertices; road segments as edges with costs (positive or negative credits).
-- Run Bellman–Ford from the pickup location.
-- Find the shortest-cost path to the delivery location.
-- If a negative cycle exists in the service area, investigate: Is it a data error or a profitable marketing opportunity?
-
-**Why Bellman–Ford?**
-- Handles the mix of positive costs and negative incentives.
-- Detects if the incentive structure creates a profitable "loop" (which would break the system if exploited).
-- SPFA or queue-based variants give practical performance for city-scale road networks.
-
-**Impact:** Better routes = faster deliveries, happier customers, and smarter incentive design.
-
-#### Story 3: Network Routing Protocols with Cost Metrics
-
-Distance-vector routing protocols (e.g., IGRP, EIGRP in legacy networks) compute shortest paths in autonomous systems where link costs represent delay, bandwidth, or reliability. Over time, these metrics can become negative (e.g., boosting a preferred link by applying a negative metric adjustment).
-
-**The Algorithm:**
-- Graph: Routers as vertices; links as edges with costs.
-- Each router runs a Bellman–Ford-like algorithm (or SPFA) to compute shortest paths to all destinations.
-- Routers share distance vector updates with neighbors; each neighbor refines its own shortest paths.
-- Detection of loops or anomalies triggers re-convergence or isolation of faulty routers.
-
-**Why Bellman–Ford?**
-- Handles the dynamic environment where costs change.
-- Detects routing loops (which manifest as negative cycles or oscillations).
-- Distributed nature aligns with how routing protocols propagate information.
-
-**Impact:** Reliable delivery of packets across the internet, with graceful handling of topology changes.
-
-#### Story 4: Game Theory & Economic Equilibrium
-
-In online marketplaces (e.g., Airbnb, eBay), prices fluctuate based on demand, supply, and algorithmic optimization. Finding an "arbitrage"—buying at one price and selling at another for profit—involves graph shortest paths where the goal is actually to maximize (find longest path).
-
-By negating weights, longest-path problems become shortest-path problems, and Bellman–Ford applies.
-
-**The Algorithm:**
-- Graph: Product states (location, quality, listing condition) as vertices.
-- Edge (A, B) with weight = negative profit from A to B (so "shortest path" = most profitable chain).
-- Run Bellman–Ford (or its longest-path variant) to identify profitable chains.
-- Negative cycles become positive-cycle opportunities (chains of exploits).
-
-**Why Bellman–Ford?**
-- Correctly handles the negated weights (which become negative in the shortest-path formulation).
-- Detects cycles that represent repeatable profit sources (red flag for fraud or market inefficiency).
-
-**Impact:** Identify exploited arbitrage faster than competitors; design better market protections against manipulation.
-
-### Failure Modes & Robustness
-
-#### Incorrect Handling of ∞
-
-If distance[u] = ∞, the edge (u, v) should not relax. Failing to check this leads to nonsensical updates: ∞ + w = ∞, not a real number, which can cause undefined behavior.
-
-**Fix:** Always check `if distance[u] != INFINITY` before relaxing.
-
-#### Negative Cycle Detection Too Aggressive
-
-Some implementations flag any negative cycle in the graph, even if unreachable from the source. The correct approach: only flag negative cycles reachable from the source.
-
-**Fix:** After V-1 passes, check which vertices have finite distance; only those can participate in a reachable negative cycle.
-
-#### Early Termination Misuse
-
-Terminating early when no updates occur is safe and practical, but it changes the algorithm's "name"—it's no longer exactly Bellman–Ford but a practical variant.
-
-**Fix:** Document this optimization and understand that in the worst case (dense, low-connectivity graphs), you still pay O(VE).
-
-#### Floating-Point Arithmetic
-
-With floating-point edge weights, distance comparisons (`<`) can be unreliable due to rounding errors. Negative cycle detection might false-positive or false-negative.
-
-**Fix:** Use integer weights or apply epsilon-based comparisons carefully. In financial systems, use fixed-point or decimal arithmetic.
+> [!NOTE]
+> **Production Context: Ride-Share Dynamic Credits & Route Balancing**  
+> On platforms like Uber and Lyft, moving vehicles out of driver-saturated suburbs into high-demand city cores incurs re-balancing subsidies. Modeling transit links with positive fuel costs and negative incentive credits transforms vehicle routing into a constrained Bellman-Ford problem, preventing system exploitation while minimizing re-positioning costs.
 
 ---
 
-## 🔗 CHAPTER 5: INTEGRATION & MASTERY
+## 🎙️ 45-MINUTE INTERVIEW VERBAL SCRIPT
 
-### Connections: Where Bellman–Ford Fits
+### Phase 1: Clarification & Constraints (0 - 5 min)
+- **Candidate:** *"Before jumping to an implementation, what can you tell me about the edge weights? Can weights be negative, and if so, can the graph contain negative cycles?"*
+- **Interviewer:** *"Weights can be negative. If a negative cycle exists, the system should detect it and return an error."*
+- **Candidate:** *"That immediately rules out Dijkstra's algorithm, as Dijkstra's greedy choice assumes monotonicity and can enter infinite loops or yield incorrect results with negative weights. What are the bounds on `V` and `E`?"*
+- **Interviewer:** *"V is up to 1,000, and E is up to 5,000."*
+- **Candidate:** *"With `V = 10^3` and `E = 5 * 10^3`, `V * E = 5 * 10^6` operations. Bellman-Ford will run well within typical 1-second limits while providing robust negative-cycle detection."*
 
-Bellman–Ford lives at the intersection of:
+### Phase 2: High-Level Approach & Intuition (5 - 12 min)
+- **Candidate:** *"Bellman-Ford operates on a dynamic programming principle: in a graph with `V` vertices, any simple path has at most `V - 1` edges. If we relax every edge in the graph `V - 1` times, we guarantee that all shortest paths are found.
+After completing `V - 1` iterations, we perform one final pass over all edges. If any edge can still be relaxed, there must be a path with at least `V` edges that continues to reduce total weight, proving the existence of a negative cycle."*
 
-1. **Shortest Paths (Week 09 Days 1-3):**
-   - Day 1 (Dijkstra): Fast, greedy, non-negative weights.
-   - Day 2 (Bellman–Ford): Robust, general, handles negatives.
-   - Day 3 (Floyd–Warshall): All-pairs, handles negatives, expensive.
+### Phase 3: Coding Walkthrough (12 - 30 min)
+- **Candidate:** *"I will now code this up. I will maintain a `dist` array initialized to `int.MaxValue`, setting `dist[source] = 0`.
+Notice three critical implementation details:
+1. **Overflow Guard:** We must check `dist[u] != int.MaxValue` before checking `dist[u] + weight < dist[v]` to prevent integer overflow.
+2. **Early Termination:** We track a boolean flag `updated` in each pass. If no edge relaxes in an iteration, the algorithm has converged, allowing us to exit early in `O(E)` best-case time.
+3. **Negative Cycle Verification:** The `V`-th pass only checks for strict improvements (`dist[u] + weight < dist[v]`)."*
 
-2. **Graph Algorithms (Week 08):**
-   - BFS/DFS: Basic traversals.
-   - Bellman–Ford: Builds on relaxation principle seen in Dijkstra.
+### Phase 4: Dry Run & Edge Cases (30 - 38 min)
+- **Candidate:** *"Let's trace edge cases:
+- **Unreachable negative cycles:** If a negative cycle exists in a component disconnected from `source`, `dist[u]` remains `int.MaxValue`, so it will not falsely trigger a cycle report for the source.
+- **Single-vertex graph (`V = 1`):** The loop executes `V - 1 = 0` times, `dist[source] = 0`, and the cycle pass confirms no updates.
+- **Negative edges without cycles:** As seen in our dry run, negative edges are correctly integrated across multiple passes."*
 
-3. **Greedy vs. Dynamic Programming (Week 12):**
-   - Dijkstra: Greedy strategy (always pick closest vertex).
-   - Bellman–Ford: Implicit DP (iteratively refine estimates).
-
-4. **Amortized Analysis (Week 13):**
-   - Early termination in Bellman–Ford improves practical performance.
-
-### 🧩 Pattern Recognition & Decision Framework
-
-**When should an engineer use Bellman–Ford?**
-
-**✅ Use Bellman–Ford when:**
-1. The graph **has negative-weight edges** and you must handle them correctly.
-2. You need **negative cycle detection** (a key feature Dijkstra lacks).
-3. The graph is **sparse** (E ≈ V or slightly more), making O(VE) competitive.
-4. The application is **distributed or dynamic** (routing protocols, peer-to-peer networks), where message passing aligns with Bellman–Ford's relaxation model.
-5. You **trust edge weights** but want **robustness** against unusual inputs.
-
-**🛑 Avoid Bellman–Ford when:**
-1. All edge weights are **positive** and you need speed (use Dijkstra instead).
-2. The graph is **very dense** (E ≈ V²), making O(VE) ≈ O(V³) expensive (Floyd–Warshall might be better for all-pairs).
-3. The graph is **huge** (millions of vertices/edges) and you can't afford O(VE) time.
-
-**🚩 Red Flags (Interview & System Design Signals):**
-- "Find shortest path with negative weights" → Bellman–Ford
-- "Detect if there's a profitable cycle" → Bellman–Ford (negative cycle detection)
-- "Route optimization with credits and debits" → Bellman–Ford
-- "Currency exchange arbitrage" → Bellman–Ford
-- "Distributed shortest path algorithm" → Bellman–Ford (or SPFA variant)
-
-### 🧪 Socratic Reflection
-
-Deep understanding asks:
-
-1. **Why does Bellman–Ford need V-1 passes?** What property of paths ensures this?
-
-2. **How would you modify Bellman–Ford to find longest paths instead?** (Hint: negate weights.)
-
-3. **If Bellman–Ford detects a negative cycle, can you still output shortest paths for unreachable vertices?** What's the correct behavior?
-
-4. **Compare the "information diffusion" model in Bellman–Ford to the "greedy frontier" model in Dijkstra. How does each ensure correctness?**
-
-5. **In a distributed system where routers run Bellman–Ford to compute shortest paths, how would you handle a router that lies about its distances (Byzantine failure)?** (This is a real problem in network security.)
-
-### 📌 Retention Hook
-
-> **The Essence:** "Bellman–Ford trades Dijkstra's greed for generality. Instead of always picking the closest vertex, it processes all edges repeatedly (V-1 times), relaxing distances incrementally. This works with negative weights and detects negative cycles—the price is O(VE) time instead of O((V+E) log V), but correctness and robustness are worth it when negatives are present."
-
----
-
-## 🧠 5 COGNITIVE LENSES
-
-### 1. 💻 The Hardware Lens (Cache, CPU, Memory)
-
-Bellman–Ford's edge-centric loop (process all E edges in each pass) has different cache behavior than Dijkstra's priority-queue approach:
-- **Sequential edge processing:** Good cache locality if edges are stored contiguously (array of edges).
-- **Distance array access:** Random access patterns, potential cache misses.
-- **No heap overhead:** Avoids allocation/deallocation of heap nodes.
-
-**Insight:** On systems with limited memory or constrained caches, Bellman–Ford's simpler memory footprint can win, despite O(VE) complexity.
-
-### 2. 📉 The Trade-off Lens (Time vs. Robustness, Greedy vs. Iteration)
-
-**Trade-off 1: Greedy Speed vs. General Correctness**
-- Dijkstra: O((V+E) log V), but requires non-negative weights.
-- Bellman–Ford: O(VE), but handles negatives and detects cycles.
-
-**Trade-off 2: Early Termination vs. Theoretical Simplicity**
-- Pure Bellman–Ford: Always does V-1 passes (simple, predictable).
-- Optimized version: Terminates early if no updates (faster in practice, less predictable).
-
-**Trade-off 3: Single Source vs. All Pairs**
-- Bellman–Ford: Single-source, run once per source (O(VE) per source, O(V²E) for all pairs).
-- Floyd–Warshall: All-pairs, single algorithm (O(V³) regardless of source count).
-
-### 3. 👶 The Learning Lens (Misconceptions, Psychology)
-
-**Common mistake:** "Bellman–Ford is slow, so never use it."
-
-**Reality:** Bellman–Ford is slower than Dijkstra on positive graphs, but:
-- It's much simpler to implement correctly.
-- For sparse graphs, O(VE) can be competitive.
-- It's the foundation of practical routing protocols and arbitrage detection.
-- The simplicity (no priority queue) makes it great for distributed/embedded systems.
-
-**Remediation:** Implement Bellman–Ford on a small example, then Dijkstra on the same example. Notice that Dijkstra's complexity comes from heap management, not algorithmic elegance.
-
-### 4. 🤖 The AI/ML Lens (Analogies, Optimization)
-
-Bellman–Ford's repeated relaxation resembles **gradient descent in optimization:**
-- Dijkstra: "Always move to the steepest descent point" (greedy, assumes convexity).
-- Bellman–Ford: "Tweak every parameter, then repeat; let the global optimum emerge" (iterative refinement).
-
-This analogy breaks down for nonconvex optimization, but it highlights the difference: Dijkstra assumes structure (non-negative weights), while Bellman–Ford iterates toward correctness without assumptions.
-
-### 5. 📜 The Historical Lens (Origins, Inventors)
-
-**Bellman–Ford algorithm** developed in the 1950s:
-- Richard Bellman (dynamic programming pioneer) and Lester Ford (network flow researcher) independently discovered the algorithm.
-- Bellman's version emphasized the dynamic programming interpretation (relaxation as state refinement).
-- Ford's version emphasized the minimum cost flow perspective.
-- The algorithm became foundational in routing protocols (IGRP, EIGRP) and arbitrage detection.
-
-**Modern evolution:**
-- SPFA (Shortest Path Faster Algorithm) by Leyzorek et al. (1981): Queue-based variant that outperforms Bellman–Ford on typical graphs.
-- SLF (Shortest Label First): Further optimization using deque instead of queue.
-- These variants are now standard in competitive programming and industrial routing software.
+### Phase 5: Complexity & Trade-Offs (38 - 45 min)
+- **Candidate:** *"To recap performance:
+- **Time Complexity:** `O(V * E)` worst case, `O(E)` best case with early termination.
+- **Auxiliary Space:** `O(V)` for distance and predecessor tracking.
+- **Trade-Offs:** If weights were strictly non-negative, Dijkstra would be significantly faster at `O((V + E) log V)`. If we needed all-pairs distances on a dense graph, Floyd-Warshall `O(V^3)` would be more suitable. Bellman-Ford is the definitive choice for single-source routing with negative weights."*
 
 ---
 
 ## ⚔️ SUPPLEMENTARY OUTCOMES
 
-### 🏋️ Practice Problems (8-10)
+### Practice Problem Ladder
 
-| Problem | Source | Difficulty | Key Concept | Why Important |
+| Problem | Source | Difficulty | Key Concept | Target Time |
 | :--- | :--- | :--- | :--- | :--- |
-| Cheapest Flights Within K Stops | LeetCode #787 | 🟡 Medium | Bellman–Ford with distance bound | Introduces constraint (≤ K edges) |
-| Network Delay Time | LeetCode #743 | 🟡 Medium | Single-source shortest paths (Dijkstra) | Contrast: when Dijkstra suffices |
-| Detecting Negative Cycle | Custom | 🟡 Medium | Negative cycle detection | Core feature of Bellman–Ford |
-| Bellman–Ford from Scratch | LeetCode #269 (Alien Dictionary) | 🟡 Medium | Topological sort + edges (prelude to SSSP) | Builds intuition for directed graphs |
-| Currency Exchange Arbitrage | Custom | 🟡 Medium | Negative weights, cycle detection | Real-world motivation |
-| Floyd–Warshall Comparison | LeetCode #1334 | 🟡 Medium | All-pairs shortest paths | See when Bellman–Ford vs Floyd–Warshall |
-
-### 🎙️ Interview Questions (6+)
-
-1. **Q:** Explain Bellman–Ford algorithm. Why does it need V-1 passes? When would you use it over Dijkstra?
-   - **Follow-up:** Implement Bellman–Ford. How do you detect a negative cycle?
-
-2. **Q:** Bellman–Ford is O(VE); Dijkstra is O((V+E) log V). When is Bellman–Ford faster in practice?
-   - **Follow-up:** Given a graph with negative weights, how would you adapt an all-pairs shortest-path algorithm?
-
-3. **Q:** You're building a currency exchange system. Exchange rates can go up or down. Design an algorithm to detect arbitrage opportunities.
-   - **Follow-up:** How would you handle the fact that floating-point exchange rates have precision issues?
-
-4. **Q:** Routing protocols like IGRP use a Bellman–Ford-like algorithm. Why is negative cycle detection important here?
-   - **Follow-up:** What happens if a router reports an incorrect (too-low) distance? How can you protect against Byzantine failures?
-
-5. **Q:** Implement SPFA (Shortest Path Faster Algorithm), a queue-based variant of Bellman–Ford. How does it improve practical performance?
-   - **Follow-up:** On what graph structures does SPFA underperform?
-
-6. **Q:** Given a directed graph with negative weights, find the shortest path from source s to target t, or report if a negative cycle exists that affects the path.
-   - **Follow-up:** How would you handle multiple sources and destinations (all-pairs)?
-
-### ❌ Common Misconceptions (3-5)
-
-- **Myth:** "Bellman–Ford is always slower than Dijkstra."
-  - **Reality:** For sparse graphs or those with negative weights, Bellman–Ford can be competitive or necessary. Dijkstra is faster only for positive-weight graphs.
-
-- **Myth:** "Negative cycles are rare and usually indicate buggy input."
-  - **Reality:** Negative cycles are meaningful in arbitrage detection, routing anomalies, and financial systems. Detecting them is a feature, not a bug.
-
-- **Myth:** "You must do exactly V-1 passes in Bellman–Ford."
-  - **Reality:** Early termination when no distances change is correct and standard. The V-1 passes is a worst-case bound, not a requirement.
-
-- **Myth:** "Bellman–Ford and Floyd–Warshall are interchangeable for all-pairs."
-  - **Reality:** Floyd–Warshall is O(V³); running Bellman–Ford from each vertex is O(V²E). For dense graphs, Floyd–Warshall is better; for sparse, Bellman–Ford-based approach is better.
-
-- **Myth:** "If you process edges in a different order, Bellman–Ford gives different results."
-  - **Reality:** Edge order doesn't affect correctness, only convergence speed. All orderings produce the same final shortest-path distances.
-
-### 🚀 Advanced Concepts (3-5)
-
-- **SPFA (Shortest Path Faster Algorithm):** Queue-based variant that often outperforms Bellman–Ford on practical graphs by processing only "promising" vertices. Average O(E), worst O(VE).
-- **Distributed Bellman–Ford:** Routers exchange distance vectors; each refines shortest paths asynchronously. Forms the basis of distance-vector routing protocols (RIP, EIGRP).
-- **Bellman–Ford for Longest Paths:** Negate all weights and find shortest paths; negate distances to get longest paths.
-- **Potentials and Reweighting (Johnson's Algorithm):** Transform a negative-weight graph using potentials so Dijkstra can be applied from each source (advanced optimization).
-- **Minimum Cost Circulation:** Bellman–Ford applied to flow networks to find circulations with minimum cost (generalization of shortest paths).
-
-### 📚 External Resources
-
-- **Cormen, Leiserson, Rivest, Stein, "Introduction to Algorithms" (CLRS), Chapter 24:** Rigorous treatment of shortest paths, including Bellman–Ford and negative cycle detection.
-- **Sedgewick & Wayne, "Algorithms" (4th ed.), Chapter 4.4:** Practical implementation with emphasis on edge-based representation.
-- **MIT OpenCourseWare 6.006 (Introduction to Algorithms), Lecture 15-16:** Bellman–Ford, negative cycles, and application to arbitrage detection.
-- **Competitive Programming Resources:** Codeforces blogs on SPFA and Bellman–Ford variants; USACO Guide on shortest paths.
+| Cheapest Flights Within K Stops | LeetCode #787 | 🟡 Medium | Bellman-Ford with exact `K` relaxation passes | 20 mins |
+| Network Delay Time | LeetCode #743 | 🟡 Medium | Single-source shortest path comparison | 15 mins |
+| Find the City With the Smallest Number of Neighbors | LeetCode #1334 | 🟡 Medium | Shortest path thresholding (BF / FW) | 20 mins |
+| Currency Arbitrage | Custom / UVA #10557 | 🔴 Hard | Negative-cycle detection via `-log(rate)` | 30 mins |
 
 ---
 
-## 📊 Complexity Analysis Reference Table
+## 📊 COMPLEXITY ANALYSIS REFERENCE TABLE
 
-| Algorithm | Time | Space | Handles Negatives | Detects Cycles | Best Use Case |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Dijkstra (Binary Heap)** | O((V+E) log V) | O(V) | ❌ | ❌ | Dense/sparse positive-weight graphs |
-| **Bellman–Ford** | O(VE) | O(V) | ✅ | ✅ | General graphs, negative weights, cycle detection |
-| **SPFA (Queue Variant)** | O(VE) worst, O(E) avg | O(V) | ✅ | ✅ | Practical graphs; often faster than Bellman–Ford |
-| **Floyd–Warshall (All-Pairs)** | O(V³) | O(V²) | ✅ | ✅ | Small dense graphs, all-pairs |
+| Approach | Time Complexity | Auxiliary Space | Output Space | Negative Weights? |
+| :--- | :--- | :--- | :--- | :--- |
+| **Bellman-Ford (Standard)** | `O(V * E)` | `O(V)` | `O(V)` | ✅ Yes |
+| **Bellman-Ford (Early Exit)** | `O(E)` best, `O(V * E)` worst | `O(V)` | `O(V)` | ✅ Yes |
+| **SPFA (Queue Variant)** | `O(E)` average, `O(V * E)` worst | `O(V)` | `O(V)` | ✅ Yes |
+| **Dijkstra** | `O((V + E) log V)` | `O(V + E)` | `O(V)` | ❌ No |
 
----
-
-## Integration with Week 09 Arc
-
-**From Day 1 (Dijkstra) to Day 2 (Bellman–Ford):**
-- Day 1 introduced single-source shortest paths assuming non-negative weights.
-- Day 2 generalizes: handles negative weights, detects negative cycles, but at higher computational cost.
-- Both rely on relaxation; Bellman–Ford just applies it more thoroughly and less greedily.
-
-**Looking Forward to Day 3 (Floyd–Warshall):**
-- Day 3 addresses all-pairs shortest paths (every source-destination pair).
-- Floyd–Warshall is the go-to for all-pairs with negative weights.
-- Bellman–Ford (run from each source) is an alternative for sparse graphs.
-
----
-
-## 🧪 SELF-CHECK & CORRECTNESS VERIFICATION
-
-**Before treating this content as final, verify:**
-
-### ✅ Input Definitions Check
-- [ ] All graph examples use only defined vertices (A, B, C, D)
-- [ ] All edge weights in traces match the graph definition
-- [ ] No undefined edges referenced in algorithm walkthrough
-- [ ] Consistent vertex naming throughout (not "vertex A" and "vertex a")
-
-### ✅ Logic Flow Check
-- [ ] Each algorithm step follows logically from the previous
-- [ ] State after Pass N becomes input to Pass N+1
-- [ ] Relaxation condition (distance[u] + weight < distance[v]) applied consistently
-- [ ] Early termination logic is explicitly shown
-
-### ✅ Numerical Accuracy Check
-- [ ] Distance totals are cumulative (Pass 1 improvements carried to Pass 2)
-- [ ] All arithmetic in traces is correct (e.g., 2 + (-3) = -1, not 2)
-- [ ] Edge count matches graph definition (5 edges in example)
-- [ ] Final distances match hand-calculated shortest paths
-
-### ✅ State Consistency Check
-- [ ] After each edge relaxation, distance array is shown
-- [ ] Predecessor updates are explicit
-- [ ] Pass transitions clearly mark when distance improvements stop
-- [ ] No contradictions (e.g., claiming B is unreachable, then using it)
-
-### ✅ Termination Check
-- [ ] Algorithm correctly stops at V-1 passes (3 for V=4)
-- [ ] Negative cycle detection pass is separate and explicit
-- [ ] Final result clearly identifies shortest distances or negative cycles
-
-### ✅ Red Flag Checks
-- [ ] No input mismatch (all references valid)
-- [ ] No logic jumps (each step explained)
-- [ ] No math errors (all sums verified)
-- [ ] No state contradictions (transitions explained)
-- [ ] No algorithm overshooting (stops exactly when intended)
-- [ ] No count mismatches (3 passes claimed, 3 shown)
-- [ ] No missing steps (progression is smooth)
-
-**Result: All checks passed ✅ Content ready for delivery.**
-
----
-## 📊 Complexity Recap
-
-- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
-- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
 ---
 
 > 🧭 **Navigation:** [← Previous Day](Week_09_Day_01_Dijkstra_Single_Source_Shortest_Paths_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_09_Day_03_Floyd_Warshall_All_Pairs_Shortest_Paths_Instructional.md)

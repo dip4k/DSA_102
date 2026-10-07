@@ -1,4 +1,4 @@
-# Phase 26: Thread-Safe Data Structures & Concurrency Bridges
+﻿# Phase 26: Thread-Safe Data Structures & Concurrency Bridges
 
 > **Focus:** High-Throughput Thread-Safe LRU Cache, Bounded Blocking Queue (Producer-Consumer), and Burst-Tolerant Token Bucket Rate Limiter.  
 > **Target Level:** Senior / Staff Software Engineer (.NET & Polyglot Concurrency)  
@@ -332,13 +332,13 @@ stateDiagram-v2
         Egest: Remove item from buffer[_head]
     }
 
-    Idle --> Ingest: Enqueue called (Count < Capacity)
+    Idle --> Ingest: Enqueue called (Count &lt; Capacity)
     Idle --> FullWait: Enqueue called (Count == Capacity)
     Idle --> EmptyWait: Dequeue called (Count == 0)
     Idle --> Egest: Dequeue called (Count > 0)
 
-    FullWait --> Ingest: Consumer calls PulseAll & frees slot
-    EmptyWait --> Egest: Producer calls PulseAll & pushes item
+    FullWait --> Ingest: Consumer calls PulseAll and frees slot
+    EmptyWait --> Egest: Producer calls PulseAll and pushes item
 
     Ingest --> Idle: PulseAll waiting consumers
     Egest --> Idle: PulseAll waiting producers

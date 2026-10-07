@@ -1,4 +1,4 @@
-# 29. Search Autocomplete & Typeahead System (LeetCode 642)
+﻿# 29. Search Autocomplete & Typeahead System (LeetCode 642)
 
 ## 📌 Problem Context & Motivation
 The **Search Autocomplete / Typeahead Suggestion System** is one of the most frequently asked System Design & Advanced LLD interview questions at **Google, Amazon, Meta, and Microsoft**. 
@@ -19,12 +19,12 @@ When a user types characters into a search bar (e.g., Google Search, Amazon Prod
 ## 🎯 CrackingWalnuts 6-Step Methodology Applied
 
 ```mermaid
-flowchart LR
-    A["1. Requirement Mining\n• Top-K prefix completions\n• Dynamic '#' sentence commit\n• Sub-20ms lookup latency\n• Concurrent reader/writer safety"] --> B["2. Class Discovery\n• AutocompleteSystem\n• TrieNode (Composite)\n• SearchPrefixResult (Value Object)\n• IAutocompleteEngine"]
-    B --> C["3. Relationships\n• AutocompleteSystem has 1 Root TrieNode\n• TrieNode has N Children TrieNodes\n• TrieNode caches Top-K completions"]
-    C --> D["4. Design Patterns\n• Trie / Prefix Tree Pattern\n• Strategy (Priority Ranking)\n• ReaderWriterLockSlim Concurrency"]
-    D --> E["5. V1 → V4 Evolution\n• V1: Naive Trie + DFS on every key\n• V2: Frequency Map per node + MinHeap\n• V3: Cached Top-K list per node (O(1) read)\n• V4: Production Concurrent Trie with RW-Lock"]
-    E --> F["6. Problem Archetype\nFamily 5: In-Memory Data Structures + DSA Hybrid"]
+flowchart TD
+    A["1. Requirement Mining<br/>• Top-K prefix completions<br/>• Dynamic '#' sentence commit<br/>• Sub-20ms lookup latency<br/>• Concurrent reader/writer safety"] --> B["2. Class Discovery<br/>• AutocompleteSystem<br/>• TrieNode (Composite)<br/>• SearchPrefixResult (Value Object)<br/>• IAutocompleteEngine"]
+    B --> C["3. Relationships<br/>• AutocompleteSystem has 1 Root TrieNode<br/>• TrieNode has N Children TrieNodes<br/>• TrieNode caches Top-K completions"]
+    C --> D["4. Design Patterns<br/>• Trie / Prefix Tree Pattern<br/>• Strategy (Priority Ranking)<br/>• ReaderWriterLockSlim Concurrency"]
+    D --> E["5. V1 → V4 Evolution<br/>• V1: Naive Trie + DFS on every key<br/>• V2: Frequency Map per node + MinHeap<br/>• V3: Cached Top-K list per node (O(1) read)<br/>• V4: Production Concurrent Trie with RW-Lock"]
+    E --> F["6. Problem Archetype<br/>Family 5: In-Memory Data Structures + DSA Hybrid"]
 ```
 
 ---
@@ -36,11 +36,11 @@ Instead of executing an expensive Depth-First Search (DFS) traversal down the su
 
 ```mermaid
 graph TD
-    Root["Root Node\n['i': 12, 'iron': 5, 'island': 4]"]
-    Root -->|"char 'i'"| NodeI["Node 'i'\nTop-3: ['i love you': 5, 'island': 4, 'ironman': 3]"]
-    NodeI -->|"char ' '"| NodeISpace["Node 'i '\nTop-3: ['i love you': 5, 'i love leetcode': 2]"]
-    NodeI -->|"char 's'"| NodeIS["Node 'is'\nTop-3: ['island': 4]"]
-    NodeI -->|"char 'r'"| NodeIR["Node 'ir'\nTop-3: ['ironman': 3]"]
+    Root["Root Node<br/>['i': 12, 'iron': 5, 'island': 4]"]
+    Root -->|"char 'i'"| NodeI["Node 'i'<br/>Top-3: ['i love you': 5, 'island': 4, 'ironman': 3]"]
+    NodeI -->|"char ' '"| NodeISpace["Node 'i '<br/>Top-3: ['i love you': 5, 'i love leetcode': 2]"]
+    NodeI -->|"char 's'"| NodeIS["Node 'is'<br/>Top-3: ['island': 4]"]
+    NodeI -->|"char 'r'"| NodeIR["Node 'ir'<br/>Top-3: ['ironman': 3]"]
 ```
 
 ### Keystroke Lifecycle & Concurrency Flow

@@ -1,4 +1,4 @@
-# 📚 WEEK 02: FOUNDATIONS II - LINEAR DATA STRUCTURES
+﻿# 📚 WEEK 02: FOUNDATIONS II - LINEAR DATA STRUCTURES
 > 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)
 > 
 > 💡 **Instructor Note:** *This Comprehensive Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
@@ -638,13 +638,7 @@ flowchart LR
     classDef node fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
     classDef nullNode fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,color:#616161
 
-    N1["🟢 Head: [10 | Next]"]:::headNode
-    N2["📦 Node: [20 | Next]"]:::node
-    N3["📦 Node: [30 | Next]"]:::node
-    N4["📦 Node: [40 | Next]"]:::node
-    N5["🛑 null"]:::nullNode
-
-    N1 --> N2 --> N3 --> N4 --> N5
+    N1["🟢 Head: [10 | •]"]:::headNode --> N2["📦 Node: [20 | •]"]:::node --> N3["📦 Node: [30 | •]"]:::node --> N4["📦 Node: [40 | •]"]:::node --> N5["🛑 null"]:::nullNode
 ```
 
 

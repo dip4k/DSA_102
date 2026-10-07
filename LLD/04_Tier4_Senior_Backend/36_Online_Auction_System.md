@@ -1,23 +1,23 @@
-# 36. Online Auction & Real-Time Bidding System (eBay / Sotheby's Lite)
+﻿# 36. Online Auction & Real-Time Bidding System (eBay / Sotheby's Lite)
 
 ## 📌 Problem Context & Motivation
 An **Online Real-Time Auction System** is one of the most intellectually demanding Senior/Staff LLD questions (asked at eBay, Amazon, StockX, Uber). It challenges candidates across multiple critical architectural axes:
 1. **Financial Escrow & Double-Entry Integrity**: Bidders must have funds pre-authorized/held; when outbid, holds must be immediately released without deadlocks.
 2. **Atomic High-Contention Bidding (CAS / Concurrency)**: Hundreds of bidders submit simultaneous bids in the final seconds. Bids must be validated atomically against the current highest bid + minimum increment.
 3. **Dynamic Time Extension ("Anti-Sniping" Rule)**: If a bid arrives in the final 60 seconds, the auction dynamically extends by 2 minutes to prevent bot sniping.
-4. **Lifecycle State Machine**: Transitions through `Draft` $\rightarrow$ `Active` $\rightarrow$ `Extended` $\rightarrow$ `EndedPendingSettlement` $\rightarrow$ `Settled` or `ReserveNotMet`.
+4. **Lifecycle State Machine**: Transitions through `Draft` -> `Active` -> `Extended` -> `EndedPendingSettlement` -> `Settled` or `ReserveNotMet`.
 
 ---
 
 ## 🎯 CrackingWalnuts 6-Step Methodology Applied
 
 ```mermaid
-flowchart LR
-    A["1. Requirement Mining\n• Escrow Pre-authorization\n• Minimum Increments\n• 60s Anti-Sniping Extension"] --> B["2. Class Discovery\n• AuctionListing (Aggregate)\n• Bid (Value Object)\n• EscrowLedger (Entity)"]
-    B --> C["3. Relationships\n• Auction (1:N) Bids\n• Auction (1:1) HighestBid\n• Bidder (1:1) Escrow"]
-    C --> D["4. Patterns\n• State Pattern (Auction Stages)\n• Observer (Outbid Alerts)\n• Command Pattern (PlaceBid)"]
-    D --> E["5. V1 → V4 Evolution\n• Naive Max → Anti-Snipe → Concurrency Locks → Escrow Ledgers"]
-    E --> F["6. Family Archetype\nFamily 2: Financial Ledgers + Family 1: Allocation"]
+flowchart TD
+    A["1. Requirement Mining<br/>• Escrow Pre-authorization<br/>• Minimum Increments<br/>• 60s Anti-Sniping Extension"] --> B["2. Class Discovery<br/>• AuctionListing (Aggregate)<br/>• Bid (Value Object)<br/>• EscrowLedger (Entity)"]
+    B --> C["3. Relationships<br/>• Auction (1:N) Bids<br/>• Auction (1:1) HighestBid<br/>• Bidder (1:1) Escrow"]
+    C --> D["4. Patterns<br/>• State Pattern (Auction Stages)<br/>• Observer (Outbid Alerts)<br/>• Command Pattern (PlaceBid)"]
+    D --> E["5. V1 → V4 Evolution<br/>• Naive Max → Anti-Snipe → Concurrency Locks → Escrow Ledgers"]
+    E --> F["6. Family Archetype<br/>Family 2: Financial Ledgers + Family 1: Allocation"]
 ```
 
 ---
@@ -30,9 +30,9 @@ stateDiagram-v2
     Draft --> Active: StartAuction(StartTime)
     Active --> Extended: Bid placed within 60s of EndTime
     Extended --> Extended: Another bid placed in final 60s
-    Active --> Settled: EndTime reached & ReservePrice met
-    Extended --> Settled: Extended EndTime reached & Reserve met
-    Active --> ReserveNotMet: EndTime reached & HighestBid < ReservePrice
+    Active --> Settled: EndTime reached and ReservePrice met
+    Extended --> Settled: Extended EndTime reached and Reserve met
+    Active --> ReserveNotMet: EndTime reached and HighestBid below ReservePrice
     Settled --> [*]
     ReserveNotMet --> [*]
 ```

@@ -8,9 +8,9 @@ This repository is engineered to train Senior, Lead, and Staff Software Engineer
 ## 👤 Learner Profile & Persona
 - **Role:** Senior Full Stack Software Engineer / Technical Lead
 - **Primary Tech Stack:** .NET (C# / ASP.NET Core), Angular, Cloud Architecture (Azure & AWS), Microservices, Distributed Systems.
-- **DSA Languages:**
-  - **Primary:** **C#** (.NET 8/9, `Span<T>`, `Memory<T>`, `PriorityQueue<TElement, TPriority>`, `ref struct`, pattern matching, zero-allocation memory awareness).
-  - **Secondary:** **Python** (Python 3.11+, `collections.deque`, `heapq`, `bisect`, type hints, list comprehensions, rapid whiteboard prototyping).
+- **DSA & LLD Languages:**
+  - **Primary:** **C#** (.NET 8/9, `Span<T>`, `Memory<T>`, `PriorityQueue<TElement, TPriority>`, `ref struct`, pattern matching, zero-allocation memory awareness, `ReaderWriterLockSlim`, `ConcurrentDictionary<TKey, TValue>`).
+  - **Secondary:** **Python** (Python 3.11+, `collections.deque`, `heapq`, `bisect`, `threading`, `abc.ABC`, type hints, list comprehensions, rapid whiteboard prototyping).
 - **Preparation Goals:** FAANG / Tier-1 Senior & Staff Software Engineering interviews covering:
   1. Data Structures & Algorithms (Invariant-first derivation)
   2. Low-Level Design (LLD / OOD / Clean Architecture / Design Patterns / Concurrency)
@@ -50,14 +50,84 @@ flowchart LR
 
 ---
 
+## 🏛️ Senior LLD Protocol (The 6-Phase Architectural Arc)
+
+Whenever practicing, analyzing, or conducting a Low-Level Design (LLD / OOD) interview, **follow the 6-Phase Architectural Arc**:
+
+```mermaid
+flowchart LR
+    P1["1. Scope & NFRs"] --> P2["2. Core Domain Contracts"]
+    P2 --> P3["3. Class & State Modeling"]
+    P3 --> P4["4. Patterns & Concurrency"]
+    P4 --> P5["5. Idiomatic Code"]
+    P5 --> P6["6. Extensibility Drill"]
+```
+
+1. **Scope & NFRs (5–7 min):** Lock in 3–5 core functional use cases. Establish Non-Functional Requirements: multi-threaded concurrency, throughput, memory capacity limits, and in-memory vs pluggable persistence.
+2. **Core Domain Contracts (5–8 min):** Isolate domain entities, immutable value objects, and thin interfaces adhering strictly to Interface Segregation (`SOLID 'I'`).
+3. **Class & State Modeling (8–10 min):** Construct clean Mermaid `classDiagram` showing relationships (inheritance `--|>`, composition `*--`, association `-->`). Model lifecycle state machines (`stateDiagram-v2`) if entity states evolve.
+4. **Patterns & Concurrency (5–7 min):** Justify GoF design patterns (Strategy, Factory, State, Observer, Decorator). Formulate thread-safety strategy (`ReaderWriterLockSlim`, `ConcurrentDictionary`, `SemaphoreSlim`, or threading locks).
+5. **Idiomatic Code (15–20 min):** Production-ready C# (.NET 8/9) with dependency injection, async/await, and `IDisposable` lock cleanup; Python (3.11+) with type hints, `abc.ABC`, and context-managed locks.
+6. **Extensibility Drill (5 min):** Address architectural curveballs (e.g. dynamic fee policies, distributed locking, multi-node replication) demonstrating Open-Closed extension (`OCP`).
+
+---
+
+## 🤖 Agentic Practice System & Network
+
+This repository is equipped with an autonomous agentic practice system to simulate live FAANG interview pressure, scaffold code, and execute automated test suites.
+
+### 👥 Specialized Agent Personas (`.agents/agents/`)
+- **`dsa_mock_interviewer`:** Senior FAANG Bar Raiser conducting 45-min live algorithmic interviews using the 8-Step Delivery Arc with progressive hints.
+- **`lld_architect_interviewer`:** Staff Systems Architect conducting 45-min LLD/OOD interviews using the 6-Phase Arc, evaluating SOLID and concurrency.
+- **`dsa_code_evaluator`:** Algorithmic reviewer verifying correctness, Big-O adherence, `Span<T>` zero-allocation constraints, and test passes.
+- **`lld_code_evaluator`:** Object-oriented reviewer verifying design patterns, deadlocks, race conditions, and multi-threaded stress tests.
+- **`practice_scaffolder`:** Scaffolds starter implementations, domain models, and unit test files in `Coding_Practice/` for C# and Python.
+
+### 🧩 Practice Skills (`.agents/skills/`)
+- **`agentic-practice-orchestrator`:** Master coordinator for full practice drills, session scoring, and spaced repetition tracking.
+- **`lld-practice-coach`:** Live interactive LLD mock interviewer and OOD architectural mentor.
+- **`lld-interactive-runner`:** Scaffolding and multi-threaded test runner for LLD problems.
+- **`dsa-interactive-runner`:** Scaffolding and test runner for DSA problems.
+- **`interview-practice-coach`:** Unified coaching skill routing between DSA and LLD interview tracks.
+- **`dsa-pedagogy-verifier`:** Audits curriculum files for beginner-accessible clarity and zero academic jargon.
+- **`dsa-material-generation`:** Generates reference guides following the 8-Step Arc.
+
+### ⚡ Test Execution & Automation (`.agents/scripts/practice.ps1`)
+Run all test suites locally:
+```powershell
+# Run all tests across DSA & LLD (C# & Python)
+powershell -ExecutionPolicy Bypass -File .agents\scripts\practice.ps1 -Type all -Action test
+
+# Run only LLD tests
+powershell -ExecutionPolicy Bypass -File .agents\scripts\practice.ps1 -Type lld -Action test
+
+# Run only DSA tests
+powershell -ExecutionPolicy Bypass -File .agents\scripts\practice.ps1 -Type dsa -Action test
+```
+
+Direct CLI commands:
+- **DSA C#:** `dotnet test Coding_Practice\Senior_Practice\csharp\SeniorPractice.Tests.csproj`
+- **DSA Python:** `py -m unittest discover -s Coding_Practice\Senior_Practice\python`
+- **LLD C#:** `dotnet test Coding_Practice\LLD_Practice\csharp\LLDPractice.Tests.csproj`
+- **LLD Python:** `py -m unittest discover -s Coding_Practice\LLD_Practice\python -p "test_*.py"`
+
+---
+
 ## 📁 Repository Directory Taxonomy
 
 - `Senior_problem_solution/`: The primary reference encyclopedia of 164 senior DSA problems across 25 phases.
 - `Senior_dsa_question_list.md`: Master question inventory, ROI ranking matrix, and sprint schedules.
 - `LLD/`: Object-Oriented Design, Low-Level Design patterns, domain models, and thread-safe in-memory systems.
 - `system-design/`: High-Level Design (HLD) deep dives, distributed systems architectures, and enterprise patterns.
-- `Coding_Practice/`: Hands-on workspace for active coding, test-driven drills, and unit test suites.
+- `Coding_Practice/`:
+  - `Senior_Practice/`: Test-driven DSA practice in C# (.NET 8 xUnit) and Python (unittest).
+  - `LLD_Practice/`: Test-driven LLD practice in C# (`LLDPractice.Tests.csproj`) and Python (`unittest`).
 - `learning_tracking/`: Progress tracking logs (`Practice_Log.md`, `Question_Bank.md`, `Weekly_Review.md`, `Mock_Interview_Log.md`).
+- `.agents/`:
+  - `agents/`: Specifications and prompts for specialized interview & evaluation agent personas.
+  - `skills/`: Antigravity skill definitions (`agentic-practice-orchestrator`, `lld-practice-coach`, etc.).
+  - `rules/`: Modular rule guides (`lld-methodology.md`, `dsa-methodology.md`, `csharp-dotnet-standards.md`, etc.).
+  - `scripts/`: PowerShell automation helpers (`practice.ps1`).
 - `week_01` to `week_19`: Longitudinal foundational and deep-dive weekly curriculums.
 - `Old/`: **Historical / archived content**. Do NOT edit or use as active context unless explicitly requested by the user.
 
@@ -69,6 +139,7 @@ flowchart LR
   - **When to Use Mermaid:** Use Mermaid ONLY where visual logic, state transitions, branching decisions, or true hierarchical structures truly clarify understanding:
     - High-level decision trees & branching flowcharts (`flowchart TD` / `flowchart LR` with diamonds `{...}` and labeled branches `-->|Yes|`).
     - True hierarchical tree and graph topologies (Binary Search Trees, AVL/Red-Black trees, Tries, DFS/BFS graphs).
+    - LLD domain models and class relationships (`classDiagram`).
     - Multi-entity sequences (`sequenceDiagram`) or state machines (`stateDiagram-v2`).
   - **Strictly FORBIDDEN Mermaid Anti-Patterns:**
     - **No Tree/Star Sprawl on Linear Steps:** NEVER convert linear step-by-step algorithms, sequential dry-runs, or execution traces into artificial star/tree graphs (e.g. `R --> N1`, `R --> N2`, `R --> N3...`).
@@ -94,6 +165,3 @@ flowchart LR
 - **Linear & Practice-Ready:** When explaining or building exercises, present concepts sequentially. Avoid fragmented notes, cognitive leaps, or circular jumps.
 - **Dual-Language Fluency:** Always provide C# as the primary, production-ready solution, and accompany it with a clean Python counterpart.
 - **FAANG Interview Pragmatism:** Focus on what is tested in actual 45-minute live technical interviews (problem clarification, communicating thought process, clean code, time/space trade-offs, edge-case testing).
-
-
-

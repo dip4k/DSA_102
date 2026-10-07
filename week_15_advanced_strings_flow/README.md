@@ -1,4 +1,4 @@
-# 📘 Advanced Strings, Range Queries & Network Flow
+﻿# 📘 Advanced Strings, Range Queries & Network Flow
 
 > 🧭 **Navigation:** [← Previous: Week 14](../week_14_matrix_backtracking_bits/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 16 →](../week_16_advanced_data_structures/README.md)
 
@@ -14,7 +14,7 @@
 Linear Z-algorithm matching, Segment Trees with Lazy Propagation, Ford-Fulkerson max-flow, bipartite matching reductions, and min-cut bottlenecks.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start["Week 15 Start"] --> Daily["Daily Invariant Deep Dives"]
     Daily --> Playbook["Consolidated Playbook & Visuals"]
     Playbook --> DualLang["Dual-Language Practice (C# & Python)"]

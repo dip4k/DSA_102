@@ -64,7 +64,7 @@ The 164 problems are categorized across **11 Algorithmic Paradigms** and organiz
 Every problem solution in this repository strictly adheres to the **Senior / Lead 8-Step Delivery Framework**:
 
 ```mermaid
-flowchart LR
+flowchart TD
     S1["1. Clarify & Bounds"] --> S2["2. Naive Baseline"]
     S2 --> S3["3. Spot Bottleneck"]
     S3 --> S4["4. Invariant Selection"]

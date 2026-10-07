@@ -1,4 +1,4 @@
-# 📘 Advanced Algorithms & Dynamic Programming Optimization
+﻿# 📘 Advanced Algorithms & Dynamic Programming Optimization
 
 > 🧭 **Navigation:** [← Previous: Week 16](../week_16_advanced_data_structures/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 18 →](../week_18_probabilistic_ds_systems/README.md)
 
@@ -14,7 +14,7 @@
 Convex Hull Trick (CHT) slope optimizations, Slope Trick with dual heaps, impartial game theory (Grundy numbers/Nimbers), and Catalan combinatorics.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start["Week 17 Start"] --> Daily["Daily Invariant Deep Dives"]
     Daily --> Playbook["Consolidated Playbook & Visuals"]
     Playbook --> DualLang["Dual-Language Practice (C# & Python)"]

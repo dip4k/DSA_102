@@ -1,4 +1,4 @@
-# 📘 Computational Fundamentals, RAM Model & Asymptotics
+﻿# 📘 Computational Fundamentals, RAM Model & Asymptotics
 
 > 🧭 **Navigation:** [← Root Curriculum](../README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 02 →](../week_02_foundations_ii_linear_data_structures/README.md)
 
@@ -14,7 +14,7 @@
 Build rock-solid mental models of program execution, RAM memory hierarchy, complexity bounds (Big-O/Ω/Θ), and recursion call stack mechanics.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start["Week 01 Start"] --> Daily["Daily Invariant Deep Dives"]
     Daily --> Playbook["Consolidated Playbook & Visuals"]
     Playbook --> DualLang["Dual-Language Practice (C# & Python)"]

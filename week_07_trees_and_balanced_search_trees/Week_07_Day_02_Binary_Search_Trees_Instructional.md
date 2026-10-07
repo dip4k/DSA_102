@@ -1,10 +1,5 @@
 # 📘 WEEK 7 DAY 2: Binary Search Trees (BSTs) — Engineering Guide
 
-
-
-
-
-
 > 🧭 **Navigation:** [← Previous Day](Week_07_Day_01_Binary_Trees_And_Traversals_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_07_Day_03_Balanced_BSTs_AVL_And_RedBlack_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
@@ -15,10 +10,10 @@
 
 *By the end of this chapter, you will be able to:*
 
-- 🎯 **Internalize** the BST invariant (left < parent < right) as a fundamental principle for organizing searchable data hierarchically.
-- ⚙️ **Implement** search, insert, and delete operations without looking them up, understanding the mechanical flow of each operation.
-- ⚖️ **Evaluate** why BSTs can degenerate to linked lists and recognize when balance becomes critical.
-- 🏭 **Connect** BST concepts to production systems: database indexing, symbol tables in compilers, sorted collections in standard libraries, and ordered key-value stores like Redis.
+- 🎯 **Internalize** the BST invariant (`left.val < node.val < right.val`) as a structural contract that converts linear search into logarithmic binary decisions.
+- ⚙️ **Implement** search, insert, delete (handling leaf, single-child, and two-children successor cases), and BST validation from scratch in both C# and Python.
+- ⚖️ **Evaluate** why unbalanced BSTs degenerate into linked lists on sorted insertions and recognize when tree height dictates system latency.
+- 🏭 **Connect** BST invariants to production systems: database secondary indexes, compiler symbol tables, and standard library sorted collections.
 
 ---
 
@@ -26,25 +21,33 @@
 
 ### The Engineering Challenge
 
-Imagine you're building a database. Users insert, update, and query data constantly. Your task: support fast lookups ("find the record with ID 42"), fast range queries ("find all records with ID between 1000 and 5000"), and maintain data in sorted order for reporting.
+Consider the trade-offs among fundamental data structures for an in-memory key lookup system:
+- **Unsorted Array / Linked List:** Fast insertions (`O(1)`), but lookups take `O(N)` linear scans.
+- **Sorted Array:** Rapid lookups via binary search (`O(log N)`), but inserting or deleting elements requires shifting memory blocks, costing `O(N)` time.
+- **Hash Table:** Blazing `O(1)` average lookups and mutations, but completely destroys ordering. Range queries (`WHERE price BETWEEN 20 AND 50`), finding the minimum/maximum, or extracting sorted streams require `O(N)` table scans.
 
-A hash table gives you O(1) lookup, but it doesn't maintain order and doesn't support range queries efficiently—you'd need to scan the entire table. A sorted array maintains order and supports binary search (O(log n) lookup), but insertion and deletion are expensive (O(n) shifting). Neither is ideal.
+We need a structure that delivers both: **dynamic logarithmic mutations** like a linked list and **logarithmic ordered searches** like a sorted array.
 
-Or consider a compiler building a symbol table. As it parses code, it encounters variable declarations, function definitions, and scope boundaries. The compiler needs to: quickly find if a name is already defined, maintain scope hierarchy (variables in inner scopes shadow outer ones), and support fast addition/removal as scopes open and close.
+### The Solution: The Binary Search Tree Invariant
 
-Or think about a file system. The OS maintains a directory structure—each folder contains files and subfolders. When you navigate to `/home/alice/projects/dsa/`, the OS needs to quickly find each directory level, resolve symbolic links, and check permissions. A naive linear search through the directory structure would be catastrophically slow.
+A Binary Search Tree (BST) organizes nodes hierarchically under a strict relational contract:
+For every node `X`:
+- Every key in the **left subtree** is strictly less than `X.val`.
+- Every key in the **right subtree** is strictly greater than `X.val`.
+- Both subtrees are themselves valid BSTs.
 
-These problems share a common pattern: **maintain sorted order while supporting efficient insertion, deletion, and lookup**. Arrays are sorted but slow to modify. Hash tables are fast but unordered. You need a hybrid: a data structure that's sorted like an array but dynamic like a linked list.
+```
+                  [ 10 ]
+                 /      \
+             [ 5 ]      [ 15 ]
+            /     \     /    \
+          [ 2 ]  [ 7 ][ 12 ] [ 20 ]
+```
 
-Enter the **Binary Search Tree**—a deceptively simple structure: organize data hierarchically so that left subtree values are always smaller than the parent, and right subtree values are always larger. This invariant, called the *BST property*, means you can search as efficiently as binary search on a sorted array, but insertion and deletion are nearly as fast as linked lists. It's the Goldilocks of ordered data structures.
+This structural invariant eliminates half of the candidate search space at every branching decision. Searching for a key mirrors binary search, but insertion and deletion require only local pointer updates without shifting memory.
 
-### The Solution: The BST Property
-
-The fundamental insight: **If you arrange data in a tree such that every node's left subtree is smaller and every node's right subtree is larger, you automatically get sorted order for free—and you can find anything efficiently.**
-
-This is Week 7 Day 2. Yesterday you learned how to traverse any tree in multiple orders. Today you'll see how to *exploit* tree structure for performance. The BST property isn't just a rule to memorize—it's a contract between structure and algorithm. Maintain the property, and your operations work correctly and efficiently. Violate it, and everything breaks.
-
-> **💡 Insight:** A BST is a sorted array, but instead of storing elements in a line, you store them in a tree to enable efficient modification. The magic is the invariant: trust the structure, and O(log n) falls out naturally.
+> [!TIP]
+> **Core Insight:** Inorder traversal of any valid BST visits nodes in strictly ascending sorted order. The structure of the tree directly embodies the sorted array, while the pointers provide the dynamic mutability of linked nodes.
 
 ---
 
@@ -52,404 +55,202 @@ This is Week 7 Day 2. Yesterday you learned how to traverse any tree in multiple
 
 ### The Core Analogy
 
-Think of a BST as a **decision tree in a game of higher-lower**. You're playing: "I'm thinking of a number between 1 and 100. Guess it."
+Think of a BST as a **hierarchical library card catalog**:
+- You stand at the main catalog cabinet (Root: key `50`).
+- If you seek book `32`, `32 < 50` immediately directs you to the Left Wing. You completely ignore thousands of books in the Right Wing (`> 50`).
+- In the Left Wing, you encounter drawer `25`. Because `32 > 25`, you branch Right.
+- At each step, a single comparison halves your remaining universe of books.
 
-Guess 50? The game says "too high" → search the lower half (1–49).  
-Guess 25? The game says "too low" → search the upper half (26–49).  
-Guess 37? The game says "too high" → search 26–36.  
-Guess 31? The game says "correct!"
-
-Each guess eliminates half the search space. The structure of a BST mirrors this game tree: at each node, you decide "go left (smaller) or go right (larger)?" based on comparing your target value to the node's value. This is why searching a balanced BST takes O(log n) time—you eliminate half the remaining elements at each step, just like binary search.
-
-Or think of a BST as a **sorted filing system where file folders are arranged hierarchically**. At the top is a folder for "all files A–Z". Inside it, folders for "A–M" (left subtree) and "N–Z" (right subtree). Each folder recursively splits again. To find a specific file, you navigate: is it alphabetically before or after the current split point? Go left or right, then repeat.
-
-### 🖼 Visualizing the Structure
-
-Here's a concrete BST containing the values [5, 3, 7, 2, 4, 6, 8]:
-
-```mermaid
-flowchart TD
-    n5["5"] --> n3["3"]
-    n5 --> n7["7"]
-    n3 --> n2["2"]
-    n3 --> n4["4"]
-    n7 --> n6["6"]
-    n7 --> n8["8"]
-```
-
-Notice the invariant at every node:
-- Node 5: left subtree (3, 2, 4) all < 5; right subtree (7, 6, 8) all > 5. ✓
-- Node 3: left (2) < 3; right (4) > 3. ✓
-- Node 7: left (6) < 7; right (8) > 7. ✓
-- All other nodes (leaves) trivially satisfy it. ✓
-
-This is what makes searching work. Looking for 4? Start at 5: 4 < 5, go left to 3. 4 > 3, go right to 4. Found it! Three comparisons for 7 nodes. A linear search would need 4 on average, but scales to O(n) for large trees. The BST scales to O(log n).
-
-In memory:
+### 🖼 Visualizing the Structure & Pointer Navigation
 
 ```
-Node 5: value=5, left→Node3, right→Node7
-Node 3: value=3, left→Node2, right→Node4
-Node 7: value=7, left→Node6, right→Node8
-Node 2: value=2, left→NULL, right→NULL (leaf)
-Node 4: value=4, left→NULL, right→NULL (leaf)
-Node 6: value=6, left→NULL, right→NULL (leaf)
-Node 8: value=8, left→NULL, right→NULL (leaf)
+Target Search Key: 7
+
+Step 1: Compare 7 with Root (10)  --> 7 < 10, Branch LEFT
+              [ 10 ]
+             /
+Step 2: Compare 7 with Node (5)   --> 7 > 5,  Branch RIGHT
+         [ 5 ]
+              \
+Step 3: Compare 7 with Node (7)   --> 7 == 7, MATCH FOUND!
+              [ 7 ]
 ```
 
-Each node is a decision point: left for "smaller," right for "larger."
+Memory layout of a single BST node:
 
-### Invariants & Properties
+```
++-------------------------------------------------------+
+|                       BST Node                        |
+|  int val = 5                                          |
+|  TreeNode? left  ──────────> [ All keys < 5 ]         |
+|  TreeNode? right ──────────> [ All keys > 5 ]         |
++-------------------------------------------------------+
+```
 
-Here are the rules that define a BST and why they matter:
+### Invariants & Theoretical Foundations
 
-**The BST Property: For every node, all values in its left subtree are smaller, and all values in its right subtree are larger.** This isn't optional—violate it, and your BST becomes useless (you can no longer trust the left/right decisions). This invariant must be maintained through all operations (insert, delete).
-
-**Inorder traversal produces sorted output.** Because of the BST property, visiting left subtree, then node, then right subtree visits values in ascending order. This is *the* reason to use a BST for ordered data.
-
-**Search, insert, and delete are O(h) where h is height.** For a balanced tree, h = O(log n), so operations are fast. For a degenerate tree (linked list), h = O(n), so operations are slow. **This is the critical weakness**: a BST's performance depends entirely on its shape. A badly ordered sequence (like inserting already-sorted data) creates a degenerate tree that's essentially a sorted linked list—all the maintenance overhead of a tree with none of the performance benefits.
-
-**BSTs are recursive by nature.** The left subtree is itself a BST, the right subtree is itself a BST. This recursive structure makes operations elegant: search(5, tree) becomes "compare 5 to root, then recursively search the appropriate subtree." This is why many BST operations are naturally implemented recursively.
-
-### 📐 Mathematical & Theoretical Foundations
-
-Let me formalize the core properties:
-
-**Definition:** A BST T is a tree where for every node n with value v:
-- All values in n's left subtree are < v
-- All values in n's right subtree are > v
-- Both left and right subtrees are themselves BSTs
-
-**Search complexity:** For a balanced BST with n nodes, height h = O(log n). Search, insert, delete all require O(h) = O(log n) comparisons.
-
-**Degenerate case:** If a tree is a chain (one child per node), h = O(n). This happens when you insert already-sorted data: insert 1, then 2, then 3, then 4... creates a right-skewed chain. Search becomes O(n), defeating the purpose.
-
-**Inorder invariant:** Inorder traversal of a BST visits nodes in ascending order. Proof: inorder visits left subtree (all smaller), then node, then right subtree (all larger). By induction on subtree size, this produces sorted order.
-
-**Uniqueness property:** A BST structure is unique given a particular insertion sequence. Inserting [5, 3, 7] creates a specific tree; inserting [3, 5, 7] creates a different structure. This matters for deletion: there are multiple valid BST structures containing the same elements (depending on which node is chosen as root of each subtree).
-
-### Taxonomy of Variations
-
-BSTs come in flavors, each optimized for different scenarios:
-
-| Variant | Structure Constraint | Best Use Case | Insert/Delete Complexity |
-| :--- | :--- | :--- | :--- |
-| **Unbalanced BST** | None—any shape allowed | Theoretical foundation, educational | O(h) avg O(log n), worst O(n) |
-| **AVL Tree** | Height balanced: height(left) - height(right) ∈ {-1, 0, 1} | Production, legacy systems | O(log n) guaranteed |
-| **Red-Black Tree** | Color balanced: black-height consistent, red nodes have black children | Production, modern systems (Java TreeMap) | O(log n) guaranteed |
-| **Splay Tree** | Self-adjusting: frequently accessed nodes move to root | Cache-friendly, adaptive | O(log n) amortized |
-| **B-Tree** | Generalization to multiple children per node | Databases, file systems | O(log n) disk accesses |
-| **Treap** | Random priority balancing | Simple to implement, probabilistic balance | O(log n) expected |
+1. **Strict Invariant Definition:** For any node `curr`, `max(curr.left) < curr.val < min(curr.right)`. A common interview bug is checking only immediate children (`node.left.val < node.val`). The invariant must hold across the **entire subtree**.
+2. **Height & Complexity Bounds:**
+   - **Balanced Tree:** Height `H = O(log N)`. Search, insertion, and deletion run in `O(log N)`.
+   - **Degenerate Tree (Skewed):** When keys are inserted in sorted order (`[1, 2, 3, 4, 5]`), the tree becomes a single chain of height `H = O(N)`, degrading all operations to `O(N)`.
+3. **Inorder Successor & Predecessor:**
+   - **Inorder Successor:** The smallest node in the right subtree (`FindMin(node.right)`).
+   - **Inorder Predecessor:** The largest node in the left subtree (`FindMax(node.left)`).
 
 ---
 
-## ⚙️ CHAPTER 3: MECHANICS & IMPLEMENTATION
+## ⚙️ CHAPTER 3: MECHANICS & STATE MACHINE
 
-### The State Machine & Memory Layout
+### 🔧 Complete BST CRUD Operations
 
-A BST node in memory is essentially the same as a generic tree node, but the invariant adds structure:
+A Binary Search Tree provides the full Create, Read, Update, and Delete (CRUD) lifecycle governed by the invariant: `Left < Root < Right`.
+
+#### 1. Create (Insert)
+- **Invariant Rule:** Compare the new key against the current node. If `val < curr.val`, branch left; if `val > curr.val`, branch right.
+- **Base Case:** When reaching a `null` reference, allocate the new `TreeNode(val)` and return it to link with its parent.
+- **Visual Trace (Inserting `6` into Tree `[8, 3, 10, 1]`):**
+```
+Insert 6:
+Step 1: 6 < 8  --> Branch Left to [ 3 ]
+Step 2: 6 > 3  --> [ 3 ].right is null! Attach [ 6 ] here.
+
+        [ 8 ]                         [ 8 ]
+       /     \                       /     \
+    [ 3 ]   [ 10 ]     ── Insert 6 ──> [ 3 ]   [ 10 ]
+    /                                  /   \
+  [ 1 ]                              [ 1 ] [ 6 ]
+```
+
+#### 2. Read (Search)
+- **Invariant Rule:** At each node, compare `target` with `curr.val`:
+  - `target == curr.val`: Target found. Return node reference.
+  - `target < curr.val`: Target must reside in left subtree. Move `curr = curr.left`.
+  - `target > curr.val`: Target must reside in right subtree. Move `curr = curr.right`.
+  - `curr == null`: Target does not exist in the BST. Return `null`.
+- **Zero-Allocation Advantage:** Done iteratively, search consumes strictly `O(1)` auxiliary memory with no call-stack overhead.
+
+#### 3. Update (Payload vs Key Modification)
+- **Payload / Satellite Data Update:** If updating associated data (e.g., student GPA given student ID), locate the node via search in `O(H)` time and overwrite the satellite field in-place.
+- **Key Modification:** If modifying the indexed search key itself, **you cannot overwrite `node.val` in-place**, as doing so violates the BST invariant across ancestor and descendant nodes. Instead:
+  1. `DeleteNode(root, oldKey)`
+  2. `InsertIntoBST(root, newKey)`
+
+#### 4. Delete: Visual Step-by-Step Traces of All 3 Cases
+
+Deleting a node `Z` while preserving the ordering invariant presents three structural cases:
+
+##### Case 1: Node Z is a Leaf (Zero Children)
+The node has no descendants (`left == null && right == null`). Discard it by returning `null` to its parent.
 
 ```
-class TreeNode {
-    int value;           // The data stored at this node
-    TreeNode left;       // Left subtree (smaller values)
-    TreeNode right;      // Right subtree (larger values)
-    // Note: no parent pointer usually; we maintain path in recursion
-}
+Visual Trace: Delete Leaf Node 2 from Parent 5
+       [ 5 ]                          [ 5 ]
+      /     \       ── Delete 2 ──>  /     \
+    [ 2 ]   [ 8 ]                  null    [ 8 ]
+    /   \
+  null  null
+Action: 5.left is reassigned from reference(2) to null. Node 2 is unlinked.
 ```
 
-The key insight: **the BST property is enforced by the algorithm, not the data structure itself**. There's nothing preventing you from creating a "BST" where left > right. The invariant is a promise you keep through disciplined operations.
+##### Case 2: Node Z has Exactly One Child
+The node has either a left child or a right child, but not both. Bypass `Z` by returning its non-null child directly to `Z`'s parent.
 
-### 🔧 Operation 1: Search
+```
+Visual Trace: Delete Node 2 (having only right child 3)
+       [ 5 ]                          [ 5 ]
+      /     \       ── Delete 2 ──>  /     \
+    [ 2 ]   [ 8 ]                  [ 3 ]   [ 8 ]
+        \
+        [ 3 ]
+Action: 5.left is reassigned directly to 2.right (Node 3). Node 2 is bypassed.
+```
 
-**Intent:** Find whether a target value exists in the BST. The search algorithm exploits the BST property to eliminate large portions of the tree.
+##### Case 3: Node Z has Two Children (In-Order Successor Replacement)
+The node has both non-null left and right subtrees. You cannot simply unlink `Z`, because both subtrees must remain reachable and valid:
+1. Locate `Z`'s **in-order successor** `S`: the minimum element in `Z`'s right subtree (`FindMin(Z.right)`).
+   *(Note: Alternatively, you could use the in-order predecessor: `FindMax(Z.left)`).*
+2. Copy `S.val` into `Z.val` (replacing `Z`'s payload).
+3. Recursively delete `S.val` from `Z.right`. Because `S` is the minimum in the right subtree, **`S` cannot have a left child** (`S.left == null`). Thus, deleting `S` strictly reduces to Case 1 (if `S` is a leaf) or Case 2 (if `S` has a right child)!
 
-**Recursive implementation—narrative walkthrough:**
+```
+Visual Step-by-Step Trace: Delete Node 5 (Two Children: left 3, right 8)
 
-1. If the current node is null, the value doesn't exist (base case).
-2. If the target equals the current node's value, we found it.
-3. If the target is less than the current node's value, recursively search the left subtree (because all smaller values are there).
-4. If the target is greater than the current node's value, recursively search the right subtree (because all larger values are there).
+Step A: Locate Node 5 and its In-order Successor (Min of right subtree = 6)
+            [ 5 ] <--- Target to delete
+           /     \
+        [ 3 ]   [ 8 ]
+               /     \
+             [ 6 ]   [ 9 ]
+             (Successor: min of right subtree)
 
-Why does this work? The BST property guarantees that if the value exists, it must be in the chosen subtree. We eliminate the other subtree entirely.
+Step B: Overwrite Target's Value with Successor's Value (5 becomes 6)
+            [ 6 ] <--- Overwritten with Successor val
+           /     \
+        [ 3 ]   [ 8 ]
+               /     \
+             [ 6 ]   [ 9 ] <--- Duplicate temporarily exists
 
-**Inline trace 🧪—watch it execute:**
+Step C: Delete Successor (6) from right subtree (Reduces to Case 1 or 2)
+            [ 6 ]
+           /     \
+        [ 3 ]   [ 8 ]
+               /     \
+             null    [ 9 ]
+Invariant Result: 3 < 6 < 8 < 9. Structure remains a strictly valid BST!
+```
 
-Search for value 4 in the tree:
+---
+
+### 🔧 Dedicated BST Navigation & Verification Operations
+
+#### Operation 5: `FindMin` and `FindMax`
+- **`FindMin(node)`:** Follow `left` pointers until `curr.left == null`. The leftmost node is guaranteed to hold the minimum key in the subtree.
+- **`FindMax(node)`:** Follow `right` pointers until `curr.right == null`. The rightmost node holds the maximum key.
+
+#### Operation 6: `InorderSuccessor(root, p)` — Finding the Next Larger Key
+Given node `p`, find the node with the smallest key strictly greater than `p.val`:
+- **Scenario A (`p.right != null`):** The successor is the minimum node in `p`'s right subtree: `FindMin(p.right)`.
+- **Scenario B (`p.right == null`):** The successor is the deepest ancestor for which `p` lies in its **left** subtree.
+  - *Algorithm:* Start at `root`. While `curr != null`:
+    - If `p.val < curr.val`, record `curr` as candidate successor and branch left (`curr = curr.left`).
+    - If `p.val >= curr.val`, branch right (`curr = curr.right`).
+
+```
+Inorder Successor Scenarios:
+Scenario A (Right Subtree Exists):         Scenario B (No Right Subtree):
+        [ 20 ]                                     [ 20 ] <--- Lowest left-turn ancestor (Successor of 15)
+       /      \                                   /      \
+    [ 10 ]    [ 30 ]                           [ 10 ]    [ 30 ]
+             /                                     \
+          [ 25 ] <--- FindMin(30.left)             [ 15 ] <--- p (No right child)
+          Successor of 20 is 25!                   Successor of 15 is 20!
+```
+
+#### Operation 7: `InorderPredecessor(root, p)` — Finding the Previous Smaller Key
+Given node `p`, find the node with the largest key strictly smaller than `p.val`:
+- **Scenario A (`p.left != null`):** The predecessor is the maximum node in `p`'s left subtree: `FindMax(p.left)`.
+- **Scenario B (`p.left == null`):** The predecessor is the deepest ancestor for which `p` lies in its **right** subtree.
+  - *Algorithm:* Start at `root`. While `curr != null`:
+    - If `p.val > curr.val`, record `curr` as candidate predecessor and branch right (`curr = curr.right`).
+    - If `p.val <= curr.val`, branch left (`curr = curr.left`).
+
+#### Operation 8: `ValidateBST(root)` — Subtree Bounding
+- Checking only local child relationships (`node.left.val < node.val`) is a fatal interview bug.
+- Correct approach: maintain a valid interval `(low, high)`.
+  - For the left subtree, valid range is `(low, node.val)`.
+  - For the right subtree, valid range is `(node.val, high)`.
+  - Base case: `null` returns `true`. If `node.val <= low || node.val >= high`, return `false`.
+
+### 📉 Progressive Example: Balanced vs Degenerate BST
 
 ```mermaid
 flowchart TD
-    n5["5"] --> n3["3"]
-    n5 --> n7["7"]
-    n3 --> n2["2"]
-    n3 --> n4["4 (Target)"]
-    n7 --> n6["6"]
-    n7 --> n8["8"]
-```
-
-| Step | Node | Target | Comparison | Decision | Output |
-|------|------|--------|------------|----------|--------|
-| 1    | 5    | 4      | 4 < 5      | Go left to 3 | - |
-| 2    | 3    | 4      | 4 > 3      | Go right to 4 | - |
-| 3    | 4    | 4      | 4 == 4     | Found! | True |
-
-**Search for value 9 (doesn't exist):**
-
-| Step | Node | Target | Comparison | Decision | Output |
-|------|------|--------|------------|----------|--------|
-| 1    | 5    | 9      | 9 > 5      | Go right to 7 | - |
-| 2    | 7    | 9      | 9 > 7      | Go right to 8 | - |
-| 3    | 8    | 9      | 9 > 8      | Go right (NULL) | - |
-| 4    | NULL | 9      | N/A        | Base case: not found | False |
-
-**Iterative version—the same logic without recursion:**
-
-```
-Start at root, target = 4
-current = root (5)
-
-Loop 1: current = 5 (not null)
-  4 < 5? Yes → current = 5.left = 3
-
-Loop 2: current = 3 (not null)
-  4 == 3? No
-  4 < 3? No
-  4 > 3? Yes → current = 3.right = 4
-
-Loop 3: current = 4 (not null)
-  4 == 4? Yes → return True
-
-Time complexity: O(h) where h is tree height
-```
-
-**Complexity analysis:** Each comparison eliminates one subtree. For a balanced tree with n nodes, h = O(log n), so search is O(log n). For a degenerate tree, h = O(n), so search is O(n).
-
-### 🔧 Operation 2: Insert
-
-**Intent:** Add a new value to the BST while maintaining the BST property. The key: find the correct leaf position where the value "belongs," then create a new node there.
-
-**Recursive implementation—narrative walkthrough:**
-
-1. If the current node is null, create a new node here and return it (base case).
-2. If the value already exists, either ignore it (set operations) or update it (map operations). (Different implementations handle duplicates differently; we'll skip it.)
-3. If the value is less than the current node, recursively insert into the left subtree.
-4. If the value is greater than the current node, recursively insert into the right subtree.
-5. Return the current node with potentially updated children.
-
-Why does this work? By always inserting smaller values to the left and larger values to the right, we preserve the BST property at every node.
-
-**Inline trace 🧪—watch it execute:**
-
-Insert value 1 into the tree:
-
-```mermaid
-flowchart TD
-    n5["5"] --> n3["3"]
-    n5 --> n7["7"]
-    n3 --> n2["2"]
-    n3 --> n4["4"]
-    n7 --> n6["6"]
-    n7 --> n8["8"]
-```
-
-| Step | Node | Value | Comparison | Decision | Action |
-|------|------|-------|------------|----------|--------|
-| 1    | 5    | 1     | 1 < 5      | Go left to 3 | Recurse |
-| 2    | 3    | 1     | 1 < 3      | Go left to 2 | Recurse |
-| 3    | 2    | 1     | 1 < 2      | Go left to NULL | Recurse |
-| 4    | NULL | 1     | Leaf found | Create new node | Node(1) created |
-| 5    | 2    | (up)  | Set left child | 2.left = Node(1) | Return updated 2 |
-| 6    | 3    | (up)  | Set left child | 3.left = 2 (unchanged) | Return updated 3 |
-| 7    | 5    | (up)  | Set left child | 5.left = 3 (unchanged) | Return updated 5 |
-
-Result after insertion:
-
-```mermaid
-flowchart TD
-    n5["5"] --> n3["3"]
-    n5 --> n7["7"]
-    n3 --> n2["2"]
-    n3 --> n4["4"]
-    n2 --> n1["1 (New)"]
-    n7 --> n6["6"]
-    n7 --> n8["8"]
-```
-
-**Insert value 9:**
-
-| Step | Node | Value | Comparison | Decision | Action |
-|------|------|-------|------------|----------|--------|
-| 1    | 5    | 9     | 9 > 5      | Go right to 7 | Recurse |
-| 2    | 7    | 9     | 9 > 7      | Go right to 8 | Recurse |
-| 3    | 8    | 9     | 9 > 8      | Go right to NULL | Recurse |
-| 4    | NULL | 9     | Leaf found | Create new node | Node(9) created |
-| 5    | 8    | (up)  | Set right child | 8.right = Node(9) | Return updated 8 |
-
-Result: 9 becomes the right child of 8.
-
-**Iterative version:**
-
-```
-Insert 1 into BST
-
-current = root (5), parent = NULL, going_left = false
-
-Loop 1: current = 5 (not null)
-  1 < 5? Yes → parent = 5, current = 5.left (= 3), going_left = true
-
-Loop 2: current = 3 (not null)
-  1 < 3? Yes → parent = 3, current = 3.left (= 2), going_left = true
-
-Loop 3: current = 2 (not null)
-  1 < 2? Yes → parent = 2, current = 2.left (= NULL), going_left = true
-
-Loop 4: current = NULL
-  If going_left: parent.left = new Node(1)
-  Else: parent.right = new Node(1)
-```
-
-**Complexity:** Same as search. O(h) comparisons to find the insertion point. For balanced trees O(log n), for degenerate O(n).
-
-### 🔧 Operation 3: Delete
-
-**Intent:** Remove a node while maintaining the BST property. This is the trickiest operation because deletion can disrupt the tree structure.
-
-**Three cases arise, each requiring different handling:**
-
-**Case 1: Deleting a leaf node (no children)**
-
-The simplest case. Just remove the node; nothing else needs updating.
-
-```mermaid
-flowchart LR
-    subgraph Before["Before (Delete Leaf 1)"]
-        b5["5"] --> b3["3"] & b7["7"]
-        b3 --> b1["1"] & b4["4"]
-        b7 --> b6["6"] & b8["8"]
+    subgraph Balanced["Balanced Insertion: [4, 2, 6, 1, 3, 5, 7] — Height O(log N)"]
+        b4["4"] --> b2["2"] & b6["6"]
+        b2 --> b1["1"] & b3["3"]
+        b6 --> b5["5"] & b7["7"]
     end
-    subgraph After["After Deletion"]
-        a5["5"] --> a3["3"] & a7["7"]
-        a3 --> a4["4"]
-        a7 --> a6["6"] & a8["8"]
-    end
-```
-
-The parent's pointer (`3.left`) simply becomes `NULL`.
-
-**Case 2: Deleting a node with one child**
-
-Remove the node and replace it with its single child (the child is promoted up).
-
-```mermaid
-flowchart LR
-    subgraph Before2["Before (Delete 3)"]
-        bb5["5"] --> bb3["3"] & bb7["7"]
-        bb3 --> bb2["2"] & bb4["4"]
-        bb7 --> bb6["6"] & bb8["8"]
-    end
-    subgraph After2["After Promotion"]
-        aa5["5"] --> aa4["4"] & aa7["7"]
-        aa4 --> aa2["2"]
-        aa7 --> aa6["6"] & aa8["8"]
-    end
-```
-
-Why: `4` is the direct replacement for `3`.
-- All values in `4`'s left subtree (`2`) are still `< 5`.
-- All values in `4`'s right subtree are still `> 5`.
-- The BST property is fully maintained.
-
-**Case 3: Deleting a node with two children (hardest case)**
-
-This requires choosing a replacement node. Two strategies:
-
-**Strategy A: In-order successor (most common)**
-
-Find the smallest node in the right subtree (go right once, then left as far as possible). This node has no left child (by definition of "leftmost"), making it easy to remove from its current position. Promote it to replace the deleted node.
-
-```mermaid
-flowchart LR
-    subgraph Before3["Before (Delete 5)"]
-        c5["5 (Root)"] --> c3["3"] & c7["7"]
-        c3 --> c2["2"] & c4["4"]
-        c7 --> c6["6 (Successor)"] & c8["8"]
-    end
-    subgraph After3["After Successor Swap"]
-        r6["6 (New Root)"] --> r3["3"] & r7["7"]
-        r3 --> r2["2"] & r4["4"]
-        r7 --> r8["8"]
-    end
-```
-
-Why does this work? The in-order successor is the next-largest value in the tree. Replacing the deleted node with the successor maintains the BST property: all values in the left subtree are still smaller, all values in the right subtree are still larger.
-
-**Inline trace 🧪—delete 5 (two children), using in-order successor:**
-
-| Step | Action | Node | Reason | Result |
-|------|--------|------|--------|--------|
-| 1    | Find target | 5 | Target node | Found at root |
-| 2    | Check children | 5 has 3 and 7 | Two children | Use successor strategy |
-| 3    | Find successor | Go right to 7, left to 6 | Smallest in right subtree | Successor = 6 |
-| 4    | Delete successor | Remove 6 from its position | 6 has no left child | 6.right (∅) promoted |
-| 5    | Replace | Put 6 where 5 was | 6 becomes new root | 6.left = 3, 6.right = 7 |
-| 6    | Verify invariant | Check all nodes | left < parent < right? | Valid BST |
-
-**Recursive implementation—narrative walkthrough:**
-
-```
-delete(node, target):
-  if node is NULL:
-    return NULL (not found)
-  
-  if target < node.value:
-    node.left = delete(node.left, target)
-    return node
-  
-  else if target > node.value:
-    node.right = delete(node.right, target)
-    return node
-  
-  else:  // target == node.value, found the node to delete
-    
-    if node.left is NULL:
-      return node.right  // Case 1 or 2: left child missing
-    
-    if node.right is NULL:
-      return node.left  // Case 2: right child missing
-    
-    // Case 3: both children exist
-    successor = findMin(node.right)  // In-order successor
-    node.value = successor.value     // Replace value
-    node.right = delete(node.right, successor.value)  // Delete successor
-    return node
-```
-
-**Complexity:** Finding successor is O(h), deleting it is O(h). Total: O(h). For balanced trees O(log n), for degenerate O(n).
-
-### 📉 Progressive Example: Building a BST and Maintaining Invariant
-
-Let's build a BST step-by-step from the insertion sequence [5, 3, 7, 2, 4, 6, 8], then perform operations:
-
-| Step | Insert Key | Comparison Path | Resulting Position | Tree Balance |
-|:----:|:----------:|:----------------|:-------------------|:------------:|
-| 1 | 5 | Root empty | Root = 5 | Balanced |
-| 2 | 3 | 3 < 5 | Left child of 5 | Balanced |
-| 3 | 7 | 7 > 5 | Right child of 5 | Balanced |
-| 4 | 2 | 2 < 5 → 2 < 3 | Left child of 3 | Balanced |
-| 5 | 4 | 4 < 5 → 4 > 3 | Right child of 3 | Balanced |
-| 6 | 6 | 6 > 5 → 6 < 7 | Left child of 7 | Balanced |
-| 7 | 8 | 8 > 5 → 8 > 7 | Right child of 7 | Balanced |
-
-Now contrast what happens when keys arrive in balanced order versus sorted order `[1, 2, 3, 4, 5]`:
-
-```mermaid
-flowchart TD
-    subgraph Balanced["Balanced BST: Insert [5, 3, 7, 2, 4, 6, 8] — Height: O(log N)"]
-        b5["5"] --> b3["3"] & b7["7"]
-        b3 --> b2["2"] & b4["4"]
-        b7 --> b6["6"] & b8["8"]
-    end
-    subgraph Degenerate["Degenerate Skewed Tree: Insert [1, 2, 3, 4, 5] — Height: O(N)"]
+    subgraph Degenerate["Sorted Insertion: [1, 2, 3, 4, 5] — Height O(N)"]
         d1["1"] --> d2["2"]
         d2 --> d3["3"]
         d3 --> d4["4"]
@@ -457,298 +258,549 @@ flowchart TD
     end
 ```
 
-This is a **degenerate BST**—a right-skewed chain. Search for 5 requires 5 comparisons (1, 2, 3, 4, 5), making it O(n) instead of O(log n). This is the nightmare scenario: you have the overhead of a tree but the performance of a linked list.
+---
 
-> **⚠️ Watch Out:** A BST's performance is determined by insertion order. Random insertions create balanced trees (roughly O(log n)). Sorted insertions create degenerate chains (O(n)). This is why balanced BSTs (AVL, Red-Black) were invented—they maintain balance regardless of insertion order.
+## 💻 CHAPTER 4: PRODUCTION-GRADE IMPLEMENTATIONS (C# & PYTHON)
+
+### Problem 1: Search in a Binary Search Tree (LeetCode 700)
+
+#### 🎙️ 45-Minute Interview Talk Track
+> *"To locate a target key in a BST, we exploit the ordering invariant: at any node, if the target matches the node's value, we return it immediately. If the target is strictly smaller, the invariant guarantees that any potential match must reside in the left subtree; otherwise, it must reside in the right subtree. We implement this iteratively to maintain O(1) auxiliary space, terminating when we either match the key or hit a null reference, running in O(H) time where H is tree height."*
+
+#### C# Primary Implementation (.NET 8/9 — Iterative Zero-Allocation)
+```csharp
+public static class BstSearcher
+{
+    /// <summary>
+    /// Searches for a target value in a BST iteratively.
+    /// Time Complexity: O(H) | Auxiliary Space: O(1)
+    /// </summary>
+    public static TreeNode? SearchBST(TreeNode? root, int val)
+    {
+        TreeNode? current = root;
+
+        while (current is not null)
+        {
+            if (current.val == val)
+            {
+                return current;
+            }
+
+            current = val < current.val ? current.left : current.right;
+        }
+
+        return null;
+    }
+}
+```
+
+#### Python Secondary Implementation (3.11+ — Idiomatic)
+```python
+def search_bst(root: Optional[TreeNode], val: int) -> Optional[TreeNode]:
+    """Iterative search in a Binary Search Tree.
+    
+    Time Complexity: O(H) | Auxiliary Space: O(1)
+    """
+    current = root
+    while current:
+        if current.val == val:
+            return current
+        current = current.left if val < current.val else current.right
+    return None
+```
+
+#### 📊 Explicit Complexity Deconstruction
+- **Time Complexity:** `O(H)` — In each iteration, we descend one level. On balanced trees, this is `O(log N)`; on skewed trees, `O(N)`.
+- **Auxiliary Space:** `O(1)` — Only a single reference pointer is maintained.
+- **Output Space:** `O(1)` — Returns reference to existing node or `null`.
 
 ---
 
-## ⚖️ CHAPTER 4: PERFORMANCE, TRADE-OFFS & REAL SYSTEMS
+### Problem 2: Insert into a Binary Search Tree (LeetCode 701)
 
-### Beyond Big-O: Performance Reality
+#### 🎙️ 45-Minute Interview Talk Track
+> *"Inserting into a BST involves finding the unique leaf position where the new value belongs. Using recursion, our base case creates and returns a new node when reaching null. At each step, if the value is smaller than the current node, we assign the result of recursing left to `root.left`; otherwise, we assign the result of recursing right to `root.right`. Returning `root` ensures existing parent-child references remain intact throughout the unwind phase."*
 
-Theoretically, BST operations are O(h) where h is tree height. For balanced trees, h = O(log n), so operations are O(log n). For degenerate trees, h = O(n), so operations degrade to O(n). But real-world performance involves subtleties:
+#### C# Primary Implementation (.NET 8/9 — Production-Grade)
+```csharp
+public static class BstInserter
+{
+    /// <summary>
+    /// Inserts a new value into the BST preserving the invariant.
+    /// Time Complexity: O(H) | Auxiliary Space: O(H) recursive stack
+    /// </summary>
+    public static TreeNode InsertIntoBST(TreeNode? root, int val)
+    {
+        if (root is null)
+        {
+            return new TreeNode(val);
+        }
 
-**Cache locality:** A balanced BST might access nodes scattered throughout memory (poor cache locality). A degenerate BST (linked list) accesses sequential memory locations (better locality). For a 1-million-node tree, balanced BST might be faster in theory but slower in practice due to cache misses.
+        if (val < root.val)
+        {
+            root.left = InsertIntoBST(root.left, val);
+        }
+        else if (val > root.val)
+        {
+            root.right = InsertIntoBST(root.right, val);
+        }
 
-**Pointer chasing overhead:** Each BST operation follows pointers (node.left, node.right). On modern CPUs, a cache miss (hitting main memory) costs hundreds of cycles. Comparing a value is 1 cycle; the memory access to reach the next node might cost 200 cycles. Optimized implementations use cache-friendly layouts (like B-trees for databases).
+        return root;
+    }
+}
+```
 
-**Rebalancing cost:** Balanced BSTs (AVL, Red-Black) add rebalancing overhead to insertions/deletions. A simple unbalanced BST might actually be faster for small trees or balanced-by-chance insertion patterns.
+#### Python Secondary Implementation (3.11+ — Idiomatic)
+```python
+def insert_into_bst(root: Optional[TreeNode], val: int) -> TreeNode:
+    """Inserts a new value into a BST recursively.
+    
+    Time Complexity: O(H) | Auxiliary Space: O(H)
+    """
+    if not root:
+        return TreeNode(val)
 
-**Memory overhead:** Each node requires two pointers (16 bytes) plus the value. For small integers, this means 4× memory overhead. For large objects, this overhead is negligible.
+    if val < root.val:
+        root.left = insert_into_bst(root.left, val)
+    elif val > root.val:
+        root.right = insert_into_bst(root.right, val)
 
-**Traversal-specific costs:**
+    return root
+```
 
-| Operation | Unbalanced | Balanced | Why |
-| :--- | :--- | :--- | :--- |
-| **Search** | O(n) worst, O(log n) avg | O(log n) guaranteed | Unbalanced degenerates |
-| **Insert** | O(n) worst, O(log n) avg | O(log n) guaranteed | Unbalanced degenerates |
-| **Delete** | O(n) worst, O(log n) avg | O(log n) guaranteed | Unbalanced degenerates |
-| **In-order traversal** | O(n) | O(n) | All nodes visited |
-| **Range query** | O(n) worst | O(log n + k) for k results | Unbalanced might scan entire tree |
-| **Rebalancing** | None | O(log n) per operation | Cost of balance maintenance |
-
-> **📉 Memory Reality:** A 1-million-node BST uses roughly 2 million pointers (16MB on 64-bit systems) plus the values. A hash table with the same elements uses similar memory, but scattered across the heap, causing more cache misses during traversal.
-
-### 🏭 Real-World Systems
-
-#### Story 1: Java's TreeMap & TreeSet
-
-Java's standard library includes TreeMap (ordered key-value map) and TreeSet (ordered unique elements). Both use Red-Black Trees internally (a balanced BST variant). Why Red-Black instead of AVL?
-
-**The problem:** AVL trees are strictly height-balanced (every subtree's height difference ≤ 1), requiring frequent rebalancing. For some workloads (lots of insertions, few searches), rebalancing overhead dominates.
-
-**The solution:** Red-Black trees are more loosely balanced (coloring-based constraints guarantee height <= 2 * log(n)). This allows more flexibility, reducing rebalancing operations while maintaining O(log n) guarantees.
-
-Impact: Java applications handling large datasets rely on TreeMap for sorted collections. A naive unbalanced BST would degenerate into a linked list on many insertion patterns, making applications 100x slower. Red-Black balancing keeps operations consistent.
-
-#### Story 2: File Systems & Inode Management
-
-Modern file systems (NTFS, ext4) use B-trees (a generalization of BSTs with multiple children per node) to manage inodes—metadata about files. Each file has an inode containing ownership, permissions, modification time, and disk block pointers.
-
-**The problem:** A typical disk has billions of inodes. A linear search for an inode is unacceptable. A naive unbalanced BST might degenerate.
-
-**The solution:** B-trees balance automatically during insertions/deletions. A B-tree node fits a 4KB disk page, so each disk access reads multiple keys simultaneously. A 4-level B-tree with 100 children per node can index 100 billion inodes with only 4 disk accesses per lookup.
-
-**Impact:** File system performance depends on inode lookup efficiency. Unbalanced BSTs would make file access 1000x slower. B-tree balancing guarantees consistent performance regardless of file creation order.
-
-#### Story 3: Database Indexing
-
-Databases (MySQL, PostgreSQL) use B+ trees (a variant optimizing for range queries) to index columns. Users query: "Find all transactions with amount > \$1,000 and < \$5,000."
-
-**The problem:** A simple sequential scan would check every row. For 1 billion rows, this takes minutes. An unbalanced BST on the amount column would be unpredictable—might be fast (O(log n)) or slow (O(n)).
-
-**The solution:** B+ trees maintain sorted order AND balance. A balanced B+ tree on the amount column lets the database jump to the first qualifying row, then scan only rows in range, skipping everything else.
-
-**Impact:** Query performance on indexed columns drops from O(n) to O(log n + k) where k is result size. This is why databases spend significant effort maintaining balanced indexes—a degenerate index is nearly useless.
-
-#### Story 4: Symbol Tables in Compilers
-
-Compilers build symbol tables (mappings from variable names to type/value information) as they parse code. Each scope (function, block) has its own symbol table linked to the parent scope.
-
-**The problem:** When resolving a variable name, the compiler searches the current scope's symbol table. If not found, it searches the parent scope, then grandparent, etc. For nested scopes (common in modern languages), this becomes expensive.
-
-**The solution:** Use a balanced BST for each scope's symbol table. Variable lookup is O(log n) per scope level. For deeply nested code, this is still practical. An unbalanced BST might be O(n), making compilation prohibitively slow.
-
-**Impact:** GCC's symbol table uses hash tables (O(1) average lookup) for speed, but some compilers use BSTs for ordered symbol listing (used in debuggers and IDE autocomplete). Balance is essential.
-
-#### Story 5: Implementation in Production Systems
-
-Redis (in-memory data structure store) provides sorted sets using a data structure called a skip list (a probabilistic alternative to balanced BSTs). Why skip lists instead of AVL or Red-Black trees?
-
-**The problem:** Balanced BSTs require rotation operations (complex to implement correctly). Skip lists are simpler: probabilistically balance the tree structure without explicit rotations.
-
-**The solution:** Skip lists are easier to implement, parallelize, and understand. They provide equivalent O(log n) performance with simpler code.
-
-**Impact:** Simpler code means fewer bugs, easier maintenance, and faster development. In high-performance systems, choosing an algorithm for implementability (not just theoretical complexity) matters greatly.
-
-### Failure Modes & Robustness
-
-**Degenerate trees from sorted input:** Inserting already-sorted data (1, 2, 3, ..., n) creates a chain. O(n) search instead of O(log n). This is why real systems always use balanced variants.
-
-**Deletion order matters:** In some implementations, deleting nodes in specific orders can trigger unexpected rebalancing cascades (in balanced BSTs). Production code must handle this carefully.
-
-**Duplicate handling:** Different implementations handle duplicate values differently. Some ignore duplicates (sets), some store multiple copies, some increment a counter. Mixing approaches causes bugs.
-
-**Non-existent elements:** Searching for a non-existent element should return "not found," not crash. Naive implementations might have off-by-one errors in leaf checks.
-
-**Memory leaks in deletion:** When deleting a node with two children, if the successor isn't properly unlinked from its original location, you might have dangling pointers or memory leaks.
-
-**Concurrency issues:** BSTs are notoriously hard to make thread-safe. Concurrent insertions/deletions can break the invariant. Production systems need careful locking or lock-free algorithms.
+#### 📊 Explicit Complexity Deconstruction
+- **Time Complexity:** `O(H)` — Traverses a single root-to-leaf path (`O(log N)` balanced, `O(N)` skewed).
+- **Auxiliary Space:** `O(H)` — Call stack frames proportional to tree height.
+- **Output Space:** `O(1)` — Exactly one new `TreeNode` allocated.
 
 ---
 
-## 🔗 CHAPTER 5: INTEGRATION & MASTERY
+### Problem 3: Delete Node in a BST (LeetCode 450)
 
-### Connections (Precursors & Successors)
+#### 🎙️ 45-Minute Interview Talk Track
+> *"Deleting a node requires finding the target key and restructuring the tree across three distinct scenarios: if the node is a leaf, we return null to sever it; if it has a single child, we return that child to bypass the deleted node; if it has two children, we locate its inorder successor—the minimum element in the right subtree. We overwrite the current node's value with the successor's value, and then recursively delete that successor from the right subtree. This preserves the BST ordering across the entire tree."*
 
-**Precursors:** Tree traversals (Week 7 Day 1) are prerequisite—you need to understand how to visit nodes. Sorting (Week 3) provides intuition for ordered data. Recursion (Week 1) is essential for recursive BST operations.
+#### C# Primary Implementation (.NET 8/9 — Production-Grade)
+```csharp
+public static class BstDeleter
+{
+    /// <summary>
+    /// Deletes a key from a BST, handling 0, 1, and 2-child cases.
+    /// Time Complexity: O(H) | Auxiliary Space: O(H)
+    /// </summary>
+    public static TreeNode? DeleteNode(TreeNode? root, int key)
+    {
+        if (root is null) return null;
 
-**Successors:** Week 7 Day 3 (Balanced BSTs—AVL and Red-Black) adds the critical constraint: automatic balance maintenance. Week 8 (Graphs) generalizes BSTs to arbitrary DAGs. Week 10 (Dynamic Programming) sometimes uses BSTs as auxiliary data structures.
+        if (key < root.val)
+        {
+            root.left = DeleteNode(root.left, key);
+        }
+        else if (key > root.val)
+        {
+            root.right = DeleteNode(root.right, key);
+        }
+        else
+        {
+            // Case 1 & 2: Zero or one child
+            if (root.left is null) return root.right;
+            if (root.right is null) return root.left;
 
-**The arc:** Linear searching (arrays, binary search) → ordered dynamic search (BSTs) → balanced search (AVL/Red-Black) → general graphs. Each builds on the previous.
+            // Case 3: Two children
+            // Find inorder successor (minimum node in right subtree)
+            TreeNode successor = FindMin(root.right);
+            root.val = successor.val;
+            // Delete successor from right subtree
+            root.right = DeleteNode(root.right, successor.val);
+        }
 
-### 🧩 Pattern Recognition & Decision Framework
+        return root;
+    }
 
-When you see "ordered data" problems, ask:
+    private static TreeNode FindMin(TreeNode node)
+    {
+        while (node.left is not null)
+        {
+            node = node.left;
+        }
+        return node;
+    }
+}
+```
 
-**1. Do I need ordered iteration?**
-   - Yes: Use BST (or sorted array if updates are rare)
-   - No: Use hash map (faster for lookup, doesn't maintain order)
+#### Python Secondary Implementation (3.11+ — Idiomatic)
+```python
+def delete_node(root: Optional[TreeNode], key: int) -> Optional[TreeNode]:
+    """Deletes a node with the given key from a BST.
+    
+    Time Complexity: O(H) | Auxiliary Space: O(H)
+    """
+    if not root:
+        return None
 
-**2. Are insertions/deletions frequent?**
-   - Yes: BST is good (dynamic updates). Consider balanced variant if insertion pattern is adversarial.
-   - No: Sorted array might be sufficient (faster search, no rebalancing)
+    if key < root.val:
+        root.left = delete_node(root.left, key)
+    elif key > root.val:
+        root.right = delete_node(root.right, key)
+    else:
+        # Case 1 & 2: 0 or 1 child
+        if not root.left:
+            return root.right
+        if not root.right:
+            return root.left
 
-**3. Is insertion order random or sorted?**
-   - Random: Unbalanced BST stays reasonably balanced (O(log n) expected)
-   - Sorted: Unbalanced BST degenerates. Use balanced variant (AVL, Red-Black, B-tree)
+        # Case 3: 2 children
+        successor = root.right
+        while successor.left:
+            successor = successor.left
+        
+        root.val = successor.val
+        root.right = delete_node(root.right, successor.val)
 
-**4. Is range query performance critical?**
-   - Yes: B+ tree (optimized for range scans) or sorted array
-   - No: Simple BST sufficient
+    return root
+```
 
-- **✅ Use when:** You need ordered data with frequent insertions/deletions and moderate search performance.
-- **🛑 Avoid when:** You need O(1) lookup (use hash map). Or you never insert/delete (use sorted array).
-
-**🚩 Red Flags (Interview Signals):** "Maintain sorted order," "range query," "insertion and deletion," "smallest element," "in-order iteration," "next greatest element," "floor/ceiling," "construct from sorted array."
-
-### 🧪 Socratic Reflection
-
-Reflect deeply on these:
-
-1. **Mechanical understanding:** Insert [1, 2, 3, 4, 5] into an empty BST by hand. Draw the result. What do you notice about the shape? Why is this bad? How would a balanced BST differ?
-
-2. **Design tradeoff:** Why would a compiler use a sorted array for symbol tables, while a database uses a BST? What's different about their workloads?
-
-3. **Robustness thinking:** Write code to delete a node with two children using in-order successor. What must you be careful about? What are the edge cases?
-
-### 📌 Retention Hook
-
-> **The Essence:** "A BST is nature's way of searching in sorted data: trust the invariant (left < parent < right), and O(log n) emerges automatically. Maintain the invariant, and your structure works. Break it, and you've just built a confused linked list."
+#### 📊 Explicit Complexity Deconstruction
+- **Time Complexity:** `O(H)` — Finding the target node is `O(H)`. Finding the successor and deleting it also descends along a single branch, bounded by `O(H)`.
+- **Auxiliary Space:** `O(H)` — Call stack depth bounded by tree height.
+- **Output Space:** `O(1)` — In-place pointer modifications.
 
 ---
 
-## 🧠 5 COGNITIVE LENSES
+### Problem 4: Validate Binary Search Tree (LeetCode 98)
 
-### 💻 The Hardware Lens
+#### 🎙️ 45-Minute Interview Talk Track
+> *"A frequent trap in BST validation is verifying only local parent-child relations. A node must actually satisfy global bounds: every element in its left subtree must be strictly less than the node, and every element in the right subtree strictly greater. We pass explicit allowable range boundaries `(min, max)` down the recursive call stack. For the left child, the upper bound tightens to `node.val`; for the right child, the lower bound tightens to `node.val`. We use 64-bit integers (`long`) to prevent integer overflow when node values match `int.MinValue` or `int.MaxValue`."*
 
-BST operations involve pointer-chasing: you follow a pointer to a new memory location, dereference it, check the value, and follow another pointer. Modern CPUs can be 200× slower for cache misses than hits. A balanced BST might access scattered memory locations. A degenerate BST (linked list) might have better locality.
+#### C# Primary Implementation (.NET 8/9 — Range Bounded)
+```csharp
+public static class BstValidator
+{
+    /// <summary>
+    /// Validates whether a binary tree satisfies the BST invariant.
+    /// Time Complexity: O(N) | Auxiliary Space: O(H)
+    /// </summary>
+    public static bool IsValidBST(TreeNode? root)
+    {
+        return Validate(root, long.MinValue, long.MaxValue);
 
-Real impact: In practice, a B-tree (which packs multiple keys per node to match disk page size) is faster than a balanced binary BST, even though both are O(log n). Hardware layout matters.
+        static bool Validate(TreeNode? node, long min, long max)
+        {
+            if (node is null) return true;
 
-### 📉 The Trade-off Lens
+            // Invariant violation: key outside permissible bounds
+            if (node.val <= min || node.val >= max)
+            {
+                return false;
+            }
 
-**Insertion order vs. structure:** Random order gives balanced tree. Sorted order gives degenerate chain. You can't control both.
+            return Validate(node.left, min, node.val) &&
+                   Validate(node.right, node.val, max);
+        }
+    }
+}
+```
 
-**Simplicity vs. guarantees:** Unbalanced BST is simple to code but risky (might degenerate). Balanced BST is complex but guarantees O(log n).
+#### Python Secondary Implementation (3.11+ — Idiomatic)
+```python
+def is_valid_bst(root: Optional[TreeNode]) -> bool:
+    """Validates if binary tree satisfies the BST property.
+    
+    Time Complexity: O(N) | Auxiliary Space: O(H)
+    """
+    def validate(node: Optional[TreeNode], min_val: float, max_val: float) -> bool:
+        if not node:
+            return True
+        if not (min_val < node.val < max_val):
+            return False
+        return validate(node.left, min_val, node.val) and validate(node.right, node.val, max_val)
 
-**Memory overhead vs. flexibility:** Dense data (array) uses less memory but is inflexible. Pointer-based BST uses more memory but is dynamic.
+    return validate(root, float('-inf'), float('inf'))
+```
 
-**Search speed vs. insertion speed:** Sorted array is fast to search (binary search) but slow to insert (shifting). BST is moderate at both.
+#### 📊 Explicit Complexity Deconstruction
+- **Time Complexity:** `O(N)` — Every node is checked at most once. Early returns on first violation.
+- **Auxiliary Space:** `O(H)` — Proportional to the height of the tree.
+- **Output Space:** `O(1)` — Single boolean return.
 
-### 👶 The Learning Lens
+---
 
-Common misconceptions:
+### Problem 5: Inorder Successor and Predecessor in BST (LeetCode 285)
 
-1. **"A BST is always balanced"** — False! Insertion order matters. Sorted input creates degenerate chains.
-2. **"Delete is harder than insert"** — True for two-child case, but the principle is the same: maintain the invariant.
-3. **"Inorder traversal is the only useful one"** — False. Preorder is useful for copying (parent before children), postorder for deletion.
-4. **"Unbalanced BSTs are useless"** — False. They work fine for random insertion patterns. But adversarial patterns break them.
+#### 🎙️ 45-Minute Interview Talk Track
+> *"To find the inorder successor of node `p`, we examine two distinct structural cases. If `p` has a right child, its successor is unequivocally the minimum element in that right subtree (`FindMin(p.right)`). If `p` lacks a right child, the successor must be an ancestor. We descend from the root towards `p`: whenever `p.val < curr.val`, `curr` is a valid ancestor that lies to the right of `p`, so we record `curr` as our candidate successor and branch left; if `p.val >= curr.val`, we branch right. When the loop terminates, the recorded candidate is the lowest ancestor where a left turn occurred, which is precisely the immediate successor. Finding the predecessor is exactly symmetric. Both methods execute in O(H) time and O(1) auxiliary space without requiring parent pointers."*
 
-### 🤖 The AI/ML Lens
+#### C# Primary Implementation (.NET 8/9 — Iterative Zero-Allocation)
+```csharp
+public static class BstNavigation
+{
+    /// <summary>
+    /// Finds the minimum node in a BST subtree by following left pointers.
+    /// Time Complexity: O(H) | Auxiliary Space: O(1)
+    /// </summary>
+    public static TreeNode? FindMin(TreeNode? node)
+    {
+        if (node is null) return null;
+        while (node.left is not null)
+        {
+            node = node.left;
+        }
+        return node;
+    }
 
-Decision trees in ML are structurally similar to BSTs but serve different purposes:
+    /// <summary>
+    /// Finds the maximum node in a BST subtree by following right pointers.
+    /// Time Complexity: O(H) | Auxiliary Space: O(1)
+    /// </summary>
+    public static TreeNode? FindMax(TreeNode? node)
+    {
+        if (node is null) return null;
+        while (node.right is not null)
+        {
+            node = node.right;
+        }
+        return node;
+    }
 
-- **BST:** Minimizes search time by organizing data for binary search.
-- **Decision tree:** Minimizes classification error by learning the best split at each node.
+    /// <summary>
+    /// Finds the inorder successor (next larger element) of node p in a BST.
+    /// Time Complexity: O(H) | Auxiliary Space: O(1)
+    /// </summary>
+    public static TreeNode? InorderSuccessor(TreeNode? root, TreeNode p)
+    {
+        // Case 1: Right subtree exists -> min of right subtree
+        if (p.right is not null)
+        {
+            return FindMin(p.right);
+        }
 
-Both use a tree structure for efficient lookup/classification, but the construction algorithm differs. BSTs are constructed by insertion order; decision trees are built by minimizing information entropy.
+        // Case 2: No right subtree -> lowest ancestor where p is in left branch
+        TreeNode? successor = null;
+        TreeNode? current = root;
 
-### 📜 The Historical Lens
+        while (current is not null)
+        {
+            if (p.val < current.val)
+            {
+                successor = current;
+                current = current.left;
+            }
+            else if (p.val > current.val)
+            {
+                current = current.right;
+            }
+            else
+            {
+                break;
+            }
+        }
 
-BSTs were formalized in the 1960s as computer scientists moved from arrays to dynamic data structures. AVL trees (1962) were the first self-balancing BST. Red-Black trees (1972) were designed to be simpler to rebalance. The progression reflects engineering pragmatism: theoretical perfection (AVL) traded for practical simplicity (Red-Black).
+        return successor;
+    }
+
+    /// <summary>
+    /// Finds the inorder predecessor (previous smaller element) of node p in a BST.
+    /// Time Complexity: O(H) | Auxiliary Space: O(1)
+    /// </summary>
+    public static TreeNode? InorderPredecessor(TreeNode? root, TreeNode p)
+    {
+        // Case 1: Left subtree exists -> max of left subtree
+        if (p.left is not null)
+        {
+            return FindMax(p.left);
+        }
+
+        // Case 2: No left subtree -> lowest ancestor where p is in right branch
+        TreeNode? predecessor = null;
+        TreeNode? current = root;
+
+        while (current is not null)
+        {
+            if (p.val > current.val)
+            {
+                predecessor = current;
+                current = current.right;
+            }
+            else if (p.val < current.val)
+            {
+                current = current.left;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        return predecessor;
+    }
+}
+```
+
+#### Python Secondary Implementation (3.11+ — Idiomatic)
+```python
+def find_min(node: Optional[TreeNode]) -> Optional[TreeNode]:
+    """Finds the minimum node by walking the leftmost spine."""
+    if not node:
+        return None
+    while node.left:
+        node = node.left
+    return node
+
+def find_max(node: Optional[TreeNode]) -> Optional[TreeNode]:
+    """Finds the maximum node by walking the rightmost spine."""
+    if not node:
+        return None
+    while node.right:
+        node = node.right
+    return node
+
+def inorder_successor(root: Optional[TreeNode], p: TreeNode) -> Optional[TreeNode]:
+    """Finds the inorder successor of node p in a BST.
+    
+    Time Complexity: O(H) | Auxiliary Space: O(1)
+    """
+    if p.right:
+        return find_min(p.right)
+
+    successor: Optional[TreeNode] = None
+    current = root
+
+    while current:
+        if p.val < current.val:
+            successor = current
+            current = current.left
+        elif p.val > current.val:
+            current = current.right
+        else:
+            break
+
+    return successor
+
+def inorder_predecessor(root: Optional[TreeNode], p: TreeNode) -> Optional[TreeNode]:
+    """Finds the inorder predecessor of node p in a BST.
+    
+    Time Complexity: O(H) | Auxiliary Space: O(1)
+    """
+    if p.left:
+        return find_max(p.left)
+
+    predecessor: Optional[TreeNode] = None
+    current = root
+
+    while current:
+        if p.val > current.val:
+            predecessor = current
+            current = current.right
+        elif p.val < current.val:
+            current = current.left
+        else:
+            break
+
+    return predecessor
+```
+
+#### 📊 Explicit Complexity Deconstruction
+- **Time Complexity:** `O(H)` — In both cases, the algorithm traverses a single root-to-leaf or node-to-leaf spine. In balanced trees, this is `O(log N)`; in skewed trees, `O(N)`.
+- **Auxiliary Space:** `O(1)` — Iterative traversal maintains only constant pointer references without stack recursion.
+- **Output Space:** `O(1)` — Returns a reference to an existing tree node or `null`.
+
+---
+
+## ⚖️ CHAPTER 5: PERFORMANCE, TRADE-OFFS & FAANG PATTERN SIGNALS
+
+### ⚖️ Comprehensive Data Structure Trade-Off Matrix
+
+Understanding when to choose a dynamic array, hash table, raw BST, or balanced tree is a cornerstone of system design and algorithms:
+
+| Dimension / Operation | Unsorted Dynamic Array | Sorted Dynamic Array | Singly Linked List | Hash Table (Chaining) | Unbalanced BST | AVL Tree (Strict) | Red-Black Tree (Relaxed) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Random Access `arr[i]`** | `O(1)` | `O(1)` | `O(N)` | N/A | `O(H)` (augmented) | `O(log N)` (augmented) | `O(log N)` (augmented) |
+| **Search Key (Average)** | `O(N)` | `O(log N)` | `O(N)` | `O(1)` | `O(log N)` | `O(log N)` | `O(log N)` |
+| **Search Key (Worst-Case)**| `O(N)` | `O(log N)` | `O(N)` | `O(N)` (all collisions)| `O(N)` (skewed) | `O(log N)` | `O(log N)` |
+| **Insert (Average)** | `O(1)` amortized | `O(N)` (shifting) | `O(1)` (at head) | `O(1)` amortized | `O(log N)` | `O(log N)` | `O(log N)` |
+| **Insert (Worst-Case)** | `O(N)` (realloc) | `O(N)` | `O(1)` | `O(N)` (rehash) | `O(N)` | `O(log N)` | `O(log N)` |
+| **Delete (Average)** | `O(N)` | `O(N)` | `O(1)` (given node)| `O(1)` amortized | `O(log N)` | `O(log N)` | `O(log N)` |
+| **Delete (Worst-Case)** | `O(N)` | `O(N)` | `O(1)` | `O(N)` | `O(N)` | `O(log N)` | `O(log N)` |
+| **Find Min / Max** | `O(N)` | `O(1)` | `O(N)` | `O(N)` | `O(H)` | `O(log N)` | `O(log N)` |
+| **Inorder Successor** | `O(N)` | `O(log N)` | `O(N)` | `O(N)` | `O(H)` | `O(log N)` | `O(log N)` |
+| **Range Query `[L, R]`** | `O(N)` | `O(log N + K)` | `O(N)` | `O(N)` | `O(H + K)` | `O(log N + K)` | `O(log N + K)` |
+| **Memory Overhead** | Lowest (Dense array)| Lowest (Dense array)| Low (1 pointer/node)| High (Bucket array + entries)| Medium (2 pointers/node)| Medium (2 pointers + height)| Medium (2 pointers + 1-bit color)|
+| **CPU Cache Locality** | Outstanding (L1/L2) | Outstanding (L1/L2) | Poor (Pointer chasing)| Poor (Pointer chasing)| Poor (Scattered heap nodes)| Poor (Scattered heap nodes)| Poor (Scattered heap nodes)|
+
+### Beyond Big-O: Pointer Chasing & Degeneration
+
+1. **The Sorted Input Achilles Heel:** Inserting `1, 2, 3, 4, 5, ..., N` into a raw BST forces every new node to become a right child. The height becomes `N`, turning binary search into linear search. Balanced trees (AVL, Red-Black) were engineered specifically to counteract this vulnerability.
+2. **Memory Layout Overhead:** In .NET / C#, each object header is 16 bytes on 64-bit systems. With two 8-byte reference pointers and a 4-byte integer (padded to 8 bytes), a single `TreeNode` consumes 40 bytes to store 4 bytes of integer payload.
+
+### 🏭 Real-World Systems Context
+
+> [!NOTE]
+> **Production Context — Language Standard Libraries (Java TreeMap & C++ std::map):** Standard libraries do not rely on unbalanced BSTs because malicious or natural sorted keys produce `O(N)` latency spikes. Java's `TreeMap` and C++ STL's `std::map` internally implement Red-Black trees to guarantee `O(log N)` operations under all insertion orders.
+
+> [!NOTE]
+> **Production Context — Database B+ Tree Secondary Indexes:** Relational engines (PostgreSQL, MySQL InnoDB) maintain B+ trees for indexed columns. Range queries such as `SELECT * FROM orders WHERE price BETWEEN 100 AND 200` jump to key `100` in `O(log N)` disk page reads, then perform sequential leaf scans across sibling pointers.
+
+> [!NOTE]
+> **Production Context — Redis Sorted Sets & Skip Lists:** Redis sorted sets (`ZADD`, `ZRANGE`) require sorted dynamic structures. Rather than balanced BSTs that necessitate complex tree rotations during concurrent mutations, Redis uses Skip Lists—a probabilistic balanced alternative that simplifies concurrent lock-free slicing.
+
+### Failure Modes & Edge Cases
+
+| Failure Mode | Root Cause | Engineering Mitigation |
+| :--- | :--- | :--- |
+| **Integer Overflow in Validation** | Testing with `int.MinValue` or `int.MaxValue` when boundary initializers are 32-bit | Initialize bounds to `long.MinValue` / `long.MaxValue` or Python `float('-inf')` |
+| **Local-Only BST Check Bug** | Validating only `node.left.val < node.val` instead of whole subtree range | Propagate narrowing `(min, max)` range intervals down recursion |
+| **Orphaned Subtrees during Delete** | Forgetting to assign recursive return values to `root.left` / `root.right` | Always re-link: `root.left = DeleteNode(root.left, key);` |
+| **Duplicate Key Ambiguity** | Unhandled equality logic in insert/delete | Clarify business requirements: store counts in nodes or reject duplicates strictly |
+
+### Pattern Recognition & Decision Framework
+
+```
+When to use a BST:
+- Need dynamic insertions and deletions with sorted ordering preserved?
+    └── Yes -> BST / Balanced BST
+- Need only O(1) key-value lookups with zero range queries?
+    └── No -> Use Hash Table (Dictionary / HashMap) instead
+- Need to find kth smallest or rank in O(log N)?
+    └── Yes -> Augmented BST (Day 5)
+```
 
 ---
 
 ## ⚔️ SUPPLEMENTARY OUTCOMES
 
-### 🏋️ Practice Problems (10)
+### 🏋️ Practice Problems
 
-| Problem | Source | Difficulty | Key Concept | Edge Cases |
-| :--- | :--- | :--- | :--- | :--- |
-| 1. Search in a BST | LeetCode #700 | 🟢 Easy | Basic search, comparison logic | Null tree, single node |
-| 2. Insert into a BST | LeetCode #701 | 🟢 Easy | Recursive insert, leaf placement | Duplicate values |
-| 3. Delete Node in a BST | LeetCode #450 | 🟡 Medium | All three deletion cases | Leaf, one child, two children |
-| 4. Validate BST | LeetCode #98 | 🟡 Medium | Verify invariant, range constraints | Root with two children, edge values |
-| 5. Kth Smallest in BST | LeetCode #230 | 🟡 Medium | Inorder traversal for sorted | k > tree size, k = 0 |
-| 6. Lowest Common Ancestor | LeetCode #235 | 🟡 Medium | BST-specific path following | LCA is one of the nodes |
-| 7. Convert Sorted Array to BST | LeetCode #108 | 🟢 Easy | Balanced tree construction | Empty array, single element |
-| 8. Inorder Successor in BST | LeetCode #285 | 🟡 Medium | Finding successor efficiently | No successor (rightmost node) |
-| 9. Recover BST (two swapped nodes) | LeetCode #99 | 🔴 Hard | Identify and fix invariant violation | Adjacent nodes swapped |
-| 10. Binary Search Tree Iterator | LeetCode #173 | 🟡 Medium | In-order iteration without storage | Consume entire tree step-by-step |
+| # | Problem | Source | Difficulty | Target Pattern |
+| :---: | :--- | :--- | :---: | :--- |
+| 1 | Search in a Binary Search Tree | LeetCode #700 | 🟢 Easy | Iterative BST descent |
+| 2 | Insert into a Binary Search Tree | LeetCode #701 | 🟡 Medium | Leaf position attachment |
+| 3 | Delete Node in a BST | LeetCode #450 | 🟡 Medium | 3-case deletion with successor |
+| 4 | Validate Binary Search Tree | LeetCode #98 | 🟡 Medium | Range-bounded DFS validation |
+| 5 | Lowest Common Ancestor of a BST | LeetCode #235 | 🟡 Medium | BST directional split decision |
+| 6 | Kth Smallest Element in a BST | LeetCode #230 | 🟡 Medium | Inorder traversal early termination |
+| 7 | Convert Sorted Array to BST | LeetCode #108 | 🟢 Easy | Divide-and-conquer midpoint root |
+| 8 | BST Iterator | LeetCode #173 | 🟡 Medium | Controlled iterative stack state |
+| 9 | Trim a Binary Search Tree | LeetCode #669 | 🟡 Medium | Recursive pruning of subtrees |
+| 10 | Two Sum IV - Input is a BST | LeetCode #653 | 🟢 Easy | Inorder + two-pointer / Hash set |
 
-### 🎙️ Interview Questions (8)
-
-1. **Q:** Implement BST search and insert operations recursively and iteratively. What are the trade-offs?
-   - **Follow-up:** Why is delete more complex than insert? Walk through all three cases.
-
-2. **Q:** Given a BST and a value, find the in-order successor. Optimize for the case where the BST has parent pointers.
-   - **Follow-up:** How would your solution change without parent pointers?
-
-3. **Q:** How would you validate if a binary tree is a valid BST? What's a common pitfall?
-   - **Follow-up:** What if nodes can have duplicate values? Does your solution still work?
-
-4. **Q:** Convert a sorted array to a balanced BST. Why is choosing the middle element important?
-   - **Follow-up:** What if the array has duplicates?
-
-5. **Q:** Delete a node from a BST using the in-order predecessor instead of successor. Is there any difference?
-   - **Follow-up:** Why might successor be preferred in practice?
-
-6. **Q:** You're implementing a database index. Why use a B-tree instead of a binary BST?
-   - **Follow-up:** What's a B-tree node's relationship to disk pages?
-
-7. **Q:** A BST was built by inserting [1, 2, 3, ..., 1000] in order. What's the tree structure? How would you rebalance it?
-   - **Follow-up:** If you could only do insert/delete, how would you incrementally rebalance?
-
-8. **Q:** Implement an in-order iterator for a BST that uses O(1) extra space (not O(h) stack). Is this possible?
-   - **Follow-up:** What data structure would you add to the BST to achieve this?
-
-### ❌ Common Misconceptions (6)
-
-- **Myth:** "A BST is always balanced."
-  - **Reality:** No. Insertion order matters. Sorted input creates degenerate chains. Balanced variants (AVL, Red-Black) enforce balance.
-
-- **Myth:** "Delete is as simple as insert."
-  - **Reality:** Delete with two children is complex—you must choose a replacement (successor/predecessor) and maintain the invariant.
-
-- **Myth:** "Inorder traversal is the only useful traversal for BSTs."
-  - **Reality:** All traversals are useful for different purposes. Preorder copies the tree structure, postorder aggregates child values.
-
-- **Myth:** "All operations in a BST are O(log n)."
-  - **Reality:** Only if the tree is balanced. Unbalanced trees degenerate to O(n). This is why balanced variants exist.
-
-- **Myth:** "BSTs are obsolete because hash maps are O(1)."
-  - **Reality:** Hash maps are O(1) average case but O(n) worst case, and don't maintain order. BSTs are O(log n) worst case and ordered.
-
-- **Myth:** "A BST with duplicate values is invalid."
-  - **Reality:** Depends on the implementation. Some ignore duplicates (sets), some allow them. The invariant is just about less/greater, not uniqueness.
-
-### 🚀 Advanced Concepts (5)
-
-1. **Threaded BST:** Modify null pointers to point to in-order predecessor/successor, enabling traversal without recursion or explicit stack.
-
-2. **Implicit BST (Cartesian Trees):** Represent a sequence as a BST where in-order traversal recovers the sequence. Useful for range minimum queries.
-
-3. **Treaps (Randomized BSTs):** Assign random priorities to nodes; maintain both BST property (for keys) and max-heap property (for priorities). Probabilistically balanced.
-
-4. **Splay Trees (Self-Adjusting):** Move accessed nodes to root via rotations. Frequently accessed elements are quickly found; amortized O(log n).
-
-5. **Persistent BSTs:** Efficiently support multiple versions of the tree (point-in-time queries). Each modification creates a new version while sharing structure with previous versions.
-
-### 📚 External Resources
-
-- **Books:**
-  - *Introduction to Algorithms* (CLRS) — Chapters 12 on BSTs, Chapter 13 on Red-Black trees
-  - *The Art of Computer Programming, Vol. 3* (Knuth) — Comprehensive tree analysis
-  
-- **Online:**
-  - MIT OCW 6.006 Lecture notes on BSTs and balanced trees
-  - VisuAlgo.net — Interactive BST visualization and operations
-  - CP-Algorithms (Codeforces) — BST and balanced tree explanations
-  
-- **Papers:**
-  - Guibas & Sedgewick (1978) "A Dichromatic Framework for Balanced Trees" — Red-Black tree introduction
+### 🎙️ Interview Questions & Follow-ups
+1. **Q: How does finding the Lowest Common Ancestor (LCA) in a BST differ from a general Binary Tree?**
+   - *Follow-up:* In a BST, we do not need postorder exploration. If both `p` and `q` are strictly smaller than root, LCA lies in left subtree; if both are larger, it lies in right subtree; the moment they diverge (or one equals root), current node is the LCA (`O(H)` time and `O(1)` space).
+2. **Q: Why do we replace a deleted two-child node with its inorder successor rather than an arbitrary descendant?**
+   - *Follow-up:* The inorder successor is the smallest value strictly greater than the target. Placing it at the target position guarantees it remains greater than all elements in the left subtree and smaller than all remaining elements in the right subtree.
 
 ---
 
-## 📊 Complexity Recap
+## 📊 COMPLEXITY RECAP
 
-- **Time Complexity:**
-  - Search, Insertion, Deletion: `O(H)` where `H` is the height of the tree.
-  - Balanced BST: `O(log N)` average case.
-  - Degenerate (Skewed) BST: `O(N)` worst case.
-- **Auxiliary Space:** `O(H)` for recursive implementations due to call stack frames (`O(1)` auxiliary for iterative search and insertion).
+| Operation | Average Case (Balanced) | Worst Case (Degenerate Chain) | Auxiliary Space |
+| :--- | :---: | :---: | :---: |
+| **Search** | `O(log N)` | `O(N)` | `O(1)` (Iterative) |
+| **Insert** | `O(log N)` | `O(N)` | `O(H)` (Recursive) / `O(1)` (Iterative) |
+| **Delete** | `O(log N)` | `O(N)` | `O(H)` (Recursive) / `O(1)` (Iterative) |
+| **Validate BST** | `O(N)` | `O(N)` | `O(H)` |
+| **Inorder Traversal** | `O(N)` | `O(N)` | `O(H)` |
 
 ---
+
 > 🧭 **Navigation:** [← Previous Day](Week_07_Day_01_Binary_Trees_And_Traversals_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_07_Day_03_Balanced_BSTs_AVL_And_RedBlack_Instructional.md)

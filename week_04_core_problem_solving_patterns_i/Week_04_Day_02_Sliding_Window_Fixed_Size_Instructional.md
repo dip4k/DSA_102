@@ -1,9 +1,5 @@
 # 📘 Week 04 Day 02: Sliding Window (Fixed Size) — Efficient Sequential Processing
 
-
-
-
-
 > 🧭 **Navigation:** [← Previous Day](Week_04_Day_01_Two_Pointer_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_04_Day_03_Sliding_Window_Variable_Size_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
@@ -14,10 +10,10 @@
 
 *By the end of this chapter, you will be able to:*
 
-- 🎯 **Internalize** why expanding and contracting fixed-size windows reduces redundant computation from O(n*k) to O(n).
-- ⚙️ **Implement** the sliding window pattern for computing running averages, maximums, and minimums without memorization.
-- ⚖️ **Evaluate** when fixed-size windows apply versus variable-size windows or other data structures (heaps, deques).
-- 🏭 **Connect** this pattern to production systems where continuous metrics matter: moving averages, bandwidth throttling, buffer management, and stream aggregation.
+- 🎯 **Internalize** why expanding and contracting fixed-size windows reduces redundant computation from `O(N * K)` to `O(N)`.
+- ⚙️ **Implement** the fixed-size sliding window pattern for computing running sums, rolling averages, anagram matches, and monotonic deque window maximums.
+- ⚖️ **Evaluate** when fixed-size windows apply versus variable-size windows, prefix sums, or heap-based approaches.
+- 🏭 **Connect** this pattern to production systems where continuous rolling metrics matter: moving averages, bandwidth throttling, buffer management, and stream aggregation.
 
 ---
 
@@ -25,19 +21,21 @@
 
 ### The Engineering Problem
 
-Imagine you're building a performance monitoring dashboard for a cloud platform. Every second, thousands of servers report CPU usage. You need to compute the average CPU usage over the last 60 seconds, updated every second. A naive approach: for each new second, sum all 60 values and divide by 60. That's O(60) = O(k) work per update, so O(n*k) total for n seconds.
+Imagine you are building a performance monitoring dashboard for a cloud platform. Every second, thousands of edge servers report CPU utilization. You need to compute the average CPU usage over the last 60 seconds, updated every second. A naive approach: for each new second, iterate through all 60 previous values and re-sum them. That requires `O(K)` work per update, resulting in `O(N * K)` total CPU cycles for `N` seconds.
 
-But there's a beautiful insight: when a new measurement arrives, the oldest one leaves the window. Instead of recomputing the sum from scratch, you can subtract the departing value and add the arriving value. That's O(1) work per update, O(n) total.
+When a new measurement arrives, only the oldest value departs the window. Instead of recomputing the entire sum from scratch, you subtract the departing value and add the arriving value. That is strict `O(1)` work per update, or `O(N)` total.
 
-Or consider a different scenario: you're analyzing trading data for stock price momentum. You have millions of price points and need to find the maximum price in every 50-price window. A naive approach iterates through 50 values for each window: O(n*50) comparisons. But with a clever data structure (a deque maintaining decreasing order), you can find the maximum in O(1) amortized time per window while processing all n prices in O(n) total.
-
-Now imagine real-time video transcoding. You need to know the maximum bitrate in the last 2 seconds of video (120 frames at 60 fps). The maximum tells you if the network can handle the stream. Recomputing it naively is wasteful. With a sliding window, you get instant answers with minimal computation.
+Now consider real-time financial trading: you have millions of price points and must calculate the maximum price in every 50-price window to detect volatility breakouts. Scanning 50 values per tick requires millions of redundant comparisons. By pairing a fixed window with a monotonic double-ended queue (deque), you can extract the window maximum in `O(1)` amortized time per tick.
 
 ### The Solution: Fixed-Size Windows
 
-The sliding window pattern treats the problem as maintaining a window of exactly k elements. As you slide right through the array, elements enter and exit the window. The key insight is recognizing what computation you can perform on just the entering and exiting elements, rather than the entire window.
+The fixed-size sliding window treats the problem as maintaining a contiguous span of exactly `K` elements. As the window advances to the right, exactly one element enters and exactly one element leaves. The key insight is transforming full-window re-evaluation into an incremental delta update:
 
-> **💡 Insight:** Fixed-size sliding windows transform redundant computation into incremental updates. The pattern's power lies in separating the initial window setup (O(k)) from the per-slide update (O(1) in the best case, but sometimes O(log k) with smart data structures).
+```
+New_State = Old_State - Exiting_Element + Entering_Element
+```
+
+> **💡 Insight:** Fixed-size sliding windows transform redundant computation into incremental delta updates. The pattern separates initial window initialization `O(K)` from per-slide updates (`O(1)` for sums/counters, `O(1)` amortized for monotonic queues).
 
 ---
 
@@ -45,66 +43,63 @@ The sliding window pattern treats the problem as maintaining a window of exactly
 
 ### The Core Analogy
 
-Think of a fixed-size sliding window like a physical window pane sliding across a wall. The window always shows exactly 10 bricks. As you move it one position to the right, one brick exits the left side and one brick enters the right side. You're always seeing exactly the same amount—10 bricks—but the view shifts. If you're tracking the "heaviest brick visible," you don't need to weigh all 10 bricks every time you slide. You only need to consider the brick that just left and the brick that just arrived.
+Think of a fixed-size sliding window like a physical train car with `K` passenger seats sliding across a scenic track. The train always accommodates exactly `K` passengers. As the train pulls forward by one station, the passenger in the rearmost seat disembarks, and exactly one new passenger boards at the front.
 
-That's the sliding window idea: maintain information about a fixed-size region, update it incrementally as the region shifts, and query the result without reprocessing.
+If you are tracking the total weight of passengers inside the car, you do not need to weigh all `K` people after every stop. You simply subtract the weight of the passenger who exited and add the weight of the passenger who boarded.
 
 ### 🖼 Visualizing Fixed-Size Window Mechanics
 
-Here's the progression of a window of size 3 sliding through an array:
+Here is the progression of a window of size `K = 3` sliding through an array:
 
 ```
-Array: [1, 3, -1, -3, 5, 3, 6, 7]
-Indices: 0  1  2   3  4  5  6  7
+Array:   [ 1,  3, -1, -3,  5,  3,  6,  7 ]
+Indices:   0   1   2   3   4   5   6   7
 
-Step 1: Window at [0, 1, 2]
-        [1, 3, -1]
-         ↑
-        Window contains first 3 elements
+Step 1: Initial window [0..2]
+         [ 1,  3, -1 ]
+          L       R      -> Sum = 1 + 3 + (-1) = 3
 
-Step 2: Slide right - remove arr[0]=1, add arr[3]=-3
-        [3, -1, -3]
-             ↑
-        Window is now at [1, 2, 3]
+Step 2: Slide right by 1 position (Exit index 0: 1, Enter index 3: -3)
+             [ 3, -1, -3 ]
+               L       R  -> Sum = 3 - 1 + (-3) = -1
 
-Step 3: Slide right - remove arr[1]=3, add arr[4]=5
-        [-1, -3, 5]
-                ↑
-        Window is now at [2, 3, 4]
+Step 3: Slide right by 1 position (Exit index 1: 3, Enter index 4: 5)
+                 [-1, -3,  5 ]
+                   L       R -> Sum = -1 - 3 + 5 = 1
 
-... continues until window reaches [5, 6, 7]
+Step 4: Slide right by 1 position (Exit index 2: -1, Enter index 5: 3)
+                     [-3,  5,  3 ]
+                       L       R -> Sum = 1 - (-1) + 3 = 5
 ```
 
-The window "slides" across the array, always containing exactly k consecutive elements. At each step, you remove the leftmost element and add a new rightmost element.
+At every slide, the window length `(R - L + 1)` remains constant at `K`.
 
 ### Invariants & Properties
 
-The fundamental invariant of a fixed-size window: **At every step, the window contains exactly k consecutive elements from the array.**
+The fundamental invariant of a fixed-size window:
+1. **Constant Span:** At every step, the window contains exactly `K` consecutive elements (`R - L + 1 == K`).
+2. **Single-Element Delta:** Each step advances `L` by 1 and `R` by 1. Exactly one element leaves at `L - 1` and one element arrives at `R`.
+3. **Linear Traversal:** Every element enters the window exactly once and exits exactly once, guaranteeing `O(N)` overall complexity.
 
-This invariant guarantees several properties:
-- **Completeness:** Every element is examined exactly once (when it enters and when it exits)
-- **Locality:** You never need to look beyond k positions away from the current window
-- **Predictability:** After examining element i, you know element i+1 (if it exists) will enter the next window
+### 📐 Theoretical Foundation
 
-These properties enable the optimization: instead of recomputing your metric on all k elements, you maintain it incrementally.
+The mathematical efficiency stems from **telescoping updates** and **amortized analysis**:
 
-### 📐 Mathematical Foundation
+* **Running Sum:**
+  `Sum(i) = Sum(i - 1) + arr[i] - arr[i - K]`
+  Instead of `K` additions, we perform 1 addition and 1 subtraction.
 
-The core principle is **amortized analysis**. While inserting one element into a data structure might cost O(log k) (like a balanced binary search tree), when you insert and remove elements across n windows, each element is inserted exactly once and removed exactly once. Total cost: O(n log k), which is O(log k) amortized per element.
-
-**Key Insight (Amortized Cost):** If an operation costs at most C per element, and each element is processed at most m times, total cost is O(n*m*C), which amortizes to O(m*C) per element.
+* **Monotonic Deque (Max/Min):**
+  Each element index is pushed to the back of the deque exactly once and popped from the deque at most once. Over `N` window slides, at most `2N` deque operations occur, proving `O(1)` amortized time per window slide.
 
 ### Taxonomy of Fixed-Size Sliding Window Variants
 
-| Variant | Computation Needed | Data Structure | Use Case |
-| :--- | :--- | :--- | :--- |
-| **Sum/Average** | Additive update (remove old, add new) | None (track sum) | Running averages, total consumption |
-| **Min/Max** | Decreasing order required | Deque (monotonic) | Bandwidth peaks, price extremes |
-| **Mode (Most Frequent)** | Count tracking, hashmap | HashMap + max tracking | Most common value in window |
-| **Median** | Two heaps (or binary search tree) | Two heaps | Moving median for anomaly detection |
-| **All Distinct Elements** | Frequency tracking | HashSet | Unique count in window |
-
-Each variant requires different logic for the "update" step, but all follow the same sliding window structure.
+| Variant | State Tracked | Data Structure | Per-Slide Cost | Typical Use Case |
+| :--- | :--- | :--- | :--- | :--- |
+| **Sum / Average** | Scalar accumulator | Primitive `long` / `double` | `O(1)` | Moving average, maximum subarray sum of size K |
+| **Character Counts** | Frequency array / hash map | `int[26]` / `Span<int>` | `O(1)` | Find all anagrams, permutation in string |
+| **Window Extreme** | Monotonically ordered indices | Doubly linked deque / circular array | `O(1)` amortized | Sliding window maximum / minimum |
+| **Distinct Count** | Unique element occurrences | Hash map / frequency table | `O(1)` | Subarrays of size K with exactly K distinct elements |
 
 ---
 
@@ -113,343 +108,408 @@ Each variant requires different logic for the "update" step, but all follow the 
 ### The State Machine & Memory Layout
 
 A fixed-size sliding window maintains:
-- **Array:** Input data
-- **Window Size (k):** Fixed parameter
-- **Left Pointer:** Index of the leftmost element in the window
-- **Right Pointer:** Index of the rightmost element in the window
-- **Result Structure:** Depends on computation (number for sum, deque for max, etc.)
-- **Auxiliary Data:** Hash maps, heaps, or counters tracking information inside the window
-
-The typical state progression:
-1. Initialize window [0, k-1] and compute the metric
-2. For each subsequent position, advance right pointer, compute new element
-3. Remove left pointer element from computation
-4. Store result and advance left pointer
-
-### 🔧 Operation 1: Computing Running Sum/Average (Simple Additive Case)
-
-**The Intent:** For each k-length window, compute the sum (or average) of elements in that window. This is the simplest sliding window variant and the perfect starting point.
-
-Let me walk through the mechanism. Imagine computing the sum of every 3-length window in `[1, 3, -1, -3, 5, 3, 6, 7]`.
-
-**Naive approach:** For each position, iterate through k elements and sum them. That's O(n*k) time.
-
-**Sliding window approach:**
+- **Array Reference:** Contiguous input memory.
+- **Window Size (`K`):** Fixed integer width.
+- **Left Pointer (`L`):** Index `i - K + 1`.
+- **Right Pointer (`R`):** Current loop index `i`.
+- **Accumulator / State:** Running sum or data structure storing the contents of `[L..R]`.
 
 ```
-Step 1: Initialize first window [0, 2] = [1, 3, -1]
-        sum = 1 + 3 + (-1) = 3
-        
-Step 2: Slide to [1, 3] = [3, -1, -3]
-        Old sum = 3
-        Remove arr[0] = 1 → sum = 3 - 1 = 2
-        Add arr[3] = -3 → sum = 2 + (-3) = -1
-        
-Step 3: Slide to [2, 4] = [-1, -3, 5]
-        Old sum = -1
-        Remove arr[1] = 3 → sum = -1 - 3 = -4
-        Add arr[4] = 5 → sum = -4 + 5 = 1
-        
-Step 4: Slide to [3, 5] = [-3, 5, 3]
-        Old sum = 1
-        Remove arr[2] = -1 → sum = 1 - (-1) = 2
-        Add arr[5] = 3 → sum = 2 + 3 = 5
-        
-... continues
+                    Window [L..R] of size K
+                   +-----------------------+
+   [ ... | arr[L-1] | arr[L] | ... | arr[R] | arr[R+1] | ... ]
+              ^                                 ^
+           Exits                             Enters
+          on slide                          on slide
 ```
-
-Here's the full trace:
-
-```
-| Step | Left | Right | Remove | Add  | Old Sum | New Sum | Window |
-|------|------|-------|--------|------|---------|---------|--------|
-| 1    | 0    | 2     | -      | -    | -       | 3       | [1,3,-1] |
-| 2    | 1    | 3     | 1      | -3   | 3       | -1      | [3,-1,-3] |
-| 3    | 2    | 4     | 3      | 5    | -1      | 1       | [-1,-3,5] |
-| 4    | 3    | 5     | -1     | 3    | 1       | 5       | [-3,5,3] |
-| 5    | 4    | 6     | -3     | 6    | 5       | 8       | [5,3,6] |
-| 6    | 5    | 7     | 5      | 7    | 8       | 10      | [3,6,7] |
-```
-
-**Key Observations:**
-- First window setup: O(k) time (one pass to sum k elements)
-- Each subsequent slide: O(1) time (one subtraction, one addition, one assignment)
-- Total time: O(k + n) ≈ O(n) for n windows
-- Space: O(1) (just tracking the sum, no additional storage)
-
-Compare this to the naive approach:
-- Naive: O(n*k) = 8 * 3 = 24 operations
-- Sliding window: O(k + n) = 3 + 8 = 11 operations
-- Speedup: ~2x for this small example, but 100x+ for large k (like 365-day moving average with 10 years of data)
-
-### 🔧 Operation 2: Finding Maximum in Each Window (Monotonic Deque Case)
-
-Now let's look at a more complex operation: finding the maximum in each k-length window. Naive approach: for each window, iterate through k elements and find the max. That's O(n*k).
-
-The trick: use a **deque (double-ended queue) maintaining elements in decreasing order**. Here's how it works:
-
-**Intent:** As elements enter the window, we maintain a deque where the front element is always the maximum in the current window, and the deque stays sorted in decreasing order.
-
-Let's trace through finding the maximum in windows of size 3 on `[1, 3, -1, -3, 5, 3, 6, 7]`:
-
-```
-Step 1: Initialize window [0, 2] = [1, 3, -1]
-        Process arr[0]=1: deque is empty, add → deque=[1]
-        Process arr[1]=3: 3 > 1, remove 1, add 3 → deque=[3]
-        Process arr[2]=-1: -1 < 3, add -1 → deque=[3, -1]
-        Window complete, max = front of deque = 3
-        
-Step 2: Slide to [1, 3] = [3, -1, -3]
-        Remove arr[0]=1 from window (it's not in deque, ok)
-        Add arr[3]=-3: -3 < -1, add -3 → deque=[3, -1, -3]
-        Max = front of deque = 3
-        
-Step 3: Slide to [2, 4] = [-1, -3, 5]
-        Remove arr[1]=3 from window: check if 3 is at front of deque
-        Yes! 3 is front, remove it → deque=[-1, -3]
-        Add arr[4]=5: 5 > -1, remove -1; 5 > -3, remove -3; add 5 → deque=[5]
-        Max = front of deque = 5
-        
-Step 4: Slide to [3, 5] = [-3, 5, 3]
-        Remove arr[2]=-1 from window: -1 is not at front, already removed
-        Add arr[5]=3: 3 < 5, add 3 → deque=[5, 3]
-        Max = front of deque = 5
-        
-Step 5: Slide to [4, 6] = [5, 3, 6]
-        Remove arr[3]=-3 from window: -3 is not in deque, ok
-        Add arr[6]=6: 6 > 3, remove 3; 6 > 5, remove 5; add 6 → deque=[6]
-        Max = front of deque = 6
-        
-Step 6: Slide to [5, 7] = [3, 6, 7]
-        Remove arr[4]=5 from window: 5 is not in deque
-        Add arr[7]=7: 7 > 6, remove 6; add 7 → deque=[7]
-        Max = front of deque = 7
-```
-
-Full trace with deque state:
-
-```
-| Step | Window | Deque State | Max | Action |
-|------|--------|-------------|-----|--------|
-| 1    | [1,3,-1] | [3, -1] | 3 | Init window |
-| 2    | [3,-1,-3] | [3, -1, -3] | 3 | Add -3 |
-| 3    | [-1,-3,5] | [5] | 5 | Remove 3, add 5 |
-| 4    | [-3,5,3] | [5, 3] | 5 | Add 3 |
-| 5    | [5,3,6] | [6] | 6 | Remove 5,3, add 6 |
-| 6    | [3,6,7] | [7] | 7 | Remove 6, add 7 |
-```
-
-**Key Observations:**
-- First window setup: O(k) time (process k elements through deque)
-- Each slide: O(1) amortized time (each element is added once and removed once from deque)
-- Total time: O(k + n) ≈ O(n)
-- Space: O(k) for the deque
-
-**Why this works:** The deque maintains the invariant that it's sorted in decreasing order and only contains elements from the current window. The front element is always the maximum because it's the largest element in the window.
-
-### 📉 Progressive Example: Stock Trading — 50-Day Moving Average
-
-Let's apply the simple sum-based sliding window to a realistic scenario: computing a 50-day moving average for stock closing prices.
-
-Input: Array of 1000 daily closing prices for Apple stock
-Window size: 50 days (standard technical indicator)
-Goal: Compute the moving average for each possible 50-day window
-
-```
-prices = [150.2, 151.5, 149.8, ..., 195.3] (1000 prices)
-
-Step 1: Initialize window [0, 49] (first 50 days)
-        sum = price[0] + price[1] + ... + price[49]
-        avg = sum / 50
-        
-Step 2: Slide to window [1, 50] (days 2-51)
-        Remove price[0] from sum
-        Add price[50] to sum
-        avg = sum / 50
-        
-... continue for remaining 950 windows
-```
-
-**Performance comparison:**
-- Naive: 1000 windows * 50 days = 50,000 operations
-- Sliding window: 50 (initial) + 950 (slides) = 1,000 operations
-- Speedup: **50x** — a massive improvement
-
-This is exactly what happens in real trading platforms. Moving averages are computed continuously, and the sliding window pattern makes this feasible.
-
-> **⚠️ Watch Out:** When the window size is large relative to the array, the optimization is profound. But if k ≈ n (window size ≈ array size), you only have one window, and the benefit is minimal. Also, be careful with integer overflow when summing large values—you might need to use `long` instead of `int`.
 
 ---
 
-## ⚖️ CHAPTER 4: PERFORMANCE, TRADE-OFFS & REAL SYSTEMS
+### 🔧 Operation 1: Computing Running Sum / Average (Additive Delta)
 
-### Beyond Big-O: Performance Reality
+**The Intent:** Compute the sum of every contiguous window of length `K = 3` in `[1, 3, -1, -3, 5, 3]`.
 
-Let's compare three approaches to the moving average problem: naive nested loops, precomputed prefix sums, and sliding window.
+```
+Step 0: Initialize first window [0..2] = [1, 3, -1] -> Sum = 3
+Step 1: Slide to [1..3] -> Subtract arr[0]=1, Add arr[3]=-3 -> Sum = 3 - 1 + (-3) = -1
+Step 2: Slide to [2..4] -> Subtract arr[1]=3, Add arr[4]=5  -> Sum = -1 - 3 + 5  = 1
+Step 3: Slide to [3..5] -> Subtract arr[2]=-1, Add arr[5]=3 -> Sum = 1 - (-1) + 3 = 5
+```
 
-| Approach | Time | Space | Practical Cost |
-| :--- | :--- | :--- | :--- |
-| Naive (nested loop) | O(n*k) | O(1) | For k=365, n=10^6: 365 billion ops |
-| Prefix sum | O(n) | O(n) | Requires extra array, cache misses on lookup |
-| Sliding window | O(n) | O(1) | Single pass, cache-friendly, incremental |
+#### Step-by-Step Trace Table
 
-**Memory Reality:** Sliding window uses O(1) extra space (just a few variables), unlike prefix sums which allocate an entire array. For streaming data where you can't store all values, sliding window is your only option.
-
-**Cache Locality:** The naive approach jumps around in memory (accessing arr[i], arr[i+1], ..., arr[i+k] for different i values). Sliding window scans sequentially left to right, hitting the CPU cache on nearly every access. In practice, this is 3-5x faster than the raw Big-O comparison suggests.
-
-**Data Structure Trade-offs:**
-
-| Data Structure | Max/Min | Cost Per Slide | Memory |
-| :--- | :--- | :--- | :--- |
-| Array (naive) | O(k) | O(k) | O(1) |
-| Deque (monotonic) | O(1) | O(1) amortized | O(k) |
-| Heap | O(1) | O(log k) | O(k) |
-| Balanced BST | O(1) | O(log k) | O(k) |
-| MultiSet (Java TreeSet) | O(log k) | O(log k) | O(k) |
-
-For simple sum/average, you need no data structure. For min/max, a monotonic deque is optimal (O(1) amortized). For more complex metrics (median, mode), use heaps or balanced trees.
-
-### 🏭 Real-World Systems Story 1: Stock Market Technical Analysis (TradingView)
-
-TradingView processes millions of stock prices per day from thousands of securities. When you load a chart and see the 50-day moving average as a blue line, that's a sliding window computation.
-
-The challenge: users can zoom into any timeframe (daily, 1-hour, 5-minute candles) and request any window size (20, 50, 200-day moving averages). TradingView pre-computes common moving averages and caches them.
-
-For a stock with 20 years of daily data (5,000 days), computing a 200-day moving average naively is 5,000 * 200 = 1 million operations per indicator. With sliding window, it's just 5,000 operations. For each stock and each indicator, the speedup is 200x.
-
-At scale: 2,000 stocks * 10 common indicators * 200x speedup = TradingView saves **4 million operations per price update**. That's the difference between computing in milliseconds (acceptable) versus seconds (unacceptable for real-time trading).
-
-Real impact: TradingView's analysis engine responds instantly to user pans and zooms, enabling traders to spot trends in seconds instead of minutes.
-
-### 🏭 Real-World Systems Story 2: Bandwidth Throttling & Network Monitoring (CDN)
-
-Content delivery networks (CDNs) like Akamai throttle traffic based on peak bandwidth usage. They maintain a fixed-size sliding window of the last 60 seconds and track the maximum bitrate used in that window.
-
-When a burst of requests arrives, the maximum in the current 60-second window spikes. If it exceeds the threshold, the CDN begins rate-limiting. When the burst ends and leaves the window, the maximum drops, and rate-limiting is relaxed.
-
-Naive approach: every second, scan 60 measurements to find the max. That's 60 operations per second, or 3,600 operations per minute. For millions of CDN nodes, that's billions of operations.
-
-Sliding window approach: use a deque to maintain decreasing order. Each new measurement is added in O(1) amortized time. The maximum is always the front of the deque.
-
-Real impact: At Akamai's scale, sliding window reduces CPU usage for bandwidth monitoring by 60-100x, enabling the same hardware to monitor thousands of additional edge nodes.
-
-### 🏭 Real-World Systems Story 3: Video Stream Buffering & Adaptive Bitrate (Netflix)
-
-Netflix streams video at adaptive bitrate: the encoder automatically adjusts quality based on available bandwidth. The player monitors the last 10 seconds of throughput (120 frames at 12 fps, or 60 seconds at 1 fps depending on frame rate) and predicts if the network can handle 1080p, 720p, or 480p.
-
-The computation: every frame arrival, update the bitrate window, compute moving average and variance, and make a quality decision.
-
-Naive approach: recalculate mean and variance of 120 bitrate measurements per frame. That's O(120) operations per frame, or 7,200 operations per second.
-
-Sliding window approach: maintain the sum and sum-of-squares incrementally. Mean and variance are O(1) to compute per frame. With a deque, also track the recent maximum bitrate to predict momentary spikes.
-
-Real impact: On a device streaming 1080p at 60fps, naive computation costs significant CPU (noticeable on battery). Sliding window reduces to negligible cost. On billions of Netflix streams running on billions of devices, the aggregate energy savings is significant—estimated at 1-2% of Netflix's total streaming infrastructure cost.
-
-### Failure Modes & Robustness
-
-**Negative and Very Large Numbers:** Simple addition works with any numeric type, but watch for integer overflow. If summing large values, use `long` instead of `int`.
-
-**Floating-Point Precision:** Computing averages involves division. With many small-value windows, accumulated rounding errors can appear. For high-precision requirements, periodically recompute the full window instead of relying entirely on incremental updates.
-
-**Out-of-Order Arrivals (Streaming Data):** Fixed-size windows assume data arrives in order. If data arrives out-of-order or late, you need more complex windowing (e.g., event-time vs. processing-time windows in Apache Kafka). Simple sliding window breaks.
-
-**Sparse Data:** If your array has many zeros or missing values, simple sliding window still works, but the interpretation changes. A "moving average" of sparse data might not be meaningful (e.g., averaging 2 sales and 48 zeros is very different from averaging 50 sales).
-
-**Concurrency & Streaming:** If multiple threads update the window concurrently, you need synchronization. Also, streaming data might require handling late arrivals or out-of-order updates differently than batch data.
+| Step | L | R | Exiting (`arr[L-1]`) | Entering (`arr[R]`) | Old Sum | Calculation | New Sum | Window Span |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Init** | 0 | 2 | None | 1, 3, -1 | 0 | `1 + 3 + (-1)` | 3 | `[1, 3, -1]` |
+| **1** | 1 | 3 | 1 | -3 | 3 | `3 - 1 + (-3)` | -1 | `[3, -1, -3]` |
+| **2** | 2 | 4 | 3 | 5 | -1 | `-1 - 3 + 5` | 1 | `[-1, -3, 5]` |
+| **3** | 3 | 5 | -1 | 3 | 1 | `1 - (-1) + 3` | 5 | `[-3, 5, 3]` |
 
 ---
 
-## 🔗 CHAPTER 5: INTEGRATION & MASTERY
+### 🔧 Operation 2: Finding Maximum in Each Window (Monotonic Deque)
 
-### Connections (Precursors & Successors)
+**The Intent:** Find the maximum value in every window of size `K = 3` on `[1, 3, -1, -3, 5, 3, 6, 7]`.
 
-**Building on Prior Knowledge:**
-Fixed-size sliding windows extend the two-pointer intuition from Day 1. Instead of pointers moving toward each other or both in the same direction, they maintain a constant distance (k apart). The invariant shifts from "everything to the left is processed" to "the region [left, right] is the current focus."
+A monotonic decreasing deque stores array **indices**. The invariant:
+- Values at the stored indices are in strictly decreasing order: `nums[deque[0]] > nums[deque[1]] > ...`
+- The front of the deque (`deque[0]`) is always the index of the maximum element in the active window.
 
-**Foreshadowing Future Topics:**
-Day 3 (Variable-size sliding windows) removes the fixed window size constraint, requiring more complex logic to decide when to grow vs. shrink. Days 4-5 involve different problem-solving patterns (divide & conquer, binary search), but the pattern recognition skills here transfer: recognizing when a problem has **structure** (fixed window, monotonic property, etc.) that you can exploit.
+```
+Array: [1, 3, -1, -3, 5, 3, 6, 7], K = 3
 
-### 🧩 Pattern Recognition & Decision Framework
+Index 0 (val 1):  Deque: [0 (val 1)]
+Index 1 (val 3):  3 > 1, pop 0 -> Deque: [1 (val 3)]
+Index 2 (val -1): -1 < 3 -> Deque: [1 (val 3), 2 (val -1)]
+                  Window [0..2] max = nums[1] = 3
 
-**Red Flags That Suggest Fixed-Size Sliding Window:**
-- "Moving average" — almost certainly fixed window
-- "Maximum/minimum in every k-element window" — deque or heap pattern
-- "Continuous metric computed every n seconds" — sliding window with time-based windows
-- "Sample the last k items" — fixed-size window
-- "Bandwidth in the last 60 seconds" — time-based fixed window
+Index 3 (val -3): Evict out-of-bounds? 1 > 3 - 3 (No).
+                  -3 < -1 -> Deque: [1 (val 3), 2 (val -1), 3 (val -3)]
+                  Window [1..3] max = nums[1] = 3
 
-**When to Use:**
+Index 4 (val 5):  Evict out-of-bounds? 1 <= 4 - 3 (Yes, evict 1).
+                  5 > -3 (pop 3), 5 > -1 (pop 2) -> Deque: [4 (val 5)]
+                  Window [2..4] max = nums[4] = 5
+```
 
-✅ **Use fixed-size sliding window when:**
-- Window size is known and constant
-- You're computing a metric that updates incrementally (sum, max, min, etc.)
-- Sequential processing of a large dataset is required
-- Memory must be constant (O(1) or O(k), not O(n))
-- Real-time or streaming processing is involved
+#### Step-by-Step Monotonic Deque Trace Table
 
-🛑 **Avoid when:**
-- Window size changes dynamically (use variable-size window instead)
-- The metric doesn't have an obvious incremental update (use variable-size or other approaches)
-- You only need a single aggregate (just compute it once)
-- Memory is abundant and simplicity is valued over speed
+| `i` | `nums[i]` | Out-of-Bounds Eviction | Monotonic Pops (`<= nums[i]`) | Deque Indices (Values) | Current Window | Window Max |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **0** | 1 | None | None | `[0 (1)]` | Incomplete | - |
+| **1** | 3 | None | Pop 0 | `[1 (3)]` | Incomplete | - |
+| **2** | -1 | None | None | `[1 (3), 2 (-1)]` | `[0..2]` | **3** |
+| **3** | -3 | None | None | `[1 (3), 2 (-1), 3 (-3)]` | `[1..3]` | **3** |
+| **4** | 5 | Evict 1 (`1 <= 1`) | Pop 3, Pop 2 | `[4 (5)]` | `[2..4]` | **5** |
+| **5** | 3 | None | None | `[4 (5), 5 (3)]` | `[3..5]` | **5** |
+| **6** | 6 | Evict None | Pop 5, Pop 4 | `[6 (6)]` | `[4..6]` | **6** |
+| **7** | 7 | Evict None | Pop 6 | `[7 (7)]` | `[5..7]` | **7** |
 
-**Interview Red Flags:**
-When an interviewer says "moving average," "last k elements," or "maximum in every window," they're signaling a sliding window problem. When they say "O(n) time, O(1) space," they might be hinting that a clever data structure (deque for max/min) is needed.
-
-### 🧪 Socratic Reflection
-
-Before moving on, think deeply about these questions (no answers provided):
-
-1. **Why does the deque maintain decreasing order for the max problem?** If you see a smaller element enter before a larger one leaves, why can you safely remove the smaller element?
-
-2. **In the moving average problem, why can you use subtraction and addition instead of recomputing the sum?** What property of addition allows this optimization?
-
-3. **If you use a simple array (naive approach) versus a deque for the max problem, both can find the max. Why is the deque O(1) amortized while the array is O(k) per window?**
-
-4. **How would you adapt the sliding window approach if new elements arrive out of order, or with timestamps different from their position?** Does the pattern still apply?
-
-5. **For a moving median problem (finding the median in each k-size window), why would a deque not work?** What data structure would you need instead?
-
-### 📌 Retention Hook
-
-> **The Essence:** "Fixed-size sliding windows transform O(n*k) redundant computation into O(n) efficient incremental updates. The trick is recognizing what can be updated with just the entering and exiting elements. For sum, it's addition and subtraction. For max/min, it's a deque maintaining decreasing order. For complex metrics, use heaps or trees. The pattern's power is separating initial setup (O(k)) from per-slide updates (O(1) to O(log k))."
+> **⚠️ Watch Out:** When implementing the monotonic deque, store **indices**, not raw values. Indices are required to determine whether an element has slid outside the window boundary (`index <= i - K`).
 
 ---
 
-## 🧠 5 COGNITIVE LENSES
+## 💻 CHAPTER 4: PRODUCTION-GRADE IMPLEMENTATIONS (C# & PYTHON)
 
-### 💻 **The Hardware Lens: Sequential vs. Random Access**
+### Problem 1: Maximum Average Subarray I (LeetCode 643)
 
-Modern CPUs prefetch sequential memory accesses automatically. A sliding window that scans left-to-right hits the CPU cache on nearly every element access. Compare this to the naive approach that re-scans the same window region multiple times—each scan might evict the previous data from cache, causing cache misses.
+#### 🎙️ 45-Minute Interview Talk Track
+> *"To find the maximum average of a contiguous subarray of size K, we recognize that maximizing the average of K numbers is mathematically identical to maximizing their sum, since K is constant. Instead of recalculating the sum of each K-length window in O(K) time—which would cost O(N * K) overall—we initialize a running sum of the first K elements. We then slide the window across the array from index K to N - 1. At each step, we subtract the element leaving the window at index `i - K` and add the new element at index `i`. This runs in O(N) time and O(1) auxiliary space."*
 
-On a real 2024 Intel CPU, sequential access to an array is 3-5x faster than repeated random access to the same elements due to prefetching and cache-line reuse. For a 365-day moving average over 10 years (3,650 elements), the naive approach rescans each element 365 times, while sliding window scans each element once. The cache advantage compounds: sequential scanning is not just "faster," it's **fundamentally more efficient**.
+#### C# Primary Implementation (.NET 8/9 — Zero Allocation)
+```csharp
+using System;
 
-### 📉 **The Trade-off Lens: Space vs. Time vs. Complexity**
+public static class FixedWindowSolvers
+{
+    /// <summary>
+    /// Finds the maximum average value for any contiguous subarray of length k.
+    /// Time Complexity: O(N) | Auxiliary Space: O(1)
+    /// </summary>
+    public static double FindMaxAverage(ReadOnlySpan<int> nums, int k)
+    {
+        // Guard Clause: Minimum array contract
+        if (nums.Length < k || k <= 0) return 0.0;
 
-For finding max in windows:
-- **Array (naive):** O(1) space, O(n*k) time, O(1) code complexity
-- **Deque (monotonic):** O(k) space, O(n) time, O(k) code complexity
-- **Segment Tree:** O(n) space, O(n + m log n) time, O(n) code complexity
+        // Step 1: Precompute initial window of size k using 64-bit integer
+        long currentWindowSum = 0;
+        for (int i = 0; i < k; i++)
+        {
+            currentWindowSum += nums[i];
+        }
 
-The best choice depends on context. For real-time processing with streaming data, you can't use segment trees (they require knowing n upfront). For a one-time batch computation on a huge array with small k, deque is optimal. For competitive programming where code simplicity matters, naive might be acceptable if k is small enough.
+        long maxWindowSum = currentWindowSum;
 
-### 👶 **The Learning Lens: From Intuition to Implementation**
+        // Step 2: Slide window: subtract exiting element, add entering element
+        for (int i = k; i < nums.Length; i++)
+        {
+            currentWindowSum += nums[i] - nums[i - k];
+            if (currentWindowSum > maxWindowSum)
+            {
+                maxWindowSum = currentWindowSum;
+            }
+        }
 
-Many learners struggle with monotonic deques because they try to memorize "when to pop from the deque." The intuition is simpler: maintain elements in decreasing order so the front is always the maximum. Once you understand this invariant, the code (pop while smaller, push new element, pop from front if stale) becomes mechanical.
+        return (double)maxWindowSum / k;
+    }
+}
+```
 
-The learning progression: naive approach → "hey, we're recomputing the same window" → "what if we only track entering/exiting elements?" → "for max, that means maintaining order" → deque emerges as a natural data structure.
+#### Python Secondary Implementation (3.11+ — Idiomatic)
+```python
+def find_max_average(nums: list[int], k: int) -> float:
+    """Finds maximum average value for contiguous subarray of length k.
+    
+    Time Complexity: O(N) | Auxiliary Space: O(1)
+    """
+    if len(nums) < k or k <= 0:
+        return 0.0
 
-### 🤖 **The AI/ML Lens: Streaming Data & Online Learning**
+    current_window_sum = sum(nums[:k])
+    max_window_sum = current_window_sum
 
-Machine learning on streaming data uses sliding windows for feature engineering. A recommender system might track "movies watched in the last 7 days" as features for predicting next watch. As time progresses, the window slides forward (old movies exit, new ones enter), and features update incrementally.
+    for i in range(k, len(nums)):
+        current_window_sum += nums[i] - nums[i - k]
+        if current_window_sum > max_window_sum:
+            max_window_sum = current_window_sum
 
-This is fundamentally a sliding window problem: maintain metrics about a recent time period and update them as new data arrives. Online learning (where you update a model as data streams in) relies on this pattern extensively.
+    return max_window_sum / k
+```
 
-### 📜 **The Historical Lens: Technical Analysis in Stock Trading**
+#### 📊 Explicit Complexity Deconstruction
+* **Time Complexity:** `O(N)` — The initial slice takes `K` operations, followed by `N - K` iterations each doing `O(1)` addition and subtraction. Total operations: `N`.
+* **Auxiliary Space:** `O(1)` — Only two 64-bit accumulators (`currentWindowSum`, `maxWindowSum`) are maintained on the stack. Zero heap allocations.
+* **Output Space:** `O(1)` — Returns a single primitive 64-bit float.
 
-Moving averages were invented in the 1950s for stock price analysis. Before computers, traders computed 50-day moving averages by hand—an extremely tedious task. The advent of computers made technical analysis practical. Today, algorithms compute billions of moving averages per day in nanoseconds.
+---
 
-The sliding window pattern is the computer science formalization of how traders realized they could update a moving average: "remove the oldest price, add the newest price, done." What was intuitive manual arithmetic became a formal algorithmic pattern that powers modern financial markets.
+### Problem 2: Sliding Window Maximum (LeetCode 239)
+
+#### 🎙️ 45-Minute Interview Talk Track
+> *"To find the maximum in every sliding window of size K, a naive approach scans K elements per window, taking O(N * K) time. A max-heap gives O(N log K) time, but element removal is O(K). We achieve optimal O(N) time using a monotonic decreasing deque that stores array indices. As we iterate through the array, we first evict the front index if it has fallen out of the current window (`index <= i - K`). Next, we pop indices from the back whose values are less than or equal to the incoming element, since they can never be the maximum in any future window. Finally, we push the current index. The front of the deque always holds the index of the maximum value for the active window."*
+
+#### C# Primary Implementation (.NET 8/9 — Monotonic Deque)
+```csharp
+using System;
+using System.Collections.Generic;
+
+public static class SlidingWindowMaxSolver
+{
+    /// <summary>
+    /// Computes the maximum value within each sliding window of size k using a monotonic deque.
+    /// Time Complexity: O(N) | Auxiliary Space: O(K)
+    /// </summary>
+    public static int[] MaxSlidingWindow(ReadOnlySpan<int> nums, int k)
+    {
+        if (nums.Length == 0 || k <= 0) return Array.Empty<int>();
+        if (k == 1) return nums.ToArray();
+
+        int n = nums.Length;
+        int[] result = new int[n - k + 1];
+        
+        // Deque stores array indices in strictly decreasing order of their values
+        var deque = new LinkedList<int>();
+
+        for (int i = 0; i < n; i++)
+        {
+            // 1. Evict indices that have fallen outside the active window [i - k + 1, i]
+            if (deque.Count > 0 && deque.First.Value <= i - k)
+            {
+                deque.RemoveFirst();
+            }
+
+            // 2. Maintain monotonic decreasing order: pop elements <= current
+            while (deque.Count > 0 && nums[deque.Last.Value] <= nums[i])
+            {
+                deque.RemoveLast();
+            }
+
+            // 3. Add current index to back
+            deque.AddLast(i);
+
+            // 4. Record maximum once the first full window is established
+            if (i >= k - 1)
+            {
+                result[i - k + 1] = nums[deque.First.Value];
+            }
+        }
+
+        return result;
+    }
+}
+```
+
+#### Python Secondary Implementation (3.11+ — Monotonic Deque)
+```python
+from collections import deque
+
+def max_sliding_window(nums: list[int], k: int) -> list[int]:
+    """Finds maximum in every sliding window of size k using a monotonic deque.
+    
+    Time Complexity: O(N) | Auxiliary Space: O(K)
+    """
+    if not nums or k <= 0:
+        return []
+    if k == 1:
+        return list(nums)
+
+    dq: deque[int] = deque()  # Stores array indices
+    result: list[int] = []
+
+    for i, val in enumerate(nums):
+        # 1. Evict elements outside active sliding window
+        if dq and dq[0] <= i - k:
+            dq.popleft()
+
+        # 2. Maintain monotonic decreasing order: pop smaller or equal elements
+        while dq and nums[dq[-1]] <= val:
+            dq.pop()
+
+        dq.append(i)
+
+        # 3. Front of deque is maximum of current window once i >= k - 1
+        if i >= k - 1:
+            result.append(nums[dq[0]])
+
+    return result
+```
+
+#### 📊 Explicit Complexity Deconstruction
+* **Time Complexity:** `O(N)` — Each array index is pushed to the deque exactly once and popped from the deque at most once across the entire scan. Total operations across all iterations are bounded by `2N`.
+* **Auxiliary Space:** `O(K)` — The deque holds at most `K` indices at any point in time.
+* **Output Space:** `O(N - K + 1)` — Result array storing one maximum per complete window.
+
+---
+
+### Problem 3: Find All Anagrams in a String (LeetCode 438)
+
+#### 🎙️ 45-Minute Interview Talk Track
+> *"An anagram is simply a string with the identical character frequency counts. Since pattern `p` has fixed length `K`, any valid anagram in string `s` must be a contiguous substring of length exactly `K`. We maintain two 26-element frequency vectors: one for pattern `p` and one for the current sliding window in `s`. Instead of comparing all 26 frequencies on every slide in O(26) time, we track the number of matching character frequencies (`matches`). When sliding from `i - 1` to `i`, we update only the exiting character at `i - K` and the entering character at `i`. If `matches == 26`, the current window is an anagram. This yields a zero-allocation O(N) solution."*
+
+#### C# Primary Implementation (.NET 8/9 — Stackalloc Span Optimization)
+```csharp
+using System;
+using System.Collections.Generic;
+
+public static class AnagramWindowSolver
+{
+    /// <summary>
+    /// Finds all start indices of p's anagrams in s using a fixed-size frequency window.
+    /// Time Complexity: O(N) | Auxiliary Space: O(1)
+    /// </summary>
+    public static List<int> FindAnagrams(string s, string p)
+    {
+        var result = new List<int>();
+        if (string.IsNullOrEmpty(s) || string.IsNullOrEmpty(p) || s.Length < p.Length)
+        {
+            return result;
+        }
+
+        ReadOnlySpan<char> sSpan = s.AsSpan();
+        ReadOnlySpan<char> pSpan = p.AsSpan();
+        int k = pSpan.Length;
+
+        // Zero-allocation stack buffers for 26-character frequency counts
+        Span<int> pCount = stackalloc int[26];
+        Span<int> windowCount = stackalloc int[26];
+
+        for (int i = 0; i < k; i++)
+        {
+            pCount[pSpan[i] - 'a']++;
+            windowCount[sSpan[i] - 'a']++;
+        }
+
+        int matches = 0;
+        for (int c = 0; c < 26; c++)
+        {
+            if (pCount[c] == windowCount[c]) matches++;
+        }
+
+        if (matches == 26) result.Add(0);
+
+        for (int i = k; i < sSpan.Length; i++)
+        {
+            int enterChar = sSpan[i] - 'a';
+            int exitChar = sSpan[i - k] - 'a';
+
+            // Add entering character and adjust match count
+            windowCount[enterChar]++;
+            if (windowCount[enterChar] == pCount[enterChar])
+                matches++;
+            else if (windowCount[enterChar] == pCount[enterChar] + 1)
+                matches--;
+
+            // Remove exiting character and adjust match count
+            windowCount[exitChar]--;
+            if (windowCount[exitChar] == pCount[exitChar])
+                matches++;
+            else if (windowCount[exitChar] == pCount[exitChar] - 1)
+                matches--;
+
+            if (matches == 26)
+            {
+                result.Add(i - k + 1);
+            }
+        }
+
+        return result;
+    }
+}
+```
+
+#### Python Secondary Implementation (3.11+ — Idiomatic)
+```python
+def find_anagrams(s: str, p: str) -> list[int]:
+    """Finds all start indices of p's anagrams in s using a fixed frequency window.
+    
+    Time Complexity: O(N) | Auxiliary Space: O(1)
+    """
+    if len(s) < len(p):
+        return []
+
+    p_count = [0] * 26
+    w_count = [0] * 26
+    k = len(p)
+
+    for i in range(k):
+        p_count[ord(p[i]) - ord('a')] += 1
+        w_count[ord(s[i]) - ord('a')] += 1
+
+    matches = sum(1 for i in range(26) if p_count[i] == w_count[i])
+    result: list[int] = []
+
+    if matches == 26:
+        result.append(0)
+
+    for i in range(k, len(s)):
+        enter = ord(s[i]) - ord('a')
+        exit_char = ord(s[i - k]) - ord('a')
+
+        # Add entering character
+        w_count[enter] += 1
+        if w_count[enter] == p_count[enter]:
+            matches += 1
+        elif w_count[enter] == p_count[enter] + 1:
+            matches -= 1
+
+        # Remove exiting character
+        w_count[exit_char] -= 1
+        if w_count[exit_char] == p_count[exit_char]:
+            matches += 1
+        elif w_count[exit_char] == p_count[exit_char] - 1:
+            matches -= 1
+
+        if matches == 26:
+            result.append(i - k + 1)
+
+    return result
+```
+
+#### 📊 Explicit Complexity Deconstruction
+* **Time Complexity:** `O(N)` — Initializing takes `O(K)`. The sliding loop iterates `N - K` times with strictly `O(1)` array increments and integer comparisons.
+* **Auxiliary Space:** `O(1)` — Memory is bounded by two 26-element integer buffers (`stackalloc` in C#).
+* **Output Space:** `O(N)` in the worst case (e.g., `s = "aaaa"`, `p = "a"` where every index matches).
+
+---
+
+## ⚖️ CHAPTER 5: FAANG INTERVIEW PATTERN SIGNALS & EDGE CASES
+
+> [!NOTE]
+> **Production Reality (Why FAANG Tests This):**
+> High-throughput telemetry pipelines (such as Akamai CDN bandwidth limiters, Netflix adaptive bitrate estimators, and financial candle aggregators) process millions of events per second. Recomputing rolling metrics naively costs `O(N * K)` CPU cycles, causing unacceptable GC pressure and thread stalls. Fixed-size sliding windows maintain rolling averages, variances, and monotonic extremes in strict `O(1)` amortized time per incoming telemetry packet using cache-friendly contiguous buffers.
+
+### 🎯 Pattern Recognition Signals
+- ✅ **"Subarray / substring of fixed length K"** -> Immediate fixed-size sliding window trigger.
+- ✅ **"Running average / moving sum over K time units"** -> Maintain scalar accumulator with delta subtraction and addition.
+- ✅ **"Maximum / minimum in all K-length windows"** -> Monotonic deque storing indices.
+- ✅ **"Find all substrings that are permutations / anagrams of string P"** -> Fixed window of size `len(P)` with frequency count arrays.
+- 🛑 **"Subarray sum equals target / at most K distinct elements"** -> Window size is **not fixed**; use variable-size sliding window instead.
+
+### 🧪 Concrete Edge-Case Checklist
+1. **Window Size Exceeds Array (`K > N`):** Guard clause must return 0 or empty result immediately without indexing.
+2. **Window Size Equals One (`K == 1`):** Window maximum is trivially the array itself; ensure no redundant deque evictions trigger off-by-one errors.
+3. **Integer Overflow in Running Sums:** When summing large integers (e.g., `10^5` elements each up to `10^9`), 32-bit signed integers overflow; accumulate into a 64-bit `long`.
+4. **Deque Monotonicity with Equal Elements:** When popping from the deque back (`nums[deque.Last] <= nums[i]`), decide whether `<` or `<=` is required. `<=` keeps only the latest duplicate, minimizing deque size.
 
 ---
 
@@ -459,83 +519,74 @@ The sliding window pattern is the computer science formalization of how traders 
 
 | Problem | Source | Difficulty | Key Concept |
 | :--- | :--- | :--- | :--- |
-| Maximum of Sliding Window | LeetCode 239 | 🔴 Hard | Monotonic deque, practical |
-| Moving Average | LeetCode 346 | 🟢 Easy | Simple sum-based window |
-| Sliding Window Maximum (variant) | LeetCode 239 Variants | 🟡 Medium | Different window updates |
-| First Unique Character | LeetCode 387 | 🟢 Easy | HashMap + window (variant) |
-| Grumpy Bookstore Owner | LeetCode 1052 | 🟡 Medium | Sum-based with twist |
-| Sliding Window Median | LeetCode 295 | 🔴 Hard | Two heaps or multiset |
-| Max Sum Subarray (Size K) | LeetCode variants | 🟢 Easy | Direct application |
-| Longest Substring Without Repeating (preview) | LeetCode 3 | 🟡 Medium | Leads to variable-size window |
+| Maximum Average Subarray I | LeetCode 643 | 🟢 Easy | Additive delta update |
+| Sliding Window Maximum | LeetCode 239 | 🔴 Hard | Monotonic deque maintaining decreasing order |
+| Find All Anagrams in a String | LeetCode 438 | 🟡 Medium | Fixed frequency window with 26-char diff |
+| Permutation in String | LeetCode 567 | 🟡 Medium | Fixed window boolean anagram match |
+| Grumpy Bookstore Owner | LeetCode 1052 | 🟡 Medium | Fixed window optimization with baseline sum |
+| Diet Plan Performance | LeetCode 1176 | 🟢 Easy | Basic fixed window running sum threshold |
+| Maximum Number of Vowels in Substring | LeetCode 1456 | 🟡 Medium | Character count sliding window of length K |
+| Sliding Window Median | LeetCode 480 | 🔴 Hard | Dual heaps or balanced BST with fixed window |
 
 ### 🎙️ Interview Questions (6+)
 
-1. **Q:** Implement moving average of k-size windows. Explain the time and space complexity.
-   - **Follow-up:** What if the window size is very large (k = 365)? How do you handle potential integer overflow?
+1. **Q:** Implement moving average of K-size windows. What is the time complexity per slide?
+   - **Follow-up:** How would you handle continuous incoming data where `K = 1,000,000` without accumulating precision drift in floating-point division?
 
-2. **Q:** Find the maximum value in every k-size window of an array. Naive approach takes O(n*k). Can you do better?
-   - **Follow-up:** Explain why a deque works. What invariant does it maintain?
+2. **Q:** Explain why a monotonic deque solves Sliding Window Maximum in `O(N)` instead of `O(N * K)`.
+   - **Follow-up:** What invariant does the deque maintain, and why are popped elements safely discarded forever?
 
-3. **Q:** How would you compute the moving median of a stream of k-size windows?
-   - **Follow-up:** Can you use a deque like in the max/min problem? Why or why not?
+3. **Q:** Why do we store indices rather than values inside the monotonic deque?
+   - **Follow-up:** Can you implement the same logic storing pairs of `(value, index)`? What are the memory trade-offs?
 
-4. **Q:** Describe the difference between fixed-size and variable-size sliding windows.
-   - **Follow-up:** When would you use each? Give examples of problems for both.
+4. **Q:** How do you test whether a window of size `K` contains an anagram of pattern `P` in `O(1)` time per slide?
+   - **Follow-up:** How does your approach generalize to full Unicode or UTF-8 character sets?
 
-5. **Q:** Implement a bandwidth throttler that maintains the maximum bitrate in the last 60 seconds of requests.
-   - **Follow-up:** What if requests arrive out of order? How does that change your approach?
+5. **Q:** When would you choose a prefix sum array over a fixed-size sliding window?
+   - **Follow-up:** When is a sliding window strictly superior in streaming distributed systems?
 
-6. **Q:** You have a stock price array and need to find the best time to buy and sell with a maximum holding period of k days. Explain how sliding window could help.
-   - **Follow-up:** What metric would you track in the window? How would you update it?
+6. **Q:** Design a rate limiter that allows at most 100 requests per 60-second fixed window.
+   - **Follow-up:** What edge cases occur at the boundary between two adjacent windows, and how does a sliding log address them?
 
 ### ❌ Common Misconceptions (3-5)
 
-- **Myth:** Sliding window only works for sums and averages.
-  - **Reality:** It works for any metric that updates incrementally. Max, min, mode, count distinct elements—all work if you maintain the right data structure.
-
-- **Myth:** A deque for max/min is overly complicated; just use a priority queue.
-  - **Reality:** A priority queue is O(log k) per operation, while a deque is O(1) amortized. For max/min, deque is simpler and faster.
-
-- **Myth:** Sliding window needs O(k) extra space for the window itself.
-  - **Reality:** The window is defined by two pointers; you only need extra space for data structures (like a deque for max). For simple sum, it's O(1).
-
-- **Myth:** If the window size equals the array size, sliding window has no benefit.
-  - **Reality:** Correct—you'd compute the metric once, not per window. Sliding window is for problems with many windows.
+- **Myth:** Sliding window always recomputes state from all `K` elements.
+  - **Reality:** True sliding windows update state in `O(1)` via deltas (`+ entering - exiting`).
+- **Myth:** A priority queue (heap) gives `O(N)` for Sliding Window Maximum.
+  - **Reality:** Heap extraction costs `O(log K)` and arbitrary removal costs `O(K)`. Only a monotonic deque achieves true `O(N)`.
+- **Myth:** The monotonic deque can grow to size `N`.
+  - **Reality:** The deque never exceeds `K` elements because elements older than `i - K` are evicted immediately.
+- **Myth:** Fixed-size windows work on dynamic constraints like "sum >= target".
+  - **Reality:** Dynamic constraints require variable-size sliding windows where both pointers advance independently.
 
 ### 🚀 Advanced Concepts (3-5)
 
-- **Monotonic Stack/Deque:** A generalization maintaining a monotonic sequence, useful beyond sliding windows (next greater element, etc.).
-- **Variable-Size Sliding Windows:** Dynamic window sizing based on constraints (covered tomorrow in Day 3).
-- **Time-Based Sliding Windows:** Treating time (instead of array indices) as the sliding dimension (e.g., "events in the last 60 seconds").
-- **Two-Pointer Extension:** Using two pointers with varying distance (instead of fixed k) to solve other problems.
-- **Streaming Window Algorithms:** How to handle out-of-order data and late arrivals (Apache Kafka, event-driven systems).
+- **Monotonic Queue Abstraction:** Encapsulating `Push`, `Pop`, and `Max` operations into a reusable class for streaming data pipelines.
+- **Cache-Conscious Circular Buffers:** Implementing fixed windows over raw memory buffers to eliminate garbage collector pressure.
+- **Sliding Window Median via Dual Balanced Trees:** Maintaining running medians in `O(N log K)` time using dual heaps with lazy deletion.
+- **Rolling Polynomial Hashes (Rabin-Karp):** Using fixed sliding windows with modular arithmetic to locate pattern matches in strings in linear time.
 
 ### 📚 External Resources
 
-- **"Competitive Programming" (Halim & Halim):** Chapter on sliding windows with dozens of examples and edge cases.
-- **LeetCode Problem Set:** 239 (Maximum of Sliding Window) has excellent discussions explaining monotonic deques.
-- **MIT 6.006 Lecture on Strings and Pattern Matching:** Sliding window appears implicitly when computing rolling hashes for substring searching.
-- **Time-Series Database Papers:** Research papers on how systems like InfluxDB implement efficient window aggregations using sliding windows.
+- **"Introduction to Algorithms" (CLRS):** Chapter on amortized analysis and queue data structures.
+- **LeetCode Discuss (Problem 239):** Reference discussions on monotonic deque formal correctness.
+- **High-Performance .NET (Stephen Toub):** Zero-allocation memory patterns using `ReadOnlySpan<T>` and `stackalloc`.
+- **Netflix Tech Blog:** Real-time stream telemetry and adaptive bitrate algorithms.
 
 ---
 
 ## 📌 CLOSING REFLECTION
 
-Fixed-size sliding windows might seem like a narrow technique—just moving a window across an array. But they exemplify a profound principle: **efficiency comes from recognizing structure and exploiting it**.
+Fixed-size sliding windows illustrate a core principle of high-performance software engineering: **do not recompute what you can incrementally update**. By isolating the boundary changes—the single entering element and the single exiting element—computations that naively scale as `O(N * K)` collapse into clean, cache-friendly `O(N)` scans.
 
-When you see that you're recomputing the same window-local metric repeatedly, you've spotted the structure. When you realize that only the entering and exiting elements matter, you've found the optimization. When you recognize that some metrics (like max) need a smarter data structure to maintain, you've reached the implementation insight.
-
-In production systems, sliding windows are everywhere: moving averages in stock trading, bandwidth monitoring in CDNs, stream processing in real-time analytics. Every time you see "the last k elements," "in the last 60 seconds," or "recent average," a sliding window is probably solving the problem.
-
-In interviews, sliding window is a category of problem that tests whether you can optimize naive approaches. The deque-based max/min variant is a classic "aha!" moment—many candidates see the O(n*k) naive solution first, and optimizing to O(n) separates the strong candidates from the rest.
-
-Master fixed-size sliding windows, and you're ready for variable-size windows (tomorrow), time-series problems, and any domain where continuous metrics matter.
+Whether calculating moving averages in trading algorithms, enforcing bandwidth ceilings across content delivery networks, or tracking peak server latency, the fixed-size sliding window is a foundational tool in every systems engineer's repertoire.
 
 ---
 
-**Inline Visuals:** 9 (ASCII diagrams, trace tables, comparison matrices)  
-**Real-World Stories:** 3 (Trading platforms, CDN monitoring, Netflix streaming)  
-**Interview-Ready:** Yes — covers mechanics, data structures, trade-offs, and applications
+**Inline Visuals:** 6 (ASCII diagrams, trace tables, window schemas)  
+**Real-World Context:** High-throughput telemetry, CDN rate limiters, adaptive bitrate buffering  
+**Interview-Ready:** Yes — complete talk tracks, zero-allocation C# (.NET 8/9), idiomatic Python (3.11+), explicit complexity deconstruction  
+
 ---
 
 > 🧭 **Navigation:** [← Previous Day](Week_04_Day_01_Two_Pointer_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_04_Day_03_Sliding_Window_Variable_Size_Instructional.md)

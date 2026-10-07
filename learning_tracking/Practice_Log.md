@@ -1,4 +1,4 @@
-# 📊 Senior Algorithmic Practice Log
+﻿# 📊 Senior Algorithmic Practice Log
 
 > **Track daily hands-on implementation drills, time targets, language fluency (C# / Python), and algorithmic invariant derivation.**
 
@@ -7,7 +7,7 @@
 ## 🧭 Practice Workflow Pipeline
 
 ```mermaid
-flowchart LR
+flowchart TD
     P1["1. Select Problem<br/>(3-Tier Ladder)"]:::step
     P2["2. Timed Whiteboard<br/>(25–40 min)"]:::step
     P3["3. Invariant Derivation<br/>& Edge Cases"]:::step

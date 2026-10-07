@@ -1,4 +1,4 @@
-# 🏦 Question Bank & Reattempt Queue
+﻿# 🏦 Question Bank & Reattempt Queue
 
 > **Track failure patterns, analyze invariant breakdowns, and schedule spaced-repetition reattempts to achieve FAANG interview mastery.**
 
@@ -7,7 +7,7 @@
 ## 🔁 Spaced-Repetition Reattempt Protocol
 
 ```mermaid
-flowchart LR
+flowchart TD
     F["❌ Attempt Failure<br/>(Hint needed or bug)"]:::fail
     A["1. Root Cause Analysis<br/>& Invariant Breakdown"]:::step
     R1["2. Retest +3 Days<br/>(Dry-run verification)"]:::step

@@ -1,4 +1,4 @@
-# 10. Interview Quick Reference, Decision Trees & Checklists
+﻿# 10. Interview Quick Reference, Decision Trees & Checklists
 
 A unified, single-source-of-truth operational battle-card for **45-minute OOD rounds**, **90-minute Machine Coding rounds**, and **Senior Backend Architectural Follow-ups** at top-tier tech companies (FAANG, Uber, Stripe, Microsoft, Databricks, Citadel).
 
@@ -94,23 +94,23 @@ $$\text{Cache RAM Required} = (\text{Daily Unique Reads} \times \text{Object Siz
 
 ```mermaid
 flowchart TD
-    Start["What is your data model and primary access pattern?"] --> Rel{"Complex relationships,\nACID transactions,\nstrict schema?"}
-    Rel -- Yes --> SQL["RDBMS (PostgreSQL, MySQL, SQL Server)\n• Best for: Orders, Ledgers, User Accounts\n• Scaling: Read replicas, Citus/Sharding"]
-    Rel -- No --> Access{"What is the read/write\npattern & payload shape?"}
+    Start["What is your data model and primary access pattern?"] --> Rel{"Complex relationships,<br/>ACID transactions,<br/>strict schema?"}
+    Rel -->|"Yes"| SQL["RDBMS (PostgreSQL, MySQL, SQL Server)<br/>• Best for: Orders, Ledgers, User Accounts<br/>• Scaling: Read replicas, Citus/Sharding"]
+    Rel -->|"No"| Access{"What is the read/write<br/>pattern & payload shape?"}
 
-    Access -- Key-Value Lookup (O(1)) --> KV{"Ephemeral or\nPersistent?"}
-    KV -- Ephemeral/Cache --> Redis["Redis / Memcached\n• Best for: Hot cache, sessions, rate limiting"]
-    KV -- Persistent & High Scale --> Dynamo["DynamoDB / Aerospike\n• Best for: Shopping carts, device tokens"]
+    Access -->|"Key-Value Lookup (O(1)) "| KV{"Ephemeral or<br/>Persistent?"}
+    KV -->|"Ephemeral/Cache"| Redis["Redis / Memcached<br/>• Best for: Hot cache, sessions, rate limiting"]
+    KV -->|"Persistent and High Scale"| Dynamo["DynamoDB / Aerospike<br/>• Best for: Shopping carts, device tokens"]
 
-    Access -- Massive Write-Heavy Events --> LSM["Wide-Column / LSM (Cassandra, ScyllaDB)\n• Best for: Telemetry, chat history, audit logs\n• Write optimized, eventual consistency"]
+    Access -- Massive Write-Heavy Events --> LSM["Wide-Column / LSM (Cassandra, ScyllaDB)<br/>• Best for: Telemetry, chat history, audit logs<br/>• Write optimized, eventual consistency"]
 
-    Access -- Hierarchical / Variable Schema --> Doc["Document DB (MongoDB, Cosmos DB)\n• Best for: Product catalogs, user profiles"]
+    Access -->|"Hierarchical / Variable Schema"| Doc["Document DB (MongoDB, Cosmos DB)<br/>• Best for: Product catalogs, user profiles"]
 
-    Access -- Time-stamped Metrics --> TS["Time-Series DB (TimescaleDB, InfluxDB)\n• Best for: IoT sensors, financial tick data"]
+    Access -- Time-stamped Metrics --> TS["Time-Series DB (TimescaleDB, InfluxDB)<br/>• Best for: IoT sensors, financial tick data"]
 
-    Access -- Free-text / Fuzzy Search --> Search["Search Engine (Elasticsearch, OpenSearch)\n• Inverted index, tokenization, BM25 ranking"]
+    Access -- Free-text / Fuzzy Search --> Search["Search Engine (Elasticsearch, OpenSearch)<br/>• Inverted index, tokenization, BM25 ranking"]
 
-    Access -- Highly interconnected graph --> Graph["Graph DB (Neo4j, Amazon Neptune)\n• Best for: Social graphs, fraud rings, knowledge trees"]
+    Access -->|"Highly interconnected graph"| Graph["Graph DB (Neo4j, Amazon Neptune)<br/>• Best for: Social graphs, fraud rings, knowledge trees"]
 ```
 
 ### Database Comparison Matrix
@@ -289,9 +289,9 @@ When an interviewer throws a curveball follow-up question, use this universal 4-
 
 ```mermaid
 flowchart LR
-    A["1. Pause & Clarify\n(Restate question, isolate constraint)"] --> B["2. State Bottleneck\n(Pinpoint exact component that breaks)"]
-    B --> C["3. Propose Solution\n(Scale component & address side effects)"]
-    C --> D["4. Discuss Tradeoffs\n(Cost, consistency, & latency impacts)"]
+    A["1. Pause & Clarify<br/>(Restate question, isolate constraint)"] --> B["2. State Bottleneck<br/>(Pinpoint exact component that breaks)"]
+    B --> C["3. Propose Solution<br/>(Scale component & address side effects)"]
+    C --> D["4. Discuss Tradeoffs<br/>(Cost, consistency, & latency impacts)"]
 ```
 
 ### Scenario 1: "What happens when traffic increases 10x / 100x?"

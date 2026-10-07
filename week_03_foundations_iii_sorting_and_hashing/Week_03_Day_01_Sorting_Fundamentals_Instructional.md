@@ -337,6 +337,26 @@ public static void BubbleSort(int[] a)
 }
 ```
 
+#### Python Implementation (Bubble with Early Termination)
+
+```python
+def bubble_sort(arr: list[int]) -> list[int]:
+    """Bubble sort with early termination on zero swaps.
+    
+    Time: O(N) best, O(N^2) average/worst | Space: O(1) auxiliary
+    """
+    n = len(arr)
+    for pass_num in range(n - 1):
+        swapped = False
+        for j in range(n - 1 - pass_num):
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                swapped = True
+        if not swapped:
+            break
+    return arr
+```
+
 #### Bubble Optimization: Last Swap Boundary
 If the last swap during a pass occurred at index `k`, then everything after `k` is already in order for the next pass. That means we can shrink the next scan range more aggressively than `n-1-pass`.
 
@@ -362,6 +382,25 @@ public static void BubbleSort_LastSwap(int[] a)
         end = lastSwap;
     }
 }
+```
+
+#### Python Implementation (Bubble with Last Swap Boundary)
+
+```python
+def bubble_sort_last_swap(arr: list[int]) -> list[int]:
+    """Bubble sort tracking the last swap boundary to aggressively shrink the search range.
+    
+    Time: O(N) best, O(N^2) worst | Space: O(1) auxiliary
+    """
+    end = len(arr) - 1
+    while end > 0:
+        last_swap = 0
+        for j in range(end):
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                last_swap = j
+        end = last_swap
+    return arr
 ```
 
 > **⚠️ Watch Out:** Bubble sort can be written in many ways. If you can’t explain why your loop bounds match your invariant, you’re one off-by-one away from a bug.
@@ -483,6 +522,25 @@ public static void SelectionSort(int[] a)
 }
 ```
 
+#### Python Implementation (Selection Sort)
+
+```python
+def selection_sort(arr: list[int]) -> list[int]:
+    """Selection sort: exactly n - 1 swaps, O(N^2) comparisons.
+    
+    Time: O(N^2) best/avg/worst | Space: O(1) auxiliary | Unstable
+    """
+    n = len(arr)
+    for i in range(n - 1):
+        min_idx = i
+        for j in range(i + 1, n):
+            if arr[j] < arr[min_idx]:
+                min_idx = j
+        if min_idx != i:
+            arr[i], arr[min_idx] = arr[min_idx], arr[i]
+    return arr
+```
+
 #### Stable Selection Sort Variant (Shift-Based)
 To make selection sort stable, you cannot swap the minimum across equals.
 
@@ -518,6 +576,28 @@ public static void StableSelectionSort(int[] a)
         a[i] = minValue;
     }
 }
+```
+
+#### Python Implementation (Stable Selection Sort)
+
+```python
+def stable_selection_sort(arr: list[int]) -> list[int]:
+    """Stable selection sort using block shifts instead of long swaps.
+    
+    Time: O(N^2) comparisons and shifts | Space: O(1) auxiliary | Stable
+    """
+    n = len(arr)
+    for i in range(n - 1):
+        min_idx = i
+        for j in range(i + 1, n):
+            if arr[j] < arr[min_idx]:
+                min_idx = j
+        min_val = arr[min_idx]
+        while min_idx > i:
+            arr[min_idx] = arr[min_idx - 1]
+            min_idx -= 1
+        arr[i] = min_val
+    return arr
 ```
 
 > **⚠️ Watch Out:** Stable selection sort is rarely used, but it’s a great interview demonstration that you understand stability as a mechanical constraint, not just a buzzword.
@@ -641,6 +721,24 @@ public static void InsertionSort(int[] a)
 }
 ```
 
+#### Python Implementation (Insertion Sort)
+
+```python
+def insertion_sort(arr: list[int]) -> list[int]:
+    """Adaptive insertion sort: O(N) best case, stable, in-place.
+    
+    Time: O(N + I) where I is inversion count; O(N^2) worst | Space: O(1) auxiliary
+    """
+    for i in range(1, len(arr)):
+        key = arr[i]
+        j = i - 1
+        while j >= 0 and arr[j] > key:
+            arr[j + 1] = arr[j]
+            j -= 1
+        arr[j + 1] = key
+    return arr
+```
+
 #### Binary Insertion Sort (Comparison Optimization)
 Insertion sort spends time in two places:
 
@@ -679,7 +777,30 @@ public static void BinaryInsertionSort(int[] a)
 }
 ```
 
-> **⚠️ Watch Out:** The line `if (a[mid] <= key) lo = mid + 1;` is chosen intentionally to keep stability by inserting after existing equals.
+#### Python Implementation (Binary Insertion Sort)
+
+```python
+def binary_insertion_sort(arr: list[int]) -> list[int]:
+    """Binary insertion sort: binary search finds insertion index in O(log i).
+    
+    Time: O(N log N) comparisons, O(N^2) shifts | Space: O(1) auxiliary | Stable
+    """
+    for i in range(1, len(arr)):
+        key = arr[i]
+        lo, hi = 0, i
+        while lo < hi:
+            mid = (lo + hi) // 2
+            if arr[mid] <= key:
+                lo = mid + 1
+            else:
+                hi = mid
+        for j in range(i, lo, -1):
+            arr[j] = arr[j - 1]
+        arr[lo] = key
+    return arr
+```
+
+> **⚠️ Watch Out:** The line `if (arr[mid] <= key) lo = mid + 1` (or `a[mid] <= key` in C#) is chosen intentionally to keep stability by inserting after existing equals.
 
 ---
 
@@ -769,20 +890,36 @@ The syllabus points to three classic wins. Let’s expand them as engineering de
    - Many production sorts partition a big array and then “finish” using insertion sort on tiny partitions.
    - This is a best-of-both-worlds approach: `O(n log n)` structure with `O(n²)` behavior only on very small `n`.
 
-### 🏭 Real-World Systems
-These are “engineering stories” that explain *why* these sorts persist.
+### 🏭 Real-World Systems & Engineering Context
 
-**Story 1: The “small partition” inside a fast sort.**
-In large-scale sorting, the outer algorithm (like quicksort or a merge-based hybrid) quickly reduces the problem into small regions. At that point, continuing to recurse or allocate buffers can cost more than it saves. Insertion sort, with its tight inner loop and cache-friendly shifts, often acts as the last-mile optimizer. The big-O headline stays `O(n log n)`, but the constant factors drop.
+> [!NOTE]
+> **Production Engineering Context:** While general-purpose sorting frameworks utilize `O(N log N)` paradigms, elementary sorts—specifically Insertion Sort—remain critical production primitives. Modern runtimes (including Python's TimSort, Java's Dual-Pivot QuickSort, and .NET's Introsort) switch to Insertion Sort as a base-case threshold (typically `N <= 16` to `32`). At small array sizes, CPU cache lines (64 bytes) accommodate the entire partition, branch prediction stabilizes, and the `O(N)` adaptive shift mechanism avoids recursive call stack and memory allocation overhead. Furthermore, Insertion Sort preserves stability, making it essential for multi-key sorting pipelines.
 
-**Story 2: Stable multi-key ordering in business data.**
-Consider an analytics dashboard where you sort transactions by `riskScore`, and inside ties you must keep the order by `createdAt` because users expect time order. If the second-stage sort is stable, you can build correct multi-key ordering by successive sorts (secondary first, then primary stable sort). That is not only about aesthetics; it prevents subtle bugs where the UI “shuffles” equal items across refreshes.
+### 📊 Complexity Deconstruction
 
-**Story 3: Sorting as a preprocessing step for linear-time pipelines.**
-Many algorithms become simple once data is sorted: merging intervals, removing duplicates, two-pointer scanning, binary searching for boundaries. Sometimes the right engineering move is to pay an `O(n log n)` sort once and then run a clean `O(n)` pipeline. Understanding elementary sorts makes that design pattern easier to trust because you understand exactly what sorting guarantees.
+| Algorithm | Best-Case Time | Average-Case Time | Worst-Case Time | Auxiliary Space | Output Space | In-Place? | Stable? | Key Invariant |
+| :--- | :--- | :--- | :--- | :--- | :--- | :---: | :---: | :--- |
+| **Bubble Sort** | `O(N)` | `O(N^2)` | `O(N^2)` | `O(1)` | `O(1)` | Yes | Yes | Suffix `[N-1-pass..N-1]` is sorted and in final position. |
+| **Selection Sort** | `O(N^2)` | `O(N^2)` | `O(N^2)` | `O(1)` | `O(1)` | Yes | No | Prefix `[0..i]` contains `i+1` smallest elements in sorted order. |
+| **Insertion Sort** | `O(N)` | `O(N^2)` | `O(N^2)` | `O(1)` | `O(1)` | Yes | Yes | Prefix `[0..i-1]` is sorted; element `i` shifts into place (`O(N + I)` where `I` = inversions). |
+| **Binary Insertion Sort**| `O(N log N)` comp | `O(N^2)` shifts | `O(N^2)` shifts | `O(1)` | `O(1)` | Yes | Yes | Binary search locates slot in `O(log i)`, block copy shifts right. |
 
-**Story 4: Debugging and test oracles.**
-When implementing a complex algorithm, engineers often need a trusted baseline to validate outputs. A straightforward insertion sort (even if slow for large inputs) can be used in unit tests for small cases as a correctness oracle. This is the same reason we learn “simple but correct” algorithms early: they become building blocks for verifying harder ones.
+- **Time Complexity Nuances:** Insertion sort runs in `O(N + I)` time where `I` is the number of inverted pairs. If each element is at most `k` positions from its sorted position (`k`-sorted array), insertion sort executes in deterministic `O(N * k)` time.
+- **Auxiliary Space:** Strict `O(1)` memory. Only a fixed number of CPU registers (`i`, `j`, `key`, `min_idx`, `swapped`) are allocated on the stack. No heap allocation.
+- **Output Space:** `O(1)` as operations mutate the input buffer in-place.
+
+### 🎙️ 45-Minute Interview Verbal Script
+
+**Interviewer:** *"Can you explain the trade-offs between Bubble, Selection, and Insertion sort, and explain why modern language runtimes still use any of them?"*
+
+**Candidate Verbal Response:**
+> "In elementary comparison-based sorting, all three algorithms have an `O(N^2)` worst-case time bound and operate in-place with `O(1)` auxiliary space. However, their mechanical behavior differs fundamentally:
+> 
+> 1. **Bubble Sort** performs adjacent comparisons and swaps, bubbling the largest unsorted element to the end. With an early-exit flag on zero swaps, it achieves `O(N)` best-case time on already-sorted arrays, but incurs high write amplification due to frequent pairwise swaps.
+> 2. **Selection Sort** finds the global minimum of the unsorted suffix and places it at the front. It makes exactly `N - 1` swaps, which minimizes writes if write costs are high, but it always executes `O(N^2)` comparisons regardless of input order and is inherently unstable.
+> 3. **Insertion Sort** incrementally inserts the current element into a sorted prefix via rightward shifts. It is both stable and adaptive: its runtime is proportional to `O(N + I)`, where `I` is the number of inversions. On a nearly-sorted or `k`-sorted array, it runs in linear `O(N)` time.
+> 
+> Modern production runtimes—like Python's TimSort, Java's Dual-Pivot QuickSort, and C# / C++ Introsort—never use Bubble or Selection sort. However, they almost universally rely on Insertion Sort as their base-case cutoff for sub-arrays of size `N <= 16` to `32`. At that scale, the entire sub-array fits in L1 cache, branch predictors anticipate sequential shifts, and the zero-allocation, tight loop of insertion sort outperforms the recursion and divide-and-conquer overhead of QuickSort or MergeSort."
 
 ### Failure Modes & Robustness
 Elementary sorts can “break” in production in ways beyond correctness.
@@ -850,30 +987,6 @@ When should you reach for these algorithms?
 
 ---
 
-## 🧠 5 COGNITIVE LENSES
-
-1. **💻 The Hardware Lens**
-   - Insertion sort’s shifts are sequential writes; CPUs love predictable access.
-   - Swaps increase write traffic; selection’s repeated scans revisit memory frequently.
-
-2. **📉 The Trade-off Lens**
-   - Swaps vs shifts: selection minimizes swaps; insertion minimizes work on nearly-sorted inputs.
-   - Stability vs in-place: stability is semantics, in-place is memory; you often want both.
-
-3. **👶 The Learning Lens**
-   - Most bugs are invariants not understood: wrong loop bounds, wrong comparison condition, breaking stability.
-   - If you can trace one pass precisely, you can debug any sorting algorithm later.
-
-4. **🤖 The AI/ML Lens**
-   - Think of sorting as repeatedly reducing a loss function: inversions are “errors.”
-   - Insertion sort is like local repair: small changes converge quickly when you’re already close.
-
-5. **📜 The Historical Lens**
-   - Elementary sorts were among the earliest widely taught algorithms because they match human intuition.
-   - Modern systems rarely use them alone at scale, but they survive as inner loops inside hybrids.
-
----
-
 ## ⚔️ SUPPLEMENTARY OUTCOMES
 
 ### 🏋️ Practice Problems (8-10)
@@ -923,7 +1036,7 @@ When should you reach for these algorithms?
 - **Stable selection via shifting:** Remove minimum and shift block; stable but more writes.
 - **Inversion counting via merge sort (preview):** Efficient `O(n log n)` inversion count bridges directly to Day 2.
 - **Sorting networks (conceptual):** Fixed comparison patterns; connects to hardware predictability.
-- **Comparison lower bound (preview):** Any comparison-based sort needs `Ω(n log n)` comparisons in worst case.
+- **Comparison lower bound (preview):** Any comparison-based sort needs `Omega(n log n)` comparisons in worst case.
 
 ### 📚 External Resources
 - CLRS (Introduction to Algorithms): Sorting basics and stability discussion.

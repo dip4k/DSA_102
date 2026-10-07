@@ -1,12 +1,12 @@
-# 37. High-Throughput URL Shortener & Real-Time Analytics System (TinyURL / Bitly)
+﻿# 37. High-Throughput URL Shortener & Real-Time Analytics System (TinyURL / Bitly)
 
 ## 📌 Problem Context & Motivation
 The **URL Shortener System (TinyURL / Bitly)** is the quintessential Senior Backend & Distributed Systems LLD problem asked across **Google, Microsoft, Meta, Amazon, and Stripe**.
 
 While junior candidates treat this as a simple string-hashing script, Senior and Staff interviews evaluate your mastery across:
-1. **Bijective Base62 Encoding & ID Generation**: Producing compact 7-character URLs ($62^7 \approx 3.52 \text{ trillion}$ permutations) without collision loops.
+1. **Bijective Base62 Encoding & ID Generation**: Producing compact 7-character URLs (`62^7` ≈ 3.52 trillion permutations) without collision loops.
 2. **Distributed ID Generation**: Distributed Atomic Range Allocation (ZooKeeper/Etcd token ranges) vs. Twitter Snowflake vs. Hashing with collision resolution.
-3. **Cache-Aside Architecture**: Multi-tier caching (In-Memory LRU / Redis) supporting $100{,}000+$ read QPS with $< 5\text{ ms}$ redirect latency.
+3. **Cache-Aside Architecture**: Multi-tier caching (In-Memory LRU / Redis) supporting 100,000+ read QPS with under 5ms redirect latency.
 4. **Non-Blocking Asynchronous Click Analytics**: Tracking clicks, geolocations, and referrers using buffered background channels without adding latency to the redirect path.
 5. **HTTP 301 vs. 302/307 Redirect Semantics**: The critical architectural tradeoff between client-side browser caching and server-side analytics accuracy.
 
@@ -15,12 +15,12 @@ While junior candidates treat this as a simple string-hashing script, Senior and
 ## 🎯 CrackingWalnuts 6-Step Methodology Applied
 
 ```mermaid
-flowchart LR
-    A["1. Requirement Mining\n• ShortenUrl & ResolveUrl\n• Custom Aliases & TTL\n• Non-blocking Analytics\n• Rate Limiting & Anti-Scraping"] --> B["2. Class Discovery\n• UrlMapping (Entity)\n• Base62Encoder (Domain Logic)\n• ITokenGenerator (Strategy)\n• ICacheStore & IAnalyticsService"]
-    B --> C["3. Relationships\n• UrlService uses ITokenGenerator\n• UrlService decorates ICacheStore\n• UrlService publishes to ClickChannel"]
-    C --> D["4. Design Patterns\n• Strategy (ID Generation)\n• Cache-Aside Pattern\n• Producer-Consumer Channel\n• Decorator / Interceptor"]
-    D --> E["5. V1 → V4 Evolution\n• V1: Naive MD5 hash substring (collisions!)\n• V2: Central DB Auto-Increment + Base62\n• V3: Distributed Range / Snowflake Token Gen\n• V4: Cache-Aside + Async Channel + Bloom Filter"]
-    E --> F["6. Problem Archetype\nFamily 5: Fast Lookups + Family 7: Senior Distributed Backend"]
+flowchart TD
+    A["1. Requirement Mining<br/>• ShortenUrl & ResolveUrl<br/>• Custom Aliases & TTL<br/>• Non-blocking Analytics<br/>• Rate Limiting & Anti-Scraping"] --> B["2. Class Discovery<br/>• UrlMapping (Entity)<br/>• Base62Encoder (Domain Logic)<br/>• ITokenGenerator (Strategy)<br/>• ICacheStore & IAnalyticsService"]
+    B --> C["3. Relationships<br/>• UrlService uses ITokenGenerator<br/>• UrlService decorates ICacheStore<br/>• UrlService publishes to ClickChannel"]
+    C --> D["4. Design Patterns<br/>• Strategy (ID Generation)<br/>• Cache-Aside Pattern<br/>• Producer-Consumer Channel<br/>• Decorator / Interceptor"]
+    D --> E["5. V1 → V4 Evolution<br/>• V1: Naive MD5 hash substring (collisions!)<br/>• V2: Central DB Auto-Increment + Base62<br/>• V3: Distributed Range / Snowflake Token Gen<br/>• V4: Cache-Aside + Async Channel + Bloom Filter"]
+    E --> F["6. Problem Archetype<br/>Family 5: Fast Lookups + Family 7: Senior Distributed Backend"]
 ```
 
 ---
@@ -32,19 +32,19 @@ flowchart TD
     Client["Client / Browser"] -->|"1. GET /xyz789"| Gateway["API Gateway / Rate Limiter"]
     Gateway -->|"2. ResolveUrl"| Service["UrlShortenerService"]
     
-    subgraph Read Path [< 5ms SLA]
+    subgraph ReadPath ["Read Path (under 5ms SLA)"]
         Service -->|"3. Check Cache"| Cache["L1 In-Memory / L2 Redis Cache"]
         Cache -.->|"Cache Hit"| Service
-        Cache -.->|"Cache Miss"| DB[("Primary Persistent Store\n(CockroachDB / DynamoDB)")]
+        Cache -.->|"Cache Miss"| DB[("Primary Persistent Store<br/>CockroachDB / DynamoDB")]
         DB -.->|"Backfill Cache"| Cache
     end
 
     Service -->|"4. Return 302 Redirect (Original URL)"| Client
     
-    subgraph Async Analytics Path [Non-Blocking Background Stream]
-        Service -->|"5. Enqueue ClickEvent"| Channel["System.Threading.Channels\n(or Kafka / EventHub)"]
+    subgraph AsyncPath ["Async Analytics Path (Non-Blocking Stream)"]
+        Service -->|"5. Enqueue ClickEvent"| Channel["System.Threading.Channels<br/>(or Kafka / EventHub)"]
         Channel --> Worker["Background Analytics Worker"]
-        Worker --> AnalyticsDB[("Click Analytics Store\n(ClickHouse / Snowflake)")]
+        Worker --> AnalyticsDB[("Click Analytics Store<br/>ClickHouse / Snowflake")]
     end
 ```
 
@@ -57,7 +57,7 @@ sequenceDiagram
     participant Service as UrlShortenerService
     participant Cache as ICacheStore (LRU / Redis)
     participant DB as Persistent Storage
-    participant Channel as Channel<ClickEvent>
+    participant Channel as Channel of ClickEvent
     participant Analytics as Background Analytics Engine
 
     User->>Service: ResolveUrl("promo24")
@@ -650,7 +650,7 @@ public static class Program
 | Parameter | Quantitative Metric / Calculation |
 | :--- | :--- |
 | **URL Combinations** | $62^7 = 3{,}521{,}614{,}606{,}208$ ($> 3.52$ Trillion unique URLs with 7 characters). |
-| **Read Latency (SLA)** | $< 5\text{ ms}$ via Cache-Aside (In-Memory / Redis). |
+| **Read Latency (SLA)** | under 5ms via Cache-Aside (In-Memory / Redis). |
 | **Write Throughput** | $O(1)$ lock-free via `Interlocked.Increment` within assigned token range. |
 | **Analytics Overhead** | $O(1)$ non-blocking publish to `System.Threading.Channels` (zero blocking on redirect path). |
 | **Storage at 100M URLs/month** | $100\text{M} \times 500\text{ bytes} \approx 50\text{ GB/month} \rightarrow 3\text{ TB}$ across 5 years (trivially managed by distributed NoSQL). |

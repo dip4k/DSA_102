@@ -1,4 +1,4 @@
-# LLD Problem #23: Snake and Ladder Game (Extensible Board Game Engine)
+﻿# LLD Problem #23: Snake and Ladder Game (Extensible Board Game Engine)
 
 **Tier:** 🟡 Tier 2 (Classic LLD — State & Strategy Mastery)  
 **Problem Family:** 🟡 Family 3 — Stateful Workflow Engine / 🟢 Family 2 — Strategy & Extensible Rules  
@@ -53,12 +53,12 @@ Design a modular, extensible, and thread-safe **Snake and Ladder Game** supporti
 ## 🎯 CrackingWalnuts 6-Step Methodology Applied
 
 ```mermaid
-flowchart LR
-    A["1. Requirement Mining\n• Dynamic N x N\n• Pluggable Dice\n• Special Cells (Snake/Ladder/Mine)\n• Cycle Detection"] --> B["2. Class Discovery\n• Board, Cell, Player\n• ISpecialCell, IDiceStrategy\n• GameController"]
-    B --> C["3. Relationship Modeling\n• Board (1:N) Cells\n• Cell (0:1) ISpecialCell\n• GameController (1:1) Board"]
-    C --> D["4. Pattern Injection\n• Strategy (Dice Roll)\n• Polymorphism (Special Cell)\n• Observer (Event Broadcast)"]
-    D --> E["5. Edge Cases & Concurrency\n• 3 Sixes in a row\n• Overshoot roll\n• Thread-safe turn locking"]
-    E --> F["6. Production Defense\n• Staff-Level Tradeoffs\n• Replay Event Logs"]
+flowchart TD
+    A["1. Requirement Mining<br/>• Dynamic N x N<br/>• Pluggable Dice<br/>• Special Cells (Snake/Ladder/Mine)<br/>• Cycle Detection"] --> B["2. Class Discovery<br/>• Board, Cell, Player<br/>• ISpecialCell, IDiceStrategy<br/>• GameController"]
+    B --> C["3. Relationship Modeling<br/>• Board (1:N) Cells<br/>• Cell (0:1) ISpecialCell<br/>• GameController (1:1) Board"]
+    C --> D["4. Pattern Injection<br/>• Strategy (Dice Roll)<br/>• Polymorphism (Special Cell)<br/>• Observer (Event Broadcast)"]
+    D --> E["5. Edge Cases & Concurrency<br/>• 3 Sixes in a row<br/>• Overshoot roll<br/>• Thread-safe turn locking"]
+    E --> F["6. Production Defense<br/>• Staff-Level Tradeoffs<br/>• Replay Event Logs"]
 ```
 
 ---

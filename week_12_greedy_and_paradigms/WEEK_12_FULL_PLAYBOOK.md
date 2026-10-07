@@ -1,4 +1,4 @@
-# 🟧 WEEK 12: GREEDY ALGORITHMS & PROOFS
+﻿# 🟧 WEEK 12: GREEDY ALGORITHMS & PROOFS
 > 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)
 > 
 > 💡 **Instructor Note:** *This Comprehensive Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
@@ -851,9 +851,9 @@ flowchart TD
 
     R["💼 Job Sequencing with Deadlines & Profits"]:::sort
     R --> S1["1️⃣ Sort all jobs in descending order of profit (Greedy Choice)"]:::sort
-    S1 --> S2["2️⃣ For each job j: Find latest available time slot t <= deadline[j]"]:::slot
+    S1 --> S2["2️⃣ For each job j: Find latest available time slot t &le; deadline[j]"]:::slot
     S2 -->|Slot available| Sched["✅ Schedule job j in slot t<br/>Add profit[j], mark slot t occupied"]:::slot
-    S2 -->|No slot <= deadline[j]| Drop["❌ All prior slots taken: Drop job j"]:::prune
+    S2 -->|No slot &le; deadline[j]| Drop["❌ All prior slots taken: Drop job j"]:::prune
 ```
 
 

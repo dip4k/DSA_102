@@ -1,4 +1,4 @@
-# 📘 Advanced Data Structures
+﻿# 📘 Advanced Data Structures
 
 > 🧭 **Navigation:** [← Previous: Week 15](../week_15_advanced_strings_flow/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 17 →](../week_17_advanced_graphs_hld_fft/README.md)
 
@@ -14,7 +14,7 @@
 Probabilistic Skip Lists, randomized Treaps, dynamic Link-Cut Trees via Splay Trees, persistent path-copying trees, and cache-oblivious designs.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start["Week 16 Start"] --> Daily["Daily Invariant Deep Dives"]
     Daily --> Playbook["Consolidated Playbook & Visuals"]
     Playbook --> DualLang["Dual-Language Practice (C# & Python)"]

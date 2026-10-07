@@ -9,7 +9,7 @@
 **Phase:** D – Algorithm Paradigms  
 **Theme:** Backtracking & Branch & Bound  
 **Core Topics:** Backtracking Fundamentals, Backtracking Problems, Branch & Bound, Amortized Analysis  
-**Format:** Hybrid (Enhanced ASCII + Web Resource Links)  
+**Format:** Hybrid (Enhanced ASCII + State Space Diagrams)  
 **Syllabus Source:** COMPLETE_SYLLABUS.md  
 
 ---
@@ -30,25 +30,6 @@
 | `■` | Processed node | Explored and completed |
 | `⚡` | Best-first search | Priority-based exploration |
 | `📏` | Bound calculation | Lower/upper bounds |
-
----
-
-## 🔗 PROFESSIONAL VISUALIZATION RESOURCES
-
-| Tool | URL | Best For | How to Use |
-|------|-----|----------|------------|
-| **VisuAlgo** | https://visualgo.net/en/recursion | Backtracking animations | Select "Backtracking" → "N-Queens" to watch state space exploration |
-| **Algorithm Visualizer** | https://algorithm-visualizer.org/backtracking/n-queens | N-Queens visualization | Run visualization to see pruning in action |
-| **CS USF** | https://www.cs.usfca.edu/~galles/visualization/DPChange.html | Dynamic visualization | Adapt for amortized analysis examples |
-| **Python Tutor** | https://pythontutor.com/visualize.html | Code execution trace | Paste backtracking code and step through recursion |
-| **Recursion Tree Visualizer** | https://recursion.vercel.app/ | Recursion tree display | Input recursive backtracking function |
-| **GeeksforGeeks Visualizer** | https://www.geeksforgeeks.org/backtracking-algorithms/ | Conceptual diagrams | Read alongside code examples |
-
-**Usage Notes:**
-- **Offline Mode:** All ASCII diagrams in this playbook work without internet
-- **Online Enhancement:** Use tools above for animated, interactive exploration
-- **Learning Path:** Review ASCII diagrams first → Then explore interactive tools
-- **Best Practice:** Draw your own diagrams after reviewing both ASCII and web versions
 
 ---
 
@@ -135,15 +116,19 @@
 
 ### Pattern 1.1: Backtracking Concept & Mechanism
 
-**Interactive Resource:** 🔗 [VisuAlgo Backtracking](https://visualgo.net/en/recursion)
-
 #### Visual 1: Backtracking State Space Tree
 
-
-|  |  |
-| :--- | :--- |
-|  |  |
-
+```text
+State Space Tree Exploration:
+                 Root []
+               /    |    \
+           [1]     [2]     [3]
+          /   \   /   \   /   \
+       [1,2] [1,3] ... ... ...
+        /       \
+     [1,2,3]  [1,3,2]
+      (Sol)    (Sol)
+```
 
 **Explanation:**
 - **State Space Tree**: Represents all possible solution paths
@@ -155,10 +140,12 @@
 
 #### Visual 2: Backtracking Template Structure
 
-
-|  |  |
-| :--- | :--- |
-|  | +-> Backtrack to [1] Remove 2 |
+```text
+Backtracking Execution Flow:
+Choose:   state.Add(choice)
+Explore:  backtrack(state, choices)
+Unchoose: state.Remove(choice)  <-- Backtrack & restore state!
+```
 
 
 **Explanation:**
@@ -411,8 +398,6 @@ Time: O(1) per check vs O(n) scanning
 
 ### Pattern 2.1: N-Queens Problem
 
-**Interactive Resource:** 🔗 [Algorithm Visualizer N-Queens](https://algorithm-visualizer.org/backtracking/n-queens)
-
 #### Visual 1: N-Queens State Space & Pruning
 
 ```
@@ -505,8 +490,6 @@ function solve_nqueens(col, board, solutions):
 
 ### Pattern 2.2: Sudoku Solver
 
-**Interactive Resource:** 🔗 [Sudoku Backtracking Visualizer](https://www.geeksforgeeks.org/backtracking-algorithms/)
-
 #### Visual 1: Sudoku Constraint Checking
 
 
@@ -531,8 +514,6 @@ function solve_nqueens(col, board, solutions):
 ---
 
 ### Pattern 2.3: Permutations & Combinations
-
-**Interactive Resource:** 🔗 [Python Tutor Permutations](https://pythontutor.com/visualize.html)
 
 #### Visual 1: Permutations Generation
 
@@ -759,8 +740,6 @@ O(C(n,k) × k) = O(n choose k × k)
 
 ### Pattern 2.4: Word Search in Grid
 
-**Interactive Resource:** 🔗 [Word Search Visualizer](https://visualgo.net/en/recursion)
-
 #### Visual 1: Word Search with Backtracking
 
 ```
@@ -897,8 +876,6 @@ O(word_length) for recursion stack
 ---
 
 ### Pattern 2.5: Maze Solving
-
-**Interactive Resource:** 🔗 [Maze Solving Visualizer](https://algorithm-visualizer.org/backtracking/maze)
 
 #### Visual 1: Maze Pathfinding
 
@@ -1220,16 +1197,16 @@ All unique permutations preserved
 
 ### Pattern 3.1: Branch & Bound Concept
 
-**Interactive Resource:** 🔗 [Branch & Bound TSP](https://www.geeksforgeeks.org/traveling-salesman-problem-using-branch-and-bound/)
-
 #### Visual 1: Branch & Bound vs Pure Backtracking
 
-
-|  |  |
-| :--- | :--- |
-|  |  |
-|  |  |
-
+```text
+BACKTRACKING (DFS Exhaustion)        BRANCH & BOUND (Best-First + Pruning)
+         Root                                 Root
+        / | \                                / | \
+       A  B  C                              A  B  C
+      / \                                  / \     \
+     D   E (searches all leaves)          D   [Pruned: bound >= best]
+```
 
 **Explanation:**
 - **Backtracking**: Explores all paths, finds best by exhaustion
@@ -1241,14 +1218,11 @@ All unique permutations preserved
 
 #### Visual 2: Branch & Bound State Space Tree
 
-
-| Live Node | ← Currently being explored |
-| :--- | :--- |
-| Dead Node | ← Pruned (bound worse than best) |
-| E-Node | ← Expansion node (generating children) |
-|  |  |
-|  |  |
-|  |  |
+| Node State | Status | Action Taken |
+| :--- | :--- | :--- |
+| **E-Node (Expanding)** | Active in Priority Queue | Generates feasible child branches |
+| **Live Node** | Bound < Current Best | Stored in heap for exploration |
+| **Dead / Pruned Node** | Bound >= Current Best | Discarded immediately without expanding children |
 
 
 **Explanation:**
@@ -1260,8 +1234,6 @@ All unique permutations preserved
 ---
 
 ### Pattern 3.2: TSP with Branch & Bound
-
-**Interactive Resource:** 🔗 [TSP Branch & Bound](https://algorithm-visualizer.org/branch-and-bound/traveling-salesman-problem)
 
 #### Visual 1: TSP Lower Bound Calculation
 
@@ -1345,8 +1317,6 @@ Branches with lower bounds exceeding 80 (such as `[A, B, C]` with bound 95) are 
 ---
 
 ### Pattern 3.3: 0/1 Knapsack with Branch & Bound
-
-**Interactive Resource:** 🔗 [Knapsack Branch & Bound](https://www.cs.usfca.edu/~galles/visualization/DPKnapsack.html)
 
 #### Visual 1: Knapsack Upper Bound (Fractional Relaxation)
 
@@ -1602,8 +1572,6 @@ Guarantees optimal when search completes
 
 ### Pattern 4.1: Amortized Complexity Concept
 
-**Interactive Resource:** 🔗 [Amortized Analysis Explained](https://www.cs.usfca.edu/~galles/visualization/DPChange.html)
-
 #### Visual 1: Amortized Cost vs Worst-Case Cost
 
 
@@ -1631,8 +1599,6 @@ Guarantees optimal when search completes
 
 ### Pattern 4.2: Aggregate Analysis
 
-**Interactive Resource:** 🔗 [Dynamic Array Analysis](https://visualgo.net/en/list)
-
 #### Visual 1: Aggregate Analysis of Dynamic Array
 
 
@@ -1658,8 +1624,6 @@ Guarantees optimal when search completes
 
 ### Pattern 4.3: Accounting Method
 
-**Interactive Resource:** 🔗 [Accounting Method Tutorial](https://www.geeksforgeeks.org/introduction-to-amortized-analysis/)
-
 #### Visual 1: Accounting Method for Stack Multipop
 
 
@@ -1682,8 +1646,6 @@ Guarantees optimal when search completes
 ---
 
 ### Pattern 4.4: Potential Method
-
-**Interactive Resource:** 🔗 [Potential Method Explained](https://www.cs.princeton.edu/courses/archive/fall13/cos521/lecnotes/lec2final.pdf)
 
 #### Visual 1: Potential Method for Binary Counter
 
@@ -1710,8 +1672,6 @@ Guarantees optimal when search completes
 ---
 
 ### Pattern 4.5: Dynamic Array Amortized Analysis (All Three Methods)
-
-**Interactive Resource:** 🔗 [Dynamic Array Comparison](https://www.cs.usfca.edu/~galles/visualization/DynamicArray.html)
 
 #### Visual 1: Three Methods Compared
 
@@ -1860,61 +1820,17 @@ Credit balance: 0 (valid, non-negative)
 
 ---
 
-## 🔗 RECOMMENDED LEARNING RESOURCES
+## 📚 CORE CONCEPT WALKTHROUGHS
 
-### Resource 1: VisuAlgo Backtracking
-- **URL:** https://visualgo.net/en/recursion
-- **Best For:** Backtracking fundamentals, N-Queens visualization
-- **How to Use:**
-  1. Navigate to "Recursion" section
-  2. Select "Backtracking" examples (N-Queens, Sudoku)
-  3. Step through execution to watch state space exploration
-  4. Observe pruning in action (branches cut off)
+### Core Visualizations & Tree Exploration
+- **State Space Tree Exploration:** Systematic depth-first tree descent and choice reversal.
+- **Bounding & Pruning Dynamics:** Optimistic lower/upper bound calculations and priority queue best-first expansion.
+- **Amortized Analysis Frameworks:** Aggregate summation, accounting credit balances, and potential function differences.
 
-### Resource 2: Algorithm Visualizer
-- **URL:** https://algorithm-visualizer.org/backtracking/n-queens
-- **Best For:** Animated backtracking problems
-- **How to Use:**
-  1. Select backtracking category from menu
-  2. Choose specific problem (N-Queens, Sudoku, etc.)
-  3. Run animation at different speeds
-  4. Watch how constraints eliminate branches
-
-### Resource 3: Python Tutor
-- **URL:** https://pythontutor.com/visualize.html
-- **Best For:** Step-by-step recursion and backtracking trace
-- **How to Use:**
-  1. Paste your backtracking code
-  2. Click "Visualize Execution"
-  3. Step through call stack frame-by-frame
-  4. Observe state changes and backtracking
-
-### Resource 4: GeeksforGeeks Branch & Bound
-- **URL:** https://www.geeksforgeeks.org/branch-and-bound-algorithm/
-- **Best For:** TSP and Knapsack branch & bound examples
-- **How to Use:**
-  1. Read conceptual explanation first
-  2. Study TSP example with bounds calculation
-  3. Follow Knapsack fractional relaxation
-  4. Implement examples yourself
-
-### Resource 5: MIT OpenCourseWare 6.046J
-- **URL:** https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2015/
-- **Best For:** Amortized analysis lectures and notes
-- **How to Use:**
-  1. Watch Lecture on Amortized Analysis
-  2. Study three methods (Aggregate, Accounting, Potential)
-  3. Work through problem sets
-  4. Compare your solutions with provided answers
-
-### Resource 6: Competitive Programming Handbook
-- **URL:** https://cses.fi/book/book.pdf (Chapter on Complete Search & Dynamic Programming)
-- **Best For:** Advanced backtracking techniques and optimization
-- **How to Use:**
-  1. Read Chapter 5 (Complete Search) for backtracking
-  2. Study pruning optimization strategies
-  3. Practice problems from CSES Problem Set
-  4. Compare with editorial solutions
+### Conceptual Lecture Alignment
+- "Backtracking & Constraint Satisfaction" — N-Queens row invariants, pruning conditions, and state restoration
+- "Branch & Bound Optimization" — TSP minimum spanning tree relaxation and fractional knapsack bounds
+- "Amortized Analysis Methodologies" — Aggregate, accounting, and physicist's potential functions
 
 ---
 
@@ -1946,7 +1862,7 @@ Credit balance: 0 (valid, non-negative)
 1. Read Pattern 1.1-1.3 thoroughly (30 min)
 2. Trace through state space tree examples manually (20 min)
 3. Implement backtracking template in code (20 min)
-4. Try online visualizers (VisuAlgo) for N-Queens (20 min)
+4. Trace N-Queens state space tree pruning on paper (20 min)
 
 **Day 2: Backtracking Problems (90-120 min)**
 1. Study N-Queens and Sudoku patterns (30 min)
@@ -2028,7 +1944,7 @@ Credit balance: 0 (valid, non-negative)
 
 **Features:**
 - 30+ ASCII diagrams (offline-ready)
-- 6 professional tool links (online enhancement)
+- Self-contained visual state diagrams
 - 20 quiz questions (self-assessment)
 - 6 failure modes (common mistakes)
 - Complete complexity reference
@@ -2075,13 +1991,13 @@ Use this checklist to verify your understanding:
 ### Integration
 - [ ] Completed all 20 quiz questions with correct answers
 - [ ] Reviewed all 6 failure modes and understand fixes
-- [ ] Used at least 2-3 online visualization tools
+- [ ] Traced state space tree and bound pruning on paper
 - [ ] Traced through examples manually on paper
 - [ ] Can explain concepts to peer/interviewer clearly
 
 ### Production Readiness
 - [ ] All diagrams render correctly (ASCII format)
-- [ ] Web resource links accessible and functional
+- [ ] All diagrams self-contained without external dependencies
 - [ ] Content flows logically day-by-day
 - [ ] Complexity tables accurate and complete
 - [ ] No missing sections or incomplete explanations

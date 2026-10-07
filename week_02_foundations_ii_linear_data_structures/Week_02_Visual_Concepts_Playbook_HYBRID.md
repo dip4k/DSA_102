@@ -1,4 +1,4 @@
-# 📊 WEEK 02 VISUAL CONCEPTS PLAYBOOK (HYBRID)
+﻿# 📊 WEEK 02 VISUAL CONCEPTS PLAYBOOK (HYBRID)
 
 > 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)
 > 
@@ -7,8 +7,8 @@
 ---
 
 **Theme:** Static/Dynamic Arrays, Linked Lists, Stacks/Queues/Deques, Binary Search Invariants  
-**Format:** Hybrid (Enhanced ASCII + Web Resource Links + Reference Tools)  
-**Purpose:** Visual-first concept explanation with embedded professional resources
+**Format:** Hybrid (Enhanced ASCII + Architecture & State Diagrams)  
+**Purpose:** Visual-first concept explanation and deep structural intuition
 
 ---
 
@@ -27,18 +27,6 @@
 | `⇄` | Operation or transition |
 | `✓` | Valid state |
 | `✗` | Invalid state |
-| 🔗 | Link to interactive visualization |
-
-### Professional Visualization Resources
-
-| Tool | Resource | Best For |
-|------|----------|----------|
-| **VisuAlgo Arrays** | https://visualgo.net/en/list | Array/List visualizations |
-| **VisuAlgo Binary Search** | https://visualgo.net/en/bst | Binary search trees + search |
-| **Linked List Visualizer** | https://www.cs.usfca.edu/~galles/visualization/LinkedList.html | Linked list operations |
-| **GeeksforGeeks Arrays** | https://www.geeksforgeeks.org/array-data-structure/ | Array concepts & problems |
-| **GeeksforGeeks Linked Lists** | https://www.geeksforgeeks.org/linked-list-set-1-introduction/ | Linked list operations |
-| **GeeksforGeeks Binary Search** | https://www.geeksforgeeks.org/binary-search/ | Binary search guide |
 
 ---
 
@@ -67,8 +55,6 @@
 ---
 
 ### Pattern 1.1: Static Array Memory Layout
-
-**Interactive Resource:** 🔗 [VisuAlgo Arrays](https://visualgo.net/en/list)
 
 #### Visual 1: Contiguous Memory Representation
 
@@ -126,8 +112,6 @@
 
 ### Pattern 2.1: Doubling Strategy & Reallocation
 
-**Interactive Resource:** 🔗 [VisuAlgo Arrays - Resize](https://visualgo.net/en/list)
-
 #### Visual 1: Capacity Growing Process
 
 
@@ -147,13 +131,13 @@
 
 
 ```mermaid
-flowchart LR
+flowchart TD
     classDef cheap fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef resize fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
     classDef total fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
 
     N1["🟢 Normal Insert (N-1 operations)<br/>O(1) write each"]:::cheap
-    N2["🔴 Array Doubling (1 operation)<br/>Allocate 2N & copy elements O(N)"]:::resize
+    N2["🔴 Array Doubling (1 operation)<br/>Allocate 2N and copy elements O(N)"]:::resize
     TOT["📊 Total Aggregate Cost: O(N) for N inserts<br/>Average Amortized Cost: O(1) per insert"]:::total
 
     N1 --> TOT
@@ -189,8 +173,6 @@ flowchart LR
 
 ### Pattern 3.1: Node Structure & Pointer Chaining
 
-**Interactive Resource:** 🔗 [Linked List Visualizer](https://www.cs.usfca.edu/~galles/visualization/LinkedList.html)
-
 #### Visual 1: Singly Linked List in Heap
 
 
@@ -200,9 +182,9 @@ flowchart LR
     classDef node fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
     classDef nullNode fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,color:#616161
 
-    H["🟢 Head: [10 | Next]"]:::headNode
-    N2["📦 Node: [20 | Next]"]:::node
-    N3["📦 Node: [30 | Next]"]:::node
+    H["🟢 Head: [10 | •]"]:::headNode
+    N2["📦 Node: [20 | •]"]:::node
+    N3["📦 Node: [30 | •]"]:::node
     Null["🛑 null"]:::nullNode
 
     H --> N2 --> N3 --> Null
@@ -368,8 +350,6 @@ flowchart LR
 
 ### Pattern 5.1: Invariant & Mid Calculation
 
-**Interactive Resource:** 🔗 [VisuAlgo Binary Search](https://visualgo.net/en/bst)
-
 #### Visual 1: Search Range Halving
 
 
@@ -482,29 +462,14 @@ Step 2: Add 1:
 ## 🎯 WEEK 02 VISUAL SUMMARY TABLE
 
 
-| DAY | TOPIC | Complexity | Key Feature |
+| Day | Topic | Complexity | Key Feature |
 | :--- | :--- | :--- | :--- |
-| 1 | Static Arrays | O(1) access | Contiguous |
-|  | Memory Layout | O(n) insert | memory |
-|  |  | O(1) space |  |
-|  |  |  |  |
-| 2 | Dynamic Array | O(1) amortiz. | Doubling |
-|  | Amortized | O(n) reallocate | strategy |
-|  | Analysis | O(n) capacity |  |
-|  |  |  |  |
-| 3 | Linked Lists | O(n) search | Pointer |
-|  | Pointer Chain | O(1) insert | chaining |
-|  |  | O(n) space | at head |
-|  |  |  |  |
-| 4 | Stack/Queue | O(1) ops | LIFO/FIFO |
-|  | Deques | O(1) space | circular |
-|  |  |  | buffer |
-|  |  |  |  |
-| 5 | Binary Search | O(log n) | Invariant |
-|  | Invariants | O(1) space | halving |
-|  |  |  |  |
-| 6 | Strings/Nums | Conversions O(N) | Encoding & |
-|  | Representations | StringBuilder O(N) | Immutability |
+| **Day 1** | Static Arrays & Memory Layout | `O(1)` access, `O(N)` insert | Contiguous memory allocation & index arithmetic |
+| **Day 2** | Dynamic Arrays & Amortized Analysis | `O(1)` amortized, `O(N)` resize | Geometric doubling strategy & capacity growth |
+| **Day 3** | Linked Lists & Node Chaining | `O(N)` search, `O(1)` insert at head | Discontiguous heap nodes & pointer manipulation |
+| **Day 4** | Stacks, Queues & Deques | `O(1)` push/pop/peek | LIFO/FIFO disciplines & circular ring buffer |
+| **Day 5** | Binary Search & Invariants | `O(log N)` search, `O(1)` space | Search range halving & boundary invariants |
+| **Day 6** | Strings & Character Encodings | `O(N)` conversions & `StringBuilder` | UTF-16 code units & immutability semantics |
 
 
 ---
@@ -525,20 +490,18 @@ Step 2: Add 1:
 
 ---
 
-## 🔗 RECOMMENDED LEARNING RESOURCES
+## 📚 CORE CONCEPT WALKTHROUGHS
 
-### Interactive Visualizations
-1. **VisuAlgo Arrays** (https://visualgo.net/en/list) — Array/List operations
-2. **VisuAlgo Binary Search** (https://visualgo.net/en/bst) — Search and traversal
-3. **Linked List Visualizer** (https://www.cs.usfca.edu/~galles/visualization/LinkedList.html) — Node operations
-4. **GeeksforGeeks Arrays** (https://www.geeksforgeeks.org/array-data-structure/) — Array reference
-5. **GeeksforGeeks Linked Lists** (https://www.geeksforgeeks.org/linked-list-set-1-introduction/) — List operations
-6. **GeeksforGeeks Binary Search** (https://www.geeksforgeeks.org/binary-search/) — Search patterns
+### Core Visualizations & Memory Traces
+- **Contiguous vs Linked Memory:** Array random access vs pointer indirection.
+- **Dynamic Array Geometric Doubling:** Step-by-step capacity expansion and amortized cost.
+- **Queue Ring Buffers:** Head/Tail modular arithmetic and wraparound mechanics.
+- **Binary Search Search Space:** Halving intervals and converging boundary pointers.
 
-### Video Tutorials
-- "Arrays vs Linked Lists" — Trade-offs and when to use each
-- "Binary Search Explained" — Invariant-based thinking
-- "Stack and Queue" — LIFO/FIFO operations visualized
+### Conceptual Lecture Alignment
+- "Arrays vs Linked Lists" — Trade-offs and memory locality
+- "Binary Search Explained" — Invariant-based thinking and branch pruning
+- "Stack and Queue" — LIFO/FIFO operations and circular buffer layouts
 
 ---
 
@@ -552,7 +515,7 @@ Step 2: Add 1:
 
 ### Deep Learning (2-3 hours)
 1. Read playbook + extended subtopics
-2. Visit web resource links for interactive animations
+2. Hand-trace state transitions using visual diagrams
 3. Implement each data structure yourself
 4. Trace operations using playbook visuals
 
@@ -564,7 +527,7 @@ Step 2: Add 1:
 
 ---
 
-**Use web resource links for interactive visualizations while studying!**
+**Review pointer layouts and structural invariants visually while practicing!**
 
 ---
 

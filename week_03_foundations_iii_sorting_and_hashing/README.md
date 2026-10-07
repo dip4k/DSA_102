@@ -1,4 +1,4 @@
-# 📘 Sorting Algorithms, Heaps & Hash Tables
+﻿# 📘 Sorting Algorithms, Heaps & Hash Tables
 
 > 🧭 **Navigation:** [← Previous: Week 02](../week_02_foundations_ii_linear_data_structures/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 04 →](../week_04_core_problem_solving_patterns_i/README.md)
 
@@ -14,7 +14,7 @@
 Understand comparison sorts, divide-and-conquer (Merge & Quick sort), heapify invariants, collision resolution, and rolling hash foundations.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start["Week 03 Start"] --> Daily["Daily Invariant Deep Dives"]
     Daily --> Playbook["Consolidated Playbook & Visuals"]
     Playbook --> DualLang["Dual-Language Practice (C# & Python)"]

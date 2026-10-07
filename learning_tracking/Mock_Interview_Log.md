@@ -1,4 +1,4 @@
-# 🎙️ FAANG Senior / Lead Mock Interview Log
+﻿# 🎙️ FAANG Senior / Lead Mock Interview Log
 
 > **High-Fidelity Tracking for Live 45-Minute Algorithmic Coding Interviews.**  
 > **Target Roles:** Senior Software Engineer (L5 / SDE-III / E5), Lead Software Engineer, Staff Software Engineer (L6 / E6).  
@@ -11,7 +11,7 @@
 In top-tier technical rounds, candidates are assessed on four distinct competency dimensions. A "Hire" decision typically requires an average score of **3.5+** with no pillar below **3.0**.
 
 ```mermaid
-flowchart LR
+flowchart TD
     classDef p1 fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
     classDef p2 fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
     classDef p3 fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20

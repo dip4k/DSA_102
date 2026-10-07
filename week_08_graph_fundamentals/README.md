@@ -1,4 +1,4 @@
-# 📘 Graph Fundamentals & Traversals
+﻿# 📘 Graph Fundamentals & Traversals
 
 > 🧭 **Navigation:** [← Previous: Week 07](../week_07_trees_and_balanced_search_trees/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 09 →](../week_09_graph_algorithms_i/README.md)
 
@@ -14,7 +14,7 @@
 Adjacency lists vs matrices, queue-based BFS shortest paths, recursive/stack DFS, topological sort via Kahn's algorithm, cycle detection, and SCCs.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start["Week 08 Start"] --> Daily["Daily Invariant Deep Dives"]
     Daily --> Playbook["Consolidated Playbook & Visuals"]
     Playbook --> DualLang["Dual-Language Practice (C# & Python)"]

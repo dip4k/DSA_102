@@ -1,4 +1,4 @@
-# 19. Amazon Locker Management System (Allocation, State Machine, Concurrency)
+﻿# 19. Amazon Locker Management System (Allocation, State Machine, Concurrency)
 
 ## 📌 Problem Context & Motivation
 The **Amazon Hub Locker** (or Smart Delivery Kiosk) is a quintessential Tier-1 (Amazon, Flipkart, Google) Low-Level Design question. It evaluates:
@@ -12,12 +12,12 @@ The **Amazon Hub Locker** (or Smart Delivery Kiosk) is a quintessential Tier-1 (
 ## 🎯 CrackingWalnuts 6-Step Methodology Applied
 
 ```mermaid
-flowchart LR
-    A["1. Requirement Mining\n• 4 Locker Sizes\n• 72h Pickup TTL\n• No Double-Booking"] --> B["2. Class Discovery\n• Locker (Entity)\n• LockerCode (Value Object)\n• Package (Value Object)"]
-    B --> C["3. Relationships\n• LockerLocation (1:N) Lockers\n• Locker (1:1) Package"]
-    C --> D["4. Patterns\n• Strategy (Allocation)\n• State Machine (Lifecycle)\n• Observer (Notification)"]
-    D --> E["5. V1 → V4 Evolution\n• Flat List → Size Index → Concurrency Hardened"]
-    E --> F["6. Family Archetype\nFamily 1: Allocation & Concurrency"]
+flowchart TD
+    A["1. Requirement Mining<br/>• 4 Locker Sizes<br/>• 72h Pickup TTL<br/>• No Double-Booking"] --> B["2. Class Discovery<br/>• Locker (Entity)<br/>• LockerCode (Value Object)<br/>• Package (Value Object)"]
+    B --> C["3. Relationships<br/>• LockerLocation (1:N) Lockers<br/>• Locker (1:1) Package"]
+    C --> D["4. Patterns<br/>• Strategy (Allocation)<br/>• State Machine (Lifecycle)<br/>• Observer (Notification)"]
+    D --> E["5. V1 → V4 Evolution<br/>• Flat List → Size Index → Concurrency Hardened"]
+    E --> F["6. Family Archetype<br/>Family 1: Allocation & Concurrency"]
 ```
 
 ---

@@ -1,4 +1,4 @@
-# 🎨 Week 14 Visual Concepts Playbook (Hybrid): Matrices, Bitmasks & Number Theory
+﻿# 🎨 Week 14 Visual Concepts Playbook (Hybrid): Matrices, Bitmasks & Number Theory
 
 > 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)
 > 
@@ -80,13 +80,13 @@ This loop systematically clearing trailing bits and re-activates sub-bits that m
 
 ```mermaid
 graph TD
-    M[Base Mask: 1101] --> |sub - 1 = 1100 <br> AND mask| S1[Submask: 1100]
-    S1 --> |sub - 1 = 1011 <br> AND mask| S2[Submask: 1001]
-    S2 --> |sub - 1 = 1000 <br> AND mask| S3[Submask: 1000]
-    S3 --> |sub - 1 = 0111 <br> AND mask| S4[Submask: 0101]
-    S4 --> |sub - 1 = 0100 <br> AND mask| S5[Submask: 0100]
-    S5 --> |sub - 1 = 0011 <br> AND mask| S6[Submask: 0001]
-    S6 --> |sub - 1 = 0000 <br> AND mask| S7[Submask: 0000 / End]
+    M[Base Mask: 1101] --> |sub - 1 = 1100 <br/> AND mask| S1[Submask: 1100]
+    S1 --> |sub - 1 = 1011 <br/> AND mask| S2[Submask: 1001]
+    S2 --> |sub - 1 = 1000 <br/> AND mask| S3[Submask: 1000]
+    S3 --> |sub - 1 = 0111 <br/> AND mask| S4[Submask: 0101]
+    S4 --> |sub - 1 = 0100 <br/> AND mask| S5[Submask: 0100]
+    S5 --> |sub - 1 = 0011 <br/> AND mask| S6[Submask: 0001]
+    S6 --> |sub - 1 = 0000 <br/> AND mask| S7[Submask: 0000 / End]
 ```
 
 ---

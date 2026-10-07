@@ -1,4 +1,4 @@
-# 📘 Dynamic Programming I: Fundamentals & Core Families
+﻿# 📘 Dynamic Programming I: Fundamentals & Core Families
 
 > 🧭 **Navigation:** [← Previous: Week 09](../week_09_graph_algorithms_i/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 11 →](../week_11_dp_ii_advanced/README.md)
 
@@ -14,7 +14,7 @@
 Demystify DP: transition from brute-force recursion to memoization and iterative tabulation. 1D Knapsack, 2D Grid paths, Edit Distance, LCS, and LIS.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start["Week 10 Start"] --> Daily["Daily Invariant Deep Dives"]
     Daily --> Playbook["Consolidated Playbook & Visuals"]
     Playbook --> DualLang["Dual-Language Practice (C# & Python)"]

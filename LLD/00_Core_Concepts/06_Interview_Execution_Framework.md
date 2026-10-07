@@ -1,4 +1,4 @@
-# 06. The Machine Coding & LLD Interview Execution Framework
+﻿# 06. The Machine Coding & LLD Interview Execution Framework
 
 A successful Low-Level Design (LLD) or Machine Coding interview is rarely won on raw syntax knowledge. Candidates fail because of **poor time management, under-specified requirements, over-engineering too early, or writing untestable code**.
 
@@ -12,11 +12,11 @@ Never start by blindly coding or sketching random classes. Use this funnel to sy
 
 ```mermaid
 flowchart TD
-    S1["1. Requirement Mining\n(Extract functional rules, scale, invariants, & out-of-scope boundaries)"] --> S2["2. Class Discovery\n(Categorize into Entities, Value Objects, & Domain Services)"]
-    S2 --> S3["3. Relationship Discovery\n(Establish 1:1, 1:N, M:N; Composition vs Aggregation; Ownership)"]
-    S3 --> S4["4. Pattern Selection\n(Apply GoF patterns ONLY when forced by explicit variance drivers)"]
-    S4 --> S5["5. Design Evolution (V1 → V4)\n(Naive Baseline → Decoupled Patterns → O(1) Indexing → Concurrency & Fault Tolerance)"]
-    S5 --> S6["6. 'You've Seen This Before'\n(Anchor to known Problem Archetypes & reuse mental models)"]
+    S1["1. Requirement Mining<br/>(Extract functional rules, scale, invariants, & out-of-scope boundaries)"] --> S2["2. Class Discovery<br/>(Categorize into Entities, Value Objects, & Domain Services)"]
+    S2 --> S3["3. Relationship Discovery<br/>(Establish 1:1, 1:N, M:N; Composition vs Aggregation; Ownership)"]
+    S3 --> S4["4. Pattern Selection<br/>(Apply GoF patterns ONLY when forced by explicit variance drivers)"]
+    S4 --> S5["5. Design Evolution (V1 → V4)<br/>(Naive Baseline → Decoupled Patterns → O(1) Indexing → Concurrency & Fault Tolerance)"]
+    S5 --> S6["6. 'You've Seen This Before'<br/>(Anchor to known Problem Archetypes & reuse mental models)"]
 ```
 
 1. **Step 1: Requirement Mining**: Extract hard business constraints and explicit exclusions. Identify the primary happy path, failure states, and concurrency expectations (e.g., can two users book the same locker simultaneously?).
@@ -29,11 +29,11 @@ flowchart TD
    - *Aggregation* (Package is temporarily held by a Locker).
    - *Multiplicity* (1 Kiosk has N Lockers; 1 Customer has M Bookings).
 4. **Step 4: Pattern Selection (Just-in-Time)**:
-   - Does allocation or pricing change? $\rightarrow$ **Strategy Pattern**.
-   - Do entities transition through distinct valid stages? $\rightarrow$ **State Pattern**.
-   - Do decoupled subsystems need asynchronous notifications? $\rightarrow$ **Observer Pattern**.
-   - Do external providers need uniform contracts? $\rightarrow$ **Adapter / Factory Pattern**.
-5. **Step 5: Design Evolution (V1 $\rightarrow$ V4)**:
+   - Does allocation or pricing change? -> **Strategy Pattern**.
+   - Do entities transition through distinct valid stages? -> **State Pattern**.
+   - Do decoupled subsystems need asynchronous notifications? -> **Observer Pattern**.
+   - Do external providers need uniform contracts? -> **Adapter / Factory Pattern**.
+5. **Step 5: Design Evolution (V1 -> V4)**:
    - **V1**: Naive working baseline (in-memory list, linear scan).
    - **V2**: Pattern decoupling (interfaces, dependency injection, OCP).
    - **V3**: Algorithmic scalability (indexing, hash lookups, balanced trees).
@@ -109,7 +109,7 @@ gantt
 Never start coding immediately. Spend the first 10 minutes asking targeted questions categorized into these 5 dimensions:
 
 ### A. Functional Scope (Features)
-* *"What is the primary happy path?"* (e.g., Rider books cab $\rightarrow$ Driver assigned $\rightarrow$ Ride completes $\rightarrow$ Payment recorded).
+* *"What is the primary happy path?"* (e.g., Rider books cab -> Driver assigned -> Ride completes -> Payment recorded).
 * *"What features are explicitly out of scope for today?"* (e.g., Promo codes, multi-destination stops, driver ratings).
 * *"Are there multiple user personas or roles?"* (e.g., Customer, Admin, Vendor, Driver).
 
@@ -137,12 +137,12 @@ Never start coding immediately. Spend the first 10 minutes asking targeted quest
 When given an ambiguous prompt, use this systematic linguistic parsing technique:
 
 ```mermaid
-flowchart LR
+flowchart TD
     Text["Problem Statement"] --> Nouns["Nouns / Substantives"]
     Text --> Verbs["Verbs / Actions"]
-    Nouns --> Entities["Entities & Value Objects"]
-    Verbs --> Services["Domain Services & Commands"]
-    Entities --> Invariants["Encapsulation & Validation"]
+    Nouns --> Entities["Entities and Value Objects"]
+    Verbs --> Services["Domain Services and Commands"]
+    Entities --> Invariants["Encapsulation and Validation"]
     Services --> Patterns["Design Patterns (Strategy, State, etc.)"]
 ```
 
@@ -159,9 +159,9 @@ flowchart LR
    * **Services**: `TripService`, `MatchingService`, `PricingService`, `PaymentService`.
 
 3. **Identify Variation Points**:
-   * Driver matching logic varies (Nearest Driver vs Highest-Rated Driver) $\rightarrow$ `IDriverMatchingStrategy`.
-   * Fare calculation varies (Standard vs Surge vs Night-time) $\rightarrow$ `IPricingStrategy`.
-   * Trip lifecycle has transitions $\rightarrow$ State transitions guarded inside `Trip` aggregate.
+   * Driver matching logic varies (Nearest Driver vs Highest-Rated Driver) -> `IDriverMatchingStrategy`.
+   * Fare calculation varies (Standard vs Surge vs Night-time) -> `IPricingStrategy`.
+   * Trip lifecycle has transitions -> State transitions guarded inside `Trip` aggregate.
 
 ---
 
@@ -246,5 +246,5 @@ Before telling the interviewer you are finished, verify:
 * [ ] Is every shared in-memory collection thread-safe?
 * [ ] Did I demonstrate both the happy path and at least two edge-case failures in `Main()`?
 * [ ] Can I verbally explain *why* I picked this design pattern over alternatives?
-* [ ] Have I walked through the V1 $\rightarrow$ V4 evolution with the interviewer?
+* [ ] Have I walked through the V1 -> V4 evolution with the interviewer?
 

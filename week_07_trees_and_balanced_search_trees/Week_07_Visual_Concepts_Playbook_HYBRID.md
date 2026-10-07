@@ -1,4 +1,4 @@
-# 📊 WEEK 7: Trees & Balanced Search Trees — Visual Hybrid Support Guide
+﻿# 📊 WEEK 7: Trees & Balanced Search Trees — Visual Hybrid Support Guide
 
 > 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)
 > 
@@ -35,7 +35,7 @@
 ### 📌 🌲 General Hierarchical Tree
 
 - **🌿 Binary Tree (At Most 2 Children)**
-  - **⚖️ Binary Search Tree (Left < Root < Right)**
+  - **⚖️ Binary Search Tree (Left &lt; Root &lt; Right)**
     - 🛡️ Balanced BST: AVL Tree (Height Invariant |Δh| <= 1)
     - 🔴⚫ Balanced BST: Red-Black Tree (O(log N) Guarantee)
 - 📚 Multiway Trees: Tries & B-Trees
@@ -82,7 +82,7 @@ flowchart TD
             C2 --> C5["5"]
             C2 --> C6["6"]
         end
-        subgraph Balanced["Balanced Tree (|Δh| <= 1)"]
+        subgraph Balanced["Balanced Tree (|Δh| &le; 1)"]
             B1["1"] --> B2["2"]
             B1 --> B3["3"]
             B2 --> B4["4"]
@@ -199,7 +199,7 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    subgraph ValidBST["✅ Valid BST (Left < Root < Right)"]
+    subgraph ValidBST["✅ Valid BST (Left &lt; Root &lt; Right)"]
         V5["5"] --> V3["3"]
         V5 --> V7["7"]
         V3 --> V1["1"]
@@ -207,11 +207,11 @@ flowchart TD
         V7 --> V9["9"]
     end
 
-    subgraph InvalidBST["❌ Violates Invariant (6 < 5 in right subtree)"]
+    subgraph InvalidBST["❌ Violates Invariant (6 &lt; 5 in right subtree)"]
         I5["5"] --> I3["3"]
         I5 --> I8["8"]
         I3 --> I1["1"]
-        I8 --> I6["6 (Illegal: 6 < 5)"]:::errorNode
+        I8 --> I6["6 (Illegal: 6 &lt; 5)"]:::errorNode
     end
 
     classDef default fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#ffffff
@@ -224,7 +224,7 @@ Searching for target key `6`:
 
 ```mermaid
 flowchart TD
-    S5["1️⃣ Root 5 (6 > 5 -> Go Right)"]:::searchStep --> S7["2️⃣ Node 7 (6 < 7 -> Go Left)"]:::searchStep
+    S5["1️⃣ Root 5 (6 > 5 -> Go Right)"]:::searchStep --> S7["2️⃣ Node 7 (6 &lt; 7 -> Go Left)"]:::searchStep
     S5 -.-> S3["Node 3"]
     S7 --> SNull["3️⃣ Left is null -> NOT FOUND ❌"]:::nullStep
     S7 -.-> S9["Node 9"]
@@ -262,7 +262,7 @@ flowchart TD
 ### BST Deletion Cases
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph Case1["Case 1: Leaf Deletion (Delete 4)"]
         direction TB
         subgraph C1B["Before"]
@@ -286,7 +286,7 @@ flowchart LR
 ```
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph Case2["Case 2: Single Child Deletion (Delete 7)"]
         direction TB
         subgraph C2B["Before"]
@@ -328,7 +328,7 @@ flowchart TD
 ### Degenerate Tree (Sorted Input)
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph Degenerate["❌ Adversarial Sorted Input: [1, 2, 3, 4, 5]"]
         direction TB
         D1["1"] --> D2["2"]
@@ -359,7 +359,7 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    subgraph BalancedAVL["✅ Balanced AVL (|BF| <= 1)"]
+    subgraph BalancedAVL["✅ Balanced AVL (|BF| &le; 1)"]
         B5["5 (BF: 0)"] --> B3["3 (BF: 0)"]
         B5 --> B7["7 (BF: 0)"]
         B3 --> B1["1 (BF: 0)"]
@@ -571,7 +571,7 @@ flowchart TD
 ### Serialization — Preorder with Null Markers
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph TreeStructure["Original Tree"]
         direction TB
         T1["1"] --> T2["2"]
@@ -635,7 +635,7 @@ Find `3`-rd smallest element (`k = 3`) in augmented tree:
 
 ```mermaid
 flowchart TD
-    Q5["1️⃣ Root 5 (size: 7)<br/>leftSize(3) = 3 >= k(3) -> Go Left"]:::stepNode --> Q3["2️⃣ Node 3 (size: 3)<br/>leftSize(1) = 1 < k(3) -> Go Right with k'=3-1-1=1"]:::stepNode
+    Q5["1️⃣ Root 5 (size: 7)<br/>leftSize(3) = 3 >= k(3) -> Go Left"]:::stepNode --> Q3["2️⃣ Node 3 (size: 3)<br/>leftSize(1) = 1 &lt; k(3) -> Go Right with k'=3-1-1=1"]:::stepNode
     Q3 --> Q4["3️⃣ Node 4 (size: 1)<br/>leftSize(0) + 1 == k'(1) -> Found! ✅"]:::foundNode
     Q3 -.-> Q1["Node 1 (size: 1)"]
 
@@ -652,8 +652,8 @@ Find the rank of `6` (count of keys `<= 6`):
 
 ```mermaid
 flowchart TD
-    R5["1️⃣ Node 5: 6 > 5 -> Go Right<br/>Accumulate leftSize + 1 = 3 + 1 = 4"]:::accNode --> R8["2️⃣ Node 8: 6 < 8 -> Go Left<br/>No accumulation"]:::stepNode
-    R8 --> R7["3️⃣ Node 7: 6 < 7 -> Go Left<br/>Left is null -> Terminate"]:::stepNode
+    R5["1️⃣ Node 5: 6 > 5 -> Go Right<br/>Accumulate leftSize + 1 = 3 + 1 = 4"]:::accNode --> R8["2️⃣ Node 8: 6 &lt; 8 -> Go Left<br/>No accumulation"]:::stepNode
+    R8 --> R7["3️⃣ Node 7: 6 &lt; 7 -> Go Left<br/>Left is null -> Terminate"]:::stepNode
 
     classDef accNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
     classDef stepNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
@@ -676,7 +676,7 @@ Actually in range: 4, 5, 7, 8 ✓
 ### Augmentation Maintenance During Insertion
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph BeforeInsert["Before: Root size = 7"]
         direction TB
         B5["5 (size: 7)"] --> B3["3 (size: 3)"]
@@ -694,7 +694,7 @@ flowchart LR
         A7 --> A6["6 (size: 1 🆕)"]:::newNode
     end
 
-    BeforeInsert ==>|"Insert 6 & Increment Ancestors"| AfterInsert
+    BeforeInsert ==>|"Insert 6 and Increment Ancestors"| AfterInsert
 
     classDef updateNode fill:#1565c0,stroke:#90caf9,stroke-width:2px,color:#ffffff
     classDef newNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
@@ -791,7 +791,7 @@ flowchart TD
 ### Core Algorithmic Mechanics
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph LeftRotate["Left Rotate around x"]
         direction TB
         LX["x"] --> LY["y"]

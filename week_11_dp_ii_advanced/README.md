@@ -1,4 +1,4 @@
-# 📘 Dynamic Programming II: Advanced State Spaces
+﻿# 📘 Dynamic Programming II: Advanced State Spaces
 
 > 🧭 **Navigation:** [← Previous: Week 10](../week_10_dynamic_programming_i_fundamentals/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 12 →](../week_12_greedy_and_paradigms/README.md)
 
@@ -14,7 +14,7 @@
 Tree DP (diameter and vertex covers), DAG topological path counting, bitmask subset DP (TSP), and state-space space-saving rolling buffer optimizations.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start["Week 11 Start"] --> Daily["Daily Invariant Deep Dives"]
     Daily --> Playbook["Consolidated Playbook & Visuals"]
     Playbook --> DualLang["Dual-Language Practice (C# & Python)"]

@@ -1,12 +1,8 @@
-# 📚 Week 05 Day 03: Merge Operations & Interval Patterns (Engineering Guide)
-
-
-
-
+# 📚 Week 05 Day 03: Merge Operations & Interval Patterns — Engineering Guide
 
 > 🧭 **Navigation:** [← Previous Day](Week_05_Day_02_Monotonic_Stack_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_05_Day_04_Part_A_Partition_Cyclic_Sort_Instructional.md)
 > 
-> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Focus on the core interval invariants and the three-phase insertion mechanics according to your interview timeline.*
 
 ---
 
@@ -14,43 +10,34 @@
 
 By the end of this chapter, you will be able to:
 
-- **Internalize** interval merging as a sorting + linear scan pattern
-- **Implement** merge intervals, insert interval, and merge K lists without solutions
-- **Evaluate** trade-offs between greedy merging vs. heap vs. advanced data structures
-- **Connect** interval patterns to real calendar/scheduling systems
-- **Recognize** when problems decompose into interval/merge subproblems
+- 🎯 **Internalize** the sorting-as-enabler principle: sorting by interval start time transforms an intractable `O(N^2)` combinatorial overlap problem into an `O(N log N)` sort followed by a greedy `O(N)` linear merge.
+- ⚙️ **Implement** Merge Intervals, Insert Interval, Meeting Rooms II, and Merge K Sorted Lists in modern C# (.NET 8/9) and Python (3.11+).
+- ⚖️ **Evaluate** trade-offs between two-pointer boundary sweeps, min-heaps, and segment trees for interval scheduling.
+- 🏭 **Connect** interval merges to production systems (distributed calendar availability, Linux OS process scheduler slices, cloud autoscaling reservation windows).
+- 🎙️ **Articulate** boundary invariants and edge-case contracts flawlessly during a 45-minute technical interview.
 
 ---
 
 ## 📖 CHAPTER 1: CONTEXT & MOTIVATION
 
-### The Engineering Challenge
+### The Engineering Problem
 
-You're building Google Calendar. Users book meetings: `[(1,3), (2,6), (8,10), (15,18)]` where each tuple is `(start_time, end_time)`.
+Managing overlapping resource commitments is a ubiquitous systems challenge. Whether scheduling conference rooms across enterprise teams, consolidating network maintenance outages, or allocating CPU burst windows in cloud clusters, systems receive sets of contiguous spans defined by `[start, end]`.
 
-Problem: **Merge overlapping meetings to show free time blocks.**
+In an unsorted collection of intervals, determining whether any interval overlaps with any other requires checking all pairs, taking `O(N^2)` time. Moreover, resolving chained overlaps (where interval A touches B, and B touches C) requires complex graph-connected components.
 
-Without merging: You'd show 4 separate busy periods, but really it's 3: `[(1,6), (8,10), (15,18)]`.
+By **sorting intervals by start time**, we establish a crucial directional property: every interval that could possibly merge with the current interval must appear immediately after it.
 
-**Naive Approach:** For each interval, check all others for overlaps → O(n²)
+> [!NOTE]
+> **Production Reality (Why FAANG Tests This):**
+> Enterprise calendar engines (Google Calendar, Outlook) and cloud hypervisors (AWS EC2, Kubernetes pod allocators) process millions of temporal intervals daily to detect conflicts and calculate free blocks. Interviewers test interval manipulation to evaluate whether you recognize that an initial `O(N log N)` sort removes spatial ambiguity, unlocking optimal greedy linear scans.
 
-**Better Approach:** Sort by start time, then merge adjacent overlaps in one pass → O(n log n)
+### The Solution: The Interval Invariant
 
-But here's the deeper insight: Sorting **enables** the linear merge. This is a pattern you'll see repeatedly: expensive pre-processing (sort) enables simple processing (linear scan).
-
-### The Solution: Interval-Centric Thinking
-
-Interval problems solve:
-- **Merge intervals:** Combine overlapping ranges
-- **Insert interval:** Add new interval and merge with existing
-- **Merge K sorted lists:** Combine multiple sorted streams
-- **Scheduling:** Allocate resources, detect conflicts
-
-The elegant trick: **Sort by start time. Then greedy merge: if next start ≤ current end, extend end. Else start new interval.**
-
-### Insight
-
-**Sorting removes the ambiguity; linear merge captures all overlaps in one pass.**
+Once intervals are ordered such that `start[i] <= start[i + 1]`:
+- Two adjacent intervals `curr` and `next` overlap if and only if `next.start <= curr.end`.
+- If they overlap, their merged interval is `[curr.start, max(curr.end, next.end)]`.
+- If `next.start > curr.end`, no future interval can ever overlap with `curr` (since future starts are `>= next.start > curr.end`). Hence, `curr` is finalized and added to the output.
 
 ---
 
@@ -58,549 +45,550 @@ The elegant trick: **Sort by start time. Then greedy merge: if next start ≤ cu
 
 ### The Core Analogy
 
-Think of intervals like **overlapping timeblocks on a calendar.**
+Imagine laying physical wooden planks along a measurement tape. If the planks are thrown randomly on the floor, finding which ones overlap is chaotic. But if you line up the planks so their left edges are ordered from left to right, you can simply walk along the tape:
+- If a plank's left edge starts before the previous plank ends, the two planks form a single continuous bridge. You push the right boundary to cover whichever plank reaches further.
+- If a plank's left edge starts after the previous plank ends, a gap exists. You nail down the previous bridge and start measuring a new one.
 
-Imagine a whiteboard with multiple colored blocks representing meeting times. When blocks overlap spatially, you merge them into a single larger block. Your eyes naturally do this: overlaps are visually obvious.
-
-The algorithm mimics this: sort left-to-right, scan left-to-right, merge when you see overlap.
-
-### Visualizing Intervals
+### 🖼 Visualizing Timeline Overlap & Merging
 
 ```
-Original:     [(1,3), (2,6), (8,10), (15,18)]
-               |--|   |---|          |--|   |--|
+Interval A:  [ 1 ──────── 5 ]
+Interval B:       [ 3 ────────── 8 ]
+Interval C:                            [ 10 ──── 12 ]
+Timeline:    0  1  2  3  4  5  6  7  8  9 10 11 12 13
 
-Sorted:       [(1,3), (2,6), (8,10), (15,18)]  (already sorted by start)
-               |--|   |---|          |--|   |--|
+Case 1 (Overlap): B.start (3) <= A.end (5)
+  -> Merged Span: [ A.start, max(A.end, B.end) ] = [ 1, max(5, 8) ] = [ 1, 8 ]
 
-Merge pass:
-  - Interval (1,3): output start
-  - Interval (2,6): 2 ≤ 3? Yes, extend → (1,6)
-  - Interval (8,10): 8 ≤ 6? No, output (1,6), start (8,10)
-  - Interval (15,18): 15 ≤ 10? No, output (8,10), start (15,18)
-  - End: output (15,18)
-
-Result: [(1,6), (8,10), (15,18)]
+Case 2 (Disjoint): C.start (10) > Merged.end (8)
+  -> Commit [ 1, 8 ] to Output
+  -> Start new running interval: [ 10, 12 ]
 ```
 
-### The Merge Invariant
+### Invariants & Properties
 
-**Definition:** At any point in the merge, `current_end` is the maximum end time of all intervals processed so far.
+1. **Monotonic Start Invariant:** For all `i < j`, `intervals[i].start <= intervals[j].start`.
+2. **Greedy Extension Invariant:** When extending an active interval `curr` with `next`, the start remains fixed at `curr.start` while the end expands to `max(curr.end, next.end)`.
+3. **Disjoint Finalization Invariant:** The moment `intervals[i].start > curr.end`, `curr` cannot overlap with any subsequent interval `k >= i`. It is mathematically finalized.
 
-**Why It Matters:** If the next interval's start ≤ current_end, it definitely overlaps (no gaps possible in a sorted list).
+### Taxonomy of Interval Operations
 
-**What Breaks If Violated:** If current_end weren't tracking the max, we might miss overlaps spanning multiple intervals.
-
-### Three Core Patterns
-
-#### Pattern A: Merge Intervals
-
-**Idea:** Combine all overlapping intervals into minimal non-overlapping set.
-
-Example: `[(1,3), (2,6), (8,10)]` → `[(1,6), (8,10)]`
-
-#### Pattern B: Insert Interval
-
-**Idea:** Insert a new interval into a list of non-overlapping intervals and merge.
-
-Example: Insert `(5,7)` into `[(1,3), (6,9)]` → `[(1,3), (5,9)]`
-
-#### Pattern C: Merge K Sorted Lists
-
-**Idea:** Combine k sorted lists into single sorted list.
-
-Example: Merge `[1,4,5]`, `[1,3,4]`, `[2,6]` → `[1,1,2,3,4,4,5,6]`
-
-### Taxonomy of Interval Problems
-
-| Pattern | Input | Output | Algorithm | Time |
-|---------|-------|--------|-----------|------|
-| **Merge** | Unsorted intervals | Non-overlapping | Sort + linear scan | O(n log n) |
-| **Insert** | Sorted + new interval | Sorted, merged | Split + merge + combine | O(n) |
-| **Merge K** | k sorted lists | Single sorted | Heap of k heads | O(N log k) |
+| Pattern Variant | Core Mechanism | Time Complexity | Auxiliary Space | Canonical Problem |
+| :--- | :--- | :--- | :--- | :--- |
+| **Merge Overlapping** | Sort by start + Greedy merge | `O(N log N)` | `O(N)` | Merge Intervals (LC 56) |
+| **Insert & Merge** | Three-phase linear partition | `O(N)` | `O(N)` | Insert Interval (LC 57) |
+| **Concurrent Sweep** | Coordinate split + Two pointers | `O(N log N)` | `O(N)` | Meeting Rooms II (LC 253) |
+| **K-Way Stream Merge** | Min-Heap (`PriorityQueue`) | `O(N log K)` | `O(K)` | Merge K Sorted Lists (LC 23) |
 
 ---
 
-## 🔧 CHAPTER 3: MECHANICS & IMPLEMENTATION
+## 🔧 CHAPTER 3: CORE PATTERN MECHANICS & ASCII TRACES
 
-### Implementation 1: Merge Intervals
-
-**Intent:** Combine overlapping intervals into minimal non-overlapping set.
-
-**Approach:**
-1. Sort intervals by start time
-2. Iterate through sorted intervals
-3. If current start ≤ previous end: extend previous end
-4. Else: add previous to result, start new interval
-
-**State Variables:**
-- `merged`: List of output intervals
-- `current`: Current merged interval being built
-- `start`, `end`: Boundaries of current interval
-
-**Progressive Example:**
+### Three-Phase Insert Interval Mechanics
 
 ```
-Input: [(1,3), (2,6), (8,10), (15,18)]
+Existing Intervals: [ [1,2], [3,5], [6,7], [8,10], [12,16] ]
+New Interval to Insert: [4, 8]
 
-Step 0: current = (1,3)
-Step 1: next = (2,6), 2 ≤ 3? Yes, extend → (1,6)
-Step 2: next = (8,10), 8 ≤ 6? No, output (1,6), current = (8,10)
-Step 3: next = (15,18), 15 ≤ 10? No, output (8,10), current = (15,18)
-Step 4: end of input, output (15,18)
+Phase 1 (Completely Before): interval.end < new.start
+  [1, 2] -> 2 < 4  -> ADD to output -> Output: [ [1,2] ]
+  [3, 5] -> 5 < 4  -> FALSE -> Exit Phase 1
 
-Result: [(1,6), (8,10), (15,18)]
+Phase 2 (Overlapping): interval.start <= new.end
+  [3, 5]  -> 3 <= 8 -> Merge: new = [min(4,3), max(8,5)]   = [3, 8]
+  [6, 7]  -> 6 <= 8 -> Merge: new = [min(3,6), max(8,7)]   = [3, 8]
+  [8, 10] -> 8 <= 8 -> Merge: new = [min(3,8), max(8,10)]  = [3, 10]
+  [12, 16] -> 12 <= 10 -> FALSE -> Exit Phase 2
+  Commit merged new interval: Output: [ [1,2], [3,10] ]
+
+Phase 3 (Completely After): Append remaining intervals
+  [12, 16] -> ADD to output -> Final: [ [1,2], [3,10], [12,16] ]
 ```
 
-**Inline Trace Table:**
+### Sweep-Line Meeting Room Concurrency Trace
 
-| Step | Current | Next | Start ≤ End? | Action | Output |
-|------|---------|------|--------------|--------|--------|
-| 0 | — | (1,3) | — | Initialize | — |
-| 1 | (1,3) | (2,6) | 2 ≤ 3: Yes | Extend to (1,6) | — |
-| 2 | (1,6) | (8,10) | 8 ≤ 6: No | Save (1,6), start (8,10) | [(1,6)] |
-| 3 | (8,10) | (15,18) | 15 ≤ 10: No | Save (8,10), start (15,18) | [(1,6), (8,10)] |
-| 4 | (15,18) | EOF | — | Save (15,18) | [(1,6), (8,10), (15,18)] |
+```
+Intervals: [[0, 30], [5, 10], [15, 20]]
+Starts: [0, 5, 15]     Ends: [10, 20, 30]
 
-**C# Implementation:**
+Time 0:  Start (0) < End (10)  -> Room count = 1, advance start ptr
+Time 5:  Start (5) < End (10)  -> Room count = 2, advance start ptr  <-- PEAK = 2
+Time 10: Start (15) >= End (10)-> Room freed = 1, advance end ptr
+Time 15: Start (15) < End (20) -> Room count = 2, advance start ptr
+Time 20: Meeting ends (20)     -> Room freed = 1, advance end ptr
+Time 30: Meeting ends (30)     -> Room freed = 0, advance end ptr
 
+Max Concurrent Rooms Required = 2
+```
+
+---
+
+## 💻 CHAPTER 4: PRODUCTION-GRADE IMPLEMENTATIONS (C# & PYTHON)
+
+### Problem 1: Merge Intervals (LeetCode 56) — Sort + Greedy Linear Merge
+
+#### 🎙️ 45-Minute Interview Talk Track
+> *"To merge all overlapping intervals, checking pairs naively requires `O(N^2)` comparisons. We can reduce this to `O(N log N)` by first sorting the intervals based on their start times. We initialize our merged list with the first interval. Then we iterate through the remaining intervals. For each interval, if its start is less than or equal to the end of our current merged interval, they overlap, and we update the current merged interval's end to the maximum of both ends. If its start is strictly greater, no overlap occurs, so we commit the current interval and start a new one. This ensures each interval is examined in a single linear pass after sorting."*
+
+#### C# Primary Implementation (.NET 8/9 — Production-Grade)
 ```csharp
-public int[][] Merge(int[][] intervals)
+using System;
+using System.Collections.Generic;
+
+public static class MergeIntervalsSolver
 {
-    if (intervals.Length <= 1) return intervals;
-    
-    // Sort by start time
-    Array.Sort(intervals, (a, b) => a[0].CompareTo(b[0]));
-    
-    var merged = new List<int[]>();
-    int[] current = intervals[0];
-    
-    for (int i = 1; i < intervals.Length; i++)
+    /// <summary>
+    /// Merges all overlapping intervals after sorting by start boundary.
+    /// Time Complexity: O(N log N) | Auxiliary Space: O(N) | Output Space: O(N)
+    /// </summary>
+    public static int[][] Merge(int[][] intervals)
     {
-        int[] next = intervals[i];
-        
-        // Overlapping? Extend current
-        if (next[0] <= current[1])
+        ArgumentNullException.ThrowIfNull(intervals);
+        if (intervals.Length <= 1) return intervals;
+
+        // Sort intervals primarily by start time
+        Array.Sort(intervals, static (a, b) => a[0].CompareTo(b[0]));
+
+        var merged = new List<int[]>(intervals.Length);
+        int[] current = intervals[0];
+
+        for (int i = 1; i < intervals.Length; i++)
         {
-            // Update end to maximum
-            current[1] = Math.Max(current[1], next[1]);
+            int[] next = intervals[i];
+
+            if (next[0] <= current[1])
+            {
+                // Overlapping: extend end to the maximum
+                current[1] = Math.Max(current[1], next[1]);
+            }
+            else
+            {
+                // Disjoint: commit current interval and start tracking next
+                merged.Add(current);
+                current = next;
+            }
         }
-        else
+
+        // Add trailing active interval
+        merged.Add(current);
+
+        return [.. merged];
+    }
+}
+```
+
+#### Python Secondary Implementation (3.11+ — Clean & Idiomatic)
+```python
+def merge_intervals(intervals: list[list[int]]) -> list[list[int]]:
+    """Merges all overlapping intervals greedily after sorting by start time.
+
+    Time Complexity: O(N log N) | Auxiliary Space: O(N) | Output Space: O(N)
+    """
+    if not intervals:
+        return []
+
+    intervals.sort(key=lambda x: x[0])
+    merged: list[list[int]] = [intervals[0][:]]
+
+    for start, end in intervals[1:]:
+        if start <= merged[-1][1]:
+            merged[-1][1] = max(merged[-1][1], end)
+        else:
+            merged.append([start, end])
+
+    return merged
+```
+
+#### 📊 Explicit Complexity Deconstruction
+* **Time Complexity:** `O(N log N)` — Sorting `N` intervals takes `O(N log N)`. The subsequent merge pass visits each interval exactly once in `O(N)` time. Overall runtime is dominated by sorting.
+* **Auxiliary Space:** `O(N)` — Sorting requires `O(log N)` or `O(N)` internal stack/buffer space depending on language implementation.
+* **Output Space:** `O(N)` — The returned array stores at most `N` non-overlapping intervals.
+
+---
+
+### Problem 2: Insert Interval (LeetCode 57) — Three-Phase Linear Merge
+
+#### 🎙️ 45-Minute Interview Talk Track
+> *"Because the input list of intervals is already sorted by start time and contains no overlaps, we do not need an `O(N log N)` sort. Instead, we solve this in strict `O(N)` time and space using a three-phase scan. In Phase 1, we add all intervals that end strictly before `newInterval` starts. In Phase 2, for all intervals that overlap with `newInterval` (where `interval.start <= newInterval.end`), we greedily merge them by expanding `newInterval`'s start to the minimum start and its end to the maximum end. Once overlaps cease, we insert the merged `newInterval`. In Phase 3, we append all remaining intervals that start strictly after `newInterval` ends. Each interval is visited exactly once."*
+
+#### C# Primary Implementation (.NET 8/9 — Production-Grade)
+```csharp
+using System;
+using System.Collections.Generic;
+
+public static class InsertIntervalSolver
+{
+    /// <summary>
+    /// Inserts and merges an interval into a pre-sorted non-overlapping list in O(N) time.
+    /// Time Complexity: O(N) | Auxiliary Space: O(N) | Output Space: O(N)
+    /// </summary>
+    public static int[][] Insert(int[][] intervals, int[] newInterval)
+    {
+        ArgumentNullException.ThrowIfNull(intervals);
+        ArgumentNullException.ThrowIfNull(newInterval);
+
+        var result = new List<int[]>(intervals.Length + 1);
+        int i = 0;
+        int n = intervals.Length;
+
+        // Phase 1: Add all intervals ending before newInterval starts
+        while (i < n && intervals[i][1] < newInterval[0])
         {
-            // Non-overlapping: save current, start new
-            merged.Add(current);
-            current = next;
+            result.Add(intervals[i]);
+            i++;
         }
-    }
-    
-    // Don't forget final interval!
-    merged.Add(current);
-    
-    return merged.ToArray();
-}
-```
 
-**Key Insight:** Update end to `Math.Max(current[1], next[1])` to handle nested intervals correctly.
-
-**Watch Out:** Don't forget to add the final interval after the loop.
-
----
-
-### Implementation 2: Insert Interval
-
-**Intent:** Insert new interval into sorted list and merge with overlapping intervals.
-
-**Approach:**
-1. Add all non-overlapping intervals before new interval
-2. Merge the new interval with all overlapping intervals
-3. Add all non-overlapping intervals after new interval
-
-**Three-Phase Strategy:**
-```
-Phase 1: While next.end < new.start, these don't overlap, add them
-Phase 2: While next.start ≤ new.end, these overlap, merge
-Phase 3: Add remaining (all after new interval)
-```
-
-**Progressive Example:**
-
-```
-Input: intervals = [[1,2],[3,5],[6,7],[8,10],[12,16]], newInterval = [4,8]
-
-Phase 1: Add intervals ending before new starts
-  [1,2]: 2 < 4? Yes, add → output = [[1,2]]
-  [3,5]: 5 < 4? No, stop phase 1
-
-Phase 2: Merge overlapping
-  [3,5]: 3 ≤ 8? Yes, merge → new = [3, max(5,8)] = [3,8]
-  [6,7]: 6 ≤ 8? Yes, merge → new = [3, max(7,8)] = [3,8]
-  [8,10]: 8 ≤ 8? Yes, merge → new = [3, max(10,8)] = [3,10]
-  [12,16]: 12 ≤ 10? No, stop phase 2
-
-Phase 3: Add remaining
-  [12,16]: add → output = [[1,2], [3,10], [12,16]]
-```
-
-**C# Implementation:**
-
-```csharp
-public int[][] Insert(int[][] intervals, int[] newInterval)
-{
-    var result = new List<int[]>();
-    int i = 0;
-    
-    // Phase 1: Add non-overlapping intervals before new
-    while (i < intervals.Length && intervals[i][1] < newInterval[0])
-    {
-        result.Add(intervals[i]);
-        i++;
-    }
-    
-    // Phase 2: Merge overlapping intervals
-    while (i < intervals.Length && intervals[i][0] <= newInterval[1])
-    {
-        newInterval[0] = Math.Min(newInterval[0], intervals[i][0]);
-        newInterval[1] = Math.Max(newInterval[1], intervals[i][1]);
-        i++;
-    }
-    result.Add(newInterval);
-    
-    // Phase 3: Add remaining non-overlapping intervals
-    while (i < intervals.Length)
-    {
-        result.Add(intervals[i]);
-        i++;
-    }
-    
-    return result.ToArray();
-}
-```
-
-**Key Insight:** Three phases ensure we process each interval exactly once → O(n).
-
----
-
-### Implementation 3: Merge K Sorted Lists
-
-**Intent:** Combine k sorted linked lists into single sorted list.
-
-**Approach 1: Naive (O(n log k)):**
-- Compare k list heads, pick minimum
-- Add minimum to result, advance that pointer
-- Repeat until all empty
-- Time: n iterations × k comparisons = O(nk)
-
-**Approach 2: Heap (O(n log k)):**
-- Use min-heap of k list heads
-- Pop minimum from heap, add to result
-- Push next element from same list
-- Time: n pops + pushes × log k = O(n log k)
-
-**Heap-Based Implementation:**
-
-```csharp
-public ListNode MergeKLists(ListNode[] lists)
-{
-    // Min-heap by value
-    var heap = new PriorityQueue<ListNode, int>();
-    
-    // Initialize heap with k list heads
-    foreach (var list in lists)
-    {
-        if (list != null)
-            heap.Enqueue(list, list.val);
-    }
-    
-    // Merge
-    var dummy = new ListNode(0);
-    var current = dummy;
-    
-    while (heap.Count > 0)
-    {
-        var minNode = heap.Dequeue();
-        current.next = minNode;
-        current = current.next;
-        
-        // Add next element from same list
-        if (minNode.next != null)
-            heap.Enqueue(minNode.next, minNode.next.val);
-    }
-    
-    return dummy.next;
-}
-```
-
-**Why Heap Beats Naive:**
-- Naive: O(nk) — compare all k heads for each of n nodes
-- Heap: O(n log k) — heap pick/insert is log k
-- For k=100, n=1,000,000: 100M vs. 10M operations (10x)
-
----
-
-### Implementation 4: Interval Scheduling
-
-**Intent:** Find maximum number of non-overlapping intervals (weighted or unweighted).
-
-**Approach (Greedy):**
-1. Sort by end time (earliest deadline)
-2. Greedily pick intervals: if next start ≥ current end, pick it
-3. Count picked intervals
-
-**Why Greedy Works:** Picking earliest-ending interval leaves most room for future picks.
-
-```csharp
-public int MaxIntervals(int[][] intervals)
-{
-    // Sort by end time
-    Array.Sort(intervals, (a, b) => a[1].CompareTo(b[1]));
-    
-    int count = 0;
-    int currentEnd = int.MinValue;
-    
-    foreach (var interval in intervals)
-    {
-        if (interval[0] >= currentEnd)
+        // Phase 2: Merge all overlapping intervals
+        while (i < n && intervals[i][0] <= newInterval[1])
         {
-            count++;
-            currentEnd = interval[1];
+            newInterval[0] = Math.Min(newInterval[0], intervals[i][0]);
+            newInterval[1] = Math.Max(newInterval[1], intervals[i][1]);
+            i++;
         }
+        result.Add(newInterval);
+
+        // Phase 3: Add all remaining intervals starting after newInterval ends
+        while (i < n)
+        {
+            result.Add(intervals[i]);
+            i++;
+        }
+
+        return [.. result];
     }
-    
-    return count;
 }
 ```
 
----
+#### Python Secondary Implementation (3.11+ — Clean & Idiomatic)
+```python
+def insert_interval(
+    intervals: list[list[int]], new_interval: list[int]
+) -> list[list[int]]:
+    """Inserts a new interval into sorted non-overlapping intervals in single linear pass.
 
-## 📈 CHAPTER 4: PERFORMANCE & REAL SYSTEMS
+    Time Complexity: O(N) | Auxiliary Space: O(N) | Output Space: O(N)
+    """
+    result: list[list[int]] = []
+    i = 0
+    n = len(intervals)
 
-### Performance Analysis
+    # Phase 1: Preceding non-overlapping intervals
+    while i < n and intervals[i][1] < new_interval[0]:
+        result.append(intervals[i])
+        i += 1
 
-### Explicit Complexity Callouts (Core Patterns)
+    # Phase 2: Overlapping intervals
+    while i < n and intervals[i][0] <= new_interval[1]:
+        new_interval[0] = min(new_interval[0], intervals[i][0])
+        new_interval[1] = max(new_interval[1], intervals[i][1])
+        i += 1
+    result.append(new_interval)
 
-- Merge Intervals
-    - Time Complexity: O(n log n) due to sorting + O(n) merge scan.
-    - Space Complexity: O(n) output storage (in-place variants can reduce auxiliary overhead).
-- Insert Interval (sorted non-overlapping input)
-    - Time Complexity: O(n)
-    - Space Complexity: O(n) for result buffer.
-- Merge K Sorted Lists (heap)
-    - Time Complexity: O(N log k), where N is total elements across all lists.
-    - Space Complexity: O(k) heap.
+    # Phase 3: Trailing non-overlapping intervals
+    while i < n:
+        result.append(intervals[i])
+        i += 1
 
-**Merge Intervals:**
-
-| Approach | Time | Space | Constants |
-|----------|------|-------|-----------|
-| Brute force | O(n²) | O(1) | 1.0 |
-| Sort + merge | O(n log n) | O(n) | 2.5 |
-| Interval tree | O(n log n) | O(n) | 3.5 |
-
-Sorting dominates; merge is O(n).
-
-**Merge K Lists:**
-
-| Approach | Time | Space | When |
-|----------|------|-------|------|
-| Naive comparison | O(nk) | O(1) | k very small |
-| Heap | O(n log k) | O(k) | **Standard** |
-| Merge sort style | O(n log k) | O(n) | Better constants |
-
----
-
-### Real-World System 1: Google Calendar
-
-**Problem:** Merge user calendars to find free slots for meetings.
-
-**Challenge:** 
-- Millions of users, billions of calendar events
-- Real-time merging as users update calendars
-- Queries: "Find 1-hour slot in everyone's calendar"
-
-**Solution:**
-- Store calendar events as intervals
-- Sort by start time (index into storage)
-- Merge intervals to find gaps
-- Query: binary search gaps for desired duration
-
-**Impact:** Free-time finding goes from O(n²) brute force to O(n log n) sorted merge.
-
----
-
-### Real-World System 2: Meeting Room Scheduling
-
-**Problem:** Assign meetings to rooms, minimize total rooms needed.
-
-**Algorithm:**
-1. Sort meetings by start time
-2. Use heap of room end-times
-3. For each meeting: if earliest-ending room is free, reuse; else allocate new
-
-This is the **interval scheduling maximization** problem.
-
-**Real Impact:** Can schedule 10,000 meetings with 50 rooms vs. naive approach needing 100+ rooms.
-
----
-
-### Real-World System 3: Network Traffic Merging
-
-**Problem:** Merge traffic logs from k servers, ordered by timestamp.
-
-**Challenge:** Logs arrive as k separate streams; need single sorted stream.
-
-**Solution:** Merge K sorted lists pattern.
-
-**Efficiency:**
-- Naive: Wait for all logs, then sort: O(N log N)
-- Streaming merge: Process as they arrive: O(N log k) heap, much lower latency
-
----
-
-### Failure Modes
-
-**1. Off-by-One in Overlap Check**
-```csharp
-// Wrong: next[0] < current[1] (doesn't handle touching intervals)
-if (next[0] < current[1]) { }
-
-// Right: next[0] <= current[1] (handles touching: [1,2] and [2,3])
-if (next[0] <= current[1]) { }
+    return result
 ```
 
-**2. Not Updating Max End in Merge**
-```csharp
-// Wrong: current[1] = next[1] (misses nested intervals)
-current[1] = next[1];
+#### 📊 Explicit Complexity Deconstruction
+* **Time Complexity:** `O(N)` — Each interval is evaluated and appended exactly once across the three sequential `while` loops.
+* **Auxiliary Space:** `O(1)` — Beyond the output list, only integer loop indices and scalar boundaries are tracked.
+* **Output Space:** `O(N)` — The resulting array holds at most `N + 1` intervals.
 
-// Right: current[1] = Math.Max(current[1], next[1])
-current[1] = Math.Max(current[1], next[1]);
+---
+
+### Problem 3: Meeting Rooms II (LeetCode 253) — Sweep-Line Coordinate Split
+
+#### 🎙️ 45-Minute Interview Talk Track
+> *"To find the minimum number of meeting rooms required, we must determine the maximum number of concurrent meetings occurring at any point in time. Instead of tracking room assignments with a heap, we can separate meeting start times and end times into two arrays and sort them independently in `O(N log N)`. We use two pointers: one traversing start times, the other traversing end times. When `start[i] < end[j]`, a new meeting has begun before an existing meeting ended, requiring an additional room. When `start[i] >= end[j]`, an existing meeting has concluded, freeing a room. We maintain a running room count and record the peak value. This two-pointer sweep eliminates heap overhead."*
+
+#### C# Primary Implementation (.NET 8/9 — Production-Grade)
+```csharp
+using System;
+
+public static class MeetingRoomsSolver
+{
+    /// <summary>
+    /// Computes minimum meeting rooms required using two-pointer sweep-line over split endpoints.
+    /// Time Complexity: O(N log N) | Auxiliary Space: O(N) | Output Space: O(1)
+    /// </summary>
+    public static int MinMeetingRooms(int[][] intervals)
+    {
+        ArgumentNullException.ThrowIfNull(intervals);
+        int n = intervals.Length;
+        if (n <= 1) return n;
+
+        var starts = new int[n];
+        var ends = new int[n];
+
+        for (int i = 0; i < n; i++)
+        {
+            starts[i] = intervals[i][0];
+            ends[i] = intervals[i][1];
+        }
+
+        Array.Sort(starts);
+        Array.Sort(ends);
+
+        int activeRooms = 0;
+        int maxRooms = 0;
+        int startPtr = 0;
+        int endPtr = 0;
+
+        while (startPtr < n)
+        {
+            if (starts[startPtr] < ends[endPtr])
+            {
+                // A new meeting starts before the earliest active meeting ends
+                activeRooms++;
+                startPtr++;
+            }
+            else
+            {
+                // An existing meeting ended, freeing up a room
+                activeRooms--;
+                endPtr++;
+            }
+
+            maxRooms = Math.Max(maxRooms, activeRooms);
+        }
+
+        return maxRooms;
+    }
+}
 ```
 
-**3. Forgetting Final Interval**
-Always add the last interval after the loop!
+#### Python Secondary Implementation (3.11+ — Clean & Idiomatic)
+```python
+def min_meeting_rooms(intervals: list[list[int]]) -> int:
+    """Finds peak concurrent meeting rooms using sorted start and end coordinate sweeps.
+
+    Time Complexity: O(N log N) | Auxiliary Space: O(N) | Output Space: O(1)
+    """
+    if not intervals:
+        return 0
+
+    starts = sorted(i[0] for i in intervals)
+    ends = sorted(i[1] for i in intervals)
+
+    active_rooms = 0
+    max_rooms = 0
+    start_ptr = 0
+    end_ptr = 0
+    n = len(intervals)
+
+    while start_ptr < n:
+        if starts[start_ptr] < ends[end_ptr]:
+            active_rooms += 1
+            start_ptr += 1
+        else:
+            active_rooms -= 1
+            end_ptr += 1
+
+        max_rooms = max(max_rooms, active_rooms)
+
+    return max_rooms
+```
+
+#### 📊 Explicit Complexity Deconstruction
+* **Time Complexity:** `O(N log N)` — Extracting endpoints takes `O(N)`. Sorting `starts` and `ends` takes `2 * O(N log N)`. The two-pointer sweep takes `O(N)`.
+* **Auxiliary Space:** `O(N)` — Allocates two arrays of length `N` to decouple start and end coordinates.
+* **Output Space:** `O(1)` — Returns a single integer scalar.
 
 ---
 
-## 🌍 CHAPTER 5: INTEGRATION & MASTERY
+### Problem 4: Merge K Sorted Lists (LeetCode 23) — Min-Heap K-Way Merge
 
-### How Intervals Fit Into Curriculum
+#### 🎙️ 45-Minute Interview Talk Track
+> *"To merge `K` sorted linked lists containing `N` total nodes, comparing all `K` list heads iteratively costs `O(N * K)`. Instead, we maintain a min-heap of size `K` holding the current head node of each list. We extract the smallest node from the heap in `O(log K)` time, append it to our merged list, and if that node has a `.next` pointer, we insert its successor back into the heap. This ensures the heap never exceeds `K` elements, reducing total time to `O(N log K)` with `O(K)` auxiliary space."*
 
-**Previous:**
-- Week 4: Sorting, binary search prepare for pre-processing
-- Days 1-2: Hash and stack patterns for lookups/optimization
+#### C# Primary Implementation (.NET 8/9 — Production-Grade)
+```csharp
+using System.Collections.Generic;
 
-**Current:**
-- Day 3: Intervals teach "sort to enable" pattern
+public class ListNode
+{
+    public int val;
+    public ListNode next;
+    public ListNode(int val = 0, ListNode next = null)
+    {
+        this.val = val;
+        this.next = next;
+    }
+}
 
-**Upcoming:**
-- Days 4-5: Partition and pointers (more in-place tricks)
-- Weeks 6-15: Trees and graphs use intervals heavily (sweep algorithms)
+public static class MergeKListsSolver
+{
+    /// <summary>
+    /// Merges K sorted linked lists using a PriorityQueue min-heap.
+    /// Time Complexity: O(N log K) | Auxiliary Space: O(K) | Output Space: O(1) auxiliary
+    /// </summary>
+    public static ListNode MergeKLists(ListNode[] lists)
+    {
+        if (lists == null || lists.Length == 0) return null;
 
----
+        var pq = new PriorityQueue<ListNode, int>();
 
-### When to Use Interval Patterns
+        // Initialize heap with the head of each non-empty list
+        foreach (var head in lists)
+        {
+            if (head != null)
+            {
+                pq.Enqueue(head, head.val);
+            }
+        }
 
-**Use When:**
+        var dummy = new ListNode(0);
+        var tail = dummy;
 
-✅ Problem involves overlapping ranges → merge intervals  
-✅ Need to find free/busy slots → merge then query  
-✅ Scheduling or resource allocation → interval patterns  
-✅ Merging sorted streams → merge K lists  
-✅ Range queries on timeline → sort by start/end  
+        while (pq.Count > 0)
+        {
+            var smallest = pq.Dequeue();
+            tail.next = smallest;
+            tail = tail.next;
 
-**Avoid When:**
+            if (smallest.next != null)
+            {
+                pq.Enqueue(smallest.next, smallest.next.val);
+            }
+        }
 
-❌ Dynamic updates (intervals added/removed constantly) → use interval tree or segment tree  
-❌ Point lookup in sorted intervals → binary search better than merge  
-❌ 2D intervals (rectangles) → different algorithms  
+        return dummy.next;
+    }
+}
+```
 
----
+#### Python Secondary Implementation (3.11+ — Clean & Idiomatic)
+```python
+import heapq
 
-### Five Cognitive Lenses
 
-#### 1. **Hardware Lens**
-Sorting enables sequential access. Merge scan is cache-friendly. Heap operations have log k overhead but still better than k comparisons.
+class ListNode:
 
-#### 2. **Trade-off Lens**
-Spend O(n log n) on sorting to enable O(n) merge. This is a classic trade-off: expensive pre-processing, simple main algorithm.
+  def __init__(self, val: int = 0, next: "ListNode | None" = None) -> None:
+    self.val = val
+    self.next = next
 
-#### 3. **Learning Lens**
-Intervals teach "two-phase thinking": sort (pre-process) then linear scan (main algorithm). This pattern appears in 20+ advanced problems.
 
-#### 4. **AI/ML Lens**
-Training data alignment: sort examples by difficulty (pre-process), then train linearly (main algorithm). Same pattern.
+def merge_k_lists(lists: list[ListNode | None]) -> ListNode | None:
+  """Merges K sorted linked lists using a min-heap priority queue.
 
-#### 5. **Historical Lens**
-Interval scheduling was studied in operations research (1950s). Greedy algorithms for scheduling are still used in modern job schedulers.
+  Time Complexity: O(N log K) | Auxiliary Space: O(K) | Output Space: O(1)
+  auxiliary
+  """
+  heap: list[tuple[int, int, ListNode]] = []
 
----
+  for i, head in enumerate(lists):
+    if head:
+      heapq.heappush(heap, (head.val, i, head))
 
-### Socratic Reflection
+  dummy = ListNode(0)
+  tail = dummy
 
-1. Why do we sort by start time and not end time?
-2. What if we insert an interval into an unsorted list?
-3. Can we find the maximum non-overlapping intervals faster than O(n log n)?
-4. Why does the greedy algorithm for scheduling work?
-5. How would you handle intervals on a circle (wrap-around)?
+  while heap:
+    _, i, smallest = heapq.heappop(heap)
+    tail.next = smallest
+    tail = tail.next
 
----
+    if smallest.next:
+      heapq.heappush(heap, (smallest.next.val, i, smallest.next))
 
-### Retention Hook
+  return dummy.next
+```
 
-**"Sort by start, merge by end. Pre-processing enables simplicity."**
-
----
-
-## 📊 SUPPLEMENTARY OUTCOMES
-
-### Practice Problems (8)
-
-| # | Problem | Difficulty | LeetCode |
-|---|---------|-----------|----------|
-| 1 | Merge Intervals | Medium | 56 |
-| 2 | Insert Interval | Medium | 57 |
-| 3 | Merge K Sorted Lists | Hard | 23 |
-| 4 | Meeting Rooms | Easy | 252 |
-| 5 | Meeting Rooms II | Hard | 253 |
-| 6 | Non-overlapping Intervals | Medium | 435 |
-| 7 | Video Stitching | Medium | 1024 |
-| 8 | Partition Labels | Medium | 763 |
-
-### Interview Questions (6)
-
-1. **Follow-up:** Merge intervals with weighted scores (maximize value)?
-2. **Streaming:** How to merge intervals arriving one-by-one?
-3. **Optimization:** Can you solve merge intervals without sorting?
-4. **2D:** Merge rectangles (2D intervals)?
-5. **Production:** Handle million-event calendar real-time?
-6. **Variant:** Intervals on different dimensions?
-
-### Misconceptions (4)
-
-- **Myth:** "Must sort by start time" → Works, but sort by end also possible
-- **Myth:** "Can't avoid sorting" → Some special cases allow O(n)
-- **Myth:** "Merge K lists always needs heap" → Merge sort style also O(n log k)
-- **Myth:** "Intervals only on 1D" → Extends to higher dimensions (harder)
-
-### Advanced Concepts (3)
-
-1. **Interval Tree:** O(log n) insertion, O(log n) interval queries
-2. **Sweep Line Algorithm:** Powerful pattern for 2D interval problems
-3. **Segment Tree:** Range updates and queries in O(log n)
+#### 📊 Explicit Complexity Deconstruction
+* **Time Complexity:** `O(N log K)` where `N` is the total number of nodes and `K` is the number of lists. Every node is enqueued and dequeued exactly once from a heap of size at most `K`.
+* **Auxiliary Space:** `O(K)` — The heap holds at most `K` nodes at any given instant.
+* **Output Space:** `O(1)` auxiliary space — Relinks existing node pointers in-place without allocating new `ListNode` instances.
 
 ---
 
-## 🎯 FINAL REFLECTION
+## ⚖️ CHAPTER 5: PERFORMANCE, TRADE-OFFS & REAL SYSTEMS
 
-Interval problems teach a fundamental pattern: **pre-processing enables simplicity.**
+### Trade-Off Comparison
 
-Sort (hard), then linear scan (easy). This principle applies to:
-- Scheduling algorithms
-- Event processing
-- Resource allocation
-- Computational geometry
+| Approach | Time Complexity | Space Complexity | Best Applied When | Drawback |
+| :--- | :--- | :--- | :--- | :--- |
+| **Sort + Greedy Merge** | `O(N log N)` | `O(N)` | Intervals arrive unordered; batch consolidation | Must sort entire collection before merging |
+| **Three-Phase Insert** | `O(N)` | `O(N)` | Stream is already sorted and non-overlapping | Requires pre-sorted input |
+| **Two-Pointer Coordinate Sweep** | `O(N log N)` | `O(N)` | Concurrency peak detection (rooms, bandwidth) | Loses interval pairing association |
+| **Min-Heap Sweep** | `O(N log N)` | `O(N)` | Room assignment tracking (who gets which room) | Priority queue heap rebalancing overhead |
 
-By Week 15, you'll see this pattern in 30+ problems. Master it on Day 3.
+> [!NOTE]
+> **Production Reality (Why FAANG Tests This):**
+> Network edge gateways (Cloudflare, AWS CloudFront) merge CIDR IP block intervals (`[192.168.1.0, 192.168.1.255]`) to construct compact IP routing tables. In databases (PostgreSQL GiST indexing), interval merging collapses contiguous transactional time locks to avoid lock table saturation.
+
+### Defensive Engineering & Failure Modes
+
+1. **Inclusive vs. Exclusive Boundary Inconsistencies:** Clarify whether `[1, 2]` and `[2, 3]` touch or overlap:
+   - Touching counts as overlap: `next.start <= curr.end` (LeetCode standard).
+   - Touching does not overlap: `next.start < curr.end`.
+2. **Missing Trailing Interval:** In greedy merging, `current` is only appended when a disjoint interval arrives. Failing to append `current` after loop completion drops the final interval.
+3. **Nested Interval Omission:** When interval `[1, 10]` is followed by `[2, 5]`, setting `current.end = next.end` shrinks the interval to 5! Always use `Math.Max(current.end, next.end)`.
+
+---
+
+## 🎯 CHAPTER 6: FAANG INTERVIEW PATTERN SIGNALS & EDGE CASES
+
+### 🎯 Pattern Recognition Signals
+- ✅ **"Merge overlapping ranges / time slots"** -> Sort by start + Greedy merge (`O(N log N)`).
+- ✅ **"Insert interval into pre-sorted list"** -> Three-phase partition (`O(N)`).
+- ✅ **"Find minimum conference rooms / concurrent resources"** -> Sweep-line coordinate split.
+- ✅ **"Combine K sorted arrays or lists"** -> Min-Heap `PriorityQueue` (`O(N log K)`).
+- 🛑 **"Point query in massive static intervals"** -> Do NOT merge. Use Interval Trees or Binary Search over endpoints.
+
+### 🧪 Concrete Edge-Case Checklist
+1. **Empty Input (`intervals.Length == 0`):** Return empty array immediately.
+2. **Single Interval (`intervals.Length == 1`):** Return identical input without processing.
+3. **Completely Nested Intervals (`[[1, 10], [2, 5], [3, 4]]`):** Must merge down into single interval `[[1, 10]]`.
+4. **Completely Disjoint Intervals (`[[1, 2], [3, 4], [5, 6]]`):** Output must match input exactly.
+5. **Identical Duplicate Intervals (`[[1, 4], [1, 4]]`):** Must merge into `[[1, 4]]` without array index errors.
+
+---
+
+## ⚔️ SUPPLEMENTARY OUTCOMES
+
+### 🏋️ Practice Problems
+
+| # | Problem | Source | Difficulty | Key Concept |
+| :--- | :--- | :--- | :--- | :--- |
+| 1 | Merge Intervals | LeetCode 56 | 🟡 Medium | Sort by start + Greedy merge |
+| 2 | Insert Interval | LeetCode 57 | 🟡 Medium | Three-phase linear merge |
+| 3 | Meeting Rooms | LeetCode 252 | 🟢 Easy | Adjacent overlap verification |
+| 4 | Meeting Rooms II | LeetCode 253 | 🟡 Medium | Sweep-line concurrency tracking |
+| 5 | Non-overlapping Intervals | LeetCode 435 | 🟡 Medium | Greedy interval scheduling (sort by end) |
+| 6 | Minimum Arrows to Burst Balloons | LeetCode 452 | 🟡 Medium | Interval intersection tracking |
+| 7 | Merge K Sorted Lists | LeetCode 23 | 🔴 Hard | Min-Heap priority queue |
+| 8 | Employee Free Time | LeetCode 759 | 🔴 Hard | K-way merge + interval gap extraction |
+
+### 🎙️ Interview Questions (Verbal Drills)
+
+1. **Q:** Why do we sort intervals by start time rather than end time for LeetCode 56?
+   - **Answer:** Sorting by start time ensures that when processing sequentially, any interval that can merge with our running interval must begin immediately next. If we sorted by end time, an interval starting earlier could appear much later in the array, breaking the single-pass greedy invariant.
+2. **Q:** When would you sort by end time instead?
+   - **Answer:** When solving interval scheduling maximization (e.g., LeetCode 435 "Non-overlapping Intervals" or finding the maximum number of non-overlapping meetings). Greedily selecting the interval that ends earliest leaves the maximum remaining time for subsequent meetings.
+3. **Q:** In Meeting Rooms II, why can start times and end times be sorted completely independently?
+   - **Answer:** Because rooms are interchangeable resources. We only care about global concurrency count at any point on the timeline. A meeting ending frees a room regardless of which specific meeting occupied it.
+
+### ❌ Common Misconceptions
+
+- **Myth:** Insert Interval requires sorting before inserting.  
+  *Reality:* The input is already sorted. An `O(N log N)` sort is unnecessary and degrades optimal `O(N)` runtime.
+- **Myth:** Meeting Rooms II requires allocating a hash map of room objects.  
+  *Reality:* If only the peak count of rooms is requested, two pointers over sorted start and end arrays solves it with zero room object allocations.
+
+### 🚀 Advanced Concepts
+
+1. **Sweep-Line Algorithm (2D Intervals):** Extending 1D interval sweeps to 2D geometry (e.g., Skyline Problem, Rectangle Area II) using active interval segment trees.
+2. **Segment Trees:** Dynamic interval data structures supporting `O(log N)` range updates and range maximum queries for streaming scheduling engines.
+
+---
+
+## 📌 CLOSING REFLECTION
+
+Interval algorithms illustrate the power of **ordering to eliminate combinatorial complexity**. An initial sort reorganizes a confusing web of mutual overlaps into a clean, predictable line where greedy decisions are provably optimal. Master the start-sorted invariant and the three-phase insertion sweep, and you possess the toolkit to conquer any temporal scheduling problem.
 
 ---
 > 🧭 **Navigation:** [← Previous Day](Week_05_Day_02_Monotonic_Stack_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_05_Day_04_Part_A_Partition_Cyclic_Sort_Instructional.md)

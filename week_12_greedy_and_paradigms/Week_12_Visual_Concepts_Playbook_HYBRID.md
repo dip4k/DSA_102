@@ -1,4 +1,4 @@
-# 🧭 WEEK 12 VISUAL CONCEPTS PLAYBOOK (HYBRID)
+﻿# 🧭 WEEK 12 VISUAL CONCEPTS PLAYBOOK (HYBRID)
 
 > 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)
 > 
@@ -60,12 +60,12 @@ Draw a left-to-right pipeline with 4 main stages:
 
 
 ```mermaid
-flowchart LR
+flowchart TD
     classDef stage fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef loop fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
     classDef out fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
 
-    S1["1️⃣ Input Stage<br/>Raw items & constraints"]:::stage
+    S1["1️⃣ Input Stage<br/>Raw items and constraints"]:::stage
     S2["2️⃣ Preprocessing<br/>Sort by key / Build Priority Queue"]:::stage
     S3["3️⃣ Greedy Choice Loop<br/>Locally optimal pick (no backtracks)"]:::loop
     S4["4️⃣ Output / Solution<br/>Verified by exchange argument"]:::out

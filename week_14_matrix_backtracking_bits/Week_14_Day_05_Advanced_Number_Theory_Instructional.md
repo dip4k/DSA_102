@@ -33,8 +33,8 @@ To prevent this, advanced algebraic systems use:
 
 ### 2. Naive Pitfalls
 The naive way to solve a system of simultaneous modular equations is to iterate through integers one by one:
-x == a_i +/-od{m_i}
-This search takes O(M) operations, where M is the product of all moduli. If M approx. 10^{18} (highly standard in distributed indexing or cryptography), a linear scan takes years of execution time.
+`x = a_i (mod m_i)`
+This search takes `O(M)` operations, where `M` is the product of all moduli. If `M approx. 10^18` (highly standard in distributed indexing or cryptography), a linear scan takes years of execution time.
 
 ### 3. Real-world Anchor: RSA Key Space
 In the RSA cryptosystem, public-key encryption and private-key decryption rely on Euler's Totient function to calculate modular keys. Because finding phi(N) for a product of two large prime numbers (N = p x q) is extremely difficult without knowing the factors, this mathematical relation forms the foundation of modern digital security.
@@ -117,14 +117,14 @@ public static class TotientEngine {
 
 ### 2. Chinese Remainder Theorem & Overflow-Safe Multiplication
 
-To reconstruct x from multiple congruence equations:
-1.  Compute the total product M = product m_i.
-2.  For each equation, calculate M_i = M / m_i.
-3.  Find y_i such that M_i * y_i == 1 +/-od{m_i} (modular inverse of M_i modulo m_i using the Extended Euclidean algorithm).
+To reconstruct `x` from multiple congruence equations:
+1.  Compute the total product `M = product m_i`.
+2.  For each equation, calculate `M_i = M / m_i`.
+3.  Find `y_i` such that `(M_i * y_i) % m_i == 1` (modular inverse of `M_i` modulo `m_i` using the Extended Euclidean algorithm).
 4.  Reconstruct the solution:
-    x = sum(a_i * M_i * y_i) (mod M)
+    `x = sum(a_i * M_i * y_i) (mod M)`
 
-To prevent multiplication overflow when modulo M approx. 10^{18}, we use **Overflow-Safe Modular Multiplication** (similar to binary exponentiation changes, also known as Russian Peasant Multiplication):
+To prevent multiplication overflow when modulo `M approx. 10^18`, we use **Overflow-Safe Modular Multiplication** (similar to binary exponentiation changes, also known as Russian Peasant Multiplication):
 
 ```csharp
 // CRT & Overflow-Safe Modular Multiplication (C#)
@@ -243,16 +243,100 @@ def solve_crt(a: list[int], m: list[int]) -> int:
 
 ---
 
-## 📘 Chapter 4: Performance and Systems
+---
 
-*   **Asymptotic Complexities**:
-    *   Euler's Totient (Single): O(sqrt(N)) time, O(1) space.
-    *   Euler's Totient (Sieve): O(limit log log limit) time, O(limit) space.
-    *   Safe multiplication: O(log B) operations, O(1) space.
-    *   Chinese Remainder Theorem: O(k log M) steps, where M is the product of all moduli.
-*   **System Integration (Distributed Modulo Pipelines)**:
-    In distributed databases and big-data analytics platforms, computing exact products of extremely large integers is highly expensive because arbitrary-precision software libraries (like `BigInteger`) bypass hardware register execution circuits.
-    These platforms parallelize calculations using Chinese Remainder Theorem mapping. Each pipeline worker computes remainders modulo small primary coprimes (e.g. 32-bit primes) directly in hardware registers. The system then merges these modular results using the CRT engine, bypassing the latency of arbitrary-precision software structures.
+## 📘 Chapter 4: Performance, Invariants & Systems Architecture
+
+### 1. Exact Governing Invariants
+
+*   **Euler's Product Formula Invariant**: For any positive integer `N`, Euler's Totient function is given by:
+    `phi(N) = N * product_{p | N} (1 - 1/p)`
+    where the product is taken over all distinct prime factors `p` dividing `N`. By the principle of inclusion-exclusion, multiplying by `(1 - 1/p)` (computed as `res -= res / p`) subtracts all multiples of `p` without duplicate removal of composite factors. Single queries factorize `N` in `O(sqrt(N))` time; sieve precomputation initializes `phi[i] = i` and scales multiples in `O(N log log N)`.
+*   **Chinese Remainder Theorem Uniqueness Invariant**: Let `m_1, m_2, ..., m_k` be pairwise coprime moduli (`gcd(m_i, m_j) = 1` for `i != j`), and let `M = product_{i=1}^k m_i`. For any system of congruence equations:
+    `x = a_i (mod m_i)  for 1 <= i <= k`
+    there exists a strictly unique solution `x` in the residue range `[0, M - 1]`. For each equation, `M_i = M / m_i` satisfies `gcd(M_i, m_i) = 1`. Computing modular inverse `y_i = M_i^(-1) (mod m_i)` via Extended Euclid yields orthogonal terms:
+    `term_i = a_i * M_i * y_i`
+    where `term_i = a_i (mod m_i)` and `term_i = 0 (mod m_j)` for all `j != i`. Summing all terms modulo `M` satisfies all equations simultaneously.
+*   **Extended Euclidean Bézout Invariant**: For integers `a` and `b`, `ExtendedGcd(a, b)` computes integer coefficients `x` and `y` satisfying:
+    `a * x + b * y = gcd(a, b)`
+    Induction maintains: `gcd(a, b) = gcd(b, a % b) = b * x1 + (a % b) * y1 = a * y1 + b * (x1 - floor(a / b) * y1)`. When `gcd(a, m) = 1`, `a * x = 1 (mod m)`, giving the modular multiplicative inverse `(x % m + m) % m` in `O(log(min(a, m)))` time.
+*   **Russian Peasant Safe Multiplication Invariant**: When computing `(a * b) % mod` where `mod > 2^31 - 1`, the direct product `a * b` exceeds 64-bit signed integer limits. Decomposing `b` into binary maintains the invariant:
+    `(res + a * b) % mod == constant`
+    Accumulating `a` when `b & 1` and doubling `a = (a * 2) % mod` runs in `O(log b)` additions with zero 64-bit integer overflow.
+
+---
+
+### 2. Explicit Complexity Deconstruction
+
+| Algorithm / Engine | Time (Best / Avg / Worst) | Auxiliary Space | Output Space | Mathematical Derivation |
+| :--- | :--- | :--- | :--- | :--- |
+| **Euler's Totient (Single)** | `O(1)` / `O(sqrt(N))` / `O(sqrt(N))` | `O(1)` | `O(1)` | Trial division up to `floor(sqrt(N))` identifies all distinct prime factors. |
+| **Euler's Totient (Sieve)** | `O(N log log N)` | `O(N)` | `O(N)` | Sieve eliminates multiples: `sum_{p <= N} (N / p) = N log log N`. |
+| **Extended Euclidean GCD** | `O(1)` / `O(log(min(a, b)))` / `O(log(min(a, b)))` | `O(log(min(a, b)))` stack / `O(1)` iter | `O(1)` | Lamé's Theorem: number of division steps `<= 5 * log10(min(a, b))`. |
+| **Safe Modular Multiplication** | `O(1)` / `O(log B)` / `O(log B)` | `O(1)` | `O(1)` | Bitwise decomposition of multiplier `B` into at most 64 doubling steps. |
+| **Chinese Remainder Solver** | `O(K log M)` | `O(1)` working memory | `O(1)` | Computes `K` modular inverses, each running Extended Euclid in `O(log m_i)` time. |
+
+---
+
+### 3. Senior Interview Context: Hardware, Memory & Concurrency
+
+*   **Residue Number Systems (RNS) in High-Performance Computing**:
+    Arbitrary-precision arithmetic libraries (e.g., `BigInteger`) store numbers as dynamic byte buffers, allocating memory on the heap and incurring pointer indirection. High-throughput cryptographic accelerators (RSA-4096, elliptic curve pairings) and distributed database analytics decompose massive computations into small coprime residue channels `m_1, m_2, ..., m_k` (e.g., 32-bit primes). Additions, subtractions, and multiplications execute independently in hardware ALU registers with zero cross-lane communication. The final 4096-bit value is reconstructed using CRT only once at the boundary.
+*   **64-Bit Integer Overflow Traps**:
+    - If `mod = 10^9 + 7`, `(a * b)` reaches `approx. 10^18`, fitting within `long.MaxValue` (`9.22 * 10^18`).
+    - If `mod approx. 10^12`, direct multiplication `a * b` overflows 64 bits immediately, producing negative results or silent truncation. In .NET 7+, use hardware-accelerated `UInt128` or `Int128`. In legacy or cross-platform code, use the Russian Peasant doubling algorithm `SafeMultiply`.
+*   **Non-Coprime Moduli Failures**:
+    Standard CRT strictly requires that all moduli pairs satisfy `gcd(m_i, m_j) = 1`. In production distributed systems, if two servers report congruence states modulo overlapping bases (e.g., `x = 2 mod 4` and `x = 3 mod 6`), standard CRT crashes or outputs erroneous values. Always run pairwise GCD validation before applying CRT.
+
+---
+
+## 🎙️ Senior 45-Minute Verbal Talk Track
+
+```text
++-------------------------------------------------------------------------------+
+| PHASE 1: Constraints & Moduli Verification (Minutes 00 - 05)                  |
+| - Verify whether moduli are pairwise coprime (gcd(m_i, m_j) == 1).            |
+| - Check maximum magnitude of total product M (e.g., M <= 10^18).              |
+| - Clarify overflow rules: 64-bit integer limits vs 128-bit primitives.        |
++-------------------------------------------------------------------------------+
+                                      │
+                                      ▼
++-------------------------------------------------------------------------------+
+| PHASE 2: Naive Iteration Bottleneck       (Minutes 05 - 10)                   |
+| - Highlight naive linear search: scanning integers up to M takes O(M) time.   |
+| - Show that M approx. 10^18 makes naive linear search computationally fatal.  |
++-------------------------------------------------------------------------------+
+                                      │
+                                      ▼
++-------------------------------------------------------------------------------+
+| PHASE 3: Mathematical Invariant Derivation (Minutes 10 - 20)                  |
+| - Derive CRT orthogonal projection: M_i = M / m_i, y_i = M_i^(-1) mod m_i.    |
+| - Prove term_i = a_i (mod m_i) and term_i = 0 (mod m_j) for all j != i.       |
+| - Explain Extended Euclidean Bézout identity for finding non-prime inverses.  |
++-------------------------------------------------------------------------------+
+                                      │
+                                      ▼
++-------------------------------------------------------------------------------+
+| PHASE 4: Production Implementation & Guards (Minutes 20 - 35)                 |
+| - Implement ExtendedGcd, ModInverse, SafeMultiply, and SolveCrt.              |
+| - Guard against non-coprime moduli (inverse == -1) and register overflows.    |
+| - Ensure non-negative normalization: ((val % mod) + mod) % mod.              |
++-------------------------------------------------------------------------------+
+                                      │
+                                      ▼
++-------------------------------------------------------------------------------+
+| PHASE 5: Complexity Proof & Architecture  (Minutes 35 - 45)                   |
+| - Deconstruct Time: O(K log M), Space: O(1).                                  |
+| - Explain RNS hardware acceleration in cryptographic co-processors.           |
+| - Discuss general CRT for non-coprime moduli via LCM unification.             |
++-------------------------------------------------------------------------------+
+```
+
+### Verbal Script Excerpts
+
+*   **Opening (Minutes 00-05)**: *"Before writing the Chinese Remainder solver, let me verify the moduli preconditions. Are all moduli `m_i` guaranteed to be pairwise coprime? If yes, standard CRT guarantees a unique solution modulo `M = product m_i`. If not, we must check consistency using `(a_i - a_j) % gcd(m_i, m_j) == 0` and merge congruences iteratively using LCM."*
+*   **Invariant Articulation (Minutes 10-20)**: *"The genius of CRT is orthogonal basis decomposition. For each equation `x = a_i (mod m_i)`, we isolate `M_i = M / m_i`. Notice that `M_i` contains every modulus except `m_i`, meaning `M_i = 0 (mod m_j)` for all `j != i`. We then find `y_i = M_i^(-1) (mod m_i)` via Extended Euclid. This constructs a basis element `E_i = M_i * y_i` that evaluates to `1 (mod m_i)` and `0 (mod m_j)`. Multiplying by `a_i` and summing over all `i` directly solves the system in `O(K log M)` time."*
+*   **Overflow Defense (Minutes 35-45)**: *"Notice line 134: when multiplying `a[i] * intermediateM`, the product can exceed 64-bit integer limits if `M approx. 10^18`. Rather than risking silent integer overflow, we invoke `SafeMultiply`, which uses Russian Peasant binary doubling. This computes `(a * b) % mod` in `O(log B)` modular additions, guaranteeing 100% numerical safety on hardware registers."*
 
 ---
 
@@ -260,7 +344,8 @@ def solve_crt(a: list[int], m: list[int]) -> int:
 
 ### 1. Pattern Selection Rules
 *   *Use the Chinese Remainder Theorem when*: You need to solve simultaneous equations modulo coprime bases or distribute high-precision calculations across parallel arithmetic pipelines.
-*   *Use Euler's Totient function when*: You need to count coprime configurations, find the number of irreducible fractions, or optimize high-power modular remainders (using Euler's Theorem: a^{phi(m)} == 1 +/-od m).
+*   *Use Euler's Totient function when*: You need to count coprime configurations, find the number of irreducible fractions, or optimize high-power modular remainders (using Euler's Theorem: `a^phi(m) = 1 (mod m)` for `gcd(a, m) == 1`).
+*   *Use Safe Multiplication when*: Multiplying integers where the product can exceed `9.22 * 10^18` without access to 128-bit integer hardware types.
 
 ---
 
@@ -269,11 +354,15 @@ def solve_crt(a: list[int], m: list[int]) -> int:
 ### Practice Problems
 1.  **Euler's Totient Function**: Implement a single totient function and a sieve precomputation.
 2.  **Extended Euclidean Algorithm**: Find modular inverses for non-prime moduli.
-3.  **Chinese Remainder Solver**: Build a generic CRT solver for K modular equations.
+3.  **Chinese Remainder Solver**: Build a generic CRT solver for `K` modular equations.
+4.  **Check If It Is a Good Array** ([LeetCode 1250](https://leetcode.com/problems/check-if-it-is-a-good-array/)): Apply Bézout's Identity across an entire array of integers.
 
 ### Misconceptions and Corrections
 *   *Incorrect Idea*: Assuming that the Chinese Remainder Theorem can solve systems with non-pairwise coprime moduli without modifications.
-    *   *Correction*: If the moduli are not coprime, a solution might not exist, or it might not be unique modulo their product. You must verify that the GCD of the moduli is 1 before starting.
+    *   *Correction*: If the moduli are not coprime, a solution might not exist, or it might not be unique modulo their product. You must verify that `gcd(m_i, m_j) == 1` for all `i != j` before applying standard CRT.
+*   *Incorrect Idea*: Assuming Euler's Theorem `a^phi(m) = 1 (mod m)` holds when `a` and `m` share common factors.
+    *   *Correction*: Euler's Theorem strictly requires `gcd(a, m) == 1`. If `gcd(a, m) > 1`, power reduction must use the generalized power tower rule `a^b = a^(b % phi(m) + phi(m)) (mod m)` for `b >= phi(m)`.
+
 ---
 
 > 🧭 **Navigation:** [← Previous Day](Week_14_Day_04_Advanced_Strings_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_14_FULL_PLAYBOOK.md)

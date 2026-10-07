@@ -1,8 +1,4 @@
-# 📘 WEEK 7 DAY 3: Balanced BSTs — AVL & Red-Black Trees — Engineering Guide
-
-
-
-
+﻿# 📘 WEEK 7 DAY 3: Balanced BSTs — AVL & Red-Black Trees — Engineering Guide
 
 > 🧭 **Navigation:** [← Previous Day](Week_07_Day_02_Binary_Search_Trees_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_07_Day_04_Tree_Patterns_Instructional.md)
 > 
@@ -14,10 +10,10 @@
 
 *By the end of this chapter, you will be able to:*
 
-- 🎯 **Internalize** why balance matters: height bounds that guarantee O(log n) operations regardless of insertion order.
-- ⚙️ **Implement** tree rotations (LL, LR, RR, RL cases in AVL; color flips and rotations in Red-Black) without memorization, understanding the invariant preservation.
-- ⚖️ **Evaluate** the trade-off between AVL (stricter balance, more rotations) and Red-Black (looser balance, fewer rotations, more practical).
-- 🏭 **Connect** balanced BSTs to production systems: language libraries choosing one variant over another, databases using B-Trees (generalized balanced trees), and why this choice matters for real systems under load.
+- 🎯 **Internalize** why tree self-balancing is mandatory to guarantee `O(log N)` upper bounds against adversarial or naturally sorted data.
+- ⚙️ **Implement** AVL tree rotations—Left (RR), Right (LL), Left-Right (LR), and Right-Left (RL)—and height updates cleanly in C# and Python.
+- ⚖️ **Evaluate** trade-offs between AVL trees (stricter balance factor `<= 1`, faster lookups) and Red-Black trees (looser balance, fewer rotations during mutations, preferred by production runtimes).
+- 🏭 **Connect** self-balancing invariants to Linux kernel process scheduling (`rbtree`), C++ `std::map`, and database multi-way B-trees.
 
 ---
 
@@ -25,33 +21,24 @@
 
 ### The Engineering Challenge
 
-Imagine you're building the backend for a ride-sharing platform (Uber, Lyft). The system maintains a "hot list" of available drivers, indexed by their location zone. When a user requests a ride, the system must:
+Yesterday we established that an unbalanced BST has an average-case search time of `O(log N)`, but its worst case degrades to `O(N)`. 
 
-1. **Find** available drivers in the requested zone (O(log n) lookup)
-2. **Remove** the driver from available list (O(log n) deletion)
-3. **Add** the driver back to available list when done (O(log n) insertion)
+In production systems, this gap between average and worst case is hazardous:
+- Consider a ride-sharing driver registry or database timestamp index where records arrive in chronological order (`timestamp1 < timestamp2 < timestamp3`).
+- A standard BST turns into a 100,000-node linked list. Latency spikes from 17 CPU comparisons (`log2(100000)`) to 100,000 pointer chases per query. Under 10,000 requests/sec, the system collapses under thread pool exhaustion.
+- An attacker can exploit this via Algorithmic Complexity Attacks (DoS), feeding sorted keys to force `O(N)` quadratic operations.
 
-On a quiet night, 100 drivers trickle in sequentially. A naive BST degenerates into a linked list. Lookup is now O(n)—50 comparisons on average per lookup. A system processing 10,000 ride requests per minute suddenly becomes O(n) = 50 average time per request. At scale, this adds up to multi-second latencies. Users see "searching for rides..." indefinitely.
+We cannot assume incoming data is uniformly randomized. The data structure itself must enforce an architectural guarantee: **the tree must dynamically rebalance itself upon every insertion and deletion**.
 
-With a balanced tree, every lookup is ~7 comparisons (log₂ 128) regardless of insertion order. Performance is deterministic. The system doesn't slow down as more drivers come online.
+### The Solution: Self-Balancing Trees (AVL & Red-Black)
 
-Or consider a database with a million-row table indexed by timestamp. Users run range queries: "Find all orders from 2 PM to 3 PM today." A degenerate BST requires scanning 500,000 nodes in the worst case. A balanced tree with O(log n) height needs only 20 node traversals to find the range boundaries, then a linear scan through the results.
+Self-balancing binary search trees maintain a strict height invariant through **tree rotations**—`O(1)` local pointer manipulations that restructure subtrees without violating the BST ordering invariant.
 
-Or think about a traffic control system managing 100,000 traffic lights. Each light has a maintenance schedule stored in a tree indexed by next-maintenance-time. The system must add new maintenance events and query upcoming events. If insertion order is adversarial (e.g., maintenance windows fill in chronological order), a naive BST degenerates. But a balanced tree guarantees O(log n) insertion and query regardless of order.
+1. **AVL Trees (Adelson-Velsky and Landis, 1962):** Enforces strict height balance: for every node, the height difference between left and right subtrees (the **Balance Factor**) is at most 1.
+2. **Red-Black Trees (Bayer, 1972 / Guibas & Sedgewick, 1978):** Enforces loose balance via node coloring rules, guaranteeing that the longest root-to-leaf path is no more than twice the length of the shortest path.
 
-This is the core problem balanced BSTs solve: **guarantee O(log n) operations regardless of insertion order.** No matter how adversarial the data, the tree maintains its shape through automatic rebalancing.
-
-### The Solution: Balanced BSTs (AVL & Red-Black)
-
-Yesterday, you learned that a BST can degenerate into a linked list if insertion is sorted. Today, you'll see how two different approaches solve this:
-
-1. **AVL Trees:** Strict balance—every node's left and right subtrees have heights differing by at most 1. More rotations required to maintain this. Used when you need strong guarantees and don't mind rebalancing overhead.
-
-2. **Red-Black Trees:** Loose balance—nodes are colored red or black with color rules enforcing a weak height bound. Fewer rotations than AVL. Practical choice used in production systems (Java TreeMap, C++ std::map).
-
-Both maintain O(log n) height through rebalancing operations. The core insight: **a small amount of work during insertion/deletion (rotations) buys you O(log n) guarantee forever.**
-
-> **💡 Insight:** Balance is maintained automatically through rotations—local restructuring operations that preserve the BST invariant while tightening height bounds.
+> [!TIP]
+> **Core Insight:** A rotation is a localized pointer exchange taking `O(1)` time. By performing at most `O(log N)` rotations during insertion/deletion, we permanently buy guaranteed `O(log N)` lookup times.
 
 ---
 
@@ -59,748 +46,635 @@ Both maintain O(log n) height through rebalancing operations. The core insight: 
 
 ### The Core Analogy
 
-Think of a balanced BST as a **self-organizing filing cabinet.** Initially, documents are filed alphabetically (sorted). But usage patterns cause imbalance:
+Think of a balanced BST as a **mechanical balance scale**:
+- If weights are added to one pan until the arm tilts past tolerance, a mechanical escapement shifts the pivot point down one notch toward the heavier side.
+- The items on the scale remain in the exact same left-to-right order, but the center of gravity is restored directly underneath the fulcrum.
+- In tree terms: the pivot shift is a **rotation**, preserving BST order while reducing overall height.
 
-- Over time, recent documents are accessed heavily, pushing deeper into the tree.
-- An unbalanced cabinet has one very deep drawer and shallow others.
-- Reaching documents in the deep drawer takes many steps.
+### 🖼 Visualizing Rotations
 
-A balanced cabinet reorganizes itself automatically:
-- When a drawer becomes too deep compared to others, internal dividers shift.
-- Files move to rebalance the structure.
-- No file is ever more than a few steps from the top divider (logarithmic depth).
-
-The "reorganization" is a rotation—a local restructuring that preserves alphabetical order while reshaping the tree.
-
-### 🖼 Visualizing the Structure
-
-Here's an unbalanced BST (degenerate case) from inserting [1, 2, 3, 4, 5]:
+#### Single Right Rotation (LL Case)
+Triggered when a node becomes left-heavy (`Balance Factor > 1`) and its left child is also left-heavy (`left.BalanceFactor >= 0`):
 
 ```
-      1
-       \
-        2
-         \
-          3
-           \
-            4
-             \
-              5
-Height = 5, O(n) search
+       y                                x
+      / \                              / \
+     x   T3      ── Right-Rotate(y) ──>  T1   y
+    / \                                      / \
+   T1  T2                                   T2 T3
+
+Ordering invariant strictly preserved: T1 < x < T2 < y < T3
 ```
 
-The same values in an AVL tree (perfectly balanced):
-
-```mermaid
-graph TD
-    classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
-
-    N3["3 (Root)"]:::nodeStyle
-    N2["2"]:::nodeStyle
-    N4["4"]:::nodeStyle
-    N1["1"]:::nodeStyle
-    N5["5"]:::nodeStyle
-
-    N3 --> N2
-    N3 --> N4
-    N2 --> N1
-    N4 --> N5
-```
-
-Height = 2, guaranteeing `O(log N)` search time.
-
-The AVL tree restructures itself to maintain balance. How? Through **rotations**—local rearrangements of pointers that preserve the BST invariant.
-
-The state machine for a single node:
+#### Single Left Rotation (RR Case)
+Triggered when a node becomes right-heavy (`Balance Factor < -1`) and its right child is right-heavy (`right.BalanceFactor <= 0`):
 
 ```
-Node (in memory):
-  int value
-  Node left, right
-  int height (for AVL) / color (for Red-Black)
-  Node parent (optional, useful for rebalancing)
+     x                                      y
+    / \                                    / \
+   T1  y         ── Left-Rotate(x) ──>    x   T3
+      / \                                / \
+     T2 T3                              T1 T2
+
+Ordering invariant strictly preserved: T1 < x < T2 < y < T3
 ```
 
-When you insert or delete, the tree checks if balance is violated. If so, it rotates to restore balance.
-
-### Invariants & Properties
-
-**AVL Invariant:** For every node, |height(left subtree) - height(right subtree)| ≤ 1.
-
-This constraint is strict. Every node must satisfy it. If violated, rotations fix it immediately.
-
-**Red-Black Invariant:** 
-1. Every node is either red or black.
-2. The root is black.
-3. All leaves (null pointers) are black.
-4. If a node is red, both children are black.
-5. All paths from a node to descendant leaves have the same number of black nodes (black-height property).
-
-These constraints are more subtle. They don't directly enforce height balance but guarantee it through the black-height property.
-
-**Height bound from invariants:**
-- AVL: For n nodes, height ≤ 1.44 log₂(n+2). In practice, h ≈ 1.0-1.01 × log₂(n).
-- Red-Black: For n nodes, height ≤ 2 log₂(n+1). Looser than AVL but still logarithmic.
-
-**Why maintain balance?** Because height directly determines operation complexity (search, insert, delete all are O(h)). A balanced tree guarantees h = O(log n), ensuring O(log n) operations. A degenerate tree has h = O(n), degrading to O(n).
-
-### 📐 Mathematical & Theoretical Foundations
-
-**AVL Tree Height Theorem:** An AVL tree with n nodes has height h ≤ 1.44 log₂(n + 2). Proof uses Fibonacci numbers—a balanced AVL tree of height h has at least Fib(h+2) nodes, where Fib is the Fibonacci sequence. This bounds height logarithmically.
-
-**Red-Black Tree Height Theorem:** A red-black tree with n internal nodes has height h ≤ 2 log₂(n + 1). Proof: Red-black coloring ensures black-height is logarithmic; the height is at most 2× the black-height due to the constraint that no two red nodes are adjacent.
-
-**Rotation Correctness:** A rotation is a local restructuring that preserves the BST invariant. Specifically:
-- Left rotation on node x: x's right child becomes x's parent; x becomes the left child.
-- The BST invariant is preserved: all values < middle node go left, all > go right.
-- Height might change locally, but global operations remain O(1).
-
-**Rebalancing Complexity:**
-- AVL: After insertion or deletion, O(log n) nodes might need rebalancing. At most O(log n) rotations per operation.
-- Red-Black: After insertion or deletion, O(1) rebalancing in practice. At most 2 rotations per deletion, 1 per insertion.
-
-### Taxonomy of Variations
-
-| Tree Type | Balance Strictness | Rotations/Insert | Rotations/Delete | Space | Use Case |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Generic BST** | None | 0 | 0 | O(n) | Educational, academic |
-| **AVL Tree** | Strict (≤1 height diff) | ≤2 | ≤2 | O(n) | When you need perfect balance, less insertion-heavy |
-| **Red-Black Tree** | Loose (color rules) | ≤1 | ≤3 | O(n) | Production systems, balanced insertion/deletion |
-| **Splay Tree** | None (self-adjusting) | 1 per access | 1 per access | O(n) | Skewed access patterns, cache-friendly |
-| **B-Tree** | Multi-child balance | O(log n) | O(log n) | O(n) | Databases, disk-based storage |
-| **Treap** | Probabilistic (heap priority) | O(1) expected | O(1) expected | O(n) | Randomized balancing, simpler code |
-
----
-
-## ⚙️ CHAPTER 3: MECHANICS & IMPLEMENTATION
-
-### The State Machine & Memory Layout
-
-A balanced BST node looks similar to a generic BST node but with additional metadata:
-
-```
-class AVLNode {
-    int value
-    AVLNode left, right
-    int height  // height of subtree rooted at this node
-}
-
-class RedBlackNode {
-    int value
-    RedBlackNode left, right, parent
-    Color color  // RED or BLACK
-}
-```
-
-The key difference: AVL stores height, Red-Black stores color and parent pointer. This metadata is used during rebalancing checks.
-
-### 🔧 Operation 1: AVL Insertion & Rebalancing
-
-**Intent:** Insert a new node into an AVL tree, then check balance at each ancestor node. If any node's balance factor (|left_height - right_height|) exceeds 1, perform rotations to restore balance.
-
-**Recursive implementation—narrative walkthrough:**
-
-AVL insertion follows BST insertion, then rebalances:
-
-1. Insert the new node using normal BST insertion.
-2. Update heights for ancestor nodes (the path from inserted node to root).
-3. At each ancestor, compute balance factor = height(left) - height(right).
-4. If balance factor is outside [-1, +1], perform rotations based on the type of imbalance.
-
-The balance factor tells you what rotation is needed:
-
-- **Balance factor = +2** (left heavy): Left subtree is too tall.
-  - If left child's balance factor ≥ 0 (left child also left-heavy): LL case → single right rotation
-  - If left child's balance factor < 0 (left child is right-heavy): LR case → left rotation on left child, then right rotation on node
-  
-- **Balance factor = -2** (right heavy): Right subtree is too tall.
-  - If right child's balance factor ≤ 0 (right child also right-heavy): RR case → single left rotation
-  - If right child's balance factor > 0 (right child is left-heavy): RL case → right rotation on right child, then left rotation on node
-
-**Inline trace 🧪—watch it execute:**
-
-Insert [1, 2, 3] into an AVL tree:
-
-```mermaid
-flowchart LR
-    classDef skewed fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
-    classDef balanced fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
-
-    subgraph Before["❌ Before: Right-Heavy (RR Case, Balance = +2)"]
-        direction TB
-        B1["1"]:::skewed --> B2["2"]:::skewed
-        B2 --> B3["3"]:::skewed
-    end
-
-    subgraph After["✅ After: Left Rotation on Node 1"]
-        direction TB
-        A2["2 (New Root)"]:::balanced
-        A1["1"]:::balanced
-        A3["3"]:::balanced
-        A2 --> A1
-        A2 --> A3
-    end
-
-    Before -->|"Left Rotate(1)"| After
-```
-
-- **Balance Check at 1:** `height(right) - height(left) = 2 - 0 = +2` (Right heavy, RR case).
-- **Resolution:** Left rotate around root `1`. Node `2` ascends to root, pulling `1` into its left subtree and keeping `3` in its right subtree. Balance factors reset to `0`.
-
-**Trace table—detailed walkthrough:**
-
-```
-| Step | Action | Tree Structure | Balance Check | Rotation? |
-|------|--------|----------------|---------------|-----------|
-| 1    | Insert 1 | 1 | 0 (balanced) | No |
-| 2    | Insert 2 | 1\2 | +1 at 1 (right slightly heavy, OK) | No |
-| 3    | Insert 3 | 1\2\3 | +2 at 1 (right too heavy) | Yes (RR) |
-| 4    | Left rotate on 1 | 2/(1,3) | 0 at all nodes | No (balanced) |
-```
-
-**LR case example (trickier):**
-
-Insert [1, 3, 2] into AVL:
-
-```mermaid
-flowchart LR
-    classDef warn fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
-    classDef balanced fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
-
-    subgraph S1["1️⃣ Insertion (RL Zig-Zag)"]
-        direction TB
-        N1["1 (BF: +2)"]:::warn --> N3["3 (BF: -1)"]:::warn
-        N3 --> N2["2"]:::warn
-    end
-
-    subgraph S2["2️⃣ Right-Rotate on 3"]
-        direction TB
-        M1["1 (BF: +2)"]:::warn --> M2["2 (BF: +1)"]:::warn
-        M2 --> M3["3"]:::warn
-    end
-
-    subgraph S3["3️⃣ Left-Rotate on 1"]
-        direction TB
-        R2["2 (Balanced Root)"]:::balanced
-        R1["1"]:::balanced
-        R3["3"]:::balanced
-        R2 --> R1
-        R2 --> R3
-    end
-
-    S1 -->|"Right Rotate(3)<br/>Straighten line"| S2
-    S2 -->|"Left Rotate(1)<br/>Balance tree"| S3
-```
-
-- **Diagnosis:** `BalanceFactor(1) = +2` (right heavy) and `BalanceFactor(3) = -1` (left heavy). A single rotation cannot fix a "knee/zig-zag" bend!
-- **Double Rotation Fix:**
-  1. **Right rotate on child `3`:** Straightens the zig-zag `1 -> 3 -> 2` into a straight line `1 -> 2 -> 3`.
-  2. **Left rotate on grandparent `1`:** Pulls `2` up as the balanced root with children `1` and `3`. Balance factors return to `0`.
-
-### 🔧 Operation 2: Red-Black Insertion & Rebalancing
-
-**Intent:** Insert a new node (colored red) into a Red-Black tree. The insertion might violate color rules (two red nodes in a row). Rebalance through color flips and rotations.
-
-**Narrative walkthrough:**
-
-Red-Black insertion is more complex than AVL because violations are context-dependent:
-
-1. Insert the new node as red (red is the "default" color for new nodes).
-2. If parent is black, you're done—no violation.
-3. If parent is red, you have a violation (two red nodes). Fix depends on uncle (parent's sibling):
-   - **Uncle is red:** Flip colors. Parent, uncle, and grandparent change colors. Recheck grandparent.
-   - **Uncle is black (or null):** Perform rotations (similar to AVL) to restructure.
-
-Why red for new nodes? Because flipping colors from red to black reduces the number of nodes that need rotation.
-
-**Inline trace 🧪—watch it execute:**
-
-Insert `[1, 2, 3]` into Red-Black tree:
+#### Double Rotations: Straightening the "Knee" (Zig-Zag)
+A single rotation cannot fix a bent path. When inserting into the inner grandchild, we perform a double rotation:
 
 ```mermaid
 flowchart TD
-    subgraph Step1["Step 1: Insert 1"]
-        R1["1 (Black Root)"]:::blackNode
-    end
-
-    subgraph Step2["Step 2: Insert 2"]
-        R2["1 (Black)"]:::blackNode
-        C2["2 (Red)"]:::redNode
-        R2 --> C2
-    end
-
-    subgraph Step3["Step 3: Insert 3 (Violation!)"]
-        R3["1 (Black)"]:::blackNode
-        C3["2 (Red)"]:::redNode
-        C3_3["3 (Red)"]:::redNode
-        R3 --> C3
-        C3 --> C3_3
-    end
-
-    subgraph Step4["Step 4: Left Rotate(1) & Recolor"]
-        N2["2 (Black - New Root)"]:::blackNode
-        N1["1 (Red)"]:::redNode
-        N3["3 (Red)"]:::redNode
-        N2 --> N1
-        N2 --> N3
-    end
-
-    Step1 --> Step2 --> Step3 --> Step4
-
-    classDef blackNode fill:#263238,stroke:#eceff1,stroke-width:2px,color:#ffffff
-    classDef redNode fill:#b71c1c,stroke:#ff8a80,stroke-width:2px,color:#ffffff
-```
-
-**Step Breakdown:**
-- **Step 1:** Insert `1` (colored black as root).
-- **Step 2:** Insert `2` as red right child. Valid because parent `1` is black.
-- **Step 3:** Insert `3` as red right child of `2`. **Violation:** consecutive red nodes (`2(R) -> 3(R)`). Node `3`'s uncle is `null` (black).
-- **Step 4:** Left rotation around grandparent `1` lifts `2` to the sub-root with `1` and `3` as children. Recolor `2` to black and `1` to red. Root is black.
-- **Black-height check:** Path `2 -> 1 -> null` has 2 black nodes; path `2 -> 3 -> null` has 2 black nodes. All paths maintain identical black-height.
-
-**Why Red-Black is more practical:**
-- AVL has stricter balance, requiring more rotations on insertion.
-- Red-Black allows some height imbalance but guarantees `O(log N)` through the black-height property.
-- Red-Black requires fewer rotations in practice (at most 2 rotations per insertion), making it the standard choice for language standard libraries (C++ `std::map`, Java `TreeMap`, Linux kernel CFS scheduler).
-
-### 🔧 Operation 3: Rotations (The Core Mechanic)
-
-A rotation is a local restructuring operation that preserves the BST invariant while changing the tree shape.
-
-**Left rotation on node x:**
-
-```mermaid
-flowchart LR
-    subgraph Before["Before: Left-Rotate(x)"]
+    subgraph S1["1. Left-Right Zig-Zag (Imbalance at 1)"]
         direction TB
-        BX["Node x"]:::focusNode
-        BY["Node y"]:::subNode
-        BB["Subtree b"]:::subNode
-        BC["Subtree c"]:::subNode
-        BX --> BY
-        BY --> BB
-        BY --> BC
+        A1["1 (BF: -2)"] --> A3["3 (BF: +1)"]
+        A3 --> A2["2"]
     end
 
-    subgraph After["After: Left-Rotate(x)"]
+    subgraph S2["2. Right-Rotate on 3 (Straighten)"]
         direction TB
-        AY["Node y (New Root)"]:::focusNode
-        AX["Node x"]:::subNode
-        AB["Subtree b"]:::subNode
-        AC["Subtree c"]:::subNode
-        AY --> AX
-        AY --> AC
-        AX --> AB
+        B1["1 (BF: -2)"] --> B2["2"]
+        B2 --> B3["3"]
     end
 
-    Before ==>|"Rotate Left around x"| After
-
-    classDef focusNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
-    classDef subNode fill:#37474f,stroke:#cfd8dc,stroke-width:2px,color:#ffffff
-```
-
-**BST invariant check:**
-- **Before:** All values `< x` go left (none shown), all `> x` go right (to `y`). At `y`: all `< y` go left (`b`), all `> y` go right (`c`). Thus `x < b < y < c`.
-- **After:** All values `< y` go left (`x` and its subtree). At `x`: all `> x` go right (`b`). Order `x < b < y < c` is strictly preserved!
-- **Height effect:** If subtree `c` was deep, lifting `y` decreases overall tree depth.
-- **Cost:** `O(1)` pointer updates (5–6 pointer reassignments in total).
-
-**Right rotation:** Mirror of left rotation. All logic is symmetric.
-
-**Double rotation (LR case):**
-- Left rotation on left child, then right rotation on parent.
-- Straightens a zig-zag before lifting the middle node.
-- Still `O(1)` rotations (exactly 2 constant-time rotations).
-
-### 📉 Progressive Example: Building an AVL Tree
-
-Inserting `[5, 3, 7, 2, 4, 6, 8, 1]` step-by-step into an AVL tree:
-
-| Step | Inserted Key | Structure Action | Balance Status |
-| :--- | :--- | :--- | :--- |
-| **1** | `5` | Single root node | Balanced (`BF = 0`) |
-| **2** | `3` | Left child of `5` | Balanced (`BF(5) = -1`) |
-| **3** | `7` | Right child of `5` | Perfectly balanced (`BF(5) = 0`) |
-| **4** | `2` | Left child of `3` | Balanced (`BF(3) = -1`, `BF(5) = -1`) |
-| **5** | `4` | Right child of `3` | Balanced (`BF(3) = 0`, `BF(5) = -1`) |
-| **6** | `6` | Left child of `7` | Balanced (`BF(7) = -1`) |
-| **7** | `8` | Right child of `7` | Balanced (`BF(7) = 0`, `BF(5) = 0`) |
-| **8** | `1` | Left child of `2` | Balanced (`BF(2) = -1`, `BF(3) = -1`, `BF(5) = -1`) |
-
-```mermaid
-flowchart TD
-    subgraph FinalAVL["Balanced AVL Tree with Keys [5, 3, 7, 2, 4, 6, 8, 1]"]
-        N5["5 (BF: -1)"]:::balancedNode
-        N3["3 (BF: -1)"]:::balancedNode
-        N7["7 (BF: 0)"]:::balancedNode
-        N2["2 (BF: -1)"]:::balancedNode
-        N4["4 (BF: 0)"]:::balancedNode
-        N6["6 (BF: 0)"]:::balancedNode
-        N8["8 (BF: 0)"]:::balancedNode
-        N1["1 (BF: 0)"]:::leafNode
-
-        N5 --> N3
-        N5 --> N7
-        N3 --> N2
-        N3 --> N4
-        N7 --> N6
-        N7 --> N8
-        N2 --> N1
+    subgraph S3["3. Left-Rotate on 1 (Balanced)"]
+        direction TB
+        C2["2 (Root)"] --> C1["1"]
+        C2 --> C3["3"]
     end
 
-    classDef balancedNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
-    classDef leafNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
+    S1 -->|"Step 1: Rotate Right(3)"| S2
+    S2 -->|"Step 2: Rotate Left(1)"| S3
 ```
 
-**Balance Verification at Node 3 after inserting 1:**
-- Height of left subtree (`2 -> 1`): `2`
-- Height of right subtree (`4`): `1`
-- `BalanceFactor(3) = height(left) - height(right) = 2 - 1 = +1` (within acceptable AVL range `[-1, 1]`). No rebalance needed!
+### Invariants & Foundations
 
-> [!WARNING]
-> AVL rotations can be tricky. The four cases (LL, LR, RR, RL) each require distinct rotation sequences. A common interview bug is applying a single rotation when a double rotation is required. Always evaluate the balance factor of the child to verify whether a zig-zag knee exists!
+#### 1. AVL Height & Strict Balance Invariant
+- **Height Calculation:** `Height(null) = 0`, `Height(node) = 1 + max(Height(node.left), Height(node.right))`.
+- **Balance Factor (BF):** `BF(node) = Height(node.left) - Height(node.right)`.
+- **AVL Invariant:** For every node in the tree, `BF(node) in {-1, 0, 1}`.
+- **Height Bound:** For an AVL tree with `N` nodes, the maximum height `H` satisfies `H <= 1.44 * log2(N + 2)`. In practice, height closely tracks `1.01 * log2(N)`. Because the balance is so tight, lookup searches require fewer comparisons than in Red-Black trees.
+
+#### 2. The 5 Core Red-Black Properties in Plain English
+A Red-Black tree is a self-balancing binary search tree where each node carries an extra 1-bit color attribute (`Red` or `Black`). It balances the tree by strictly enforcing 5 fundamental rules:
+
+1. **Property 1 (Color):** Every node is colored either **Red** or **Black**.
+2. **Property 2 (Root):** The root of the entire tree is always **Black**.
+   - *Plain English:* Anchors the tree so black-height calculations have a fixed baseline.
+3. **Property 3 (Leaves):** Every leaf (`null` sentinel reference / NIL) is considered **Black**.
+   - *Plain English:* Ensures every downward path terminates with a Black marker.
+4. **Property 4 (Red-No-Red):** If a node is **Red**, both of its children must be **Black**. No two Red nodes can ever be directly adjacent on any root-to-leaf path.
+   - *Plain English:* Places an upper limit on branch growth: you can never have two Red nodes in a row.
+5. **Property 5 (Equal Black-Height):** Every simple path from any given node down to any of its descendant `null` leaves must contain the exact same number of Black nodes.
+   - *Plain English:* Guarantees that every branch possesses identical "black weight."
+
+#### The Golden Consequence: Why Red-Black Trees are Strictly `O(log N)`
+Consider the shortest and longest possible paths from root to a leaf:
+- **Shortest Path:** Composed entirely of Black nodes (`B` black nodes). Length = `B`.
+- **Longest Path:** Alternates strictly between Red and Black nodes (Property 4 prevents consecutive Reds). To satisfy Property 5, it must contain exactly `B` black nodes, which are interleaved with at most `B` red nodes. Length <= `2B`.
+- **Conclusion:** `Longest Path <= 2 * Shortest Path`. No branch can ever be more than twice as deep as any other branch. Therefore, tree height `H <= 2 * log2(N + 1)`, guaranteeing all search, insert, and delete operations execute in strictly `O(log N)` time!
+
+### Taxonomy of Balanced Search Trees
+
+| Data Structure | Balance Strictness | Rotations on Insert | Rotations on Delete | Primary Use Case |
+| :--- | :--- | :---: | :---: | :--- |
+| **AVL Tree** | `\|height(L) - height(R)\| <= 1` | At most 2 | `O(log N)` | Lookup-heavy read databases |
+| **Red-Black Tree** | Longest path `<= 2 *` Shortest path | At most 2 | At most 3 | Mutation-heavy runtime libraries |
+| **B-Tree / B+ Tree** | Multi-way branching (hundreds of keys/node) | Node splits | Node merges | Disk-based relational databases & file systems |
+| **Treap** | Probabilistic balancing via heap priorities | `O(1)` expected | `O(1)` expected | Randomized sets, simpler concurrency |
 
 ---
 
-## ⚖️ CHAPTER 4: PERFORMANCE, TRADE-OFFS & REAL SYSTEMS
+## ⚙️ CHAPTER 3: MECHANICS & THE 4 ROTATION CASES
 
-### Beyond Big-O: Performance Reality
+### 🔧 AVL Balance Factor & The 4 Rotation Cases
 
-Theoretically, both AVL and Red-Black guarantee O(log n) height, so both guarantee O(log n) search, insert, and delete. But real systems choose one over the other based on practical trade-offs:
-
-**AVL Trees:**
-- Tighter balance (height ≈ 1.0 × log₂(n))
-- More rotations on insertion/deletion (up to O(log n) in worst case, but typically 1–2)
-- Better for search-heavy workloads (deeper searches are rare)
-- Worse for insertion-heavy workloads (more rebalancing overhead)
-
-**Red-Black Trees:**
-- Looser balance (height ≈ 1.5 × log₂(n), but still logarithmic)
-- Fewer rotations (at most 2 per insertion, 3 per deletion in practice)
-- Better for insertion-heavy workloads
-- Slightly deeper searches but same O(log n) guarantee
-- Practical choice in production (Java, C++, Linux kernel all use Red-Black)
-
-**Memory overhead:**
-- AVL: Node needs value + 2 pointers + height (typically 1–2 bytes, or part of unused pointer bits)
-- Red-Black: Node needs value + 3 pointers (left, right, parent) + 1 bit for color
-- Red-Black uses more memory (parent pointer) but compensates with fewer rotations
-
-**Cache performance:**
-- Both scatter nodes throughout memory (pointer-based), causing cache misses during traversal
-- B-Trees (generalization of balanced trees) are better for cache (multiple children per node fit in one cache line)
-- For in-memory systems with L3 caches, difference is usually small
-
-| Operation | AVL | Red-Black | Generic BST (degenerate) |
-| :--- | :--- | :--- | :--- |
-| **Search** | O(log n), tighter | O(log n), looser | O(n) worst |
-| **Insert** | O(log n) + rebalance | O(log n) + rebalance | O(n) worst |
-| **Delete** | O(log n) + rebalance | O(log n) + rebalance | O(n) worst |
-| **Height** | 1.0 × log₂(n) avg | 1.5 × log₂(n) avg | n worst |
-| **Rotations/insert** | ~1 avg, O(log n) worst | ~1 avg | 0 |
-| **Rotations/delete** | ~2 avg | ~1.5 avg | 0 |
-| **Memory/node** | ~24 bytes | ~32 bytes | ~24 bytes |
-| **Production use** | Rare (LLVM compiler) | Common (Java, C++, Linux) | Never (educational only) |
-
-> **📉 Memory Reality:** A balanced BST with 1 million nodes uses ~32 MB (Red-Black) or ~24 MB (AVL). A hash table with the same data uses ~48 MB (with load factor 0.75). The memory difference is negligible; the performance difference under worst-case insertion is enormous.
-
-### 🏭 Real-World Systems
-
-#### Story 1: Java Collections & C++ STL—Language Library Choices
-
-Java's TreeMap and TreeSet use Red-Black Trees. C++'s std::map and std::set also use Red-Black. Why Red-Black?
-
-**The decision:** Java and C++ designers benchmarked AVL vs Red-Black on real workloads. Insertion/deletion are more common than pure search in typical applications. Red-Black's fewer rotations win in practice, offsetting the slightly deeper searches.
-
-**The impact:** Millions of Java developers use TreeMap daily. If Java had chosen AVL, tree rebalancing would cause noticeable lag in insertions. The choice affects user experience globally.
-
-**Code example (conceptual):**
-```
-TreeMap<Integer, String> map = new TreeMap<>();
-map.put(5, "five");   // Insertion, Red-Black rebalances with ≤1 rotation
-map.put(3, "three");  // ≤1 rotation
-map.put(7, "seven");  // ≤1 rotation
-String value = map.get(5);  // O(log n) lookup, slightly deeper due to loose balance
-```
-
-#### Story 2: Linux Kernel & File System Indexing
-
-The Linux kernel uses Red-Black Trees extensively (rbtree.c, ~400 lines of code). Every process has a red-black tree of memory regions (mmap). File systems use them for directory inode trees.
-
-**The problem:** The kernel runs on diverse hardware (embedded 8-bit microcontrollers to 64-core servers). Rotations are expensive on slow CPUs. Red-Black's fewer rotations are crucial for kernel performance.
-
-**The solution:** Linux kernel developers implemented Red-Black Trees with extreme care, handling every edge case. The implementation is optimized for the kernel's specific workload (insertion-heavy, often with sequential keys).
-
-**Impact:** A slow rbtree implementation would slow down every process creation, memory allocation, and file system operation. Global system performance depends on this one data structure.
-
-#### Story 3: Database B-Trees (Generalization of Balanced Trees)
-
-Databases don't use binary BSTs directly. Instead, they use B-Trees—a generalization allowing multiple children per node. A B-Tree of order 100 can have 100 children per node.
-
-**The problem:** With binary BST, a million-row table has ~log₂(1,000,000) ≈ 20 levels. Each level requires one disk read (10ms typical). 20 reads = 200ms per query.
-
-**The solution:** A B-Tree of order 100 has ~log₁₀₀(1,000,000) ≈ 3 levels. 3 reads = 30ms per query. The B-Tree order is chosen so each node fits in a disk page (4KB, contains 100–200 keys).
-
-**Impact:** Database query performance—especially range queries—depends critically on B-Tree design. PostgreSQL, MySQL, SQLite all use B-Tree variants. A naive binary BST would be 10× slower.
-
-#### Story 4: Git & Version Control—Balanced Trees in Distributed Systems
-
-Git stores the commit history as a DAG with tree-like properties. When you search for a commit by date or hash, the system navigates a balanced tree structure.
-
-**The problem:** A large open-source project (Linux kernel, Chromium) has 1–2 million commits. Searching linearly is slow.
-
-**The solution:** Git uses an internal tree structure (conceptually similar to balanced trees) to quickly find commits. The exact implementation varies, but the principle is the same: logarithmic search.
-
-**Impact:** Fast git operations (git log, git bisect) depend on efficient tree navigation. Slow tree implementation would make version control unusable.
-
-#### Story 5: Real-Time Systems & Avionics
-
-Real-time systems (aircraft avionics, medical devices, industrial control) often use balanced BSTs for priority queues. A critical constraint: **guaranteed O(log n) performance**, not average case.
-
-**The problem:** In average-case analysis, a generic BST might degenerate to O(n) in an emergency scenario. A surgeon can't have the system lag unexpectedly.
-
-**The solution:** Balanced BSTs provide worst-case O(log n) guarantees. AVL is preferred here because of its stricter balance (even tighter worst-case guarantees).
-
-**Impact:** The difference between a system that's reliable and one that fails unpredictably under worst-case load.
-
-### Failure Modes & Robustness
-
-**Incorrect rotation:** A rotation that violates the BST invariant corrupts the tree. Subsequent searches return wrong results. This is subtle—the rotation looks correct locally but breaks global structure.
-
-**Incomplete rebalancing:** Rebalancing must propagate up the tree. If you stop early, ancestor nodes might remain imbalanced. The fix: after each rotation, recheck ancestors up to the root.
-
-**Height not updated:** AVL trees rely on accurate height values. If height isn't updated after insertion/deletion, balance factor computation is wrong, leading to incorrect rebalancing decisions.
-
-**Color invariant violations:** Red-Black Trees rely on color invariants. Violations include:
-- Two consecutive red nodes (tree is unbalanced)
-- Non-uniform black-height (tree structure is violated)
-- Root is not black (color rule broken)
-
-**Concurrency issues:** Rebalancing changes tree structure (rotations). If multiple threads insert/delete concurrently, rotations might corrupt the tree. Solution: locking or lock-free algorithms (advanced).
-
-**Memory leaks during rebalancing:** Rotations might temporarily create dangling pointers if not careful. Solution: maintain invariants throughout the operation; never leave the tree in an intermediate state visible to other threads.
+Whenever an insertion or deletion pushes a node's balance factor outside `{-1, 0, 1}`, exactly one of four rebalance operations is triggered:
 
 ---
 
-## 🔗 CHAPTER 5: INTEGRATION & MASTERY
+#### Case 1: Left-Left (LL) Imbalance — Single Right Rotation
+- **Trigger Condition:** `BF(node) > 1` and `BF(node.left) >= 0` (inserted into left subtree of left child).
+- **Core Action:** Node `y` rotates down to become the right child of `x`. Subtree `T2` is reattached as `y`'s left child.
 
-### Connections (Precursors & Successors)
-
-**Precursors:** Week 7 Day 2 (BST operations, especially why degeneration is bad) motivates today's balanced trees. Day 1 (traversals) is used during rebalancing to validate tree correctness.
-
-**Successors:** Week 7 Day 4 (tree patterns: LCA, path sum) builds on balanced BST as a foundation. Week 8 (graphs) uses similar concepts for cycle detection and topological sorting. Week 9 (shortest paths) uses balanced trees in the priority queue (essential for Dijkstra's algorithm).
-
-**The arc:** Generic trees → ordered trees (BSTs) → **guaranteed-performance trees (balanced BSTs)** → graph algorithms (which depend on trees for efficiency).
-
-### 🧩 Pattern Recognition & Decision Framework
-
-When you encounter a problem needing ordered data, ask:
-
-**1. What's the insertion order?**
-   - Random/unknown → balanced BST (guaranteed O(log n))
-   - Known/controlled → generic BST might work
-   - Highly adversarial → must use balanced BST or randomized data structure
-
-**2. What's the workload?**
-   - Search-heavy → AVL (tighter balance, fewer deep searches)
-   - Insert-heavy → Red-Black (fewer rotations)
-   - Mixed → Red-Black (practical choice, fewer rotations, same guarantee)
-
-**3. What are the constraints?**
-   - Memory-critical → AVL (slightly smaller overhead)
-   - Real-time → AVL (stricter guarantees, more predictable rotations)
-   - Disk-based → B-Tree (multiple children per node fit in page)
-   - Standard library → Red-Black (all major languages use it)
-
-**4. Do you need range queries?**
-   - Yes → augmented balanced BST or B-Tree
-   - No → standard balanced BST is fine
-
-- **✅ Use when:** You need ordered data with insertion/deletion interleaved with searches, and insertion order is unknown or adversarial.
-- **🛑 Avoid when:** Data is static (sorted array is simpler), insertion order is guaranteed random (generic BST works), or you only need fast lookups (hash table is simpler).
-
-**🚩 Red Flags (Interview Signals):** "Maintain sorted data dynamically", "Insert and find efficiently", "Design a system that doesn't slow down with adversarial input", "Implement TreeMap/TreeSet", "Guarantee O(log n) operations".
-
-### 🧪 Socratic Reflection
-
-Reflect deeply on these questions:
-
-1. **Mechanical understanding:** Insert [1, 2, 3, 4, 5] into an AVL tree step by step. At each step, check balance factors and perform rotations if needed. Does your final tree maintain AVL properties? Height should be log₂(5) ≈ 3, right?
-
-2. **Design trade-off:** Why does the Java standard library use Red-Black Trees instead of AVL? What workload pattern makes Red-Black better? Can you construct a case where AVL would be better?
-
-3. **Edge case thinking:** What happens if you insert a million identical keys into a balanced BST that requires unique keys? How does the implementation handle duplicates? Why is this design choice made?
-
-4. **Correctness:** Explain why a right rotation preserves the BST invariant. Draw a before/after diagram and verify: all values < middle go left, all > go right.
-
-### 📌 Retention Hook
-
-> **The Essence:** "A balanced BST maintains O(log n) height through rebalancing. AVL is strict, Red-Black is practical. Both guarantee you won't hit degenerate O(n) performance, no matter the insertion order. That guarantee is worth the rebalancing complexity."
+```
+                  LL Case: Single Right Rotation on y
+                  
+         Before Rotation                                After Rotation
+             [ y ] (BF: +2)                                 [ x ] (BF: 0)
+            /     \                                        /     \
+         [ x ]    T3          ── Right-Rotate(y) ──>     T1     [ y ] (BF: 0)
+        /     \                                                 /     \
+       T1     T2                                               T2     T3
+     (T1 grew taller)
+     
+Invariant Preserved: T1 < x < T2 < y < T3
+Code Mechanics:
+  TreeNode x = y.left;
+  y.left = x.right;      // T2 transfers to y
+  x.right = y;           // y becomes right child of x
+  UpdateHeight(y); UpdateHeight(x);
+```
 
 ---
 
-## 🧠 5 COGNITIVE LENSES
+#### Case 2: Right-Right (RR) Imbalance — Single Left Rotation
+- **Trigger Condition:** `BF(node) < -1` and `BF(node.right) <= 0` (inserted into right subtree of right child).
+- **Core Action:** Node `x` rotates down to become the left child of `y`. Subtree `T2` is reattached as `x`'s right child.
 
-### 💻 The Hardware Lens
+```
+                  RR Case: Single Left Rotation on x
+                  
+         Before Rotation                                After Rotation
+             [ x ] (BF: -2)                                 [ y ] (BF: 0)
+            /     \                                        /     \
+           T1    [ y ]        ── Left-Rotate(x) ──>     [ x ]     T3
+                /     \                                 /     \
+               T2     T3                               T1     T2
+                    (T3 grew taller)
+                    
+Invariant Preserved: T1 < x < T2 < y < T3
+Code Mechanics:
+  TreeNode y = x.right;
+  x.right = y.left;      // T2 transfers to x
+  y.left = x;            // x becomes left child of y
+  UpdateHeight(x); UpdateHeight(y);
+```
 
-Balanced BSTs are pointer-based, scattering nodes throughout memory. Modern CPUs have caches optimized for spatial locality (contiguous memory). A balanced BST search bounces around memory, causing cache misses every 1–2 steps.
+---
 
-Real impact: A balanced BST search on 1 million nodes might take 20 cache misses (20 × 100ns = 2μs) versus a sorted array taking 3 misses (3 × 100ns = 300ns). The BST is 6× slower on pure search, despite same O(log n) complexity.
+#### Case 3: Left-Right (LR) Imbalance — Double Rotation (Left then Right)
+- **Trigger Condition:** `BF(node) > 1` and `BF(node.left) < 0` (inserted into inner grandchild `z` under `x.right`).
+- **Core Action:** A single rotation cannot fix a bent path (knee). We first left-rotate child `x` into a straight line (LL case), then right-rotate node `y`.
 
-The lesson: Constant factors matter. B-Trees (which pack multiple nodes into a page) are faster on real hardware despite the same asymptotic complexity.
+```
+                  LR Case: Double Rotation (Rotate Left x, Rotate Right y)
+                  
+  Step 1: Rotate Left on x (Straighten Knee)
+            [ y ]                                         [ y ]
+           /     \                                       /     \
+        [ x ]    T4       ── Left-Rotate(x) ──>       [ z ]    T4
+       /     \                                       /     \
+      T1    [ z ]                                  [ x ]   T3
+           /     \                                /     \
+          T2     T3                              T1     T2
 
-### 📉 The Trade-off Lens
+  Step 2: Rotate Right on y (Rebalance Top)
+            [ y ]                                         [ z ]
+           /     \                                      /       \
+        [ z ]    T4       ── Right-Rotate(y) ──>     [ x ]     [ y ]
+       /     \                                      /     \   /     \
+     [ x ]   T3                                    T1     T2 T3     T4
+     /   \
+    T1   T2
+    
+Invariant Preserved: T1 < x < T2 < z < T3 < y < T4
+Code Mechanics:
+  node.left = RotateLeft(node.left);   // Straightens x-z-y knee into line
+  return RotateRight(node);            // Restores AVL balance
+```
 
-Every design choice involves trade-offs:
+---
 
-- **AVL vs Red-Black:** Stricter balance vs fewer rotations.
-- **Binary vs B-Tree:** Simpler implementation vs better cache locality.
-- **Rebalancing on insertion vs on access:** Insertion rebalancing (AVL) vs lazy rebalancing (Splay).
-- **Guaranteed vs probabilistic:** Deterministic balance vs randomized balance (Treap, Skip List).
+#### Case 4: Right-Left (RL) Imbalance — Double Rotation (Right then Left)
+- **Trigger Condition:** `BF(node) < -1` and `BF(node.right) > 0` (inserted into inner grandchild `z` under `y.left`).
+- **Core Action:** First right-rotate child `y` into a straight line (RR case), then left-rotate node `x`.
 
-### 👶 The Learning Lens
+```
+                  RL Case: Double Rotation (Rotate Right y, Rotate Left x)
+                  
+  Step 1: Rotate Right on y (Straighten Knee)
+          [ x ]                                          [ x ]
+         /     \                                        /     \
+        T1    [ y ]       ── Right-Rotate(y) ──>       T1    [ z ]
+             /     \                                        /     \
+          [ z ]    T4                                      T2    [ y ]
+         /     \                                                /     \
+        T2     T3                                              T3     T4
 
-Common misconceptions:
+  Step 2: Rotate Left on x (Rebalance Top)
+          [ x ]                                           [ z ]
+         /     \                                        /       \
+        T1    [ z ]       ── Left-Rotate(x) ──>      [ x ]     [ y ]
+             /     \                                /     \   /     \
+            T2    [ y ]                            T1     T2 T3     T4
+                 /     \
+                T3     T4
+                
+Invariant Preserved: T1 < x < T2 < z < T3 < y < T4
+Code Mechanics:
+  node.right = RotateRight(node.right); // Straightens x-z-y knee into line
+  return RotateLeft(node);              // Restores AVL balance
+```
 
-1. **"AVL and Red-Black are the only balanced BSTs."** — False. Splay trees, Treaps, and weight-balanced trees exist and have their own properties.
-2. **"Rotation is a rare operation."** — False. For insertion-heavy workloads, rotations happen frequently (but still O(1) amortized).
-3. **"Balanced trees are always faster than arrays."** — False. For static data, sorted arrays often win. Balanced trees shine with dynamic updates.
-4. **"Red-Black is always better than AVL."** — False. AVL is better for search-heavy, insertion-light workloads. Red-Black wins for mixed/insertion-heavy.
+---
 
-### 🤖 The AI/ML Lens
+### 🔧 Red-Black Tree Rotation & Recoloring Principles
 
-Self-balancing trees are analogous to neural network training with regularization. An unbalanced tree (overfitting) is like a deep network that memorizes training data—it works on "clean" insertion order but fails on adversarial data. Balancing (regularization) prevents overfitting, ensuring generalization.
+When a new node `Z` is inserted into a Red-Black Tree:
+1. **Always Insert as RED:** Inserting a Red node does not change the count of Black nodes on any path, preserving **Property 5 (Black-Height)** by default.
+2. **If Parent `P` is Black:** We are done! Zero violations occur.
+3. **If Parent `P` is Red:** We have a Red-Red violation (**Property 4**). Note: Because parent `P` is Red, grandparent `G` must exist and must be Black (by Property 4 before insertion).
 
-The parallel: Self-correction mechanisms (rebalancing) are key to robust systems.
+To fix the Red-Red violation, we inspect the **Uncle `U`** (the sibling of parent `P`):
 
-### 📜 The Historical Lens
+#### Case 1: Uncle `U` is RED — Pure Recoloring (Push Redness Upward)
+When both parent `P` and uncle `U` are Red:
+- **Action:** Flip colors!
+  - Paint parent `P` -> **BLACK**
+  - Paint uncle `U` -> **BLACK**
+  - Paint grandparent `G` -> **RED**
+- Move current pointer to grandparent: `Z = G`.
+- Repeat the check up the tree. (At the very end, force root to Black to satisfy Property 2).
+- **Zero Rotations Required!**
 
-AVL Trees were invented in 1962 by Adelson-Velsky and Landis. They were revolutionary—the first self-balancing BST, proof that guaranteed O(log n) was possible.
+```
+              Uncle is RED: Recoloring Only
+              
+      Before Recoloring:                        After Recoloring:
+            [ G ] (Black)                             [ G ] (Red)  <-- Check G's parent
+           /     \                                   /     \
+     (Red)[ P ]   [ U ](Red)         ── Recoloring ──> (Blk)[ P ]   [ U ](Blk)
+         /                                                 /
+   (Red)[ Z ]                                        (Red)[ Z ]
+```
 
-Red-Black Trees came later in 1972 (Bayer). They were a response to AVL's complexity and rotation overhead, inspired by B-Trees (which use Red-Black coloring internally).
+#### Case 2: Uncle `U` is BLACK (or NIL) & `Z` is Inner Grandchild (Zig-Zag / Knee)
+- **Action:** Rotate parent `P` in the opposite direction of `Z` to transform the bent knee into a straight line (transitions immediately into Case 3).
 
-The progression shows engineering evolution: simpler idea (AVL) → practical improvement (Red-Black) → specialized variants (Splay, Treap) for specific workloads.
+#### Case 3: Uncle `U` is BLACK (or NIL) & `Z` is Outer Grandchild (Straight Line)
+- **Action:**
+  1. Rotate Grandparent `G`.
+  2. Swap colors: paint parent `P` -> **BLACK**, paint grandparent `G` -> **RED**.
+- **Result:** The tree is now completely balanced and compliant with all 5 properties. Terminate immediately!
+
+```
+          Uncle is BLACK: Rotation + Recoloring (Line Case)
+          
+      Before Rotation:                          After Rotation + Color Swap:
+            [ G ] (Black)                             [ P ] (Black)
+           /     \                                   /     \
+     (Red)[ P ]   [ U ](Black/NIL)  ── Rotate(G) ──> (Red)[ Z ]   [ G ] (Red)
+         /                                                        /     \
+   (Red)[ Z ]                                                   T2      [ U ](Black)
+```
+
+---
+
+## 💻 CHAPTER 4: PRODUCTION-GRADE IMPLEMENTATIONS (C# & PYTHON)
+
+### Problem 1: Complete Production-Grade AVL Tree
+
+#### 🎙️ 45-Minute Interview Talk Track
+> *"An AVL tree augments each node with a `height` field. When inserting a value, we follow standard BST recursive descent. On the unwind phase, we update the node's height as `1 + max(height(left), height(right))` and compute its balance factor. If the balance factor is greater than 1, the left subtree is too tall. We inspect the left child's balance factor: if it's non-negative, it's an LL case resolved by a single right rotation; if negative, it's an LR knee resolved by rotating left on the child first, then right on the parent. The right-heavy cases are symmetric. Every rotation updates heights in O(1) time, ensuring total insertion time remains strictly bounded by O(log N)."*
+
+#### C# Primary Implementation (.NET 8/9 — Production AVL)
+```csharp
+using System;
+
+public sealed class AVLNode
+{
+    public int val;
+    public int height;
+    public AVLNode? left;
+    public AVLNode? right;
+
+    public AVLNode(int val)
+    {
+        this.val = val;
+        this.height = 1; // New leaf node starts with height 1
+    }
+}
+
+public sealed class AVLTree
+{
+    public AVLNode? Root { get; private set; }
+
+    public void Insert(int val)
+    {
+        Root = InsertNode(Root, val);
+    }
+
+    private AVLNode InsertNode(AVLNode? node, int val)
+    {
+        // Step 1: Standard BST recursive insertion
+        if (node is null) return new AVLNode(val);
+
+        if (val < node.val)
+        {
+            node.left = InsertNode(node.left, val);
+        }
+        else if (val > node.val)
+        {
+            node.right = InsertNode(node.right, val);
+        }
+        else
+        {
+            return node; // Duplicate keys ignored
+        }
+
+        // Step 2: Update height of current ancestor node
+        node.height = 1 + Math.Max(GetHeight(node.left), GetHeight(node.right));
+
+        // Step 3: Compute Balance Factor
+        int balance = GetBalance(node);
+
+        // Step 4: Handle 4 rebalance cases
+        
+        // Case 1: Left-Left (LL)
+        if (balance > 1 && val < node.left!.val)
+        {
+            return RotateRight(node);
+        }
+
+        // Case 2: Right-Right (RR)
+        if (balance < -1 && val > node.right!.val)
+        {
+            return RotateLeft(node);
+        }
+
+        // Case 3: Left-Right (LR)
+        if (balance > 1 && val > node.left!.val)
+        {
+            node.left = RotateLeft(node.left);
+            return RotateRight(node);
+        }
+
+        // Case 4: Right-Left (RL)
+        if (balance < -1 && val < node.right!.val)
+        {
+            node.right = RotateRight(node.right);
+            return RotateLeft(node);
+        }
+
+        return node;
+    }
+
+    private static int GetHeight(AVLNode? node) => node?.height ?? 0;
+
+    private static int GetBalance(AVLNode? node) =>
+        node is null ? 0 : GetHeight(node.left) - GetHeight(node.right);
+
+    private static AVLNode RotateRight(AVLNode y)
+    {
+        AVLNode x = y.left!;
+        AVLNode? T2 = x.right;
+
+        // Perform rotation
+        x.right = y;
+        y.left = T2;
+
+        // Update heights (y first, then x as x is new root)
+        y.height = 1 + Math.Max(GetHeight(y.left), GetHeight(y.right));
+        x.height = 1 + Math.Max(GetHeight(x.left), GetHeight(x.right));
+
+        return x; // New root of rotated subtree
+    }
+
+    private static AVLNode RotateLeft(AVLNode x)
+    {
+        AVLNode y = x.right!;
+        AVLNode? T2 = y.left;
+
+        // Perform rotation
+        y.left = x;
+        x.right = T2;
+
+        // Update heights (x first, then y)
+        x.height = 1 + Math.Max(GetHeight(x.left), GetHeight(x.right));
+        y.height = 1 + Math.Max(GetHeight(y.left), GetHeight(y.right));
+
+        return y; // New root of rotated subtree
+    }
+}
+```
+
+#### Python Secondary Implementation (3.11+ — Idiomatic)
+```python
+from typing import Optional
+
+class AVLNode:
+    def __init__(self, val: int):
+        self.val = val
+        self.height: int = 1
+        self.left: Optional['AVLNode'] = None
+        self.right: Optional['AVLNode'] = None
+
+class AVLTree:
+    def __init__(self):
+        self.root: Optional[AVLNode] = None
+
+    def insert(self, val: int) -> None:
+        self.root = self._insert(self.root, val)
+
+    def _insert(self, node: Optional[AVLNode], val: int) -> AVLNode:
+        if not node:
+            return AVLNode(val)
+
+        if val < node.val:
+            node.left = self._insert(node.left, val)
+        elif val > node.val:
+            node.right = self._insert(node.right, val)
+        else:
+            return node
+
+        node.height = 1 + max(self._get_height(node.left), self._get_height(node.right))
+        balance = self._get_balance(node)
+
+        # Case 1: Left-Left
+        if balance > 1 and node.left and val < node.left.val:
+            return self._rotate_right(node)
+
+        # Case 2: Right-Right
+        if balance < -1 and node.right and val > node.right.val:
+            return self._rotate_left(node)
+
+        # Case 3: Left-Right
+        if balance > 1 and node.left and val > node.left.val:
+            node.left = self._rotate_left(node.left)
+            return self._rotate_right(node)
+
+        # Case 4: Right-Left
+        if balance < -1 and node.right and val < node.right.val:
+            node.right = self._rotate_right(node.right)
+            return self._rotate_left(node)
+
+        return node
+
+    def _get_height(self, node: Optional[AVLNode]) -> int:
+        return node.height if node else 0
+
+    def _get_balance(self, node: Optional[AVLNode]) -> int:
+        return self._get_height(node.left) - self._get_height(node.right) if node else 0
+
+    def _rotate_right(self, y: AVLNode) -> AVLNode:
+        x = y.left
+        assert x is not None
+        T2 = x.right
+
+        x.right = y
+        y.left = T2
+
+        y.height = 1 + max(self._get_height(y.left), self._get_height(y.right))
+        x.height = 1 + max(self._get_height(x.left), self._get_height(x.right))
+        return x
+
+    def _rotate_left(self, x: AVLNode) -> AVLNode:
+        y = x.right
+        assert y is not None
+        T2 = y.left
+
+        y.left = x
+        x.right = T2
+
+        x.height = 1 + max(self._get_height(x.left), self._get_height(x.right))
+        y.height = 1 + max(self._get_height(y.left), self._get_height(y.right))
+        return y
+```
+
+#### 📊 Explicit Complexity Deconstruction
+- **Time Complexity:** `O(log N)` — Insertion descends down a single path of height `<= 1.44 log2(N)`. Rotations and height recalculations require `O(1)` operations per ancestor.
+- **Auxiliary Space:** `O(log N)` — Recursion stack depth strictly bounded by logarithmic tree height.
+- **Output Space:** `O(1)` — Allocates exactly one `AVLNode`.
+
+---
+
+### Problem 2: Balanced Binary Tree Validation (LeetCode 110)
+
+#### 🎙️ 45-Minute Interview Talk Track
+> *"To verify if an arbitrary binary tree is height-balanced, a naive top-down approach computing tree depth for every node takes O(N^2) time. We optimize to O(N) using a bottom-up postorder DFS: our helper returns the true height of the subtree if it is balanced, or sentinel -1 as soon as any imbalance is detected. If either subtree returns -1 or their height difference exceeds 1, we immediately propagate -1 up the call stack, achieving early exit with zero duplicate traversals."*
+
+#### C# Primary Implementation (.NET 8/9 — Bottom-Up DFS)
+```csharp
+public static class BalancedTreeChecker
+{
+    /// <summary>
+    /// Checks if a binary tree is height-balanced in O(N) time.
+    /// Time Complexity: O(N) | Auxiliary Space: O(H)
+    /// </summary>
+    public static bool IsBalanced(TreeNode? root)
+    {
+        return CheckHeight(root) != -1;
+
+        static int CheckHeight(TreeNode? node)
+        {
+            if (node is null) return 0;
+
+            int leftHeight = CheckHeight(node.left);
+            if (leftHeight == -1) return -1; // Early exit: left unbalanced
+
+            int rightHeight = CheckHeight(node.right);
+            if (rightHeight == -1) return -1; // Early exit: right unbalanced
+
+            if (Math.Abs(leftHeight - rightHeight) > 1)
+            {
+                return -1; // Imbalance at current node
+            }
+
+            return 1 + Math.Max(leftHeight, rightHeight);
+        }
+    }
+}
+```
+
+#### Python Secondary Implementation (3.11+ — Idiomatic)
+```python
+def is_balanced(root: Optional[TreeNode]) -> bool:
+    """Bottom-up verification of AVL height balance.
+    
+    Time Complexity: O(N) | Auxiliary Space: O(H)
+    """
+    def check_height(node: Optional[TreeNode]) -> int:
+        if not node:
+            return 0
+
+        left_h = check_height(node.left)
+        if left_h == -1:
+            return -1
+
+        right_h = check_height(node.right)
+        if right_h == -1:
+            return -1
+
+        if abs(left_h - right_h) > 1:
+            return -1
+
+        return 1 + max(left_h, right_h)
+
+    return check_height(root) != -1
+```
+
+#### 📊 Explicit Complexity Deconstruction
+- **Time Complexity:** `O(N)` — Every node is visited once during postorder traversal; breaks early if any subtree is unbalanced.
+- **Auxiliary Space:** `O(H)` — Call stack space bounded by tree height (`O(log N)` balanced, `O(N)` worst).
+- **Output Space:** `O(1)` — Single boolean result.
+
+---
+
+## ⚖️ CHAPTER 5: PERFORMANCE, TRADE-OFFS & FAANG PATTERN SIGNALS
+
+### AVL vs Red-Black Engineering Comparison
+
+| Criterion | AVL Tree | Red-Black Tree |
+| :--- | :--- | :--- |
+| **Balance Rigidity** | Strict (`BF <= 1`) | Loose (`Path_max <= 2 * Path_min`) |
+| **Average Search Height** | `~1.01 * log2(N)` | `~1.50 * log2(N)` |
+| **Rotations per Insert** | `<= 2` | `<= 2` |
+| **Rotations per Delete** | `O(log N)` | `<= 3` |
+| **Metadata per Node** | Height integer (1 byte/int) | 1-bit color flag (can steal bit in pointer) |
+| **Best Production Fit** | Read-heavy, static lookup sets | Write-heavy, dynamic key-value maps |
+
+### 🏭 Real-World Systems Context
+
+> [!NOTE]
+> **Production Context — Language Standard Libraries (Java TreeMap & C++ std::map):** Standard language libraries choose Red-Black trees over AVL trees because deletion in Red-Black requires at most 3 rotations, whereas AVL deletion can trigger rotations all the way up to the root (`O(log N)`). For mutation-intensive workloads, Red-Black trees consistently deliver higher throughput.
+
+> [!NOTE]
+> **Production Context — Linux Kernel CFS Scheduler (`rbtree`):** The Completely Fair Scheduler (CFS) tracks runnable processes in a Red-Black tree keyed by `vruntime` (virtual runtime). The leftmost node represents the task most starved of CPU time. Finding the next process takes `O(1)` using a cached leftmost pointer, while inserting and updating runtimes runs in deterministic `O(log N)` without allocating heap memory.
+
+> [!NOTE]
+> **Production Context — Database Multi-Way B-Trees:** In storage engines (PostgreSQL, MySQL), nodes map directly to disk blocks. Binary tree rotations require rewriting multiple parent-child pointers across distinct disk pages. Relational databases therefore use B+ trees with branching factors of 100+ to guarantee shallow trees (3–4 levels) with localized node splits instead of rotations.
+
+### Failure Modes & Edge Cases
+
+| Failure Mode | Root Cause | Engineering Mitigation |
+| :--- | :--- | :--- |
+| **Stale Height Calculation** | Forgetting to update rotated child height before updating new root | Update rotated node `y.height` first, then new root `x.height` |
+| **Incorrect Double Rotation** | Performing single rotation on a zig-zag knee imbalance | Check sign of child balance factor before choosing rotation |
+| **Unwind Missing Re-link** | Not assigning rotation return value back to parent reference | Ensure `return RotateRight(node);` assigns to calling stack frame |
 
 ---
 
 ## ⚔️ SUPPLEMENTARY OUTCOMES
 
-### 🏋️ Practice Problems (10)
+### 🏋️ Practice Problems
 
-| Problem | Source | Difficulty | Key Concept | Edge Cases |
-| :--- | :--- | :--- | :--- | :--- |
-| 1. Validate AVL Tree | LeetCode Custom | 🟡 Medium | Check balance factor at each node | Unbalanced by 1 everywhere, balanced tree |
-| 2. Validate Red-Black Tree | LeetCode Custom | 🟡 Medium | Check color and black-height invariants | Root violations, unequal black-height |
-| 3. AVL Tree Insertion | LeetCode Custom | 🟡 Medium | Insert with LL, LR, RR, RL rotations | Each rotation case, multiple rebalances |
-| 4. AVL Tree Deletion | LeetCode Custom | 🔴 Hard | Delete with rebalancing, multiple cases | Leaf, one child, two children + rotations |
-| 5. Red-Black Tree Insertion | LeetCode Custom | 🔴 Hard | Insert red node, fix color violations | Uncle is red (color flip), uncle is black (rotate) |
-| 6. Red-Black Tree Deletion | LeetCode Custom | 🔴 Hard | Delete with color cases, complex rebalancing | All six deletion cases with color handling |
-| 7. Lowest Common Ancestor in Balanced BST | LeetCode #235 (extended) | 🟡 Medium | LCA in guaranteed-balanced tree | Same node as LCA, one is ancestor |
-| 8. Convert Sorted Array to Balanced BST | LeetCode #108 | 🟡 Medium | Build AVL/Red-Black from sorted array | Single element, powers of 2, non-powers |
-| 9. Invert Binary Search Tree | LeetCode #226 | 🟢 Easy | Swap children (breaks BST, tests understanding) | Single node, perfectly balanced |
-| 10. Balanced Binary Tree | LeetCode #110 | 🟡 Medium | Check if tree is height-balanced (AVL-like) | Already balanced, one unbalanced subtree |
+| # | Problem | Source | Difficulty | Target Pattern |
+| :---: | :--- | :--- | :---: | :--- |
+| 1 | Balanced Binary Tree | LeetCode #110 | 🟢 Easy | Bottom-up postorder height check |
+| 2 | Convert Sorted Array to Binary Search Tree | LeetCode #108 | 🟢 Easy | Midpoint root construction |
+| 3 | Convert Sorted List to Binary Search Tree | LeetCode #109 | 🟡 Medium | Fast/slow pointer or inorder simulation |
+| 4 | Maximum Depth of Binary Tree | LeetCode #104 | 🟢 Easy | Postorder height calculation |
+| 5 | Balance a Binary Search Tree | LeetCode #1382 | 🟡 Medium | Inorder extraction + median rebuild |
+| 6 | My Calendar I | LeetCode #729 | 🟡 Medium | Interval booking via balanced BST |
+| 7 | Count of Smaller Numbers After Self | LeetCode #315 | 🔴 Hard | Augmented BST / Fenwick tree |
+| 8 | Data Stream as Disjoint Intervals | LeetCode #352 | 🔴 Hard | Interval merging in balanced map |
 
-### 🎙️ Interview Questions (8)
-
-1. **Q:** Implement AVL tree insertion with all four rotation cases (LL, LR, RR, RL). When does each case occur? Why is LR and RL more complex than LL and RR?
-   - **Follow-up:** Can you implement it iteratively without recursion?
-
-2. **Q:** Explain the difference between AVL and Red-Black trees. When would you choose one over the other?
-   - **Follow-up:** If you were designing a system with 1 million insertions and 10 million searches, which would you choose and why?
-
-3. **Q:** A rotation is a local operation (O(1)), yet rebalancing an AVL tree after deletion can cause O(log n) rotations. Why?
-   - **Follow-up:** How does this compare to Red-Black trees? Why does Red-Black do better here?
-
-4. **Q:** Design a balanced BST that supports order statistics: given value x, find how many elements are ≤ x in O(log n). What additional metadata must you store? (Preview of augmented trees)
-   - **Follow-up:** Can you do range count queries [L, R] in O(log n)?
-
-5. **Q:** Implement Red-Black tree insertion. Handle the case where uncle is red (color flip) and uncle is black (rotation). Why is the color flip sufficient for the "uncle is red" case?
-   - **Follow-up:** Why is the new node always colored red, not black?
-
-6. **Q:** A generic BST built from random data is likely to be balanced by chance. Why don't production systems rely on this? What's the worst case?
-   - **Follow-up:** Can you construct an adversarial insertion order that degenerates any generic BST?
-
-7. **Q:** Explain the black-height invariant of Red-Black trees. Why does this invariant guarantee logarithmic height?
-   - **Follow-up:** What happens if the black-height is violated? How do you fix it?
-
-8. **Q:** You're designing the priority queue for Dijkstra's algorithm. Would you use AVL or Red-Black? Why? How does the choice affect overall algorithm performance?
-   - **Follow-up:** What if you could only use a generic BST? Would the algorithm still work? Would it be slower?
-
-### ❌ Common Misconceptions (6)
-
-- **Myth:** "AVL is always better because it's more balanced."
-  - **Reality:** AVL has stricter balance but more rotations. Red-Black is faster for insertion-heavy workloads.
-
-- **Myth:** "Rotations are rare; you don't need to worry about them."
-  - **Reality:** For insertion-heavy workloads, rotations happen constantly (but still O(1) amortized cost).
-
-- **Myth:** "A balanced tree is always faster than a sorted array."
-  - **Reality:** For static data, a sorted array often wins due to cache locality. Balanced trees shine with dynamic updates.
-
-- **Myth:** "You can fix balance by checking every node."
-  - **Reality:** Rebalancing must happen incrementally during insertion/deletion, not afterward. Post-hoc fixing is too slow.
-
-- **Myth:** "All rotations are the same; just swap pointers."
-  - **Reality:** Rotations come in four variants (LL, LR, RR, RL), each requiring different pointer manipulations.
-
-- **Myth:** "Red-Black is just AVL with different colors."
-  - **Reality:** Red-Black uses a completely different invariant (color rules and black-height) that leads to different behavior and fewer rotations.
-
-### 🚀 Advanced Concepts (5)
-
-1. **Augmented Balanced BSTs:** Store additional metadata (subtree size, max value in range) at each node. Enables order-statistics queries (kth smallest) and range queries in O(log n). Foundation for Fenwick Trees and Segment Trees.
-
-2. **Treaps (Tree + Heap):** Nodes have both BST priority (value) and heap priority (random). Maintain both invariants through rotations. Simpler than AVL/Red-Black, O(log n) expected height (probabilistic).
-
-3. **Splay Trees:** Self-adjusting trees without explicit balance. Frequently accessed nodes move to root through splaying (cascading rotations). Excellent for skewed access patterns (recently used items are faster).
-
-4. **Weight-Balanced Trees:** Instead of height, balance based on subtree size. Size invariant: |size(left) - size(right)| ≤ constant. Rotations happen less frequently than AVL but more than Red-Black.
-
-5. **Skip Lists:** Probabilistic alternative to balanced trees. Simpler to implement than Red-Black, with O(log n) expected search/insert/delete. Used in some production systems (Redis, LevelDB) due to implementation simplicity.
-
-### 📚 External Resources
-
-- **Books:**
-  - *Introduction to Algorithms* (CLRS) — Chapters on balanced trees, proofs of correctness
-  - *The Art of Computer Programming, Vol. 3* (Knuth) — Foundational material
-  
-- **Online:**
-  - VisuAlgo.net — Interactive AVL/Red-Black insertion/deletion visualizations
-  - CP-Algorithms — Detailed balanced tree implementations with edge cases
-  - MIT OCW 6.006 — Balanced tree lectures, problem sets, and exams
-  
-- **Papers:**
-  - Adelson-Velsky & Landis (1962) — AVL Trees (original paper)
-  - Bayer (1972) — Red-Black Trees and B-Trees (foundational)
+### 🎙️ Interview Questions & Follow-ups
+1. **Q: Why does the Linux kernel implement Red-Black trees as an intrusive data structure?**
+   - *Follow-up:* In `struct rb_node`, the node pointers are embedded directly inside the process descriptor struct (`task_struct`), eliminating separate memory allocations and cache misses.
+2. **Q: If a tree has 1,000,000 nodes, what is the maximum depth difference between an AVL tree and a Red-Black tree?**
+   - *Follow-up:* AVL maximum height is `~1.44 * log2(10^6) ≈ 28`, while Red-Black maximum height is `~2 * log2(10^6) ≈ 40`.
 
 ---
 
-**Total Word Count: 16,800 words**
+## 📊 COMPLEXITY RECAP
 
-**Visual Elements: 10 diagrams (tree structures, rotations, rebalancing traces, comparisons)**
+| Tree Structure | Search Time | Insert Time | Delete Time | Auxiliary Space | Rotations per Mutation |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Unbalanced BST** | `O(N)` | `O(N)` | `O(N)` | `O(H)` | `0` |
+| **AVL Tree** | `O(log N)` | `O(log N)` | `O(log N)` | `O(log N)` | `<= 2` (Insert), `O(log N)` (Delete) |
+| **Red-Black Tree** | `O(log N)` | `O(log N)` | `O(log N)` | `O(log N)` | `<= 2` (Insert), `<= 3` (Delete) |
 
-
-This file follows the Unified v13 Narrative-First architecture:
-- ✅ 5-chapter arc: Context → Mental Model → Mechanics → Reality → Mastery
-- ✅ Inline visuals placed exactly where concepts introduced
-- ✅ Production case studies (5 detailed stories: libraries, kernel, databases, version control, real-time systems)
-- ✅ Flowing prose with natural transitions
-- ✅ Mechanical understanding through detailed rotation traces
-- ✅ Both AVL and Red-Black thoroughly explained
-- ✅ All four rotation cases (LL, LR, RR, RL) explained
-- ✅ Real systems grounding (Java TreeMap, C++ std::map, Linux kernel, Git, medical systems)
-- ✅ Interview-focused supplementary outcomes (8 Q&A, 10 practice problems)
-- ✅ Handles trade-offs between AVL and Red-Black
-- ✅ Connections to augmented trees and advanced concepts
-
-
-
----
-
-## 📊 Complexity Recap
-
-- Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.
-- Space Complexity: Include auxiliary space and recursion-stack impact where relevant.
 ---
 
 > 🧭 **Navigation:** [← Previous Day](Week_07_Day_02_Binary_Search_Trees_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_07_Day_04_Tree_Patterns_Instructional.md)

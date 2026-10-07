@@ -327,144 +327,243 @@ Iteration 3: sum = 2 + 7 = 9, target = 9
 
 ---
 
-## ⚖️ CHAPTER 4: PERFORMANCE, TRADE-OFFS & REAL SYSTEMS
+## 💻 CHAPTER 4: PRODUCTION-GRADE IMPLEMENTATIONS (C# & PYTHON)
 
-### Beyond Big-O: Performance Reality
+### Problem 1: Two Sum II — Input Array Is Sorted (LeetCode 167)
 
-Let's be clear about the numbers. Two-pointer patterns give us O(n) or O(n + m) time with O(1) space (excluding output). But what does that mean in practice?
+#### 🎙️ 45-Minute Interview Talk Track
+> *"Since the array is sorted in ascending order, checking all pairs naively requires O(N^2) time. We can achieve optimal O(N) time and O(1) auxiliary space using two pointers starting at opposite boundaries (index 0 and index N-1). At each step, if the sum is greater than the target, decrementing the right pointer strictly decreases the sum, safely discarding that rightmost element. Conversely, if the sum is too small, incrementing the left pointer strictly increases the sum. Pointers converge monotonically until the target pair is identified."*
 
-Compare three approaches to merging sorted arrays of size n and m:
+#### C# Primary Implementation (.NET 8/9 — Zero Allocation)
+```csharp
+using System;
 
-| Approach | Time | Space | Practical Notes |
-| :--- | :--- | :--- | :--- |
-| Hash set merge | O(n + m) | O(n + m) | Simple, but allocates huge hash table |
-| Merge sort both, then merge | O(n log n + m log m) | O(n + m) | Unnecessary sorting if already sorted |
-| Two-pointer merge | O(n + m) | O(1) | Cache-friendly, zero allocation after initial pointers |
+public static class TwoPointerSolvers
+{
+    /// <summary>
+    /// Finds two 1-indexed positions whose values sum to the target in a sorted array.
+    /// Time Complexity: O(N) | Auxiliary Space: O(1)
+    /// </summary>
+    public static int[] TwoSumSorted(ReadOnlySpan<int> numbers, int target)
+    {
+        // Guard Clause: Minimum array length contract
+        if (numbers.Length < 2) return Array.Empty<int>();
 
-For a database merging 100GB of sorted customer data, the difference between allocating an extra 100GB hash table versus using just a few pointers is the difference between feasible and crashing the server.
+        int left = 0;
+        int right = numbers.Length - 1;
 
-**Memory Reality:** Two pointers are literally just two integers (8 bytes each on modern systems). Compare that to a hash table with millions of entries—hundreds of MB or GB easily. This is why two-pointer patterns are beloved in embedded systems, real-time systems, and any scenario where memory is precious.
+        while (left < right)
+        {
+            int currentSum = numbers[left] + numbers[right];
 
-**Cache Locality:** Because two-pointer patterns scan arrays sequentially without jumping back and forth, they're incredibly cache-friendly. Modern CPUs can prefetch the next array element automatically, making two-pointer code 3-10x faster than algorithms with random access patterns.
+            if (currentSum == target)
+            {
+                // LeetCode 167 expects 1-based indices
+                return new int[] { left + 1, right + 1 };
+            }
 
-### 🏭 Real-World Systems Story 1: Database Merge Operations (PostgreSQL)
+            if (currentSum < target)
+            {
+                left++; // Sum is too small: discard left element
+            }
+            else
+            {
+                right--; // Sum is too large: discard right element
+            }
+        }
 
-Let's look at how PostgreSQL implements merge joins—one of the most common operations in SQL execution. When you write `SELECT * FROM customers JOIN orders ON customers.id = orders.customer_id`, the query planner might use a merge join if both tables are already sorted on the join key (common after an index scan).
+        return Array.Empty<int>();
+    }
+}
+```
 
-PostgreSQL's merge join maintains two pointers: one through the customer table, one through the orders table. As it scans both tables, it outputs matching rows. The entire operation is O(n + m) with almost no additional memory.
+#### Python Secondary Implementation (3.11+ — Idiomatic)
+```python
+def two_sum_sorted(numbers: list[int], target: int) -> list[int]:
+    """Finds two 1-indexed positions whose values sum to target in a sorted list.
+    
+    Time Complexity: O(N) | Auxiliary Space: O(1)
+    """
+    left, right = 0, len(numbers) - 1
 
-Why is this a win? Because hash joins (the other common approach) build a massive hash table of one table's rows, then probe it with the other table. For large tables, the hash table allocates gigabytes of RAM. A merge join streams through both tables with just two pointers, requiring only the memory to buffer a few rows.
+    while left < right:
+        current_sum = numbers[left] + numbers[right]
+        if current_sum == target:
+            return [left + 1, right + 1]
+        elif current_sum < target:
+            left += 1
+        else:
+            right -= 1
 
-Real impact: At a company processing 10TB of customer data nightly, switching from hash joins to merge joins (by ensuring sorted inputs) reduced memory usage from 500GB to 5GB—a 100x reduction—letting them run the job on commodity hardware instead of high-memory servers.
+    return []
+```
 
-### 🏭 Real-World Systems Story 2: Netflix Streaming (Contiguous Buffer Optimization)
-
-Netflix streams video data in segments. Each segment is encoded at multiple quality levels: 480p, 720p, 1080p, etc. When a user's connection speed changes, Netflix must switch between quality streams.
-
-Internally, Netflix maintains buffers of video segments. The key data structure: sorted segment indices for each quality level. When switching from 720p to 1080p, Netflix needs to find the segments that exist in both buffers. Using nested loops would be O(n²). Using hash sets would require allocating new memory.
-
-Netflix's actual implementation: two pointers moving through the sorted segment lists. It finds matching segments in O(n) time with minimal memory overhead. This happens microseconds before the user notices the switch, so that speed is critical.
-
-Real impact: By optimizing buffer management with two-pointer patterns, Netflix reduced the CPU time for quality-switching algorithms, enabling it to optimize power consumption on streaming devices and let viewers switch quality seamlessly even on low-end hardware.
-
-### 🏭 Real-World Systems Story 3: Removing Duplicates from Sensor Data (IoT)
-
-Consider a drone with multiple environmental sensors: temperature, humidity, pressure. Each sensor reports data once per second, and sometimes two sensors produce identical readings (sensor malfunction, or legitimate identical conditions). Engineers need to deduplicate the stream.
-
-If you accumulate 1 million readings from 10 sensors, storing each unique reading in a hash set costs substantial memory. Instead, engineers sort the sensor data once (O(n log n)) using batch processing, then use the in-place removal algorithm (a two-pointer pattern) to mark duplicates.
-
-The entire deduplication: sort once (expensive but batch), then a single linear scan with two pointers (O(n), almost free). Total: O(n log n) but with O(1) extra space during the two-pointer phase. For streaming applications, this separation of concerns is critical.
-
-### Failure Modes & Robustness
-
-Where do two-pointer patterns break down?
-
-**Unsorted Input:** If you try to use opposite-direction two pointers on an unsorted array, you'll miss valid solutions. Example: two-sum on `[15, 3, 7, 2]` for target 9. Your pointers might exit without finding the answer because the sorted invariant isn't maintained.
-
-**Non-linear Relationships:** Two pointers work because moving them in a specific direction is guaranteed to explore a region of the solution space systematically. If the relationship isn't monotonic (e.g., finding a pair with a specific XOR value), two pointers fails.
-
-**Concurrency:** In multi-threaded scenarios, concurrent modification of the array while pointers are moving causes corruption. Always ensure thread safety by locking or using immutable data structures.
-
-**Pointer Semantics (Linked Lists):** While two pointers work on arrays trivially, linked lists require following the `next` pointers, not indexing. This still works (as in "fast and slow pointer" for cycle detection) but is slower than array-based two pointers.
-
----
-
-## 🔗 CHAPTER 5: INTEGRATION & MASTERY
-
-### Connections (Precursors & Successors)
-
-**Building on Prior Knowledge:**
-Two-pointer patterns assume you understand arrays and sorted sequences from Weeks 2-3. The pattern recognition skill developed here transfers directly to sliding windows (Week 4 Day 2-3), where two pointers define a window rather than moving to merge or find pairs.
-
-**Foreshadowing Future Topics:**
-Many graph problems use variations of two pointers (DFS with two recursive pointers on a tree), and dynamic programming sometimes maintains two pointers through a state space. The invariant-maintenance intuition you develop here is foundational.
-
-### 🧩 Pattern Recognition & Decision Framework
-
-**Red Flags That Suggest Two-Pointer Patterns:**
-- "The array is sorted" — immediate signal for opposite-direction (if pairs) or same-direction (if merging)
-- "Remove/modify in-place" — same-direction with separate read/write pointers
-- "Find a pair satisfying a condition" — opposite-direction
-- "Merge two sorted sequences" — same-direction, canonical application
-- "No extra space allowed" — often a hint to use two pointers instead of hash maps
-
-**When to Use:**
-
-✅ **Use two pointers when:**
-- Input is sorted or has monotonic properties
-- You need O(1) space and O(n) or O(n + m) time
-- The problem asks for pairs, merging, or in-place transformations
-- You want optimal cache locality (array access patterns)
-
-🛑 **Avoid when:**
-- Input is unsorted AND you need to find pairs (use hash map instead)
-- Problem requires arbitrary element access (two pointers assume sequential movement)
-- Space is abundant and time is critical (other algorithms might be simpler)
-
-**Interview Red Flags:**
-When an interviewer says "remove in-place" or "O(1) space," they're hinting at two pointers. When they say "array is sorted," it's almost a guarantee if it's a two-pointer problem.
-
-### 🧪 Socratic Reflection
-
-Before moving on, think deeply about these questions (no answers provided):
-
-1. **Why does the two-pointer approach for removing duplicates preserve the relative order of unique elements?** What invariant ensures this?
-
-2. **In the "container with most water" problem, why is it safe to always move the shorter pointer inward?** What elements become impossible to achieve a better result with?
-
-3. **If an array is unsorted, why does two-sum fail with opposite-direction pointers?** Can you construct a counterexample?
-
-4. **How would you adapt the two-pointer merge algorithm if the arrays aren't sorted, but you know they're nearly sorted (off by at most k positions)?** Is it still better than a standard merge?
-
-5. **Two-pointer works on arrays but is harder on linked lists (requires following pointers). Why is it still used for linked lists in algorithms like cycle detection?** What invariant does it maintain?
-
-### 📌 Retention Hook
-
-> **The Essence:** "Two-pointer patterns maintain an invariant as pointers move. Same-direction pointers merge or transform sequences in linear time. Opposite-direction pointers shrink the search space, exploiting sorted order to find pairs or optimize values. The power isn't in the pointers—it's in the invariant."
+#### 📊 Explicit Complexity Deconstruction
+* **Time Complexity:** `O(N)` — Each step moves either `left` forward or `right` backward by exactly 1 position. At most `N` total steps occur.
+* **Auxiliary Space:** `O(1)` — Only two primitive integer pointers are stored on the stack frame. Zero heap allocations.
+* **Output Space:** `O(1)` — Returns a 2-element fixed array.
 
 ---
 
-## 🧠 5 COGNITIVE LENSES
+### Problem 2: Remove Duplicates from Sorted Array (LeetCode 26)
 
-### 💻 **The Hardware Lens: Cache Locality**
+#### 🎙️ 45-Minute Interview Talk Track
+> *"We maintain two same-direction pointers: a 'write' pointer tracking the boundary of unique elements, and a 'read' pointer exploring subsequent elements. Since the input is sorted, all duplicate occurrences of any number appear contiguously. Whenever `numbers[read]` differs from `numbers[write - 1]`, we copy `numbers[read]` to `numbers[write]` and increment `write`. This guarantees in-place deduplication in O(N) time and O(1) extra space."*
 
-Modern CPUs predict linear memory access patterns and prefetch the next element automatically. Two-pointer algorithms that scan arrays sequentially hit the CPU cache on nearly every access. Compare this to hash table lookups (random memory jumps, cache misses) or tree traversals (pointer chasing, unpredictable access). On a real 2024 Intel CPU, sequential array access is 3-10x faster than random access due to prefetching and cache-line reuse. For a billion-element array, this translates to seconds versus minutes.
+#### C# Primary Implementation (.NET 8/9 — In-Place Mutation)
+```csharp
+using System;
 
-### 📉 **The Trade-off Lens: Space vs. Time**
+public static class DuplicateRemover
+{
+    /// <summary>
+    /// Removes duplicates in-place from a sorted array and returns the unique count k.
+    /// Time Complexity: O(N) | Auxiliary Space: O(1)
+    /// </summary>
+    public static int RemoveDuplicates(Span<int> numbers)
+    {
+        if (numbers.Length == 0) return 0;
 
-The classic trade-off: hash maps solve many problems optimally in time (O(n) for two-sum) but cost space (O(n) to store elements). Two-pointer patterns flip this: they cost time for some problems (O(n²) without sorting) but save space (O(1) after initial sort). In interview scenarios, space is often the constraint: can you find two numbers without using a hash map? Two pointers enforce a different cost model. In systems programming, memory is the precious resource; two pointers are a win. In competitive programming, time limits matter more; hash maps are often preferred. Context determines optimality.
+        int write = 1;
 
-### 👶 **The Learning Lens: The Invariant Is Everything**
+        for (int read = 1; read < numbers.Length; read++)
+        {
+            if (numbers[read] != numbers[write - 1])
+            {
+                numbers[write] = numbers[read];
+                write++;
+            }
+        }
 
-Beginners often memorize two-pointer code: "left starts at 0, right starts at n-1, move them toward each other if sum > target." This is brittle—change the condition, and they're lost. Expert learners internalize: "What invariant am I maintaining? What does it guarantee? How do pointers move to preserve it?" A learner thinking in terms of invariants can invent two-pointer solutions for novel problems. One thinking in terms of code templates is stuck. Focus on the invariant, not the pointers.
+        return write; // First 'write' elements represent the unique sequence
+    }
+}
+```
 
-### 🤖 **The AI/ML Lens: Streaming Data Processing**
+#### Python Secondary Implementation (3.11+ — Idiomatic)
+```python
+def remove_duplicates(numbers: list[int]) -> int:
+    """Removes duplicates in-place from sorted array and returns length of unique prefix.
+    
+    Time Complexity: O(N) | Auxiliary Space: O(1)
+    """
+    if not numbers:
+        return 0
 
-Machine learning on data streams (user interactions, sensor data, logs) can't afford to buffer everything. Two-pointer patterns enable incremental processing: maintain a sorted buffer, use two pointers to find patterns or deduplicate. This is how real-time recommendation systems process millions of events per second without storing them all in memory. The invariant approach to two pointers maps directly to online learning: process streaming data while maintaining an invariant about what you've seen so far.
+    write = 1
+    for read in range(1, len(numbers)):
+        if numbers[read] != numbers[write - 1]:
+            numbers[write] = numbers[read]
+            write += 1
 
-### 📜 **The Historical Lens: The Birth of Efficient Algorithms**
+    return write
+```
 
-Two-pointer techniques were formally popularized in the 1970s with the two-sum problem in sorted arrays and merge operations in sorting. They represent a fundamental insight: **exploiting structure (sortedness) eliminates the need for data structures (hash tables)**. This led to the principle that many O(n) space problems become O(1) space if you sort first (O(n log n) time). This principle shaped systems design: pre-sort data once, then use simple, cache-friendly algorithms to process it. It's the reason databases maintain sorted indices—not just for search, but to enable efficient merges and joins downstream.
+#### 📊 Explicit Complexity Deconstruction
+* **Time Complexity:** `O(N)` — The `read` pointer traverses each index from `1` to `N - 1` exactly once.
+* **Auxiliary Space:** `O(1)` — Modification occurs directly in the existing memory span without auxiliary collections.
+* **Output Space:** `O(1)` — Returns a single integer count `k`.
+
+---
+
+### Problem 3: Container With Most Water (LeetCode 11)
+
+#### 🎙️ 45-Minute Interview Talk Track
+> *"The volume formed between two lines at indices `left` and `right` is `min(height[left], height[right]) * (right - left)`. If we start with the widest possible base (`left = 0`, `right = N - 1`), moving the pointer with the larger height inward can never yield a larger area because the width decreases while the bounding height cannot exceed the shorter wall. Therefore, we greedily advance whichever pointer points to the strictly shorter line. This eliminates all inferior candidate pairs safely in O(N) time."*
+
+#### C# Primary Implementation (.NET 8/9 — Invariant-First)
+```csharp
+using System;
+
+public static class ContainerSolvers
+{
+    /// <summary>
+    /// Calculates the maximum water area that can be trapped between two vertical lines.
+    /// Time Complexity: O(N) | Auxiliary Space: O(1)
+    /// </summary>
+    public static int MaxArea(ReadOnlySpan<int> height)
+    {
+        if (height.Length < 2) return 0;
+
+        int left = 0;
+        int right = height.Length - 1;
+        int maxWater = 0;
+
+        while (left < right)
+        {
+            int hLeft = height[left];
+            int hRight = height[right];
+            int currentWidth = right - left;
+            int currentArea = Math.Min(hLeft, hRight) * currentWidth;
+
+            if (currentArea > maxWater)
+            {
+                maxWater = currentArea;
+            }
+
+            // Discard the shorter boundary line
+            if (hLeft < hRight)
+            {
+                left++;
+            }
+            else
+            {
+                right--;
+            }
+        }
+
+        return maxWater;
+    }
+}
+```
+
+#### Python Secondary Implementation (3.11+ — Clean & Idiomatic)
+```python
+def max_area(height: list[int]) -> int:
+    """Calculates max area between vertical lines using opposite-direction calipers.
+    
+    Time Complexity: O(N) | Auxiliary Space: O(1)
+    """
+    left, right = 0, len(height) - 1
+    max_water = 0
+
+    while left < right:
+        width = right - left
+        current_water = min(height[left], height[right]) * width
+        if current_water > max_water:
+            max_water = current_water
+
+        if height[left] < height[right]:
+            left += 1
+        else:
+            right -= 1
+
+    return max_water
+```
+
+#### 📊 Explicit Complexity Deconstruction
+* **Time Complexity:** `O(N)` — At each iteration, either `left` increments or `right` decrements, evaluating at most `N - 1` potential containers.
+* **Auxiliary Space:** `O(1)` — Only integer scalars are tracked.
+* **Output Space:** `O(1)` — Returns a single integer maximum area.
+
+---
+
+## ⚖️ CHAPTER 5: FAANG INTERVIEW PATTERN SIGNALS & EDGE CASES
+
+> [!NOTE]
+> **Production Reality (Why FAANG Tests This):**
+> Database query engines (such as PostgreSQL and MySQL Merge Joins) use two-pointer linear scans when joining two pre-sorted index tables. A Hash Join requires allocating gigabytes of RAM to buffer rows; a Merge Join streams through sorted rows with two integer pointers in `O(N + M)` time and `O(1)` auxiliary memory with optimal sequential CPU cache line hits.
+
+### 🎯 Pattern Recognition Signals
+- ✅ **"Array is sorted" + "Find pair/triplet"** -> Opposite-direction pointers (`left = 0`, `right = N - 1`).
+- ✅ **"Modify array in-place" + "Remove elements/duplicates"** -> Same-direction read/write pointers.
+- ✅ **"Trapping water / boundary optimization"** -> Squeeze boundary pointers inward based on min height.
+- 🛑 **"Array is unsorted" + "Find pair"** -> Do NOT sort if `O(N)` time is required. Use a Hash Map complement lookup instead.
+
+### 🧪 Concrete Edge-Case Checklist
+1. **Empty or Single-Element Input (`N < 2`):** Guard clause must return 0 or empty array immediately before accessing indices.
+2. **All Identical Elements (`[2, 2, 2, 2]`):** In duplicate removal, ensures pointer advances without out-of-bounds writes.
+3. **Extreme Numerical Ranges:** When computing sums (`numbers[left] + numbers[right]`), cast to `long` in languages where 32-bit integer overflow can occur on large positive/negative values.
 
 ---
 

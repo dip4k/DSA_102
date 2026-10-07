@@ -1,4 +1,4 @@
-# 26. LRU & LFU Cache Mastery (LeetCode 146 & 460)
+﻿# 26. LRU & LFU Cache Mastery (LeetCode 146 & 460)
 
 ## 📌 Architectural Context & Problem Framing
 
@@ -8,7 +8,7 @@ In modern software engineering, in-memory caches are the fundamental defense lin
    - Tests generic abstractions, multi-threading (`ReaderWriterLockSlim`), TTL expiration policies, background sweeping, and thread-safe eviction.
    - *Reference*: Implemented comprehensively in **[01_Tier1_Highest_Priority/07_Custom_Cache.md](../01_Tier1_Highest_Priority/07_Custom_Cache.md)**.
 2. **Pure Data Structure Algorithmic Screening (DSA + OOP Hybrids)**:
-   - Tests raw algorithmic mechanics, pointer manipulation, and achieving strict **$O(1)$** time complexity for both `Get` and `Put`.
+   - Tests raw algorithmic mechanics, pointer manipulation, and achieving strict **O(1)** time complexity for both `Get` and `Put`.
    - **LeetCode 146 (LRU Cache)**: Medium — tests Hash Map + Doubly Linked List integration.
    - **LeetCode 460 (LFU Cache)**: Hard — tests multiple Hash Maps + frequency-bucketed Doubly Linked Lists with LRU tie-breaking and dynamic minimum frequency tracking.
 
@@ -21,8 +21,8 @@ This master class delivers the complete LeetCode 146 (LRU) and LeetCode 460 (LFU
 | Metric / Policy | **FIFO (First In First Out)** | **LRU (Least Recently Used)** | **LFU (Least Frequently Used)** | **ARC (Adaptive Replacement Cache)** |
 | :--- | :--- | :--- | :--- | :--- |
 | **Eviction Metric** | Arrival time | Time of last access | Total access count | Dynamic balance of recency & frequency |
-| **Time Complexity** | $O(1)$ | $O(1)$ | $O(1)$ | $O(1)$ |
-| **Data Structures** | Queue / LinkedList | HashMap + Doubly LinkedList | 2 HashMaps + Frequency DLLs | 4 DLLs + 2 Ghost Caches + Adaptation parameter $p$ |
+| **Time Complexity** | O(1) | O(1) | O(1) | O(1) |
+| **Data Structures** | Queue / LinkedList | HashMap + Doubly LinkedList | 2 HashMaps + Frequency DLLs | 4 DLLs + 2 Ghost Caches + Adaptation parameter `p` |
 | **Vulnerability** | Ignores access frequency | **Scan Resistance**: sequential scans evict entire hot working set | **Frequency Starvation**: historic items stay forever; new hot items evicted immediately | Higher memory overhead for tracking ghost entries |
 | **Primary Use Cases** | Simple buffers | General caching, CPU cache line eviction, OS paging | Static asset caches, DNS lookups, heavy skewed read distributions | Enterprise storage controllers (IBM, ZFS, NetApp) |
 
@@ -35,13 +35,13 @@ Design a data structure that follows the constraints of a **Least Recently Used 
 - `LRUCache(int capacity)`: Initialize the LRU cache with positive size `capacity`.
 - `int Get(int key)`: Return the value of the `key` if the key exists, otherwise return `-1`. Marks the key as **most recently used**.
 - `void Put(int key, int value)`: Update the value of the `key` if the `key` exists. Otherwise, add the `key-value` pair to the cache. If the number of keys exceeds `capacity`, evict the **least recently used key**.
-- Both `Get` and `Put` must run in **$O(1)$** average time complexity.
+- Both `Get` and `Put` must run in **O(1)** average time complexity.
 
 ### 1.2 Data Structure Architecture
 
 ```mermaid
-flowchart LR
-    subgraph HashMap ["_cache: Dictionary<int, LruNode>"]
+flowchart TD
+    subgraph HashMap ["_cache: Dictionary[int, LruNode]"]
         K1["Key: 1"] --> N1
         K2["Key: 2"] --> N2
         K3["Key: 3"] --> N3
@@ -55,12 +55,12 @@ flowchart LR
     end
 ```
 
-- **Why a Hash Map alone fails**: Lookup is $O(1)$, but ordering by recency requires $O(N)$ scanning or shifting.
-- **Why an Array / `List<T>` fails**: Moving an accessed item to the front requires $O(N)$ element shifts.
-- **Why a Doubly Linked List alone fails**: Insertion and deletion of a known node is $O(1)$, but finding a key requires an $O(N)$ linear traversal.
+- **Why a Hash Map alone fails**: Lookup is O(1), but ordering by recency requires O(N) scanning or shifting.
+- **Why an Array / `List[T]` fails**: Moving an accessed item to the front requires O(N) element shifts.
+- **Why a Doubly Linked List alone fails**: Insertion and deletion of a known node is O(1), but finding a key requires an O(N) linear traversal.
 - **The Combined Solution**:
-  1. A `Dictionary<int, LruNode>` provides instant $O(1)$ lookup to any node pointer.
-  2. A **Doubly Linked List** with dummy `_head` and `_tail` nodes enables $O(1)$ node extraction and insertion without edge-case null checks.
+  1. A `Dictionary<int, LruNode>` provides instant O(1) lookup to any node pointer.
+  2. A **Doubly Linked List** with dummy `_head` and `_tail` nodes enables O(1) node extraction and insertion without edge-case null checks.
 
 ### 1.3 Complete C# 12 Implementation (LeetCode 146)
 
@@ -183,17 +183,17 @@ Design and implement a data structure for a **Least Frequently Used (LFU) cache*
 - `LFUCache(int capacity)`: Initializes the object with the `capacity` of the data structure.
 - `int Get(int key)`: Gets the value of the `key` if it exists in the cache. Otherwise, returns `-1`. Increments the access frequency of `key`.
 - `void Put(int key, int value)`: Update the value of the `key` if present, or insert the `key` if not already present. When the cache reaches its `capacity`, it should invalidate and remove the **least frequently used** key before inserting a new item. For this problem, when there is a **tie** (i.e., two or more keys have the same frequency), the **least recently used** key among them should be invalidated.
-- Both `Get` and `Put` functions must run in **$O(1)$** average time complexity.
+- Both `Get` and `Put` functions must run in **O(1)** average time complexity.
 
 ### 2.2 Why Priority Queue (Min-Heap) Fails
 A naive attempt uses a Min-Heap storing `(frequency, lastAccessedTimestamp, key)`.
-- Evicting the minimum frequency is $O(1)$ to peek, but $O(\log N)$ to delete.
-- Every `Get(key)` or `Put(existingKey)` updates the frequency, requiring a heap reshuffle (`DecreaseKey` / sift-down), which takes **$O(\log N)$** or **$O(N)$** in standard library heaps.
-- Therefore, **a heap does NOT satisfy the LeetCode 460 requirement of strict $O(1)$ time**.
+- Evicting the minimum frequency is O(1) to peek, but $O(\log N)$ to delete.
+- Every `Get(key)` or `Put(existingKey)` updates the frequency, requiring a heap reshuffle (`DecreaseKey` / sift-down), which takes **$O(\log N)$** or **O(N)** in standard library heaps.
+- Therefore, **a heap does NOT satisfy the LeetCode 460 requirement of strict O(1) time**.
 
-### 2.3 The $O(1)$ Two-HashMap Architecture
-To achieve true $O(1)$ operations, we combine:
-1. `_nodeMap: Dictionary<int, LfuNode>`: Maps `key` $\rightarrow$ `LfuNode` for direct $O(1)$ lookup.
+### 2.3 The O(1) Two-HashMap Architecture
+To achieve true O(1) operations, we combine:
+1. `_nodeMap: Dictionary<int, LfuNode>`: Maps `key` $\rightarrow$ `LfuNode` for direct O(1) lookup.
 2. `_freqMap: Dictionary<int, LfuDoublyLinkedList>`: Maps `frequency` $\rightarrow$ a dedicated Doubly Linked List holding all nodes that share that exact frequency.
    - Within each frequency list, nodes are kept in **LRU order**:
      - Head = Most recently used with that frequency.
@@ -211,8 +211,8 @@ flowchart TD
     end
 
     subgraph FreqBuckets ["_freqMap: Frequency -> DoublyLinkedList (LRU ordered)"]
-        F1["Freq 1"] --> L1["DLL (Head <-> Node 10 <-> Tail)"]
-        F2["Freq 2"] --> L2["DLL (Head <-> Node 30 [MRU] <-> Node 20 [LRU] <-> Tail)"]
+        F1["Freq 1"] --> L1["DLL (Head ↔ Node 10 ↔ Tail)"]
+        F2["Freq 2"] --> L2["DLL (Head ↔ Node 30 [MRU] ↔ Node 20 [LRU] ↔ Tail)"]
     end
 
     MF["_minFrequency = 1"] -.-> F1
@@ -476,9 +476,9 @@ Invented by **Nimrod Megiddo and Dharmendra S. Modha (IBM Almaden Research, 2003
 - Each list is split into two halves:
   - Top half ($T_1, T_2$): Items currently held in physical cache memory.
   - Bottom half ($B_1, B_2$): **Ghost (phantom) caches** that store *only keys/metadata*, no values!
-- **The Magic Parameter $p$ (Target size for $T_1$)**:
-  - If a hit occurs in ghost cache $B_1$ (recency ghost), the cache realizes it needs more recency: it increases $p$ ($p \leftarrow \min(p + \max(1, |B_2|/|B_1|), c)$).
-  - If a hit occurs in ghost cache $B_2$ (frequency ghost), it realizes it needs more frequency: it decreases $p$.
+- **The Magic Parameter `p` (Target size for $T_1$)**:
+  - If a hit occurs in ghost cache $B_1$ (recency ghost), the cache realizes it needs more recency: it increases `p` ($p \leftarrow \min(p + \max(1, |B_2|/|B_1|), c)$).
+  - If a hit occurs in ghost cache $B_2$ (frequency ghost), it realizes it needs more frequency: it decreases `p`.
 - ARC delivers near-optimal hit ratios across arbitrary workloads without requiring manual tuning or threshold guessing. *(Note: ARC was historically patented by IBM, which led to open-source alternatives like 2Q and TinyLFU).*
 
 #### Modern Production Caching: W-TinyLFU
@@ -493,7 +493,7 @@ In modern systems (e.g., **Caffeine Cache** in Java, **BitFaster.Caching** in .N
 
 ### Question 1: "Why do we use custom `LruNode` and pointers instead of the built-in .NET `LinkedList<T>`?"
 **Candidate Response:**
-> "While .NET's `LinkedList<T>` provides $O(1)$ operations if you hold a `LinkedListNode<T>`, using a custom internal node gives us three distinct advantages in an interview and in high-performance runtimes:
+> "While .NET's `LinkedList<T>` provides O(1) operations if you hold a `LinkedListNode<T>`, using a custom internal node gives us three distinct advantages in an interview and in high-performance runtimes:
 > 1. **Zero Allocations on Access**: `LinkedList<T>.AddFirst` creates a heap node wrapper if not reusing existing nodes. With a custom node, moving between lists or to the head is purely a pointer rewiring operation with zero memory allocations or GC pressure.
 > 2. **Inlining & Cache Locality**: Custom nodes allow packing `Key`, `Value`, `Frequency`, and intrusive pointers into a single object, avoiding double pointer dereferencing.
 > 3. **Demonstrating Mastery**: Interviewers specifically look for comfort with doubly linked list boundary operations and sentinel nodes."

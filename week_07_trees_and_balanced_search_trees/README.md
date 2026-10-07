@@ -1,4 +1,4 @@
-# 📘 Trees & Balanced Search Trees
+﻿# 📘 Trees & Balanced Search Trees
 
 > 🧭 **Navigation:** [← Previous: Week 06](../week_06_string_manipulation_patterns/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 08 →](../week_08_graph_fundamentals/README.md)
 
@@ -14,7 +14,7 @@
 Hierarchical data models: recursive and iterative DFS/BFS traversals, BST invariants, AVL/Red-Black rotation balance, LCA, and tree diameter.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start["Week 07 Start"] --> Daily["Daily Invariant Deep Dives"]
     Daily --> Playbook["Consolidated Playbook & Visuals"]
     Playbook --> DualLang["Dual-Language Practice (C# & Python)"]

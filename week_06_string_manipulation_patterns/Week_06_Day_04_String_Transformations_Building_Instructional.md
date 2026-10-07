@@ -1,23 +1,20 @@
 # 📘 Week 06 Day 4: String Transformations & Building — Engineering Guide
 
-
-
-
-
 > 🧭 **Navigation:** [← Previous Day](Week_06_Day_03_Parentheses_Bracket_Matching_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_06_Day_05_Advanced_String_Matching_Rabin_Karp_Rolling_Hash_Instructional.md)
 > 
-> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
+> 💡 **Instructor Note:** *In modern managed languages (C#, Python, Java), strings are immutable heap objects. Understanding the memory reality of string allocation, string builders, and numerical parsing state machines prevents quadratic runtime and edge-case overflow bugs.*
 
 ---
 
 ## 🎯 LEARNING OBJECTIVES
 
-*By the end of this chapter, you will be able to:*
+By the end of this chapter, you will be able to:
 
-- 🎯 **Internalize** string transformation as systematic conversion between data representations.
-- ⚙️ **Implement** common transformations (string-to-integer, integer-to-roman, compression) with edge case handling.
-- ⚖️ **Evaluate** trade-offs between string immutability, builder patterns, and performance optimization.
-- 🏭 **Connect** transformations to real systems like serialization, logging, and data formatting.
+- **Internalize** the mechanical impact of string immutability and why repeated concatenation in loops creates `O(N^2)` garbage collection pressure.
+- **Implement** bulletproof state machine parsers (`my_atoi`) with proactive 32-bit integer overflow detection *before* arithmetic execution.
+- **Master** dual representation transformations: greedy value-mapping (`IntToRoman`) and lookahead reduction (`RomanToInt`).
+- **Execute** in-place two-pointer string mutations (Run-Length Encoding / Array Compression) in `O(1)` auxiliary space.
+- **Deliver** a structured 45-minute technical interview script defending buffer capacity allocation and boundary protection.
 
 ---
 
@@ -25,791 +22,415 @@
 
 ### The Engineering Challenge
 
-Imagine building a logging system for a large-scale web service. Each request generates a log entry—sometimes gigabytes of data per day. If you naively concatenate strings using `str + "," + value`, each operation allocates a new string object, copies data, and discards the old one. For 1 million log entries with 10 fields each, you're performing 10 million allocations.
+String transformation and parsing sits at the boundary between raw network protocols and typed runtime systems:
+1. **API Ingestion & Microservices:** Gateways convert raw untrusted HTTP query parameters and headers into typed integers and domain symbols.
+2. **High-Throughput Serialization:** Encoders (JSON serializers, Protobuf text bridges, log formatters) emit millions of structured strings per second.
+3. **Data Compression & Archival:** Lightweight run-length encoders compress repetitive payloads prior to disk or network transmission.
 
-Or consider a backend API that receives user input like "12345ABC" and needs to extract the integer portion. Edge cases abound: overflow (number too large for 32-bit int), leading zeros, negative signs, non-numeric characters. One forgotten boundary check causes your API to crash on production data.
+A common developer mistake is string concatenation inside loops: `s += c`. Because strings are immutable, each concatenation allocates a new buffer of length `i` and copies all existing characters. Summing `1 + 2 + ... + N` creates `O(N^2)` memory churn and catastrophic GC pauses.
 
-Then there's **data compression**. A user uploads a DNA sequence "AAAAAACCCCCCC". Storing each base separately wastes space. Encoding it as "6A7C" (run-length encoding) saves significantly. But how do you decode it correctly? How do you handle malformed input?
-
-These problems—building strings efficiently, parsing user input safely, encoding/decoding data—are string transformation tasks. They're ubiquitous in systems engineering.
-
-### The Solution: Strategic Representation Conversion
-
-The key insight is that **data lives in multiple representations**: memory (integers), user input (strings), files (bytes), and human-readable format (displayable strings). Transforming between representations requires:
-
-1. **Understanding the source format** (what do we have?)
-2. **Defining the target format** (what do we want?)
-3. **Handling edge cases** (overflow, invalid characters, boundaries)
-4. **Optimizing performance** (immutability trade-offs, builder patterns)
-
-Modern languages provide string builders to avoid the O(n²) naive concatenation trap. The art is knowing when to use them and recognizing transformation patterns.
-
-> **💡 Insight:** String transformations are systematic mappings between representations. Efficiency comes from understanding format structure and handling boundaries correctly.
+> [!NOTE]
+> **Interview & Systems Context:** In systems programming and technical interviews, never use 64-bit integer (`long` / `int64`) casting as a lazy crutch to solve 32-bit overflow in `atoi`. Interviewers at top-tier firms explicitly test whether you can detect 32-bit boundary violations mathematically before the multiplication step using `int.MaxValue / 10`.
 
 ---
 
 ## 🧠 CHAPTER 2: BUILDING THE MENTAL MODEL
 
-### The Core Analogy
+### Memory Reality: String Immutability vs. Mutable Builders
 
-Imagine a **currency exchange booth**. You have dollars and want euros. The booth:
-1. **Validates** your input (is it actually currency?)
-2. **Converts** using an exchange rate (multiply by exchange rate)
-3. **Handles edge cases** (small amounts, rounding, fees)
-4. **Returns** the result (euros)
-
-String transformation is exactly this: **data enters in one format, exits in another, with validation and rules in between**.
-
-### 🖼 Visualizing Data Representation Layers
-
-Different representations of the same data:
-
-
-### 📌 🎯 Abstract Data Entity: The Number 123
-
-- 🔤 Decimal String: '123'
-- 💻 Binary Representation: 0b01111011
-- 🏛️ Roman Numeral: 'CXXIII'
-- 🗣️ Verbal English: 'One Hundred Twenty-Three'
-
-
-
-The mental model: **data has intrinsic meaning (a number, a sequence), but multiple external representations (string, binary, roman, compressed, etc.).**
-
-### Invariants & Properties
-
-**The Transformation Invariant:**
-
-For a valid transformation:
-- Source data can be uniquely reconstructed from the target.
-- All transformations are deterministic (same input → same output).
-- Edge cases are handled explicitly (no silent failures or data loss).
-
-**Character Encoding Awareness:**
-
-Modern systems use UTF-8, but assumptions matter:
-- ASCII: 7-bit characters (safe for international text)
-- UTF-8: Variable-length encoding (1-4 bytes per character)
-- UTF-16: 2-4 bytes per character (used in Java internally)
-
-Transformations must respect encoding.
-
-**Performance Implications:**
-
-String immutability (in languages like Java, Python, C#) means:
-- Each concatenation creates a new object
-- O(n) characters → O(n²) time naively
-- Solution: use StringBuilder (O(n) amortized)
-
-### 📐 Mathematical & Theoretical Foundations
-
-**Number Base Conversion:**
-
-Converting integer N to base B:
 ```
-Algorithm:
-  1. Repeat:
-       digit = N mod B
-       N = N div B
-     Until N == 0
-  2. Reverse digits for result
+Naive Concatenation (s += c):
+  Step 1: Allocate "a"          (Length 1)
+  Step 2: Allocate "ab"         (Length 2, copies "a")
+  Step 3: Allocate "abc"        (Length 3, copies "ab")
+  Step 4: Allocate "abcd"       (Length 4, copies "abc")
+  Total Allocations: N strings | Total Copies: N*(N+1)/2 = O(N^2) bytes copied!
+
+StringBuilder / Dynamic Array (Pre-allocated Buffer):
+  Internal Buffer: [ a | b | c | d | _ | _ | _ | _ ]
+  Capacity: 8, Length: 4
+  Appends occur in O(1) amortized time by writing directly to contiguous heap memory.
 ```
 
-Complexity: O(log_B(N)) digits, O(log_B(N)) time
+### State Machine Architecture: String to Integer (`my_atoi`)
 
-**Run-Length Encoding:**
-
-Encoding sequence S:
 ```
-Algorithm:
-  1. Iterate through S
-  2. Count consecutive identical characters
-  3. Output: count + character
+   [ State 0: Leading Whitespace ]
+            | (Encounter non-space)
+            v
+   [ State 1: Optional Sign (+/-) ]
+            | (Encounter digit)
+            v
+   [ State 2: Digit Accumulation ] <----+
+            |                           | (More digits)
+            | Check: result > MAX/10    +
+            | Accumulate: result * 10 + d
+            v (Encounter non-digit / EOS)
+   [ State 3: Terminal Return ]
+            -> return sign * result
 ```
 
-Space savings depend on repetition frequency.
+### Roman Numeral Representations: Greedy vs. Lookahead
 
-### Taxonomy of Transformations
+```
+Greedy Value Partition (IntToRoman):
+  Values:  [ 1000, 900, 500, 400, 100,  90,  50,  40,  10,   9,   5,   4,   1 ]
+  Symbols: [  "M", "CM","D", "CD","C", "XC","L", "XL","X", "IX", "V", "IV", "I" ]
+  Rule: Iterate descending. Subtract largest matching value repeatedly.
 
-| Transformation Type | Source → Target | Key Challenges | Complexity |
-| :--- | :--- | :--- | :--- |
-| **String-to-Integer** | "123" → 123 | Overflow, sign, leading zeros | O(n) |
-| **Integer-to-Roman** | 123 → "CXXIII" | Mapping ranges, boundary values | O(log n) |
-| **Zigzag Conversion** | String → Zigzag pattern | Index formula derivation | O(n) |
-| **Run-Length Encoding** | "AAAA" → "4A" | Compression vs expansion trade-off | O(n) |
-| **Character Case** | "HeLLo" → "hello" | Unicode case sensitivity | O(n) |
-| **Whitespace Trim** | "  hello  " → "hello" | Finding boundaries | O(n) |
-| **Escape Sequences** | "a\tb" → "a" + TAB + "b" | Special character handling | O(n) |
+Lookahead Scan (RomanToInt):
+  Symbol:   M     C     M     X     C     I     V
+  Values: 1000   100  1000   10   100     1     5
+  Rule: If currentValue < nextValue, subtract it (e.g., C < M -> -100).
+        Otherwise, add it (e.g., M -> +1000).
+```
+
+### In-Place Array Compression: Read and Write Heads
+
+```
+Input: ['a', 'a', 'a', 'b', 'b', 'c']
+Pointers: Write (W), Read (R), Anchor (A)
+
+Step 1: Count run of 'a': length 3.
+        Chars[W++] = 'a'; Chars[W++] = '3'
+        Array: [ 'a', '3', | 'a', 'b', 'b', 'c' ]
+                           W
+Step 2: Count run of 'b': length 2.
+        Chars[W++] = 'b'; Chars[W++] = '2'
+        Array: [ 'a', '3', 'b', '2', | 'b', 'c' ]
+                                     W
+Step 3: Count run of 'c': length 1.
+        Chars[W++] = 'c' (no count for length 1)
+        Array: [ 'a', '3', 'b', '2', 'c', | 'c' ]
+                                          W (Return W = 5)
+```
 
 ---
 
 ## ⚙️ CHAPTER 3: MECHANICS & IMPLEMENTATION
 
-### The State Machine & Memory Layout
+### Operation 1: String to Integer (LeetCode 8)
 
-String transformation state machine:
+1. Skip leading whitespace: Advance index while `s[i] == ' '`.
+2. Check sign: If `s[i] == '-'` set `sign = -1`, if `'+'` set `sign = 1`. Advance index.
+3. Process digits:
+   - Calculate digit: `d = s[i] - '0'`.
+   - Prevent 32-bit overflow *before* multiplying:
+     `if (result > INT_MAX / 10 || (result == INT_MAX / 10 && d > 7))`
+     Return `sign == 1 ? INT_MAX : INT_MIN`.
+   - Update: `result = result * 10 + d`.
+4. Return `sign * result`.
 
-```
-State:
-  inputString   : immutable string (read-only)
-  outputBuilder : mutable builder (append-only)
-  currentIndex  : position in input (for iteration)
-  state         : transformation-specific state (counter, flags, etc.)
+### Operation 2: In-Place String Compression (LeetCode 443)
 
-Pattern:
-  1. Initialize builder with capacity hint (if possible)
-  2. Iterate through input:
-     a. Process character based on transformation rule
-     b. Accumulate in builder
-     c. Handle edge cases (boundaries, special values)
-  3. Build final result from builder
-  4. Return immutable string
-
-Memory: Input is O(n) read-only. Builder grows dynamically. Final output is O(m) where m depends on transformation.
-```
-
-### 🔧 Operation 1: String-to-Integer Conversion (atoi)
-
-**Narrative Walkthrough:**
-
-Convert a string like "  -42  xyz" to the integer -42. We must:
-1. Skip leading whitespace
-2. Detect optional sign
-3. Read digits and accumulate into integer
-4. Handle overflow (number too large for 32-bit int)
-5. Stop at first non-digit (ignore trailing characters)
-
-The tricky part is overflow: -2^31 to 2^31-1 for 32-bit signed int. We detect overflow before it happens.
-
-**Inline Trace (Detailed):**
-
-```
-String: "  -42xyz"  (length 8)
-
-Parse state: Sign=unsigned, value=0, started=false, overflowDetected=false
-
-Index 0, char ' ':
-  Action: Skip whitespace
-  State: sign=unsigned, value=0
-
-Index 1, char ' ':
-  Action: Skip whitespace
-  State: sign=unsigned, value=0
-
-Index 2, char '-':
-  Action: Found sign, mark negative
-  State: sign=negative, value=0, started=true
-
-Index 3, char '4':
-  Action: Digit found, accumulate
-         value = 0 * 10 + 4 = 4
-  State: sign=negative, value=4
-
-Index 4, char '2':
-  Action: Digit found, accumulate
-         Check overflow: is 4 * 10 + 2 > INT_MAX?
-         4 * 10 = 40 (no overflow)
-         40 + 2 = 42 (no overflow)
-         value = 42
-  State: sign=negative, value=42
-
-Index 5, char 'x':
-  Action: Non-digit encountered
-         Stop parsing, return result
-
-Result: Apply sign: -42
+1. Maintain `write = 0`, `read = 0`.
+2. For each run:
+   - Identify character `c = chars[read]` and find length of continuous run.
+   - Write character: `chars[write++] = c`.
+   - If `count > 1`, convert count to string and write each digit to `chars[write++]`.
+3. Return `write` as the new compressed array length.
 
 ---
 
-Overflow example: "9999999999" (10 nines)
+### 💻 Production-Grade Implementations
 
-Parse state: value=0
+#### C# (.NET 8/9 — Zero Allocation & Memory Efficiency)
 
-Index 0-8: Accumulate digits
-  After 9 digits: value = 999999999
+```csharp
+using System;
+using System.Text;
 
-Index 9, char '9':
-  Check: value * 10 > INT_MAX (2147483647)?
-  999999999 * 10 = 9999999990 > 2147483647? YES!
-  Overflow detected
-  
-  In language like Java:
-    Return Integer.MAX_VALUE (capped)
-  In C++:
-    Could return INT_MAX or set error flag
-  
-  This prevents integer wraparound
+public static class StringTransformationSolutions
+{
+    /// <summary>
+    /// Converts a string to a 32-bit signed integer with robust overflow handling.
+    /// Time Complexity: O(N) | Auxiliary Space: O(1)
+    /// </summary>
+    public static int MyAtoi(ReadOnlySpan<char> s)
+    {
+        if (s.IsEmpty) return 0;
+
+        int i = 0;
+        // Step 1: Skip leading whitespace
+        while (i < s.Length && s[i] == ' ')
+        {
+            i++;
+        }
+
+        if (i >= s.Length) return 0;
+
+        // Step 2: Handle sign
+        int sign = 1;
+        if (s[i] == '+' || s[i] == '-')
+        {
+            sign = (s[i] == '-') ? -1 : 1;
+            i++;
+        }
+
+        // Step 3: Accumulate digits with overflow guard
+        int result = 0;
+        const int maxThreshold = int.MaxValue / 10;
+
+        while (i < s.Length && char.IsDigit(s[i]))
+        {
+            int digit = s[i] - '0';
+
+            // Guard overflow BEFORE calculation
+            // int.MaxValue is 2147483647 (ends in 7), int.MinValue is -2147483648 (ends in 8)
+            if (result > maxThreshold || (result == maxThreshold && digit > 7))
+            {
+                return sign == 1 ? int.MaxValue : int.MinValue;
+            }
+
+            result = result * 10 + digit;
+            i++;
+        }
+
+        return sign * result;
+    }
+
+    /// <summary>
+    /// Converts an integer to a Roman numeral using greedy value mapping.
+    /// Time Complexity: O(1) | Auxiliary Space: O(1)
+    /// </summary>
+    public static string IntToRoman(int num)
+    {
+        if (num <= 0 || num > 3999) return string.Empty;
+
+        ReadOnlySpan<int> values = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1];
+        string[] symbols = ["M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"];
+
+        StringBuilder sb = new(16);
+
+        for (int i = 0; i < values.Length; i++)
+        {
+            while (num >= values[i])
+            {
+                sb.Append(symbols[i]);
+                num -= values[i];
+            }
+        }
+
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// In-place run-length string compression (LeetCode 443).
+    /// Time Complexity: O(N) | Auxiliary Space: O(1)
+    /// </summary>
+    public static int Compress(char[] chars)
+    {
+        if (chars == null || chars.Length == 0) return 0;
+
+        int write = 0;
+        int read = 0;
+
+        while (read < chars.Length)
+        {
+            char current = chars[read];
+            int count = 0;
+
+            // Count contiguous run
+            while (read < chars.Length && chars[read] == current)
+            {
+                read++;
+                count++;
+            }
+
+            // Write character
+            chars[write++] = current;
+
+            // Write count digits if greater than 1
+            if (count > 1)
+            {
+                foreach (char digit in count.ToString())
+                {
+                    chars[write++] = digit;
+                }
+            }
+        }
+
+        return write;
+    }
+}
 ```
 
-The key is checking for overflow **before** performing the operation.
-
-### 🔧 Operation 2: Integer-to-Roman Numeral Conversion
-
-**Narrative Walkthrough:**
-
-Convert integer 1994 to Roman numeral "MCMXCIV".
-
-Roman numerals use specific symbols:
-- I=1, V=5, X=10, L=50, C=100, D=500, M=1000
-- Subtractive rule: IV=4, IX=9, XL=40, XC=90, CD=400, CM=900
-
-Strategy: Use a mapping table of values in descending order, including subtractive pairs. For each value, append its symbol as many times as possible while decrementing the number.
-
-**Inline Trace:**
-
-```
-Number: 1994
-
-Mapping table (descending):
-  1000 → "M"
-   900 → "CM"
-   500 → "D"
-   400 → "CD"
-   100 → "C"
-    90 → "XC"
-    50 → "L"
-    40 → "XL"
-    10 → "X"
-     9 → "IX"
-     5 → "V"
-     4 → "IV"
-     1 → "I"
-
-Processing:
-
-Step 1: Value 1000
-  Can we subtract 1000 from 1994? Yes, 1994 >= 1000
-  Append "M", subtract: 1994 - 1000 = 994
-  Result so far: "M"
-
-Step 2: Value 900
-  Can we subtract 900 from 994? Yes, 994 >= 900
-  Append "CM", subtract: 994 - 900 = 94
-  Result so far: "MCM"
-
-Step 3: Value 500
-  Can we subtract 500 from 94? No, 94 < 500
-  Skip
-
-Step 4: Value 400
-  Can we subtract 400 from 94? No, 94 < 400
-  Skip
-
-Step 5: Value 100
-  Can we subtract 100 from 94? No, 94 < 100
-  Skip
-
-Step 6: Value 90
-  Can we subtract 90 from 94? Yes, 94 >= 90
-  Append "XC", subtract: 94 - 90 = 4
-  Result so far: "MCMXC"
-
-Step 7: Value 50
-  Can we subtract 50 from 4? No, 4 < 50
-  Skip
-
-Step 8: Value 40
-  Can we subtract 40 from 4? No, 4 < 40
-  Skip
-
-Step 9: Value 10
-  Can we subtract 10 from 4? No, 4 < 10
-  Skip
-
-Step 10: Value 9
-  Can we subtract 9 from 4? No, 4 < 9
-  Skip
-
-Step 11: Value 5
-  Can we subtract 5 from 4? No, 4 < 5
-  Skip
-
-Step 12: Value 4
-  Can we subtract 4 from 4? Yes, 4 >= 4
-  Append "IV", subtract: 4 - 4 = 0
-  Result so far: "MCMXCIV"
-
-Step 13: Value 1
-  Can we subtract 1 from 0? No, 0 >= 1 is false
-  Skip (and we're done anyway)
-
-Final Result: "MCMXCIV"
-```
-
-The greedy algorithm works because the Roman numeral system is designed with specific ranges.
-
-### 📉 Progressive Example: Run-Length Encoding
-
-Compress string "AAABBBCCCCAABBBCD":
-
-```
-String: "AAABBBCCCCAABBBCD"  (17 chars)
-
-Processing:
-
-Index 0-2, char 'A': Count 3
-  Compressed: "3A"
-  Index now at 3
-
-Index 3-5, char 'B': Count 3
-  Compressed: "3A3B"
-  Index now at 6
-
-Index 6-9, char 'C': Count 4
-  Compressed: "3A3B4C"
-  Index now at 10
-
-Index 10-11, char 'A': Count 2
-  Compressed: "3A3B4C2A"
-  Index now at 12
-
-Index 12-14, char 'B': Count 3
-  Compressed: "3A3B4C2A3B"
-  Index now at 15
-
-Index 15, char 'C': Count 1
-  Compressed: "3A3B4C2A3B1C"
-  Index now at 16
-
-Index 16, char 'D': Count 1
-  Compressed: "3A3B4C2A3B1C1D"
-  Index now at 17
-
-Final Result: "3A3B4C2A3B1C1D"  (14 chars)
-Compression ratio: 14/17 ≈ 82% (modest compression, no reduction)
-```
-
-Notice: Compression helps when there are long runs; otherwise, it may expand the data.
-
----
-
-## ⚖️ CHAPTER 4: PERFORMANCE, TRADE-OFFS & REAL SYSTEMS
-
-### Beyond Big-O: Performance Reality
-
-**String Concatenation Anti-Pattern:**
-
-```
-WRONG (O(n²) in most languages):
-  result = ""
-  for i in 0...n:
-    result = result + str[i]  // Creates new string each time
-
-CORRECT (O(n) amortized):
-  builder = StringBuilder()
-  for i in 0...n:
-    builder.append(str[i])
-  result = builder.toString()
-```
-
-In languages like Java, Python 3, and C#, string builders are **essential for performance**. Naive concatenation can turn O(n) logic into O(n²) catastrophe.
-
-**Memory Overhead:**
-
-When you build a string:
-- Initial capacity: typically 16 bytes
-- Growth strategy: double when full (amortized O(1) per character)
-- Final conversion: one copy to immutable string
-
-For a 1MB result:
-- Naive: ~50 string allocations, ~100MB copied
-- Builder: ~10 reallocations, ~2MB copied
-
-**Complexity Comparison:**
-
-| Approach | Time | Space | Use Case |
-| :--- | :--- | :--- | :--- |
-| Naive concatenation | O(n²) | O(n²) | Tiny strings only |
-| String builder | O(n) | O(n) | Most transformations |
-| Streaming (no string build) | O(n) | O(1) | Output only (files, network) |
-| Pre-allocated array | O(n) | O(n) | Known size transformation |
-
-### 🏭 Real-World Systems
-
-**Story 1: JSON Serialization (Gson, Jackson)**
-
-When your Java application serializes an object to JSON:
-
-```java
-User user = new User("Alice", 30, "alice@example.com");
-String json = gson.toJson(user);
-// Result: {"name":"Alice","age":30,"email":"alice@example.com"}
-```
-
-Internally, Gson uses StringBuilder to accumulate JSON:
-1. Append `{`
-2. For each field:
-   - Append field name
-   - Append `:` and value
-   - Append `,` (with proper formatting)
-3. Append final `}`
-
-Without StringBuilder, serializing a million users (common in batch processing) would take quadratic time. With StringBuilder, it's linear.
-
-**Story 2: Log Formatting (Log4j, Logback)**
-
-A production web service logs millions of entries daily. Each log entry might look like:
-
-```
-[2026-01-10 18:30:45.123] [THREAD-001] [INFO] Request from 192.168.1.1 took 45ms
-```
-
-If the logging framework naively concatenated:
-```
-message = "[" + timestamp + "] [" + thread + "] [" + level + "] ..."
-```
-
-With 1 million entries, you'd have O(n²) string operations. The solution: use a **thread-local StringBuilder** to accumulate, then flush to output in one operation. This cuts log overhead dramatically.
-
-**Story 3: HTTP Response Compression**
-
-HTTP clients like OkHttp or urllib need to build responses. When a client requests a large JSON array, the server:
-
-```
-Response:
-[
-  {"id": 1, "name": "Alice"},
-  {"id": 2, "name": "Bob"},
-  ...1 million entries...
-]
-```
-
-Building this naively with concatenation would take hours. The real implementation:
-1. Uses StringBuilder to accumulate
-2. Compresses the result with gzip
-3. Sends compressed bytes
-
-The StringBuilder is critical; without it, response time explodes.
-
-### Failure Modes & Robustness
-
-**Failure Mode 1: Forgetting Sign in String-to-Integer**
-
-```
-WRONG:
-  result = 0
-  for char in "  -42":
-    if char.isDigit():
-      result = result * 10 + int(char)
-  // Ignores the '-', returns 42 instead of -42
-
-CORRECT:
-  sign = 1
-  for char in string:
-    if char == '-':
-      sign = -1
-    elif char.isDigit():
-      result = result * 10 + int(char)
-  return sign * result
-```
-
-**Failure Mode 2: Off-by-One in Repetition Count**
-
-```
-WRONG:
-  Encoding "AAA" to RLE:
-  count = 1
-  for i in 1...len(s):  // Starts at 1, not 0!
-    if s[i] == s[i-1]:
-      count++
-  // Misses first character or counts wrong
-
-CORRECT:
-  count = 1
-  for i in 1...len(s):
-    if s[i] == s[i-1]:
-      count++
-    else:
-      append(str(count) + s[i-1])
-      count = 1
-  append(str(count) + s[len(s)-1])  // Don't forget last group!
-```
-
-**Failure Mode 3: Integer Overflow Not Detected**
-
-```
-WRONG:
-  INT_MAX = 2147483647
-  result = 0
-  for digit in "9999999999":
-    result = result * 10 + digit  // Wraps silently!
-  // Returns negative number, no error
-
-CORRECT:
-  Check before multiplying:
-  if result > INT_MAX / 10:
-    raise OverflowException()
-  if result == INT_MAX / 10 and digit > 7:
-    raise OverflowException()  // Last digit boundary
-  result = result * 10 + digit
-```
-
-**Failure Mode 4: Empty String Handling**
-
-```
-WRONG:
-  def toRoman(n):
-    result = ""
-    for value, symbol in mapping:
-      while n >= value:
-        result += symbol  // Concatenation, O(n²)!
-        n -= value
-    return result
-
-CORRECT:
-  def toRoman(n):
-    result = []  // Use list for amortized append
-    for value, symbol in mapping:
-      while n >= value:
-        result.append(symbol)  // O(1) amortized
-        n -= value
-    return ''.join(result)  // Single join at end
-```
-
-**Failure Mode 5: Special Character Escaping**
-
-```
-WRONG:
-  Encoding string with quotes:
-  json = '{"name":"' + user_input + '"}'
-  // If user_input = 'John"Smith', result is malformed JSON
-
-CORRECT:
-  json = '{"name":"' + escape_json(user_input) + '"}'
-  // escape_json() handles ", \, control chars, etc.
+#### Python (3.11+ — Idiomatic & Pythonic)
+
+```python
+class StringTransformationSolutions:
+    @staticmethod
+    def my_atoi(s: str) -> int:
+        """
+        Parses string to a 32-bit signed integer with clamping.
+        Time: O(N) | Auxiliary Space: O(1)
+        """
+        s = s.lstrip()
+        if not s:
+            return 0
+
+        sign = 1
+        idx = 0
+
+        if s[0] in ("-", "+"):
+            sign = -1 if s[0] == "-" else 1
+            idx = 1
+
+        result = 0
+        int_max = 2**31 - 1
+        int_min = -(2**31)
+
+        while idx < len(s) and s[idx].isdigit():
+            digit = ord(s[idx]) - ord("0")
+
+            # Check overflow before accumulating
+            if result > int_max // 10 or (
+                result == int_max // 10 and digit > 7
+            ):
+                return int_max if sign == 1 else int_min
+
+            result = result * 10 + digit
+            idx += 1
+
+        total = sign * result
+        return max(int_min, min(int_max, total))
+
+    @staticmethod
+    def int_to_roman(num: int) -> str:
+        """
+        Converts integer to Roman numeral using greedy value matching.
+        Time: O(1) | Auxiliary Space: O(1)
+        """
+        mapping: list[tuple[int, str]] = [
+            (1000, "M"),
+            (900, "CM"),
+            (500, "D"),
+            (400, "CD"),
+            (100, "C"),
+            (90, "XC"),
+            (50, "L"),
+            (40, "XL"),
+            (10, "X"),
+            (9, "IX"),
+            (5, "V"),
+            (4, "IV"),
+            (1, "I"),
+        ]
+
+        out: list[str] = []
+        for val, sym in mapping:
+            while num >= val:
+                out.append(sym)
+                num -= val
+
+        return "".join(out)
+
+    @staticmethod
+    def compress(chars: list[str]) -> int:
+        """
+        In-place run-length encoding on a character list.
+        Time: O(N) | Auxiliary Space: O(1)
+        """
+        write = 0
+        read = 0
+
+        while read < len(chars):
+            current_char = chars[read]
+            count = 0
+
+            while read < len(chars) and chars[read] == current_char:
+                read += 1
+                count += 1
+
+            chars[write] = current_char
+            write += 1
+
+            if count > 1:
+                for digit in str(count):
+                    chars[write] = digit
+                    write += 1
+
+        return write
 ```
 
 ---
 
-## 🔗 CHAPTER 5: INTEGRATION & MASTERY
+## ⚖️ CHAPTER 4: COMPLEXITY DECONSTRUCTION
 
-### Connections (Precursors & Successors)
+### Explicit Complexity Breakdown
 
-**Precursors:**
-- Week 02: Strings (immutability, indexing)
-- Week 06 Days 1-3: Palindromes, substrings, brackets (pattern analysis)
-
-**Successors:**
-- Week 10: Dynamic programming (string transformations with constraints)
-- Week 15: Advanced string algorithms (KMP, Manacher), and compression algorithms
-- Week 19: Systems integration (serialization, protocol handling)
-
-### 🧩 Pattern Recognition & Decision Framework
-
-**When to suspect a string transformation problem:**
-
-- "Convert", "transform", "encode", "decode", "format"
-- Input and output are different types/formats
-- Mapping rules are explicit (roman numerals, compression, escaping)
-- Edge case handling is emphasized
-
-**Decision Tree:**
-
-
-### 📌 Is the problem about TRANSFORMATION between formats?
-
-- **Yes, NUMBER ↔ STRING?**
-  - String to integer? (watch overflow)
-  - Integer to roman? (use mapping table)
-  - Integer to words? (special mapping)
-- **Yes, DATA COMPRESSION?**
-  - Run-length encoding? (count consecutive)
-  - Other encoding? (understand the scheme)
-- **Yes, FORMATTING/BUILDING?**
-  - Zigzag or pattern layout? (derive index formula)
-  - String building? (use builder, not concatenation)
-- **Yes, ESCAPING/SPECIAL HANDLING?**
-  - JSON/XML escaping? (replace special chars)
-  - URL encoding? (percent-encode)
-
-
-
-- **✅ Use when:** Converting between representations, building strings, encoding/decoding
-- **🛑 Avoid when:** Not really about format conversion (e.g., finding patterns, use substring matching)
-
-**🚩 Red Flags (Interview Signals):**
-- "String to integer"
-- "Integer to roman"
-- "Build", "format", "encode", "compress"
-- "Validate input"
-- "Overflow", "boundary"
-
-### 🧪 Socratic Reflection
-
-1. **Why does string concatenation become O(n²) in languages with immutable strings?** (Hint: think about what happens each time you concatenate.)
-
-2. **Why does the greedy algorithm work for roman numeral conversion?** (Hint: what properties does the roman numeral system have that make greedy optimal?)
-
-3. **In run-length encoding, when does compression help and when does it hurt?** (Hint: think about the data characteristics.)
-
-### 📌 Retention Hook
-
-> **The Essence:** "String transformations are systematic mappings between representations. Use builders, not concatenation. Handle boundaries carefully—off-by-one and overflow are the deadly sins. Understand your mapping rules deeply."
+| Algorithm / Operation | Time (Best Case) | Time (Worst Case) | Auxiliary Space | Output Space | Key Optimization |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **String to Integer (atoi)** | `O(1)` (non-digit prefix) | `O(N)` (valid digits) | `O(1)` | `O(1)` | Clamping prior to `result * 10` |
+| **Integer to Roman** | `O(1)` (fixed <= 13 steps)| `O(1)` | `O(1)` | `O(1)` (max 15 chars) | Pre-sorted greedy denomination array |
+| **Roman to Integer** | `O(N)` | `O(N)` (max 15 chars) | `O(1)` | `O(1)` | Lookahead subtractive reduction |
+| **In-Place Compression** | `O(N)` | `O(N)` | `O(1)` | `O(1)` (in-place) | Dual-pointer read/write heads |
+| **Loop `+=` Concatenation** | `O(N)` | `O(N^2)` | `O(N^2)` | `O(N)` | Antipattern: reallocates on every character |
 
 ---
 
-## 🧠 5 COGNITIVE LENSES
+## 🎙️ CHAPTER 5: 45-MINUTE INTERVIEW VERBAL SCRIPT
 
-### 1. 💻 The Hardware Lens (Cache, CPU, Memory)
+### Phase 1: Clarification & Boundary Invariants (0–5 Mins)
+- **Candidate:** "Let's confirm the transformation parameters: For `atoi`, what should happen on overflow? Should it wrap around or clamp to `[INT_MIN, INT_MAX]`? Also, how should leading/trailing garbage be handled?"
+- **Interviewer:** "Clamp to 32-bit signed integer limits. Ignore leading whitespace, ignore trailing characters after the valid digit sequence."
+- **Candidate:** "Understood. That defines a classic 4-state lexical analyzer: skip whitespace, parse sign, parse digits with proactive overflow guarding, and terminate upon first non-digit."
 
-StringBuilder exploits **memory locality and amortization**. Instead of allocating a new string (expensive: memory lookup, allocation, copy), StringBuilder appends to a contiguous buffer. When the buffer fills, it doubles, copying once. This is cache-efficient: you're not fragmenting memory, you're growing linearly.
+### Phase 2: Why String Builders & Guarding Arithmetic (5–12 Mins)
+- **Candidate:** "In C# and Python, strings are immutable. Any problem involving building or transforming strings dynamically should use a mutable buffer (`StringBuilder` or list) to guarantee `O(N)` linear runtime instead of `O(N^2)`.
+For numeric accumulation, a critical mistake is computing `result * 10 + digit` using a 64-bit integer and casting at the end. That hides the math and fails in languages without 64-bit types. Instead, I will detect overflow *before* multiplication using `result > int.MaxValue / 10` or `result == int.MaxValue / 10 && digit > 7`."
 
-### 2. 📉 The Trade-off Lens (Time vs Space, Simplicity vs Power)
+### Phase 3: Live Implementation Walkthrough (12–32 Mins)
+- **Candidate:** "Let's code `MyAtoi`. Notice how clean the loop is. We initialize `result = 0` and `sign = 1`. If we detect that the next multiplication would exceed `2147483647`, we immediately return the clamped boundary. This requires zero memory allocation."
 
-| Approach | Time | Space | Simplicity | Flexibility |
+### Phase 4: Edge Cases & Verification (32–40 Mins)
+- **Candidate:** "Let's trace tricky edge cases:
+  1. Whitespace only `"   "`: Correctly advances to end and returns 0.
+  2. Just a sign `"+"` or `"-"`: Advances sign, loop never runs, returns 0.
+  3. Overflow payload `"2147483648"`: Reaches threshold check at digit 8, clamps to `INT_MAX`.
+  4. Negative overflow `"-2147483649"`: Clamps to `INT_MIN`.
+  5. Words before numbers `"words and 987"`: First char non-space non-digit, returns 0."
+
+---
+
+## 🛠️ CHAPTER 6: COMMON PITFALLS & DECISION FRAMEWORK
+
+### Common Pitfalls
+1. **Multiplication Overflow:** Calculating `result = result * 10 + digit` *before* checking bounds. In 32-bit arithmetic, this wraps silently to negative values.
+2. **Character Digit Arithmetic:** Forgetting `- '0'` and accidentally using the ASCII code of the digit (e.g., `'0'` is ASCII 48).
+3. **Repeated String Concatenation:** Using `string += str` inside a loop instead of `StringBuilder.Append()`.
+
+### Decision Framework
+
+```
+                     [ String Transformation Task ]
+                                   |
+         +-------------------------+-------------------------+
+         |                                                   |
+   [ Numeric Parsing ]                              [ Text Formatting ]
+         |                                                   |
+   State Machine                                   Memory Discipline?
+   - Skip whitespace                                         |
+   - Extract sign                                   +--------+--------+
+   - Pre-check MAX/10                               |                 |
+   - Accumulate digits                        In-Place Buffer     Dynamic Builder
+                                              Two-Pointers        StringBuilder
+                                              (Compress)          (IntToRoman)
+```
+
+---
+
+## 🏋️ PRACTICE LADDER
+
+| Problem | LeetCode # | Difficulty | Key Pattern | Primary Focus |
 | :--- | :--- | :--- | :--- | :--- |
-| Naive concatenation | O(n²) | O(n) | ⭐⭐⭐⭐⭐ | Limited |
-| StringBuilder | O(n) | O(n) | ⭐⭐⭐⭐ | Full |
-| Pre-allocated array | O(n) | O(n) | ⭐⭐ | Limited |
-| Streaming (no buffer) | O(n) | O(1) | ⭐⭐ | Limited to output |
-
-StringBuilder is the sweet spot: linear time with reasonable code complexity.
-
-### 3. 👶 The Learning Lens (Misconceptions, Psychology)
-
-**Misconception 1:** "String transformations are simple; why worry about performance?"
-
-**Reality:** Naive implementations become bottlenecks. Log systems, serialization, and formatting must be fast. A 1% slow logging line can dominate production CPU usage at scale.
-
-**Misconception 2:** "I can just count characters; overflow won't happen in practice."
-
-**Reality:** Overflow happens. User input is unpredictable. Boundary cases are common in real systems. Defensive programming saves debugging time.
-
-**Misconception 3:** "Compression always reduces size."
-
-**Reality:** Compression depends on data repetition. Highly random data may expand with compression overhead.
-
-### 4. 🤖 The AI/ML Lens (Analogies to Neural Networks)
-
-String transformations are analogous to **layers in neural networks**. Each transformation layer:
-- Takes input in one format
-- Applies a function (the transformation rule)
-- Outputs in a different format
-
-Just as neural networks stack layers to learn complex mappings, we compose string transformations: parse → validate → transform → format.
-
-### 5. 📜 The Historical Lens (Origins, Inventors)
-
-String transformations are foundational to computing:
-- **Roman Numeral Conversion:** Medieval problem, solved by medieval algorithms
-- **Base Conversion:** Computer science classic (Knuth, "The Art of Computer Programming")
-- **Run-Length Encoding:** 1950s compression technique, still used in CCITT fax compression
-- **String Builders:** Introduced in languages like Perl (1987) and Java (1995) to solve concatenation problems
-
-The recognition that "naive string concatenation is slow" came from hard-won experience in the late 1980s.
+| **String to Integer (atoi)** | #8 | 🟡 Medium | State Machine | 32-bit arithmetic boundary check |
+| **Integer to Roman** | #12 | 🟡 Medium | Greedy Mapping | Descending value partition |
+| **Roman to Integer** | #13 | 🟢 Easy | Lookahead Scan | Subtractive symbol reduction |
+| **String Compression** | #443 | 🟡 Medium | In-Place Two Pointers | Zero-allocation run length write |
+| **Zigzag Conversion** | #6 | 🟡 Medium | Buffer Simulation | Multi-row `StringBuilder` array |
+| **Reverse Words in a String** | #151 | 🟡 Medium | In-Place Two Pointers | Word reversal + space compaction |
 
 ---
 
-## ⚔️ SUPPLEMENTARY OUTCOMES
-
-### 🏋️ Practice Problems (8-10)
-
-| Problem | Source | Difficulty | Key Concept |
-| :--- | :--- | :--- | :--- |
-| String to Integer (atoi) | LeetCode #8 | 🟡 Medium | Boundary, sign, overflow |
-| Integer to Roman | LeetCode #12 | 🟡 Medium | Mapping table, greedy |
-| Roman to Integer | LeetCode #13 | 🟡 Medium | Reverse mapping, sum logic |
-| Zigzag Conversion | LeetCode #6 | 🟡 Medium | Index formula, pattern |
-| String Compression RLE | LeetCode #443 | 🟡 Medium | In-place, counting |
-| Text Justification | LeetCode #68 | 🔴 Hard | Layout logic, spacing |
-| Encode and Decode Strings | LeetCode #271 | 🟡 Medium | Delimiter handling |
-| Valid IP Address | LeetCode #468 | 🔴 Hard | Validation, parsing |
-
-### 🎙️ Interview Questions (6+)
-
-1. **Q:** Convert a string to an integer (atoi). Handle edge cases.
-   - **Follow-up:** What if the number is in a different base (binary, hex)?
-   - **Follow-up:** How would you handle scientific notation ("1e5")?
-
-2. **Q:** Convert an integer to its Roman numeral representation.
-   - **Follow-up:** How would you handle numbers larger than 3999?
-   - **Follow-up:** Can you do the reverse (Roman to integer) efficiently?
-
-3. **Q:** Implement run-length encoding and decoding.
-   - **Follow-up:** How would you handle edge cases where encoding expands the string?
-   - **Follow-up:** How would you stream large data through RLE?
-
-4. **Q:** Given a string, validate that it represents a valid number.
-   - **Follow-up:** How about floating-point numbers?
-   - **Follow-up:** What about scientific notation?
-
-5. **Q:** Design a string builder. How would you optimize it?
-   - **Follow-up:** How do you prevent excessive memory waste?
-   - **Follow-up:** What if you needed to support Unicode?
-
-6. **Q:** Format a number for display (e.g., add commas for thousands).
-   - **Follow-up:** How about internationalization (different separators by locale)?
-   - **Follow-up:** What about negative numbers and currency symbols?
-
-### ❌ Common Misconceptions (3-5)
-
-- **Myth:** "String transformations are simple O(n) problems."
-  - **Reality:** Naive implementation can become O(n²) due to immutability. Understanding builder patterns is essential.
-
-- **Myth:** "Compression always reduces size."
-  - **Reality:** Overhead exists. Run-length encoding can expand data if there are no long runs.
-
-- **Myth:** "Boundary checking is optional for parsing."
-  - **Reality:** Overflow, off-by-one, and edge cases are common. Defensive parsing prevents crashes.
-
-- **Myth:** "The mapping table for roman numerals should be in numerical order."
-  - **Reality:** Descending order (including subtractive pairs) is critical for the greedy algorithm to work.
-
-- **Myth:** "Unicode handling is the same as ASCII."
-  - **Reality:** Unicode characters can be multi-byte. Case conversion, normalization, and comparisons are complex.
-
-### 🚀 Advanced Concepts (3-5)
-
-1. **Custom Encodings:** Design domain-specific encodings (e.g., protocol buffers, messagepack).
-
-2. **Streaming Transformations:** Transform data without loading everything into memory (useful for gigabyte files).
-
-3. **Reversible Transformations:** Ensure transformations are bijective (invertible) for round-trip consistency.
-
-4. **Locale-Aware Formatting:** Number formatting varies by region (decimal point, thousands separator).
-
-5. **Unicode Normalization:** Handle combining characters, case folding, and equivalent representations.
-
-### 📚 External Resources
-
-- **"The Unicode Standard":** Comprehensive Unicode reference.
-- **"Code Complete"** (Steve McConnell): Chapter on string handling best practices.
-- **"Effective Java"** (Joshua Bloch): Item on string concatenation and StringBuilder.
-- **LeetCode String Transformation Problems:** 20+ problems covering common transformations.
-- **Protocol Buffers Documentation:** Example of efficient encoding design.
-
----
-
-## 📊 Summary Table: String Transformation Techniques at a Glance
-
-| Technique | Time | Space | Use Case | Complexity |
-| :--- | :--- | :--- | :--- | :--- |
-| Direct mapping | O(n) | O(n) | Digit/character substitution | Simple |
-| Greedy table-based | O(n) | O(1) aux | Roman numerals, canonical forms | Medium |
-| Streaming encoding | O(n) | O(1) | Compression, streaming | Simple |
-| StringBuilder building | O(n) | O(n) | General string building | Simple |
-| Two-pass algorithm | O(n) | O(n) | Complex layout (text justification) | Medium |
-
----
-
-## 🏁 Conclusion: From Theory to Mastery
-
-You've journeyed from understanding string transformations as systematic mappings to recognizing performance pitfalls and real-world applications. The key principles:
-
-1. **Use builders, not concatenation.** Immutable strings demand it.
-2. **Handle boundaries explicitly.** Overflow, off-by-one, edge cases are real.
-3. **Understand your mapping rules deeply.** Greedy works when properties allow it.
-4. **Test with edge cases.** Empty input, single character, maximum value, etc.
-
-String transformations are everywhere: logging, serialization, formatting, encoding. Mastering them makes you a more careful, efficient engineer.
-
-When you encounter a transformation problem, pause. Ask:
-- **What are the source and target formats?**
-- **What mapping rules apply?**
-- **What are the boundaries and edge cases?**
-- **Is my approach O(n) or O(n²)?**
-
-These questions will lead you to elegant, efficient solutions.
-
----
 > 🧭 **Navigation:** [← Previous Day](Week_06_Day_03_Parentheses_Bracket_Matching_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_06_Day_05_Advanced_String_Matching_Rabin_Karp_Rolling_Hash_Instructional.md)

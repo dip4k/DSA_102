@@ -1,4 +1,4 @@
-# 🎯 Senior / Lead DSA Interview — Unified Problem List
+﻿# 🎯 Senior / Lead DSA Interview — Unified Problem List
 
 > **Curated DSA curriculum for Senior Software Engineer / Lead Software Engineer interviews at product tech companies.**  
 > **Target Level:** Senior / Lead Software Engineer (.NET / C# / Polyglot)  
@@ -74,7 +74,7 @@ Day 5 (Timed Mock & Review)          -> Rehearse 45-minute verbal narration and 
 ### 🏁 Sprint 1 — Two Pointers (ROI Rank #1)
 
 ```mermaid
-flowchart LR
+flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
@@ -103,7 +103,7 @@ flowchart LR
 ### 🏁 Sprint 2 — Sliding Window (ROI Rank #1)
 
 ```mermaid
-flowchart LR
+flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
@@ -132,7 +132,7 @@ flowchart LR
 ### 🏁 Sprint 3 — Monotonic Stack & Queue (ROI Rank #2)
 
 ```mermaid
-flowchart LR
+flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
@@ -161,7 +161,7 @@ flowchart LR
 ### 🏁 Sprint 4 — Dynamic Programming: 1D -> 2D -> State Machine (ROI Rank #2)
 
 ```mermaid
-flowchart LR
+flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
@@ -190,7 +190,7 @@ flowchart LR
 ### 🏁 Sprint 5 — Binary Search on Monotonic Answer Space (ROI Rank #3)
 
 ```mermaid
-flowchart LR
+flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
@@ -219,7 +219,7 @@ flowchart LR
 ### 🏁 Sprint 6 — Heap & Two Heaps: Streaming Data (ROI Rank #5)
 
 ```mermaid
-flowchart LR
+flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
@@ -248,7 +248,7 @@ flowchart LR
 ### 🏁 Sprint 7 — Graph BFS, DFS & Topological Sort (ROI Rank #4)
 
 ```mermaid
-flowchart LR
+flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
@@ -277,7 +277,7 @@ flowchart LR
 ### 🏁 Sprint 8 — Backtracking & Decision Trees (ROI Rank #6)
 
 ```mermaid
-flowchart LR
+flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
@@ -306,7 +306,7 @@ flowchart LR
 ### 🏁 Sprint 9 — Tree DFS: Bottom-Up Subtree DP (ROI Rank #10)
 
 ```mermaid
-flowchart LR
+flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
@@ -335,7 +335,7 @@ flowchart LR
 ### 🏁 Sprint 10 — Linked List: Multi-Step Pointer Transformations (ROI Rank #7)
 
 ```mermaid
-flowchart LR
+flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
@@ -364,7 +364,7 @@ flowchart LR
 ### 🏁 Sprint 11 — Data Structure Design Specialist (ROI Rank #6)
 
 ```mermaid
-flowchart LR
+flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
@@ -1034,8 +1034,8 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A["Minimum Window Substring 🔴 (LC 76)"] -->|Variable Window & Match Counter| B["Longest Repeating Character Replacement 🟡 (LC 424)"]
-    B -->|Window Invariant: len - maxFreq <= k| C["Longest Substring Without Repeating 🟡 (LC 3)"]
+    A["Minimum Window Substring 🔴 (LC 76)"] -->|Variable Window and Match Counter| B["Longest Repeating Character Replacement 🟡 (LC 424)"]
+    B -->|Window Invariant: len - maxFreq &le; k| C["Longest Substring Without Repeating 🟡 (LC 3)"]
     C -->|Last-seen Index Map Optimization| D["Fixed-size Window: Permutation in String 🟡 (LC 567)"]
 ```
 
@@ -1050,7 +1050,7 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A["Largest Rectangle in Histogram 🔴 (LC 84)"] -->|Left & Right Limits via Monotonic Stack| B["Daily Temperatures 🟡 (LC 739)"]
+    A["Largest Rectangle in Histogram 🔴 (LC 84)"] -->|Left and Right Limits via Monotonic Stack| B["Daily Temperatures 🟡 (LC 739)"]
     B -->|Single-side Next Greater Element| C["Nearest Smaller / Greater Core Problems 🟢"]
 ```
 
@@ -1065,7 +1065,7 @@ flowchart TD
 Do not begin with dozens of trivial DP problems. Build state-space discipline incrementally:
 
 ```mermaid
-flowchart LR
+flowchart TD
     HR["House Robber<br/>(1D Include/Exclude)"] --> CC["Coin Change<br/>(Unbounded Knapsack)"]
     CC --> PSS["Partition Subset Sum<br/>(0-1 Knapsack)"]
     PSS --> LIS["LIS<br/>(Patience Sort / DP)"]
@@ -1530,7 +1530,7 @@ flowchart TD
 After solving any **⭐ Core** problem, immediately solve one corresponding **⚪ Reinforcement** or **🔥 High** problem that applies the identical invariant in a slightly different disguise.
 
 ```mermaid
-flowchart LR
+flowchart TD
     A["Trapping Rain Water 🔴<br/>(Master Boundary Invariant)"] -->|Reinforce Two-Pointer Boundary Logic| B["Container With Most Water 🟡<br/>(Greedy Boundary Shrink)"]
 ```
 

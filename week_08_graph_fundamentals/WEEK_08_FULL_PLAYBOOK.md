@@ -1,4 +1,4 @@
-# 🌐 Week 08 Full Playbook – Graph Fundamentals: Representations, BFS, DFS & Topological Sort
+﻿# 🌐 Week 08 Full Playbook – Graph Fundamentals: Representations, BFS, DFS & Topological Sort
 
 > 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)
 > 
@@ -926,11 +926,11 @@ Directed graph:
 
 
 ```mermaid
-flowchart LR
+flowchart TD
     classDef scc1 fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
     classDef scc2 fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:2px;
 
-    subgraph SCC1["🔄 Strongly Connected Component 1: {1, 2, 3, 5}"]
+    subgraph SCC1["🔄 SCC 1: {1, 2, 3, 5}"]
         N1["Node 1"]:::scc1
         N2["Node 2"]:::scc1
         N3["Node 3"]:::scc1

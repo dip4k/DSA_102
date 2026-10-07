@@ -1,4 +1,4 @@
-# 📚 WEEK 07 FULL PLAYBOOK
+﻿# 📚 WEEK 07 FULL PLAYBOOK
 > 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)
 > 
 > 💡 **Instructor Note:** *This Comprehensive Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
@@ -152,7 +152,7 @@ flowchart TD
         C3 --> C6["6"]
     end
 
-    subgraph BalancedTree["Balanced Tree (|Δh| <= 1)"]
+    subgraph BalancedTree["Balanced Tree (|Δh| &le; 1)"]
         B1["1"] --> B2["2"]
         B1 --> B3["3"]
         B2 --> B4["4"]
@@ -485,7 +485,7 @@ flowchart TD
         V7 --> V8
     end
 
-    subgraph InvalidBST["❌ Invalid BST (6 < 5 in right subtree)"]
+    subgraph InvalidBST["❌ Invalid BST (6 &lt; 5 in right subtree)"]
         I5["5"]
         I3["3"]
         I6["6"]
@@ -613,7 +613,7 @@ Deleting is trickier because you must maintain the tree structure and invariant.
 Simply remove it. No restructuring needed.
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph C1Before["Before"]
         direction TB
         B5_1["5"] --> B3_1["3"]
@@ -637,7 +637,7 @@ flowchart LR
 Bypass the node (child directly replaces parent).
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph C2Before["Before"]
         direction TB
         B5_2["5"] --> B3_2["3 (To delete)"]:::deletedNode
@@ -664,7 +664,7 @@ flowchart LR
 - **Why successor works:** It is strictly greater than all nodes in the left subtree, and strictly less than all other nodes in the right subtree. Furthermore, the successor has at most one child (a right child), reducing its removal to Case 1 or 2!
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph C3Before["Before: Delete Root 5"]
         direction TB
         B5_3["5 (Target)"]:::deletedNode --> B3_3["3"]
@@ -680,7 +680,7 @@ flowchart LR
         A3_3 --> A1_3["1"]
         A3_3 --> A4_3["4"]
     end
-    C3Before ==>|"Copy 7 to root & delete old 7"| C3After
+    C3Before ==>|"Copy 7 to root and delete old 7"| C3After
 
     classDef deletedNode fill:#b71c1c,stroke:#ff8a80,stroke-width:2px,color:#ffffff
     classDef promotedNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
@@ -795,7 +795,7 @@ A **rotation** is a local tree restructuring that preserves the global BST invar
 ##### Right Rotation (Fixes Left-Heavy Trees)
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph RRBefore["Before: Left-Heavy (BF = -2)"]
         direction TB
         B5["5"] --> B3["3"]
@@ -830,7 +830,7 @@ Node RotateRight(Node root) {
 ##### Left Rotation (Fixes Right-Heavy Trees)
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph LRBefore["Before: Right-Heavy (BF = +2)"]
         direction TB
         B1_L["1"] --> B3_L["3"]

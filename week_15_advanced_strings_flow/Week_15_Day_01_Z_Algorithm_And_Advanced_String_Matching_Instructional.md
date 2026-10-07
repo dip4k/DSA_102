@@ -1,23 +1,492 @@
-# 📘 WEEK 15 DAY 01: Z-ALGORITHM & ADVANCED STRING MATCHING — ENGINEERING GUIDE
-
-
-
-
+# 📘 WEEK 15 DAY 01: ADVANCED STRING DATA STRUCTURES & MATCHING — TRIES & THE Z-ALGORITHM
 
 > 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_15_Day_02_Segment_Trees_Range_Queries_Instructional.md)
 > 
-> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
+> 💡 **Instructor Note:** *This masterclass is divided into two powerhouse pillars of modern string processing: **Part 1 covers Tries (Prefix Trees)** — the data structure powering autocomplete, dictionary lookups, IP routing, and spell checking; **Part 2 covers the Z-Algorithm** — the linear-time string matcher that solves exact pattern search and periodicity without state-machine complexity.*
 
 ---
 
 ## 🎯 LEARNING OBJECTIVES
+
 *By the end of this chapter, you will be able to:*
-- 🎯 **Internalize** the Z-array as "how far does the string agree with its own prefix, starting at position i" — the single invariant that drives every operation in this file.
-- ⚙️ **Implement** the Z-array construction algorithm in O(n) using the sliding "Z-box" window, and use it to find all occurrences of a pattern inside a text in O(n + m).
-- ⚖️ **Evaluate** the trade-offs between the Z-algorithm and KMP's failure function — two different lenses on the same underlying linear-time guarantee.
-- 🏭 **Connect** this concept to real production systems: text editors' "find all," bioinformatics repeat-finding pipelines, plagiarism detection engines, and log-deduplication tools.
+- 🎯 **Master Trie Mechanics**: Internalize prefix trees as retrieval trees sharing common prefixes across millions of strings in `O(L)` time (where `L` is string length), completely independent of dictionary size `N`.
+- ⚙️ **Implement Production-Grade Tries**: Build zero-leak Tries in C# (.NET 8/9) and Python (3.11+) featuring `Insert`, `Search`, `StartsWith`, and clean **bottom-up recursive pruning on `Delete`**.
+- ⚖️ **Evaluate Trie Memory Architectures**: Compare fixed `[26]` arrays vs HashMaps vs Compressed Tries (Radix / Patricia Trees) across CPU cache locality, pointer bloat, and alphabet flexibility.
+- 🎯 **Internalize the Z-Algorithm**: Understand the rightmost matching window `[L, R]` invariant and build the linear-time `O(N)` Z-array to locate all pattern occurrences in `O(N + M)`.
+- 🏭 **Connect to Real Systems**: Power search engine autocomplete, phonebook T9 predictive text, Linux routing tables (LPM), and code-editor "Find All".
 
 ---
+
+## 🌳 PART 1: TRIES (PREFIX TREES) — ARCHITECTURE, AUTOCOMPLETE & MEMORY PRUNING
+
+### 1. The Beginner Mental Model: The Phonebook & Predictive Search
+
+Imagine searching an old-fashioned paper phonebook for `"Watson"`:
+- You don't scan name-by-name from page 1 (`O(N)` brute force).
+- Instead, you flip directly to section **`W`**, then sub-section **`Wa`**, then **`Wat`**, then **`Wats`**, and finally reach **`Watson`**.
+- Everyone whose name starts with `"Wat"` (Watson, Watts, Watkins) shares the exact same physical pages until their letters diverge!
+
+Now translate that to your smartphone keyboard or a search engine's autocomplete box:
+When you type `"app"`, the system instantly suggests:
+- `"apple"`
+- `"application"`
+- `"apply"`
+
+Why does it suggest these in microseconds, even if the dictionary contains 500,000 words? Because all three words branch from the **exact same trunk**: `root -> 'a' -> 'p' -> 'p'`.
+
+```text
+                     [ Root ]
+                        |
+                       'a'
+                        |
+                       'p'
+                        |
+                       'p'  <-- Prefix "app" matched here!
+                     /     \
+                   'l'     'l'
+                   /         \
+                 'e' [*]     'y' [*]
+               ("apple")    ("apply")
+```
+
+A **Trie** (derived from re**trie**val, pronounced "try") organizes strings as a tree of characters. Every node represents a common prefix shared by all its descendants.
+
+Key Property:
+- Looking up whether a word of length `L` exists in a dictionary of `10,000,000` words takes **`O(L)` operations**, bounded strictly by the word length `L`, not the dictionary size `N`!
+
+---
+
+### 2. Anatomy of a TrieNode
+
+Each node in a Trie contains two fundamental fields:
+1. **Children Collection**: Pointers or references to subsequent characters.
+   - For lowercase English (`a`-`z`): an array of size 26 (`TrieNode[26]`), where index `c - 'a'` maps to child `c`.
+   - For arbitrary Unicode, numbers, or sparse alphabets: a hash table (`Dictionary<char, TrieNode>`).
+2. **`isEndOfWord` (boolean)**: A terminal marker flag.
+   - Distinguishes valid words from mere intermediate prefixes.
+   - For example, if `"apple"` and `"app"` are both stored, the node at the second `'p'` has `isEndOfWord = true` (signifying `"app"` is a complete word), while also having a child pointer to `'l'` leading to `"apple"`.
+
+```text
++-------------------------------------------------------------+
+|                       TrieNode Memory Model                  |
++-------------------------------------------------------------+
+|  isEndOfWord: bool (true / false)                           |
+|  children: TrieNode*[26] (Pointers to 'a' through 'z')      |
+|  [0]='a' | [1]='b' | ... | [15]='p' | ... | [25]='z'        |
++-------------------------------------------------------------+
+```
+
+---
+
+### 3. Visual ASCII Diagram: Building a Trie Step-by-Step
+
+Let's insert words `"car"`, `"card"`, `"cat"`, and `"dog"` into an initially empty Trie:
+
+```text
+                                [ Root ]
+                               /        \
+                            'c'          'd'
+                            /              \
+                          'a'              'o'
+                         /   \               \
+                       'r'   't' [*]         'g' [*]
+                      / [*]  ("cat")         ("dog")
+                    'd' [*]
+                   ("card")
+
+Nodes marked with [*] have isEndOfWord = true.
+Notice:
+1. "car" and "cat" share the prefix "ca".
+2. "card" extends the existing path of "car" without duplicating 'c', 'a', or 'r'.
+3. "car" has isEndOfWord = true (it is a valid word), and it also branches to 'd'.
+```
+
+---
+
+### 4. Complete Trie Operations Walkthrough
+
+#### Operation 1: `Insert(word)`
+1. Start at `root`.
+2. For each character `c` in `word`:
+   - Calculate index `idx = c - 'a'`.
+   - If `children[idx]` is `null`, allocate a new `TrieNode`.
+   - Move `curr = children[idx]`.
+3. After the loop, set `curr.isEndOfWord = true`.
+- **Time Complexity:** `O(L)` where `L` is word length.
+- **Auxiliary Space:** `O(L)` in the worst case (when all characters are new).
+
+#### Operation 2: `Search(word)`
+1. Start at `root`.
+2. For each character `c` in `word`:
+   - Calculate index `idx = c - 'a'`.
+   - If `children[idx]` is `null`, the word does not exist -> return `false`.
+   - Move `curr = children[idx]`.
+3. Return `curr.isEndOfWord`. (If the path exists but `isEndOfWord` is `false`, it's only a prefix, not a complete word!).
+- **Time Complexity:** `O(L)`.
+- **Auxiliary Space:** `O(1)`.
+
+#### Operation 3: `StartsWith(prefix)`
+1. Start at `root`.
+2. For each character `c` in `prefix`:
+   - If `children[c - 'a']` is `null`, return `false`.
+   - Move `curr = children[c - 'a']`.
+3. Return `true`. (We only care that the prefix path exists; whether any complete word terminates here is irrelevant).
+- **Time Complexity:** `O(P)` where `P` is prefix length.
+- **Auxiliary Space:** `O(1)`.
+
+#### Operation 4: `Delete(word)` with Bottom-Up Recursive Pruning
+
+> [!WARNING]
+> **The Phantom Node Bug:** Simply setting `curr.isEndOfWord = false` is dangerous in production. If you insert 100,000 temporary words and delete them, your memory footprint never shrinks because unreferenced leaf nodes remain allocated in the heap! A production Trie must perform **bottom-up recursive pruning** to deallocate nodes that no longer lead to any valid words.
+
+##### Deletion Cases:
+- **Case 1: Word not present.** Trie is unchanged.
+- **Case 2: Word is a prefix of another word (e.g., delete `"car"` when `"card"` exists).**
+  - Simply set `isEndOfWord = false` at node `'r'`. Node `'r'` cannot be pruned because it has child `'d'`.
+- **Case 3: Word has other words along its prefix (e.g., delete `"card"` when `"car"` exists).**
+  - Prune node `'d'`. Unwind recursion to `'r'`. Because node `'r'` has `isEndOfWord == true`, stop pruning! Node `'r'` and all its ancestors are preserved.
+- **Case 4: Unique word with no sharing (e.g., delete `"dog"`).**
+  - Prune `'g'`, then `'o'`, then `'d'`. The entire unique branch is deleted up to the root.
+
+```text
+=============================================================================
+PRUNING VISUALIZATION: Deleting "card" while preserving "car"
+=============================================================================
+
+BEFORE DELETION:
+[ Root ] -> 'c' -> 'a' -> 'r' [*] -> 'd' [*]
+
+1. Recurse down to 'd'.
+2. Set 'd'.isEndOfWord = false.
+3. Check 'd': has NO children? True! -> Deallocate / prune 'd'. Return true to parent 'r'.
+4. Unwind to 'r': remove child 'd'.
+5. Check 'r': has other children? No. BUT is 'r'.isEndOfWord == true? YES ("car" is a word!).
+   -> STOP pruning! Do NOT delete 'r'.
+
+AFTER DELETION:
+[ Root ] -> 'c' -> 'a' -> 'r' [*]
+Node 'd' is cleanly freed from memory!
+```
+
+---
+
+### 5. Architectural Variations & Trade-Offs
+
+| Dimension | Fixed Array `children[26]` | Dynamic Hash Map `children` | Compressed Trie (Radix / Patricia Tree) |
+| :--- | :--- | :--- | :--- |
+| **Lookup Cost** | `O(1)` direct array index (`c - 'a'`) | `O(1)` average hash lookup | `O(1)` lookup per edge + string comparison |
+| **Memory Footprint** | High waste on sparse tries (`26` pointers/node) | Low memory when alphabet is large or sparse | **Minimal**: merges non-branching chains |
+| **Cache Locality** | Excellent (flat contiguous pointer block) | Poor (pointer chasing through buckets) | High (fewer total heap nodes) |
+| **Alphabet Flexibility** | Fixed (lowercase ASCII only) | Unlimited (Unicode, Chinese, emojis, bytes) | Unlimited (arbitrary strings on edges) |
+| **Best Used For** | English lowercase dictionaries, competitive DSA | Broad Unicode text, multilingual dictionaries | IP routing tables (CIDR / LPM), file systems |
+
+#### The Compressed Trie (Radix Tree / Patricia Tree)
+
+In a standard Trie, words with long common paths with no branching (e.g., `"test"`, `"testing"`, `"tester"`) create single-child node chains:
+`'t' -> 'e' -> 's' -> 't' -> ('i' -> 'n' -> 'g' | 'e' -> 'r')`.
+
+A **Compressed Trie (Radix Tree)** compresses every chain of single-child nodes into a single edge holding a substring:
+
+```text
+Standard Trie:
+[ Root ] --'t'--> [ ] --'e'--> [ ] --'s'--> [ ] --'t'--> [*] --'e'--> [ ] --'r'--> [*]
+                                                            \
+                                                            'i'--> [ ] --'n'--> [ ] --'g'--> [*]
+
+Compressed Trie (Radix Tree):
+[ Root ] -------- "test" --------> [*]
+                                   /  \
+                             "er" /    \ "ing"
+                                 v      v
+                                [*]    [*]
+```
+**Radix Tree Guarantee:** A Radix Tree storing `K` words has at most `2K` total nodes, eliminating all redundant single-child allocations!
+
+---
+
+### 6. Dual-Language Production Implementations of Trie
+
+#### Modern C# (.NET 8/9) Production Implementation
+
+```csharp
+using System;
+using System.Collections.Generic;
+
+/// <summary>
+/// Production-grade Prefix Tree (Trie) featuring fixed-array children,
+/// exact search, prefix search, autocomplete suggestions, and
+/// bottom-up recursive pruning on deletion.
+/// </summary>
+public class Trie
+{
+    private class TrieNode
+    {
+        public readonly TrieNode?[] Children = new TrieNode?[26];
+        public bool IsEndOfWord { get; set; } = false;
+
+        public bool HasChildren()
+        {
+            for (int i = 0; i < 26; i++)
+            {
+                if (Children[i] != null) return true;
+            }
+            return false;
+        }
+    }
+
+    private readonly TrieNode _root = new();
+
+    /// <summary>
+    /// Inserts a word into the Trie. Time Complexity: O(L) | Space: O(L) worst-case.
+    /// </summary>
+    public void Insert(string word)
+    {
+        if (string.IsNullOrEmpty(word)) return;
+
+        TrieNode curr = _root;
+        foreach (char c in word)
+        {
+            int idx = c - 'a';
+            if (idx < 0 || idx >= 26)
+                throw new ArgumentException($"Unsupported character '{c}'. Only lowercase a-z allowed.");
+
+            curr.Children[idx] ??= new TrieNode();
+            curr = curr.Children[idx]!;
+        }
+        curr.IsEndOfWord = true;
+    }
+
+    /// <summary>
+    /// Searches for an exact word in the Trie. Time: O(L) | Space: O(1).
+    /// </summary>
+    public bool Search(string word)
+    {
+        if (string.IsNullOrEmpty(word)) return false;
+
+        TrieNode? node = TraverseToNode(word);
+        return node != null && node.IsEndOfWord;
+    }
+
+    /// <summary>
+    /// Checks if any word in the Trie starts with the specified prefix. Time: O(P) | Space: O(1).
+    /// </summary>
+    public bool StartsWith(string prefix)
+    {
+        if (string.IsNullOrEmpty(prefix)) return false;
+
+        return TraverseToNode(prefix) != null;
+    }
+
+    /// <summary>
+    /// Deletes a word from the Trie with bottom-up recursive pruning of orphan nodes.
+    /// Returns true if the word existed and was deleted; false otherwise.
+    /// Time Complexity: O(L) | Space: O(L) call stack.
+    /// </summary>
+    public bool Delete(string word)
+    {
+        if (string.IsNullOrEmpty(word)) return false;
+
+        bool wordExisted = false;
+        DeleteHelper(_root, word, 0, ref wordExisted);
+        return wordExisted;
+    }
+
+    private bool DeleteHelper(TrieNode current, string word, int depth, ref bool wordExisted)
+    {
+        if (depth == word.Length)
+        {
+            if (!current.IsEndOfWord)
+            {
+                wordExisted = false; // Word does not exist
+                return false;
+            }
+
+            current.IsEndOfWord = false;
+            wordExisted = true;
+
+            // If current node has no children, signal parent to prune this node
+            return !current.HasChildren();
+        }
+
+        int idx = word[depth] - 'a';
+        if (idx < 0 || idx >= 26 || current.Children[idx] == null)
+        {
+            wordExisted = false;
+            return false;
+        }
+
+        bool shouldPruneChild = DeleteHelper(current.Children[idx]!, word, depth + 1, ref wordExisted);
+
+        if (shouldPruneChild)
+        {
+            current.Children[idx] = null; // Prune unreferenced child pointer
+
+            // Prune current node if it is not an end of another word and has no remaining children
+            return !current.IsEndOfWord && !current.HasChildren();
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Autocomplete: Returns all words in the Trie matching the given prefix.
+    /// </summary>
+    public List<string> GetWordsWithPrefix(string prefix)
+    {
+        var results = new List<string>();
+        if (string.IsNullOrEmpty(prefix)) return results;
+
+        TrieNode? startNode = TraverseToNode(prefix);
+        if (startNode == null) return results;
+
+        CollectWords(startNode, prefix, results);
+        return results;
+    }
+
+    private void CollectWords(TrieNode node, string currentPrefix, List<string> results)
+    {
+        if (node.IsEndOfWord)
+        {
+            results.Add(currentPrefix);
+        }
+
+        for (int i = 0; i < 26; i++)
+        {
+            if (node.Children[i] != null)
+            {
+                char nextChar = (char)('a' + i);
+                CollectWords(node.Children[i]!, currentPrefix + nextChar, results);
+            }
+        }
+    }
+
+    private TrieNode? TraverseToNode(string query)
+    {
+        TrieNode curr = _root;
+        foreach (char c in query)
+        {
+            int idx = c - 'a';
+            if (idx < 0 || idx >= 26 || curr.Children[idx] == null)
+            {
+                return null;
+            }
+            curr = curr.Children[idx]!;
+        }
+        return curr;
+    }
+}
+```
+
+#### Idiomatic Python (3.11+) Production Implementation
+
+```python
+from typing import List, Optional, Dict
+
+class TrieNode:
+    """Trie node using a dynamic dictionary for universal character support."""
+    def __init__(self) -> None:
+        self.children: Dict[str, TrieNode] = {}
+        self.is_end_of_word: bool = False
+
+class Trie:
+    """
+    Production Prefix Tree (Trie) supporting O(L) insert, search, starts_with,
+    autocomplete, and bottom-up recursive pruning on delete.
+    """
+    def __init__(self) -> None:
+        self.root: TrieNode = TrieNode()
+
+    def insert(self, word: str) -> None:
+        """Inserts word into Trie. Time: O(L) | Space: O(L) worst-case."""
+        if not word:
+            return
+        curr = self.root
+        for char in word:
+            if char not in curr.children:
+                curr.children[char] = TrieNode()
+            curr = curr.children[char]
+        curr.is_end_of_word = True
+
+    def search(self, word: str) -> bool:
+        """Searches for exact word match. Time: O(L) | Space: O(1)."""
+        node = self._traverse_to_node(word)
+        return node is not None and node.is_end_of_word
+
+    def starts_with(self, prefix: str) -> bool:
+        """Checks if any word starts with prefix. Time: O(P) | Space: O(1)."""
+        return self._traverse_to_node(prefix) is not None
+
+    def delete(self, word: str) -> bool:
+        """
+        Deletes word with bottom-up recursive pruning of orphan nodes.
+        Returns True if word was found and deleted, False otherwise.
+        """
+        if not word:
+            return False
+
+        existed = False
+
+        def _delete_helper(curr: TrieNode, depth: int) -> bool:
+            nonlocal existed
+            if depth == len(word):
+                if not curr.is_end_of_word:
+                    existed = False
+                    return False
+                curr.is_end_of_word = False
+                existed = True
+                # Prune if this node has no children
+                return len(curr.children) == 0
+
+            char = word[depth]
+            if char not in curr.children:
+                existed = False
+                return False
+
+            should_prune_child = _delete_helper(curr.children[char], depth + 1)
+
+            if should_prune_child:
+                del curr.children[char]  # Prune child pointer
+                # Prune current node if it has no children and is not end of another word
+                return not curr.is_end_of_word and len(curr.children) == 0
+
+            return False
+
+        _delete_helper(self.root, 0)
+        return existed
+
+    def autocomplete(self, prefix: str) -> List[str]:
+        """Returns all stored words matching the given prefix."""
+        results: List[str] = []
+        if not prefix:
+            return results
+
+        start_node = self._traverse_to_node(prefix)
+        if not start_node:
+            return results
+
+        def _dfs(node: TrieNode, path: List[str]) -> None:
+            if node.is_end_of_word:
+                results.append("".join(path))
+            for char, child_node in sorted(node.children.items()):
+                path.append(char)
+                _dfs(child_node, path)
+                path.pop()
+
+        _dfs(start_node, list(prefix))
+        return results
+
+    def _traverse_to_node(self, query: str) -> Optional[TrieNode]:
+        curr = self.root
+        for char in query:
+            if char not in curr.children:
+                return None
+            curr = curr.children[char]
+        return curr
+```
+
+---
+
+## ⚡ PART 2: THE Z-ALGORITHM & ADVANCED LINEAR STRING MATCHING
 
 ## 📖 CHAPTER 1: CONTEXT & MOTIVATION
 *The "Why" — Grounding the concept in engineering reality.*
@@ -325,6 +794,53 @@ public static List<int> FindAllOccurrences(string text, string pattern)
 }
 ```
 
+### 🐍 Python Production-Grade Implementations (Python 3.11+)
+
+```python
+def build_z_array(s: str) -> list[int]:
+    """Computes the Z-array for string s in O(n) time.
+    
+    Z[i] is the length of the longest substring starting at s[i] that matches prefix s[0...].
+    """
+    n = len(s)
+    z = [0] * n
+    if n == 0:
+        return z
+
+    left, right = 0, 0
+    for i in range(1, n):
+        if i <= right:
+            z[i] = min(right - i + 1, z[i - left])
+        while i + z[i] < n and s[z[i]] == s[i + z[i]]:
+            z[i] += 1
+        if i + z[i] - 1 > right:
+            left, right = i, i + z[i] - 1
+    return z
+
+
+def find_all_occurrences(text: str, pattern: str) -> list[int]:
+    """Finds all 0-based starting indices where pattern occurs in text using Z-algorithm.
+    
+    Time Complexity: O(n + m) | Auxiliary Space: O(n + m) | Output Space: O(K)
+    """
+    if not pattern or not text or len(pattern) > len(text):
+        return []
+
+    separator = "\x01"  # Sentinel character outside user alphabet
+    combined = pattern + separator + text
+    z = build_z_array(combined)
+
+    m = len(pattern)
+    offset = m + 1
+    results = []
+
+    for i in range(offset, len(combined)):
+        if z[i] == m:
+            results.append(i - offset)
+
+    return results
+```
+
 The guard clauses here matter for production robustness: an empty pattern is a degenerate, meaningless search; a pattern longer than the text can never match. Both are checked *before* any string concatenation happens, avoiding wasted allocation.
 
 ### 📉 Progressive Example: Handling Repetition and Edge Cases
@@ -355,15 +871,66 @@ Every single lookup in this trace required *at most one* character comparison at
 ## ⚖️ CHAPTER 4: PERFORMANCE, TRADE-OFFS & REAL SYSTEMS
 *The "Reality" — From Big-O to Production Engineering.*
 
-### Beyond Big-O: Performance Reality
+### Explicit Complexity Deconstruction
 
-| Operation | Best Case | Average | Worst | Space |
+| Operation | Time (Best / Avg / Worst) | Auxiliary Space | Output Space | Mathematical Derivation |
 | :--- | :--- | :--- | :--- | :--- |
-| Build Z-array | O(n) | O(n) | O(n) | O(n) |
-| Pattern search (via concatenation) | O(n + m) | O(n + m) | O(n + m) | O(n + m) |
-| Naive brute-force matching (for comparison) | O(n) | O(n·m) | O(n·m) | O(1) |
+| **Build Z-Array** | `O(N)` / `O(N)` / `O(N)` | `O(N)` | `O(N)` | The right boundary `R` advances strictly monotonically from 0 to `N - 1`. The while loop only executes when `i + matchLength > R` or on mismatch; total successful character comparisons across all iterations cannot exceed `N`. |
+| **Pattern Search (Concat)** | `O(N + M)` / `O(N + M)` / `O(N + M)` | `O(N + M)` | `O(K)` | Z-array built on combined string of length `N + M + 1`. Emits `K` match positions in a single linear pass. |
+| **Brute-Force Matching** | `O(N)` / `O(N * M)` / `O(N * M)` | `O(1)` | `O(K)` | Re-scans previously verified characters, degrading to quadratic on inputs like `T = "a"^N, P = "a"^(M-1) + "b"`. |
 
-The theoretical guarantee is clean: no matter how adversarial the input, the Z-algorithm never degrades past O(n). But there's a practical subtlety worth internalizing, one that echoes the memory-hierarchy lessons from Week 1: the Z-algorithm's O(1) "safe copy" lookups (`Z[i] = Z[mirrored]`) are extremely cheap in terms of *instruction count*, but they still require reading from the `Z` array, which — for very large strings — may not fully reside in L1 or L2 cache. In practice, this means the Z-algorithm's *constant factor* is small but not zero; production systems that need to match patterns against gigabyte-scale text (e.g., genomic sequences) often care deeply about this constant factor, not just the asymptotic bound, because O(n) with a large constant can still be meaningfully slower than a competing O(n) approach with tighter cache behavior.
+---
+
+## 🎙️ Senior 45-Minute Verbal Talk Track
+
+```text
++-------------------------------------------------------------------------------+
+| PHASE 1: Requirements & Alphabet Boundaries (Minutes 00 - 05)                |
+| - Verify alphabet constraints (ASCII, Unicode, binary) and length (N, M <= 10^6). |
+| - Clarify sentinel character choice (e.g. '\0', '\x01') to avoid collisions.   |
++-------------------------------------------------------------------------------+
+                                      │
+                                      ▼
++-------------------------------------------------------------------------------+
+| PHASE 2: Naive Backtracking & Waste Analysis (Minutes 05 - 10)                |
+| - State brute force O(N * M): re-evaluating text throws away prefix insights.  |
+| - Demonstrate the pathological repetitive string case ("aaaa...").             |
++-------------------------------------------------------------------------------+
+                                      │
+                                      ▼
++-------------------------------------------------------------------------------+
+| PHASE 3: The Z-Box Invariant [L, R]          (Minutes 10 - 20)                |
+| - Define Z[i]: length of longest common prefix between S and S[i...].         |
+| - Maintain [L, R]: the rightmost segment matching prefix S[0...R-L].          |
+| - Branch 1 (Safe Copy): if Z[i - L] < R - i + 1, set Z[i] = Z[i - L] in O(1).  |
+| - Branch 2 (Extension): if match reaches or exceeds R, extend R via while loop.|
++-------------------------------------------------------------------------------+
+                                      │
+                                      ▼
++-------------------------------------------------------------------------------+
+| PHASE 4: Dual-Language Implementation         (Minutes 20 - 35)                |
+| - Code BuildZArray and FindAllOccurrences in idiomatic C# (.NET 8) / Python 3.11. |
+| - Enforce guard clauses: empty inputs, pattern length > text length.          |
+| - Handle 0-based offset translation: textPosition = i - (M + 1).              |
++-------------------------------------------------------------------------------+
+                                      │
+                                      ▼
++-------------------------------------------------------------------------------+
+| PHASE 5: Amortized Proof & Streaming Follow-ups (Minutes 35 - 45)             |
+| - Prove amortized O(N) bound: R increases at most N times; at most 1 mismatch |
+|   comparison per i.                                                           |
+| - Compare with KMP: Z-algorithm looks forward; KMP looks backward (automaton).|
+| - Discuss memory optimization: streaming chunks to avoid N + M concatenation. |
++-------------------------------------------------------------------------------+
+```
+
+### Verbal Script Excerpts
+
+*   **Opening (Minutes 00-05)**: *"To find all occurrences of pattern `P` in text `T`, we can achieve optimal `O(N + M)` time and `O(N + M)` space using the Z-algorithm. Before writing code, I want to confirm the alphabet set so we can select a guaranteed collision-free sentinel delimiter."*
+*   **Invariant Articulation (Minutes 10-20)**: *"The algorithm tracks the rightmost matching window `[L, R]` where `S[L...R]` matches prefix `S[0...R-L]`. When processing index `i` inside `[L, R]`, the substring starting at `i` is identical to the substring starting at `i - L` in the prefix. If the precomputed `Z[i - L]` is strictly less than the remaining distance `R - i + 1`, we copy `Z[i] = Z[i - L]` in `O(1)`. Only when the match touches or extends past `R` do we perform explicit character comparisons, advancing `R` monotonically."*
+*   **Amortized Bound Defense (Minutes 35-45)**: *"Even though there is a while loop, each successful comparison inside the loop increments `matchLength` and strictly advances the window boundary `R`. Because `R` can advance from `0` to at most `N - 1`, the while loop body can execute at most `N` successful comparisons across the entire lifetime of the algorithm. Unsuccessful comparisons terminate immediately (at most 1 per index `i`). Therefore, total comparisons are bounded by `2N`, guaranteeing `O(N)`."*
+
+---
 
 > **📉 Memory Reality:** The concatenation-based search approach (`pattern + separator + text`) has a subtle cost: it allocates a *new* string of length `n + m + 1` before building the Z-array. For a single search against a huge text, this doubling of memory (you now hold both the original text and the concatenated copy) can matter. Production-grade implementations sometimes avoid the concatenation by computing the pattern's own Z-array once, then streaming through the text separately while consulting the pattern's Z-array and a rolling match-length counter — trading a slightly more intricate implementation for a smaller memory footprint. This mirrors the general engineering principle from Week 2 that "asymptotically equivalent" solutions can still differ meaningfully in real memory behavior.
 
@@ -432,20 +999,6 @@ Neither is "strictly better" — they are two different mental models converging
 
 ### 📌 Retention Hook
 > **The Essence:** "The Z-array remembers what the string already told you about itself, so you never re-ask a question you've already answered."
-
----
-
-## 🧠 5 COGNITIVE LENSES
-
-1. **💻 The Hardware Lens:** The Z-array construction is a single forward pass over contiguous memory with O(1) auxiliary state (`L`, `R`, and the output array itself) — this sequential access pattern is exactly what CPU prefetchers are optimized for, meaning the real-world wall-clock performance tracks the theoretical O(n) bound unusually closely compared to algorithms with scattered memory access (like pointer-chasing linked structures from Week 2).
-
-2. **📉 The Trade-off Lens:** The Z-algorithm trades a small amount of implementation complexity (the Z-box bookkeeping, the "safe copy vs. must extend" branching) for a hard guarantee against quadratic blowup on adversarial or repetitive input — the same trade-off philosophy you saw when comparing insertion sort's simplicity against merge sort's guaranteed-but-more-complex O(n log n) behavior in Week 3.
-
-3. **👶 The Learning Lens:** The most common beginner misconception is believing the Z-array construction is "just brute-force with a fancy name" — students often skip internalizing *why* the safe-copy case avoids re-comparison, and end up implementing a version that's correct but secretly quadratic because it re-verifies characters it didn't need to. Tracing through a repetitive string like `"aaaaaa"` by hand, as done in Chapter 3, is the fastest way to expose this misconception.
-
-4. **🤖 The AI/ML Lens:** Longest-common-prefix-style measurements (the same family of question the Z-array answers) appear throughout sequence modeling and tokenization pipelines — for instance, byte-pair encoding and certain tokenizer training procedures rely on efficiently measuring shared prefixes/substrings across large corpora, and the same amortized-pointer reasoning that makes the Z-algorithm linear underlies why these preprocessing steps can scale to enormous training corpora without becoming a bottleneck.
-
-5. **📜 The Historical Lens:** The Z-algorithm is a relatively later, cleaner reformulation of ideas that trace back to the same era as KMP (Knuth, Morris, and Pratt's 1977 paper) and the Boyer-Moore algorithm — all developed to solve the same practical problem (fast text search in early Unix tools like `grep`) using fundamentally different but related insights about reusing partial-match information instead of restarting comparisons from scratch.
 
 ---
 

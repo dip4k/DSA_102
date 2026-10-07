@@ -1,10 +1,5 @@
 # 📘 WEEK 7 DAY 1: Binary Trees & Traversals — Engineering Guide
 
-
-
-
-
-
 > 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_07_Day_02_Binary_Search_Trees_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
@@ -17,8 +12,8 @@
 
 - 🎯 **Internalize** how binary trees generalize linear structures into hierarchical organizations and why this matters for real-world data.
 - ⚙️ **Implement** all four major traversals (preorder, inorder, postorder, level-order) in both recursive and iterative forms without memorization.
-- ⚖️ **Evaluate** trade-offs between recursive elegance and iterative control, understanding when each approach excels and fails.
-- 🏭 **Connect** tree traversals to production systems: compilers parsing expressions, databases optimizing queries, game engines rendering hierarchies, and machine learning building decision boundaries.
+- ⚖️ **Evaluate** trade-offs between recursive call stacks and iterative heap-allocated stacks/queues, identifying stack overflow risks on skewed trees.
+- 🏭 **Connect** tree traversals to production systems: compiler AST evaluation, scene graph rendering, and breadth-first search pipelines.
 
 ---
 
@@ -26,25 +21,27 @@
 
 ### The Engineering Challenge
 
-Imagine you're designing the backend for an image editing application like Photoshop. Users work with layers organized in a hierarchy: a document contains groups, groups contain layer folders, and folders contain individual pixel layers. Each element has properties (opacity, blend mode, visibility) that need to be processed in a specific order.
+Linear data structures (arrays, linked lists) model sequence: event logs, task queues, history stacks. But real-world data is inherently hierarchical:
+- **File Systems:** Root directories contain nested subdirectories and files.
+- **Compilers:** Expressions like `(3 + 4) * (2 + 5)` are parsed into Abstract Syntax Trees (ASTs) where operator precedence dictating execution order is encoded directly into node depth.
+- **Scene Graphs:** In game engines, cameras, player rigs, weapons, and particle effects exist in a parent-child transform hierarchy. Moving the player model must recursively update the weapon's coordinate space before rendering muzzle flash effects.
 
-Now imagine a user hits "flatten image"—you need to visit every single layer, starting from the top level and recursively descending into each group, processing properties in the correct order. Should you process parents before children? Children before parents? All children before moving to siblings? The answer depends on the exact operation, but here's the critical constraint: **your algorithm must work efficiently regardless of tree shape or depth.**
+A flat array cannot represent parent-child relationships without complex index math; a linked list restricts each node to a single successor. Binary trees solve this by providing up to two branching paths per node.
 
-Or consider a compiler parsing an arithmetic expression like `(3 + 4) * (2 + 5)`. The parser builds an Abstract Syntax Tree (AST) where each operation is a node, and operands are subtrees. To evaluate this expression, the compiler must traverse this tree in a specific order: it can't multiply until both addition operations are complete. A single traversal order mistake produces wrong answers.
-
-Or think about a game engine rendering a scene. The camera is at the world root; attached to the camera is a player model; attached to the player is a weapon; attached to the weapon is a muzzle flash effect. The engine must traverse from root to leaves to compute transformations (position, rotation, scale) correctly. Process the weapon before the player? Its position is wrong. Process the muzzle flash before the weapon? It vanishes into the player's body.
-
-These are all tree traversal problems, and they're not theoretical—they're at the heart of every sophisticated software system. But **raw recursion gets messy fast**. How do you debug a crash deep in a recursive tree traversal? How do you pause and resume? How do you avoid stack overflow on deeply nested structures?
-
-The answer: **understand tree traversals at a mechanical level**, in both recursive and iterative forms. Master the mental model of how pointers navigate, how stacks maintain context, and how each traversal order solves different problems.
+The computational challenge is **navigation**: How do you visit every node systematically when each node splits into two directions? Changing the visitation sequence—preorder, inorder, postorder, or level-order—fundamentally changes what the algorithm computes, from mathematical expression evaluation to tree deallocation.
 
 ### The Solution: Binary Trees & Their Traversals
 
-A binary tree is simply a way to organize data hierarchically—each element has at most two children. But the power lies not in the structure itself, but in **how you visit the nodes**. Change the order of visitation—preorder, inorder, postorder, level-order—and you change what the algorithm computes.
+A binary tree is recursive pointers paired with a traversal discipline. By selecting whether you process a node:
+1. **Before** descending into its children (**Preorder**: Root `->` Left `->` Right),
+2. **Between** visiting left and right subtrees (**Inorder**: Left `->` Root `->` Right),
+3. **After** resolving both subtrees (**Postorder**: Left `->` Right `->` Root), or
+4. **Level-by-level** from top to bottom (**Level-Order**: Breadth-First Search),
 
-This is Week 7 Day 1. You're moving from linear sequences (arrays, linked lists) into hierarchical structures. You need to see why trees exist, how they're shaped in memory, and crucially, how to move through them. We'll walk through the mental models—traversal as a conversation with the tree, where you decide when to say hello (preorder), process children first (postorder), or visit in levels (breadth-first).
+you control the exact order of data aggregation. Master the traversal mechanics, and every hierarchical problem decomposes into manageable subproblems.
 
-> **💡 Insight:** A binary tree is just recursive pointers plus a traversal order. Master the traversal, and you master the tree.
+> [!TIP]
+> **Core Insight:** A binary tree is just recursive pointers plus a traversal sequence. Change the visitation moment relative to branching, and you transform your algorithm from a cloner (preorder) to a sorter (inorder) to a bottom-up evaluator (postorder).
 
 ---
 
@@ -52,708 +49,819 @@ This is Week 7 Day 1. You're moving from linear sequences (arrays, linked lists)
 
 ### The Core Analogy
 
-Think of a binary tree as an **organizational chart**. At the top is the CEO (root). Each person reports to exactly one manager (parent) and may manage two direct reports (children). When you need to communicate an announcement to the entire organization, you have choices:
+Think of a binary tree traversal as a **guided tour of a museum with branching wings**:
+- You start at the main entrance (the root).
+- Each gallery splits into a Left Wing and a Right Wing.
+- **Preorder:** You stamp your admission ticket upon entering a gallery, then tour the wings. (Parent processed first)
+- **Inorder:** You tour the Left Wing, return to record notes on the main gallery, then explore the Right Wing. (Sorted order in BSTs)
+- **Postorder:** You inspect every artifact in both wings first, and only write the summary critique for the gallery on your way out. (Bottom-up evaluation / cleanup)
+- **Level-Order:** You inspect every gallery on Floor 1, take the stairs to Floor 2, and inspect all galleries left-to-right. (Breadth-first exploration)
 
-- **Preorder traversal:** Tell the CEO first, then have them tell their direct reports, who tell theirs. ("Breadth-down" communication)
-- **Inorder traversal:** Process the first report, then the boss, then the second report. (Used for searching sorted trees)
-- **Postorder traversal:** Don't tell anyone until you've told all their subordinates. (Useful for computing aggregate metrics bottom-up)
-- **Level-order traversal:** Announce to all CEOs, then all vice presidents, then all directors. (Parallel communication)
+### 🖼 Visualizing the Structure, Node Anatomy & Memory Layout
 
-Each traversal order is optimal for a different problem, but they all visit the same tree—just in a different sequence.
+#### Node Anatomy: The Core Triad
+Every binary tree node is composed of three essential fields:
+1. **`val` (Payload / Key):** The stored data (e.g., 32-bit `int`, 64-bit reference to a complex object).
+2. **`left` (Left Child Pointer):** A 64-bit memory reference to the root of the left subtree, or `null` if empty.
+3. **`right` (Right Child Pointer):** A 64-bit memory reference to the root of the right subtree, or `null` if empty.
 
-Or think of it as **visiting a museum**. You're standing at the entrance (root). Each gallery has a left wing and a right wing (subtrees). You must visit every room, but the *order* determines what you experience:
+```
+                     Node Anatomy (Logical vs Physical Layout)
+                     
+       Logical View                           Physical 64-bit Heap Layout (e.g. .NET CLR)
+    +-----------------+                     +---------------------------------------------+
+    |      [Val]      |                     | 0x00: Object Header / SyncBlock (8 bytes)   |
+    |      (Key)      |                     | 0x08: TypeHandle / MethodTable Pointer (8B) |
+    +--------+--------+                     | 0x10: int val (4 bytes) + 4-byte padding    |
+    |  Left  | Right  |                     | 0x18: TreeNode* left  (8-byte pointer)      |
+    | Pointer| Pointer|                     | 0x20: TreeNode* right (8-byte pointer)      |
+    +---+----+----+---+                     +---------------------------------------------+
+        |         |                         Total Memory Footprint: 32 bytes per node!
+        v         v
+    [Left Node] [Right Node]
+```
 
-- Visit the left wing entirely, process the main room, then right wing? That's **inorder**—mirror the hierarchical structure.
-- Process the main room, then both wings? That's **preorder**—learn the theme before details.
-- Explore both wings completely, then understand the main room? That's **postorder**—understand parts before the whole.
-- Visit every room on floor 1, then floor 2, then floor 3? That's **level-order**—breadth before depth.
+#### Contiguous Arrays vs Scattered Tree Nodes: The Cache Reality
 
-### 🖼 Visualizing the Structure
+```
+Contiguous Array (High Cache Locality - Spatial Pre-fetching):
+Address:   [ 0x1000 ] [ 0x1004 ] [ 0x1008 ] [ 0x100C ] [ 0x1010 ]
+Elements:  |  arr[0] |  arr[1] |  arr[2] |  arr[3] |  arr[4] |
+Cache:     <--------------- 64-Byte CPU Cache Line ----------------> (1 fetch brings ~16 ints)
 
-Let's build a concrete mental image. Here's a binary tree:
+Scattered Binary Tree (Low Cache Locality - Pointer Chasing):
+Address:   0x1040                 0x4080                     0x9200
+Node:      [ Node A (Root) ] ----> [ Node B (Left) ] -------> [ Node D (Leaf) ]
+           (Heap Block 1)         (Heap Block 2)             (Heap Block 3)
+Cache:     Each pointer dereference may trigger a separate L1/L2/L3 cache miss!
+```
 
 ```mermaid
 flowchart TD
-    A["A"] --> B["B"]
-    A --> C["C"]
-    B --> D["D"]
-    B --> E["E"]
-    C --> F["F"]
+    A["A (Root)"] --> B["B (Left)"]
+    A --> C["C (Right)"]
+    B --> D["D (Leaf)"]
+    B --> E["E (Leaf)"]
+    C --> F["F (Leaf)"]
 ```
 
-Each node is a container with **three pieces of data**: the value (A, B, C, ...), a left pointer, and a right pointer. The root node `A` has no parent; leaf nodes `D`, `E`, `F` have no children.
-
-Now, if we stored this in memory:
-
 ```
-Node A: value=A, left→B, right→C
-Node B: value=B, left→D, right→E
-Node C: value=C, left→NULL, right→F
-Node D: value=D, left→NULL, right→NULL (leaf)
-Node E: value=E, left→NULL, right→NULL (leaf)
-Node F: value=F, left→NULL, right→NULL (leaf)
+Node A (Heap @ 0x1040): val='A', left -> 0x4080 (B),    right -> 0x5100 (C)
+Node B (Heap @ 0x4080): val='B', left -> 0x9200 (D),    right -> 0x9240 (E)
+Node C (Heap @ 0x5100): val='C', left -> null,          right -> 0x7300 (F)
+Node D (Heap @ 0x9200): val='D', left -> null,          right -> null (Leaf)
+Node E (Heap @ 0x9240): val='E', left -> null,          right -> null (Leaf)
+Node F (Heap @ 0x7300): val='F', left -> null,          right -> null (Leaf)
 ```
-
-**The shape is pure recursion.** Each subtree (like the tree rooted at B) follows the same structure: a value, a left subtree, a right subtree. This self-similarity is why recursive traversal is so natural.
 
 ### Invariants & Properties
 
-Here are the rules that define binary trees, woven into why they matter:
+1. **Acyclic Single-Parent Rule:** Every node has exactly one parent, except the root which has none. Exactly one unique path exists from the root to any target node.
+2. **Height Bounds:** For a tree with `N` nodes, the height `H` ranges from `log2(N)` (perfectly balanced) to `N` (degenerate skewed chain, equivalent to a linked list).
+3. **Capacity per Level:** Level `k` (0-indexed) contains at most `2^k` nodes. A tree of height `H` contains at most `2^(H+1) - 1` nodes.
+4. **Reconstruction Invariant:** Given an inorder traversal along with either a preorder or postorder sequence (with unique node keys), the exact binary tree topology can be uniquely reconstructed.
 
-**Every node has exactly zero or two parents.** Well, almost—the root has zero parents, and every other node has exactly one. This creates a tree structure (no cycles, connected). Why does this matter? Because it means there's exactly one path from root to any node, making searches predictable.
+### Taxonomy of Binary Trees
 
-**A complete binary tree is fully filled except the last level, which fills left-to-right.** Why does this matter? Arrays can store complete trees efficiently (no wasted pointers). Index a node at position `i`, and its children are at `2i+1` and `2i+2`. This is how heaps work—you've already seen this.
-
-**A balanced binary tree has height logarithmic in the number of nodes.** This is crucial: if a tree is badly shaped (like a linked list), traversing it takes O(n) time. But if it's balanced, traversal touches O(log n) levels, and each level is visited once. This is why balanced BSTs matter—they guarantee logarithmic operations.
-
-**A binary search tree (BST) maintains left < parent < right.** This property means traversing inorder gives you sorted order. One traversal, automatic sorting. That's not magic—that's structure being exploited by algorithm.
-
-### 📐 Mathematical & Theoretical Foundations
-
-Let me state the formal definition and why it matters:
-
-**Definition:** A binary tree T is either empty, or a triple (root_value, left_subtree, right_subtree) where left_subtree and right_subtree are binary trees.
-
-**Height of a tree:** The length of the longest path from root to any leaf. For n nodes, height ranges from O(log n) (balanced) to O(n) (degenerate, like a linked list).
-
-**Number of nodes at level k:** In a complete tree, level k has 2^k nodes (level 0 has 1, level 1 has 2, level 2 has 4...).
-
-**Traversal complexity:** Every traversal visits each node exactly once, so all traversals are O(n) in time and O(h) in space (where h is height—the recursion stack depth, or explicit stack size for iterative versions).
-
-**Theorem (Tree Structure Uniqueness):** Given preorder and inorder traversals, the tree is uniquely reconstructible. Why? Preorder tells you which element is the root (first element), inorder tells you which elements are in the left subtree (all before root in inorder). This recursive decomposition rebuilds the entire tree. This theorem powers serialization algorithms.
-
-### Taxonomy of Variations
-
-Binary trees come in flavors, each optimized for different problems:
-
-| Tree Type | Structure Guarantee | Best For | Traversal Complexity |
-| :--- | :--- | :--- | :--- |
-| **Generic Binary Tree** | None—any shape allowed | Organizational hierarchies, expression trees | O(n) worst case (degenerate) |
-| **Complete Binary Tree** | Fully filled except last level, left-biased | Array storage, heaps | O(log n) for balanced height |
-| **Full Binary Tree** | Every node has 0 or 2 children (no single child) | Mathematical models | O(n) but predictable structure |
-| **Perfect Binary Tree** | All internal nodes have 2 children, all leaves at same level | Theoretical analysis, complete graphs | O(n), balanced |
-| **Binary Search Tree (BST)** | left < parent < right | Ordered data, fast search | O(n) worst (degenerate), O(log n) average |
-| **Balanced BST (AVL, Red-Black)** | BST property + height bound | Production databases, indexing | O(log n) guaranteed |
+| Tree Type | Structural Guarantee | Real-World Application |
+| :--- | :--- | :--- |
+| **Generic Binary Tree** | At most 2 children per node; unrestricted shape | Syntax trees, expression parsers, decision graphs |
+| **Full Binary Tree** | Every node has either 0 or 2 children | Huffman coding trees |
+| **Complete Binary Tree** | All levels filled except last, which fills left-to-right | Binary heaps (`PriorityQueue`), array-backed trees |
+| **Perfect Binary Tree** | All internal nodes have 2 children, all leaves at identical depth | Theoretical lower-bound proofs, tournament trees |
+| **Degenerate Tree** | Every internal node has exactly 1 child (linked-list shape) | Worst-case BST performance scenario (`O(N)` height) |
 
 ---
 
-## ⚙️ CHAPTER 3: MECHANICS & IMPLEMENTATION
+## ⚙️ CHAPTER 3: MECHANICS & TRAVERSAL TRACES
 
-### The State Machine & Memory Layout
-
-Let's descend into how traversals actually execute. In memory, a binary tree node looks like this (using C# pseudocode):
-
-```
-class TreeNode {
-    int value;           // The data stored at this node
-    TreeNode left;       // Pointer to left child (null if no left child)
-    TreeNode right;      // Pointer to right child (null if no right child)
-}
-```
-
-When you traverse a tree recursively, the call stack automatically maintains state:
-
-
-### 📌 Stack Frame 1 function traverse(nodeA)
-
-- **Stack Frame 2: function traverse(nodeB) [called from nodeA]**
-  - **Stack Frame 3: function traverse(nodeD) [called from nodeB]**
-    - Stack Frame 4: function traverse(null) [returns immediately]
-    - 'Visit D here' (depends on traversal order)
-  - 'Visit B here' (depends on traversal order)
-- 'Visit A here' (depends on traversal order)
-
-
-
-For iterative traversal, **you explicitly maintain a stack** (or queue for level-order), managing the same state manually. This trades elegance for control—you can pause, resume, or inspect the stack at any point.
-
-### 🔧 Operation 1: Preorder Traversal
-
-**Intent:** Visit the current node *before* visiting its children. This is useful when you need to process parents before children—like in serialization ("save this node, then save everything below it") or expression evaluation ("recognize the operator, then evaluate operands").
-
-**Recursive implementation—narrative walkthrough:**
-
-You want to traverse a tree in preorder, visiting each node before its descendants. The logic is almost tautological:
-
-1. If the current node is null, stop (base case).
-2. **Process the current node** (print it, record it, analyze it—whatever "visit" means).
-3. Recursively traverse the left subtree.
-4. Recursively traverse the right subtree.
-
-Why does this work? Because step 2 happens *before* the recursive calls in steps 3 and 4, by definition. You've "processed" the node before diving into its children.
-
-**Inline trace 🧪—watch it execute:**
-
-Given tree:
-
-```mermaid
-flowchart TD
-    A["A"] --> B["B"]
-    A --> C["C"]
-    B --> D["D"]
-    B --> E["E"]
-```
-
-Execution trace for preorder traversal:
-
-| Step | Action | Current Node | Output | Call Stack Depth |
-|------|--------|--------------|--------|------------------|
-| 1    | Visit  | A            | A      | 1 (traversing A) |
-| 2    | Recurse| Go left → B  | -      | 2 (B pushed) |
-| 3    | Visit  | B            | A, B   | 2 |
-| 4    | Recurse| Go left → D  | -      | 3 (D pushed) |
-| 5    | Visit  | D            | A, B, D| 3 |
-| 6    | Recurse| D.left=null  | -      | 4 (null check fails) |
-| 7    | Return | Back to D    | -      | 3 (D frame exits) |
-| 8    | Recurse| D.right=null | -      | 4 (null check fails) |
-| 9    | Return | Back to B    | -      | 2 (D frame exits completely) |
-| 10   | Recurse| Go right → E | -      | 3 (E pushed) |
-| 11   | Visit  | E            | A, B, D, E | 3 |
-| 12   | Recurse| E.left=null  | -      | 4 |
-| 13   | Return | Back to B    | -      | 3 |
-| 14   | Recurse| E.right=null | -      | 4 |
-| 15   | Return | Back to B    | -      | 2 |
-| 16   | Return | Back to A    | -      | 1 (B frame exits) |
-| 17   | Recurse| Go right → C | -      | 2 (C pushed) |
-| 18   | Visit  | C            | A, B, D, E, C | 2 |
-| 19   | Recurse| C.left=null  | -      | 3 |
-| 20   | Return | Back to C    | -      | 2 |
-| 21   | Recurse| C.right=null | -      | 3 |
-| 22   | Return | Back to A    | -      | 1 (C frame exits) |
-| 23   | Return | Back to caller| -     | 0 (A frame exits, done) |
-
-**Final output: A, B, D, E, C**
-
-Notice the pattern: node visited immediately upon arrival, before exploring subtrees. The call stack grows as you descend left, shrinks as you backtrack.
-
-**Iterative version—the same logic, manually stacked:**
-
-To avoid recursion, push nodes onto an explicit stack and pop them in the same order:
+### Canonical Reference Tree for All Traversals
+To rigorously compare traversal mechanics, we evaluate all operations against this canonical 6-node tree:
 
 ```
-Initialize: stack = [A], output = []
-
-Iteration 1: pop A, output A, push A's children (right then left, so left is popped first)
-  Stack = [B, C], Output = [A]
-
-Iteration 2: pop C, output C, push C's children (none)
-  Stack = [B], Output = [A, C]
-
-Iteration 3: pop B, output B, push B's children (right then left)
-  Stack = [E, D], Output = [A, C, B]
-
-Iteration 4: pop D, output D, push D's children (none)
-  Stack = [E], Output = [A, C, B, D]
-
-Iteration 5: pop E, output E, push E's children (none)
-  Stack = [], Output = [A, C, B, D, E]
+                 [ 1 ]
+                /     \
+             [ 2 ]   [ 3 ]
+             /   \       \
+           [ 4 ] [ 5 ]   [ 6 ]
 ```
-
-Wait—this gives `[A, C, B, D, E]`, not `[A, B, D, E, C]`! The issue: when popping B, we push right then left, making left (D) pop *last*, so we visit C before B's subtrees.
-
-Fix: **push right first, then left**, so left (the next node we want) is on top of the stack. This maintains the "visit parent, then left subtree, then right subtree" order.
-
-### 🔧 Operation 2: Inorder Traversal
-
-**Intent:** Visit the current node *between* visiting its children (left child, then node, then right child). For binary search trees, this produces sorted order. Inorder is crucial for evaluating expressions and processing ordered data.
-
-**Recursive implementation—narrative walkthrough:**
-
-The logic mirrors preorder, but "visit" happens in the middle:
-
-1. Recursively traverse the left subtree.
-2. **Process the current node** (after left, before right).
-3. Recursively traverse the right subtree.
-
-Why does this work? The node is visited *sandwiched* between its children. For a BST, the left subtree has all smaller values, the right subtree has all larger values, so inorder visits them in ascending order.
-
-**Inline trace 🧪—watch it execute:**
-
-Given the same tree:
-
-```mermaid
-flowchart TD
-    A["A"] --> B["B"]
-    A --> C["C"]
-    B --> D["D"]
-    B --> E["E"]
-```
-
-Execution trace for inorder traversal:
-
-| Step | Action | Current Node | Output | Notes |
-|------|--------|--------------|--------|-------|
-| 1    | Recurse| Traverse left of A (go to B) | - | Go left before visiting A |
-| 2    | Recurse| Traverse left of B (go to D) | - | Go left before visiting B |
-| 3    | Visit  | D (no left child to traverse first) | D | Visit D |
-| 4    | Recurse| D has no right child | - | Done with D |
-| 5    | Visit  | B (after left subtree, before right) | D, B | Visit B |
-| 6    | Recurse| Traverse right of B (go to E) | - | Go right |
-| 7    | Visit  | E (no left child) | D, B, E | Visit E |
-| 8    | Recurse| E has no right child | - | Done with E |
-| 9    | Visit  | A (after left subtree traversed, before right) | D, B, E, A | Visit A |
-| 10   | Recurse| Traverse right of A (go to C) | - | Go right |
-| 11   | Visit  | C (no left child) | D, B, E, A, C | Visit C |
-| 12   | Recurse| C has no right child | - | Done |
-
-**Final output: D, B, E, A, C**
-
-This is inorder: left subtree (D), node (B), right subtree (E), then node (A), then right subtree (C).
-
-**Iterative version—a clever use of a stack:**
-
-Inorder iterative is trickier because you can't simply push and pop. You need to:
-
-1. Keep moving left, pushing nodes onto the stack *without visiting them yet*.
-2. When you hit null (no more left children), pop a node, visit it, then try its right child.
-3. If there's a right child, start over (go left as far as possible).
-
-```
-Initialize: stack = [], current = A, output = []
-
-Iteration 1: current is A (not null), push A, go left to B
-  Stack = [A], current = B
-
-Iteration 2: current is B (not null), push B, go left to D
-  Stack = [A, B], current = D
-
-Iteration 3: current is D (not null), push D, go left (null)
-  Stack = [A, B, D], current = null
-
-Iteration 4: current is null, pop D, visit D, try D's right (null)
-  Stack = [A, B], Output = [D], current = null
-
-Iteration 5: current is null, pop B, visit B, try B's right (E)
-  Stack = [A], Output = [D, B], current = E
-
-Iteration 6: current is E (not null), push E, go left (null)
-  Stack = [A, E], current = null
-
-Iteration 7: current is null, pop E, visit E, try E's right (null)
-  Stack = [A], Output = [D, B, E], current = null
-
-Iteration 8: current is null, pop A, visit A, try A's right (C)
-  Stack = [], Output = [D, B, E, A], current = C
-
-Iteration 9: current is C (not null), push C, go left (null)
-  Stack = [C], current = null
-
-Iteration 10: current is null, pop C, visit C, try C's right (null)
-  Stack = [], Output = [D, B, E, A, C], current = null
-
-Iteration 11: current is null, stack is empty, done.
-```
-
-**Final output: D, B, E, A, C**
 
 ---
 
-### 🔧 Operation 3: Postorder Traversal
+### 🔧 Operation 1: Preorder Traversal (`Root -> Left -> Right`)
 
-**Intent:** Visit the current node *after* visiting its children. This is essential for bottom-up computations—you can't decide on a parent until you've processed all children. Example: computing the height of a tree (height = 1 + max(left_height, right_height)), freeing memory (free children before parent), or computing expression values (evaluate operands before applying operator).
+- **Intent:** Visit the parent node before recursing into left and right subtrees. Ideal for tree serialization, prefix expression generation, and cloning/copying topologies.
+- **Traversal Sequence:** `[1, 2, 4, 5, 3, 6]`
 
-**Recursive implementation—narrative walkthrough:**
+#### Recursive Call Stack Trace Table
+Each row traces one step in the runtime call stack:
 
-1. Recursively traverse the left subtree.
-2. Recursively traverse the right subtree.
-3. **Process the current node** (after both children).
+| Step | Function Invocation | Node Examined | Action Taken | Call Stack (Top -> Bottom) | Accumulated Output |
+| :---: | :--- | :---: | :--- | :--- | :--- |
+| 1 | `Preorder(1)` | `1` | Visit `1`, recurse left `Preorder(2)` | `[1]` | `[1]` |
+| 2 | `Preorder(2)` | `2` | Visit `2`, recurse left `Preorder(4)` | `[2, 1]` | `[1, 2]` |
+| 3 | `Preorder(4)` | `4` | Visit `4`, recurse left `Preorder(null)` | `[4, 2, 1]` | `[1, 2, 4]` |
+| 4 | `Preorder(null)` | `null` | Base case: return to `4` | `[2, 1]` | `[1, 2, 4]` |
+| 5 | `Preorder(4)` | `4` | Recurse right `Preorder(null)` | `[4, 2, 1]` | `[1, 2, 4]` |
+| 6 | `Preorder(null)` | `null` | Base case: return; `4` finishes | `[2, 1]` | `[1, 2, 4]` |
+| 7 | `Preorder(2)` | `2` | Recurse right `Preorder(5)` | `[5, 2, 1]` | `[1, 2, 4]` |
+| 8 | `Preorder(5)` | `5` | Visit `5`, recurse left/right null, return | `[2, 1]` | `[1, 2, 4, 5]` |
+| 9 | `Preorder(2)` | `2` | Left subtree resolved; return to `1` | `[1]` | `[1, 2, 4, 5]` |
+| 10 | `Preorder(1)` | `1` | Recurse right `Preorder(3)` | `[3, 1]` | `[1, 2, 4, 5]` |
+| 11 | `Preorder(3)` | `3` | Visit `3`, recurse left `null`, recurse right `6` | `[6, 3, 1]` | `[1, 2, 4, 5, 3]` |
+| 12 | `Preorder(6)` | `6` | Visit `6`, recurse left/right null, return | `[3, 1]` | `[1, 2, 4, 5, 3, 6]` |
+| 13 | Return Root | - | Stack unwinds to caller; complete | Empty `[]` | `[1, 2, 4, 5, 3, 6]` |
 
-Why does this work? The node is visited only after its children have been completely processed. No child knowledge is missing.
+#### Iterative Stack Trace Table (Push Right Before Left)
+Because a stack is LIFO (Last-In, First-Out), pushing `right` before `left` guarantees that `left` will pop next:
 
-**Inline trace 🧪:**
-
-Given tree:
-
-```mermaid
-flowchart TD
-    A["A"] --> B["B"]
-    A --> C["C"]
-    B --> D["D"]
-    B --> E["E"]
-```
-
-Postorder execution:
-
-| Step | Node | Action | Output |
-|------|------|--------|--------|
-| 1    | A    | Recurse left to B | - |
-| 2    | B    | Recurse left to D | - |
-| 3    | D    | No children, visit D | D |
-| 4    | B    | Recurse right to E | - |
-| 5    | E    | No children, visit E | D, E |
-| 6    | B    | Both children visited, visit B | D, E, B |
-| 7    | A    | Recurse right to C | - |
-| 8    | C    | No children, visit C | D, E, B, C |
-| 9    | A    | Both children visited, visit A | D, E, B, C, A |
-
-**Final output: D, E, B, C, A**
-
-Postorder is "leaves-up"—leaves first, root last.
+| Step | Stack at Start of Loop | Popped Node | Push Children (Right then Left) | Output Appended | Result List |
+| :---: | :--- | :---: | :--- | :---: | :--- |
+| Initial | `[1]` | - | Root pushed initially | - | `[]` |
+| 1 | `[1]` | `1` | Push `3`, then push `2` | `1` | `[1]` |
+| 2 | `[2, 3]` | `2` | Push `5`, then push `4` | `2` | `[1, 2]` |
+| 3 | `[4, 5, 3]` | `4` | Both children null; push nothing | `4` | `[1, 2, 4]` |
+| 4 | `[5, 3]` | `5` | Both children null; push nothing | `5` | `[1, 2, 4, 5]` |
+| 5 | `[3]` | `3` | Push `6` (right child) | `3` | `[1, 2, 4, 5, 3]` |
+| 6 | `[6]` | `6` | Both children null; push nothing | `6` | `[1, 2, 4, 5, 3, 6]` |
+| End | Empty `[]` | - | Loop terminates (`stack.Count == 0`) | - | `[1, 2, 4, 5, 3, 6]` |
 
 ---
 
-### 🔧 Operation 4: Level-Order Traversal (Breadth-First)
+### 🔧 Operation 2: Inorder Traversal (`Left -> Root -> Right`)
 
-**Intent:** Visit nodes level by level, left to right. Useful for breadth-first search, layer-by-layer processing, and algorithms requiring neighboring information (like finding widest level in tree).
+- **Intent:** Drill to the deepest left child before processing the node, followed by the right subtree. In a Binary Search Tree (BST), this produces elements in **strictly non-decreasing sorted order**.
+- **Traversal Sequence:** `[4, 2, 5, 1, 3, 6]`
 
-**Iterative implementation using a Queue (not recursion):**
+#### Recursive Call Stack Trace Table
 
-1. Initialize queue with the root.
-2. While queue is not empty:
-   - Dequeue the front node, visit it.
-   - Enqueue its left child (if it exists).
-   - Enqueue its right child (if it exists).
+| Step | Function Invocation | Node Examined | Action Taken | Call Stack | Accumulated Output |
+| :---: | :--- | :---: | :--- | :--- | :--- |
+| 1 | `Inorder(1)` | `1` | Recurse left `Inorder(2)` | `[1]` | `[]` |
+| 2 | `Inorder(2)` | `2` | Recurse left `Inorder(4)` | `[2, 1]` | `[]` |
+| 3 | `Inorder(4)` | `4` | Recurse left `Inorder(null)` | `[4, 2, 1]` | `[]` |
+| 4 | `Inorder(null)` | `null` | Base case: return to `4` | `[2, 1]` | `[]` |
+| 5 | Unwind to `4` | `4` | **Visit `4`**, recurse right `null`, return | `[2, 1]` | `[4]` |
+| 6 | Unwind to `2` | `2` | **Visit `2`**, recurse right `Inorder(5)` | `[5, 2, 1]` | `[4, 2]` |
+| 7 | `Inorder(5)` | `5` | Recurse left `null`, **Visit `5`**, recurse right `null`, return | `[2, 1]` | `[4, 2, 5]` |
+| 8 | Unwind to `1` | `1` | **Visit `1`**, recurse right `Inorder(3)` | `[3, 1]` | `[4, 2, 5, 1]` |
+| 9 | `Inorder(3)` | `3` | Recurse left `null`, **Visit `3`**, recurse right `Inorder(6)` | `[6, 3, 1]` | `[4, 2, 5, 1, 3]` |
+| 10 | `Inorder(6)` | `6` | Recurse left `null`, **Visit `6`**, recurse right `null`, return | `[3, 1]` | `[4, 2, 5, 1, 3, 6]` |
+| 11 | Unwind to Root | - | Traversal complete; return result | Empty `[]` | `[4, 2, 5, 1, 3, 6]` |
 
-Why queue and not stack? A stack processes depth-first (exploring down one path completely); a queue processes breadth-first (visiting all neighbors before going deeper).
+#### Iterative Stack Trace Table (Left Spine Descent & Pop)
+Maintain a pointer `curr` and explicit stack. Drill left pushing all ancestors. When `curr` hits `null`, pop, record value, and pivot to `curr = popped.right`:
 
-**Inline trace 🧪:**
+| Step | `curr` Pointer | Stack Before Drill | Stack After Left Drill | Popped Node | Next `curr` (`popped.right`) | Result List |
+| :---: | :---: | :--- | :--- | :---: | :---: | :--- |
+| 1 | `1` | `[]` | `[4, 2, 1]` | `4` | `null` | `[4]` |
+| 2 | `null` | `[2, 1]` | `[2, 1]` (no drill) | `2` | `5` | `[4, 2]` |
+| 3 | `5` | `[1]` | `[5, 1]` | `5` | `null` | `[4, 2, 5]` |
+| 4 | `null` | `[1]` | `[1]` (no drill) | `1` | `3` | `[4, 2, 5, 1]` |
+| 5 | `3` | `[]` | `[3]` | `3` | `6` | `[4, 2, 5, 1, 3]` |
+| 6 | `6` | `[]` | `[6]` | `6` | `null` | `[4, 2, 5, 1, 3, 6]` |
+| 7 | `null` | `[]` | `[]` | - | - (Terminates) | `[4, 2, 5, 1, 3, 6]` |
 
-Given tree:
+---
 
-```mermaid
-flowchart TD
-    A["A"] --> B["B"]
-    A --> C["C"]
-    B --> D["D"]
-    B --> E["E"]
-    C --> F["F"]
+### 🔧 Operation 3: Postorder Traversal (`Left -> Right -> Root`)
+
+- **Intent:** Process all descendant subtrees before visiting their parent. Essential for bottom-up computation (calculating tree height, subtree sizes, diameter) and safe memory deallocation.
+- **Traversal Sequence:** `[4, 5, 2, 6, 3, 1]`
+
+#### Recursive Call Stack Trace Table
+
+| Step | Function Invocation | Node Examined | Action Taken | Call Stack | Accumulated Output |
+| :---: | :--- | :---: | :--- | :--- | :--- |
+| 1 | `Postorder(1)` | `1` | Recurse left `Postorder(2)` | `[1]` | `[]` |
+| 2 | `Postorder(2)` | `2` | Recurse left `Postorder(4)` | `[2, 1]` | `[]` |
+| 3 | `Postorder(4)` | `4` | Left/right null resolved -> **Visit `4`** | `[2, 1]` | `[4]` |
+| 4 | `Postorder(2)` | `2` | Recurse right `Postorder(5)` | `[5, 2, 1]` | `[4]` |
+| 5 | `Postorder(5)` | `5` | Left/right null resolved -> **Visit `5`** | `[2, 1]` | `[4, 5]` |
+| 6 | Unwind to `2` | `2` | Both children resolved -> **Visit `2`** | `[1]` | `[4, 5, 2]` |
+| 7 | `Postorder(1)` | `1` | Recurse right `Postorder(3)` | `[3, 1]` | `[4, 5, 2]` |
+| 8 | `Postorder(3)` | `3` | Left null resolved -> Recurse right `Postorder(6)` | `[6, 3, 1]` | `[4, 5, 2]` |
+| 9 | `Postorder(6)` | `6` | Left/right null resolved -> **Visit `6`** | `[3, 1]` | `[4, 5, 2, 6]` |
+| 10 | Unwind to `3` | `3` | Right child resolved -> **Visit `3`** | `[1]` | `[4, 5, 2, 6, 3]` |
+| 11 | Unwind to `1` | `1` | Both children resolved -> **Visit `1`** | Empty `[]` | `[4, 5, 2, 6, 3, 1]` |
+
+#### Iterative Stack Trace Table (Single Stack with `lastVisited` Pointer)
+A node can be visited only after its right child has already been visited (or if right child is null):
+
+| Step | `curr` | Stack State | `stack.Peek()` | `lastVisited` | Action Taken | Output Appended |
+| :---: | :---: | :--- | :---: | :---: | :--- | :---: |
+| 1 | `1` | `[4, 2, 1]` | `4` | `null` | `4.right == null` -> Pop & Visit | `4` |
+| 2 | `null` | `[2, 1]` | `2` | `4` | `2.right (5) != 4` -> Drill to `5` | - |
+| 3 | `5` | `[5, 2, 1]` | `5` | `4` | `5.right == null` -> Pop & Visit | `5` |
+| 4 | `null` | `[2, 1]` | `2` | `5` | `2.right == 5` -> Pop & Visit | `2` |
+| 5 | `null` | `[1]` | `1` | `2` | `1.right (3) != 2` -> Drill to `3` | - |
+| 6 | `3` | `[6, 3, 1]` | `6` | `2` | `6.right == null` -> Pop & Visit | `6` |
+| 7 | `null` | `[3, 1]` | `3` | `6` | `3.right == 6` -> Pop & Visit | `3` |
+| 8 | `null` | `[1]` | `1` | `3` | `1.right == 3` -> Pop & Visit | `1` |
+| End | `null` | Empty `[]` | - | `1` | Loop terminates | Result: `[4, 5, 2, 6, 3, 1]` |
+
+---
+
+### 🔧 Operation 4: Level-Order Traversal (Breadth-First Search)
+
+- **Intent:** Process nodes level-by-level, left-to-right. Used for finding shortest path in unweighted graphs, hierarchical level snapshots, and complete tree serialization.
+- **Queue Batching Mechanism:** To segment nodes into levels, snapshot `int levelSize = queue.Count` at the start of each layer, and dequeue exactly that many elements in an inner loop.
+
+#### Queue Batching Trace Table
+
+| Level | `levelSize` Snapshot | Queue at Start of Level | Dequeued Batch | Enqueued Children | Current Level Array | Accumulated 2D Output |
+| :---: | :---: | :--- | :--- | :--- | :--- | :--- |
+| **0** | `1` | `[1]` | `1` | `2`, `3` | `[1]` | `[[1]]` |
+| **1** | `2` | `[2, 3]` | `2`, `3` | `4`, `5` (from 2), `6` (from 3) | `[2, 3]` | `[[1], [2, 3]]` |
+| **2** | `3` | `[4, 5, 6]` | `4`, `5`, `6` | None (all children null) | `[4, 5, 6]` | `[[1], [2, 3], [4, 5, 6]]` |
+| End | `0` | Empty `[]` | - | - | - | Complete 3 levels |
+
+---
+
+### 🔧 Operation 5: Morris In-order Traversal (`O(1)` Auxiliary Space)
+
+- **The Fundamental Challenge:** Why do recursive and iterative traversals require `O(H)` auxiliary space? Because binary tree pointers are strictly unidirectional (parent to child). Once you descend to a leaf, you cannot backtrack to its parent without an ancestor stack or parent pointers.
+- **The Morris Solution (Pointer Threading):** We temporarily utilize the `right` pointer of the current node's **in-order predecessor** (which is otherwise `null`) to create a bridge ("thread") pointing directly back up to the current node!
+- **Algorithmic Invariant Rules:**
+  1. If `curr.left is null`: Visit `curr.val`, then advance right: `curr = curr.right`.
+  2. If `curr.left is not null`: Find `curr`'s in-order predecessor (`pred = curr.left`, then walk right while `pred.right != null and pred.right != curr`):
+     - **Thread Creation (First Visit):** If `pred.right is null`, set `pred.right = curr` (build the bridge) and advance `curr = curr.left`.
+     - **Thread Teardown & Visit (Second Visit):** If `pred.right is curr`, the left subtree has been completely visited! Restore the tree by breaking the bridge (`pred.right = null`), visit `curr.val`, and advance `curr = curr.right`.
+
+```
+                    Morris Pointer Threading Diagram
+                    
+      1. Before Threading (Bridge Missing):       2. Thread Created (pred.right -> curr):
+                [ 1 ]                                       [ 1 ] <----------+
+               /                                           /                 |
+            [ 2 ]                                       [ 2 ]                |
+            /   \                                       /   \                |
+          [ 4 ] [ 5 ]                                 [ 4 ] [ 5 ] ───────────+
+                                                      (pred of 1)  (Thread Bridge)
 ```
 
-Level-order execution:
+#### Step-by-Step Morris Trace on Canonical Tree:
 
-| Step | Queue Before | Action | Output | Queue After |
-|------|--------------|--------|--------|-------------|
-| 1    | [A]          | Visit A, enqueue children | A | [B, C] |
-| 2    | [B, C]       | Visit B, enqueue children | A, B | [C, D, E] |
-| 3    | [C, D, E]    | Visit C, enqueue children | A, B, C | [D, E, F] |
-| 4    | [D, E, F]    | Visit D (no children) | A, B, C, D | [E, F] |
-| 5    | [E, F]       | Visit E (no children) | A, B, C, D, E | [F] |
-| 6    | [F]          | Visit F (no children) | A, B, C, D, E, F | [] |
-| 7    | []           | Queue empty, done | - | - |
+| Step | `curr` | `curr.left` | Predecessor `pred` | `pred.right` | Action Taken | Thread State | Output Appended | Next `curr` |
+| :---: | :---: | :---: | :---: | :---: | :--- | :--- | :---: | :---: |
+| 1 | `1` | `2` | `5` | `null` | Create thread `5.right = 1` | `5.right -> 1` | - | `2` |
+| 2 | `2` | `4` | `4` | `null` | Create thread `4.right = 2` | `4.right -> 2` | - | `4` |
+| 3 | `4` | `null` | - | - | `4.left is null` -> Visit & follow thread | Unchanged | `4` | `2` (`4.right`) |
+| 4 | `2` | `4` | `4` | `2` | Thread exists! Break thread `4.right = null`, Visit `2` | Thread cut | `2` | `5` (`2.right`) |
+| 5 | `5` | `null` | - | - | `5.left is null` -> Visit & follow thread | Unchanged | `5` | `1` (`5.right`) |
+| 6 | `1` | `2` | `5` | `1` | Thread exists! Break thread `5.right = null`, Visit `1` | Thread cut | `1` | `3` (`1.right`) |
+| 7 | `3` | `null` | - | - | `3.left is null` -> Visit `3` | Unchanged | `3` | `6` (`3.right`) |
+| 8 | `6` | `null` | - | - | `6.left is null` -> Visit `6` | Unchanged | `6` | `null` |
+| End | `null` | - | - | - | Tree restored to original state! Traversal ends. | All Clean | - | Result: `[4, 2, 5, 1, 3, 6]` |
 
-**Final output: A, B, C, D, E, F**
+### 📉 Progressive Example: Expression Tree Evaluation
 
-Level-order visits breadth-first: level 0 (A), then level 1 (B, C), then level 2 (D, E, F).
-
-### 📉 Progressive Example: Building and Traversing a Real Tree
-
-Let's build a tree representing an arithmetic expression: `(3 + 4) * (2 + 5)`.
-
-The expression tree looks like:
+Consider the arithmetic expression `(3 + 4) * (2 + 5)`:
 
 ```mermaid
 flowchart TD
-    mul["*"] --> plus1["+"]
-    mul --> plus2["+"]
+    mul["* (Multiply)"] --> plus1["+ (Left Add)"]
+    mul --> plus2["+ (Right Add)"]
     plus1 --> n3["3"]
     plus1 --> n4["4"]
     plus2 --> n2["2"]
     plus2 --> n5["5"]
 ```
 
-Now, let's see how different traversals interpret this tree:
-
-**Preorder: `* + 3 4 + 2 5`** — This is "prefix notation" (operator before operands). A stack-based calculator can evaluate: push 3, push 4, pop both and add (get 7), push 2, push 5, pop both and add (get 7), pop 7 and 7, pop multiply, output 49.
-
-**Inorder: `3 + 4 * 2 + 5`** — This is "infix notation" (operator between operands), the notation we write in. But note: it's ambiguous without parentheses! Is it `(3+4)*(2+5)=49` or `3+(4*2)+5=16`? The tree structure resolves this.
-
-**Postorder: `3 4 + 2 5 + *`** — This is "reverse Polish notation" (operator after operands). A stack-based calculator evaluates left-to-right: push 3, push 4, pop both and add (7), push 2, push 5, pop both and add (7), pop 7 and 7, pop multiply, output 49.
-
-**Level-order: `* + + 3 4 2 5`** — This is "breadth-first", showing operators before operands but level-by-level. Less commonly used but good for serialization (save operators first, then leaves).
-
-> **⚠️ Watch Out:** Preorder, inorder, and postorder are all O(n) in time (visit each node once) but have different output sequences and use cases. A common interview mistake: using the wrong traversal for the problem. Always ask: "Am I processing parents before children (preorder), between children (inorder), or after children (postorder)?"
+- **Preorder:** `* + 3 4 + 2 5` (Prefix / Polish Notation)
+- **Inorder:** `3 + 4 * 2 + 5` (Infix Notation; loses operator precedence without parentheses)
+- **Postorder:** `3 4 + 2 5 + *` (Reverse Polish Notation / RPN; evaluated via stack with zero ambiguity)
+- **Level-Order:** `* + + 3 4 2 5` (Breadth-first layer scan)
 
 ---
 
-## ⚖️ CHAPTER 4: PERFORMANCE, TRADE-OFFS & REAL SYSTEMS
+## 💻 CHAPTER 4: PRODUCTION-GRADE IMPLEMENTATIONS (C# & PYTHON)
+
+### Problem 1: Binary Tree Inorder Traversal (LeetCode 94)
+
+#### 🎙️ 45-Minute Interview Talk Track
+> *"To obtain the inorder sequence, we process all nodes in the left subtree before visiting the root, followed by the right subtree. In a recursive solution, the runtime call stack maintains this path implicitly. However, for a production system or deep skewed tree with height up to 10^5, recursion risks a stack overflow (`StackOverflowException`). We implement the iterative approach using an explicit heap-allocated stack and a pointer `curr`. We drill down to the leftmost child, pushing ancestors onto the stack. Once `curr` reaches null, we pop the top node, record its value, and transition to its right child. Both methods run in O(N) time and O(H) auxiliary space. If the interviewer pushes for optimal auxiliary space, we present Morris Traversal: by temporarily threading the right pointer of each node's inorder predecessor back to the current node, we traverse the tree in O(N) time using strictly O(1) auxiliary space without altering original node structures permanently."*
+
+#### C# Primary Implementation (.NET 8/9 — Production-Grade)
+```csharp
+using System;
+using System.Collections.Generic;
+
+public sealed class TreeNode
+{
+    public int val;
+    public TreeNode? left;
+    public TreeNode? right;
+
+    public TreeNode(int val = 0, TreeNode? left = null, TreeNode? right = null)
+    {
+        this.val = val;
+        this.left = left;
+        this.right = right;
+    }
+}
+
+public static class InorderTraversals
+{
+    /// <summary>
+    /// Recursive Inorder Traversal: Left -> Root -> Right
+    /// Time Complexity: O(N) | Auxiliary Space: O(H) call stack
+    /// </summary>
+    public static IList<int> InorderRecursive(TreeNode? root)
+    {
+        var result = new List<int>();
+        Traverse(root, result);
+        return result;
+
+        static void Traverse(TreeNode? node, List<int> list)
+        {
+            if (node is null) return;
+            Traverse(node.left, list);
+            list.Add(node.val);
+            Traverse(node.right, list);
+        }
+    }
+
+    /// <summary>
+    /// Iterative Inorder Traversal using an explicit Stack.
+    /// Eliminates call stack overflow on deep skewed trees.
+    /// Time Complexity: O(N) | Auxiliary Space: O(H) explicit stack
+    /// </summary>
+    public static IList<int> InorderIterative(TreeNode? root)
+    {
+        var result = new List<int>();
+        if (root is null) return result;
+
+        var stack = new Stack<TreeNode>();
+        TreeNode? current = root;
+
+        while (current is not null || stack.Count > 0)
+        {
+            // Step 1: Reach leftmost node of current subtree
+            while (current is not null)
+            {
+                stack.Push(current);
+                current = current.left;
+            }
+
+            // Step 2: Pop and process node
+            current = stack.Pop();
+            result.Add(current.val);
+
+            // Step 3: Transition to right child
+            current = current.right;
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Morris Inorder Traversal using temporary pointer threading.
+    /// Achieves O(1) auxiliary space without permanently mutating the tree.
+    /// Time Complexity: O(N) | Auxiliary Space: O(1)
+    /// </summary>
+    public static IList<int> InorderMorris(TreeNode? root)
+    {
+        var result = new List<int>();
+        TreeNode? current = root;
+
+        while (current is not null)
+        {
+            if (current.left is null)
+            {
+                // Rule C: No left child -> visit current and pivot right
+                result.Add(current.val);
+                current = current.right;
+            }
+            else
+            {
+                // Find the inorder predecessor (rightmost node in left subtree)
+                TreeNode predecessor = current.left;
+                while (predecessor.right is not null && predecessor.right != current)
+                {
+                    predecessor = predecessor.right;
+                }
+
+                if (predecessor.right is null)
+                {
+                    // Rule A: Thread creation (first arrival at current)
+                    predecessor.right = current;
+                    current = current.left;
+                }
+                else
+                {
+                    // Rule B: Thread teardown & visitation (second arrival at current)
+                    predecessor.right = null;
+                    result.Add(current.val);
+                    current = current.right;
+                }
+            }
+        }
+
+        return result;
+    }
+}
+```
+
+#### Python Secondary Implementation (3.11+ — Idiomatic)
+```python
+from typing import Optional
+
+class TreeNode:
+    def __init__(self, val: int = 0, left: Optional['TreeNode'] = None, right: Optional['TreeNode'] = None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def inorder_traversal(root: Optional[TreeNode]) -> list[int]:
+    """Iterative Inorder Traversal using an explicit stack.
+    
+    Time Complexity: O(N) | Auxiliary Space: O(H)
+    """
+    result: list[int] = []
+    stack: list[TreeNode] = []
+    current = root
+
+    while current is not None or stack:
+        while current is not None:
+            stack.append(current)
+            current = current.left
+        
+        current = stack.pop()
+        result.append(current.val)
+        current = current.right
+
+    return result
+
+def inorder_morris(root: Optional[TreeNode]) -> list[int]:
+    """Morris Inorder Traversal using pointer threading.
+    
+    Time Complexity: O(N) | Auxiliary Space: O(1)
+    """
+    result: list[int] = []
+    current = root
+
+    while current is not None:
+        if current.left is None:
+            # Rule C: No left child -> visit and advance right
+            result.append(current.val)
+            current = current.right
+        else:
+            # Find inorder predecessor
+            predecessor = current.left
+            while predecessor.right is not None and predecessor.right is not current:
+                predecessor = predecessor.right
+
+            if predecessor.right is None:
+                # Rule A: Create thread bridge
+                predecessor.right = current
+                current = current.left
+            else:
+                # Rule B: Destroy thread bridge and visit current
+                predecessor.right = None
+                result.append(current.val)
+                current = current.right
+
+    return result
+```
+
+#### 📊 Explicit Complexity Deconstruction
+- **Recursive & Iterative Stack Traversal:**
+  - **Time Complexity:** `O(N)` — Every node is visited a constant number of times (pushed and popped once).
+  - **Auxiliary Space:** `O(H)` — Call stack or explicit stack depth equals tree height `H` (`O(log N)` balanced, `O(N)` degenerate).
+- **Morris Traversal:**
+  - **Time Complexity:** `O(N)` Amortized — Each edge in the tree is traversed at most 3 times (twice when finding the predecessor to create and remove threads, once when descending). Overall time remains strictly linear `O(N)`.
+  - **Auxiliary Space:** `O(1)` — No recursion, no heap stack, no queue. Only two pointer references (`current` and `predecessor`) are maintained.
+- **Output Space:** `O(N)` — Required in all variants to hold the serialized result array.
+
+---
+
+### Problem 2: Binary Tree Preorder Traversal (LeetCode 144)
+
+#### 🎙️ 45-Minute Interview Talk Track
+> *"Preorder traversal processes the current node immediately upon arrival before descending into children. In the iterative approach, we maintain an explicit stack initialized with the root. When popping a node, we append its value to the output list. Crucially, because stacks are LIFO, we push the right child before the left child. This guarantees that the left child sits on the top of the stack and is evaluated next, preserving the Root -> Left -> Right sequence."*
+
+#### C# Primary Implementation (.NET 8/9 — Production-Grade)
+```csharp
+public static class PreorderTraversals
+{
+    /// <summary>
+    /// Iterative Preorder Traversal: Root -> Left -> Right
+    /// Time Complexity: O(N) | Auxiliary Space: O(H)
+    /// </summary>
+    public static IList<int> PreorderIterative(TreeNode? root)
+    {
+        var result = new List<int>();
+        if (root is null) return result;
+
+        var stack = new Stack<TreeNode>();
+        stack.Push(root);
+
+        while (stack.Count > 0)
+        {
+            TreeNode node = stack.Pop();
+            result.Add(node.val);
+
+            // Push RIGHT first so LEFT is on top of stack and popped first
+            if (node.right is not null) stack.Push(node.right);
+            if (node.left is not null) stack.Push(node.left);
+        }
+
+        return result;
+    }
+}
+```
+
+#### Python Secondary Implementation (3.11+ — Idiomatic)
+```python
+def preorder_traversal(root: Optional[TreeNode]) -> list[int]:
+    """Iterative Preorder Traversal using explicit stack.
+    
+    Time Complexity: O(N) | Auxiliary Space: O(H)
+    """
+    if not root:
+        return []
+
+    result: list[int] = []
+    stack: list[TreeNode] = [root]
+
+    while stack:
+        node = stack.pop()
+        result.append(node.val)
+        
+        if node.right:
+            stack.append(node.right)
+        if node.left:
+            stack.append(node.left)
+
+    return result
+```
+
+#### 📊 Explicit Complexity Deconstruction
+- **Time Complexity:** `O(N)` — Exactly `N` nodes popped and processed.
+- **Auxiliary Space:** `O(H)` — At most `O(H)` nodes reside in the stack at any given moment.
+- **Output Space:** `O(N)` — Holds `N` node values.
+
+---
+
+### Problem 3: Binary Tree Postorder Traversal (LeetCode 145)
+
+#### 🎙️ 45-Minute Interview Talk Track
+> *"Postorder visits all children before the parent. Iteratively, this is trickier because we must distinguish between visiting a parent on the way down versus returning after its right subtree has finished. One robust approach uses a single stack and a `prev` pointer. A node can be processed and popped only if it is a leaf or its right child was the node visited immediately prior (`curr.right == prev`). Otherwise, we push `curr` and descend into `curr.right`."*
+
+#### C# Primary Implementation (.NET 8/9 — Production-Grade)
+```csharp
+public static class PostorderTraversals
+{
+    /// <summary>
+    /// Iterative Postorder Traversal with single stack and previous pointer.
+    /// Time Complexity: O(N) | Auxiliary Space: O(H)
+    /// </summary>
+    public static IList<int> PostorderIterative(TreeNode? root)
+    {
+        var result = new List<int>();
+        if (root is null) return result;
+
+        var stack = new Stack<TreeNode>();
+        TreeNode? current = root;
+        TreeNode? prev = null;
+
+        while (current is not null || stack.Count > 0)
+        {
+            while (current is not null)
+            {
+                stack.Push(current);
+                current = current.left;
+            }
+
+            TreeNode peekNode = stack.Peek();
+
+            // If right child exists and hasn't been processed yet, traverse right
+            if (peekNode.right is not null && peekNode.right != prev)
+            {
+                current = peekNode.right;
+            }
+            else
+            {
+                // Both left and right subtrees have been processed
+                stack.Pop();
+                result.Add(peekNode.val);
+                prev = peekNode;
+            }
+        }
+
+        return result;
+    }
+}
+```
+
+#### Python Secondary Implementation (3.11+ — Idiomatic)
+```python
+def postorder_traversal(root: Optional[TreeNode]) -> list[int]:
+    """Iterative Postorder Traversal using single stack and previous pointer.
+    
+    Time Complexity: O(N) | Auxiliary Space: O(H)
+    """
+    result: list[int] = []
+    stack: list[TreeNode] = []
+    current = root
+    prev: Optional[TreeNode] = None
+
+    while current or stack:
+        while current:
+            stack.append(current)
+            current = current.left
+        
+        peek = stack[-1]
+        if peek.right and peek.right is not prev:
+            current = peek.right
+        else:
+            stack.pop()
+            result.append(peek.val)
+            prev = peek
+
+    return result
+```
+
+#### 📊 Explicit Complexity Deconstruction
+- **Time Complexity:** `O(N)` — Every edge is traversed at most twice.
+- **Auxiliary Space:** `O(H)` — Stack depth strictly bounded by tree height.
+- **Output Space:** `O(N)` — Result list.
+
+---
+
+### Problem 4: Binary Tree Level Order Traversal (LeetCode 102)
+
+#### 🎙️ 45-Minute Interview Talk Track
+> *"For level-order traversal, we process nodes breadth-first using a queue. To segment output into individual sublists per horizontal level, we capture `queue.Count` before the inner iteration loop. This snapshot represents the exact number of nodes present at the current depth. We dequeue exactly that many nodes, record their values into the level list, and enqueue their children for the subsequent level. This avoids mixing levels and operates in O(N) time and O(W) space."*
+
+#### C# Primary Implementation (.NET 8/9 — Production-Grade)
+```csharp
+public static class LevelOrderTraversals
+{
+    /// <summary>
+    /// Level-Order Traversal (BFS) grouping nodes by depth.
+    /// Time Complexity: O(N) | Auxiliary Space: O(W) where W = max tree width
+    /// </summary>
+    public static IList<IList<int>> LevelOrder(TreeNode? root)
+    {
+        var result = new List<IList<int>>();
+        if (root is null) return result;
+
+        var queue = new Queue<TreeNode>();
+        queue.Enqueue(root);
+
+        while (queue.Count > 0)
+        {
+            // CRITICAL: Snapshot queue count before dequeuing
+            int levelSize = queue.Count;
+            var currentLevel = new List<int>(levelSize);
+
+            for (int i = 0; i < levelSize; i++)
+            {
+                TreeNode node = queue.Dequeue();
+                currentLevel.Add(node.val);
+
+                if (node.left is not null) queue.Enqueue(node.left);
+                if (node.right is not null) queue.Enqueue(node.right);
+            }
+
+            result.Add(currentLevel);
+        }
+
+        return result;
+    }
+}
+```
+
+#### Python Secondary Implementation (3.11+ — Idiomatic)
+```python
+from collections import deque
+
+def level_order(root: Optional[TreeNode]) -> list[list[int]]:
+    """Level-Order Traversal grouping nodes by depth.
+    
+    Time Complexity: O(N) | Auxiliary Space: O(W)
+    """
+    if not root:
+        return []
+
+    result: list[list[int]] = []
+    queue: deque[TreeNode] = deque([root])
+
+    while queue:
+        level_size = len(queue)
+        current_level: list[int] = []
+
+        for _ in range(level_size):
+            node = queue.popleft()
+            current_level.append(node.val)
+
+            if node.left:
+                queue.append(node.left)
+            if node.right:
+                queue.append(node.right)
+
+        result.append(current_level)
+
+    return result
+```
+
+#### 📊 Explicit Complexity Deconstruction
+- **Time Complexity:** `O(N)` — Each node is enqueued once and dequeued once.
+- **Auxiliary Space:** `O(W)` — In a complete binary tree, the final level holds `N / 2` nodes, requiring `O(N)` queue capacity in the worst case.
+- **Output Space:** `O(N)` — Holds lists containing all `N` node values.
+
+---
+
+## ⚖️ CHAPTER 5: PERFORMANCE, TRADE-OFFS & FAANG PATTERN SIGNALS
 
 ### Beyond Big-O: Performance Reality
 
-Theoretically, all tree traversals are O(n) time and O(h) space (where h is tree height), visiting each node exactly once. But theory ignores realities:
+1. **Call Stack vs Heap Stack:** Recursive traversal uses thread call-stack frames (~100-200 bytes per frame depending on runtime register spills). On Windows/Linux, thread stacks default to 1MB–8MB. A degenerate tree of depth 100,000 will throw `StackOverflowException`. Iterative versions allocate from heap memory, scaling to millions of nodes safely.
+2. **Pointer Chasing & Cache Locality:** Tree nodes are allocated at disparate heap addresses. Unlike contiguous array traversal, navigating `node.left` and `node.right` causes CPU L1/L2 cache misses.
 
-**Cache locality:** A left-skewed recursive traversal might cause cache misses as you bounce between distant memory addresses. An iterative version with explicit stack control lets you batch-process levels, improving cache hit rates.
+### 🏭 Real-World Systems Context
 
-**Stack depth:** Recursive traversals use O(h) call stack. For balanced trees, h = O(log n), so a tree with 1 million nodes might have stack depth ~20. But degenerate trees (chains) have h = O(n), and deep recursion causes stack overflow. This is why production systems often use iterative traversals.
+> [!NOTE]
+> **Production Context — Compilers & Abstract Syntax Trees (AST):** Compilers (GCC, Roslyn, Clang) build ASTs from source tokens. Semantic analysis uses preorder traversal to build scoped symbol tables (parent scope declared before children), while code generation and expression evaluation use postorder traversal to ensure operand values are loaded into registers before arithmetic operators execute.
 
-**Memory overhead:** Storing a tree with pointers uses more memory than an array. Each node has two pointers (16 bytes on 64-bit systems) plus the value. A complete binary tree with n nodes uses roughly 3n×sizeof(pointer) bytes just for structure.
+> [!NOTE]
+> **Production Context — Database B-Trees & Disk Pages:** Databases (PostgreSQL, MySQL InnoDB) generalize binary trees to multi-way B+ trees. A single B+ tree page (typically 4KB–16KB) contains hundreds of keys so that tree height is restricted to 3–4 levels, transforming random disk seeks into sequential memory block operations.
 
-**Traversal-specific costs:**
+> [!NOTE]
+> **Production Context — Game Engines & Scene Graphs:** Game engines (Unity, Unreal) structure scene nodes hierarchically. Frustum culling utilizes postorder bounding-box aggregation: if a parent node's combined bounding volume lies completely outside the camera frustum, the engine prunes the entire subtree traversal, preventing unnecessary draw calls.
 
-| Traversal | Time | Space | Implementation Complexity | Best For |
-| :--- | :--- | :--- | :--- | :--- |
-| **Preorder (Recursive)** | O(n) | O(h) call stack | Simplest | Simple trees, AST traversal |
-| **Preorder (Iterative)** | O(n) | O(h) explicit stack | Simple (1 stack) | Production, predictable depth |
-| **Inorder (Recursive)** | O(n) | O(h) call stack | Simple | BST in-order traversal |
-| **Inorder (Iterative)** | O(n) | O(h) explicit stack | Moderate (loop with state) | Production systems |
-| **Postorder (Recursive)** | O(n) | O(h) call stack | Simple | Bottom-up computation |
-| **Postorder (Iterative)** | O(n) | O(h) explicit stack | Complex (need to track visited) | Production, avoid recursion |
-| **Level-order** | O(n) | O(w) where w = max level width | Moderate (queue) | Breadth-first search |
+### Failure Modes & Edge Cases
 
-> **📉 Memory Reality:** A recursive traversal of a degenerate tree (10,000 nodes in a chain) will likely cause stack overflow, as each recursive call eats ~100 bytes of stack. An iterative approach with explicit stack avoids this by allocating heap memory instead.
+| Failure Mode | Root Cause | Engineering Mitigation |
+| :--- | :--- | :--- |
+| **Stack Overflow** | Recursive traversal on degenerate skewed tree (`H = 10^5`) | Switch to iterative traversal with explicit heap stack |
+| **Level-Order Mixing** | Querying `queue.Count` inside the loop condition rather than snapshotting | Capture `int levelSize = queue.Count;` prior to inner dequeue loop |
+| **Null Pointer Crash** | Accessing `node.left` or `node.right` without null check | Guard clause: `if (node is null) return;` |
+| **Memory Deallocation Leak** | Freeing parent before children in manual memory runtimes | Always utilize postorder traversal for cleanup |
 
-### 🏭 Real-World Systems
+### Pattern Recognition & Decision Framework
 
-#### Story 1: Compilers & Abstract Syntax Trees
-
-Modern compilers (GCC, Clang, Java compiler) parse source code into an Abstract Syntax Tree (AST). Each node is either an operator (like `+`, `*`, function call) or an operand (variable, literal). To generate machine code, the compiler must traverse this tree.
-
-**The problem:** Different passes need different traversal orders. The semantic analysis pass needs to visit parent scopes before child scopes (preorder), computing symbol table hierarchies. The code generation pass needs to generate code for operands before using them in operations (postorder), ensuring values are loaded into registers before arithmetic.
-
-**The solution:** The compiler implements both recursive and iterative traversals, choosing based on the pass. Early passes use recursive traversals (cleaner code, trees are shallow due to parsing). Later passes use iterative traversals when dealing with generated code that might be deeply nested.
-
-**Impact:** GCC's tree traversal bugs have caused miscompilation of safety-critical code. Stack overflow in recursive traversal led to compiler crashes on deeply nested template instantiation in C++, forcing the transition to iterative traversals in newer versions.
-
-#### Story 2: Database B-Tree Indexing (Conceptual Foundation)
-
-Databases use B-trees (a generalization of binary trees, allowing multiple children) to index data. A B-tree search traversal explores one path from root to leaf, checking keys at each node to determine which child to visit next.
-
-**The problem:** A database might have a 100-million-row table indexed by a B-tree with 6 levels (each node has 100+ children). Traversing this tree means 6 disk accesses—slow! The database needs to optimize.
-
-**The solution:** The database reads the entire node from disk (a 4KB page), then traverses in-memory until reaching a child pointer that points to a different page. This batches I/O, turning "6 node traversals" into "6 page reads + in-memory pointer traversals."
-
-**Impact:** Understanding the structure of tree traversal (one node at a time) but optimizing the implementation (batch work into cache-coherent pages) is crucial for database performance. A naive traversal that ignores page boundaries wastes 99% of disk read bandwidth.
-
-#### Story 3: Game Engines & Scene Graphs
-
-A game engine (like Unity, Unreal) represents the scene as a hierarchy of game objects: a level contains buildings, buildings contain walls, walls contain decals. Each object has a transformation matrix (position, rotation, scale) that's relative to its parent.
-
-**The problem:** When the player moves, the camera must recompute transformations for all visible objects. A naive preorder traversal (visit parent, transform children) is correct but recomputes transformations even for invisible objects.
-
-**The solution:** Modern engines use frustum culling: a postorder traversal that checks each node's bounding box against the camera frustum (visible region). If a node is outside, skip its entire subtree (pruning the traversal). This reduces traversals from O(n) to O(visible nodes), sometimes 100× faster.
-
-**Impact:** The difference between smooth 60 FPS and stuttering 20 FPS in complex scenes often comes down to traversal order and pruning. A postorder traversal with early termination is standard.
-
-#### Story 4: Machine Learning Decision Trees
-
-Decision trees are binary trees where each internal node is a boolean test (e.g., "age < 30?") and leaves are class predictions. A random forest is hundreds of these trees.
-
-**The problem:** Evaluating a forest to classify 1 million samples means 300 million tree traversals (300 trees × 1M samples). Each traversal is I/O-bound if the tree doesn't fit in cache.
-
-**The solution:** ML frameworks (scikit-learn, XGBoost) reorder tree traversals to improve cache locality. Instead of "traverse tree 1 for sample 1, traverse tree 1 for sample 2, ...", they do "evaluate all samples on tree 1's root, then split samples into left/right groups, recursively evaluate groups." This reuses the root node in cache, reducing misses dramatically.
-
-**Impact:** Cache-aware tree evaluation can be 5–10× faster than naive traversal, making the difference between "batch inference takes 10 seconds" and "10 milliseconds per request" in production ML systems.
-
-#### Story 5: Serialization & Deserialization
-
-When saving a tree structure to disk (JSON, binary), you need to encode the tree in a linear format. The traversal order you choose affects deserialization.
-
-**The problem:** If you save inorder traversal of a BST, you lose the structure—you can't rebuild the tree from just the inorder sequence (as mentioned earlier, you need two traversals). 
-
-**The solution:** Save preorder (or postorder) + structure information. Preorder gives "root, then left subtree, then right subtree", which uniquely encodes structure. Reconstruction is recursive: read the root, recursively reconstruct left subtree, recursively reconstruct right subtree.
-
-**Impact:** JSON tree serializers use preorder for this reason. A naive approach (trying to serialize inorder) loses the tree structure and rebuilds incorrectly.
-
-### Failure Modes & Robustness
-
-**Stack overflow on deep trees:** A 100,000-node degenerate tree (linked list) uses 100,000 call stack frames. Recursive traversal crashes. Solution: iterative version. Cost: more complex code.
-
-**Memory leaks in tree cleanup:** A postorder traversal must visit a node *after* freeing its children, or you lose the pointer. Preorder would free the parent first, then try to access children through deleted pointers. This is why postorder is essential for deallocation—but it's easy to get wrong.
-
-**Infinite recursion on cyclic graphs:** If someone accidentally creates a cycle (node A → node B → node A), a traversal without visited-tracking will loop forever. Trees are acyclic by definition, but if data isn't truly a tree (or has a bug), traversal breaks.
-
-**Concurrency issues:** If the tree is modified during traversal (node inserted/deleted), iterators can break. Recursive traversals hold the current path in the call stack, making them more resilient to some concurrent modifications than iterative stacks.
-
----
-
-## 🔗 CHAPTER 5: INTEGRATION & MASTERY
-
-### Connections (Precursors & Successors)
-
-**Precursors:** You've built recursion (Week 1 Day 4), understood pointers and dynamic memory (Week 2), and worked with linear structures (Week 2). Tree traversals are the natural evolution: recursion + pointers applied to hierarchical data.
-
-**Successors:** Week 7 Day 2 (Binary Search Trees) assumes you can traverse a tree. Week 7 Day 3 (Balanced BSTs) adds rotation operations during traversal. Week 8 (Graphs) generalizes trees to arbitrary DAGs, requiring traversals with visited-tracking. Week 10 (Dynamic Programming) uses tree DP, applying traversal insights to compute optimal substructure.
-
-**The arc:** Linear → hierarchical → general graphs. Each level builds on traversal efficiency.
-
-### 🧩 Pattern Recognition & Decision Framework
-
-When you see a problem, ask:
-
-**1. Is data hierarchical?** Trees appear in:
-   - Organizational structures (managers/reports)
-   - File systems (directories/files)
-   - Expression parsing (operators/operands)
-   - HTML/XML (tags/content)
-   - ML decision boundaries
-   
-   If yes → tree traversal might be the answer.
-
-**2. What order do I need to process nodes?**
-   - **Parent before children?** Preorder (e.g., serialization, DFS)
-   - **Child before parent?** Postorder (e.g., deallocation, aggregation)
-   - **Sorted order?** Inorder (for BSTs)
-   - **All at same level before going deeper?** Level-order (BFS)
-
-**3. Do I have recursion depth constraints?** 
-   - Deep trees or unknown depth → use iterative to avoid stack overflow
-   - Shallow trees and simple logic → use recursive for clarity
-
-**4. Performance critical?**
-   - Yes → choose iterative, optimize for cache locality
-   - No → choose recursive for clarity
-
-- **✅ Use when:** You have hierarchical data and need to visit every node in a specific order.
-- **🛑 Avoid when:** Data is unordered and random-access queries dominate (hash map is better). Data is a general graph with cycles (need cycle detection).
-
-**🚩 Red Flags (Interview Signals):** "Traverse a tree", "Visit all nodes", "Process hierarchical data", "Serialize/deserialize a tree", "Expression evaluation", "Reconstruct tree from traversals", "Lowest common ancestor", "Path sum", "Tree diameter".
+```
+Hierarchical Processing Decision:
+- Need to copy, clone, or serialize tree?
+    └── Preorder Traversal (Root -> Left -> Right)
+- Working with a Binary Search Tree and need sorted keys?
+    └── Inorder Traversal (Left -> Root -> Right)
+- Need bottom-up aggregation (height, diameter, memory cleanup)?
+    └── Postorder Traversal (Left -> Right -> Root)
+- Need shortest path, horizontal view, or layer-by-layer batching?
+    └── Level-Order Traversal (BFS via Queue)
+```
 
 ### 🧪 Socratic Reflection
-
-Reflect on these questions—don't just think through answers, *write them out*:
-
-1. **Mechanical understanding:** Trace through an inorder traversal of a 7-node complete tree by hand. Write down the exact order of operations, including when the stack grows/shrinks. Does your trace match what you'd predict theoretically?
-
-2. **Design tradeoff:** Why would a compiler prefer iterative traversal over recursive for the same tree? What about a game engine? Why might they differ?
-
-3. **Edge case thinking:** What happens if you're traversing a tree of 10,000 nodes stored in a degenerate (chain-like) structure with recursive preorder? Why would this fail? How does iterative avoid the problem?
-
-### 📌 Retention Hook
-
-> **The Essence:** "A tree traversal is a conversation with the tree: in which order do you say hello (preorder), say goodbye (postorder), or visit all neighbors first (level-order)? Master the order, master the tree."
-
----
-
-## 🧠 5 COGNITIVE LENSES
-
-### 💻 The Hardware Lens
-
-Binary tree traversal interacts heavily with hardware. Recursive traversals use the call stack (often a CPU register on modern systems, very fast). Deep recursion spills to main memory (hundreds of times slower). Level-order traversal using explicit queue might have better cache locality if you process nodes in the order they're allocated.
-
-Real impact: A 10-level balanced binary tree has 1,000 nodes. Recursive traversal uses ~20 stack frames (fast). Iterative traversal with explicit queue might process all 1,000 nodes from different memory locations (cache misses). But recursive on a 10,000-node degenerate tree fails with stack overflow, while iterative works fine.
-
-The lesson: understand the memory layout, not just the algorithm.
-
-### 📉 The Trade-off Lens
-
-Every traversal order is a choice:
-
-- **Recursive elegance vs. iterative control:** Recursion is cleaner code but mysterious state. Iteration is verbose but transparent.
-- **Preorder simplicity vs. postorder complexity:** Preorder is intuitive (parent first). Postorder requires "holding" children mentally before processing (harder).
-- **Time optimization vs. clarity:** Optimizing for cache might reorder traversal in non-standard ways (ugly code but faster).
-- **Depth vs. breadth:** Preorder/inorder/postorder are depth-first, visiting one branch fully before backtracking. Level-order is breadth-first, visiting all neighbors before going deeper. Each has use cases.
-
-### 👶 The Learning Lens
-
-Common student misconceptions:
-
-1. **"Inorder always means sorted"** — Only for BSTs! A generic tree's inorder traversal is meaningless for ordering.
-2. **"Recursive is always cleaner"** — True for shallow trees, false for deep ones (stack overflow).
-3. **"Postorder is rarely used"** — False. Deallocation, aggregation, and bottom-up DP rely on postorder.
-4. **"Level-order is inefficient"** — Not if you're doing breadth-first search anyway; using the right traversal order is more efficient.
-
-### 🤖 The AI/ML Lens
-
-Decision tree traversal in ML mirrors neural network forward pass:
-
-- **Preorder in tree** ↔ **feed-forward in NN:** Process parent (input layer), propagate to children (hidden layers).
-- **Postorder in tree** ↔ **backward propagation in NN:** Compute gradients from children (output), propagate back to parents (input).
-- **Tree ensemble (random forest)** ↔ **ensemble NN:** Multiple trees (models) combining predictions is like dropout/bagging in neural networks—averaging multiple weak learners.
-
-The parallel: trees and neural networks both decompose problems recursively and can be traversed depth-first or breadth-first.
-
-### 📜 The Historical Lens
-
-Tree traversal algorithms were formalized in the 1960s (Knuth's Art of Computer Programming) as computer science separated from mathematics. Preorder, inorder, and postorder are named in Donald Knuth's work, where he proved their uniqueness properties.
-
-Why does this matter? These names have stood for 60 years because they capture something fundamental about tree structure. When learning, use the standard names—they're not arbitrary.
+1. *Why does Morris Traversal achieve `O(1)` auxiliary space, and what is its trade-off during multi-threaded concurrent reads?*
+2. *If an interview problem asks for the "right view" of a binary tree, can you solve it using both DFS and BFS? Which is more space-efficient on a wide complete tree?*
 
 ---
 
 ## ⚔️ SUPPLEMENTARY OUTCOMES
 
-### 🏋️ Practice Problems (10)
+### 🏋️ Practice Problems
 
-| Problem | Source | Difficulty | Key Concept | Edge Cases |
-| :--- | :--- | :--- | :--- | :--- |
-| 1. Binary Tree Preorder Traversal | LeetCode #144 | 🟢 Easy | Recursive preorder implementation | Null root, single node |
-| 2. Binary Tree Inorder Traversal | LeetCode #94 | 🟢 Easy | Recursive inorder, trace order | Degenerate chain |
-| 3. Binary Tree Postorder Traversal | LeetCode #145 | 🟢 Easy | Recursive postorder, output order | Leaf-only tree |
-| 4. Binary Tree Level Order Traversal | LeetCode #102 | 🟢 Easy | Queue-based BFS | Empty tree, single level |
-| 5. Construct Binary Tree from Preorder and Inorder | LeetCode #105 | 🟡 Medium | Uniqueness property, recursive reconstruction | Duplicate values |
-| 6. Binary Tree Paths | LeetCode #257 | 🟡 Medium | DFS with path tracking (preorder) | Single node, leaf tracking |
-| 7. Path Sum | LeetCode #112 | 🟡 Medium | DFS with target checking (preorder) | Negative numbers, zero sum |
-| 8. Maximum Depth of Binary Tree | LeetCode #104 | 🟢 Easy | Postorder (max of children + 1) | Null tree, single node |
-| 9. Lowest Common Ancestor of BST | LeetCode #235 | 🟡 Medium | Preorder with BST property | LCA is root, one node is ancestor |
-| 10. Serialize and Deserialize Binary Tree | LeetCode #297 | 🔴 Hard | Preorder + level-order marking | Null nodes, duplicates |
+| # | Problem | Source | Difficulty | Target Pattern |
+| :---: | :--- | :--- | :---: | :--- |
+| 1 | Binary Tree Inorder Traversal | LeetCode #94 | 🟢 Easy | Iterative stack simulation |
+| 2 | Binary Tree Preorder Traversal | LeetCode #144 | 🟢 Easy | Explicit stack; push right then left |
+| 3 | Binary Tree Postorder Traversal | LeetCode #145 | 🟢 Easy | Single stack with previous pointer |
+| 4 | Binary Tree Level Order Traversal | LeetCode #102 | 🟡 Medium | Queue BFS with level snapshot |
+| 5 | Binary Tree Zigzag Level Order | LeetCode #103 | 🟡 Medium | BFS with alternating directional inserts |
+| 6 | Maximum Depth of Binary Tree | LeetCode #104 | 🟢 Easy | Postorder bottom-up height aggregation |
+| 7 | Construct Tree from Preorder & Inorder | LeetCode #105 | 🟡 Medium | Divide-and-conquer index reconstruction |
+| 8 | Populating Next Right Pointers | LeetCode #116 | 🟡 Medium | Level-order pointer stitching |
+| 9 | Binary Tree Right Side View | LeetCode #199 | 🟡 Medium | BFS last element / DFS reverse preorder |
+| 10 | Recover Binary Search Tree | LeetCode #99 | 🟡 Medium | Inorder traversal detecting swapped nodes |
 
-### 🎙️ Interview Questions (8)
+### 🎙️ Interview Questions & Follow-ups
+1. **Q: How would you traverse a binary tree in `O(1)` auxiliary space without altering original node definitions?**
+   - *Follow-up:* Explain Morris traversal's temporary threading via inorder predecessors and why temporary mutations must be cleaned up before exiting.
+2. **Q: Given preorder and inorder traversals, why can you uniquely reconstruct the tree, whereas given preorder and postorder you cannot?**
+   - *Follow-up:* What additional constraint makes preorder + postorder reconstruction unique? (Full binary tree where every node has 0 or 2 children).
 
-1. **Q:** Implement iterative preorder traversal without recursion. Why would you choose this over recursive?
-   - **Follow-up:** What about postorder? Why is postorder harder to implement iteratively? Can you do it with a single stack?
-
-2. **Q:** Given preorder and inorder traversals, reconstruct the original tree. Why is inorder necessary? (Why not just preorder?)
-   - **Follow-up:** What if the tree has duplicate values? Does the reconstruction still work?
-
-3. **Q:** Design an algorithm to serialize a binary tree to a string and deserialize it back. What traversal order would you use and why?
-   - **Follow-up:** If you had to transmit the smallest possible string, how would you optimize?
-
-4. **Q:** Given a binary tree and a target sum, find all root-to-leaf paths that sum to target. Should you use preorder or postorder?
-   - **Follow-up:** What if you wanted to find the maximum sum path (not necessarily root-to-leaf)?
-
-5. **Q:** Implement level-order traversal iteratively. Why is a queue used instead of a stack? What if you used a stack instead—what would you get?
-   - **Follow-up:** Can you do level-order in O(1) extra space (excluding the output array)?
-
-6. **Q:** Write a function to find the Lowest Common Ancestor (LCA) of two nodes in a binary tree. Does your solution assume it's a BST? Why or why not?
-   - **Follow-up:** What if the tree is unbalanced? How does that affect complexity?
-
-7. **Q:** You're writing a compiler's AST evaluator. For expression `(3+4)*(2+5)`, which traversal order would you use to evaluate the tree? Prove your answer.
-   - **Follow-up:** What if the compiler had to handle short-circuit evaluation (e.g., `a && b` doesn't evaluate `b` if `a` is false)?
-
-8. **Q:** A recursive tree traversal on your 100,000-node degenerate tree is crashing with stack overflow. How do you fix this while keeping the code as similar to the original as possible?
-   - **Follow-up:** If you convert to iterative, what data structure(s) do you need?
-
-### ❌ Common Misconceptions (6)
-
-- **Myth:** "Inorder traversal is only for sorting."
-  - **Reality:** Inorder is only *meaningful* for BSTs (produces sorted order). For a generic tree, inorder is just a traversal order with no special property.
-
-- **Myth:** "Postorder is rarely used in practice."
-  - **Reality:** Postorder is essential for: tree deallocation (free children before parent), computing aggregates (sum/height depends on children), expression evaluation (compute operands before operations).
-
-- **Myth:** "Recursive traversal is always cleaner than iterative."
-  - **Reality:** True for shallow, balanced trees. False for deep or degenerate trees (stack overflow) or when you need to pause/resume the traversal.
-
-- **Myth:** "Level-order must be implemented with a queue; a stack won't work."
-  - **Reality:** A stack will work, but you'll get depth-first order, not breadth-first. Different algorithm, not "wrong"—just a different traversal.
-
-- **Myth:** "The traversal order doesn't matter; any order visits all nodes."
-  - **Reality:** The order matters for semantics. Expression evaluation, DSL interpretation, and graph coloring all depend on traversal order. Wrong order = wrong answer.
-
-- **Myth:** "Binary trees are only used for searching (BSTs)."
-  - **Reality:** Trees are used for hierarchical data everywhere: file systems, UI layouts, compilers (ASTs), databases (B-trees), ML (decision trees), games (scene graphs).
-
-### 🚀 Advanced Concepts (5)
-
-1. **Morris Traversal (In-place, O(1) space):** A traversal technique that uses tree edges themselves as temporary pointers instead of an explicit stack. Allows traversing a tree in O(1) space (ignoring output). Used in production systems where memory is constrained.
-
-2. **Threaded Binary Trees:** Modify tree pointers so null pointers point to in-order successor/predecessor nodes. Enables iterative traversal without explicit stack. Useful for cache efficiency but complicates insertion/deletion.
-
-3. **Lazy Evaluation & Iterators:** Instead of generating entire traversal output upfront, use iterators to generate nodes on-demand. Reduces memory usage for large trees and enables early termination (e.g., find-first-matching-node).
-
-4. **Parallel Tree Traversal:** For multi-threaded systems, different subtrees can be traversed in parallel (preorder naturally allows this). Key challenge: synchronizing results (e.g., postorder aggregation). 
-
-5. **Cache-Oblivious Tree Traversal:** Reorganize tree layout in memory to minimize cache misses regardless of cache size (theoretical concept with practical applications in modern CPUs with multiple cache levels).
-
-### 📚 External Resources
-
-- **Books:**
-  - *Introduction to Algorithms* (CLRS) — Chapters on tree traversals, formal proofs of correctness
-  - *The Art of Computer Programming, Vol. 1* (Knuth) — Original definitions, foundational material
-  
-- **Online:**
-  - MIT OCW 6.006 Lecture notes on trees and tree properties
-  - CP-Algorithms (Codeforces) — Visual tree traversal animations
-  - VisuAlgo.net — Interactive tree traversal visualizations
-  
-- **Papers:**
-  - Morris (1979) "Traversing Binary Trees Simply and Cheaply" — Introduces in-place traversal technique
+### ❌ Common Misconceptions
+- **Myth:** "Iterative traversals are always faster than recursive ones."
+  - **Reality:** Modern JIT compilers inline shallow recursion and use CPU register caching efficiently. Iterative traversals shine primarily in preventing stack overflows on deep trees, not necessarily in raw micro-benchmark speed.
+- **Myth:** "Inorder traversal always yields sorted keys."
+  - **Reality:** Inorder traversal yields sorted output **only** for Binary Search Trees (BSTs). On arbitrary binary trees, it simply reflects the topological left-to-right projection.
 
 ---
 
-## 📊 Complexity Recap
+## 📊 COMPLEXITY RECAP
 
-- **Time Complexity:** `O(N)` for all four traversals, visiting each of the `N` nodes exactly once.
-- **Auxiliary Space:** `O(H)` where `H` is the tree height (`O(log N)` balanced, `O(N)` skewed) due to recursion stack frames or explicit iteration stacks. For level-order traversal, `O(W)` auxiliary space where `W` is maximum tree width (`O(N)` in the worst case). Morris traversal achieves `O(1)` auxiliary space via temporary threading.
+| Traversal | Algorithm Mode | Time Complexity | Auxiliary Space (Balanced) | Auxiliary Space (Skewed) | Output Space |
+| :--- | :--- | :---: | :---: | :---: | :---: |
+| **Preorder** | Recursive / Stack | `O(N)` | `O(log N)` | `O(N)` | `O(N)` |
+| **Inorder** | Recursive / Stack | `O(N)` | `O(log N)` | `O(N)` | `O(N)` |
+| **Postorder** | Recursive / Stack | `O(N)` | `O(log N)` | `O(N)` | `O(N)` |
+| **Level-Order** | Iterative Queue | `O(N)` | `O(N)` (Width `W`) | `O(1)` | `O(N)` |
+| **Morris Inorder** | Pointer Threading | `O(N)` | `O(1)` | `O(1)` | `O(N)` |
 
 ---
+
 > 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_07_Day_02_Binary_Search_Trees_Instructional.md)

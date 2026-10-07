@@ -1,4 +1,4 @@
-# 30. Social Media News Feed & Followers System (Twitter / Meta Feed)
+﻿# 30. Social Media News Feed & Followers System (Twitter / Meta Feed)
 
 ## 📌 Problem Context & Motivation
 The **Social Media News Feed System** (LeetCode 355) is the canonical Low-Level & High-Level System Design problem asked across **Meta, Twitter/X, Amazon, and Uber**. 
@@ -21,12 +21,12 @@ It evaluates a candidate's ability to seamlessly bridge **algorithmic efficiency
 ## 🎯 CrackingWalnuts 6-Step Methodology Applied
 
 ```mermaid
-flowchart LR
-    A["1. Requirement Mining\n• 10 most recent tweets\n• Self + Followees feed\n• Follow / Unfollow\n• Thread-safe state"] --> B["2. Class Discovery\n• Tweet (Singly-Linked Node)\n• User (Aggregate Root)\n• TwitterEngine (Domain Service)\n• FeedResult (Value Object)"]
-    B --> C["3. Relationships\n• User (1:N) Followees [HashSet]\n• User (1:1) HeadTweet [Linked List]\n• TwitterEngine manages User Pool"]
-    C --> D["4. Design Patterns\n• Iterator / K-Way Merge\n• Observer / Fanout Strategy\n• Monotonic Atomic Clock"]
-    D --> E["5. V1 → V4 Evolution\n• V1: Naive list sort on read\n• V2: Singly-linked list per user + MaxHeap\n• V3: Thread-safe ConcurrentEngine\n• V4: Hybrid Fanout (Push/Pull Architecture)"]
-    E --> F["6. Problem Archetype\nFamily 5: In-Memory DSA + Family 4: Event-Driven Feed"]
+flowchart TD
+    A["1. Requirement Mining<br/>• 10 most recent tweets<br/>• Self + Followees feed<br/>• Follow / Unfollow<br/>• Thread-safe state"] --> B["2. Class Discovery<br/>• Tweet (Singly-Linked Node)<br/>• User (Aggregate Root)<br/>• TwitterEngine (Domain Service)<br/>• FeedResult (Value Object)"]
+    B --> C["3. Relationships<br/>• User (1:N) Followees [HashSet]<br/>• User (1:1) HeadTweet [Linked List]<br/>• TwitterEngine manages User Pool"]
+    C --> D["4. Design Patterns<br/>• Iterator / K-Way Merge<br/>• Observer / Fanout Strategy<br/>• Monotonic Atomic Clock"]
+    D --> E["5. V1 → V4 Evolution<br/>• V1: Naive list sort on read<br/>• V2: Singly-linked list per user + MaxHeap<br/>• V3: Thread-safe ConcurrentEngine<br/>• V4: Hybrid Fanout (Push/Pull Architecture)"]
+    E --> F["6. Problem Archetype<br/>Family 5: In-Memory DSA + Family 4: Event-Driven Feed"]
 ```
 
 ---
@@ -53,7 +53,7 @@ graph TD
     end
 
     subgraph PriorityQueue Step
-        Heap["Max-Heap (Size = 3 Followees)\nRoot: Alice T=150\nBob T=140 | Charlie T=130"]
+        Heap["Max-Heap (Size = 3 Followees)<br/>Root: Alice T=150<br/>Bob T=140 | Charlie T=130"]
     end
 
     A1 -.->|"1. Pop T=150, push A2 (T=120)"| Heap
@@ -75,7 +75,7 @@ flowchart TD
         Celeb["Celebrity Tweets (>100K followers)"] --> CelebStore["Celebrity Tweet Store"]
         Reader["Follower Opens App"] --> ReadTimeline["Read Redis Timeline Cache (Push)"]
         Reader --> ReadCeleb["Fetch Followed Celebrities' Tweets (Pull)"]
-        ReadTimeline & ReadCeleb --> InMemMerge["In-Memory K-Way Merge\nFinal Top 10 Feed"]
+        ReadTimeline & ReadCeleb --> InMemMerge["In-Memory K-Way Merge<br/>Final Top 10 Feed"]
     end
 ```
 

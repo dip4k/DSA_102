@@ -1,4 +1,4 @@
-# 📘 Tier 1 Critical Patterns
+﻿# 📘 Tier 1 Critical Patterns
 
 > 🧭 **Navigation:** [← Previous: Week 04](../week_04_core_problem_solving_patterns_i/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 06 →](../week_06_string_manipulation_patterns/README.md)
 
@@ -14,7 +14,7 @@
 The highest-ROI interview patterns: Hash map frequency arrays, monotonic stack next-greater elements, interval merging, cyclic sort, and fast-slow pointers.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start["Week 05 Start"] --> Daily["Daily Invariant Deep Dives"]
     Daily --> Playbook["Consolidated Playbook & Visuals"]
     Playbook --> DualLang["Dual-Language Practice (C# & Python)"]

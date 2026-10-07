@@ -1,4 +1,4 @@
-# 📚 WEEK 01: FOUNDATIONS I - COMPUTATIONAL THINKING
+﻿# 📚 WEEK 01: FOUNDATIONS I - COMPUTATIONAL THINKING
 > 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)
 > 
 > 💡 **Instructor Note:** *This Comprehensive Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
@@ -1154,8 +1154,8 @@ flowchart TD
     D4 -->|"Unpack"| D3
     D3 -->|"Unpack"| D2
     D2 -->|"Unpack"| D1
-    D1 -->|"Return result & assemble"| D2
-    D2 -->|"Return result & assemble"| D3
+    D1 -->|"Return result and assemble"| D2
+    D2 -->|"Return result and assemble"| D3
     D3 -->|"Return final answer"| D4
 ```
 

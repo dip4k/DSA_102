@@ -1,12 +1,8 @@
-# 📚 Week 05 Day 02: Monotonic Stack Patterns (Engineering Guide)
-
-
-
-
+# 📚 Week 05 Day 02: Monotonic Stack Patterns — Engineering Guide
 
 > 🧭 **Navigation:** [← Previous Day](Week_05_Day_01_Hash_Map_Hash_Set_Patterns_Instructional_EXPANDED.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_05_Day_03_Merge_Operations_Interval_Patterns_Instructional.md)
 > 
-> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
+> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Adapt your pace and focus on the core patterns according to your interview timeline.*
 
 ---
 
@@ -14,57 +10,35 @@
 
 By the end of this chapter, you will be able to:
 
-- **Internalize** the monotonic stack invariant and why it enables O(n) solutions
-- **Implement** Next Greater Element and Trapping Rain Water without referencing solutions
-- **Evaluate** trade-offs between monotonic stack vs. brute force vs. dynamic programming
-- **Connect** monotonic stacks to real production systems (stock trading, financial analytics)
-- **Recognize** interview questions that signal monotonic stack patterns
+- 🎯 **Internalize** the monotonic stack invariant and why pushing each element once and popping at most once guarantees strict `O(N)` amortized time.
+- ⚙️ **Implement** Next Greater Element, Daily Temperatures, Online Stock Span, Trapping Rain Water, and Largest Rectangle in Histogram in modern C# (.NET 8/9) and Python (3.11+).
+- ⚖️ **Evaluate** trade-offs between monotonic stacks, brute-force scans (`O(N^2)`), and multi-pass dynamic programming arrays (`O(N)` space).
+- 🏭 **Connect** monotonic stacks to real production engines (real-time stream telemetry, order-book price tick resolution, compiler expression parsing).
+- 🎙️ **Explain** the stack invariant and index-width boundary calculations flawlessly in a 45-minute technical interview.
 
 ---
 
 ## 📖 CHAPTER 1: CONTEXT & MOTIVATION
 
-### The Engineering Challenge
+### The Engineering Problem
 
-Imagine you're a quantitative analyst at a hedge fund building a high-frequency trading system. You're analyzing stock prices tick-by-tick: `[100, 80, 60, 70, 60, 75, 85]`.
+Consider an streaming telemetry monitor or trading engine processing millions of numerical observations (latencies, temperatures, stock prices). For each incoming measurement, the system must answer: "What is the very next future observation that exceeds this value?" or "How many consecutive preceding ticks were less than or equal to the current tick?"
 
-Your job: For each price, find the **next price that's higher than the current one**. This tells traders when a recovery happens.
+A naive forward scan checks all elements ahead for every index, degrading to `O(N^2)` worst-case time (such as on strictly decreasing sequences). When processing continuous real-time feeds, a quadratic rescan introduces prohibitive latency spikes.
 
-```
-Prices:     [100, 80, 60, 70, 60, 75, 85]
-            Index 0: Next greater = 85 (at index 6)
-            Index 1: Next greater = 70 (at index 3)
-            Index 2: Next greater = 70 (at index 3)
-            Index 3: Next greater = 75 (at index 5)
-            Index 4: Next greater = 75 (at index 5)
-            Index 5: Next greater = 85 (at index 6)
-            Index 6: Next greater = None
-```
+Instead of searching forward repeatedly, we can maintain an ordered invariant: a **monotonic stack**. As we iterate through the sequence, we defer processing elements until a boundary arrives that resolves them.
 
-**Naive Approach:** For each price, scan forward until you find a greater one.
-- Time: O(n²) — in worst case (prices always decreasing), you scan the entire remaining array for each element
+> [!NOTE]
+> **Production Reality (Why FAANG Tests This):**
+> High-throughput financial exchanges and distributed stream processors (Kafka stream operators, real-time anomaly detectors) use monotonic stacks to maintain windowed extrema and calculate price-span breakouts in `O(1)` amortized operations per message. FAANG interviewers test this pattern to see whether you can recognize hidden `O(N^2)` nested scans and collapse them into linear single-pass amortized pipelines.
 
-**Better Approach:** Use a **monotonic stack** to achieve O(n) in a single pass.
+### The Solution: Monotonic Stack Invariant
 
-The insight: Instead of searching forward for the next greater element, **maintain a stack of prices in decreasing order.** When you see a price higher than the stack top, you've found the next greater element for everything currently on the stack.
+A monotonic stack maintains its elements in strictly ascending or descending order:
+- **Monotonic Decreasing Stack:** Bottom is largest, top is smallest. Used to find the **Next Greater Element** or **Previous Greater Element**.
+- **Monotonic Increasing Stack:** Bottom is smallest, top is largest. Used to find the **Next Smaller Element** or **Previous Smaller Element**.
 
-This shift from "search forward" to "track and pop" is what makes monotonic stacks powerful.
-
-### The Solution: Monotonic Stack Thinking
-
-Monotonic stacks solve problems where you need to find:
-- **Next Greater Element**: First element to the right that's larger
-- **Previous Smaller Element**: Last element to the left that's smaller
-- **Trapping amounts**: Water trapped between walls of different heights
-- **Histogram areas**: Largest rectangle in a histogram
-
-The elegant trick: **Maintain a stack where elements are ordered (increasing or decreasing). When you encounter a violation, you've found the answer to a query.**
-
-### Insight
-
-**Monotonic stacks turn O(n²) problems into O(n) solutions by eliminating redundant comparisons.**
-
-Each element is pushed to the stack exactly once and popped exactly once, guaranteeing linear time complexity.
+Whenever an incoming element violates the monotonic ordering, we pop elements from the stack top. **The popping event signals that the incoming element is the optimal boundary for the popped element.**
 
 ---
 
@@ -72,883 +46,473 @@ Each element is pushed to the stack exactly once and popped exactly once, guaran
 
 ### The Core Analogy
 
-Think of a monotonic stack like a **line of people sorted by height, standing back-to-back.**
+Imagine a line of people waiting in single file. Each person can only see forward until someone strictly taller stands in front of them, blocking their view. When an extraordinarily tall person walks in, anyone shorter standing in front of them has their view blocked simultaneously. We can finalize the line-of-sight distance for every shorter person right as that taller person arrives, then pop them from the waiting line.
 
-Imagine you're building a concert stage and need to find the next taller person to the right of each person (for visibility purposes). You don't compare everyone to everyone; you maintain a line where heights are decreasing.
-
-When a new person arrives:
-- If they're shorter than the last person: add them to the back (no visibility issue)
-- If they're taller: everyone shorter than them can now see past the taller person, so they're done
-
-This process continues. Each person is compared to at most O(log n) others on average (those in the line when they arrive/leave), not O(n).
-
-### Visualizing the Structure
-
-Here's what a monotonic stack looks like during operation:
+### 🖼 Visualizing Stack Evolution (Daily Temperatures)
 
 ```
-Prices arriving: [100, 80, 60, 70, 60, 75, 85]
+Temperatures: [73, 74, 75, 71, 69, 72, 76]
+Stack tracks indices of temperatures in strictly decreasing order.
 
-Step 0: price=100
-  Stack: [100]
-  
-Step 1: price=80 (80 < 100, push)
-  Stack: [100, 80]
-  
-Step 2: price=60 (60 < 80, push)
-  Stack: [100, 80, 60]
-  
-Step 3: price=70 (70 > 60, pop 60 ← found next greater!)
-         (70 > 80? No, stop popping)
-  Stack: [100, 80, 70]
-  
-Step 4: price=60 (60 < 70, push)
-  Stack: [100, 80, 70, 60]
-  
-Step 5: price=75 (75 > 60, pop 60 ← found next greater!)
-         (75 > 70, pop 70 ← found next greater!)
-         (75 > 80? No, stop)
-  Stack: [100, 80, 75]
-  
-Step 6: price=85 (85 > 75, pop 75)
-         (85 > 80, pop 80)
-         (85 > 100? No)
-  Stack: [100, 85]
+Step 0: i = 0 (73)
+  Stack: [ 0(73) ]
+
+Step 1: i = 1 (74)
+  74 > 73 -> POP 0! Resolve ans[0] = 1 - 0 = 1 day
+  Push 1 -> Stack: [ 1(74) ]
+
+Step 2: i = 2 (75)
+  75 > 74 -> POP 1! Resolve ans[1] = 2 - 1 = 1 day
+  Push 2 -> Stack: [ 2(75) ]
+
+Step 3: i = 3 (71)
+  71 < 75 -> Push 3 -> Stack: [ 2(75), 3(71) ]
+
+Step 4: i = 4 (69)
+  69 < 71 -> Push 4 -> Stack: [ 2(75), 3(71), 4(69) ]  <-- Monotonically Decreasing
+
+Step 5: i = 5 (72)
+  72 > 69 -> POP 4! Resolve ans[4] = 5 - 4 = 1 day
+  72 > 71 -> POP 3! Resolve ans[3] = 5 - 3 = 2 days
+  72 < 75 -> Push 5 -> Stack: [ 2(75), 5(72) ]
+
+Step 6: i = 6 (76)
+  76 > 72 -> POP 5! Resolve ans[5] = 6 - 5 = 1 day
+  76 > 75 -> POP 2! Resolve ans[2] = 6 - 2 = 4 days
+  Push 6 -> Stack: [ 6(76) ]
+
+Result Array: [ 1, 1, 4, 2, 1, 1, 0 ]
 ```
 
-**Key insight:** The stack maintains **decreasing order of prices.** When a new price violates this (it's larger than the top), we pop and record the answer.
+### Invariants & Amortized Analysis
 
-### The Monotonic Invariant
+1. **Stack Monotonicity Invariant:** For any two adjacent indices `j` (below) and `k` (above) in the stack:
+   - Decreasing Stack: `nums[j] >= nums[k]`
+   - Increasing Stack: `nums[j] <= nums[k]`
+2. **Push/Pop Budget Invariant:** Across the entire execution of `N` items:
+   - Each element index is pushed onto the stack exactly once (`N` pushes total).
+   - Each element index is popped from the stack at most once (`<= N` pops total).
+3. **Amortized `O(N)` Guarantee:** Although a single iteration may pop multiple elements (e.g., popping 5 items in one step), the aggregate number of inner `while` loop iterations across the entire loop is bounded by `N`. Therefore, overall runtime is strictly `O(N)`.
 
-**Definition:** A **decreasing monotonic stack** maintains elements in non-increasing order from bottom to top.
+### Taxonomy of Monotonic Stack Applications
 
-**Invariant Property:** At any point, if element `A` is below element `B` in the stack, then `A > B`.
-
-**Why It Matters:**
-- When we see a new element `X` larger than the stack top, the stack top can never find another next-greater element on the stack itself
-- The answer for the stack top is `X`
-- Pop the top and continue
-
-**What Breaks If Violated:**
-- If the stack is not monotonic, you might compare X to an element below the top that's smaller, missing the actual next greater element
-- The invariant guarantees: "The first element greater than me is the next greater element"
-
-### Three Core Patterns
-
-#### Pattern A: Next Greater Element
-
-**The Idea:** For each element, find the first element to the right that's larger.
-
-**Example:**
-```
-Input: [2, 1, 2, 4, 3]
-Output: [4, 2, 4, -1, -1]
-
-Element 2: Next greater = 4
-Element 1: Next greater = 2
-Element 2: Next greater = 4
-Element 4: Next greater = -1 (none)
-Element 3: Next greater = -1 (none)
-```
-
-**Why Stack Works:**
-- Brute force: For each element, scan right until greater found → O(n²)
-- Stack: Maintain decreasing stack, pop when seeing greater → O(n)
-
-#### Pattern B: Stock Span Problem
-
-**The Idea:** For each day, find how many consecutive days before it (including itself) had price ≤ current day.
-
-```
-Prices: [100, 80, 60, 70, 60, 75, 85]
-Spans:  [1,   1,  1,  2,  1,  4,  6]
-
-Day 0: price=100, span=1 (only itself)
-Day 1: price=80, span=1 (80 < 100)
-Day 2: price=60, span=1 (60 < 80)
-Day 3: price=70, span=2 (70 > 60, but 70 < 80)
-Day 4: price=60, span=1 (60 < 70)
-Day 5: price=75, span=4 (75 > 60, 70, 80, so 4 consecutive)
-Day 6: price=85, span=6 (85 > all previous)
-```
-
-#### Pattern C: Trapping Rain Water
-
-**The Idea:** Given heights, compute water trapped between walls.
-
-```
-Heights: [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]
-         
-        |                    
-      | | |                  
-    | | | |       | |   | |  
-  | | | | |     | | | | | |  
-
-Water trapped = area between min(left_max, right_max) and current height
-```
-
-**Why Stack Works:**
-- Stack maintains wall heights
-- When taller wall appears, water fills the gap
-- O(n) vs. O(n) space DP approach, but stack is more elegant
-
-### Taxonomy of Monotonic Problems
-
-| Pattern | Direction | Stack Order | Problem | Example |
-|---------|-----------|-------------|---------|---------|
-| **Next Greater** | Right | Decreasing | Find next larger | [2, 1, 2, 4, 3] |
-| **Next Smaller** | Right | Increasing | Find next smaller | [2, 1, 2, 4, 3] |
-| **Previous Greater** | Left | Decreasing | Find previous larger | [2, 1, 2, 4, 3] |
-| **Stock Span** | Left | Decreasing | Consecutive smaller/equal | [100, 80, 60, 70, ...] |
-| **Trapping Water** | Both | Decreasing | Area between walls | [0, 1, 0, 2, 1, ...] |
-
-### Mathematical Foundations: Amortized Analysis
-
-**Claim:** Monotonic stack operations are O(n) amortized.
-
-**Proof Sketch:**
-- Each element is pushed to stack exactly once: n pushes = O(n)
-- Each element is popped from stack at most once: n pops = O(n)
-- Comparisons happen during push/pop: O(n) total
-- Total: O(n) amortized
-
-**Why Amortized, Not Worst-Case?**
-- Worst case: One element pushed, all others pop it: O(n) pops for one push
-- But summed across all operations: Each element popped ≤ once
-- Total pops across entire algorithm: n
-
-This is the **amortized analysis** principle: operations might be expensive individually, but the total across all operations is linear.
+| Problem Category | Stack Order | Trigger Condition | Information Resolved | Canonical Problem |
+| :--- | :--- | :--- | :--- | :--- |
+| **Next Greater** | Decreasing | `current > top` | First larger element to the right | Daily Temperatures (LC 739) |
+| **Previous Greater** | Decreasing | `current > top` | Consecutive days spanned | Online Stock Span (LC 901) |
+| **Valley Trapping** | Decreasing | `current > top` | Horizontal trapped water slices | Trapping Rain Water (LC 42) |
+| **Boundary Span** | Increasing | `current < top` | Left and right bounding limits | Largest Rectangle in Histogram (LC 84) |
 
 ---
 
-## 🔧 CHAPTER 3: MECHANICS & IMPLEMENTATION
+## 🔧 CHAPTER 3: CORE PATTERN MECHANICS & ASCII TRACES
 
-### Implementation Pattern 1: Next Greater Element
+### 1. Trapping Rain Water: Valley Slicing Mechanics
 
-**The Intent:** For each element, find the next element to the right that's strictly greater.
-
-**The Approach:**
-1. Iterate through the array from left to right
-2. Maintain a stack of indices in decreasing order of their values
-3. For each new element, pop all stack elements smaller than it
-4. Each popped element has its answer: the current element is its next greater
-
-**State Variables:**
-- `stack`: Stack of indices (not values, so we can record answers by index)
-- `result`: Array to store next greater element for each index
-- `current`: Current element being processed
-
-Let me walk through this step-by-step:
+When heights decrease, we descend into a potential water basin. When height rises (`height[i] > height[stack.Peek()]`), a valley floor is popped:
 
 ```
-Input: [2, 1, 2, 4, 3]
+            #
+    #       #        Left wall: height[left]
+    # ~ ~ ~ #        Trapped horizontal layer: min(left, right) - bottom
+    # # ~ # #        Bottom: height[popped]
+  ─ ─ ─ ─ ─ ─ ─ 
+    1 0 2 (heights)
+    0 1 2 (indices)
 
-i=0: val=2
-  Stack empty, push 0 → stack = [0]
-  result = [?, ?, ?, ?, ?]
-
-i=1: val=1
-  1 < 2? Yes, push 1 → stack = [0, 1]
-  result = [?, ?, ?, ?, ?]
-
-i=2: val=2
-  2 < 1? No, pop 1
-    result[1] = 2 (next greater of 1 is 2)
-  2 < 2? No, pop 0
-    result[0] = 2 (next greater of 2 is 2)
-  Push 2 → stack = [2]
-  result = [2, 2, ?, ?, ?]
-
-i=3: val=4
-  4 < 2? No, pop 2
-    result[2] = 4
-  4 < any in empty stack? No
-  Push 3 → stack = [3]
-  result = [2, 2, 4, ?, ?]
-
-i=4: val=3
-  3 < 4? Yes, push 4 → stack = [3, 4]
-  result = [2, 2, 4, -1, ?]
-
-End: stack = [3, 4]
-  result[3] = -1 (no next greater)
-  result[4] = -1 (no next greater)
-  result = [2, 2, 4, -1, -1]
+Calculation:
+  bottom = height[1] = 0
+  left_index = stack.Peek() = 0 (height 1)
+  right_index = 2 (height 2)
+  width = right_index - left_index - 1 = 2 - 0 - 1 = 1
+  bounded_height = min(1, 2) - 0 = 1
+  water = width * bounded_height = 1 * 1 = 1 unit
 ```
 
-**Inline Trace Table:**
+### 2. Largest Rectangle in Histogram: Bounding Index Expansion
 
-| i | val | Pop? | Popped | result[popped] | Action | Stack |
-|---|-----|------|--------|----------------|--------|-------|
-| 0 | 2 | No | — | — | Push 0 | [0] |
-| 1 | 1 | No | — | — | Push 1 | [0,1] |
-| 2 | 2 | Yes | 1 | 2 | Pop 1, pop 0 | [2] |
-| | | Yes | 0 | 2 | | |
-| 3 | 4 | Yes | 2 | 4 | Pop 2 | [3] |
-| 4 | 3 | No | — | — | Push 4 | [3,4] |
+For any histogram bar `h`, its maximum possible rectangle expands horizontally until it hits a strictly shorter bar on the left and a strictly shorter bar on the right:
 
-**C# Implementation:**
-
-```csharp
-public int[] NextGreaterElement(int[] nums)
-{
-    int n = nums.Length;
-    var result = new int[n];
-    Array.Fill(result, -1);  // Default: no next greater
-    
-    var stack = new Stack<int>();  // Stack of indices
-    
-    for (int i = 0; i < n; i++)
-    {
-        int current = nums[i];
-        
-        // Pop while current is greater than stack top
-        while (stack.Count > 0 && current > nums[stack.Peek()])
-        {
-            int topIdx = stack.Pop();
-            result[topIdx] = current;  // Found next greater!
-        }
-        
-        // Push current index
-        stack.Push(i);
-    }
-    
-    // Remaining elements have no next greater (already -1)
-    return result;
-}
 ```
+Heights: [2, 1, 5, 6, 2, 3]
 
-**Key Insight:** We store **indices** in the stack, not values. This allows us to record answers by index directly.
+Examining bar at index 3 (height = 6):
+  Left boundary: index 2 (height 5 is shorter)
+  Right boundary: index 4 (height 2 is shorter)
+  Width = right_boundary - left_boundary - 1 = 4 - 2 - 1 = 1
+  Area = 6 * 1 = 6
 
-**Watch Out:** 
-- Don't store values; you lose the ability to record the answer by index
-- The stack must maintain **decreasing order of values**, not indices
-- When done, remaining elements in stack have no next greater (remain -1)
+Examining bar at index 2 (height = 5):
+  Left boundary: index 1 (height 1 is shorter)
+  Right boundary: index 4 (height 2 is shorter)
+  Width = 4 - 1 - 1 = 2 (spans indices 2 and 3)
+  Area = 5 * 2 = 10  <-- OPTIMAL RECTANGLE
+```
 
 ---
 
-### Implementation Pattern 2: Stock Span Problem
+## 💻 CHAPTER 4: PRODUCTION-GRADE IMPLEMENTATIONS (C# & PYTHON)
 
-**The Intent:** For each day, count how many consecutive preceding days (including current) had price ≤ current.
+### Problem 1: Daily Temperatures (LeetCode 739) — Monotonic Decreasing Stack
 
-**The Approach:**
-1. Maintain stack of `(price, span)` pairs
-2. For each new price, pop all entries with price < current
-3. Span = 1 + sum of popped spans (this is the key insight!)
-4. Push current price and span
+#### 🎙️ 45-Minute Interview Talk Track
+> *"To determine how many days we must wait until a warmer temperature for each day, scanning forward naively takes `O(N^2)` time. We can optimize this to `O(N)` time using a monotonic decreasing stack storing array indices. As we iterate through each temperature, while the current temperature is warmer than the temperature at the index stored at the top of the stack, we pop that index. The waiting duration for that popped day is simply `current_index - popped_index`. We record this in our result array and continue checking. Finally, we push the current day's index onto the stack. Unresolved days in the stack naturally default to 0. Because each index is pushed once and popped at most once, runtime is strictly `O(N)`."*
 
-**Why This Works:**
-- When we see a price larger than previous prices, it covers a range
-- The popped spans tell us how many days each previous price covered
-- We sum those spans to get the total span for the current day
-
-**State Variables:**
-- `stack`: Stack of (price, span) pairs
-- `span`: Number of consecutive days
-
-**Progressive Example:**
-
-```
-Prices: [100, 80, 60, 70, 60, 75, 85]
-
-Day 0: price=100, span=1
-  Stack empty → span = 1
-  Push (100, 1)
-  stack = [(100, 1)]
-  
-Day 1: price=80, span=?
-  80 < 100? Yes, don't pop
-  span = 1
-  Push (80, 1)
-  stack = [(100, 1), (80, 1)]
-  
-Day 2: price=60, span=?
-  60 < 80? Yes, don't pop
-  span = 1
-  Push (60, 1)
-  stack = [(100, 1), (80, 1), (60, 1)]
-  
-Day 3: price=70, span=?
-  70 < 60? No, pop (60, 1)
-    span = 1 + 1 = 2
-  70 < 80? Yes, stop popping
-  Push (70, 2)
-  stack = [(100, 1), (80, 1), (70, 2)]
-  
-Day 4: price=60, span=?
-  60 < 70? Yes, don't pop
-  span = 1
-  Push (60, 1)
-  stack = [(100, 1), (80, 1), (70, 2), (60, 1)]
-  
-Day 5: price=75, span=?
-  75 < 60? No, pop (60, 1)
-    span = 1 + 1 = 2
-  75 < 70? No, pop (70, 2)
-    span = 2 + 2 = 4
-  75 < 80? Yes, stop
-  Push (75, 4)
-  stack = [(100, 1), (80, 1), (75, 4)]
-  
-Day 6: price=85, span=?
-  85 < 75? No, pop (75, 4)
-    span = 1 + 4 = 5
-  85 < 80? No, pop (80, 1)
-    span = 5 + 1 = 6
-  85 < 100? Yes, stop
-  Push (85, 6)
-  stack = [(100, 1), (85, 6)]
-
-Result spans: [1, 1, 1, 2, 1, 4, 6]
-```
-
-**Inline Trace Table:**
-
-| Day | Price | Pop? | Popped Span | New Span | Action |
-|-----|-------|------|-------------|----------|--------|
-| 0 | 100 | No | — | 1 | Push |
-| 1 | 80 | No | — | 1 | Push |
-| 2 | 60 | No | — | 1 | Push |
-| 3 | 70 | Yes | 1 | 2 | Pop (60,1), push (70,2) |
-| 4 | 60 | No | — | 1 | Push |
-| 5 | 75 | Yes | 1, 2 | 4 | Pop (60,1), pop (70,2), push (75,4) |
-| 6 | 85 | Yes | 4, 1 | 6 | Pop (75,4), pop (80,1), push (85,6) |
-
-**C# Implementation:**
-
+#### C# Primary Implementation (.NET 8/9 — Production-Grade)
 ```csharp
-public int[] CalculateSpans(int[] prices)
+using System;
+using System.Collections.Generic;
+
+public static class DailyTemperaturesSolver
 {
-    int n = prices.Length;
-    var result = new int[n];
-    var stack = new Stack<(int price, int span)>();
-    
-    for (int i = 0; i < n; i++)
+    /// <summary>
+    /// Computes days until warmer temperature using monotonic decreasing stack of indices.
+    /// Time Complexity: O(N) | Auxiliary Space: O(N) | Output Space: O(N)
+    /// </summary>
+    public static int[] DailyTemperatures(int[] temperatures)
     {
-        int currentPrice = prices[i];
-        int currentSpan = 1;
-        
-        // Pop all prices less than current and accumulate spans
-        while (stack.Count > 0 && stack.Peek().price <= currentPrice)
+        ArgumentNullException.ThrowIfNull(temperatures);
+        int n = temperatures.Length;
+        if (n == 0) return [];
+
+        var result = new int[n];
+        var stack = new Stack<int>(); // Stores indices with strictly decreasing temperatures
+
+        for (int i = 0; i < n; i++)
         {
-            var (price, span) = stack.Pop();
-            currentSpan += span;  // KEY: Add previous span!
-        }
-        
-        result[i] = currentSpan;
-        stack.Push((currentPrice, currentSpan));
-    }
-    
-    return result;
-}
-```
+            int currentTemp = temperatures[i];
 
-**Key Insight:** The span accumulation is the trick. When we pop `(price, span)`, we add `span` to the current span. This efficiently skips over ranges we already counted.
+            while (stack.Count > 0 && currentTemp > temperatures[stack.Peek()])
+            {
+                int prevDay = stack.Pop();
+                result[prevDay] = i - prevDay;
+            }
 
-**Watch Out:** Use tuples or custom objects to store both price and span. Storing only price loses the span information needed for accumulation.
-
----
-
-### Implementation Pattern 3: Trapping Rain Water
-
-**The Intent:** Given wall heights, compute total water trapped between walls.
-
-**The Approach:**
-1. Maintain stack of indices in decreasing height order
-2. When we see a taller wall, pop shorter walls below it
-3. Water trapped between popped wall and current wall is: `min(leftHeight, rightHeight) - poppedHeight`
-
-**State Variables:**
-- `stack`: Stack of indices (to track heights and positions)
-- `leftHeight`: Height at left side of trapped water
-- `trapHeight`: Water level
-- `width`: Distance between walls
-
-**Progressive Example:**
-
-```
-Heights: [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]
-
-i=0: h=0
-  Stack empty, push 0
-  stack = [0]
-  water = 0
-
-i=1: h=1
-  1 > 0? Yes, pop 0
-    No left boundary, can't trap
-  Push 1
-  stack = [1]
-  water = 0
-
-i=2: h=0
-  0 < 1? Yes, push 2
-  stack = [1, 2]
-  water = 0
-
-i=3: h=2
-  2 > 0? Yes, pop 2
-    topHeight = 0, leftHeight = 1, rightHeight = 2
-    Trap between indices: min(1,2) - 0 = 1 unit at width 1 = 1
-  2 > 1? Yes, pop 1
-    topHeight = 1, no left (boundary)
-    Can't trap (no left)
-  Push 3
-  stack = [3]
-  water = 1
-
-i=4: h=1
-  1 < 2? Yes, push 4
-  stack = [3, 4]
-  water = 1
-
-i=5: h=0
-  0 < 1? Yes, push 5
-  stack = [3, 4, 5]
-  water = 1
-
-i=6: h=1
-  1 > 0? Yes, pop 5
-    topHeight = 0, leftHeight = 1, rightHeight = 1
-    Trap = min(1,1) - 0 = 1, width = 1, so 1 unit
-  1 > 1? No, push 6
-  stack = [3, 4, 6]
-  water = 1 + 1 = 2
-
-... (continue for remaining elements)
-```
-
-**C# Implementation:**
-
-```csharp
-public int Trap(int[] height)
-{
-    var stack = new Stack<int>();
-    int water = 0;
-    
-    for (int i = 0; i < height.Length; i++)
-    {
-        while (stack.Count > 0 && height[i] > height[stack.Peek()])
-        {
-            int topIdx = stack.Pop();
-            int topHeight = height[topIdx];
-            
-            // If stack is empty, no left boundary
-            if (stack.Count == 0) break;
-            
-            int leftIdx = stack.Peek();
-            int leftHeight = height[leftIdx];
-            int rightHeight = height[i];
-            
-            // Water level is limited by shorter of two walls
-            int waterLevel = Math.Min(leftHeight, rightHeight) - topHeight;
-            int width = i - leftIdx - 1;  // Distance between walls
-            
-            water += waterLevel * width;
-        }
-        
-        stack.Push(i);
-    }
-    
-    return water;
-}
-```
-
-**Key Insight:** Water is trapped where: (min of left and right wall heights) - (current height). The stack helps us find the relevant left and right boundaries.
-
-**Watch Out:** 
-- Only pop when current height is strictly greater
-- Each popped element is the "valley" that traps water
-- The element below the popped one (or boundary) is the left wall
-
----
-
-### Implementation Pattern 4: Largest Rectangle in Histogram
-
-**The Intent:** Given histogram bar heights, find the area of the largest rectangle.
-
-**The Approach:**
-1. Maintain stack of indices in increasing height order
-2. When we see a shorter bar, pop taller bars
-3. For each popped bar, calculate area with it as height
-4. Area = height × width (width = distance to left and right boundaries)
-
-**C# Implementation:**
-
-```csharp
-public int LargestRectangleArea(int[] heights)
-{
-    var stack = new Stack<int>();
-    int maxArea = 0;
-    int i = 0;
-    
-    while (i < heights.Length)
-    {
-        // Push indices while maintaining increasing order
-        if (stack.Count == 0 || heights[i] >= heights[stack.Peek()])
-        {
             stack.Push(i);
-            i++;
         }
-        else
+
+        // Indices remaining on the stack have no warmer future day and remain 0
+        return result;
+    }
+}
+```
+
+#### Python Secondary Implementation (3.11+ — Clean & Idiomatic)
+```python
+def daily_temperatures(temperatures: list[int]) -> list[int]:
+    """Calculates days until a warmer temperature using a monotonic decreasing stack.
+
+    Time Complexity: O(N) | Auxiliary Space: O(N) | Output Space: O(N)
+    """
+    n = len(temperatures)
+    ans = [0] * n
+    stack: list[int] = []  # Stores indices
+
+    for i, temp in enumerate(temperatures):
+        while stack and temp > temperatures[stack[-1]]:
+            prev_idx = stack.pop()
+            ans[prev_idx] = i - prev_idx
+        stack.append(i)
+
+    return ans
+```
+
+#### 📊 Explicit Complexity Deconstruction
+* **Time Complexity:** `O(N)` — Single linear pass. Each index is pushed once and popped at most once, yielding at most `2N` stack operations.
+* **Auxiliary Space:** `O(N)` — In the worst-case (strictly decreasing temperatures, e.g., `[90, 80, 70]`), the stack holds all `N` indices.
+* **Output Space:** `O(N)` — Returns an array of size `N` containing days to wait.
+
+---
+
+### Problem 2: Online Stock Span (LeetCode 901) — Monotonic Stack with Span Accumulation
+
+#### 🎙️ 45-Minute Interview Talk Track
+> *"In the stock span problem, we need to return the number of consecutive preceding days where the stock price was less than or equal to today's price. Instead of scanning backward through historical arrays, we use a monotonic decreasing stack storing pairs of `(price, span)`. When a new price arrives, while the stack is non-empty and the top price is less than or equal to the current price, we pop the top element and add its accumulated span to our current span. This collapses chains of smaller preceding days in `O(1)` amortized time per call. We push the consolidated `(current_price, total_span)` onto the stack and return the span."*
+
+#### C# Primary Implementation (.NET 8/9 — Production-Grade)
+```csharp
+using System.Collections.Generic;
+
+public sealed class StockSpanner
+{
+    private readonly Stack<(int Price, int Span)> _stack = new();
+
+    /// <summary>
+    /// Processes current price and returns span in amortized O(1) time.
+    /// Time Complexity: O(1) amortized | Auxiliary Space: O(N) | Output Space: O(1)
+    /// </summary>
+    public int Next(int price)
+    {
+        int span = 1;
+
+        while (_stack.Count > 0 && _stack.Peek().Price <= price)
         {
-            // Pop and calculate area
-            int topIdx = stack.Pop();
-            int height = heights[topIdx];
-            
-            // Width: from left boundary to right boundary (current - 1)
-            int width = stack.Count == 0 ? i : i - stack.Peek() - 1;
-            int area = height * width;
-            
-            maxArea = Math.Max(maxArea, area);
+            span += _stack.Pop().Span;
         }
+
+        _stack.Push((price, span));
+        return span;
     }
-    
-    // Pop remaining and calculate areas
-    while (stack.Count > 0)
-    {
-        int topIdx = stack.Pop();
-        int height = heights[topIdx];
-        int width = stack.Count == 0 ? i : i - stack.Peek() - 1;
-        int area = height * width;
-        
-        maxArea = Math.Max(maxArea, area);
-    }
-    
-    return maxArea;
 }
 ```
 
-**Key Insight:** The height of the rectangle is determined by a bar; the width extends left and right until hitting a shorter bar.
+#### Python Secondary Implementation (3.11+ — Clean & Idiomatic)
+```python
+class StockSpanner:
+    """Calculates online consecutive stock price spans using monotonic stack consolidation."""
+
+    def __init__(self) -> None:
+        self.stack: list[tuple[int, int]] = []  # (price, accumulated_span)
+
+    def next(self, price: int) -> int:
+        span = 1
+        while self.stack and self.stack[-1][0] <= price:
+            span += self.stack.pop()[1]
+        self.stack.append((price, span))
+        return span
+```
+
+#### 📊 Explicit Complexity Deconstruction
+* **Time Complexity:** `O(1)` amortized per `next()` invocation. Over `M` calls, each item is pushed once and popped at most once, resulting in total `O(M)` time.
+* **Auxiliary Space:** `O(M)` — The stack stores up to `M` price pairs in the worst case (strictly decreasing prices).
+* **Output Space:** `O(1)` — Returns a single integer scalar per call.
 
 ---
 
-## 📈 CHAPTER 4: PERFORMANCE, TRADE-OFFS & REAL SYSTEMS
+### Problem 3: Trapping Rain Water (LeetCode 42) — Valley Filling via Stack
 
-### Beyond Big-O: Performance Reality
+#### 🎙️ 45-Minute Interview Talk Track
+> *"Trapping rain water can be solved with two pointers or dynamic programming prefix/suffix max arrays, but a monotonic decreasing stack provides an intuitive horizontal slice perspective. We push indices of decreasing heights onto the stack. When we encounter a height strictly taller than the stack's top, we have identified a potential valley floor. We pop the valley index. If the stack becomes empty, there is no left bounding wall, so no water is trapped. Otherwise, the new stack top is our left boundary, and the current index is our right boundary. The trapped water volume is `(min(left_height, right_height) - valley_height) * (right_index - left_index - 1)`. We accumulate this volume and continue popping until the monotonic property is restored."*
 
-**Comparison: Next Greater Element Solutions**
-
-| Approach | Time | Space | Hidden Constant | Real-World (n=1M) |
-|----------|------|-------|-----------------|-------------------|
-| Brute force | O(n²) | O(1) | 1.0 | ~50 seconds |
-| DP (precompute left/right max) | O(n) | O(n) | 3.5 | ~0.2 seconds |
-| Monotonic stack | O(n) | O(n) | 1.2 | ~0.1 seconds |
-
-**Why Monotonic Stack Beats DP:**
-- DP precomputes array for every position: n writes, high cache misses
-- Stack processes sequentially: better cache locality, minimal writes
-- Constant factor: 2.9x better in practice
-
-### Memory Overhead: Stack vs. Array
-
-**Simple element in array:** 4 bytes (int)
-
-**Element in stack:**
-- Integer value: 4 bytes
-- Stack node pointer: 8 bytes
-- Total overhead: ~12 bytes per element
-
-So a stack uses ~3x more memory than an array, but O(n) space overall (not O(n²) like brute force).
-
-### Real-World System 1: Stock Trading Platform
-
-**Problem:** Process 10 million tick-by-tick stock prices, finding next higher price for each.
-
-**Without Monotonic Stack:**
-- O(n²) algorithm: 10¹⁴ operations
-- At 1 GHz: 100,000 seconds (~1 day) to process
-
-**With Monotonic Stack:**
-- O(n) algorithm: 10⁷ operations
-- At 1 GHz: 0.01 seconds
-- Speedup: 10,000,000x
-
-This is why trading firms care deeply about algorithmic efficiency.
-
-**Implementation Detail:**
+#### C# Primary Implementation (.NET 8/9 — Production-Grade)
 ```csharp
-// Real-world: Process streaming prices
-while (pricesStream.HasNext())
+using System;
+using System.Collections.Generic;
+
+public static class TrappingRainWaterSolver
 {
-    int price = pricesStream.ReadNext();
-    
-    // Monotonic stack maintains decreasing prices
-    while (stack.Count > 0 && price > stack.Peek().price)
+    /// <summary>
+    /// Calculates trapped rainwater by decomposing basins into horizontal layers using a monotonic stack.
+    /// Time Complexity: O(N) | Auxiliary Space: O(N) | Output Space: O(1)
+    /// </summary>
+    public static int Trap(int[] height)
     {
-        var poppedPrice = stack.Pop();
-        alerts.Send(poppedPrice.Id, price);  // Alert trader
+        ArgumentNullException.ThrowIfNull(height);
+        if (height.Length < 3) return 0;
+
+        var stack = new Stack<int>(); // Stores indices in decreasing height order
+        int totalWater = 0;
+
+        for (int i = 0; i < height.Length; i++)
+        {
+            while (stack.Count > 0 && height[i] > height[stack.Peek()])
+            {
+                int valleyIdx = stack.Pop();
+
+                // If no left boundary wall exists, no water can be bounded
+                if (stack.Count == 0) break;
+
+                int leftIdx = stack.Peek();
+                int width = i - leftIdx - 1;
+                int boundedHeight = Math.Min(height[leftIdx], height[i]) - height[valleyIdx];
+
+                totalWater += width * boundedHeight;
+            }
+
+            stack.Push(i);
+        }
+
+        return totalWater;
     }
-    
-    stack.Push(price);
 }
 ```
 
-### Real-World System 2: Building Visibility Analysis
+#### Python Secondary Implementation (3.11+ — Clean & Idiomatic)
+```python
+def trap(height: list[int]) -> int:
+    """Computes total trapped water via horizontal slice monotonic stack accumulation.
 
-**Problem:** Given building heights, for each building, find how many other buildings it can see.
+    Time Complexity: O(N) | Auxiliary Space: O(N) | Output Space: O(1)
+    """
+    stack: list[int] = []  # Indices
+    total_water = 0
 
-A building can see another if there's no taller building blocking the view.
+    for i, h in enumerate(height):
+        while stack and h > height[stack[-1]]:
+            valley = stack.pop()
+            if not stack:
+                break
+            left = stack[-1]
+            width = i - left - 1
+            bounded_height = min(height[left], h) - height[valley]
+            total_water += width * bounded_height
+        stack.append(i)
 
-**Classic Interview Problem:** "Buildings Skyline" — requires monotonic stack approach for efficient solution.
+    return total_water
+```
 
-**Impact:**
-- Urban planning: Determine development constraints
-- Real estate: Value properties by visibility
-- AR navigation: Determine which buildings to render
-
-### Real-World System 3: Temperature Monitoring in Data Centers
-
-**Problem:** Track n sensor temperatures; for each sensor, find when the next higher temperature occurs.
-
-**Use Case:** Predictive cooling adjustments. When sensor A spikes, activate cooling based on how long the spike typically lasts.
-
-**Efficiency:** Process millions of sensors in microseconds using monotonic stack.
+#### 📊 Explicit Complexity Deconstruction
+* **Time Complexity:** `O(N)` — Single pass over `N` elements where each bar index enters and leaves the stack at most once.
+* **Auxiliary Space:** `O(N)` — Stack stores at most `N` indices in descending profiles.
+* **Output Space:** `O(1)` — Returns a single integer scalar.
 
 ---
 
-### Failure Modes & Robustness
+### Problem 4: Largest Rectangle in Histogram (LeetCode 84) — Increasing Stack Width Expansion
 
-**1. Stack Underflow**
+#### 🎙️ 45-Minute Interview Talk Track
+> *"To find the largest rectangle in a histogram, notice that for any candidate bar of height `H`, the largest rectangle using `H` as its minimum height extends left and right until it hits bars shorter than `H`. We maintain a monotonic increasing stack of bar indices. When we encounter a bar shorter than the bar at the top of the stack, that top bar cannot extend any further to the right. We pop that bar and compute its area: its height is `heights[popped]`, and its width is bounded on the right by `i` and on the left by the new stack top (or 0 if stack is empty). By iterating up to index `N` with a virtual sentinel height of 0, we cleanly flush all remaining bars from the stack in `O(N)` total time."*
+
+#### C# Primary Implementation (.NET 8/9 — Production-Grade)
 ```csharp
-// Wrong: Doesn't check if stack is empty
-int topIdx = stack.Pop();  // Crash if stack empty!
+using System;
+using System.Collections.Generic;
 
-// Right: Check before popping
-if (stack.Count > 0)
+public static class LargestRectangleHistogramSolver
 {
-    int topIdx = stack.Pop();
+    /// <summary>
+    /// Computes maximum rectangle area in histogram using a monotonic increasing stack.
+    /// Time Complexity: O(N) | Auxiliary Space: O(N) | Output Space: O(1)
+    /// </summary>
+    public static int LargestRectangleArea(int[] heights)
+    {
+        ArgumentNullException.ThrowIfNull(heights);
+        int n = heights.Length;
+        if (n == 0) return 0;
+
+        var stack = new Stack<int>(); // Stores indices of increasing heights
+        int maxArea = 0;
+
+        // Iterate up to n inclusive using 0 as a trailing sentinel height
+        for (int i = 0; i <= n; i++)
+        {
+            int currentHeight = (i == n) ? 0 : heights[i];
+
+            while (stack.Count > 0 && currentHeight < heights[stack.Peek()])
+            {
+                int h = heights[stack.Pop()];
+                int w = stack.Count == 0 ? i : i - stack.Peek() - 1;
+                maxArea = Math.Max(maxArea, h * w);
+            }
+
+            stack.Push(i);
+        }
+
+        return maxArea;
+    }
 }
 ```
 
-**2. Off-by-One in Width Calculation**
-```csharp
-// Tricky: Width between left and right boundaries
-// If left_idx = 2, current_idx = 5
-// Distance between them: 5 - 2 - 1 = 2 (indices 3, 4)
-int width = i - stack.Peek() - 1;  // Correct
-int width = i - stack.Peek();       // Wrong! Off-by-one
+#### Python Secondary Implementation (3.11+ — Clean & Idiomatic)
+```python
+def largest_rectangle_area(heights: list[int]) -> int:
+    """Finds maximum rectangular area in histogram using increasing monotonic stack.
+
+    Time Complexity: O(N) | Auxiliary Space: O(N) | Output Space: O(1)
+    """
+    stack: list[int] = []  # Indices of increasing heights
+    max_area = 0
+    n = len(heights)
+
+    for i in range(n + 1):
+        curr_h = 0 if i == n else heights[i]
+        while stack and curr_h < heights[stack[-1]]:
+            h = heights[stack.pop()]
+            w = i if not stack else i - stack[-1] - 1
+            max_area = max(max_area, h * w)
+        stack.append(i)
+
+    return max_area
 ```
 
-**3. Comparing Values vs. Indices**
-```csharp
-// Wrong: Stack stores indices, but comparing as if it stores values
-while (stack.Count > 0 && current > stack.Peek())  // Comparing int to index!
-
-// Right: Stack stores indices, so compare values
-while (stack.Count > 0 && current > heights[stack.Peek()])
-```
+#### 📊 Explicit Complexity Deconstruction
+* **Time Complexity:** `O(N)` — Each histogram bar is pushed onto the stack exactly once and popped at most once. Sentinel flush takes at most `N` operations.
+* **Auxiliary Space:** `O(N)` — The stack holds at most `N + 1` indices for strictly ascending height profiles.
+* **Output Space:** `O(1)` — Returns a single integer scalar.
 
 ---
 
-## 🌍 CHAPTER 5: INTEGRATION & MASTERY
+## ⚖️ CHAPTER 5: PERFORMANCE, TRADE-OFFS & REAL SYSTEMS
 
-### How Monotonic Stack Fits Into Curriculum
+### Trade-Off Comparison
 
-**Previous week (Week 4):**
-- Patterns for sorted/pre-processed arrays
-- Divide & conquer for multi-part problems
+| Approach | Time Complexity | Space Complexity | Strengths | Weaknesses |
+| :--- | :--- | :--- | :--- | :--- |
+| **Brute Force (Nested Scans)** | `O(N^2)` | `O(1)` | Trivial to code | Unusable for `N > 10^4`; massive TLE risk |
+| **Precomputed Prefix/Suffix DP** | `O(N)` | `O(N)` | Straightforward logic | Multi-pass memory overhead; double array allocations |
+| **Monotonic Stack** | `O(N)` | `O(N)` | Single-pass streaming; solves complex boundary problems | Requires strict index management; subtle edge cases |
+| **Two Pointers (Trapping Water)**| `O(N)` | `O(1)` | Optimal auxiliary space | Specific to converging boundary problems only |
 
-**This week (Week 5, Day 2):**
-- Monotonic stack: Single-pass optimization for next/previous queries
-- First time seeing: "Process in order, track candidates, pop when done"
+> [!NOTE]
+> **Production Reality (Why FAANG Tests This):**
+> In distributed database query optimizers and browser layout engines (Blink, WebKit), computing layout bounding boxes and inline text wrappers relies heavily on monotonic boundary sweeps. Storing indices rather than values allows single-pass geometry computation while ensuring minimal CPU cache line thrashing.
 
-**Upcoming (Week 5, Days 3-5):**
-- Intervals: Merge, overlap, scheduling (similar sorting + stack ideas)
-- Partition & Kadane: In-place operations, subarray optimization
-- Fast/Slow: Two-pointer on linked lists (similar "pass through once" idea)
+### Defensive Engineering & Failure Modes
 
-**Months ahead (Weeks 6-15):**
-- Graph algorithms: Stack-based DFS uses similar "process in order" thinking
-- Dynamic programming: Monotonic deque optimization for sliding window DP
-- Geometry: Convex hull computation uses monotonic stack concept
-
-**The Big Picture:** Monotonic stacks teach "single-pass optimization." This principle appears in 15+ advanced problems. Master it now.
+1. **Storing Values Instead of Indices:** Storing raw values in the stack prevents calculating distances (`i - prevIdx`) and breaks histogram width derivation. **Rule: Always store indices in the stack.**
+2. **Sentinel Boundary Omission:** In histogram calculations, failing to flush bars left in the stack when the loop terminates misses rectangles that extend to the far right. Use a virtual 0-height sentinel at index `N` to flush cleanly.
+3. **Strict vs. Non-Strict Inequalities:** Ensure comparison operators (`>` vs. `>=`) align with problem requirements. For Next Greater, use strict `>` to allow duplicate equal elements to stack until a strictly larger element arrives.
 
 ---
 
-### Pattern Recognition: When Should You Use Monotonic Stack?
+## 🎯 CHAPTER 6: FAANG INTERVIEW PATTERN SIGNALS & EDGE CASES
 
-**Use Monotonic Stack When:**
+### 🎯 Pattern Recognition Signals
+- ✅ **"Next/Previous greater or smaller element"** -> Monotonic Stack (`O(N)` time).
+- ✅ **"Daily temperatures" / "Waiting days until next increase"** -> Monotonic decreasing stack storing indices.
+- ✅ **"Histogram rectangles" / "Maximal rectangle in binary matrix"** -> Monotonic increasing stack with width boundaries.
+- ✅ **"Online stream with consecutive previous smaller count"** -> Monotonic stack consolidating `(value, count)` pairs.
+- 🛑 **"K-th largest element across an entire array"** -> Do NOT use a monotonic stack. Use a Heap (`PriorityQueue`) or Quickselect.
 
-✅ Problem asks: "Next/Previous greater/smaller element" → Classic monotonic stack  
-✅ Problem asks: "Area between boundaries" (water, histogram) → Decreasing stack  
-✅ Problem needs: One-pass without pre-processing → Stack eliminates sorting  
-✅ You need: Both left and right context efficiently → Stack provides both  
-✅ Problem involves: Stock prices, temperature, heights → Real-world patterns  
-
-**Avoid Monotonic Stack When:**
-
-❌ Problem requires sorted output → Sort separately first  
-❌ You need random access → Stack forces sequential access  
-❌ Space is extremely limited → Stack uses O(n) extra space  
-❌ Problem is clearly DP-solvable and simple → DP might be clearer  
+### 🧪 Concrete Edge-Case Checklist
+1. **Strictly Decreasing / Strictly Increasing Arrays:** Ensure algorithm terminates correctly when all elements remain in stack without popping until loop completion.
+2. **All Identical Elements (`[5, 5, 5, 5]`):** Confirm inequalities do not cause infinite loops or incorrect span contractions.
+3. **Empty or Single-Element Arrays (`N <= 1`):** Guard clauses must return immediately before stack accesses.
 
 ---
 
-### Five Cognitive Lenses for Monotonic Stacks
+## ⚔️ SUPPLEMENTARY OUTCOMES
 
-#### 1. The Hardware Lens
+### 🏋️ Practice Problems
 
-A monotonic stack processes elements sequentially, visiting each array index once. Modern CPUs excel at:
-- Sequential memory access (cache prefetching works)
-- Predictable branches (stack.Count check is predictable)
-- Minimal memory writes (only stack pushes/pops)
+| # | Problem | Source | Difficulty | Key Concept |
+| :--- | :--- | :--- | :--- | :--- |
+| 1 | Daily Temperatures | LeetCode 739 | 🟡 Medium | Monotonic decreasing stack |
+| 2 | Next Greater Element I | LeetCode 496 | 🟢 Easy | Stack + Hash Map lookup |
+| 3 | Online Stock Span | LeetCode 901 | 🟡 Medium | Stack pair consolidation |
+| 4 | Trapping Rain Water | LeetCode 42 | 🔴 Hard | Valley slicing boundary stack |
+| 5 | Largest Rectangle in Histogram | LeetCode 84 | 🔴 Hard | Increasing stack with width calculation |
+| 6 | Maximal Rectangle | LeetCode 85 | 🔴 Hard | 2D Matrix converted to Histogram |
+| 7 | Next Greater Element II | LeetCode 503 | 🟡 Medium | Circular array simulated with `2N` loop |
+| 8 | Remove K Digits | LeetCode 402 | 🟡 Medium | Monotonic greedy stack |
 
-This is why monotonic stacks often beat DP approaches with higher constants in practice.
+### 🎙️ Interview Questions (Verbal Drills)
 
-#### 2. The Trade-off Lens
+1. **Q:** Why does the monotonic stack achieve `O(N)` runtime despite having a nested `while` loop?
+   - **Answer:** We evaluate using amortized analysis. Each array index is pushed onto the stack exactly once and popped at most once across the entire program. Therefore, the inner while loop executes at most `N` times total across all iterations, bounding aggregate runtime to `O(N)`.
+2. **Q:** How do you handle circular array lookups for Next Greater Element?
+   - **Answer:** We loop from index `0` to `2N - 1`, accessing array elements via `nums[i % N]`. We only push indices when `i < N`, but allow popping during the second virtual pass.
+3. **Q:** In Largest Rectangle in Histogram, what does `stack.Count == 0 ? i : i - stack.Peek() - 1` compute?
+   - **Answer:** It computes the width of the rectangle for the popped bar. If the stack is empty, it means the popped bar was the smallest seen so far and its rectangle spans from index `0` to `i - 1` (width `i`). Otherwise, the rectangle is bounded on the left by `stack.Peek()` and on the right by `i - 1`, giving width `i - stack.Peek() - 1`.
 
-Monotonic stacks trade **complexity of thinking for algorithmic elegance**.
+### ❌ Common Misconceptions
 
-- Brute force: Simple to understand (nested loop), but O(n²)
-- DP: More complex (pre/post computation), but O(n)
-- Stack: As complex as DP, but often faster constants
+- **Myth:** Monotonic stacks can only find the next element, not the previous element.  
+  *Reality:* The element currently at the top of the stack when you are about to push `i` is precisely the previous greater/smaller element!
+- **Myth:** Monotonic stack is always faster than two pointers for trapping water.  
+  *Reality:* Two pointers achieves `O(1)` auxiliary space, whereas a monotonic stack uses `O(N)` auxiliary space. The stack is conceptualized as horizontal slices, while two pointers computes vertical columns.
 
-The trade-off: Spend 15 minutes understanding the stack invariant, save 100x execution time.
+### 🚀 Advanced Concepts
 
-#### 3. The Learning Lens
-
-Most people's first instinct for "next greater element" is O(n²) brute force. That's fine!
-
-But the leap to monotonic stack requires a mental shift:
-- **Brute force thinking:** "For each element, search forward"
-- **Stack thinking:** "Track candidates, pop when better option found"
-
-This is a mode of thinking specific to this week. By Week 15, it becomes second nature.
-
-#### 4. The AI/ML Lens
-
-Monotonic stacks appear in neural network optimization:
-
-**Gradient descent:** Track the monotonicity of loss values. When loss increases, adjust learning rate. Monotonic stack concept applied to training curves.
-
-**Memory-efficient models:** Use monotonic stacks to track which intermediate values are needed during backpropagation.
-
-#### 5. The Historical Lens
-
-Monotonic stacks were formalized in the 1990s by researchers studying efficient algorithms. But the concept existed earlier in:
-- Compiler design (expression parsing)
-- Graphics (polygon simplification)
-- Database indexing (B-tree operations)
-
-The insight: Many optimization problems share a common structure — "maintain order, pop when violated."
+1. **Monotonic Deques:** Double-ended monotonic queues used in sliding-window maximum (`Sliding Window Maximum`, LeetCode 239) where elements are popped from both front (out of window) and back (order violations).
+2. **2D Maximal Rectangle:** Reducing dynamic programming matrix problems to row-by-row histogram arrays processed via LeetCode 84 logic.
+3. **Convex Hull (Graham Scan):** Using a monotonic stack to eliminate points that create non-left turns when computing the 2D convex hull.
 
 ---
 
-### Decision Framework: Monotonic Stack vs. Alternatives
+## 📌 CLOSING REFLECTION
 
-**Problem: Next Greater Element**
-
-| Approach | Time | Space | Use When |
-|----------|------|-------|----------|
-| Brute force | O(n²) | O(1) | n < 1000, clarity more important |
-| Precompute max suffix | O(n) | O(n) | Need understanding before optimization |
-| Monotonic stack | O(n) | O(n) | **Optimal** in every way |
-
-**Problem: Trapping Rain Water**
-
-| Approach | Time | Space | Use When |
-|----------|------|-------|----------|
-| Brute force | O(n²) | O(1) | n < 100, learning fundamentals |
-| DP: left/right max | O(n) | O(n) | Clearer logic, don't care about constants |
-| Monotonic stack | O(n) | O(n) | **Slightly better constants** |
-| Two-pointer | O(n) | O(1) | **Space-optimal** but requires two passes mentally |
-
----
-
-### Socratic Reflection
-
-Before moving on, sit with these questions:
-
-1. **Next Greater:** We push indices to the stack, not values. Why not values? What would break?
-
-2. **Stock Span:** When we pop `(price, span)`, we add `span` to the new span. Why does this correctly skip over the spanned range?
-
-3. **Trapping Water:** The water level is `min(leftHeight, rightHeight) - topHeight`. Why `min`? What if we used `max` instead?
-
-4. **Histogram:** When calculating width of a rectangle with height H, we use `i - leftIdx - 1`. Why the `-1`? What does it represent?
-
-5. **Monotonic Invariant:** If the stack is decreasing, and we push element X greater than the top, does the invariant hold? Prove it.
-
----
-
-### Retention Hook
-
-**The Monotonic Insight:** *"Maintain candidates in order. When a better candidate arrives, mark the end for worse candidates. Single-pass, O(n)."*
-
----
-
-## 📊 SUPPLEMENTARY OUTCOMES
-
-### Practice Problems (8 Problems, Progression)
-
-| # | Problem | Difficulty | Key Concept | LeetCode |
-|---|---------|-----------|-------------|----------|
-| 1 | Next Greater Element I | Easy | Basic monotonic stack | 496 |
-| 2 | Next Smaller Element | Easy | Variant (increasing stack) | — |
-| 3 | Valid Parentheses | Easy | Stack basics (not monotonic) | 20 |
-| 4 | Daily Temperatures | Medium | Next greater with output array | 739 |
-| 5 | Stock Span Problem | Medium | Span accumulation | 901 |
-| 6 | Trapping Rain Water | Hard | Decreasing stack, area calc | 42 |
-| 7 | Largest Rectangle in Histogram | Hard | Width calculation | 84 |
-| 8 | Remove K Digits | Hard | Monotonic stack + greedy | 402 |
-
-### Interview Questions (6 Questions)
-
-1. **Next Greater Follow-up:** "What if we need next greater to the LEFT instead?" (Answer: Process right-to-left with same logic)
-2. **Stock Span Follow-up:** "What if we need prices ≥ instead of ≤?" (Answer: Adjust comparison operator)
-3. **Trapping Water:** "How would you solve with O(1) space?" (Answer: Two-pointer approach, different technique)
-4. **Why Stack Over DP?" "Compare efficiency to precomputing left/right max" (Answer: Better cache locality, fewer memory writes)
-5. **Production Question:** "How would you handle streaming data arriving faster than processing?" (Answer: Buffering strategy, monotonic stack still O(1) amortized)
-6. **Variant:** "Find next greater in circular array?" (Answer: Process array twice, or use modulo in index)
-
-### Common Misconceptions
-
-- **Myth:** "Monotonic stacks only work for strictly increasing/decreasing"  
-  **Reality:** Works for non-strict (≤, ≥) too; just adjust comparison operators
-
-- **Myth:** "Stack must contain values"  
-  **Reality:** Stack usually contains indices; values accessed via array lookup
-
-- **Myth:** "Monotonic stack is always faster than DP"  
-  **Reality:** Asymptotically same O(n), but better constants; DP might be clearer
-
-- **Myth:** "Trapping water requires monotonic stack"  
-  **Reality:** Multiple solutions: stack, DP, two-pointer all O(n)
-
----
-
-### Advanced Concepts (3 Topics)
-
-1. **Monotonic Deque:** Extend monotonic stack concept to deques (push/pop both ends) for sliding window optimization in DP.
-
-2. **Convex Hull:** Graham scan uses monotonic stack on sorted points to find convex hull in O(n) time.
-
-3. **Suffix Arrays:** Build suffix arrays using monotonic stacks for pattern matching in O(n log n).
-
----
-
-### External Resources
-
-- **"Cracking the Coding Interview" by Gayle Laakmann McDowell**: Chapter on stacks; good for interview preparation  
-- **LeetCode Discuss:** Read solutions for 496, 739, 42 to see different approaches  
-- **Geeksforgeeks "Monotonic Stack"**: Clear explanation with multiple problems
-
----
-
-## 🎯 FINAL REFLECTION
-
-Monotonic stacks represent a maturation in algorithmic thinking. You're no longer just implementing data structures; you're **using invariants to solve optimization problems.**
-
-The mental shift is powerful: Instead of "search for the answer," you think "maintain the right state, and the answer emerges as a side effect."
-
-This principle—maintaining invariants, popping when violated—will appear again in:
-- Graph algorithms (DFS maintains visited set)
-- DP (state maintains best solution so far)
-- Geometry (convex hull maintains extremal points)
-
-By mastering monotonic stacks on Day 2, you're building the intuition for a whole category of O(n) algorithms.
+Monotonic stacks represent algorithmic maturity: moving from brute-force future searches to **state-deferred boundary resolution**. By allowing the incoming stream of elements to act as natural triggers, complex quadratic algorithms collapse into clean, linear pipelines. Master index tracking and width calculation, and monotonic stacks will become one of your sharpest interview advantages.
 
 ---
 > 🧭 **Navigation:** [← Previous Day](Week_05_Day_01_Hash_Map_Hash_Set_Patterns_Instructional_EXPANDED.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_05_Day_03_Merge_Operations_Interval_Patterns_Instructional.md)

@@ -150,205 +150,234 @@ Key insight: Partition cost is O(n), but tree depth depends on pivot quality
 
 ### 🔧 Operation 1: Merge Sort (Detailed)
 
-```csharp
-public class MergeSort {
-    // Top-level entry point
-    public static void Sort(int[] arr) {
-        if (arr.Length <= 1) return;
-        
-        int mid = arr.Length / 2;
-        int[] left = arr[..mid];
-        int[] right = arr[mid..];
-        
-        Sort(left);
-        Sort(right);
-        
-        Merge(arr, left, right);
-    }
-    
-    private static void Merge(int[] target, int[] left, int[] right) {
-        int i = 0, j = 0, k = 0;
-        
-        // Core merge: compare left[i] and right[j], take smaller
-        while (i < left.Length && j < right.Length) {
-            if (left[i] <= right[j]) {
-                target[k++] = left[i++];
-            } else {
-                target[k++] = right[j++];
-            }
-        }
-        
-        // Copy remaining elements (only one will have leftovers)
-        while (i < left.Length) target[k++] = left[i++];
-        while (j < right.Length) target[k++] = right[j++];
-    }
-}
-
-// Trace for [5, 2, 8, 1]:
-// Sort [5, 2, 8, 1]
-//   Sort [5, 2]
-//     Sort [5]  (base case)
-//     Sort [2]  (base case)
-//     Merge: [2, 5]
-//   Sort [8, 1]
-//     Sort [8]  (base case)
-//     Sort [1]  (base case)
-//     Merge: [1, 8]
-//   Merge [2, 5] and [1, 8]:
-//     Compare 2 vs 1: take 1 → [1]
-//     Compare 2 vs 8: take 2 → [1, 2]
-//     Compare 5 vs 8: take 5 → [1, 2, 5]
-//     Copy 8 → [1, 2, 5, 8]
-
-// Complexity Analysis:
-// T(n) = 2×T(n/2) + O(n)  [divide + merge]
-// By master theorem: T(n) = O(n log n)
-// Space: O(n) for temporary arrays
-// Stability: Yes (≤ preserves order)
-// In-place: No
+```text
+Divide-and-Conquer Merge Tree:
+               [ 5 | 2 | 8 | 1 ]
+                  /         \
+            [ 5 | 2 ]     [ 8 | 1 ]
+             /     \       /     \
+           [ 5 ]  [ 2 ]  [ 8 ]  [ 1 ]       <- Base cases: arrays of size 1
+             \     /       \     /
+            [ 2 | 5 ]     [ 1 | 8 ]         <- Linear-time merge steps
+                  \         /
+               [ 1 | 2 | 5 | 8 ]            <- Final merged array
 ```
 
-**In-Place Merge Sort (Advanced):**
+#### C# Implementation (Production-Grade with Pre-Allocated Auxiliary Buffer)
 
 ```csharp
 using System;
 
-// Standard merge sort uses O(n) extra space
-// In-place merge is possible but complex (O(n) time but intricate)
-// Most practical implementations trade simplicity for extra space
-
-public class MergeSortInPlace {
-    public static void SortInPlace(int[] arr, int left, int right) {
-        if (left >= right) return;
-        
-        int mid = left + (right - left) / 2;
-        SortInPlace(arr, left, mid);
-        SortInPlace(arr, mid + 1, right);
-        
-        MergeInPlace(arr, left, mid, right);
+public class MergeSort {
+    // Public API entry point
+    public static void Sort(int[] arr) {
+        if (arr.Length <= 1) return;
+        // Allocate single auxiliary buffer upfront to avoid O(N log N) allocations
+        int[] aux = new int[arr.Length];
+        Sort(arr, aux, 0, arr.Length - 1);
     }
     
-    private static void MergeInPlace(int[] arr, int left, int mid, int right) {
-        // In-place merge is O(n) time but with high constant factor
-        // Using a temporary array is often faster in practice
-        int[] temp = new int[right - left + 1];
-        int i = left, j = mid + 1, k = 0;
+    private static void Sort(int[] arr, int[] aux, int low, int high) {
+        if (low >= high) return;
         
-        while (i <= mid && j <= right) {
-            if (arr[i] <= arr[j]) {
-                temp[k++] = arr[i++];
-            } else {
-                temp[k++] = arr[j++];
-            }
+        int mid = low + (high - low) / 2;
+        Sort(arr, aux, low, mid);
+        Sort(arr, aux, mid + 1, high);
+        Merge(arr, aux, low, mid, high);
+    }
+    
+    private static void Merge(int[] arr, int[] aux, int low, int mid, int high) {
+        // Optimization: If subarray is already sorted, skip merge step
+        if (arr[mid] <= arr[mid + 1]) return;
+        
+        // Copy segment to auxiliary buffer
+        Array.Copy(arr, low, aux, low, high - low + 1);
+        
+        int i = low, j = mid + 1;
+        for (int k = low; k <= high; k++) {
+            if (i > mid)               arr[k] = aux[j++];
+            else if (j > high)         arr[k] = aux[i++];
+            else if (aux[j] < aux[i])  arr[k] = aux[j++];
+            else                       arr[k] = aux[i++]; // <= maintains stability
         }
-        
-        while (i <= mid) temp[k++] = arr[i++];
-        while (j <= right) temp[k++] = arr[j++];
-        
-        Array.Copy(temp, 0, arr, left, temp.Length);
     }
 }
 ```
 
-### 🔧 Operation 2: Quick Sort (Detailed)
+#### Python Implementation (Stable MergeSort with Auxiliary Buffer)
+
+```python
+def merge_sort(arr: list[int]) -> list[int]:
+    """Production-grade stable MergeSort with pre-allocated auxiliary buffer.
+    
+    Time: O(N log N) best/avg/worst | Auxiliary Space: O(N) | Stable
+    """
+    if len(arr) <= 1:
+        return arr
+    
+    aux = [0] * len(arr)
+    
+    def _sort(low: int, high: int) -> None:
+        if low >= high:
+            return
+        mid = (low + high) // 2
+        _sort(low, mid)
+        _sort(mid + 1, high)
+        _merge(low, mid, high)
+        
+    def _merge(low: int, mid: int, high: int) -> None:
+        if arr[mid] <= arr[mid + 1]:
+            return
+        aux[low:high + 1] = arr[low:high + 1]
+        i, j = low, mid + 1
+        for k in range(low, high + 1):
+            if i > mid:
+                arr[k] = aux[j]
+                j += 1
+            elif j > high:
+                arr[k] = aux[i]
+                i += 1
+            elif aux[j] < aux[i]:
+                arr[k] = aux[j]
+                j += 1
+            else:
+                arr[k] = aux[i]
+                i += 1
+
+    _sort(0, len(arr) - 1)
+    return arr
+```
+
+### 🔧 Operation 2: Quick Sort & 3-Way Partitioning (Detailed)
+
+```text
+QuickSort 3-Way Partitioning Memory Layout (Dijkstra's Dutch National Flag):
++-----------------+-----------------+----------------------+-----------------+
+|    < pivot      |    == pivot     |     unexamined       |    > pivot      |
++-----------------+-----------------+----------------------+-----------------+
+^                 ^                 ^                      ^                 ^
+low               lt                i                      gt                high
+
+Invariants:
+- arr[low..lt-1] strictly less than pivot
+- arr[lt..i-1]   equal to pivot
+- arr[i..gt]     unexamined elements
+- arr[gt+1..high] strictly greater than pivot
+```
+
+#### C# Implementation (Randomized Lomuto, Hoare, and 3-Way Partition)
 
 ```csharp
 using System;
 
 public class QuickSort {
+    private static readonly Random Rand = new();
+
     public static void Sort(int[] arr) {
         if (arr.Length <= 1) return;
-        Sort(arr, 0, arr.Length - 1);
+        SortThreeWay(arr, 0, arr.Length - 1);
     }
     
-    private static void Sort(int[] arr, int low, int high) {
-        if (low < high) {
-            int pi = Partition(arr, low, high);
-            
-            Sort(arr, low, pi - 1);   // Sort left of pivot
-            Sort(arr, pi + 1, high);  // Sort right of pivot
-        }
-    }
-    
-    // Lomuto Partition Scheme (simple)
-    private static int PartitionLomuto(int[] arr, int low, int high) {
-        int pivot = arr[high];
-        int i = low - 1;
+    // 3-Way Partitioning (Dutch National Flag) - O(N) on all-equal keys
+    public static void SortThreeWay(int[] arr, int low, int high) {
+        if (low >= high) return;
         
-        for (int j = low; j < high; j++) {
-            if (arr[j] < pivot) {
+        // Defend against adversarial sorted data via random pivot
+        int pivotIdx = low + Rand.Next(high - low + 1);
+        (arr[low], arr[pivotIdx]) = (arr[pivotIdx], arr[low]);
+        
+        int pivot = arr[low];
+        int lt = low;       // arr[low..lt-1] < pivot
+        int gt = high;      // arr[gt+1..high] > pivot
+        int i = low + 1;    // arr[lt..i-1] == pivot
+        
+        while (i <= gt) {
+            if (arr[i] < pivot) {
+                (arr[lt], arr[i]) = (arr[i], arr[lt]);
+                lt++;
                 i++;
-                (arr[i], arr[j]) = (arr[j], arr[i]);  // Swap
+            } else if (arr[i] > pivot) {
+                (arr[i], arr[gt]) = (arr[gt], arr[i]);
+                gt--;
+            } else {
+                i++;
             }
         }
         
-        (arr[i + 1], arr[high]) = (arr[high], arr[i + 1]);  // Place pivot
+        // Recurse strictly outside the equal range
+        SortThreeWay(arr, low, lt - 1);
+        SortThreeWay(arr, gt + 1, high);
+    }
+    
+    // Lomuto Partition Scheme (simple, 1 pointer)
+    public static int PartitionLomuto(int[] arr, int low, int high) {
+        int pivot = arr[high];
+        int i = low - 1;
+        for (int j = low; j < high; j++) {
+            if (arr[j] < pivot) {
+                i++;
+                (arr[i], arr[j]) = (arr[j], arr[i]);
+            }
+        }
+        (arr[i + 1], arr[high]) = (arr[high], arr[i + 1]);
         return i + 1;
     }
     
-    // Hoare Partition Scheme (faster, more complex)
-    private static int PartitionHoare(int[] arr, int low, int high) {
+    // Hoare Partition Scheme (two inward pointers, fewer swaps)
+    public static int PartitionHoare(int[] arr, int low, int high) {
         int pivot = arr[low];
         int i = low - 1;
         int j = high + 1;
-        
         while (true) {
-            do {
-                i++;
-            } while (i < high && arr[i] < pivot);
-            
-            do {
-                j--;
-            } while (j > low && arr[j] > pivot);
-            
+            do { i++; } while (arr[i] < pivot);
+            do { j--; } while (arr[j] > pivot);
             if (i >= j) return j;
-            
             (arr[i], arr[j]) = (arr[j], arr[i]);
         }
     }
-    
-    // Randomized Pivot Selection (avoid O(n²) worst case)
-    private static int Partition(int[] arr, int low, int high) {
-        Random rand = new();
-        int randomIndex = low + rand.Next(high - low + 1);
-        
-        // Swap random pivot to end
-        (arr[randomIndex], arr[high]) = (arr[high], arr[randomIndex]);
-        
-        return PartitionLomuto(arr, low, high);
-    }
 }
+```
 
-// Trace for [5, 2, 8, 1, 9] with Lomuto partition:
-// Partition with pivot 9 (arr[4]):
-//   i = -1
-//   j = 0: arr[0] = 5 < 9, i = 0, swap arr[0] with arr[0] → no change
-//   j = 1: arr[1] = 2 < 9, i = 1, swap arr[1] with arr[1] → no change
-//   j = 2: arr[2] = 8 < 9, i = 2, swap arr[2] with arr[2] → no change
-//   j = 3: arr[3] = 1 < 9, i = 3, swap arr[3] with arr[3] → no change
-//   Place pivot: swap arr[4] with arr[4] → [5, 2, 8, 1, 9]
-//   Return pivot index 4
-//
-// Left: [5, 2, 8, 1]  Right: []
-// Partition [5, 2, 8, 1] with pivot 1:
-//   i = -1
-//   j = 0: 5 >= 1, skip
-//   j = 1: 2 >= 1, skip
-//   j = 2: 8 >= 1, skip
-//   j = 3: j == high, exit
-//   Place pivot: swap arr[3] with arr[0] → [1, 2, 8, 5]
-//   Return pivot index 0
-//
-// Continue recursively...
-// Final: [1, 2, 5, 8, 9]
+#### Python Implementation (Randomized QuickSort with 3-Way Partitioning)
 
-// Complexity Analysis:
-// Best/Average: T(n) = 2×T(n/2) + O(n) = O(n log n)
-// Worst-case: T(n) = T(n-1) + O(n) = O(n²)  (bad pivot choice)
-// Randomized: Reduces chance of O(n²) to O(1/2^n)
-// Space: O(log n) recursion stack (average), O(n) worst-case
-// Stability: No (partition reorders)
-// In-place: Yes
+```python
+import random
+
+def quick_sort_3way(arr: list[int]) -> list[int]:
+    """QuickSort with 3-way partition (Dutch National Flag).
+    
+    Time: O(N) on all-equal keys, O(N log N) expected average, O(N^2) adversarial worst
+    Auxiliary Space: O(log N) stack frames | In-place | Unstable
+    """
+    def _sort(low: int, high: int) -> None:
+        if low >= high:
+            return
+        
+        # Randomized pivot swap to front
+        pivot_idx = random.randint(low, high)
+        arr[low], arr[pivot_idx] = arr[pivot_idx], arr[low]
+        pivot = arr[low]
+        
+        lt = low        # arr[low..lt-1] < pivot
+        i = low + 1     # arr[lt..i-1] == pivot
+        gt = high       # arr[gt+1..high] > pivot
+        
+        while i <= gt:
+            if arr[i] < pivot:
+                arr[lt], arr[i] = arr[i], arr[lt]
+                lt += 1
+                i += 1
+            elif arr[i] > pivot:
+                arr[i], arr[gt] = arr[gt], arr[i]
+                gt -= 1
+            else:
+                i += 1
+                
+        _sort(low, lt - 1)
+        _sort(gt + 1, high)
+
+    _sort(0, len(arr) - 1)
+    return arr
 ```
 
 ### 🔧 Operation 3: Hybrid Approaches (Real Systems)
@@ -424,9 +453,9 @@ public class SortingComparison {
         Console.WriteLine($"Depth: {n} (if pivot always smallest)");
         Console.WriteLine($"Work per level: decreasing {n}, {n-1}, ..., 1");
         Console.WriteLine($"Total: {n * (n + 1) / 2} comparisons");
-        Console.WriteLine($"Theoretical: O(n²) = O({n * n})");
+        Console.WriteLine($"Theoretical: O(n^2) = O({n * n})");
         
-        // Key insight: With randomized pivot, probability of O(n²) is negligible
+        // Key insight: With randomized pivot, probability of O(n^2) is negligible
     }
 }
 ```
@@ -501,44 +530,41 @@ if (left[i] <= right[j]) {
 - **Merge Sort:** Need stability, guaranteed O(n log n), data on disk (external sort)
 - **Quick Sort:** In-place sorting, real-time systems, cache-friendly average case
 
-### Real Systems: Where These Algorithms Appear
+### 🏭 Real-World Systems & Engineering Context
 
-> **🏭 Real-World Systems Story 1: Database Query Execution**
+> [!NOTE]
+> **Production Engineering Context:** In industrial systems (PostgreSQL, Linux kernel, C++ STL, .NET BCL), sorting algorithms are chosen along the stability vs. allocation frontier. MergeSort's strict predictability and cache-oblivious sequential streaming make it the gold standard for external sorts (disk spills, MapReduce shuffles) and immutable datasets. Conversely, QuickSort dominates in-memory sorting due to superior cache hit ratios and in-place partitioning. Production frameworks mitigate QuickSort's `O(N^2)` worst-case via Introsort (Musser, 1997): running QuickSort until recursion depth reaches `2 * floor(log2(N))`, then dynamically falling back to HeapSort (`O(N log N)` guarantee) and Insertion Sort for sub-slices (`N <= 16`).
 
-SQL "ORDER BY" clause:
-- Small result set (< 1000): Insertion sort
-- Medium set (1000–100K): Quick sort
-- Large set (> 100K): Merge sort (stable, predictable) or external sort (data > RAM)
+### 📐 Theoretical Limits: Comparison-Based Lower Bound
 
-Database optimizers choose based on data size, index availability, and stability requirements.
+> [!NOTE]
+> **Decision Tree Lower Bound:** Every comparison sort can be modeled as a binary decision tree of height `h`, where each leaf represents one of `N!` possible permutations. To differentiate all permutations, the tree must contain at least `N!` leaves: `2^h >= N! => h >= log2(N!) = Omega(N log N)` (via Stirling's approximation). Thus, MergeSort achieves the theoretical lower bound `Omega(N log N)` in all cases; no comparison-based sort can asymptotically beat `O(N log N)`.
 
-> **🏭 Real-World Systems Story 2: Linux Kernel Heapsort Fallback**
+### 📊 Complexity Deconstruction
 
-Linux kernel uses an adaptive sort:
-1. Start with quick sort (fast average case)
-2. If recursion depth exceeds 2×log(n), switch to heap sort (guarantee O(n log n))
-3. For small arrays (< 32), use insertion sort
+| Algorithm | Best-Case Time | Average-Case Time | Worst-Case Time | Auxiliary Space | Output Space | In-Place? | Stable? | Primary Failure Mode |
+| :--- | :--- | :--- | :--- | :--- | :--- | :---: | :---: | :--- |
+| **Merge Sort** | `O(N log N)` | `O(N log N)` | `O(N log N)` | `O(N)` | `O(N)` or `O(1)` | No | Yes | High auxiliary heap allocation without buffer reuse. |
+| **QuickSort (2-Way Lomuto)** | `O(N log N)` | `O(N log N)` | `O(N^2)` | `O(log N)` avg, `O(N)` worst | `O(1)` | Yes | No | Sorted/reverse input with endpoint pivot; all-equal keys. |
+| **QuickSort (2-Way Hoare)** | `O(N log N)` | `O(N log N)` | `O(N^2)` | `O(log N)` avg, `O(N)` worst | `O(1)` | Yes | No | Adversarial pivot choices; un-randomized inputs. |
+| **QuickSort (3-Way Dutch Flag)**| `O(N)` (all equal) | `O(N log N)` | `O(N^2)` | `O(log N)` avg | `O(1)` | Yes | No | Unbalanced partitions under highly skewed unique keys. |
 
-This (Introsort) guarantees O(n log n) while maintaining quick sort's practical speed.
+- **Time Complexity:** MergeSort strictly guarantees `Theta(N log N)` comparisons. QuickSort with randomized pivot guarantees expected `1.39 N log2(N)` comparisons. QuickSort with 3-way partition collapses duplicate arrays to linear `O(N)` time.
+- **Auxiliary Space:** MergeSort requires `O(N)` auxiliary array memory plus `O(log N)` call stack frames. QuickSort requires `O(1)` heap memory and `O(log N)` stack frames on average (`O(N)` worst-case without tail-call recursion optimization).
+- **Output Space:** `O(1)` when sorting the input buffer in-place.
 
-> **🏭 Real-World Systems Story 3: Distributed Systems & MapReduce**
+### 🎙️ 45-Minute Interview Verbal Script
 
-MapReduce sorting phase uses merge sort principles:
-1. Each mapper sorts locally (quick sort)
-2. Shuffle phase: merge sorted streams from all mappers
-3. Reducer receives sorted input, processes in order
+**Interviewer:** *"Why does quicksort generally outperform mergesort in practice despite having a worse worst-case time complexity, and how do you protect quicksort in production?"*
 
-At scale, avoiding worst-case O(n²) is critical; merge sort's stability is also valuable.
-
-### Complexity Theory
-
-**Lower Bound Proof (Sketch):**
-- There are n! permutations of n elements
-- Each comparison answers one binary question (< or ≥)
-- To distinguish all n! permutations, need log₂(n!) = Θ(n log n) comparisons
-- Therefore, O(n log n) is a fundamental lower bound for comparison-based sorting
-
-Both merge sort and quick sort achieve this bound (on average or worst-case), so they're optimal.
+**Candidate Verbal Response:**
+> "While MergeSort provides an ironclad `O(N log N)` worst-case guarantee and is stable, QuickSort is typically 2x to 3x faster in practice for contiguous in-memory arrays. This disparity comes down to memory hierarchy and constant factors:
+> 
+> 1. **Cache Locality & Memory Bandwidth:** QuickSort partitions the array completely in-place. Its inner loop consists of contiguous forward and backward scans that leverage CPU L1/L2 prefetching and cache lines without extra heap traffic. MergeSort, by contrast, must write to and read from an auxiliary buffer of size `N`, incurring double the memory bandwidth and high allocation churn unless the buffer is pre-allocated.
+> 2. **Handling the `O(N^2)` Degradation:** Naive QuickSort degrades to `O(N^2)` when pivots create skewed partitions (`0` vs `N - 1` elements). To make QuickSort production-safe:
+>    - We use **randomized pivot selection** or median-of-three to eliminate deterministic adversarial triggers on sorted or reverse-sorted data.
+>    - We use **Dijkstra's 3-way partitioning**, which splits the array into `< pivot`, `== pivot`, and `> pivot`. This guarantees that arrays with heavy duplicate keys sort in linear `O(N)` time instead of quadratic `O(N^2)`.
+>    - In production frameworks (like .NET or C++ `std::sort`), we implement **Introsort**: if recursion depth exceeds `2 * log2(N)`, the algorithm switches to HeapSort, establishing an unconditional `O(N log N)` worst-case safety net."
 
 ---
 
@@ -549,11 +575,11 @@ Both merge sort and quick sort achieve this bound (on average or worst-case), so
 **Building on Week 1–2:**
 - **Recursion (Week 1 Day 5):** Merge sort and quick sort are canonical recursion examples
 - **Arrays (Week 2 Day 1):** Both operate on arrays in-place or with temporary storage
-- **Big-O Analysis (Week 1 Day 2):** Recurrence relations (T(n) = 2×T(n/2) + O(n)) solved via master theorem
+- **Big-O Analysis (Week 1 Day 2):** Recurrence relations (`T(n) = 2*T(n/2) + O(n)`) solved via master theorem
 
 **Building on Week 3 Day 1:**
-- **Elementary Sorts (Day 1):** Understand why O(n²) is inadequate
-- **Today:** Practical O(n log n) solutions
+- **Elementary Sorts (Day 1):** Understand why `O(n^2)` is inadequate
+- **Today:** Practical `O(n log n)` solutions
 - **Day 3 (Heaps):** Heap sort alternative; heaps enable priority queues
 
 **Foreshadowing Future Weeks:**
@@ -570,16 +596,16 @@ Both merge sort and quick sort achieve this bound (on average or worst-case), so
 - Appears in: Quick sort, quickselect (finding kth smallest), Hoare partition
 
 **Pattern 3: Recursion with Recurrence Relations**
-- Master theorem solves T(n) = a×T(n/b) + O(n^d)
+- Master theorem solves `T(n) = a*T(n/b) + O(n^d)`
 - Applies to: Merge sort, quick sort, FFT, matrix multiply
 
 ### Socratic Reflection
 
-1. **On Optimality:** Why is O(n log n) a lower bound for comparison-based sorting?
+1. **On Optimality:** Why is `O(n log n)` a lower bound for comparison-based sorting?
 
-2. **On Trade-Offs:** Why does merge sort use O(n) space while quick sort doesn't?
+2. **On Trade-Offs:** Why does merge sort use `O(n)` space while quick sort doesn't?
 
-3. **On Worst-Case:** How does randomizing pivot selection prevent O(n²) in quick sort?
+3. **On Worst-Case:** How does randomizing pivot selection prevent `O(n^2)` in quick sort?
 
 4. **On Practice:** Why do real systems use hybrid approaches (introsort)?
 
@@ -587,32 +613,7 @@ Both merge sort and quick sort achieve this bound (on average or worst-case), so
 
 ### 📌 Retention Hook
 
-> **The Essence:** *"Divide-and-conquer is the algorithmic superpower. Split a problem into independent subproblems, solve recursively, combine results. Merge sort and quick sort are textbook examples: O(n log n) with fundamentally different trade-offs. Master both—their mechanics, their pitfalls, their real-world variants—and you master a principle that recurs throughout computer science."*
-
----
-
-## 🧠 5 COGNITIVE LENSES
-
-### 💻 The Hardware Lens: Cache & Memory Access
-
-Merge sort does sequential writes (cache-friendly). Quick sort does random jumps (cache-unfriendly). But quick sort's lower constants often dominate in practice.
-
-### 📉 The Trade-off Lens: Stability vs Space vs Worst-Case
-
-Merge sort: Stable, O(n) space, guaranteed O(n log n).
-Quick sort: Unstable, O(log n) space, risky O(n²) worst-case.
-
-### 👶 The Learning Lens: Understanding Recursion
-
-Merge sort and quick sort are the most intuitive recursion examples. Understanding how recursion unfolds into a tree of subproblems is foundational.
-
-### 🤖 The AI/ML Lens: Sorting for Data Processing
-
-Machine learning pipelines sort data for batching, distributed training, and streaming aggregation. Choosing the right sort is critical for performance.
-
-### 📜 The Historical Lens: From Bubble Sort to Timsort
-
-Bubble sort (1950s) → Merge sort (1945, Neumann) → Quick sort (1960, Hoare) → Introsort (Musser, 1997) → Timsort (2002, Peters). Evolution shows algorithmic refinement.
+> **The Essence:** *"Divide-and-conquer is the algorithmic superpower. Split a problem into independent subproblems, solve recursively, combine results. Merge sort and quick sort are textbook examples: `O(n log n)` with fundamentally different trade-offs. Master both—their mechanics, their pitfalls, their real-world variants—and you master a principle that recurs throughout computer science."*
 
 ---
 

@@ -1,4 +1,4 @@
-# LLD Problem #25: E-Commerce Coupon & Discount Rule Engine
+﻿# LLD Problem #25: E-Commerce Coupon & Discount Rule Engine
 
 **Tier:** 🟡 Tier 2 (Classic LLD — State & Strategy Mastery)  
 **Problem Family:** 🟢 Family 2 — Strategy & Extensible Rules / 🟡 Family 3 — Stateful Workflow Engine  
@@ -32,12 +32,12 @@ In global e-commerce and quick-commerce platforms (**Amazon, Flipkart, Swiggy, Z
 ## 🎯 CrackingWalnuts 6-Step Methodology Applied
 
 ```mermaid
-flowchart LR
-    A["1. Requirement Mining\n• % with Cap\n• Flat & BxGy\n• Min Cart Value\n• Stackability & Exclusivity"] --> B["2. Class Discovery\n• Cart, CartItem, Product\n• DiscountRule, Coupon\n• IRuleSpecification\n• IDiscountStrategy"]
-    B --> C["3. Relationship Modeling\n• Composite Specs (AND/OR)\n• DiscountPipeline (Chain)\n• Coupon (1:1) Rule"]
-    C --> D["4. Pattern Injection\n• Strategy (Calculation)\n• Composite (Eligibility)\n• Pipeline (Staged Evaluation)"]
-    D --> E["5. Edge Cases & Safety\n• Negative subtotal clamp\n• Non-commutative stacking\n• High-concurrency quota locking"]
-    E --> F["6. Production Defense\n• Distributed Atomic Decrement\n• AST / Expression Engine"]
+flowchart TD
+    A["1. Requirement Mining<br/>• % with Cap<br/>• Flat & BxGy<br/>• Min Cart Value<br/>• Stackability & Exclusivity"] --> B["2. Class Discovery<br/>• Cart, CartItem, Product<br/>• DiscountRule, Coupon<br/>• IRuleSpecification<br/>• IDiscountStrategy"]
+    B --> C["3. Relationship Modeling<br/>• Composite Specs (AND/OR)<br/>• DiscountPipeline (Chain)<br/>• Coupon (1:1) Rule"]
+    C --> D["4. Pattern Injection<br/>• Strategy (Calculation)<br/>• Composite (Eligibility)<br/>• Pipeline (Staged Evaluation)"]
+    D --> E["5. Edge Cases & Safety<br/>• Negative subtotal clamp<br/>• Non-commutative stacking<br/>• High-concurrency quota locking"]
+    E --> F["6. Production Defense<br/>• Distributed Atomic Decrement<br/>• AST / Expression Engine"]
 ```
 
 ---

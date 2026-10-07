@@ -1,4 +1,4 @@
-# 📘 Core Problem-Solving Patterns I
+﻿# 📘 Core Problem-Solving Patterns I
 
 > 🧭 **Navigation:** [← Previous: Week 03](../week_03_foundations_iii_sorting_and_hashing/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 05 →](../week_05_tier_1_critical_patterns/README.md)
 
@@ -14,7 +14,7 @@
 Master two-pointer techniques, fixed and variable sliding windows, divide-and-conquer decompositions, and binary search on answer spaces.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start["Week 04 Start"] --> Daily["Daily Invariant Deep Dives"]
     Daily --> Playbook["Consolidated Playbook & Visuals"]
     Playbook --> DualLang["Dual-Language Practice (C# & Python)"]

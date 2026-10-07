@@ -1,4 +1,4 @@
-# 📊 Week_09_Visual_Concepts_Playbook_HYBRID.md
+﻿# 📊 Week_09_Visual_Concepts_Playbook_HYBRID.md
 
 > 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)
 > 
@@ -132,8 +132,9 @@ flowchart LR
     U["Node u<br/>dist[u] = 5"]:::known
     V["Node v<br/>Old dist[v] = 12"]:::target
     U -->|Edge weight w = 3| V
-    Rel{"⚖️ Is dist[u] + w < dist[v]?<br/>5 + 3 = 8 < 12"}
-    U & V --> Rel
+    Rel{"⚖️ Is dist[u] + w &lt; dist[v]?<br/>5 + 3 = 8 &lt; 12"}
+    U --> Rel
+    V --> Rel
     Rel -->|Yes: Relax Edge| NewV["✅ Update dist[v] = 8<br/>parent[v] = u"]:::action
 ```
 
@@ -234,9 +235,9 @@ flowchart TD
     classDef check fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:1.5px;
     classDef alert fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:2px;
 
-    P1["1️⃣ Pass 1: Guaranteed optimal for paths with <= 1 edge"]:::pass
-    P1 --> P2["2️⃣ Pass 2: Guaranteed optimal for paths with <= 2 edges"]:::pass
-    P2 --> PV["... Pass V-1: Guaranteed optimal for all simple paths (<= V-1 edges)"]:::pass
+    P1["1️⃣ Pass 1: Guaranteed optimal for paths with &le; 1 edge"]:::pass
+    P1 --> P2["2️⃣ Pass 2: Guaranteed optimal for paths with &le; 2 edges"]:::pass
+    P2 --> PV["... Pass V-1: Guaranteed optimal for all simple paths (&le; V-1 edges)"]:::pass
     PV --> CHK["🔍 Pass V: Negative Cycle Detection Check<br/>Iterate all edges one more time"]:::check
     CHK -->|Any dist improves?| Alert["🚨 Negative Weight Cycle Reachable from Source!"]:::alert
     CHK -->|No improvements| Done["✅ Shortest Paths Fully Converged and Valid"]:::pass
@@ -418,26 +419,14 @@ flowchart TD
 
 ## Kruskal vs. Prim Comparison
 
-
-```mermaid
-flowchart LR
-    classDef k fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
-    classDef p fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
-
-    subgraph Kruskal["⚡ Kruskal's Algorithm"]
-        K1["• Edge-centric (global sort)"]:::k
-        K2["• Data Structure: DSU"]:::k
-        K3["• Time: O(E log E)"]:::k
-        K4["• Ideal for: Sparse Graphs (E << V²)"]:::k
-    end
-
-    subgraph Prim["⚡ Prim's Algorithm"]
-        P1["• Vertex-centric (local growing cut)"]:::p
-        P2["• Data Structure: Min-Heap PQ"]:::p
-        P3["• Time: O((V + E) log V)"]:::p
-        P4["• Ideal for: Dense Graphs (E ≈ V²)"]:::p
-    end
-```
+| Dimension | ⚡ Kruskal's Algorithm | ⚡ Prim's Algorithm |
+| :--- | :--- | :--- |
+| **Strategy & Centricity** | Edge-centric (global greedy sort) | Vertex-centric (local growing cut) |
+| **Primary Data Structure** | Disjoint Set Union (DSU / Union-Find) | Min-Heap Priority Queue |
+| **Time Complexity** | O(E log E) or O(E log V) | O((V + E) log V) |
+| **Space Complexity** | O(V) auxiliary (DSU parent and rank) | O(V) auxiliary (heap and visited) |
+| **Optimal Graph Density** | **Sparse Graphs** (E << V^2) | **Dense Graphs** (E ≈ V^2) |
+| **Edge Representation** | Edge List | Adjacency List |
 
 
 ## Cut Property: Why Greedy Works
@@ -634,7 +623,7 @@ Notes:
   - Negative Weights / Cycle Detection → Bellman–Ford: O(V * E)
   - All-Pairs Shortest Path (Dense / Small V) → Floyd–Warshall: O(V³)
 - **🌲 Minimum Spanning Tree (MST)**
-  - Sparse Graphs (E << V²) → Kruskal's Algorithm: O(E log E) with DSU
+  - Sparse Graphs (E &lt;&lt; V^2) → Kruskal's Algorithm: O(E log E) with DSU
   - Dense Graphs (E ≈ V²) → Prim's Algorithm: O((V + E) log V) with PQ
 - **🔗 Connectivity & Equivalence**
   - Dynamic Edge Additions & Cycle Detection → Disjoint Set Union (DSU): O(α(N))
@@ -707,18 +696,13 @@ DSU:
 
 ## Visual Summary: When to Use Each Algorithm
 
-
-```mermaid
-flowchart LR
-    classDef prob fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
-    classDef algo fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
-
-    P1["GPS / Routing (Non-negative)"]:::prob --> A1["⚡ Dijkstra (Min-Heap)"]:::algo
-    P2["Currency Arbitrage / Forex"]:::prob --> A2["⚡ Bellman–Ford (Negative Cycles)"]:::algo
-    P3["All-Pairs Transit Matrix (V <= 400)"]:::prob --> A3["⚡ Floyd–Warshall (3-Loop DP)"]:::algo
-    P4["Network Cabling / Clustering"]:::prob --> A4["⚡ Kruskal's / Prim's MST"]:::algo
-    P5["Dynamic Social Circles / Merging"]:::prob --> A5["⚡ Disjoint Set Union (DSU)"]:::algo
-```
+| Problem Domain / Use Case | Recommended Algorithm | Key Mechanism & Invariant |
+| :--- | :--- | :--- |
+| **GPS / Network Routing (Non-negative weights)** | **⚡ Dijkstra's Algorithm** | Min-Heap priority queue; greedily settle nearest unsettled vertex |
+| **Currency Arbitrage / Forex (Negative weights/cycles)** | **⚡ Bellman–Ford Algorithm** | V - 1 edge relaxations; detect negative cycle on V-th pass |
+| **All-Pairs Transit Matrix (V <= 400)** | **⚡ Floyd–Warshall Algorithm** | 3-loop dynamic programming: dp[i, j] = min(dp[i, j], dp[i, k] + dp[k, j]) |
+| **Network Cabling / Minimum Spanning Tree** | **⚡ Kruskal's / Prim's MST** | Cut property; greedily add lowest-weight non-cycle edge |
+| **Dynamic Connected Components / Merging Groups** | **⚡ Disjoint Set Union (DSU)** | Near O(1) amortized via Path Compression and Union by Rank |
 
 
 ---

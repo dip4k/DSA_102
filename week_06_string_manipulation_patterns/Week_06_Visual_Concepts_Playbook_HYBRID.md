@@ -16,7 +16,7 @@
 
 ---
 
-## 📖 Visual Legend & Resource Guide
+## 📖 Visual Legend
 
 ### Symbol Reference
 
@@ -30,17 +30,6 @@
 | ✅ | Correct | Proper approach, working solution |
 | 💾 | Memory | State tracking, data layout |
 | 🎯 | Key Concept | Core insight, critical idea |
-
-### Professional Visualization Resources
-
-| Resource | URL | Best For | Integration |
-|----------|-----|----------|-------------|
-| **WEBRESOURCE1** | https://www.cs.usfca.edu/~galles/visualization/Algorithms.html | Interactive algorithm visualization | Real-time trace stepping |
-| **WEBRESOURCE2** | https://visualgo.net/ | Visual algorithm learning tool | Animated sequence display |
-| **WEBRESOURCE3** | https://www.youtube.com/@BackToBackSWE | Problem walkthroughs with visuals | Complex pattern explanation |
-| **WEBRESOURCE4** | https://www.leetcode.com/explore | Problem categorization by pattern | Practice with hints |
-| **WEBRESOURCE5** | https://www.bigocheatsheet.com/ | Complexity reference chart | Algorithm comparison |
-| **WEBRESOURCE6** | https://www.desmos.com/calculator | Interactive graph visualization | Performance curve plotting |
 
 ---
 
@@ -72,8 +61,6 @@
 
 
 ### 🔄 Pattern 1.1: Expand-Around-Center for Palindromes
-
-**Interactive Resource:** WEBRESOURCE1 (visualgo) or WEBRESOURCE2 (cs.usfca.edu) for step-by-step expansion
 
 **Visual 1: Palindrome Structure with Expansion**
 
@@ -266,8 +253,6 @@ In DNA analysis, a palindromic sequence can form a hairpin loop (important for p
 
 ### 🔄 Pattern 2.1: Variable-Size Window with Frequency Tracking
 
-**Interactive Resource:** WEBRESOURCE2 (visualgo) shows sliding window animation perfectly
-
 **Visual 1: Window Expansion and Shrinkage**
 
 ```
@@ -440,8 +425,6 @@ Email input validation needs to find the longest substring without special chara
 
 
 ### 🏗️ Pattern 3.1: Stack-Based Validation
-
-**Interactive Resource:** WEBRESOURCE1 shows stack state evolution beautifully
 
 **Visual 1: Stack State During Bracket Matching**
 
@@ -921,8 +904,6 @@ A logging system writes 10 million events/day, each event with 5-10 fields. If e
 
 
 ### 🔍 Pattern 5.1: Rolling Polynomial Hash
-
-**Interactive Resource:** WEBRESOURCE2 (visualgo) for hash visualization
 
 **Visual 1: Polynomial Hash Calculation**
 

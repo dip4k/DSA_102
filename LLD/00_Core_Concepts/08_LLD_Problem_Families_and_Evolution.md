@@ -1,4 +1,4 @@
-# 08. LLD Problem Families & Design Evolution (V1 → V2)
+﻿# 08. LLD Problem Families & Design Evolution (V1 → V2)
 
 One of the most powerful methodologies in Low-Level Design (popularized by advanced curricula like CrackingWalnuts) is recognizing that **there are no unique problems—only problem families**.
 
@@ -90,7 +90,7 @@ mindmap
 
 ### Family 5: High-Performance In-Memory Data Structures
 * **The Core Tension**: Sub-millisecond read/write latency under heavy multi-threading.
-* **Key Invariants**: $O(1)$ or $O(\log N)$ algorithmic operations; clean composite hierarchy.
+* **Key Invariants**: O(1) or O(log N) algorithmic operations; clean composite hierarchy.
 * **GoF Patterns**: Composite, Iterator, Decorator, Trie, PriorityQueue.
 * **Senior Concurrency**: `ReaderWriterLockSlim` (multi-reader single-writer), `ConcurrentDictionary`, custom `IComparer` on Red-Black trees (`SortedSet`).
 * **Representative Problems**: [LRU & LFU Cache Mastery](../03_Tier3_DSA_Screening/26_LRU_and_LFU_Cache.md), [In-Memory File System](../02_Tier2_Classic_LLD/17_In_Memory_File_System.md), [Stock Matching Engine](../04_Tier4_Senior_Backend/35_Stock_Exchange_Matching_Engine.md), [Rate Limiter](../04_Tier4_Senior_Backend/31_Rate_Limiter.md), [Search Autocomplete System](../03_Tier3_DSA_Screening/29_Search_Autocomplete_System.md), [Social Media News Feed](../03_Tier3_DSA_Screening/30_Social_Media_Feed_Twitter.md).
@@ -135,33 +135,33 @@ In elite tech interviews (Google, Meta, Uber, Amazon), the interviewer does not 
 Instead, the highest-scoring candidates follow the **CrackingWalnuts 4-Stage Evolution**, intentionally starting with a working baseline and systematically evolving it as requirements and scale constraints are introduced:
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph V1["V1: Naive (Happy-Path)"]
         direction TB
-        V1_1["Anemic Models\n(Public getters/setters)"]
-        V1_2["Linear Scans O(N)\nFlat List<T>"]
-        V1_3["Hardcoded Switch/If-Else\nSingle Class Logic"]
+        V1_1["Anemic Models<br/>(Public getters/setters)"]
+        V1_2["Linear Scans O(N)<br/>Flat List[T]"]
+        V1_3["Hardcoded Switch/If-Else<br/>Single Class Logic"]
     end
 
     subgraph V2["V2: Pattern Decoupling"]
         direction TB
-        V2_1["Extract Interfaces\n(Strategy / Factory)"]
-        V2_2["Open/Closed Principle\nPolymorphic Dispatch"]
-        V2_3["Domain Encapsulation\n(Private setters, Invariants)"]
+        V2_1["Extract Interfaces<br/>(Strategy / Factory)"]
+        V2_2["Open/Closed Principle<br/>Polymorphic Dispatch"]
+        V2_3["Domain Encapsulation<br/>(Private setters, Invariants)"]
     end
 
     subgraph V3["V3: Algorithmic Scalability"]
         direction TB
-        V3_1["O(1) Indexed Maps\n(Composite Keys)"]
-        V3_2["Balanced Trees / Heaps\n(SortedSet, PriorityQueue)"]
-        V3_3["Interval Trees / Bloom / Bitmaps\nfor Sub-ms Lookups"]
+        V3_1["O(1) Indexed Maps<br/>(Composite Keys)"]
+        V3_2["Balanced Trees / Heaps<br/>(SortedSet, PriorityQueue)"]
+        V3_3["Interval Trees / Bloom / Bitmaps<br/>for Sub-ms Lookups"]
     end
 
     subgraph V4["V4: Production Concurrency"]
         direction TB
-        V4_1["Thread Safety\n(ConcurrentDictionary, CAS)"]
-        V4_2["Fine-Grained Locks / Striping\n(Deadlock-Free Ordering)"]
-        V4_3["Fault Tolerance\n(Result<T>, Idempotency, Outbox)"]
+        V4_1["Thread Safety<br/>(ConcurrentDictionary, CAS)"]
+        V4_2["Fine-Grained Locks / Striping<br/>(Deadlock-Free Ordering)"]
+        V4_3["Fault Tolerance<br/>(Result[T], Idempotency, Outbox)"]
     end
 
     V1 -->|"Refactor for Extensibility"| V2
@@ -173,9 +173,9 @@ flowchart LR
 
 | Stage | Focus & Driver | What Gets Implemented | How Interviewer Evaluates |
 | :--- | :--- | :--- | :--- |
-| **V1: Naive (Happy Path)** | Establish functional validity; prove you understand core domain mechanics. | Basic classes, flat `List<T>`, linear search ($O(N)$), simple `switch` or `if/else`, direct method calls. | Verifies candidate can produce working, syntactically sound code quickly without paralysis. |
+| **V1: Naive (Happy Path)** | Establish functional validity; prove you understand core domain mechanics. | Basic classes, flat `List<T>`, linear search (O(N)), simple `switch` or `if/else`, direct method calls. | Verifies candidate can produce working, syntactically sound code quickly without paralysis. |
 | **V2: Pattern Decoupling** | Open/Closed Principle; absorb new requirements without code regression. | Replace `switch` with **Strategy**; use **Factory** for instantiation; guard invariants inside **Aggregates**; isolate state with **State Pattern**. | Verifies OOP maturity, clean separation of concerns, and dependency inversion. |
-| **V3: Algorithmic Scalability** | Throughput & Latency; eliminate bottlenecks before adding concurrency locks. | Replace $O(N)$ lists with $O(1)$ Hash Maps (`Dictionary`), $O(\log N)$ Red-Black trees (`SortedSet`), or Priority Queues for range/interval lookups. | Verifies computer science fundamentals; candidates who try to lock $O(N)$ scans get rejected. |
+| **V3: Algorithmic Scalability** | Throughput & Latency; eliminate bottlenecks before adding concurrency locks. | Replace O(N) lists with O(1) Hash Maps (`Dictionary`), O(log N) Red-Black trees (`SortedSet`), or Priority Queues for range/interval lookups. | Verifies computer science fundamentals; candidates who try to lock O(N) scans get rejected. |
 | **V4: Production Concurrency & Fault Tolerance** | Race conditions, atomicity, idempotency, failure recovery. | Thread-safe data structures (`ConcurrentDictionary`), fine-grained resource locks (`SemaphoreSlim`), deterministic lock ordering, `Result<T>` error modeling, audit ledgers. | **Strong Hire (L6+) signal**: Proves candidate designs systems ready for real-world high-concurrency production. |
 
 ---
@@ -184,14 +184,14 @@ flowchart LR
 
 1. **V1 (Naive)**:
    - `ParkingLot` has a `List<ParkingSpot>`.
-   - To park a car, run `spots.FirstOrDefault(s => !s.IsOccupied && s.Size >= vehicle.Size)` ($O(N)$ scan).
+   - To park a car, run `spots.FirstOrDefault(s => !s.IsOccupied && s.Size >= vehicle.Size)` (O(N) scan).
 2. **V2 (Patterns & Decoupling)**:
    - Introduce `IParkingStrategy` (e.g., `NearestToEntranceStrategy`, `BestFitStrategy`).
    - Extract `Vehicle` hierarchy (`Car`, `Motorcycle`, `Truck`) via Polymorphism.
    - `ParkingSpot` encapsulates `Park(vehicle)` and protects its internal occupied state.
 3. **V3 (Algorithmic Scalability)**:
    - Replace the flat list scan with indexed buckets: `Dictionary<SpotSize, Queue<ParkingSpot>>` or `Dictionary<SpotSize, SortedSet<ParkingSpot>>` ordered by distance to entry gates.
-   - Finding an available spot drops from $O(N)$ to $O(1)$ or $O(\log S)$.
+   - Finding an available spot drops from O(N) to O(1) or $O(\log S)$.
 4. **V4: Production Concurrency & Fault Tolerance**:
    - Multiple entry gates parking cars simultaneously $\rightarrow$ Wrap spot acquisition in atomic check-and-assign or per-bucket `SemaphoreSlim(1,1)`.
    - Prevent double-allocation under race conditions.
@@ -219,7 +219,7 @@ When starting the coding phase, verbally lay out your roadmap:
 > *"I will structure our implementation across 4 progressive stages:*
 > *First, in **V1**, I will establish the clean domain entities and verify the core happy path.*
 > *Next, in **V2**, I will isolate variation points—like allocation and pricing rules—using the Strategy and Factory patterns to keep our design compliant with the Open/Closed Principle.*
-> *In **V3**, we'll optimize the data structures from linear scans to indexed $O(1)$ lookups to ensure algorithmic efficiency.*
+> *In **V3**, we'll optimize the data structures from linear scans to indexed O(1) lookups to ensure algorithmic efficiency.*
 > *Finally, in **V4**, we'll harden the system for high-concurrency production by introducing fine-grained thread synchronization, deadlock-free lock ordering, and the Result pattern for error handling.*
 > *Shall we start with V1?"*
 

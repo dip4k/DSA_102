@@ -1,4 +1,4 @@
-# 🧭 Week_07_Problem_Solving_Roadmap.md
+﻿# 🧭 Week_07_Problem_Solving_Roadmap.md
 
 > 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS.md)
 > 
@@ -18,7 +18,7 @@ flowchart TD
     Start["Tree Problem"] --> Q1{"Is it a Binary Search Tree (BST)?"}
     Q1 -->|Yes| Q2{"Need sorted output or range search?"}
     Q2 -->|Sorted order| P1["In-Order Traversal (Left, Root, Right)"]
-    Q2 -->|Find / Insert / Validate| P2["Binary Search Property: Left < Root < Right"]
+    Q2 -->|Find / Insert / Validate| P2["Binary Search Property: Left &lt; Root &lt; Right"]
     Q1 -->|No: General Binary Tree| Q3{"How does data flow?"}
     Q3 -->|Level by level or shortest tree depth| P3["BFS Level-Order (Queue)"]
     Q3 -->|Need children results to compute parent property| P4["Bottom-Up Post-Order DFS (Diameter, LCA)"]

@@ -1,23 +1,19 @@
 # 📘 Week 06 Day 2: Substring Sliding Window Patterns — Engineering Guide
 
-
-
-
-
 > 🧭 **Navigation:** [← Previous Day](Week_06_Day_01_Palindrome_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_06_Day_03_Parentheses_Bracket_Matching_Instructional.md)
 > 
-> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
+> 💡 **Instructor Note:** *Sliding window turns quadratic substring searches into amortized linear time. The two essential patterns to master are Variable-Size Windows (expanding until invalid, then shrinking) and Fixed-Size Windows (sliding a rigid frame of length K).*
 
 ---
 
 ## 🎯 LEARNING OBJECTIVES
 
-*By the end of this chapter, you will be able to:*
+By the end of this chapter, you will be able to:
 
-- 🎯 **Internalize** the variable-size sliding window model and how it adapts to string constraints.
-- ⚙️ **Implement** substring pattern matching (repeating characters, fixed constraints) without nested loops.
-- ⚖️ **Evaluate** trade-offs between two-pointer window expansion, character frequency maps, and advanced techniques.
-- 🏭 **Connect** substring patterns to real systems like plagiarism detection, autocomplete engines, and regex matching.
+- **Internalize** the variable-size sliding window invariant and prove why two pointers moving monotonically right achieve amortized `O(N)` time.
+- **Implement** both dynamic windows (Longest Substring Without Repeating, Minimum Window Substring) and fixed windows (Permutation in String).
+- **Optimize** state tracking using direct ASCII frequency arrays (`int[128]`) and jump optimizations (`lastSeen[c] + 1`) to eliminate inner contraction loops.
+- **Deliver** a structured 45-minute technical interview script defending amortized pointer progression.
 
 ---
 
@@ -25,666 +21,435 @@
 
 ### The Engineering Challenge
 
-Imagine you're building Google's search suggestion engine. Users type characters one-by-one, and you need to highlight the **longest substring without repeating characters**. If they type "abcdefghi", you show all 9 characters as valid. But if they type "abcdefghi**a**", suddenly the valid substring shrinks to "bcdefghia" (you exclude the repeated 'a'). This must happen in milliseconds, processing millions of queries per second.
+Substring queries with frequency and uniqueness constraints are ubiquitous across software infrastructure:
+1. **Search & Tokenization:** Auto-suggest engines locate the longest unique prefix or keyword segment in streaming input.
+2. **Packet Inspection & Intrusion Detection:** Deep-packet inspection (DPI) firewalls scan network payloads for contiguous windows containing signature bytes.
+3. **Plagiarism Detection & Genomic Matching:** Finding minimum bounding windows containing a target multiset of k-mers or terms.
 
-Similarly, a plagiarism detection system needs to find if any substring of a suspicious document matches a substring in a reference corpus. Checking every possible substring is O(n²m) where n is the query length and m is the corpus length. For gigabyte-scale databases, this is prohibitively slow.
+A brute-force solution checks all `O(N^2)` candidate windows, spending `O(K)` time validating character counts for each, resulting in `O(N^3)` or `O(N^2)` time. The sliding window paradigm guarantees each character is processed at most twice—once entering the window through `right` and at most once exiting through `left`.
 
-Then there's the problem of **substring matching with constraints**: find the shortest substring of text that contains all characters of a pattern. This is the basis for real-time filtering in intrusion detection systems. A firewall needs to check if incoming network packets contain known malicious byte sequences.
-
-These problems share a structure: you're looking for a **window of characters** where something is true (no repeats, contains pattern, matches character constraints). The naive approach slides and checks every window: O(n²) or worse. The key insight is that you can **move the window adaptively**—expanding and shrinking based on whether constraints are satisfied—collapsing the complexity to O(n).
-
-### The Solution: Variable-Size Sliding Window with State Tracking
-
-Unlike fixed-size windows that just shift by one position, variable-size windows **grow when we need more characters** and **shrink when constraints are violated**. We maintain a frequency map of characters in the current window. When a constraint breaks, we shrink. When we need to explore further, we expand.
-
-This adaptive strategy transforms a nested-loop problem into a single pass with amortized linear time.
-
-> **💡 Insight:** Windows that grow and shrink adaptively can solve substring problems in one pass. Track character frequency, not characters themselves.
+> [!NOTE]
+> **Interview & Systems Context:** In high-throughput parsing and coding interviews, avoid recalculating window validity from scratch at every step. Maintain an incremental delta state (e.g., an integer `formed` or `matchCount`) that updates in `O(1)` whenever a character enters or leaves. For ASCII text, always prefer fixed arrays (`int[128]`) over generic hash maps to eliminate hashing overhead and heap allocations.
 
 ---
 
 ## 🧠 CHAPTER 2: BUILDING THE MENTAL MODEL
 
-### The Core Analogy
+### The Caterpillar Model: Fixed vs. Dynamic Windows
 
-Think of a **transmission window moving along a data stream**. The window can grow and shrink like an expanding/contracting rubber band:
+```
+1. Fixed-Size Window (Length K):
+   [ L ... R ] ----------> [ L ... R ] ----------> [ L ... R ]
+   Window size remains strictly K = R - L + 1.
+   Each step: Advance R by 1, advance L by 1. Add s[R], remove s[L-1].
 
-- **Growing phase:** Slide the right edge, pulling more characters into the window. Keep going until a constraint is violated or you reach the end.
-- **Shrinking phase:** Slide the left edge, removing characters. Stop when the constraint becomes valid again or you've removed enough characters to continue expanding.
+2. Dynamic / Variable-Size Window:
+   Step 1 (Expand R):   [ L ..... R ]        -> Pull in elements to satisfy criteria
+   Step 2 (Contract L): [     L . R ]        -> Shrink while valid (or invalid) to optimize
+```
 
-This "caterpillar" motion—expanding the right edge, contracting the left edge—ensures each character is visited at most twice (once by right, once by left). Hence, O(n) total work.
+### Visualizing State Progression on "abcabcbb"
 
-### 🖼 Visualizing the Variable-Size Window
+Finding the longest substring without repeating characters:
 
-Let's see how the window moves for "longest substring without repeating characters":
+```
+Index:    0   1   2   3   4   5   6   7
+Chars:    a   b   c   a   b   c   b   b
 
+R=0 ('a'): [a]                     Window: "a",       Len: 1, Max: 1
+R=1 ('b'): [a   b]                 Window: "ab",      Len: 2, Max: 2
+R=2 ('c'): [a   b   c]             Window: "abc",     Len: 3, Max: 3
+R=3 ('a'):  a  [b   c   a]         'a' duplicate! Jump L past idx 0 -> L=1. Max: 3
+R=4 ('b'):  a   b  [c   a   b]     'b' duplicate! Jump L past idx 1 -> L=2. Max: 3
+R=5 ('c'):  a   b   c  [a   b   c] 'c' duplicate! Jump L past idx 2 -> L=3. Max: 3
+R=6 ('b'):  a   b   c   a   b  [c   b] 'b' duplicate! Jump L past idx 4 -> L=5. Max: 3
+R=7 ('b'):  a   b   c   a   b   c   b  [b] 'b' duplicate! Jump L to idx 7 -> L=7. Max: 3
+```
 
-### 📌 🔤 String: 'abcabcbb' | Goal: Longest Substring Without Repeating Characters
+### Taxonomy of Sliding Window Variations
 
-- **1️⃣ L=0, R=0..2: Window 'abc'<br/>All unique | maxLen = 3**
-  - **2️⃣ R=3: Incoming 'a' seen at idx 0<br/>Duplicate detected!**
-    - 3️⃣ Contract Left: L moves to idx 1<br/>New Window: 'bca' | Length = 3
-
-
-
-The key insight: **we never go backward**. Left only moves right, right only moves right. This ensures O(n) total iterations.
-
-### Invariants & Properties
-
-**The Sliding Window Invariant:**
-
-At every moment:
-- `left` points to the start of the current valid window.
-- `right` points to the position we're currently exploring.
-- Everything between `left` and `right` (inclusive) satisfies the constraint.
-
-The constraint depends on the problem:
-- **No repeats:** Each character appears at most once in [left, right].
-- **K distinct characters:** At most K unique characters in [left, right].
-- **Contains pattern:** All characters of the pattern appear at least once in [left, right].
-
-**Why Variable Window Matters:**
-
-Unlike fixed-size windows, variable-size windows adapt to the data. If the constraint becomes invalid as we expand right, we shrink left. If we want to explore more, we expand right. This responsiveness is what makes it efficient.
-
-### 📐 Mathematical & Theoretical Foundations
-
-**Correctness via Invariant Maintenance:**
-
-A correct sliding window algorithm maintains the invariant throughout. When you expand right:
-- Add the character at `right` to your state (frequency map, set, etc.).
-- Check if the constraint is still valid.
-- If not, shrink left until valid.
-
-When you shrink left:
-- Remove the character at `left` from your state.
-- Check if the constraint becomes valid.
-- If valid, stop shrinking and resume expanding.
-
-**Complexity Analysis:**
-
-Each of the n characters is visited at most twice:
-1. Once when the right pointer passes it.
-2. Once (at most) when the left pointer passes it.
-
-Therefore: O(n) time for window movement + O(k) time per operation where k is the alphabet size (usually 26 for lowercase English or 256 for ASCII).
-
-Total: **O(n)** for a single-pass substring problem.
-
-### Taxonomy of Variations
-
-| Problem Type | Constraint | Window Strategy | Space |
+| Problem Type | Window Behavior | State Tracking Structure | Invariant Condition |
 | :--- | :--- | :--- | :--- |
-| **Longest Substring Without Repeating** | No character appears twice | Shrink when duplicate detected | O(k) hash map |
-| **Longest Substring with At Most K Distinct** | At most K unique characters | Shrink when unique count exceeds K | O(k) hash map |
-| **Minimum Window Substring** | Must contain all chars of pattern | Expand until pattern in window, shrink to find minimum | O(k) hash map |
-| **Permutation in String** | Window is anagram of pattern | Fixed window size, sliding check | O(k) frequency map |
-| **Substring with Concatenation** | Window contains exact concatenation | Fixed window size (pattern length) | O(k) hash map |
+| **Longest Substring Without Repeats** | Dynamic (Expand R, Jump L) | `int[128]` last seen index | `count[char] <= 1` |
+| **Minimum Window Substring** | Dynamic (Expand R, Shrink L) | Target map vs Window map + `formed` | All target counts satisfied |
+| **Longest with K Distinct Characters** | Dynamic (Expand R, Shrink L) | `int[128]` char counts + `distinct` | `distinct <= K` |
+| **Character Replacement with K Flips** | Dynamic (Expand R, Shrink L) | `int[26]` counts + `maxFreq` | `(R - L + 1) - maxFreq <= K` |
+| **Permutation in String / Anagrams** | Fixed (Size `|P|`) | Difference array / `matches` count | Window counts match pattern |
 
 ---
 
 ## ⚙️ CHAPTER 3: MECHANICS & IMPLEMENTATION
 
-### The State Machine & Memory Layout
+### Operation 1: Variable Window — Longest Substring Without Repeats
 
-The sliding window state machine has these variables:
-
-```
-State:
-  left        : integer (start of window)
-  right       : integer (end of window, current exploration point)
-  charFreq    : hash map {char: count} (frequency of chars in window)
-  constraintMet : boolean (whether current window satisfies constraint)
-  best        : {startIdx, endIdx, length} (best solution found so far)
-
-Transitions:
-  1. Expand: right++, add s[right] to charFreq
-  2. Check if constraint still met
-  3. If not: Shrink left until constraint met (remove s[left], left++)
-  4. If met: Update best solution, continue expanding
-```
-
-Memory layout: We store the string in read-only memory (stack or heap depending on size). The hash map charFreq uses O(k) space where k is the alphabet size (26 for lowercase, 256 for ASCII).
-
-### 🔧 Operation 1: Longest Substring Without Repeating Characters
-
-**Narrative Walkthrough:**
-
-We want to find the longest substring where no character repeats. We maintain a window [left, right]. As we expand right, we add characters to a frequency map. If we encounter a character that's already in the map, we have a duplicate—a constraint violation. We shrink from the left, removing characters until the duplicate is resolved.
-
-The key insight: when we encounter a duplicate at position right, we know the last occurrence of that character is at some earlier position `lastSeen[char]`. We can jump the left pointer directly to `lastSeen[char] + 1`, skipping the shrinking loop. This is an optimization but requires an additional hash map to track last-seen positions.
-
-**Inline Trace (Simple Version Without Optimization):**
+Instead of shrinking `left` one character at a time using a while loop, maintain an array `lastSeen` mapping each character to its most recent index. When a duplicate `c` is seen at `right`, jump `left = max(left, lastSeen[c] + 1)`.
 
 ```
-String: "dvdf" (length 4)
-
-Initial: left=0, right=-1 (haven't started), charFreq={}, best={}
-
-STEP 1: Expand right to 0
-  - right = 0, s[right] = 'd'
-  - Add to charFreq: {d:1}
-  - No duplicates
-  - Window: "d" (length 1)
-  - best = {start:0, end:0, len:1}
-
-STEP 2: Expand right to 1
-  - right = 1, s[right] = 'v'
-  - Add to charFreq: {d:1, v:1}
-  - No duplicates
-  - Window: "dv" (length 2)
-  - best = {start:0, end:1, len:2}
-
-STEP 3: Expand right to 2
-  - right = 2, s[right] = 'd'
-  - Try to add to charFreq: d already exists!
-  - Duplicate detected
-  - Shrink: remove s[left=0]='d', left++, left=1
-  - charFreq becomes {v:1}
-  - Retry adding s[right=2]='d': charFreq = {v:1, d:1}
-  - Window: "vd" (length 2)
-  - best unchanged (still length 2)
-
-STEP 4: Expand right to 3
-  - right = 3, s[right] = 'f'
-  - Add to charFreq: {v:1, d:1, f:1}
-  - No duplicates
-  - Window: "vdf" (length 3)
-  - best = {start:1, end:3, len:3}
-
-STEP 5: right reaches end
-  - Terminate
-
-Result: Longest substring = "vdf" (length 3)
+Jump Invariant:
+left = max(left, lastSeen[c] + 1)
+Using max() prevents 'left' from regressing backwards to duplicates outside the current window.
 ```
 
-The trace shows the window expanding and shrinking as needed.
+### Operation 2: Variable Window — Minimum Window Substring
 
-### 🔧 Operation 2: Minimum Window Substring
+Given text `s` and pattern `t`, find the shortest substring in `s` containing all characters in `t`.
+1. Build frequency map of `t`. Let `required` be the number of unique characters in `t`.
+2. Expand `right`. If `windowCounts[c] == targetCounts[c]`, increment `formed`.
+3. While `formed == required`:
+   - Update global minimum span `[minStart, minLen]`.
+   - Decrement `windowCounts[s[left]]`. If it falls below `targetCounts[s[left]]`, decrement `formed`.
+   - Increment `left`.
 
-**Narrative Walkthrough:**
+---
 
-Given a string s and a pattern t, find the shortest substring of s that contains all characters of t (with at least the same frequency).
+### 💻 Production-Grade Implementations
 
-Example: s = "ADOBECODEBANC", t = "ABC"
-Answer: "BANC" (contains A, B, C exactly once each)
+#### C# (.NET 8/9 — Zero Allocation with `ReadOnlySpan<char>`)
 
-Algorithm:
-1. Create a frequency map of pattern t.
-2. Expand right, adding characters from s to a window frequency map.
-3. When the window contains all required characters (constraint met), record it as a candidate.
-4. Shrink left to find a smaller valid window.
-5. Once a character's frequency drops below required, the window is invalid—expand right again.
+```csharp
+using System;
 
-**Inline Trace:**
+public static class SlidingWindowSolutions
+{
+    /// <summary>
+    /// Longest Substring Without Repeating Characters (LeetCode 3)
+    /// Time Complexity: O(N) | Auxiliary Space: O(1) (128-element stack buffer)
+    /// </summary>
+    public static int LengthOfLongestSubstring(ReadOnlySpan<char> s)
+    {
+        if (s.IsEmpty) return 0;
 
+        // Stores 1-based index (0 means unseen)
+        Span<int> lastSeen = stackalloc int[128];
+        int maxLength = 0;
+        int left = 0;
+
+        for (int right = 0; right < s.Length; right++)
+        {
+            char current = s[right];
+            if (current < 128)
+            {
+                // Advance left pointer past previous occurrence if inside window
+                left = Math.Max(left, lastSeen[current]);
+                lastSeen[current] = right + 1; // 1-based index
+            }
+
+            maxLength = Math.Max(maxLength, right - left + 1);
+        }
+
+        return maxLength;
+    }
+
+    /// <summary>
+    /// Minimum Window Substring (LeetCode 76)
+    /// Time Complexity: O(N + M) | Auxiliary Space: O(1) (fixed 128-element arrays)
+    /// </summary>
+    public static string MinWindow(string s, string t)
+    {
+        if (string.IsNullOrEmpty(s) || string.IsNullOrEmpty(t) || s.Length < t.Length)
+        {
+            return string.Empty;
+        }
+
+        Span<int> targetCounts = stackalloc int[128];
+        Span<int> windowCounts = stackalloc int[128];
+
+        int requiredUnique = 0;
+        foreach (char c in t)
+        {
+            if (c < 128)
+            {
+                if (targetCounts[c] == 0) requiredUnique++;
+                targetCounts[c]++;
+            }
+        }
+
+        int formed = 0;
+        int left = 0;
+        int minLen = int.MaxValue;
+        int minStart = 0;
+
+        for (int right = 0; right < s.Length; right++)
+        {
+            char c = s[right];
+            if (c < 128)
+            {
+                windowCounts[c]++;
+                if (targetCounts[c] > 0 && windowCounts[c] == targetCounts[c])
+                {
+                    formed++;
+                }
+            }
+
+            // Contract window while valid
+            while (left <= right && formed == requiredUnique)
+            {
+                int currentLen = right - left + 1;
+                if (currentLen < minLen)
+                {
+                    minLen = currentLen;
+                    minStart = left;
+                }
+
+                char leftChar = s[left];
+                if (leftChar < 128)
+                {
+                    windowCounts[leftChar]--;
+                    if (targetCounts[leftChar] > 0 && windowCounts[leftChar] < targetCounts[leftChar])
+                    {
+                        formed--;
+                    }
+                }
+                left++;
+            }
+        }
+
+        return minLen == int.MaxValue ? string.Empty : s.Substring(minStart, minLen);
+    }
+
+    /// <summary>
+    /// Permutation in String / Fixed Window Anagram (LeetCode 567)
+    /// Time Complexity: O(N) | Auxiliary Space: O(1)
+    /// </summary>
+    public static bool CheckInclusion(string s1, string s2)
+    {
+        if (s1.Length > s2.Length) return false;
+
+        Span<int> s1Freq = stackalloc int[26];
+        Span<int> winFreq = stackalloc int[26];
+
+        for (int i = 0; i < s1.Length; i++)
+        {
+            s1Freq[s1[i] - 'a']++;
+            winFreq[s2[i] - 'a']++;
+        }
+
+        int matches = 0;
+        for (int i = 0; i < 26; i++)
+        {
+            if (s1Freq[i] == winFreq[i]) matches++;
+        }
+
+        for (int i = s1.Length; i < s2.Length; i++)
+        {
+            if (matches == 26) return true;
+
+            int rightIdx = s2[i] - 'a';
+            int leftIdx = s2[i - s1.Length] - 'a';
+
+            // Add right character
+            winFreq[rightIdx]++;
+            if (winFreq[rightIdx] == s1Freq[rightIdx]) matches++;
+            else if (winFreq[rightIdx] == s1Freq[rightIdx] + 1) matches--;
+
+            // Remove left character
+            winFreq[leftIdx]--;
+            if (winFreq[leftIdx] == s1Freq[leftIdx]) matches++;
+            else if (winFreq[leftIdx] == s1Freq[leftIdx] - 1) matches--;
+        }
+
+        return matches == 26;
+    }
+}
 ```
-s = "ADOBEC", t = "ABC"
 
-Pattern frequency: {A:1, B:1, C:1}
-Need 3 distinct characters (or count=3 total)
+#### Python (3.11+ — Idiomatic & Optimized)
 
-Initial: left=0, right=-1, windowFreq={}, required=3, found=0, best={}
+```python
+from collections import Counter
 
-EXPAND:
-right=0, s[0]='A': windowFreq={A:1}, found=1
-  → Not enough (need 3)
 
-right=1, s[1]='D': windowFreq={A:1, D:1}, found=1
-  → Not enough
+class SlidingWindowSolutions:
+    @staticmethod
+    def length_of_longest_substring(s: str) -> int:
+        """
+        Longest substring without repeating characters using last-seen index mapping.
+        Time: O(N) | Auxiliary Space: O(min(N, Alphabet))
+        """
+        last_seen: dict[str, int] = {}
+        left = 0
+        max_length = 0
 
-right=2, s[2]='O': windowFreq={A:1, D:1, O:1}, found=1
-  → Not enough
+        for right, ch in enumerate(s):
+            if ch in last_seen and last_seen[ch] >= left:
+                left = last_seen[ch] + 1
+            last_seen[ch] = right
+            max_length = max(max_length, right - left + 1)
 
-right=3, s[3]='B': windowFreq={A:1, D:1, O:1, B:1}, found=2
-  → Not enough
+        return max_length
 
-right=4, s[4]='E': windowFreq={A:1, D:1, O:1, B:1, E:1}, found=2
-  → Not enough
+    @staticmethod
+    def min_window(s: str, t: str) -> str:
+        """
+        Finds the minimum substring of s containing all characters of t.
+        Time: O(N + M) | Auxiliary Space: O(Alphabet)
+        """
+        if not s or not t or len(s) < len(t):
+            return ""
 
-right=5, s[5]='C': windowFreq={A:1, D:1, O:1, B:1, E:1, C:1}, found=3
-  → CONSTRAINT MET! Window="ADOBEC" (length 6)
-  → best = {start:0, end:5, len:6}
+        target_counts = Counter(t)
+        required_unique = len(target_counts)
+        window_counts: dict[str, int] = {}
 
-SHRINK (from left=0):
-  left=0, s[0]='A': Remove 'A', found=2
-    → Constraint broken, stop shrinking
-  → Window is now invalid, need to expand
+        formed = 0
+        left = 0
+        min_len = float("inf")
+        best_span = (0, 0)
 
-EXPAND:
-  right=6 (out of bounds)
-  → Done
+        for right, char in enumerate(s):
+            window_counts[char] = window_counts.get(char, 0) + 1
+            if char in target_counts and window_counts[char] == target_counts[char]:
+                formed += 1
 
-Result: Shortest window = "ADOBEC" (length 6, positions 0-5)
-```
+            while left <= right and formed == required_unique:
+                current_len = right - left + 1
+                if current_len < min_len:
+                    min_len = current_len
+                    best_span = (left, right)
 
-In a longer string, we'd find "BANC" as the final answer through multiple shrink-expand cycles.
+                left_char = s[left]
+                window_counts[left_char] -= 1
+                if (
+                    left_char in target_counts
+                    and window_counts[left_char] < target_counts[left_char]
+                ):
+                    formed -= 1
+                left += 1
 
-### 📉 Progressive Example: "At Most K Distinct Characters"
+        return (
+            ""
+            if min_len == float("inf")
+            else s[best_span[0] : best_span[1] + 1]
+        )
 
-Find the longest substring with at most 2 distinct characters:
+    @staticmethod
+    def check_inclusion(s1: str, s2: str) -> bool:
+        """
+        Returns True if s2 contains a permutation of s1 (fixed-size window).
+        Time: O(N) | Auxiliary Space: O(1)
+        """
+        n1, n2 = len(s1), len(s2)
+        if n1 > n2:
+            return False
 
-```
-String: "eceba" (length 5), K=2
+        c1, c2 = [0] * 26, [0] * 26
+        for i in range(n1):
+            c1[ord(s1[i]) - 97] += 1
+            c2[ord(s2[i]) - 97] += 1
 
-left=0, right=-1, charFreq={}, distinctCount=0
+        matches = sum(1 for i in range(26) if c1[i] == c2[i])
 
-STEP 1: right=0
-  Add 'e': charFreq={e:1}, distinctCount=1
-  Window: "e" (length 1)
+        for i in range(n1, n2):
+            if matches == 26:
+                return True
 
-STEP 2: right=1
-  Add 'c': charFreq={e:1, c:1}, distinctCount=2
-  Window: "ec" (length 2)
-  best: len=2
+            r_idx = ord(s2[i]) - 97
+            l_idx = ord(s2[i - n1]) - 97
 
-STEP 3: right=2
-  Add 'e': charFreq={e:2, c:1}, distinctCount=2 (no new char)
-  Window: "ece" (length 3)
-  best: len=3
+            # Add right character
+            c2[r_idx] += 1
+            if c2[r_idx] == c1[r_idx]:
+                matches += 1
+            elif c2[r_idx] == c1[r_idx] + 1:
+                matches -= 1
 
-STEP 4: right=3
-  Add 'b': charFreq={e:2, c:1, b:1}, distinctCount=3
-  distinctCount > K! Constraint violated
-  
-  SHRINK:
-    Remove s[left=0]='e': charFreq={e:1, c:1, b:1}, distinctCount=3 (still 3)
-    left=1
-    Still 3 distinct, keep shrinking
-    Remove s[left=1]='c': charFreq={e:1, b:1}, distinctCount=2
-    left=2
-    Constraint met!
-  
-  Window: "eb" (length 2, positions 2-3)
+            # Remove left character
+            c2[l_idx] -= 1
+            if c2[l_idx] == c1[l_idx]:
+                matches += 1
+            elif c2[l_idx] == c1[l_idx] - 1:
+                matches -= 1
 
-STEP 5: right=4
-  Add 'a': charFreq={e:1, b:1, a:1}, distinctCount=3
-  Constraint violated
-  
-  SHRINK:
-    Remove s[left=2]='e': charFreq={b:1, a:1}, distinctCount=2
-    left=3
-    Constraint met!
-  
-  Window: "ba" (length 2, positions 3-4)
-
-Result: Longest substring with at most 2 distinct = "ece" (length 3)
+        return matches == 26
 ```
 
 ---
 
-## ⚖️ CHAPTER 4: PERFORMANCE, TRADE-OFFS & REAL SYSTEMS
+## ⚖️ CHAPTER 4: COMPLEXITY DECONSTRUCTION
 
-### Beyond Big-O: Performance Reality
+### Explicit Complexity Breakdown
 
-On paper, sliding window is O(n) with O(k) alphabet space. In practice:
+| Pattern / Algorithm | Time (Amortized) | Time (Worst Case) | Auxiliary Space | Output Space | Pointer Movement Bound |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Longest Substring No Repeats** | `O(N)` | `O(N)` | `O(Sigma)` (`128` ASCII) | `O(1)` | `L` and `R` advance at most `N` times each (`<= 2N` total steps) |
+| **Minimum Window Substring** | `O(N + M)` | `O(N + M)` | `O(Sigma)` (`128` ASCII) | `O(K)` | `R` steps `N` times, `L` steps at most `N` times |
+| **Permutation in String** | `O(N)` | `O(N)` | `O(1)` (`26` letters) | `O(1)` | Exactly `N - M` single-step slide shifts |
+| **Brute Force Windows** | `O(N^2)` | `O(N^3)` | `O(Sigma)` | `O(K)` | Re-scans all `N(N+1)/2` possible substrings |
 
-**What makes it fast:**
-- Single pass through the string (no nested loops).
-- Hash map operations are O(1) on average.
-- Cache-friendly: left and right pointers move sequentially, accessing memory linearly.
+> [!TIP]
+> **Why the While Loop Inside Does Not Make It Quadratic:**
+> Even though there is a nested `while formed == requiredUnique` loop inside the `for right` loop, notice that `left` only moves forward and never resets. Across the entire execution of the algorithm, `left` can increment at most `N` times. Thus, the total amortized cost of the inner while loop across all iterations is `O(N)`, keeping overall runtime strictly linear.
 
-**What can slow it down:**
-- Hash map collisions: if the alphabet is large (e.g., Unicode with millions of characters), hash operations degrade.
-- String operations: if you're extracting the substring each time, that adds O(window_size) work. Pre-compute start/end indices instead.
-- Memory allocation: if you create new hash maps for each window, that adds overhead. Reuse a single map, clearing it as needed.
+---
 
-**Practical Optimization:** Instead of storing the entire substring in memory, just store start and end indices. Extract the substring only at the very end.
+## 🎙️ CHAPTER 5: 45-MINUTE INTERVIEW VERBAL SCRIPT
 
-| Operation | Naive | Optimized Sliding Window | Manacher's |
-| :--- | :--- | :--- | :--- |
-| Check all substrings | O(n³) | O(n) | O(n) |
-| Space | O(1) | O(k) hash map | O(n) |
-| Constant factors | High (nested loops) | Low (single pass) | Moderate (complex logic) |
+### Phase 1: Clarification & State Invariant (0–5 Mins)
+- **Candidate:** "Let's clarify the constraints: What character set are we handling? If it is standard ASCII, we can use a direct fixed-size 128-element integer buffer instead of a generic hash map to achieve `O(1)` auxiliary space and cache locality. Also, does case matter?"
+- **Interviewer:** "ASCII characters, case-sensitive."
+- **Candidate:** "Understood. For Minimum Window Substring, if multiple valid windows exist with equal length, does returning any arbitrary one suffice?"
+- **Interviewer:** "Yes, any valid minimal window."
 
-### 🏭 Real-World Systems
+### Phase 2: Approach & Invariant Definition (5–12 Mins)
+- **Candidate:** "A brute-force solution checks all `O(N^2)` windows, costing `O(N^3)` or `O(N^2)` time. Instead, I'll use a dynamic two-pointer sliding window. 
+I'll maintain two invariants:
+1. `right` expands monotonically to pull new characters into our window until all target constraints are satisfied.
+2. Once valid, `left` contracts monotonically to discard unneeded prefix characters and discover the local minimum.
+To verify constraint satisfaction in `O(1)` per step, I'll track a variable `formed` representing how many unique characters in the window currently meet their target count."
 
-**Story 1: Autocomplete Engine (Search Suggestions)**
+### Phase 3: Live Implementation & State Management (12–32 Mins)
+- **Candidate:** "Notice how we maintain `formed`: when `windowCounts[c] == targetCounts[c]`, we increment `formed`. Crucially, when contracting from the left, we only decrement `formed` when `windowCounts[s[left]]` drops *strictly below* `targetCounts[s[left]]`. This eliminates iterating over the hash map on every step."
 
-Google's autocomplete suggests completions as you type. When you type "goo", it shows "google", "good", "goodreads", etc. Internally, it's checking:
+### Phase 4: Edge Case Verification & Amortized Proof (32–40 Mins)
+- **Candidate:** "Let's verify edge cases:
+  1. `t` is longer than `s`: Immediate return of `""`.
+  2. No valid window contains `t`: `minLen` remains infinity, returns `""`.
+  3. String `s` equals `t`: Expands to full length, contracts zero times, returns `s`.
+  4. Amortized complexity: Even with the nested while loop, each index from `0` to `N-1` is processed by `right` once and `left` at most once. Total operations are bounded by `2N`, which is strictly `O(N)`."
 
-- "g": longest substring without repeating chars is "g"
-- "go": longest substring without repeating chars is "go"
-- "goo": longest substring without repeating chars is "go" (second 'o' causes shrinking)
+---
 
-But there's more: the engine also tracks **character frequency constraints** for ranking. It prefers suggestions where the query characters appear early (high frequency of query chars in a short window). Sliding window makes this efficient.
+## 🛠️ CHAPTER 6: COMMON PITFALLS & DECISION FRAMEWORK
 
-For millions of queries per second, the O(n) per-query sliding window approach is essential. A naive O(n²) approach would require clusters of servers; with sliding window, a single machine suffices.
+### Common Pitfalls
+1. **Regressing the Left Pointer:** In Longest Substring Without Repeats, doing `left = lastSeen[c] + 1` without wrapping in `Math.Max(left, ...)`. If a duplicate appeared before the current `left`, `left` would erroneously jump backwards!
+2. **Re-checking the Entire Map:** Comparing two maps of size 26 at every step of a sliding window (`26 * N`), when a single `matches` counter achieves true `O(1)` per step.
+3. **Off-by-One in Span Extraction:** Slicing indices incorrectly at termination. Record `bestStart` and `minLen`, and extract the substring once at the end.
 
-**Story 2: Plagiarism Detection & Turnitin**
-
-Turnitin processes student submissions against a database of billions of previously submitted papers. It uses a technique called **rabin fingerprinting with sliding windows**:
-
-1. Compute a rolling hash of every fixed-length substring in the submitted paper.
-2. Compare these hashes against hashes of substrings in the reference corpus.
-3. Matches indicate potential plagiarism.
-
-The sliding window approach—where hashes update in O(1) as the window slides—makes this feasible. Without it, comparing every student paper would take days. With it, the system can check submissions in minutes.
-
-**Story 3: Malware Detection & Yara Rules**
-
-Antivirus software (like Yara) uses signature-based malware detection. A signature is a byte sequence that appears in known malicious binaries. The system scans incoming files using a sliding window of bytes:
-
-1. Read a chunk of the file.
-2. Slide a window over the bytes.
-3. Check if the window matches any known malicious signature.
-
-If a signature is found (minimum window substring problem), the file is flagged. The sliding window approach allows scanning gigabyte-sized files in real time without loading the entire file into memory. The window can be as small as 16-32 bytes, making it extremely efficient.
-
-### Failure Modes & Robustness
-
-**Failure Mode 1: Off-by-One When Extracting Substring**
+### Decision Framework
 
 ```
-WRONG:
-  String s = "abcde" (0-indexed)
-  left = 1, right = 3
-  Extracted substring: s.substring(left, right)  // Java: [left, right)
-  Result: "bc" (Wrong! Should be "bcd")
-
-CORRECT:
-  Extracted substring: s.substring(left, right + 1)  // Include position right
-  Result: "bcd"
-
-LESSON: Be careful with inclusive vs exclusive indices.
-```
-
-**Failure Mode 2: Forgetting to Update Frequency Before Checking**
-
-```
-WRONG:
-  while (right < n) {
-      // Check if constraint is met BEFORE adding new character
-      if (constraint_met()) {
-          update_best();
-      }
-      right++;
-      charFreq[s[right]]++;  // Add AFTER check
-  }
-  → Misses the first valid window
-
-CORRECT:
-  while (right < n) {
-      right++;
-      charFreq[s[right]]++;  // Add FIRST
-      // Then check
-      while (!constraint_met()) {
-          charFreq[s[left]]--;
-          left++;
-      }
-      update_best();
-  }
-```
-
-**Failure Mode 3: Shrinking Too Aggressively**
-
-```
-WRONG:
-  for (char c : required.characters) {
-      if (window[c] > required[c]) {
-          shrink();  // Always shrink if count exceeds required
-      }
-  }
-  → May shrink past a valid solution too quickly
-
-CORRECT:
-  while (required.are_all_satisfied(window)) {
-      update_best();
-      charFreq[s[left]]--;  // Remove left character
-      left++;
-      // After removal, constraint may be broken
-  }
-  // Now expand right again
-```
-
-**Failure Mode 4: Unicode and Multi-Byte Characters**
-
-```
-WRONG:
-  String s = "café"; // 'é' is a multi-byte UTF-8 character
-  for (int i = 0; i < s.length(); i++) {
-      // In some languages, s.length() counts bytes, not characters
-  }
-  → May iterate past the end or miss characters
-
-CORRECT:
-  for (char c : s.toCharArray()) {  // Java: properly handles Unicode
-      // Process character c
-  }
-  // Or use a library that handles UTF-8/Unicode correctly
-```
-
-**Failure Mode 5: Memory Explosion with Large Alphabets**
-
-```
-WRONG:
-  HashMap<Character, Integer> charFreq;
-  // For Unicode: potentially millions of entries if many unique chars appear
-  // Memory: O(unique characters in string) rather than O(alphabet size)
-
-CORRECT:
-  // Limit hash map to actual characters seen
-  // Or use a small fixed-size array for ASCII (size 256)
-  int[] freq = new int[256];  // ASCII only
-  // If you need Unicode, use a hash map but be aware of memory trade-offs
+                       [ Substring Problem ]
+                                 |
+              +------------------+------------------+
+              |                                     |
+      [ Window Size Known ]                [ Window Size Variable ]
+              |                                     |
+       Fixed Window of K                   Goal Condition?
+      (CheckInclusion / Anagrams)                   |
+                                    +---------------+---------------+
+                                    |                               |
+                             Find Longest                     Find Smallest
+                          (No Repeats / K Dist)          (Min Window Substring)
+                                    |                               |
+                           Expand R until invalid,         Expand R until valid,
+                           shrink L to restore validity    shrink L to minimize span
 ```
 
 ---
 
-## 🔗 CHAPTER 5: INTEGRATION & MASTERY
+## 🏋️ PRACTICE LADDER
 
-### Connections (Precursors & Successors)
-
-**Precursors:**
-- Week 04: Sliding windows (fixed-size foundation)
-- Week 06 Day 1: Palindrome patterns (substring thinking)
-
-**Successors:**
-- Week 06 Day 3-4: Parentheses matching and string transformations build on substring logic
-- Week 15: Advanced string algorithms (KMP, Z-algorithm) extend sliding window to pattern matching
-- Week 18: Probabilistic data structures use similar frequency-tracking ideas
-
-### 🧩 Pattern Recognition & Decision Framework
-
-**When to suspect a substring sliding window problem:**
-
-- "Longest" or "shortest" substring with some property
-- "Contains all" or "at most K" constraints
-- "Find" with character-based constraints
-- "Minimum window" phrasing
-
-**Decision Framework:**
-
-
-### 📌 Is the problem about SUBSTRINGS (contiguous)?
-
-- **Yes, with CONSTRAINTS on characters:**
-  - **Fixed-size window? (constant substring length needed)**
-    - Use fixed-size sliding window
-  - **Variable-size window? (constraint-based)**
-    - Optimize? (shrink to find minimum)
-    - Constraint: frequency-based
-- **No, is it about SUBSEQUENCES or PATTERNS?**
-  - Different approach (DP or advanced string algorithms)
-
-
-
-- **✅ Use when:** Finding substrings with character constraints, frequency limits, pattern containment
-- **🛑 Avoid when:** Subsequences (non-contiguous), permutations beyond order, or tree-like structures
-
-**🚩 Red Flags (Interview Signals):**
-- "Longest substring..."
-- "Shortest substring..."
-- "Contains all..."
-- "At most K..."
-- "At least K..."
-- "Find the window..."
-
-### 🧪 Socratic Reflection
-
-1. **Why do left and right pointers never move backward in a sliding window?** (Hint: think about what invalidating a constraint means. If shrinking past position X makes it invalid, why won't shrinking further forward eventually make it valid again?)
-
-2. **In a minimum window substring problem, why do you shrink aggressively after finding a valid window?** (Hint: what information do you preserve when shrinking?)
-
-3. **If you're finding the longest substring with at most K distinct characters, why can't you precompute which characters appear in each position and avoid the hashmap entirely?** (Hint: think about the trade-off between space and time.)
-
-### 📌 Retention Hook
-
-> **The Essence:** "Sliding windows move like a caterpillar: right pointer extends the reach, left pointer contracts when constraints break. Track character frequency, not positions. Move once, check always—O(n) guaranteed."
-
----
-
-## 🧠 5 COGNITIVE LENSES
-
-### 1. 💻 The Hardware Lens (Cache, CPU, Memory)
-
-Sliding window is **cache-optimal** for sequential access. Modern CPUs prefetch linearly. Left and right pointers move left-to-right, accessing memory sequentially. Compare to nested-loop approaches that jump around. The simple sequential motion makes sliding window CPU-friendly.
-
-### 2. 📉 The Trade-off Lens (Time vs Space, Simplicity vs Power)
-
-| Approach | Time | Space | Simplicity | When |
+| Problem | LeetCode # | Difficulty | Window Type | Key State Tracker |
 | :--- | :--- | :--- | :--- | :--- |
-| Nested loops | O(n²) or O(n³) | O(1) | ⭐⭐⭐⭐⭐ | Tiny strings |
-| Sliding window (variable) | O(n) | O(k) | ⭐⭐⭐⭐ | Most substring problems |
-| DP table | O(n) | O(n) | ⭐⭐⭐ | Complex constraints |
-| Hash all substrings | O(n²) | O(n²) | ⭐⭐ | Repeated queries |
-
-For real systems, O(n) time with O(k) space is the goldilocks solution.
-
-### 3. 👶 The Learning Lens (Misconceptions, Psychology)
-
-**Misconception 1:** "Sliding window only works for fixed sizes."
-
-**Reality:** Variable-size sliding windows adapt dynamically. Fixed-size is just a special case.
-
-**Misconception 2:** "I need to track every substring's properties."
-
-**Reality:** You only need to track the current window. As it slides, you update incrementally.
-
-**Misconception 3:** "Shrinking the window loses information."
-
-**Reality:** The characters you remove are past candidates. You've already recorded the best window found so far. Shrinking is a **search optimization**, not a loss.
-
-### 4. 🤖 The AI/ML Lens (Analogies to Neural Networks)
-
-Sliding windows are conceptually similar to **convolutional filters** in neural networks. A filter (kernel) slides over an image, computing features at each position. Similarly, a character window slides over a string, checking constraints at each position. Both use the principle of **local receptive field** - focusing on a small region at a time, then moving to the next.
-
-### 5. 📜 The Historical Lens (Origins, Inventors)
-
-The "two-pointer" or "caterpillar" technique for sliding windows became popular in competitive programming and interview questions around the 2010s. It's attributed to the "greedy" algorithm family, but the specific term "sliding window" and variable-width variants gained prominence through:
-
-- LeetCode problems (2012 onwards)
-- Codeforces competitive programming
-- Google/Facebook interview preparation guides
-
-The technique itself is older—implicit in Unix string utilities and pattern matching—but formalizing it as a "sliding window" problem type is relatively recent.
+| **Longest Substring Without Repeating Characters** | #3 | 🟡 Medium | Variable | `lastSeen` 1-based index table |
+| **Minimum Window Substring** | #76 | 🔴 Hard | Variable | `formed == requiredUnique` counter |
+| **Permutation in String** | #567 | 🟡 Medium | Fixed (`|s1|`) | `matches == 26` delta tracker |
+| **Find All Anagrams in a String** | #438 | 🟡 Medium | Fixed (`|p|`) | Sliding frequency difference array |
+| **Longest Substring with At Most K Distinct Characters** | #340 | 🟡 Medium | Variable | Distinct characters counter |
+| **Longest Repeating Character Replacement** | #424 | 🟡 Medium | Variable | `(R - L + 1) - maxFreq <= K` |
+| **Max Consecutive Ones III** | #1004 | 🟡 Medium | Variable | Number of flipped zeros `<= K` |
 
 ---
 
-## ⚔️ SUPPLEMENTARY OUTCOMES
-
-### 🏋️ Practice Problems (8-10)
-
-| Problem | Source | Difficulty | Key Concept |
-| :--- | :--- | :--- | :--- |
-| Longest Substring Without Repeating | LeetCode #3 | 🟡 Medium | Hashmap + two-pointer |
-| Longest Substring with At Most K Distinct | LeetCode #340 | 🟡 Medium | Variable window, distinct count |
-| Minimum Window Substring | LeetCode #76 | 🔴 Hard | Constraint satisfaction, shrink strategy |
-| Permutation in String | LeetCode #567 | 🟡 Medium | Fixed window, frequency matching |
-| Substring with Concatenation | LeetCode #30 | 🔴 Hard | Fixed window, word matching |
-| Longest Repeating Character Replacement | LeetCode #424 | 🟡 Medium | Count constraint, replacement limit |
-| Max Consecutive Ones III | LeetCode #1004 | 🟡 Medium | Binary constraint, flip limit |
-| Minimum Size Subarray Sum | LeetCode #209 | 🟡 Medium | Numeric constraint, target sum |
-
-### 🎙️ Interview Questions (6+)
-
-1. **Q:** Given a string, find the longest substring without repeating characters.
-   - **Follow-up:** What if you needed to find the start and end indices, not just the length?
-   - **Follow-up:** What if the string is in a file on disk and doesn't fit in memory?
-
-2. **Q:** Given two strings s and t, find the minimum window in s that contains all characters of t.
-   - **Follow-up:** How would you handle the case where t has duplicate characters?
-   - **Follow-up:** What if you needed to find all minimum windows, not just one?
-
-3. **Q:** Given a string s and an integer k, find the length of the longest substring that contains at most k distinct characters.
-   - **Follow-up:** Can you generalize this to "at least k" distinct characters?
-   - **Follow-up:** What if you wanted to maximize the window subject to multiple constraints?
-
-4. **Q:** Given a string s and an integer k, find the longest substring such that each character appears at least k times.
-   - **Follow-up:** How does this differ from "at most k"?
-   - **Follow-up:** Can you solve this in a single pass?
-
-5. **Q:** Given strings s and p, return all the start indices of p's anagrams in s.
-   - **Follow-up:** What if p contains duplicate characters?
-   - **Follow-up:** Optimize for multiple queries with different patterns.
-
-6. **Q:** Design a system to detect repeated substrings in a large text corpus.
-   - **Follow-up:** How would you handle memory constraints?
-   - **Follow-up:** What about real-time streaming data?
-
-### ❌ Common Misconceptions (3-5)
-
-- **Myth:** "Sliding window only works for problems with a single constraint."
-  - **Reality:** You can combine multiple constraints in a single window (e.g., "at most K distinct AND no character appears more than M times").
-
-- **Myth:** "You must always shrink from the left when a constraint breaks."
-  - **Reality:** Depending on the problem, you might skip right, or use a different strategy. The two-pointer pattern is flexible.
-
-- **Myth:** "Sliding window is harder than nested loops because you have to track state."
-  - **Reality:** Once you understand the pattern, sliding window is actually simpler than nested loops. Debugging is easier too (single pass, no nesting confusion).
-
-- **Myth:** "Sliding window only works for problems where order doesn't matter."
-  - **Reality:** Order is completely preserved. Sliding window is perfect for problems where order matters (finding substrings vs subsequences).
-
-- **Myth:** "The hash map size is always O(n)."
-  - **Reality:** For character-based problems, it's O(k) where k is the alphabet size (26 for lowercase, 256 for ASCII, ~1M for Unicode). Usually small and bounded.
-
-### 🚀 Advanced Concepts (3-5)
-
-1. **Rolling Hash Optimization:** Combine sliding window with rolling hash for substring matching. Update hash in O(1) as window slides instead of O(window_size).
-
-2. **Divide-Conquer Optimization:** For problems like "longest substring with constraint", you can sometimes use divide-and-conquer (split string in half, recurse) if sliding window isn't obvious. Usually slower, but theoretically interesting.
-
-3. **Multi-Constraint Windows:** Combine frequency constraints with other properties (e.g., "longest substring where vowels outnumber consonants"). Handle multiple HashMaps or clever single HashMap tricks.
-
-4. **Persistent Sliding Window:** For repeated queries on different strings, precompute windows or use segment trees. Trade memory for query speed.
-
-5. **Bidirectional Sliding Window:** Occasionally problems need windows that expand/contract from both ends simultaneously (e.g., finding symmetric patterns). Requires careful state management.
-
-### 📚 External Resources
-
-- **"Introduction to Algorithms"** (CLRS), Chapter on String Algorithms: foundational material.
-- **"Competitive Programming"** by Halim & Halim: excellent section on two-pointers and sliding windows.
-- **InterviewBit Sliding Window problems:** Curated problem set with explanations.
-- **LeetCode Sliding Window Collection:** 30+ problems, increasing difficulty.
-- **GeeksforGeeks Sliding Window:** Clear explanations with code examples.
-
----
-
-## 📊 Summary Table: Substring Sliding Window Techniques at a Glance
-
-| Technique | Time | Space | Use Case | Constraint Type |
-| :--- | :--- | :--- | :--- | :--- |
-| Variable-size window | O(n) | O(k) | Longest/shortest substring | Frequency-based |
-| Fixed-size window | O(n) | O(k) | Fixed-length pattern match | Size-based |
-| Two-pointer shrink | O(n) | O(k) | Minimum window substring | Containment |
-| Optimize with rolling hash | O(n) | O(k) | Fast substring comparison | Character matching |
-| Multi-constraint | O(n) | O(k²) or O(k) | Complex constraints | Hybrid |
-
----
-
-## 🏁 Conclusion: From Theory to Mastery
-
-You've journeyed from understanding the elegance of two-pointer motion to implementing real-world substring pattern matching. The key principle remains: **constraints break and fix as your window slides**. React adaptively—expand when possible, shrink when necessary.
-
-This pattern isn't limited to strings. You'll encounter similar adaptive-window thinking in:
-
-- Network packet filtering (sliding window of bytes)
-- Time-series analysis (sliding window of events)
-- Graph algorithms (expanding/contracting neighborhoods)
-- Memory management (sliding window of cache lines)
-
-When you see a problem involving sequences and constraints, pause. Ask: **"Can I maintain a sliding window to solve this?"** More often than not, the answer is yes, and the solution is elegant.
-
----
 > 🧭 **Navigation:** [← Previous Day](Week_06_Day_01_Palindrome_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_06_Day_03_Parentheses_Bracket_Matching_Instructional.md)

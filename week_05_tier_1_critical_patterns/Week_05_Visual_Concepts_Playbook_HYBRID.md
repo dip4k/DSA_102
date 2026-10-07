@@ -1,4 +1,4 @@
-# 📊 Week 05 Visual Concepts Playbook (HYBRID)
+﻿# 📊 Week 05 Visual Concepts Playbook (HYBRID)
 
 > 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)
 > 
@@ -397,7 +397,7 @@ flowchart TD
 
     Current --> Check
     Check -->|"Yes (current_sum > 0)"| Extend
-    Check -->|"No (current_sum <= 0)"| Restart
+    Check -->|"No (current_sum &le; 0)"| Restart
     Extend --> Update
     Restart --> Update
 
@@ -491,7 +491,7 @@ Move two pointers at different speeds through a linked list. If a cycle exists, 
 ### Visual 1: Cycle Intersection & Reset to Start
 
 ```mermaid
-flowchart LR
+flowchart TD
     classDef init fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef cycle fill:#fce4ec,stroke:#c2185b,color:#880e4f,stroke-width:2px;
     classDef meet fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20,stroke-width:2px;

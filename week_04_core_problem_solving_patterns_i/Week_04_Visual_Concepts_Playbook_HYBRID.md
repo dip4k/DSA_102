@@ -1,4 +1,4 @@
-# 📊 WEEK 04 VISUAL CONCEPTS PLAYBOOK (HYBRID)
+﻿# 📊 WEEK 04 VISUAL CONCEPTS PLAYBOOK (HYBRID)
 
 > 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)
 > 
@@ -7,8 +7,8 @@
 ---
 
 **Theme:** Two Pointers, Sliding Windows, Divide & Conquer, Binary Search  
-**Format:** Hybrid (Enhanced ASCII + Web Resource Links + Reference Tools)  
-**Purpose:** Visual-first concept explanation with embedded professional resources
+**Format:** Hybrid (Enhanced ASCII + Architecture & State Diagrams)  
+**Purpose:** Visual-first concept explanation and algorithmic intuition
 
 ---
 
@@ -22,18 +22,6 @@
 | `⬅️ ➡️` | Pointer movement |
 | `✓` | Valid state |
 | `✗` | Invalid state |
-| 🔗 | Link to interactive visualization |
-
-### Professional Visualization Resources
-
-| Tool | Resource | Best For |
-|------|----------|----------|
-| **VisuAlgo** | https://visualgo.net | Binary search trees, data structures |
-| **LabulaDong** | https://labuladong.online/algo/en/essential-technique/sliding-window-framework/ | Sliding window with interactive panels |
-| **HelloInterview** | https://www.hellointerview.com/learn/code/two-pointers/overview | Two-pointer with real-time coding |
-| **GeeksforGeeks Two-Pointers** | https://www.geeksforgeeks.org/dsa/two-pointers-technique/ | Comprehensive two-pointer examples |
-| **GeeksforGeeks Sliding Window** | https://www.geeksforgeeks.org/dsa/window-sliding-technique/ | Sliding window technique patterns |
-| **ByteByteGo** | https://bytebytego.com/courses/coding-patterns/two-pointers | Visual coding patterns course |
 
 ---
 
@@ -62,8 +50,6 @@
 ---
 
 ### Pattern 1.1: Same-Direction Pointers (Move Zeroes)
-
-**Interactive Resource:** 🔗 [GeeksforGeeks Two-Pointers Examples](https://www.geeksforgeeks.org/dsa/two-pointers-technique/)
 
 #### Visual 1: Array State Evolution
 
@@ -98,8 +84,6 @@ flowchart TD
 
 ### Pattern 1.2: Opposite-Direction Pointers (Container with Most Water)
 
-**Interactive Resource:** 🔗 [ByteByteGo - Two Pointers Pattern](https://bytebytego.com/courses/coding-patterns/two-pointers/introduction-to-two-pointers?fpr=javarevisited)
-
 #### Visual 1: Greedy Pointer Movement Proof
 
 
@@ -111,7 +95,7 @@ flowchart TD
 
     R["🎯 Container State: L at height[L], R at height[R]<br/>Area = min(height[L], height[R]) * (R - L)"]:::state
     R --> Cond{"⚖️ Compare Heights:<br/>height[L] vs height[R]"}
-    Cond -->|height[L] < height[R]| ML["👉 Move Shorter Pointer: L++<br/>Only way to find taller bottleneck"]:::move
+    Cond -->|"height[L] &lt; height[R]"| ML["👉 Move Shorter Pointer: L++<br/>Only way to find taller bottleneck"]:::move
     Cond -->|height[L] >= height[R]| MR["👈 Move Shorter Pointer: R--<br/>Only way to find taller bottleneck"]:::move
     R -.->|Hypothetical: Move Taller Pointer| Dead["❌ Width shrinks AND bottleneck capped by shorter<br/>Area STRICTLY decreases; safely prune!"]:::dead
 ```
@@ -258,31 +242,26 @@ D) Makes code shorter
 
 ### Pattern 2.1: Fixed Window Mechanics & Sliding
 
-**Interactive Resource:** 🔗 [LabulaDong - Sliding Window Framework](https://labuladong.online/algo/en/essential-technique/sliding-window-framework/) (with visualization panel!)
-
 #### Visual 1: Window Slide Storyboard
 
-
-| 1  2  3 | 4  5 |
-| :--- | :--- |
-| 1 | 2  3  4 |
-| 1  2 | 3  4  5 |
-
+```text
+Array: [ 1,  2,  3,  4,  5 ], k = 3
+Step 1: [ 1   2   3 ]  4   5   -> Window sum = 6
+Step 2:   1 [ 2   3   4 ]  5   -> Subtract 1, add 4 -> Window sum = 9
+Step 3:   1   2 [ 3   4   5 ]  -> Subtract 2, add 5 -> Window sum = 12
+```
 
 #### Visual 2: Complexity Comparison
 
-
-| for j=i to i+k-1: | ← Recalculate every time! |
-| :--- | :--- |
-| sum -= A[i-k] | ← 2 operations |
-| sum += A[i] | ← per position |
+| Strategy | Operation per Window Shift | Total Time |
+| :--- | :--- | :--- |
+| **Naive Recalculation** | Re-sum all `k` elements (`sum(A[i..i+k-1])`) | `O(N * k)` |
+| **Sliding Window** | Subtract outgoing `A[i-k]`, add incoming `A[i]` | `O(N)` overall (`O(1)` per step) |
 
 
 ---
 
 ### Pattern 2.2: Monotonic Deque for Max/Min Window
-
-**Interactive Resource:** 🔗 [GeeksforGeeks Sliding Window](https://www.geeksforgeeks.org/dsa/window-sliding-technique/)
 
 #### Visual 1: Monotonic Deque State Evolution
 
@@ -395,8 +374,6 @@ Result: Maintains strict decreasing order properly
 
 ### Pattern 3.1: Expand-Contract Mechanics
 
-**Interactive Resource:** 🔗 [HelloInterview - Sliding Window Patterns](https://www.hellointerview.com/learn/code/two-pointers/overview)
-
 #### Visual 1: Two-Phase Decision Flow
 
 
@@ -431,9 +408,9 @@ flowchart TD
     classDef shrink fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:1.5px;
 
     W["🔍 Current Window: s[L..R]"]
-    W --> V["✅ Valid State: Distinct Chars <= k<br/>Update maxLength = max(maxLength, R - L + 1)<br/>Expand Right Pointer: R++"]:::valid
+    W --> V["✅ Valid State: Distinct Chars &le; k<br/>Update maxLength = max(maxLength, R - L + 1)<br/>Expand Right Pointer: R++"]:::valid
     W --> B["❌ Breach State: Distinct Chars > k<br/>Window violated invariant"]:::breach
-    B --> S["👈 Shrink Window: Decrement s[L] count and L++<br/>Repeat until distinct count returns to <= k"]:::shrink
+    B --> S["👈 Shrink Window: Decrement s[L] count and L++<br/>Repeat until distinct count returns to &le; k"]:::shrink
     S --> V
 ```
 
@@ -595,7 +572,7 @@ flowchart TD
     classDef found fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
 
     R["🎯 Search Target: 6 in [-3, -1, 0, 2, 4, 6, 8, 10] (Indices 0..7)"]:::init
-    R --> S1["🔍 Step 1: L=0, R=7, Mid=3 (val=2)<br/>val=2 < target=6 → Search Right: L = Mid + 1 = 4"]:::step
+    R --> S1["🔍 Step 1: L=0, R=7, Mid=3 (val=2)<br/>val=2 &lt; target=6 → Search Right: L = Mid + 1 = 4"]:::step
     S1 --> S2["🔍 Step 2: L=4, R=7, Mid=5 (val=6)<br/>val=6 == target=6 → Target Found at Index 5!"]:::found
 ```
 
@@ -711,28 +688,13 @@ Find last: if (arr[mid] <= target) lo = mid+1
 ## 🎯 WEEK 04 VISUAL SUMMARY TABLE
 
 
-| DAY | PATTERN | Key Visual Type | Complexity |
+| Day | Pattern | Key Visual Type | Complexity |
 | :--- | :--- | :--- | :--- |
-| 1 | Two-Pointer | Pointer zones | O(n) / O(1) |
-|  | Opposite-dir/ | Convergence | space |
-|  | Same-dir | diagrams |  |
-|  |  |  |  |
-| 2 | Sliding Window | Window slide | O(n) / O(k) |
-|  | Fixed Size | storyboard | space |
-|  | + Deque | Monotonic deque |  |
-|  |  |  |  |
-| 3 | Sliding Window | Expand-contract | O(n) / |
-|  | Variable Size | Frequency map | O(charset) |
-|  |  | Constraint zones | space |
-|  |  |  |  |
-| 4 | Divide & Conquer | Recursion tree | O(n log n) / |
-|  | (Merge Sort, | Level analysis | O(n) space |
-|  | Inversions) | Inversion count |  |
-|  |  |  |  |
-| 5 | Binary Search | Range narrowing | O(log n) / |
-|  | (Classic + | Feasibility | O(1) space |
-|  | Answer Space) | curve |  |
-|  |  | Peak finding |  |
+| **Day 1** | Two-Pointer (Opposite & Same Direction) | Pointer zone convergence | `O(N)` time / `O(1)` space |
+| **Day 2** | Sliding Window (Fixed Size & Monotonic Deque) | Window storyboard & monotonic queue | `O(N)` time / `O(k)` space |
+| **Day 3** | Sliding Window (Variable Size / Dynamic) | Expand-contract state machine | `O(N)` time / `O(Σ)` space |
+| **Day 4** | Divide & Conquer (Merge Sort & Inversions) | Recursion tree & cross-inversion merge | `O(N log N)` time / `O(N)` space |
+| **Day 5** | Binary Search (Answer Space & Peak Finding) | Monotonic predicate & search space halving | `O(log N)` time / `O(1)` space |
 
 
 ---
@@ -755,22 +717,18 @@ Find last: if (arr[mid] <= target) lo = mid+1
 
 ---
 
-## 🔗 RECOMMENDED LEARNING RESOURCES
+## 📚 CORE CONCEPT WALKTHROUGHS
 
-### Interactive Visualizations
-1. **VisuAlgo** (https://visualgo.net) — Best for data structure visualization
-2. **LabulaDong** (https://labuladong.online) — Sliding window framework with panels
-3. **HelloInterview** (https://www.hellointerview.com) — Real-time coding practice
-4. **ByteByteGo** (https://bytebytego.com) — Professional coding pattern courses
+### Core Visualizations & Pattern Mechanics
+- **Two-Pointer Convergence:** Opposite-direction pointer inward march and greedy container bounds.
+- **Fixed Window Differencing:** Reusing intermediate totals via constant-time edge element updates.
+- **Variable Window Expand-Contract:** Right pointer forward exploration with left pointer constraint recovery.
+- **Binary Search Monotonicity:** Predicate truth functions `FFFFTTTT` and discrete inflection points.
 
-### Comprehensive Guides
-- **GeeksforGeeks Two-Pointers** - Full technique explanations
-- **GeeksforGeeks Sliding Window** - Sliding window patterns
-- **USACO Guide** - Two-pointer problems and solutions
-
-### Video Tutorials
-- Sliding Window in 7 minutes (AlgoMaster) — Quick visual intro
-- Binary Search visualizations — Recursion and range narrowing
+### Conceptual Lecture Alignment
+- "Two-Pointer and Partition Patterns" — In-place transformations and bilateral scans
+- "Sliding Window Frameworks" — Monotonic queue state tracking and substring constraints
+- "Binary Search on Solution Spaces" — Feasibility functions and continuous-to-discrete bounding
 
 ---
 
@@ -784,19 +742,19 @@ Find last: if (arr[mid] <= target) lo = mid+1
 
 ### Deep Learning (2-3 hours)
 1. Read playbook + extended subtopics guide
-2. Visit web resource links for interactive visualizations
+2. Hand-trace pointer movements using visual diagrams
 3. Implement code from main instructional files
 4. Solve practice problems using visuals as reference
 
 ### Interview Prep
 1. Open playbook for quick pattern reminders
-2. Use resource links for visual refresh
+2. Review visual diagrams for pattern refresh
 3. Mentally trace algorithm using playbook diagrams
 4. Code from memory with confidence
 
 ---
 
-**Use web resource links for interactive visualizations while studying!**
+**Review pointer mechanics and window boundary transitions visually while practicing!**
 
 ---
 

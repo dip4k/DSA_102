@@ -1,9 +1,5 @@
 # 📘 Week 04 Day 03: Sliding Window (Variable Size) — Dynamic Constraint Management
 
-
-
-
-
 > 🧭 **Navigation:** [← Previous Day](Week_04_Day_02_Sliding_Window_Fixed_Size_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_04_Day_04_Divide_and_Conquer_Pattern_Instructional.md)
 > 
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
@@ -14,10 +10,10 @@
 
 *By the end of this chapter, you will be able to:*
 
-- 🎯 **Internalize** why dynamic window expansion and contraction solve constraint-based optimization problems in O(n) time despite appearing O(n²) on first inspection.
-- ⚙️ **Implement** variable-size window patterns with frequency maps, maintaining constraints through expand/shrink logic without memorization.
-- ⚖️ **Evaluate** when to expand versus shrink, understanding that the key insight is each pointer advances exactly n times total, not per iteration.
-- 🏭 **Connect** this pattern to production scenarios where constraints dynamically change: cache eviction under memory pressure, query streaming with size limits, packet throttling under congestion, and fraud detection with dynamic thresholds.
+- 🎯 **Internalize** why dynamic window expansion and contraction solve constraint-based optimization problems in `O(N)` time despite nested loops appearing `O(N^2)`.
+- ⚙️ **Implement** variable-size window patterns with frequency maps and direct hash arrays, maintaining constraints through explicit expand/shrink mechanics without memorization.
+- ⚖️ **Evaluate** when to expand versus shrink, proving that each pointer advances monotonically at most `N` times.
+- 🏭 **Connect** this pattern to production scenarios where resource limits dynamically fluctuate: TCP sliding congestion windows, cache eviction, stream tokenization, and rate limiters.
 
 ---
 
@@ -25,21 +21,27 @@
 
 ### The Engineering Problem
 
-Imagine you're building a web cache for a CDN. Each cached object has a key and value. As users request objects, you cache them to speed up future requests. But you have a memory limit—say 100MB. When the cache exceeds this limit, you must evict the least recently used (LRU) item to make room.
+Imagine you are designing an in-memory session cache for a web API gateway. Each active user session consumes variable memory. As incoming traffic spikes, you want to maintain the longest contiguous sequence of requests that consume no more than 100 megabytes of memory. A naive approach: test every possible start and end request index `(i, j)`. That requires `O(N^2)` window evaluations and millions of redundant sum computations.
 
-A naive approach: every time you add a new item, check if total size exceeds 100MB. If so, iterate through all items to find and evict the LRU one. That's O(n) work per addition, or O(n²) total for n operations.
-
-But there's a beautiful insight: you don't need to find the LRU item among all items. You only need to shrink your cache window from the left until you have room. As you add items (expand right), you remove from the left (shrink left). Each item is added once and removed once—O(1) amortized per operation, O(n) total.
-
-Or consider a different scenario: you're analyzing user behavior for anomalies. You're looking for the longest substring where no more than 2 distinct user types appear (to detect when users from unusual regions suddenly appear). You expand your window to include new users, but when you exceed 2 types, you shrink from the left until you're back to 2 types.
-
-Now imagine real-time fraud detection. A system monitors transactions and looks for patterns like "purchase high-value items within a short window." The window size isn't fixed—it should be small for unusual patterns (minutes for \$10k purchases) and larger for normal patterns (days for \$100 purchases). The algorithm expands to gather context and shrinks when patterns no longer fit.
+Or consider a text-processing parser: you are tasked with identifying the longest substring of characters without any repeated letters, or finding the minimal snippet containing all query terms. A brute-force search over all `O(N^2)` substrings with validation costs `O(N^3)` time, which timeouts immediately on large strings (`N = 10^5`).
 
 ### The Solution: Variable-Size Windows
 
-The variable-size sliding window pattern treats the window as dynamically sized. As you slide right through the array, you expand the window to include new elements and shrink it from the left when a constraint is violated. The power comes from recognizing that despite the dynamic sizing, each element is still processed O(1) times on average.
+The variable-size sliding window pattern models the search space as a dynamic contiguous span `[L..R]`. As the right boundary `R` expands to ingest new elements, the left boundary `L` contracts whenever an invariant condition is violated:
 
-> **💡 Insight:** Variable-size windows appear O(n²) because the window size varies, but the amortized cost is O(n) because each element enters and exits the window exactly once. The key is maintaining a constraint that decides when to expand versus shrink.
+```
+While R < N:
+    Ingest arr[R] into window state
+    While Window_State is INVALID (or can be contracted):
+        Evict arr[L] from window state
+        L = L + 1
+    Update Best_Result with current window [L..R]
+    R = R + 1
+```
+
+Because both `L` and `R` only move forward and never backtrack, each pointer advances at most `N` times. The entire algorithm runs in guaranteed `O(N)` time.
+
+> **💡 Insight:** Variable-size windows look like `O(N^2)` due to the nested `while` loop, but the amortized cost is strictly `O(N)`. Each element enters the window through `R` once and exits through `L` at most once. The key to the pattern is rigorously defining what makes a window "valid" versus "invalid."
 
 ---
 
@@ -47,85 +49,86 @@ The variable-size sliding window pattern treats the window as dynamically sized.
 
 ### The Core Analogy
 
-Think of a variable-size sliding window like adjusting the zoom level of a magnifying glass as you scan across a document. You start zoomed in (small window). As you encounter interesting content, you zoom out to capture more context (expand window). When the content becomes too diverse or complex (constraint violated), you zoom in (shrink window) until it fits your focus area again.
+Think of a variable-size sliding window like an elastic rubber band stretched across a measuring ruler. 
+- You pull the right side of the band forward (`R++`) to capture more territory.
+- As long as the tension remains safe (constraint satisfied), you keep expanding right to find the maximum possible span.
+- The moment tension exceeds the safety threshold (constraint violated), you pull the left side forward (`L++`) to release tension until the band is once again in a safe state.
 
-Unlike the fixed-size window where you always see exactly k elements, the variable window shows you everything between left and right pointers, and that distance changes as you encounter different content.
+```
+       [ L .................. R ] ----> R expands right (ingesting elements)
+                 L ---------> L shrinks right (restoring validity)
+```
 
 ### 🖼 Visualizing Variable-Size Window Mechanics
 
-Here's the progression of a variable-size window looking for "at most 2 distinct characters" in a string:
+Here is the progression of finding the **longest substring with at most 2 distinct characters** on the string `"eceba"`:
 
 ```
-String: "abcabcbb"
-Indices: 01234567
+String:   e   c   e   b   a
+Indices:  0   1   2   3   4
 
-Step 1: left=0, right=0
-        Window [a]
-        Distinct chars: {a}
-        Constraint: ≤ 2 ✓
+Step 1: Ingest 'e' at R=0 -> Window [e], Distinct=1 <= 2 (Valid) -> MaxLen = 1
+         [e]
+          L
+          R
 
-Step 2: left=0, right=1
-        Window [a, b]
-        Distinct chars: {a, b}
-        Constraint: ≤ 2 ✓
+Step 2: Ingest 'c' at R=1 -> Window [e, c], Distinct=2 <= 2 (Valid) -> MaxLen = 2
+         [e, c]
+          L  R
 
-Step 3: left=0, right=2
-        Window [a, b, c]
-        Distinct chars: {a, b, c}
-        Constraint: ≤ 2 ✗ VIOLATED
-        Must shrink left
+Step 3: Ingest 'e' at R=2 -> Window [e, c, e], Distinct=2 <= 2 (Valid) -> MaxLen = 3
+         [e, c, e]
+          L     R
 
-Step 4: left=1, right=2
-        Window [b, c]
-        Distinct chars: {b, c}
-        Constraint: ≤ 2 ✓
+Step 4: Ingest 'b' at R=3 -> Window [e, c, e, b], Distinct=3 > 2 (INVALID!)
+         [e, c, e, b]
+          L        R
+         -> Shrink L=0 ('e'): counts {e:1, c:1, b:1}, Distinct=3 > 2 (Still Invalid)
+         -> Shrink L=1 ('c'): counts {e:1, b:1}, Distinct=2 <= 2 (VALID!)
+         -> Valid Window [e, b] at L=2, R=3 -> Length = 2, MaxLen remains 3
+                [e, b]
+                 L  R
 
-... continues with expand/shrink as needed
+Step 5: Ingest 'a' at R=4 -> Window [e, b, a], Distinct=3 > 2 (INVALID!)
+                [e, b, a]
+                 L     R
+         -> Shrink L=2 ('e'): counts {b:1, a:1}, Distinct=2 <= 2 (VALID!)
+         -> Valid Window [b, a] at L=3, R=4 -> Length = 2, MaxLen = 3
+                    [b, a]
+                     L  R
 ```
-
-The window size fluctuates based on the constraint. Sometimes it's 1 element, sometimes 5, sometimes 0 momentarily.
 
 ### Invariants & Properties
 
-The fundamental invariant: **At every step, the window [left, right) contains a state that satisfies or can move toward satisfying the constraint.**
+Every variable-size window problem maintains two fundamental invariants:
+1. **Monotonic Pointer Advancement:** `L` and `R` only advance forward (`0 <= L <= R < N`). Neither pointer ever decrements.
+2. **State Equivalence:** The auxiliary state (sum, character frequency map, distinct counter) precisely reflects all elements in the current range `[L..R]`.
 
-More formally, the window has two possible states:
-- **Valid:** The constraint is satisfied; we can expand right
-- **Invalid:** The constraint is violated; we must shrink left
+### 📐 Theoretical Foundation: Amortized Complexity Analysis
 
-This creates a state machine:
+Although the code contains an inner loop:
 ```
-VALID state → try to expand right
-             → if still valid, move to VALID
-             → if invalid, move to INVALID
-
-INVALID state → shrink left
-               → once valid again, move to VALID
+for (int right = 0; right < n; right++)
+{
+    while (ConditionViolated())
+    {
+        left++;
+    }
+}
 ```
-
-The genius is that each pointer moves exactly once from 0 to n. Even though the window size varies, no element is revisited: left advances, right advances, never go backward.
-
-### 📐 Mathematical Foundation
-
-The key to variable-size window efficiency is **amortized analysis**. While a single iteration might advance right by 1 and left by 1,000 (shrinking the window dramatically), each element participates in at most 2 pointer movements:
-1. One entry (when right reaches it)
-2. One exit (when left passes it)
-
-Total pointer movements: 2n. Average per element: 2. Average per iteration: O(1) amortized.
-
-**Key Theorem (Amortized Sliding Window):** If each element enters once and exits once, and entering/exiting cost O(1) per element, then total cost is O(n) regardless of how many times the left pointer advances in a single iteration.
+The total number of inner loop executions across the **entire execution** of the outer loop cannot exceed `N`, because `left` starts at `0` and stops at `N`. Therefore:
+- Number of increments of `right`: `N`
+- Number of increments of `left`: at most `N`
+- Total operations: at most `2N` -> `O(N)` linear time.
 
 ### Taxonomy of Variable-Size Window Variants
 
-| Variant | Constraint | Data Structure | Decision Logic |
+| Objective | Inner Loop Trigger | Window Update Point | Canonical Problem |
 | :--- | :--- | :--- | :--- |
-| **At Most K Distinct** | Unique count ≤ K | HashMap | Expand if count < K, shrink if count > K |
-| **Sum ≤ Target** | Cumulative sum bound | Running sum | Expand if sum < target, shrink if sum > target |
-| **At Most K Occurrences** | Any char appears ≤ K times | HashMap | Expand if all ≤ K, shrink if any > K |
-| **Consecutive Duplicates** | No char repeated | HashSet | Expand if new char unique, shrink if duplicate |
-| **Subarray Sum ≥ Target** | Minimum cumsum | Running sum | Expand until sum ≥ target, then shrink while valid |
-
-Each variant has different constraint logic, but all follow the same expand/shrink pattern.
+| **Maximize Window Length** | `while (invalid)` -> shrink until valid | Update `max = Math.Max(max, R - L + 1)` after inner loop | Longest Substring Without Repeating Characters |
+| **Minimize Window Length** | `while (valid)` -> shrink while valid to find minimal | Update `min = Math.Min(min, R - L + 1)` inside inner loop | Minimum Size Subarray Sum (`sum >= target`) |
+| **Exact Condition Match** | `while (count > K)` -> restore count | Update result when condition matches | Longest Substring with At Most K Distinct |
+| **Subarray Count Accumulation** | `while (sum > K)` -> restore count | Accumulate `total += (R - L + 1)` | Subarray Product Less Than K |
 
 ---
 
@@ -133,384 +136,369 @@ Each variant has different constraint logic, but all follow the same expand/shri
 
 ### The State Machine & Memory Layout
 
-A variable-size sliding window maintains:
-- **Array/String:** Input data
-- **Left Pointer:** Start of window
-- **Right Pointer:** End of window (typically exclusive, so window is [left, right))
-- **Constraint Checker:** Logic to determine if current window is valid
-- **Frequency Map:** Hash map tracking element counts/properties in current window
-- **Result Tracking:** Best/longest/shortest window found so far
-
-The typical state progression:
-1. Initialize left=0, right=0, empty frequency map
-2. Expand right, add element to frequency map, check constraint
-3. While constraint violated: shrink left, remove element from frequency map
-4. While constraint satisfied: record result, expand right further
-5. Continue until right reaches end
-
-### 🔧 Operation 1: Longest Substring with At Most K Distinct Characters
-
-**The Intent:** Find the longest substring where at most K distinct characters appear. This is the quintessential variable-size window problem.
-
-Let me walk through the mechanics. Imagine finding the longest substring with at most 2 distinct characters in `"eceba"` (k=2).
-
-**The State Evolution:**
+A variable-size sliding window manages:
+- **Input Buffer:** Array or string slice.
+- **Left Pointer (`L`):** Start index of candidate window.
+- **Right Pointer (`R`):** Current exploration index.
+- **Constraint Tracker:** A scalar running sum, or a frequency map (`Span<int>` or `Dictionary<char, int>`).
+- **Optimal Metric:** Scalar tracking the best length or count seen so far.
 
 ```
-Step 1: left=0, right=0
-        Window [e]
-        Char count: {e: 1}
-        Distinct: 1 ≤ 2 ✓
-        Max length so far: 1
-
-Step 2: left=0, right=1
-        Window [e, c]
-        Add 'c': {e: 1, c: 1}
-        Distinct: 2 ≤ 2 ✓
-        Max length so far: 2
-
-Step 3: left=0, right=2
-        Window [e, c, e]
-        Add 'e': {e: 2, c: 1}
-        Distinct: 2 ≤ 2 ✓
-        Max length so far: 3
-
-Step 4: left=0, right=3
-        Window [e, c, e, b]
-        Add 'b': {e: 2, c: 1, b: 1}
-        Distinct: 3 ≤ 2 ✗ VIOLATED!
-        Must shrink left
-
-Step 5: left=1, right=3
-        Remove 'e' at left: {e: 1, c: 1, b: 1}
-        Still 3 distinct ✗
-        Must shrink more
-
-Step 6: left=2, right=3
-        Remove 'c' at left: {e: 1, b: 1}
-        Distinct: 2 ≤ 2 ✓ VALID
-        Window [e, b], length 2
-        Max length so far: 3
-
-Step 7: left=2, right=4
-        Window [e, b, a]
-        Add 'a': {e: 1, b: 1, a: 1}
-        Distinct: 3 ≤ 2 ✗ VIOLATED!
-        Must shrink left
-
-Step 8: left=3, right=4
-        Remove 'e': {b: 1, a: 1}
-        Distinct: 2 ≤ 2 ✓
-        Window [b, a], length 2
-        Max length so far: 3 (no improvement)
+                           Dynamic Window [L..R]
+                       +---------------------------+
+  Array: [ ... | arr[L-1] | arr[L] | ... | arr[R] | arr[R+1] | ... ]
+                   ^                         ^
+              Shrinks past              Expands into
+               when invalid             every iteration
 ```
-
-**Complete Trace with Decision Logic:**
-
-```
-| Step | left | right | Char | Count Map | Distinct | Valid? | Action | Max |
-|------|------|-------|------|-----------|----------|--------|--------|-----|
-| 1    | 0    | 0     | e    | {e:1}     | 1        | ✓      | Expand | 1   |
-| 2    | 0    | 1     | c    | {e:1,c:1} | 2        | ✓      | Expand | 2   |
-| 3    | 0    | 2     | e    | {e:2,c:1} | 2        | ✓      | Expand | 3   |
-| 4    | 0    | 3     | b    | {e:2,c:1,b:1} | 3   | ✗      | Shrink | 3   |
-| 5    | 1    | 3     | -    | {e:1,c:1,b:1} | 3   | ✗      | Shrink | 3   |
-| 6    | 2    | 3     | -    | {e:1,b:1} | 2       | ✓      | Expand | 3   |
-| 7    | 2    | 4     | a    | {e:1,b:1,a:1} | 3   | ✗      | Shrink | 3   |
-| 8    | 3    | 4     | -    | {b:1,a:1} | 2       | ✓      | Done   | 3   |
-```
-
-**Key Observations:**
-- Left pointer advances: 0 → 1 → 2 → 3 (3 steps)
-- Right pointer advances: 0 → 1 → 2 → 3 → 4 (4 steps)
-- Total pointer movements: 3 + 4 = 7 (not 8*5 = 40 as naive would cost)
-- Time complexity: O(n) where n = 5, not O(n*k)
-
-**Decision Logic in Code Intuition:**
-```
-while right < n:
-    add arr[right] to frequency map
-    while (distinct count > k):
-        remove arr[left] from frequency map
-        left += 1
-    max_length = max(max_length, right - left + 1)
-    right += 1
-```
-
-This is the essence: expand until constraint violated, shrink until valid, repeat.
-
-### 🔧 Operation 2: Minimum Window Substring (Harder Variant)
-
-Now let's look at a more complex constraint: find the minimum window substring that contains all characters from a target string.
-
-Input: s="ADOBECODEBANC", t="ABC"
-Goal: Find the smallest substring of s that contains all characters in t with at least their target frequencies.
-
-**State Evolution:**
-
-```
-Step 1: left=0, right=0
-        Window [A]
-        Need: {A:1, B:1, C:1}
-        Have: {A:1}
-        Matches: 1/3 ✗
-
-Step 2: left=0, right=1
-        Window [A, D]
-        Have: {A:1, D:1}
-        Matches: 1/3 ✗
-
-Step 3: left=0, right=2
-        Window [A, D, O]
-        Have: {A:1, D:1, O:1}
-        Matches: 1/3 ✗
-
-... expand until we have all required characters ...
-
-Step N: left=0, right=9
-        Window [A, D, O, B, E, C, O, D, E]
-        Have: {A:1, B:1, C:1, O:2, D:2, E:2}
-        Matches: 3/3 ✓ VALID!
-        Length: 10
-
-Now shrink left to find minimum:
-
-Step N+1: left=1, right=9
-        Remove A: {D:1, O:2, B:1, C:1, E:2}
-        Still have {B:1, C:1}? Yes ✓
-        Length: 9
-
-Step N+2: left=2, right=9
-        Remove D: {O:2, B:1, C:1, E:2}
-        Still valid ✓
-        Length: 8
-
-... continue shrinking ...
-
-Step N+k: left=9, right=9
-        Window [B, A, N, C]
-        Have: {B:1, A:1, N:1, C:1}
-        Still have all required? Yes ✓
-        Length: 4 ← Best found so far
-```
-
-**Key Insight:** We maintain two counters:
-- **Have:** How many required characters we've collected
-- **Need:** Total required characters (3 in this case)
-
-When have == need, we have a valid window. Then we shrink left to minimize length.
-
-### 📉 Progressive Example: Longest Substring Without Repeating Characters (Classic)
-
-Let's apply variable-size window to a classic interview problem: find the longest substring without repeating characters.
-
-Input: s="abcabcbb"
-Goal: Find the longest substring with no repeated characters.
-
-**Intuition:** Use a set to track characters in current window. Expand right, adding characters. If duplicate found, shrink left until the character exits the window.
-
-```
-Step 1: Window = [a], set = {a}, max = 1
-Step 2: Window = [a, b], set = {a, b}, max = 2
-Step 3: Window = [a, b, c], set = {a, b, c}, max = 3
-Step 4: Try to add 'a' but it's in the set
-        Remove from left until 'a' is gone
-        Window = [b, c, a], set = {b, c, a}, max = 3
-Step 5: Window = [b, c, a, b] - duplicate 'b'
-        Shrink left
-        Window = [c, a, b], set = {c, a, b}, max = 3
-Step 6: Window = [c, a, b, c] - duplicate 'c'
-        Shrink left
-        Window = [a, b, c], set = {a, b, c}, max = 3
-Step 7: Window = [a, b, c, b] - duplicate 'b'
-        Window = [c, b], set = {c, b}, max = 3
-```
-
-**Result:** Maximum length = 3 (substring "abc")
-
-The entire algorithm is O(n) because each character is examined at most twice: once when right reaches it, once when left passes it.
-
-> **⚠️ Watch Out:** The key difference from fixed-size windows is that the constraint-checking logic determines when to shrink. In fixed-size windows, you shrink every k steps. In variable-size, you shrink whenever the constraint is violated. This makes the logic slightly more complex but remains O(n) due to amortized analysis.
 
 ---
 
-## ⚖️ CHAPTER 4: PERFORMANCE, TRADE-OFFS & REAL SYSTEMS
+### 🔧 Operation 1: Longest Substring Without Repeating Characters
 
-### Beyond Big-O: Performance Reality
+**The Intent:** Find the length of the longest substring in `"pwwkew"` containing zero duplicate characters.
 
-Let's compare three approaches to the "longest substring with at most K distinct" problem:
-
-| Approach | Time | Space | Practical Notes |
-| :--- | :--- | :--- | :--- |
-| Naive (nested loops) | O(n²) | O(k) | Recomputes character set per position |
-| Brute force with hashing | O(n*k) | O(k) | Checks all substrings of length k |
-| Variable-size window | O(n) | O(k) | Single pass, amortized linear |
-
-**Memory Reality:** Variable-size windows use O(k) space for the frequency map (at most k distinct characters). This is optimal—you can't do better than O(k) because you must track which characters are in the current window.
-
-**Amortized Cost Deep Dive:** The key insight that makes variable-size windows efficient is counter-intuitive. While the window size varies from 0 to n, each element is processed exactly twice:
-1. When added to the window (right pointer reaches it)
-2. When removed from the window (left pointer passes it)
-
-Total operations: 2n. Operations per element: 2. Operations per iteration: O(1) amortized.
-
-**Constraint Checking Cost:** The time to check if a constraint is satisfied depends on implementation:
-- Maintaining a counter of distinct characters: O(1) to update
-- Maintaining the full character set: O(k) to check validity, but if you track carefully, O(1) amortized
-- Complex constraints: might cost O(k log k) with balanced trees
-
-For the problems we focus on, constraint checking is O(1).
-
-### 🏭 Real-World Systems Story 1: Web Browser LRU Cache (Chrome/Firefox Memory Management)
-
-Modern web browsers cache pages to speed up the back button and reduce bandwidth. Chrome maintains an in-memory page cache with a size limit (typically 100-200MB depending on device).
-
-When the cache reaches capacity and a new page arrives, the browser must decide which page to evict. The naive approach: scan all cached pages, find the one least recently used, evict it. That's O(n) per new page, or O(n²) for n pages.
-
-Chrome's actual approach: maintain a frequency map of page access patterns and use variable-size windowing concepts. As new pages arrive (expand), the cache grows. When size exceeds the limit (constraint violated), the browser shrinks by evicting the LRU page.
-
-Implementation detail: Chrome actually uses a more sophisticated approach (multimap ordered by access time), but the core idea is variable-window constraint management: expand to add pages, shrink when memory pressure rises.
-
-Real impact: At scale, this reduces memory usage from 500MB to 200MB on memory-constrained devices (like older phones) while maintaining nearly the same cache hit rate. The difference is noticeable—faster back-button response, smoother browsing.
-
-### 🏭 Real-World Systems Story 2: Database Query Result Streaming (PostgreSQL/MongoDB)
-
-When you run a large query returning millions of rows, databases don't load everything into memory. Instead, they stream results to the client in batches. The database maintains a "current result window" in memory.
-
-The naive approach: fetch k rows, stream to client, fetch next k rows. This wastes I/O because you re-fetch rows from disk that were already fetched.
-
-Variable-window approach: expand the result window to prefetch more rows from disk (anticipate client requests), but shrink when memory pressure rises (if the client is slow or the network is congested). The window size is dynamically adjusted based on:
-- Client consumption speed (expand if client is keeping up)
-- Memory available (shrink if memory pressure detected)
-- Network bandwidth (expand if high bandwidth, shrink if congested)
-
-Real impact: Database servers maintain streaming results for thousands of concurrent clients without memory explosion. A 64GB server can handle millions of rows of result sets being streamed simultaneously, where naive buffering would require terabytes.
-
-### 🏭 Real-World Systems Story 3: Congestion Detection in Network Protocols (TCP/IP)
-
-TCP uses a "congestion window" to control how much data can be in-flight on the network. The window size varies based on network conditions:
-- **Expand:** If packets are arriving cleanly (no loss), the network has more capacity
-- **Shrink:** If packet loss is detected, the network is congested, reduce transmission rate
-
-This is literally a variable-size sliding window! Packets are added to the window (expand), and acknowledged packets are removed (shrink). The constraint is: "maintain throughput while avoiding packet loss."
-
-The algorithm (AIMD: Additive Increase, Multiplicative Decrease):
 ```
-if (ack_received):
-    window_size += 1  # Slowly expand
-if (timeout_detected):  # Packet loss detected
-    window_size /= 2  # Quickly shrink
+Array: "pwwkew"
+
+R=0 ('p'): lastSeen['p']=-1 -> L=0, Len=1, Max=1. lastSeen['p']=0
+R=1 ('w'): lastSeen['w']=-1 -> L=0, Len=2, Max=2. lastSeen['w']=1
+R=2 ('w'): lastSeen['w']=1 >= L (Duplicate!) -> Jump L = 1 + 1 = 2
+           Len = 2 - 2 + 1 = 1, Max=2. lastSeen['w']=2
+R=3 ('k'): lastSeen['k']=-1 -> L=2, Len=2, Max=2. lastSeen['k']=3
+R=4 ('e'): lastSeen['e']=-1 -> L=2, Len=3, Max=3. lastSeen['e']=4
+R=5 ('w'): lastSeen['w']=2 >= L (Duplicate!) -> Jump L = 2 + 1 = 3
+           Len = 5 - 3 + 1 = 3, Max=3. lastSeen['w']=5
 ```
 
-Real impact: TCP/IP enables stable, fair network sharing. Without congestion control, a single aggressive application could starve others. With variable-window congestion control, thousands of applications share the network smoothly. This is why video streaming works while someone else is downloading—congestion control dynamically adjusts window sizes.
+#### Step-by-Step Trace Table
 
-### Failure Modes & Robustness
-
-**Off-by-One Errors:** Variable-size window logic is tricky. Is the window [left, right) or [left, right]? Do you check the constraint before or after adding the new character? These small decisions affect correctness. Always trace through carefully.
-
-**Constraint Complexity:** Some constraints are easy to maintain incrementally (character count), while others require full recomputation (median of current window). For complex constraints, variable-size windows might not help.
-
-**Overlapping Constraints:** If multiple constraints must be satisfied simultaneously (e.g., "at most K distinct characters AND all characters appear at least once"), the logic becomes more complex. You need to check both when deciding to shrink.
-
-**Streaming vs. Batch:** Variable-size windows excel for streaming data (where you don't know future elements). For batch processing, sometimes other approaches are simpler.
-
-**Amortized vs. Real-Time:** The amortization is over the entire algorithm. A single iteration might take O(n) time if the left pointer advances n positions in one iteration. For real-time systems, this "hiccup" might be unacceptable. Batch processing before applying variable windows can help.
+| `R` | Char `s[R]` | Previous Index | New `L` Position | Window Span `[L..R]` | Window String | `R - L + 1` | `MaxLen` |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **0** | `p` | -1 | 0 | `[0..0]` | `"p"` | 1 | **1** |
+| **1** | `w` | -1 | 0 | `[0..1]` | `"pw"` | 2 | **2** |
+| **2** | `w` | 1 | 2 (`1 + 1`) | `[2..2]` | `"w"` | 1 | **2** |
+| **3** | `k` | -1 | 2 | `[2..3]` | `"wk"` | 2 | **2** |
+| **4** | `e` | -1 | 2 | `[2..4]` | `"wke"` | 3 | **3** |
+| **5** | `w` | 2 | 3 (`2 + 1`) | `[3..5]` | `"kew"` | 3 | **3** |
 
 ---
 
-## 🔗 CHAPTER 5: INTEGRATION & MASTERY
+### 🔧 Operation 2: Minimum Size Subarray Sum (`sum >= target`)
 
-### Connections (Precursors & Successors)
+**The Intent:** Find the minimal length of a contiguous subarray in `[2, 3, 1, 2, 4, 3]` with sum `>= 7`.
 
-**Building on Prior Knowledge:**
-Variable-size windows directly extend fixed-size windows from Day 2. Instead of advancing left every k steps, you advance it whenever the constraint is violated. The invariant still holds: at every step, the window contains a meaningful region of the array.
+Unlike maximization problems where we shrink until the window is valid, here we **shrink while the window is valid** to discover the smallest possible valid span.
 
-The two-pointer foundation from Day 1 remains critical: both pointers move independently, and each advancement is guided by a clear rule (expand right until constraint violated, shrink left until valid).
+```
+Target = 7, Array = [2, 3, 1, 2, 4, 3]
 
-**Foreshadowing Future Topics:**
-Variable-size windows introduce dynamic constraint satisfaction, which will reappear in graph problems (BFS with dynamic frontiers), dynamic programming (optimal substructure with varying parameters), and greedy algorithms (maintaining constraints while optimizing). The pattern of "expand while beneficial, contract when necessary" is fundamental to many algorithms.
+R=0 (val 2): Sum=2 < 7 -> Expand
+R=1 (val 3): Sum=5 < 7 -> Expand
+R=2 (val 1): Sum=6 < 7 -> Expand
+R=3 (val 2): Sum=8 >= 7 (VALID!)
+             -> MinLen = min(inf, 3 - 0 + 1) = 4
+             -> Shrink L=0 (subtract 2): Sum=6 < 7 -> Stop shrinking
+R=4 (val 4): Sum=10 >= 7 (VALID!)
+             -> MinLen = min(4, 4 - 1 + 1) = 4
+             -> Shrink L=1 (subtract 3): Sum=7 >= 7 (Still Valid!)
+             -> MinLen = min(4, 4 - 2 + 1) = 3
+             -> Shrink L=2 (subtract 1): Sum=6 < 7 -> Stop shrinking
+R=5 (val 3): Sum=9 >= 7 (VALID!)
+             -> MinLen = min(3, 5 - 3 + 1) = 3
+             -> Shrink L=3 (subtract 2): Sum=7 >= 7 (Still Valid!)
+             -> MinLen = min(3, 5 - 4 + 1) = 2
+             -> Shrink L=4 (subtract 4): Sum=3 < 7 -> Stop shrinking
+Result: 2 (Subarray [4, 3])
+```
 
-### 🧩 Pattern Recognition & Decision Framework
+#### Step-by-Step Trace Table
 
-**Red Flags That Suggest Variable-Size Sliding Window:**
-- "Longest substring" — almost certainly variable-size window
-- "At most K distinct" or "at most K occurrences" — classic variable window
-- "Find the minimum window containing..." — variable window with contraction
-- "Constraint-based subarray/substring" — likely variable window
-- "Dynamic optimization with bounds" — consider variable window
+| `R` | `nums[R]` | `currentSum` | In Inner Shrink Loop? | Window `[L..R]` | Active Length | `minLen` |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **0** | 2 | 2 | No (`2 < 7`) | `[0..0]` | 1 | inf |
+| **1** | 3 | 5 | No (`5 < 7`) | `[0..1]` | 2 | inf |
+| **2** | 1 | 6 | No (`6 < 7`) | `[0..2]` | 3 | inf |
+| **3** | 2 | 8 | Yes (`8 >= 7`) -> Shrink L=0 -> Sum becomes 6 | `[0..3]` -> `[1..3]` | 4 | **4** |
+| **4** | 4 | 10 | Yes (`10 >= 7`) -> Shrink L=1 (Sum=7) -> Shrink L=2 (Sum=6) | `[1..4]` -> `[3..4]` | 3 | **3** |
+| **5** | 3 | 9 | Yes (`9 >= 7`) -> Shrink L=3 (Sum=7) -> Shrink L=4 (Sum=3) | `[3..5]` -> `[5..5]` | 2 | **2** |
 
-**When to Use:**
-
-✅ **Use variable-size sliding window when:**
-- The constraint is dynamic (satisfied/violated status depends on current window)
-- You need the longest/shortest substring/subarray satisfying a constraint
-- The constraint can be checked/updated in O(1) or O(log k) time
-- You want O(n) time without preprocessing
-- The problem involves "at most K" or "at least K" of something in the window
-
-🛑 **Avoid when:**
-- The problem requires all substrings (not just the optimal one)
-- The constraint is complex and can't be maintained incrementally
-- The data is not sequential (2D arrays, graphs, etc.)
-- You only care about one specific window size (use fixed-size window instead)
-
-**Interview Red Flags:**
-When an interviewer says "longest substring" or "at most K distinct," they're signaling a variable-size window problem. When they say "minimum window containing," that's a classic hard variable-window variant.
-
-### 🧪 Socratic Reflection
-
-Before moving on, think deeply about these questions (no answers provided):
-
-1. **Why does each element contribute only O(1) amortized cost even though the window size varies dramatically?** What property of pointer movement guarantees this?
-
-2. **In the "at most K distinct characters" problem, why can you shrink the left pointer without checking if it violates the constraint?** What invariant ensures the window remains valid after shrinking?
-
-3. **How would you handle the "at least K distinct characters" problem?** Does the same variable-window approach work, or do you need a different strategy?
-
-4. **If the constraint requires checking multiple conditions (e.g., "all characters appear ≥ 2 times"), how does the shrink logic change?** Do you shrink when any condition is violated?
-
-5. **In the "minimum window substring" problem, why must you continue shrinking even after finding one valid window?** What might a longer valid window hide about shorter ones?
-
-### 📌 Retention Hook
-
-> **The Essence:** "Variable-size sliding windows solve constraint-based substring/subarray problems in O(n) time by expanding until the constraint is violated, then contracting until satisfied. Each element enters and exits the window exactly once, giving O(1) amortized cost per element. The key is maintaining a constraint checker that decides: expand if valid, contract if violated. This transforms O(n²) naive approaches into linear-time solutions."
+> **⚠️ Watch Out:** Ensure that when updating `minLen`, the check is performed **inside** the contraction `while` loop before decrementing `currentSum` and incrementing `left`.
 
 ---
 
-## 🧠 5 COGNITIVE LENSES
+## 💻 CHAPTER 4: PRODUCTION-GRADE IMPLEMENTATIONS (C# & PYTHON)
 
-### 💻 **The Hardware Lens: Cache-Friendly Constraint Checking**
+### Problem 1: Longest Substring Without Repeating Characters (LeetCode 3)
 
-Variable-size window code typically uses a hash map for frequency tracking. Hash maps have O(1) average-case lookup but can have poor cache locality (random memory access). Modern competitive programming often uses arrays instead: if characters are limited to 26 (English letters) or 128 (ASCII), an array of size 26/128 beats a hash map on real hardware due to better cache locality.
+#### 🎙️ 45-Minute Interview Talk Track
+> *"To find the length of the longest substring without duplicate characters, we can maintain a variable sliding window bounded by pointers `left` and `right`. As `right` traverses the string, we check whether character `s[right]` has been observed previously. Rather than sliding `left` incrementally one step at a time, we maintain an array of the most recent index where each character appeared. If `s[right]` was seen at an index greater than or equal to `left`, we can immediately advance `left` to `lastSeen[c] + 1`. We then record the new index of `s[right]` and update our maximum window length `right - left + 1`. This runs in O(N) time with O(1) auxiliary space using a fixed 128-element ASCII table."*
 
-The trade-off: memory (using an array wastes space for sparse character sets) versus speed (array access is blazing fast on modern CPUs). For "at most K distinct characters," arrays are typically faster than hash maps by a constant factor (2-3x), making the difference between microseconds and milliseconds at scale.
+#### C# Primary Implementation (.NET 8/9 — Stackalloc Span Optimization)
+```csharp
+using System;
 
-### 📉 **The Trade-off Lens: Space vs. Time vs. Implementation Complexity**
+public static class VariableWindowSolvers
+{
+    /// <summary>
+    /// Finds the length of the longest substring without repeating characters.
+    /// Time Complexity: O(N) | Auxiliary Space: O(1)
+    /// </summary>
+    public static int LengthOfLongestSubstring(string s)
+    {
+        if (string.IsNullOrEmpty(s)) return 0;
 
-For the "longest substring without repeating characters" problem:
-- **HashMap approach:** O(n) time, O(k) space, simple implementation
-- **Array approach:** O(n) time, O(128) space, very fast in practice
-- **Set approach:** O(n) time, O(k) space, medium speed
+        ReadOnlySpan<char> span = s.AsSpan();
+        int maxLength = 0;
+        int left = 0;
 
-The best choice depends on the character set size and performance requirements. In a code interview, HashMap is safest (works for any character set). In competitive programming, arrays are optimal. In production, it depends on the data and profiling results.
+        // Zero-allocation stack buffer for 128 standard ASCII character indices
+        Span<int> lastSeen = stackalloc int[128];
+        lastSeen.Fill(-1);
 
-### 👶 **The Learning Lens: From Intuition to Formal Analysis**
+        for (int right = 0; right < span.Length; right++)
+        {
+            char c = span[right];
 
-Many learners struggle with "why is this O(n) when the left pointer sometimes advances many times per iteration?" The intuition is: "total pointer movements are 2n, so it's O(n) on average." The formal argument is amortized analysis: each element contributes O(1) cost total, spread across all iterations.
+            // If character was seen within the active window, jump left pointer forward
+            if (c < 128 && lastSeen[c] >= left)
+            {
+                left = lastSeen[c] + 1;
+            }
 
-The learning progression: "this seems O(n²)" → "each element is processed twice" → "two passes through the data is O(2n) = O(n)" → amortized analysis is crystal clear.
+            if (c < 128)
+            {
+                lastSeen[c] = right;
+            }
 
-### 🤖 **The AI/ML Lens: Streaming Anomaly Detection**
+            int currentLength = right - left + 1;
+            if (currentLength > maxLength)
+            {
+                maxLength = currentLength;
+            }
+        }
 
-Machine learning on streaming data often uses sliding windows to detect anomalies. A variable-size window allows the model to adapt: expand when gathering normal behavior baseline, shrink when an anomaly is detected to isolate the abnormal pattern.
+        return maxLength;
+    }
+}
+```
 
-This is how real-time fraud detection works: maintain a window of transactions, expand to build a baseline, when an anomaly score exceeds a threshold, shrink to focus on the suspicious transaction and ignore old history.
+#### Python Secondary Implementation (3.11+ — Idiomatic Index Jump)
+```python
+def length_of_longest_substring(s: str) -> int:
+    """Finds length of longest substring without repeating characters.
+    
+    Time Complexity: O(N) | Auxiliary Space: O(min(N, Sigma))
+    """
+    last_seen: dict[str, int] = {}
+    left = 0
+    max_length = 0
 
-### 📜 **The Historical Lens: The Birth of Sublinear Constraint Solving**
+    for right, char in enumerate(s):
+        # Jump left pointer directly past previous occurrence if within active window
+        if char in last_seen and last_seen[char] >= left:
+            left = last_seen[char] + 1
 
-Before variable-size windows were formalized (around the 2000s in competitive programming), many "constraint-based substring" problems were solved with nested loops (O(n²)). The insight that you could maintain both pointers moving leftward and rightward, processing each element once, was a breakthrough.
+        last_seen[char] = right
+        max_length = max(max_length, right - left + 1)
 
-Today, variable-size windows are the go-to technique for this entire class of problems. What was a hard problem is now "standard technique." This shows how pattern recognition in algorithms compounds: once you see the structure, the solution becomes obvious.
+    return max_length
+```
+
+#### 📊 Explicit Complexity Deconstruction
+* **Time Complexity:** `O(N)` — The `right` pointer iterates through the string of length `N` exactly once. The `left` pointer advances monotonically via `O(1)` index lookups.
+* **Auxiliary Space:** `O(1)` in C# using a fixed 128-int stack buffer; `O(min(N, Alphabet))` in Python for the dictionary tracking unique characters.
+* **Output Space:** `O(1)` — Returns a single primitive integer.
+
+---
+
+### Problem 2: Minimum Size Subarray Sum (LeetCode 209)
+
+#### 🎙️ 45-Minute Interview Talk Track
+> *"We are looking for the minimal length of a contiguous subarray whose sum is at least `target`. Since all elements are strictly positive, the cumulative sum monotonically increases as we expand the window right, and monotonically decreases as we shrink left. We expand `right`, accumulating elements into `currentSum`. The moment `currentSum >= target`, the window is valid. We record the candidate length `right - left + 1`, then greedily shrink `left` by subtracting `nums[left]` and incrementing `left` until the sum falls below target. Each element is added once and subtracted at most once, providing a clean O(N) time and O(1) space solution."*
+
+#### C# Primary Implementation (.NET 8/9 — Zero Allocation)
+```csharp
+using System;
+
+public static class MinSubArrayLenSolver
+{
+    /// <summary>
+    /// Finds the minimal length of a contiguous subarray whose sum is >= target.
+    /// Time Complexity: O(N) | Auxiliary Space: O(1)
+    /// </summary>
+    public static int MinSubArrayLen(int target, ReadOnlySpan<int> nums)
+    {
+        if (nums.Length == 0) return 0;
+
+        int minLen = int.MaxValue;
+        long currentSum = 0;
+        int left = 0;
+
+        for (int right = 0; right < nums.Length; right++)
+        {
+            currentSum += nums[right];
+
+            // Contract window from left while target threshold is satisfied
+            while (currentSum >= target)
+            {
+                int currentLen = right - left + 1;
+                if (currentLen < minLen)
+                {
+                    minLen = currentLen;
+                }
+
+                currentSum -= nums[left];
+                left++;
+            }
+        }
+
+        return minLen == int.MaxValue ? 0 : minLen;
+    }
+}
+```
+
+#### Python Secondary Implementation (3.11+ — Idiomatic)
+```python
+def min_sub_array_len(target: int, nums: list[int]) -> int:
+    """Finds minimal length of contiguous subarray whose sum is at least target.
+    
+    Time Complexity: O(N) | Auxiliary Space: O(1)
+    """
+    min_length = float("inf")
+    current_sum = 0
+    left = 0
+
+    for right, val in enumerate(nums):
+        current_sum += val
+
+        # Shrink while valid to find minimal length
+        while current_sum >= target:
+            min_length = min(min_length, right - left + 1)
+            current_sum -= nums[left]
+            left += 1
+
+    return 0 if min_length == float("inf") else int(min_length)
+```
+
+#### 📊 Explicit Complexity Deconstruction
+* **Time Complexity:** `O(N)` — `right` increments `N` times; `left` increments at most `N` times across the entire runtime. Total pointer operations <= `2N`.
+* **Auxiliary Space:** `O(1)` — Only scalar pointers (`left`, `right`) and 64-bit integer accumulators (`currentSum`, `minLen`) on the stack.
+* **Output Space:** `O(1)` — Returns a single integer.
+
+---
+
+### Problem 3: Longest Substring with At Most K Distinct Characters (LeetCode 340)
+
+#### 🎙️ 45-Minute Interview Talk Track
+> *"To find the longest substring containing at most K distinct characters, we use a hash map or frequency array to track the counts of unique characters within our dynamic window `[left..right]`. As `right` advances, we add the incoming character to our frequency map. If the count of distinct characters exceeds K, the window violates our constraint. We then advance `left`, decrementing character frequencies and removing any character whose frequency drops to 0, until the distinct count is back to at most K. Once restored, `right - left + 1` is a valid candidate for the maximum length."*
+
+#### C# Primary Implementation (.NET 8/9 — Frequency Map)
+```csharp
+using System;
+using System.Collections.Generic;
+
+public static class LongestKDistinctSolver
+{
+    /// <summary>
+    /// Finds length of longest substring containing at most k distinct characters.
+    /// Time Complexity: O(N) | Auxiliary Space: O(K)
+    /// </summary>
+    public static int LengthOfLongestSubstringKDistinct(string s, int k)
+    {
+        if (string.IsNullOrEmpty(s) || k <= 0) return 0;
+
+        ReadOnlySpan<char> span = s.AsSpan();
+        var freqMap = new Dictionary<char, int>();
+        int left = 0;
+        int maxLength = 0;
+
+        for (int right = 0; right < span.Length; right++)
+        {
+            char rightChar = span[right];
+            freqMap[rightChar] = freqMap.GetValueOrDefault(rightChar, 0) + 1;
+
+            // Shrink window from left until at most k distinct characters remain
+            while (freqMap.Count > k)
+            {
+                char leftChar = span[left];
+                freqMap[leftChar]--;
+                if (freqMap[leftChar] == 0)
+                {
+                    freqMap.Remove(leftChar);
+                }
+                left++;
+            }
+
+            int currentLength = right - left + 1;
+            if (currentLength > maxLength)
+            {
+                maxLength = currentLength;
+            }
+        }
+
+        return maxLength;
+    }
+}
+```
+
+#### Python Secondary Implementation (3.11+ — Idiomatic DefaultDict)
+```python
+from collections import defaultdict
+
+def length_of_longest_substring_k_distinct(s: str, k: int) -> int:
+    """Finds length of longest substring with at most k distinct characters.
+    
+    Time Complexity: O(N) | Auxiliary Space: O(K)
+    """
+    if not s or k <= 0:
+        return 0
+
+    freq_map: defaultdict[str, int] = defaultdict(int)
+    left = 0
+    max_length = 0
+
+    for right, char in enumerate(s):
+        freq_map[char] += 1
+
+        # Shrink window until at most k distinct characters remain
+        while len(freq_map) > k:
+            left_char = s[left]
+            freq_map[left_char] -= 1
+            if freq_map[left_char] == 0:
+                del freq_map[left_char]
+            left += 1
+
+        max_length = max(max_length, right - left + 1)
+
+    return max_length
+```
+
+#### 📊 Explicit Complexity Deconstruction
+* **Time Complexity:** `O(N)` — Each character is inserted into the frequency map once and removed at most once. Hash map insertions and deletions take `O(1)` average time.
+* **Auxiliary Space:** `O(K)` — The hash map contains at most `K + 1` entries at any point before eviction occurs.
+* **Output Space:** `O(1)` — Returns a single integer length.
+
+---
+
+## ⚖️ CHAPTER 5: FAANG INTERVIEW PATTERN SIGNALS & EDGE CASES
+
+> [!NOTE]
+> **Production Reality (Why FAANG Tests This):**
+> Network protocols like TCP (Additive Increase Multiplicative Decrease congestion windows) and distributed query streaming engines (PostgreSQL and MongoDB cursor buffers) dynamically expand sliding buffers as network capacity allows, and immediately shrink them upon packet drops or memory pressure. Practicing variable-size sliding windows evaluates whether an engineer understands monotonic state management, amortized cost limits, and invariant safety in streaming contexts.
+
+### 🎯 Pattern Recognition Signals
+- ✅ **"Longest / shortest contiguous subarray or substring that satisfies condition X"** -> Core variable-size sliding window indicator.
+- ✅ **"Subarray sum at least target" (all positive elements)** -> Shrink `left` while valid.
+- ✅ **"At most K distinct elements / at most K repeating characters"** -> Expand `right`, shrink `left` while `distinct > K`.
+- ✅ **"Subarray product less than K"** -> Window length `R - L + 1` contributes to total valid subarray count.
+- 🛑 **"Array contains negative numbers and target sum is required"** -> Sliding window monotonicity breaks (sum can decrease when expanding); use Prefix Sum with Hash Map instead.
+
+### 🧪 Concrete Edge-Case Checklist
+1. **Empty String or Array (`N == 0`):** Return 0 immediately.
+2. **Constraint `K == 0`:** For "at most K distinct elements", return 0 immediately since no characters can be accepted.
+3. **Array with Negative Elements:** If asked for minimum subarray sum with negative numbers, standard sliding window fails; explicitly clarify non-negativity with the interviewer.
+4. **All Elements Identical:** Ensure frequency cleanup properly removes keys when their count hits 0 (`freqMap.Remove(char)`), otherwise `dict.Count` retains stale keys with 0 count.
 
 ---
 
@@ -520,83 +508,71 @@ Today, variable-size windows are the go-to technique for this entire class of pr
 
 | Problem | Source | Difficulty | Key Concept |
 | :--- | :--- | :--- | :--- |
-| Longest Substring Without Repeating | LeetCode 3 | 🟡 Medium | Variable window, no duplicates |
-| Longest Substring with At Most K Distinct | LeetCode 340 | 🟡 Medium | Frequency map, constraint checking |
-| Minimum Window Substring | LeetCode 76 | 🔴 Hard | Variable window, contraction strategy |
-| Permutation in String | LeetCode 567 | 🟡 Medium | Anagram detection via window |
-| Find All Anagrams in String | LeetCode 438 | 🟡 Medium | Window with frequency comparison |
-| Max Consecutive Ones III | LeetCode 1004 | 🟡 Medium | At most K flips constraint |
-| Subarrays with K Different Integers | LeetCode 992 | 🔴 Hard | "Exactly K" via two windows |
-| Longest Repeating Char Replacement | LeetCode 424 | 🟡 Medium | Window with replacement budget |
+| Longest Substring Without Repeating Characters | LeetCode 3 | 🟡 Medium | Direct index jumping / hash set |
+| Minimum Size Subarray Sum | LeetCode 209 | 🟡 Medium | Shrink while valid to minimize |
+| Longest Substring with At Most K Distinct Characters | LeetCode 340 | 🟡 Medium | Frequency map with distinct count |
+| Fruit Into Baskets | LeetCode 904 | 🟡 Medium | At most 2 distinct elements variant |
+| Max Consecutive Ones III | LeetCode 1004 | 🟡 Medium | At most K zeros flipped |
+| Minimum Window Substring | LeetCode 76 | 🔴 Hard | Dynamic window tracking multi-char match |
+| Subarray Product Less Than K | LeetCode 713 | 🟡 Medium | Count of valid subarrays via `R - L + 1` |
+| Longest Repeating Character Replacement | LeetCode 424 | 🟡 Medium | Max frequency tracking inside dynamic window |
 
 ### 🎙️ Interview Questions (6+)
 
-1. **Q:** Find the longest substring without repeating characters. Explain the variable-window approach. Why is it O(n)?
-   - **Follow-up:** What if the characters are Unicode (not just ASCII)? Does the approach change?
+1. **Q:** Why is the time complexity of a variable-size sliding window `O(N)` even though there is a `while` loop nested inside a `for` loop?
+   - **Follow-up:** Can a single iteration of the outer loop take `O(N)` time? How does this affect worst-case latency in real-time systems?
 
-2. **Q:** Find the longest substring with at most K distinct characters. Explain the expand/shrink logic.
-   - **Follow-up:** How would you find the *shortest* substring with at least K distinct characters instead?
+2. **Q:** How does having negative numbers in an array invalidate the variable sliding window approach for subarray sum problems?
+   - **Follow-up:** Which alternative pattern must you use when negative numbers are present?
 
-3. **Q:** Implement minimum window substring: given s and t, find the smallest substring of s containing all characters in t.
-   - **Follow-up:** What if t has repeated characters? How does that affect the logic?
+3. **Q:** In the "Longest Substring Without Repeating Characters" problem, how does storing the last-seen index optimize pointer movement over a simple `HashSet`?
+   - **Follow-up:** What check is critical when updating `left` using `lastSeen[char]`?
 
-4. **Q:** Explain why variable-size windows are O(n) despite the window size varying. Use amortized analysis.
-   - **Follow-up:** Can you construct an example where a single iteration takes O(n) time? Is this a problem?
+4. **Q:** How do you adapt variable sliding window logic to count the **number** of valid subarrays instead of just finding the maximum/minimum length?
+   - **Follow-up:** Why does adding `(right - left + 1)` account for all valid subarrays ending at `right`?
 
-5. **Q:** Design a constraint checker for "sum of elements ≤ target." How would you implement expand/shrink logic?
-   - **Follow-up:** What if elements can be negative? Does the approach break?
+5. **Q:** Explain how LeetCode 76 (Minimum Window Substring) determines when a window is valid in `O(1)` time without scanning the target frequency map.
+   - **Follow-up:** What two variables track matching state?
 
-6. **Q:** Given a string, find the maximum length substring where each character appears at most K times.
-   - **Follow-up:** How does this differ from "at most K distinct characters"?
+6. **Q:** Compare variable-size sliding window with two pointers in opposite directions. When do you choose which?
+   - **Follow-up:** Can every variable sliding window problem be framed as a two-pointer problem?
 
 ### ❌ Common Misconceptions (3-5)
 
-- **Myth:** Variable-size windows are O(n²) because the left pointer advances unpredictably.
-  - **Reality:** Each element is processed at most twice (once entering, once exiting). Total O(2n) = O(n).
-
-- **Myth:** You must shrink left until the constraint is satisfied.
-  - **Reality:** You shrink until valid, then move right to explore further. The pattern is expand → shrink → repeat.
-
-- **Myth:** Variable-size windows require O(n) space for tracking.
-  - **Reality:** Space is O(k) where k is the constraint limit (e.g., number of distinct characters). This is optimal.
-
-- **Myth:** If a constraint is complex, variable-size windows won't help.
-  - **Reality:** If you can maintain the constraint incrementally in O(1) or O(log k), variable windows work. Complex constraints just need clever data structures.
+- **Myth:** The nested `while` loop makes the time complexity `O(N^2)`.
+  - **Reality:** Because `left` only increments and never resets to 0, total operations across the entire algorithm are strictly bounded by `2N`.
+- **Myth:** You can use variable sliding window to find subarray sums on arrays with negative numbers.
+  - **Reality:** Negative numbers break the monotonic expansion/contraction property; a hash map of prefix sums is required.
+- **Myth:** Forgetting to delete a key when its count drops to 0 has no effect.
+  - **Reality:** In languages like Python and C#, a key with count 0 still contributes to `len(map)` or `map.Count`, corrupting distinct-character tracking.
 
 ### 🚀 Advanced Concepts (3-5)
 
-- **Exactly K vs. At Most K:** Technique of computing (≤ K) - (≤ K-1) to answer "exactly K" queries.
-- **Two-Window Pattern:** Solving problems by computing with two different windows simultaneously.
-- **Constraint Merging:** Handling multiple constraints in a single window (e.g., "distinct ≤ K AND max frequency ≤ M").
-- **Binary Search on Window Size:** Combining binary search with variable windows for different problem structures.
-- **Streaming Algorithms:** How variable windows adapt to unbounded data streams in real systems.
+- **Exact K Constraint via "At Most K":** Solving "Subarrays with exactly K distinct elements" via `AtMost(K) - AtMost(K - 1)`.
+- **Sliding Window with Monotonic Deque:** Combining dynamic window boundaries with monotonic deques to enforce both length and value range constraints.
+- **TCP Congestion Window Emulation:** Simulating network packet congestion control using variable sliding window dynamics.
+- **Lock-Free Variable Ring Buffers:** Implementing thread-safe variable-span buffers in low-latency systems.
 
 ### 📚 External Resources
 
-- **"Competitive Programming" (Halim & Halim):** Excellent chapter on two pointers and sliding windows with dozens of problems.
-- **LeetCode Discussions:** Problems 3, 76, 340 have comprehensive discussions explaining variable-window nuances.
-- **MIT 6.006 Notes:** Amortized analysis section clarifies why variable windows are linear despite varying size.
-- **"Algorithm Design Manual" (Skiena):** Chapter on string algorithms covers substring problems with variable windows.
+- **"Algorithms" (Sedgewick & Wayne):** Substring searching and frequency map management.
+- **LeetCode Discuss (Problem 76 & 3):** Canonical multi-language templates for variable sliding windows.
+- **Microsoft .NET Architecture Guides:** High-performance string manipulation using `ReadOnlySpan<char>`.
 
 ---
 
 ## 📌 CLOSING REFLECTION
 
-Variable-size sliding windows might seem like a small extension of fixed-size windows—just remove the constraint that the window size is fixed. But this seemingly small change opens a entire category of problems that would otherwise require O(n²) nested loops.
+Variable-size sliding windows showcase the beauty of amortized algorithm design. By treating window boundaries as an elastic frame that expands to gather context and contracts to restore invariants, complex constraints that naively demand `O(N^2)` combinatorial exploration dissolve into a smooth, linear `O(N)` scan.
 
-The insight is profound: **each element participates in the window exactly twice (entering and exiting), so despite the dynamic size, the total cost is linear**. This amortized analysis appears simple once you see it, but it's a powerful weapon in algorithm design.
-
-In production systems, variable-size windows appear whenever constraints are dynamic: cache eviction when memory pressure rises, query result streaming when bandwidth varies, network congestion control when packet loss changes. Every real system that adapts to changing constraints uses principles similar to variable-size windows.
-
-In interviews, variable-size window problems separate strong candidates from the rest. Many can solve the problem with O(n²) nested loops. Only those who recognize the structure and optimize to O(n) show genuine algorithmic insight.
-
-Master variable-size sliding windows, and you've mastered a fundamental pattern that applies to substring/subarray problems, constraint-based optimization, and dynamic resource allocation. Combined with the fixed-size windows from yesterday and two-pointer patterns from the day before, you now have a complete toolkit for a vast class of array and sequence problems.
+Internalizing the distinction between **expanding until invalid** (maximization) and **contracting while valid** (minimization) transforms dynamic window problems from intimidating puzzles into straightforward, systematic implementations.
 
 ---
 
-**Inline Visuals:** 8 (ASCII diagrams, trace tables, comparison matrices)  
-**Real-World Stories:** 3 (Browser LRU cache, Database streaming, TCP congestion)  
-**Interview-Ready:** Yes — covers mechanics, amortized analysis, and production scenarios
+**Inline Visuals:** 6 (ASCII diagrams, trace tables, window schemas)  
+**Real-World Context:** TCP congestion windows, in-memory cache eviction, dynamic streaming buffers  
+**Interview-Ready:** Yes — complete talk tracks, zero-allocation C# (.NET 8/9), idiomatic Python (3.11+), explicit complexity deconstruction  
+
 ---
 
 > 🧭 **Navigation:** [← Previous Day](Week_04_Day_02_Sliding_Window_Fixed_Size_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_04_Day_04_Divide_and_Conquer_Pattern_Instructional.md)

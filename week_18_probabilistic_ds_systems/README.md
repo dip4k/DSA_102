@@ -1,4 +1,4 @@
-# 📘 Competitive Programming Deep Dive & Systems DS
+﻿# 📘 Competitive Programming Deep Dive & Systems DS
 
 > 🧭 **Navigation:** [← Previous: Week 17](../week_17_advanced_graphs_hld_fft/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 19 →](../week_19_mock_interviews_mastery/README.md)
 
@@ -14,7 +14,7 @@
 Meet-in-the-Middle search space halving, Sqrt Decomposition (Mo's algorithm), Heavy-Light Decomposition (HLD), Bloom Filters, and Count-Min sketches.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start["Week 18 Start"] --> Daily["Daily Invariant Deep Dives"]
     Daily --> Playbook["Consolidated Playbook & Visuals"]
     Playbook --> DualLang["Dual-Language Practice (C# & Python)"]
@@ -27,11 +27,11 @@ flowchart LR
 
 | Day | Instructional Module | Focus & Core Objective |
 | :--- | :--- | :--- |
-| **Day 01** | [Meet In The Middle](Week_18_Day_01_Meet_In_The_Middle_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 02** | [Square Root Decomposition](Week_18_Day_02_Square_Root_Decomposition_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 03** | [Heavy Light Decomposition](Week_18_Day_03_Heavy_Light_Decomposition_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 04** | [Probabilistic Data Structures](Week_18_Day_04_Probabilistic_Data_Structures_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 05** | [Algorithmic Systems Design](Week_18_Day_05_Algorithmic_Systems_Design_Instructional.md) | Core Daily Concept Deep Dive |
+| **Day 01** | [Meet In The Middle](Week_18_Day_01_Meet_In_The_Middle_Instructional.md) | Exponent bisection transforming `O(2^N)` to `O(N * 2^(N/2))`, inductive doubling, L3 cache residency |
+| **Day 02** | [Square Root Decomposition](Week_18_Day_02_Square_Root_Decomposition_Instructional.md) | Sqrt chunking, Mo's algorithm offline sweeping, optimal block derivation `B = N / sqrt(Q)`, serpentine sort |
+| **Day 03** | [Heavy Light Decomposition](Week_18_Day_03_Heavy_Light_Decomposition_Instructional.md) | Tree path/subtree linearization, logarithmic light edges, segment tree queries in `O(log^2 N)` |
+| **Day 04** | [Probabilistic Data Structures](Week_18_Day_04_Probabilistic_Data_Structures_Instructional.md) | Bloom Filter `p = (1 - e^(-kn/m))^k`, Count-Min Sketch error bounds, HyperLogLog 12 KB cardinality |
+| **Day 05** | [Algorithmic Systems Design](Week_18_Day_05_Algorithmic_Systems_Design_Instructional.md) | Consistent Hash Ring with virtual nodes, `O(1)` continuous-time Token Bucket rate limiting |
 
 ---
 

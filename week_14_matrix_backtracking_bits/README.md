@@ -1,4 +1,4 @@
-# 📘 Coordinate Transformations, Bit Manipulation & Number Theory
+﻿# 📘 Coordinate Transformations, Bit Manipulation & Number Theory
 
 > 🧭 **Navigation:** [← Previous: Week 13](../week_13_backtracking_and_branch_bound/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 15 →](../week_15_advanced_strings_flow/README.md)
 
@@ -14,7 +14,7 @@
 In-place matrix rotations, spiral boundary scans, bitwise register manipulation, Euclidean GCD/LCM, Sieve of Eratosthenes, and modular exponentiation.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start["Week 14 Start"] --> Daily["Daily Invariant Deep Dives"]
     Daily --> Playbook["Consolidated Playbook & Visuals"]
     Playbook --> DualLang["Dual-Language Practice (C# & Python)"]

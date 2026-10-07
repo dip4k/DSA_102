@@ -7,8 +7,8 @@
 ---
 
 **Theme:** RAM Model, Pointers, Memory Layout, Big-O Analysis, Recursion Patterns, 1D/2D Peak Finding  
-**Format:** Hybrid (Enhanced ASCII + Web Resource Links + Reference Tools)  
-**Purpose:** Visual-first concept explanation with embedded professional resources  
+**Format:** Hybrid (Enhanced ASCII + Architecture & State Diagrams)  
+**Purpose:** Visual-first concept explanation and deep pattern mastery  
 **MIT Alignment:** 6.006 – Computational fundamentals and peak finding design story
 
 ---
@@ -30,18 +30,6 @@
 | `O(...)` | Big-O notation |
 | `Θ(...)` | Big-Theta (tight bound) |
 | `Ω(...)` | Big-Omega (lower bound) |
-| 🔗 | Link to interactive visualization |
-
-### Professional Visualization Resources
-
-| Tool | Resource | Best For |
-|------|----------|----------|
-| **Big-O Complexity Chart** | https://www.bigocheatsheet.com/ | Complexity visualization |
-| **Recursion Tree Visualizer** | https://www.cs.usfca.edu/~galles/visualization/RecursionTrees.html | Recursive call trees |
-| **Memory Hierarchy Sim** | https://pages.cs.wisc.edu/~remzi/OSTEP/vm-intro.pdf | Virtual memory concepts |
-| **GeeksforGeeks Big-O** | https://www.geeksforgeeks.org/analysis-of-algorithms/ | Algorithm analysis tutorial |
-| **GeeksforGeeks Recursion** | https://www.geeksforgeeks.org/recursion/ | Recursion fundamentals |
-| **NeetCode Algorithms** | https://neetcode.io/courses/algorithms | Algorithm design patterns |
 
 ---
 
@@ -65,22 +53,24 @@ flowchart TD
 
 ### Pattern 1.1: RAM Model & Constant-Time Access
 
-**Interactive Resource:** 🔗 [Big-O Complexity Chart](https://www.bigocheatsheet.com/)
-
 #### Visual 1: Abstract RAM Model
 
+```text
++----------+----------+----------+-----+------------+
+| Cell [0] | Cell [1] | Cell [2] | ... | Cell [n-1] |
++----------+----------+----------+-----+------------+
+|    42    |    78    |    15    | ... |     99     |
++----------+----------+----------+-----+------------+
+   0x1000     0x1004     0x1008             0x...
+```
 
-| Address | Value |
-| :--- | :--- |
-| 0 | [] |
-|  | 42 |
-| 1 | [] |
-|  | 78 |
-| 2 | [] |
-|  | 15 |
-| ... | ... |
-| n-1 | [] |
-|  | 99 |
+| Address | Stored Value | Time Complexity |
+| :--- | :--- | :--- |
+| `0` | `42` | `O(1)` direct index |
+| `1` | `78` | `O(1)` direct index |
+| `2` | `15` | `O(1)` direct index |
+| `...` | `...` | `O(1)` direct index |
+| `n-1` | `99` | `O(1)` direct index |
 
 
 ---
@@ -116,13 +106,19 @@ flowchart TD
 
 #### Visual 1: Pointers as Arrows
 
+```text
+ Stack Address    Variable      Stored Value
++--------------+-----------+-----------------------------------+
+|    0x1000    |     x     | 42                                |
++--------------+-----------+-----------------------------------+
+|    0x1008    |     p     | 0x1000 ----> points to x (*p = 42)|
++--------------+-----------+-----------------------------------+
+```
 
-| Stack Address | Variable | Value |
-| :--- | :--- | :--- |
-| 0x1000 | x | 42 |
-| 0x1008 | p | 0x1000  ← Pointer stores address! |
-|  | x = 42 |  |
-|  | at 0x1000 |  |
+| Stack Address | Variable | Stored Value | Notes |
+| :--- | :--- | :--- | :--- |
+| `0x1000` | `x` | `42` | Direct value variable |
+| `0x1008` | `p` | `0x1000` | Pointer storing address of `x` (`*p == 42`) |
 
 
 ---
@@ -150,8 +146,6 @@ flowchart TD
 ---
 
 ### Pattern 2.1: Big-O Notation & Complexity Classes
-
-**Interactive Resource:** 🔗 [Big-O Complexity Chart](https://www.bigocheatsheet.com/)
 
 #### Visual 1: Function Growth Comparison
 
@@ -233,10 +227,19 @@ flowchart TD
 
 #### Visual 1: Memory Allocation Strategies
 
+```text
+STACK (Automatic / Static)                 HEAP (Dynamic / Manual)
++------------------------------------+     +------------------------------------+
+| • Fixed-size frames pushed on call |     | • Dynamically allocated chunks     |
+| • Automatic pop on function return |     | • Managed via malloc/new, free/GC  |
+| • Extremely fast contiguous cache  |     | • Flexible size, non-contiguous    |
++------------------------------------+     +------------------------------------+
+```
 
-|  | [0,0,0,...,0] |
-| :--- | :--- |
-|  |  |
+| Allocation Region | Allocation Cost | Deallocation | Lifetime | Cache Locality |
+| :--- | :--- | :--- | :--- | :--- |
+| **Stack** | `O(1)` (SP pointer bump) | Automatic on return | Scope of function | High (L1/L2 friendly) |
+| **Heap** | `O(1)` amortized / search | Manual (`free`) or GC | Explicit until freed | Variable (fragmentation) |
 
 
 ---
@@ -274,16 +277,22 @@ flowchart TD
 
 ### Pattern 4.1: Recursion Tree Visualization
 
-**Interactive Resource:** 🔗 [Recursion Tree Visualizer](https://www.cs.usfca.edu/~galles/visualization/RecursionTrees.html)
-
 #### Visual 1: Factorial vs Fibonacci Trees
 
+```text
+Naive Fibonacci fib(4) Call Tree: O(2^n) branches
+                 fib(4)
+               /        \
+          fib(3)          fib(2)
+         /      \        /      \
+     fib(2)    fib(1)  fib(1)   fib(0)
+    /      \
+ fib(1)   fib(0)
 
-|  | +- fib(1) → 1 |
-| :--- | :--- |
-|  | +- fib(0) → 0 |
-|  | +- fib(1) → 1 ✓ cache |
-|  | +- fib(0) → 0 ✓ cache |
+With Memoization / DP: O(n) calls
+fib(4) -> fib(3) -> fib(2) -> fib(1)=1, fib(0)=0 (cached)
+Repeated subproblems fib(2), fib(1) hit cache in O(1).
+```
 
 
 ---
@@ -412,8 +421,6 @@ Order of magnitude improvement!
 ---
 
 ### Pattern 5.1: 1D Peak Finding (Divide-Conquer)
-
-**Interactive Resource:** 🔗 [NeetCode Algorithms](https://neetcode.io/courses/algorithms)
 
 #### Visual 1: Binary-Style Search Over Structure
 
@@ -613,23 +620,13 @@ MUCH BETTER: O(n log m) vs O(n²)!
 ## 🎯 WEEK 01 VISUAL SUMMARY TABLE
 
 
-| DAY | TOPIC | Complexity | Key Concept |
+| Day | Topic | Complexity | Key Concept |
 | :--- | :--- | :--- | :--- |
-| 1 | RAM Model | O(1) abstract | Addressable |
-|  | Pointers | address model | cells |
-|  |  |  |  |
-| 2 | Big-O Analy. | Growth rate | Function |
-|  | Asymptotics | classification | comparison |
-|  |  |  |  |
-| 3 | Space Complex. | Stack/Heap | Memory |
-|  | Call Stack | lifetimes | management |
-|  |  |  |  |
-| 4 | Recursion I | O(n) or more | Base case |
-|  | Patterns | depending | required |
-|  |  |  |  |
-| 5 | Peak Finding | O(log n) 1D | Exploit |
-|  | Design Story | O(n log m) 2D | structure |
-|  |  |  |  |
+| **Day 1** | RAM Model & Pointers | `O(1)` memory access | Uniform address space & dereferencing |
+| **Day 2** | Big-O & Asymptotics | Growth classification | Dominant terms & tight bounds |
+| **Day 3** | Space Complexity & Stack/Heap | Frame depth / Heap alloc | Call stack lifetime vs dynamic memory |
+| **Day 4** | Recursion I Fundamentals | `O(N)` or `O(2^N)` | Base case invariant & recursive work |
+| **Day 5** | Peak Finding (1D & 2D) | `O(log N)` 1D / `O(N log M)` 2D | Divide-and-conquer gradient ascent |
 
 
 ---
@@ -651,21 +648,18 @@ MUCH BETTER: O(n log m) vs O(n²)!
 
 ---
 
-## 🔗 RECOMMENDED LEARNING RESOURCES
+## 📚 CORE CONCEPT WALKTHROUGHS
 
-### Interactive Visualizations
-1. **Big-O Complexity Chart** (https://www.bigocheatsheet.com/) — Visual complexity growth
-2. **Recursion Tree Visualizer** (https://www.cs.usfca.edu/~galles/visualization/RecursionTrees.html) — Recursive call trees
-3. **GeeksforGeeks Big-O** (https://www.geeksforgeeks.org/analysis-of-algorithms/) — Algorithm analysis tutorial
-4. **GeeksforGeeks Recursion** (https://www.geeksforgeeks.org/recursion/) — Recursion fundamentals
-5. **NeetCode Algorithms** (https://neetcode.io/courses/algorithms) — Algorithm design patterns
-6. **Memory & Pointers Guide** (https://pages.cs.wisc.edu/~remzi/OSTEP/vm-intro.pdf) — Virtual memory concepts
+### Core Visualizations & Traces
+- **RAM Model & Asymptotics:** Constant-time cell addressing and dominant growth rates.
+- **Recursion Trees:** Unfolding recursive frames, base cases, and memoization reuse.
+- **Divide-and-Conquer:** 1D and 2D peak finding via binary halving invariants.
 
-### Video Tutorials
-- "RAM Model and Asymptotics" — MIT 6.006 lecture
-- "Recursion Explained" — Base cases and recursive calls
-- "Peak Finding" — Algorithm design from MIT 6.006
-- "Big-O Notation Explained" — Complexity classification
+### Conceptual Lecture Alignment (MIT 6.006)
+- "RAM Model and Asymptotics" — Computational model and memory hierarchy
+- "Recursion Explained" — Base cases, recurrence relations, and call stack mechanics
+- "Peak Finding" — 1D and 2D divide-and-conquer algorithmic design
+- "Big-O Notation Explained" — Upper bound classification and tight bounds
 
 ---
 
@@ -715,7 +709,7 @@ TIER 2 (PRACTICE):
 
 TIER 3 (DEEP REVISION):
   ✅ ✅ VISUAL PLAYBOOK (THIS FILE)
-  ✅ With 6 professional tools
+  ✅ Self-contained visual intuitions
   ✅ With 15 quizzes + 8-10 failure modes
   ✅ With offline + online strategies
 
@@ -730,7 +724,7 @@ TOTAL: 100,000+ words | 13+ files | Complete
 - ✅ All ASCII diagrams render perfectly
 - ✅ No image dependencies
 - ✅ GitHub-friendly (pure markdown)
-- ✅ 6 professional tools embedded
+- ✅ Zero external tool dependencies
 - ✅ 15 quiz questions (3 per day)
 - ✅ 8-10 failure modes per day
 - ✅ Pattern family trees showing relationships
@@ -742,5 +736,5 @@ TOTAL: 100,000+ words | 13+ files | Complete
 ---
 
 
-**Use web resource links for interactive visualizations while studying!**
+**Trace memory models and recurrence trees visually while practicing!**
 

@@ -1,4 +1,4 @@
-# 📘 String Manipulation Patterns
+﻿# 📘 String Manipulation Patterns
 
 > 🧭 **Navigation:** [← Previous: Week 05](../week_05_tier_1_critical_patterns/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 07 →](../week_07_trees_and_balanced_search_trees/README.md)
 
@@ -14,7 +14,7 @@
 Master palindrome expansions, substring sliding windows, balanced parenthesis parsing, StringBuilder zero-allocation design, and Rabin-Karp rolling hashes.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start["Week 06 Start"] --> Daily["Daily Invariant Deep Dives"]
     Daily --> Playbook["Consolidated Playbook & Visuals"]
     Playbook --> DualLang["Dual-Language Practice (C# & Python)"]

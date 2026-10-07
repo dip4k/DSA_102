@@ -1,4 +1,4 @@
-# 📘 Linear Data Structures & Binary Search Invariants
+﻿# 📘 Linear Data Structures & Binary Search Invariants
 
 > 🧭 **Navigation:** [← Previous: Week 01](../week_01_foundations_i_computational_fundamentals/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 03 →](../week_03_foundations_iii_sorting_and_hashing/README.md)
 
@@ -14,7 +14,7 @@
 Master static/dynamic array memory layout, cache prefetching, singly/doubly linked lists, circular queues, stacks, and binary search invariants.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start["Week 02 Start"] --> Daily["Daily Invariant Deep Dives"]
     Daily --> Playbook["Consolidated Playbook & Visuals"]
     Playbook --> DualLang["Dual-Language Practice (C# & Python)"]

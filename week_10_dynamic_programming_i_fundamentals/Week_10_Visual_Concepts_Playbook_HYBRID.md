@@ -1,4 +1,4 @@
-# 📊 WEEK 10: DYNAMIC PROGRAMMING I - VISUAL CONCEPTS PLAYBOOK (HYBRID)
+﻿# 📊 WEEK 10: DYNAMIC PROGRAMMING I - VISUAL CONCEPTS PLAYBOOK (HYBRID)
 
 > 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)
 > 
@@ -377,12 +377,20 @@ flowchart TD
 
 ### 5.1 "Which DP Pattern Applies?" Decision Tree
 
-
-| Maximize/minimize |  | Is it a grid/2D |
-| :--- | :--- | :--- |
-| sum of subsequence? |  | problem? |
-| Yes | No                             Yes | No |
-|  |  |  |
+```mermaid
+flowchart TD
+    Start["Problem Input"] --> Q1{"Is order of elements fixed?"}
+    Q1 -->|No / Subsets| Q2{"Choice per item (Include / Exclude)?"}
+    Q2 -->|Weight / Capacity limit| Knapsack["Knapsack DP (0/1 or Unbounded)"]
+    Q2 -->|Partition target| SubsetSum["Subset Sum / Target Sum DP"]
+    Q1 -->|Yes / Sequential| Q3{"Input dimension?"}
+    Q3 -->|2D Grid| Grid["Grid DP (Paths, Min Path Sum)"]
+    Q3 -->|Two Strings| LCS["Two-Sequence DP (LCS, Edit Dist)"]
+    Q3 -->|Single Array| Q4{"State depends on previous choices?"}
+    Q4 -->|Cooldown / Action states| StateMachine["State Machine DP (Stock Trading)"]
+    Q4 -->|Contiguous subarray| Kadane["Kadane / Prefix DP"]
+    Q4 -->|Subsequence length| LIS["LIS / Monotonic State DP"]
+```
 
 
 ### 5.2 Problem Type to Pattern Mapping
@@ -520,7 +528,7 @@ flowchart TD
 
 
 ```mermaid
-flowchart LR
+flowchart TD
     classDef real fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
     classDef arrow fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:1.5px;
     classDef dppat fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
@@ -647,42 +655,34 @@ When your DP isn't working, check these (in order):
 
 ### 10.3 How Week 10 Connects to Rest of Curriculum
 
-
-|  |  |
-| :--- | :--- |
-| Week 11 |  |
-| AdvDP |  |
-| Game DP |  |
+| Next Module | Core Prerequisite from Week 10 | Evolution in Advanced Topics |
+| :--- | :--- | :--- |
+| **Week 11 (Advanced DP)** | State definitions & DAG transitions | Tree DP, DAG DP, Bitmask DP, Digit DP |
+| **Week 12 (Greedy & Paradigms)** | Overlapping subproblems vs greedy choice | Exchange arguments & matroid greedy proofs |
+| **Week 13 (Backtracking & B&B)** | State space tree formulation | Pruning, bounding functions, branch-and-bound |
 
 
 ---
 
 ## 📌 CONCLUSION: Visual DP Mastery Roadmap
 
-
-|  |  |
-| :--- | :--- |
-|  |  |
-|  |  |
-|  |  |
-|  |  |
+```text
+Level 1: Recognize Subproblems  ───► Recurrence Relation + Base Cases
+Level 2: Memoized Recursion     ───► Top-Down Call Tree + Cache Lookup
+Level 3: Tabulation Table       ───► Bottom-Up State Evolution Order
+Level 4: Space Optimization     ───► Rolling Arrays / Variable State Drops
+```
 
 
 ---
 
-## 📚 APPENDIX: EXTERNAL RESOURCES & VISUAL TOOLS
+## 📚 APPENDIX: QUICK REFERENCE & TRACING
 
-### Recommended Visualization Tools
-- **VisuAlgo:** https://visualgo.net (DP algorithms animated)
-- **LeetCode:** Code submission with explanation forums
-- **YouTube Channels:** Abdul Bari (DP lectures), Tushar Roy
-- **Interactive:** GeeksforGeeks DP visualizations
-- **Paper:** Hand-trace DP tables for kinesthetic learning
-
-### Printable Quick Reference Sheets
-- Copy Part 9.1 (State Definition Table) for quick lookup
-- Copy Part 4.1 (Complexity Reference) for interview prep
-- Copy Part 7.1 (Keyword Spotting) for problem analysis
+### Printable Quick Reference Guides
+- **State Definition Table:** Part 9.1 for quick pattern lookup
+- **Complexity Reference:** Part 4.1 for interview bounds
+- **Keyword Spotting:** Part 7.1 for immediate problem categorization
+- **Kinesthetic Tracing:** Hand-trace 1D/2D DP tables to solidify base-case propagation
 
 ---
 

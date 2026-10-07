@@ -1,4 +1,4 @@
-# 📘 Graph Algorithms: Shortest Paths & Minimum Spanning Trees
+﻿# 📘 Graph Algorithms: Shortest Paths & Minimum Spanning Trees
 
 > 🧭 **Navigation:** [← Previous: Week 08](../week_08_graph_fundamentals/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 10 →](../week_10_dynamic_programming_i_fundamentals/README.md)
 
@@ -14,7 +14,7 @@
 Single-source Dijkstra with indexed heaps, Bellman-Ford negative cycle detection, Floyd-Warshall all-pairs DP, Kruskal/Prim MST, and Disjoint Set Union (DSU).
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start["Week 09 Start"] --> Daily["Daily Invariant Deep Dives"]
     Daily --> Playbook["Consolidated Playbook & Visuals"]
     Playbook --> DualLang["Dual-Language Practice (C# & Python)"]

@@ -1,4 +1,4 @@
-# WEEK 08 VISUAL CONCEPTS PLAYBOOK HYBRID
+﻿# WEEK 08 VISUAL CONCEPTS PLAYBOOK HYBRID
 
 > 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)
 > 
@@ -30,27 +30,6 @@ Use this legend to interpret all diagrams consistently.
 | `onStack[x]` | Whether vertex x is active in Tarjan-style SCC |
 
 All diagrams are pure ASCII so they work in any Markdown viewer or terminal.
-
----
-
-## 🌐 Professional Visualization Resources (for Online Enhancement)
-
-These tools are optional but highly recommended for deeper exploration:
-
-1. **Graph Animator (BFS/DFS/Topo)** – Visualize traversals step-by-step.  
-   - Use for: seeing BFS layers, DFS recursion, and topological order on sample graphs.  
-2. **Tree & Graph Visualizer** – Interactive editor for trees and general graphs.  
-   - Use for: building sample inputs and seeing adjacency representations.  
-3. **Algorithm Animation Library** – General-purpose visualizer for standard algorithms.  
-   - Use for: cross-checking your mental model of BFS/DFS against standard animations.  
-4. **Competitive Programming Graph Archive** – Problem sets with diagrams and editorials.  
-   - Use for: seeing graph patterns in real contest problems.  
-5. **Geometric Grid / Maze Visualizer** – Grid-based pathfinding demos.  
-   - Use for: understanding implicit graphs and BFS in grids/mazes.  
-6. **SCC / Strong Components Demo** – Interactive SCC decomposition on directed graphs.  
-   - Use for: experimenting with condensation DAGs and SCC algorithms.
-
-When using these tools: always **recreate** at least one ASCII diagram from this playbook inside the tool to strengthen transfer between mental and visual models.
 
 ---
 
@@ -791,11 +770,11 @@ Directed graph:
 
 
 ```mermaid
-flowchart LR
+flowchart TD
     classDef scc1 fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
     classDef scc2 fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:2px;
 
-    subgraph SCC1["🔄 Strongly Connected Component 1: {1, 2, 3, 5}"]
+    subgraph SCC1["🔄 SCC 1: {1, 2, 3, 5}"]
         N1["Node 1"]:::scc1
         N2["Node 2"]:::scc1
         N3["Node 3"]:::scc1
@@ -946,7 +925,7 @@ becomes SCC root.
 
 2. **Deep Learning (3–4 hours)**  
    - Walk through all diagrams slowly, simulating BFS/DFS/SCC steps by hand.  
-   - Use an online graph visualizer to rebuild 2–3 diagrams and animate traversals.  
+   - Trace BFS/DFS/SCC traversal steps by hand using the ASCII diagrams.  
    - Explain each diagram to an imaginary junior engineer.
 
 3. **Interview Prep (1 hour)**  

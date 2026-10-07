@@ -1,627 +1,609 @@
 # 📘 WEEK 12 DAY 5: GREEDY IN SYSTEMS — ENGINEERING GUIDE
 
-
-
-
-
 > 🧭 **Navigation:** [← Previous Day](Week_12_Day_04_Fractional_Knapsack_And_Scheduling_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_12_FULL_PLAYBOOK.md)
 > 
-> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
+> 💡 **Instructor Note:** *Day 5 transitions greedy algorithms from textbook drills to production architectures: Minimum Spanning Trees (Kruskal and Prim), kernel-level LRU caching, and greedy approximation for NP-hard problems like Set Cover.*
 
 ---
+
 ## 🎯 LEARNING OBJECTIVES
 
 *By the end of this chapter, you will be able to:*
 
-- 🌐 **Explain** how classic network algorithms like Kruskal and Prim are greedy algorithms, and why greediness is safe for MSTs.
-- 🛰️ **Understand** greedy routing: local decisions at each hop using limited information.
-- 🧠 **Connect** cache replacement strategies (especially LRU) to greedy heuristics over temporal locality.
-- 📉 **Recognize** when optimal solutions are NP-hard and greedy is used instead as an approximation.
-- 🧪 **Articulate** the strengths and limits of greedy methods in real systems (correctness vs performance vs simplicity).
+- 🌐 **Explain** why the Cut Property guarantees that greedy edge selection is safe in Minimum Spanning Trees (MST).
+- ⚙️ **Implement** Kruskal's MST (with Disjoint Set Union), Prim's MST (with `PriorityQueue`/`heapq`), and an `O(1)` LRU Cache in C# (.NET 8/9) and Python (3.11+).
+- ⚖️ **Contrast** Kruskal's edge-based greedy against Prim's vertex-growing greedy based on graph density (`E << V^2` vs `E ≈ V^2`).
+- 🧠 **Demystify** cache eviction heuristics: explain why LRU is an online greedy surrogate for Belady's impossible clairvoyant algorithm.
+- 📉 **Evaluate** greedy approximation algorithms for NP-hard problems (e.g., Set Cover's `O(log N)` factor).
 
 ---
 
 ## 📖 CHAPTER 1: CONTEXT & MOTIVATION
 
-### Greedy Algorithms Leave the Classroom
+### The Engineering Challenge
 
-So far this week, greedy algorithms were used on **clean, well-specified problems**:
+In distributed systems and networking, you face problems where computing a globally optimal configuration is either computationally prohibitive or distributed across thousands of independent nodes:
 
-- Activity selection, interval scheduling.
-- Huffman coding for optimal prefix codes.
-- Fractional knapsack and job sequencing.
+1. **Backbone Fiber Routing (MST):** You must interconnect 10,000 data centers with fiber optic cables. What is the cheapest cable topology that ensures every data center can communicate with every other?
+   - **Answer:** A **Minimum Spanning Tree (MST)**. Greedily picking the cheapest valid edges (Kruskal/Prim) guarantees an exact minimum-cost tree.
+2. **High-Speed In-Memory Cache (LRU):** A Redis or kernel page cache must evict entries when capacity is full. You cannot predict future memory accesses.
+   - **Answer:** **Least Recently Used (LRU)**. A greedy temporal heuristic that assumes past access frequency predicts near-future demand.
+3. **Microservice Monitoring (Set Cover):** You have 1,000 metrics and 200 monitoring probes. Each probe tracks a subset of metrics. What is the smallest set of probes to deploy to cover all metrics?
+   - **Answer:** NP-hard in the exact case! Greedily picking the probe that covers the most uncovered metrics guarantees an **`O(log N)` approximation**.
 
-In each case, you had:
-
-- A precise mathematical formulation.
-- A provable correctness argument (exchange, stays-ahead, or structural induction).
-
-Real-world systems are messier:
-
-- Networks are dynamic; link latencies and capacities change.
-- Caches face unpredictable access patterns.
-- Many optimization problems are NP-hard — exact optimal algorithms may be infeasible.
-
-Yet engineers **still rely heavily on greedy thinking**:
-
-- Build a cheap but well-connected network (MST).
-- Route packets hop-by-hop with limited knowledge.
-- Evict the “least useful” cache entry without looking into the future.
-- Design approximation algorithms that are good enough for NP-hard problems.
-
-Today focuses on how these greedy ideas show up in **systems design**, and how the theory you learned earlier helps you understand their behavior and limits.
-
-### Three System-Level Faces of Greedy
-
-Day 5 highlights three major system contexts:
-
-1. **Greedy in Networks**
-   - **Minimum Spanning Trees (MST):** Kruskal and Prim greedily pick cheapest edges while preserving connectivity.
-   - **Routing Protocols:** Greedy forwarding using local metrics like hop-count, distance, or geographic position.
-
-2. **Cache Replacement**
-   - **LRU (Least Recently Used):** Greedy heuristic that evicts the item least recently accessed.
-   - Captures temporal locality well but is not always globally optimal.
-
-3. **Approximation Algorithms**
-   - For NP-hard problems, greedy gives bounded approximations.
-   - **Set cover** as a canonical example: simple greedy achieves O(log n) approximation.
-
-All three share a theme:
-
-> Use a **simple, local rule** to make progress, either because it is provably optimal (MST) or because exact optimality is computationally unreasonable (caching, set cover).
-
----
-
-## 🧠 CHAPTER 2: GREEDY IN NETWORKS
-
-### A. Minimum Spanning Trees as Greedy Structures
-
-A **Minimum Spanning Tree (MST)** of a connected, weighted, undirected graph is a subset of edges that:
-
-- Connects all vertices (is a spanning tree).
-- Has minimum possible total edge weight among all spanning trees.
-
-Two classic algorithms are:
-
-- **Kruskal’s Algorithm (Edge-Based Greedy)**
-- **Prim’s Algorithm (Vertex-Based Greedy)**
-
-Both are **greedy** in different ways.
-
-#### 1. Kruskal’s Algorithm — Greedy by Global Edge Weight
-
-**Greedy idea:**
-
-> Always pick the **smallest-weight edge** that does **not** create a cycle.
-
-**Conceptual Steps:**
-
-1. Sort all edges by weight in non-decreasing order.
-2. Start with an empty forest (no edges, all nodes separate).
-3. For each edge in sorted order:
-   - If the edge connects two different components (no cycle), **add it** to the forest.
-   - Otherwise, skip it.
-4. Stop when you have `V - 1` edges; that forest is an MST.
-
-This uses a **global** ordering of edges.
-
-**Visual Sketch:**
-
-Imagine a graph:
-
-```text
-   (1)---2---(2)
-    | \      /
-   3|  4\  /6
-    |    (3)
-    5 \  /
-       (4)
+```
+THE THREE TIERS OF GREEDY IN PRODUCTION:
++-------------------+-----------------------------------+-----------------------------------+
+| Tier              | System Example                    | Guarantees                        |
++-------------------+-----------------------------------+-----------------------------------+
+| 1. Exact Optimum  | Kruskal / Prim MST, Huffman       | Mathematically 100% Optimal       |
+| 2. Online Heuristic| LRU Cache, Geographic Routing     | Fast O(1), No Future Guarantee    |
+| 3. Approximation  | Greedy Set Cover                  | Provable O(log N) Bound for NP-hard|
++-------------------+-----------------------------------+-----------------------------------+
 ```
 
-Edges (weight in parentheses):
+---
 
-- (1-2): 2
-- (1-3): 4
-- (1-4): 5
-- (2-3): 6
-- (2-4): 3
+## 🧠 CHAPTER 2: GREEDY IN NETWORKS — MINIMUM SPANNING TREES
 
-Sorted by weight: 2, 3, 4, 5, 6.
+### The Cut Property (No Academic Jargon)
 
-Kruskal picks:
+Why can we make irrevocable local edge choices without regretting them? Because of the **Cut Property**:
 
-1. Edge (1-2) with weight 2.
-2. Edge (2-4) with weight 3.
-3. Edge (1-3) with weight 4.
+```
+Cut Property Visualized:
 
-Now we have 3 edges, 4 nodes → spanning tree. Heavier edge (2-3) weight 6 is never chosen.
+          Set S (Red Nodes)           Set V \ S (Blue Nodes)
+           [ Node 1 ]                    [ Node 3 ]
+              |                             |
+              |                             |
+           [ Node 2 ]                    [ Node 4 ]
+              \                             /
+               \                           /
+          ======\=========================/======  <-- THE CUT (Partition)
+                 \                       /
+             Edge A: wt = 7          Edge B: wt = 2 (CHEAPEST CROSSING EDGE!)
+                 /                       \
+          ======/=========================\======
 
-**Why Greedy is Safe (Cut Property):**
-
-- Consider any **cut** of the vertices (split nodes into two non-empty groups).
-- The **lightest edge crossing that cut** is always in **some** MST.
-- Kruskal’s algorithm, at each step, effectively chooses such a lightest crossing edge for some cut of the still-disconnected components.
-
-This cut property is the greedy-choice justification for MSTs.
-
-#### 2. Prim’s Algorithm — Greedy by Growing a Tree
-
-**Greedy idea:**
-
-> Start from an arbitrary node and repeatedly attach the **cheapest edge** that expands the current tree to a new vertex.
-
-**Conceptual Steps:**
-
-1. Pick any start vertex; mark it as part of the MST.
-2. Among all edges that connect a vertex in the tree to a vertex outside, choose the smallest.
-3. Add that edge and the new vertex to the tree.
-4. Repeat until all vertices are included.
-
-This is similar to **Dijkstra’s algorithm** in flavor, but applied to undirected graphs and edge weights for constructing an MST instead of shortest paths.
-
-**Visual Growth:**
-
-- Initially, the MST is just the start vertex.
-- Each step, one new vertex and one new edge are added.
-- The tree “grows” outward greedily along the cheapest frontier edges.
-
-#### 3. Why Greedy Works for MSTs
-
-Two key properties make MST problems greedy-friendly:
-
-1. **Optimal Substructure:**
-   - Any segment of an MST is also an MST for its vertices.
-   - Removing any edge from an MST splits it into two smaller MSTs for their respective components.
-
-2. **Cut Property (Greedy Choice Property):**
-   - For any cut, the minimum-weight edge crossing it belongs to **some** MST.
-   - Kruskal and Prim both repeatedly apply this property.
-
-Thus, MST problems are a powerful demonstration: **local cheapest choices can be globally optimal** when the structure (cut property) holds.
-
-### B. Greedy Routing in Networks
-
-Now move from building the network (MST) to **routing packets** through it.
-
-Ideal routing would minimize:
-
-- Latency (time delay), or
-- Hop count (number of edges), or
-- Congestion (load on links).
-
-Exact global optimization often requires full network knowledge, which is unrealistic at routers.
-
-**Greedy routing principle:**
-
-> Each router makes a **local forwarding decision** based on simple metrics, often:
->
-> - Next hop with smallest distance to destination.
-> - Next hop with lowest latency estimate.
-> - Next hop with highest available bandwidth.
-
-#### 1. Greedy Geographic Routing (Conceptual)
-
-In some wireless or sensor networks, each node knows:
-
-- Its own coordinates (x, y)
-- The coordinates of its neighbors
-- Destination coordinate
-
-Greedy rule:
-
-- Forward packet to the neighbor **closest (in Euclidean distance)** to the destination.
-
-**Visualization:**
-
-```text
-S •----• A
-        \
-         • B
-          \
-           • D (destination)
+Key Truth:
+To connect Set S to Set V \ S, AT LEAST ONE crossing edge must be included.
+If you pick Edge B (the cheapest crossing edge, wt = 2), you can NEVER regret it!
+Any alternative crossing edge (like Edge A, wt = 7) would make the tree heavier.
+Therefore, the lightest edge crossing ANY cut is guaranteed to be in SOME MST.
 ```
 
-At `S`, among neighbors {A}, pick A (closest to D). At A, pick B; at B, pick D.
+### Kruskal vs Prim: Two Faces of Greed
 
-This is a greedy walk downhill on the distance function.
+| Dimension | Kruskal's Algorithm | Prim's Algorithm |
+| :--- | :--- | :--- |
+| **Strategy** | Global edge greedy: sorts all edges globally | Local frontier greedy: grows a tree from a start vertex |
+| **Data Structure** | Disjoint Set Union (DSU / Union-Find) | Min-Priority Queue (Binary Heap) |
+| **Time Complexity**| `O(E log E)` = `O(E log V)` | `O(E log V)` with binary heap |
+| **Best Used When** | **Sparse graphs** (`E ≈ V`), edge list given | **Dense graphs** (`E ≈ V^2`), adjacency list given |
 
-**Caveats:**
+```
+Kruskal Mechanics (Component Merging):
+1. Sort all edges: [ (1-2, 2), (2-4, 3), (1-3, 4), (1-4, 5), (2-3, 6) ]
+2. Edge (1-2, 2): Connects Comp{1} and Comp{2} -> ACCEPT.
+3. Edge (2-4, 3): Connects Comp{1,2} and Comp{4} -> ACCEPT.
+4. Edge (1-3, 4): Connects Comp{1,2,4} and Comp{3} -> ACCEPT.
+Total edges = 3 = V - 1. Finished!
 
-- Can get stuck in local minima: a node that has no neighbor closer to D even though a path exists.
-- Real protocols use fallback strategies (e.g., perimeter routing) to recover.
-
-#### 2. Greedy Metrics in Classical Routing
-
-In IP networks, protocols like OSPF (Open Shortest Path First) and IS-IS use:
-
-- Dijkstra’s algorithm centrally at each router (with global topology info from link-state advertisements).
-
-Even here, **forwarding** is local and greedy:
-
-- Forward along the next hop on the shortest path tree (from Dijkstra’s result).
-
-While Dijkstra itself is not a purely local greedy hop-by-hop algorithm (it requires global knowledge), the **forwarding behavior** at each router is a simple greedy choice: 
-
-> Send packet to neighbor that leads to the shortest path to destination.
-
----
-
-## 🧠 CHAPTER 3: GREEDY IN CACHE REPLACEMENT
-
-### A. What is a Cache?
-
-A **cache** is a smaller, faster storage that keeps a subset of data items from a larger, slower storage (e.g., RAM vs disk, CPU cache vs RAM, CDN vs origin server).
-
-When a requested item is **in cache**, we get a fast **hit**; otherwise, a slow **miss** occurs and we must fetch from lower memory.
-
-**Cache replacement problem:**
-
-- Cache can only hold `K` items.
-- Items are requested over time: `a1, a2, a3, ...`
-- When cache is full and a miss occurs on item `x`, we must **evict** some existing item to bring `x` in.
-- Which item should we evict to minimize future misses?
-
-The optimal strategy (Belady’s algorithm) would be:
-
-> Always evict the item whose **next use** is **farthest in the future**.
-
-But this requires **knowing the future sequence** — impossible in real systems.
-
-### B. LRU (Least Recently Used) as a Greedy Temporal Heuristic
-
-**LRU idea:**
-
-> Evict the item that was **least recently accessed** — the one you haven’t used for the longest time.
-
-This embodies the **principle of temporal locality**:
-
-- Data used recently is more likely to be used again soon.
-- Data not used for a long time is less likely to be used again soon.
-
-LRU approximates Belady’s optimal rule by greedily assuming:
-
-- "Past is a proxy for the (unknown) future."
-
-#### 1. Visual Example
-
-Consider a cache of size 3 and access sequence:
-
-```text
-Accesses: A, B, C, A, D, B, E
-Cache size: K = 3
+Prim Mechanics (Frontier Expansion):
+Start at Node 1.
+Frontier edges from {1}: (1-2, 2), (1-3, 4), (1-4, 5).
+1. Min edge is (1-2, 2) -> Add Node 2. MST = {1, 2}.
+2. Frontier now includes edges from {1, 2}: (2-4, 3), (1-3, 4), (1-4, 5).
+   Min edge is (2-4, 3) -> Add Node 4. MST = {1, 2, 4}.
+3. Frontier expands to edges from {1, 2, 4}: Min edge is (1-3, 4) -> Add Node 3.
+All vertices visited!
 ```
 
-We track cache contents after each access using LRU.
+---
 
-Initial: cache is empty `[]`.
+## 🧠 CHAPTER 3: GREEDY IN CACHING — LRU DESIGN
 
-1. Access A → miss
-   - Cache: `[A]` (A is most recently used)
+### Temporal Locality & Belady's Optimal Dilemma
 
-2. Access B → miss
-   - Cache: `[A, B]` (B is most recent)
+A cache has fixed capacity `C`. When full, which element should be evicted?
+- **Belady's Optimal Algorithm (Clairvoyant):** Evict the page that will not be used for the longest time in the future.
+  - Provably optimal: minimizes total page faults.
+  - **Impossible in production** because systems cannot foresee future requests!
+- **LRU (Least Recently Used):** Uses past recency as a greedy proxy for future demand.
+  - Assumes that if key `X` was read 1 millisecond ago, it will likely be read again soon.
+  - To achieve `O(1)` get and put, we combine a **Hash Map** with a **Doubly-Linked List**.
 
-3. Access C → miss
-   - Cache: `[A, B, C]` (C most recent, A least recent)
+```
+ASCII LRU Cache Pointer Layout:
 
-4. Access A → hit
-   - Cache before: `[A, B, C]` (A least recent)
-   - After access, A becomes most recent
-   - Cache (recency order): `[B, C, A]` (B LRU, A MRU)
+   [ Hash Map ]
+     "user_1" ------> [ Node 1 ]
+     "user_2" ------> [ Node 2 ]
+     "user_3" ------> [ Node 3 ]
 
-5. Access D → miss, cache full
-   - LRU item is B (least recently used)
-   - Evict B, insert D as MRU
-   - Cache: `[C, A, D]` (C LRU, D MRU)
-
-6. Access B → miss
-   - LRU is C → evict C, insert B as MRU
-   - Cache: `[A, D, B]` (A LRU, B MRU)
-
-7. Access E → miss
-   - LRU is A → evict A, insert E
-   - Cache: `[D, B, E]`
-
-**State consistency:**
-
-- Cache size never exceeds 3.
-- At each step, LRU victim is the least recently used among current items.
-
-### C. Why LRU is Greedy but Not Optimal
-
-**Greedy nature:**
-
-- At eviction time, LRU uses **only local history** (recent access times) to decide.
-- It does not look ahead or globally optimize over the access sequence.
-
-**Optimal but impossible strategy (Belady):**
-
-- If the future access sequence were known, evict the item with farthest next use.
-- This is globally optimal but unrealizable.
-
-**Counterexample where LRU is suboptimal:**
-
-Consider cache size 2 and access sequence:
-
-```text
-A, B, C, A, B, C, ...
+   [ Doubly-Linked List ]
+     (Head / MRU)                                     (Tail / LRU)
+     +----------+     +----------+     +----------+     +----------+
+     |   HEAD   |<--->|  Node 1  |<--->|  Node 2  |<--->|   TAIL   |
+     | (Dummy)  |     |("user_1")|     |("user_2")|     | (Dummy)  |
+     +----------+     +----------+     +----------+     +----------+
+                           ^                                 ^
+                     Most Recently                    Least Recently
+                         Used                              Used
+                                                      (Evict Candidate!)
 ```
 
-- LRU often oscillates badly depending on initial state.
-- Belady’s optimal (with full future knowledge) can do strictly better.
+---
 
-Key point:
+## ⚙️ CHAPTER 4: PRODUCTION IMPLEMENTATIONS
 
-> LRU is a **greedy heuristic** that often works well in practice due to locality, but it has **no global optimality guarantee** on arbitrary sequences.
+### Pattern 1: Kruskal's MST (with Disjoint Set Union)
 
-Other greedy-ish policies exist:
+#### Production C# (.NET 8/9)
 
-- **LFU (Least Frequently Used):** Evict item with lowest access count.
-- **MRU (Most Recently Used):** Evict the most recently used item (surprisingly good for some workloads).
+```csharp
+namespace DsaMastery.Systems;
 
-But LRU is the most common in general-purpose systems because temporal locality appears in many real workloads.
+using System;
+using System.Collections.Generic;
+
+public readonly record struct Edge(int U, int V, int Weight);
+
+public sealed class DisjointSet
+{
+    private readonly int[] _parent;
+    private readonly int[] _rank;
+
+    public DisjointSet(int size)
+    {
+        _parent = new int[size];
+        _rank = new int[size];
+        for (int i = 0; i < size; i++)
+        {
+            _parent[i] = i;
+        }
+    }
+
+    public int Find(int x)
+    {
+        if (_parent[x] != x)
+        {
+            _parent[x] = Find(_parent[x]); // Path compression
+        }
+        return _parent[x];
+    }
+
+    public bool Union(int x, int y)
+    {
+        int rootX = Find(x);
+        int rootY = Find(y);
+        if (rootX == rootY) return false;
+
+        // Union by rank
+        if (_rank[rootX] < _rank[rootY])
+        {
+            _parent[rootX] = rootY;
+        }
+        else if (_rank[rootX] > _rank[rootY])
+        {
+            _parent[rootY] = rootX;
+        }
+        else
+        {
+            _parent[rootY] = rootX;
+            _rank[rootX]++;
+        }
+
+        return true;
+    }
+}
+
+public static class KruskalAlgorithm
+{
+    /// <summary>
+    /// Computes the Minimum Spanning Tree using Kruskal's greedy edge selection.
+    /// Time Complexity: O(E log E)
+    /// Space Complexity: O(V)
+    /// </summary>
+    public static (List<Edge> MstEdges, int TotalWeight) ComputeMst(int vertexCount, Edge[] edges)
+    {
+        ArgumentNullException.ThrowIfNull(edges);
+        if (vertexCount <= 1) return ([], 0);
+
+        // Sort edges by weight ascending
+        Array.Sort(edges, static (a, b) => a.Weight.CompareTo(b.Weight));
+
+        var dsu = new DisjointSet(vertexCount);
+        var mst = new List<Edge>(vertexCount - 1);
+        int totalWeight = 0;
+
+        foreach (var edge in edges)
+        {
+            if (dsu.Union(edge.U, edge.V))
+            {
+                mst.Add(edge);
+                totalWeight += edge.Weight;
+
+                if (mst.Count == vertexCount - 1)
+                {
+                    break; // Spanning tree complete
+                }
+            }
+        }
+
+        if (mst.Count != vertexCount - 1)
+        {
+            throw new InvalidOperationException("Graph is disconnected; MST does not exist.");
+        }
+
+        return (mst, totalWeight);
+    }
+}
+```
+
+#### Production Python (3.11+)
+
+```python
+from typing import List, Tuple
+
+class DisjointSet:
+    def __init__(self, size: int):
+        self.parent = list(range(size))
+        self.rank = [0] * size
+
+    def find(self, x: int) -> int:
+        if self.parent[x] != x:
+            self.parent[x] = self.find(self.parent[x])  # Path compression
+        return self.parent[x]
+
+    def union(self, x: int, y: int) -> bool:
+        rx = self.find(x)
+        ry = self.find(y)
+        if rx == ry:
+            return False
+
+        # Union by rank
+        if self.rank[rx] < self.rank[ry]:
+            self.parent[rx] = ry
+        elif self.rank[rx] > self.rank[ry]:
+            self.parent[ry] = rx
+        else:
+            self.parent[ry] = rx
+            self.rank[rx] += 1
+        return True
+
+
+def kruskal_mst(vertex_count: int, edges: List[Tuple[int, int, int]]) -> Tuple[List[Tuple[int, int, int]], int]:
+    """
+    Computes MST using Kruskal's algorithm.
+    edges: list of (u, v, weight)
+    Time Complexity: O(E log E)
+    Space Complexity: O(V)
+    """
+    if vertex_count <= 1:
+        return [], 0
+
+    # Sort edges by weight ascending
+    sorted_edges = sorted(edges, key=lambda x: x[2])
+    dsu = DisjointSet(vertex_count)
+    mst: List[Tuple[int, int, int]] = []
+    total_weight = 0
+
+    for u, v, weight in sorted_edges:
+        if dsu.union(u, v):
+            mst.append((u, v, weight))
+            total_weight += weight
+            if len(mst) == vertex_count - 1:
+                break
+
+    if len(mst) != vertex_count - 1:
+        raise ValueError("Graph is disconnected; MST cannot be formed.")
+
+    return mst, total_weight
+```
 
 ---
 
-## 🧠 CHAPTER 4: GREEDY AS APPROXIMATION (SET COVER)
+### Pattern 2: Prim's MST (with PriorityQueue / Heap)
 
-### A. When Optimal is NP-Hard
+#### Production C# (.NET 8/9)
 
-Many natural optimization problems that arise in systems and data engineering are **NP-hard**. Examples include:
+```csharp
+namespace DsaMastery.Systems;
 
-- Set Cover
-- Vertex Cover
-- Traveling Salesman Problem (TSP)
-- Facility Location
+using System;
+using System.Collections.Generic;
 
-For these, we typically **cannot** hope for an efficient exact algorithm for all inputs (unless P=NP).
+public static class PrimAlgorithm
+{
+    /// <summary>
+    /// Computes MST using Prim's algorithm with PriorityQueue.
+    /// Time Complexity: O(E log V)
+    /// Space Complexity: O(V + E)
+    /// </summary>
+    public static (List<Edge> MstEdges, int TotalWeight) ComputeMst(int vertexCount, List<(int To, int Weight)>[] adj)
+    {
+        ArgumentNullException.ThrowIfNull(adj);
+        if (vertexCount <= 1) return ([], 0);
 
-Instead, we aim for:
+        var visited = new bool[vertexCount];
+        var mst = new List<Edge>(vertexCount - 1);
+        int totalWeight = 0;
 
-> **Approximation algorithms:** Efficient algorithms that are not optimal, but guarantee to come within a known factor of optimal.
+        // Min-heap storing (From, To, Weight) keyed by Weight
+        var pq = new PriorityQueue<(int From, int To, int Weight), int>();
 
-Greedy is often the right tool here.
+        void PushEdges(int u)
+        {
+            visited[u] = true;
+            foreach (var (to, weight) in adj[u])
+            {
+                if (!visited[to])
+                {
+                    pq.Enqueue((u, to, weight), weight);
+                }
+            }
+        }
 
-### B. Set Cover: Greedy O(log n) Approximation
+        PushEdges(0); // Start spanning from vertex 0
 
-**Set Cover Problem (simplified):**
+        while (pq.Count > 0 && mst.Count < vertexCount - 1)
+        {
+            var edge = pq.Dequeue();
+            if (visited[edge.To]) continue;
 
-- Universe `U` of `n` elements.
-- Collection of subsets `S1, S2, ..., Sk` whose union is `U`.
-- Each set `Si` has a cost (often 1 for the simplest version).
-- Goal: pick a minimum number of sets whose union covers all elements in `U`.
+            mst.Add(new Edge(edge.From, edge.To, edge.Weight));
+            totalWeight += edge.Weight;
+            PushEdges(edge.To);
+        }
 
-This is NP-hard. But there is a classic greedy approximation:
+        if (mst.Count != vertexCount - 1)
+        {
+            throw new InvalidOperationException("Graph is disconnected; MST does not exist.");
+        }
 
-**Greedy Algorithm:**
+        return (mst, totalWeight);
+    }
+}
+```
 
-1. Initially, no elements are covered.
-2. While some elements remain uncovered:
-   - Pick the set that covers the **largest number of currently uncovered elements** (break ties arbitrarily).
-   - Add it to the solution and mark those elements as covered.
+#### Production Python (3.11+)
 
-**Approximation Guarantee:**
+```python
+import heapq
+from typing import List, Tuple
 
-- This greedy algorithm achieves an **O(log n)** approximation factor.
-- Meaning: total number of sets chosen by greedy is at most O(log n) times the optimal number.
+def prim_mst(vertex_count: int, adj: List[List[Tuple[int, int]]], start: int = 0) -> Tuple[List[Tuple[int, int, int]], int]:
+    """
+    Computes MST using Prim's algorithm with min-heap.
+    adj: adjacency list where adj[u] contains (v, weight)
+    Time Complexity: O(E log V)
+    Space Complexity: O(V + E)
+    """
+    if vertex_count <= 1:
+        return [], 0
 
-We won’t go through the full proof here, but the core idea uses:
+    visited = [False] * vertex_count
+    mst: List[Tuple[int, int, int]] = []
+    total_weight = 0
 
-- A charging argument, or
-- Comparing progress of greedy to an optimal solution over geometric phases.
+    # Min-heap storing (weight, from_node, to_node)
+    min_heap: List[Tuple[int, int, int]] = []
 
-### C. Why This Matters for Systems
+    def push_edges(u: int):
+        visited[u] = True
+        for v, weight in adj[u]:
+            if not visited[v]:
+                heapq.heappush(min_heap, (weight, u, v))
 
-In large-scale systems, you often have problems like:
+    push_edges(start)
 
-- **Cache/replica placement:** choose which servers store which content to minimize latency.
-- **Monitoring & logging:** choose where to place monitors or log collectors to cover all traffic paths.
-- **Test selection:** choose minimal tests that cover all features or components.
+    while min_heap and len(mst) < vertex_count - 1:
+        weight, u, v = heapq.heappop(min_heap)
+        if visited[v]:
+            continue
 
-These map to variants of set cover or related NP-hard problems.
+        mst.append((u, v, weight))
+        total_weight += weight
+        push_edges(v)
 
-Exact optimization is impractical, but **greedy approximations**:
+    if len(mst) != vertex_count - 1:
+        raise ValueError("Graph is disconnected; MST cannot be formed.")
 
-- Are conceptually simple.
-- Are easy to implement and reason about.
-- Come with **mathematical guarantees**: “We’re within this factor of optimal.”
-
-Greedy here is not about being perfect; it’s about being **predictably good**.
-
----
-
-## 🔗 CHAPTER 5: INTEGRATION & MASTERY
-
-### Complexity Snapshot (Systems-Focused)
-
-- Kruskal MST
-   - Time Complexity: O(E log E)
-   - Space Complexity: O(V + E)
-- Prim MST (binary heap)
-   - Time Complexity: O(E log V)
-   - Space Complexity: O(V + E)
-- LRU Cache operations (hash map + doubly linked list)
-   - Time Complexity: O(1) average for get/put/evict
-   - Space Complexity: O(C), where C is cache capacity
-- Greedy Set Cover (naive implementation)
-   - Time Complexity: O(mn) to O(mn + m log m) depending on data structures
-   - Approximation guarantee: O(log n)
-
-### Failure Modes in Production Use
-
-- Greedy routing can get trapped in local minima without fallback policy.
-- LRU may thrash under cyclic scans larger than cache capacity.
-- Greedy approximations can satisfy bounds yet still miss domain-specific constraints without post-validation.
-
-### Connecting the Dots
-
-Across Week 12, you have seen three faces of greedy:
-
-1. **Exactly optimal on structured problems**
-   - Activity selection, MST, Huffman, fractional knapsack.
-   - Strong structural properties (optimal substructure, greedy choice property).
-
-2. **Heuristic, no guarantee, but good in practice**
-   - LRU caching, some routing heuristics.
-   - Rely on patterns in real workloads (locality, typical topologies).
-
-3. **Provably good approximations for hard problems**
-   - Set cover and other NP-hard problems.
-   - Greedy achieves bounded approximation ratios.
-
-As a systems-oriented engineer or DSA practitioner, you should be able to:
-
-- Recognize when a problem is likely **greedy-friendly** in the strong sense (like MST).
-- Recognize when greedy is a **pragmatic heuristic** with no guarantee (like LRU).
-- Recognize when greedy is used for **approximation with formal bounds** (like set cover).
-
-### Pattern Recognition Cheat Sheet
-
-When you see a problem:
-
-1. **Is there a clear cut or frontier property?**
-   - MST-style cut property often invites greedy.
-
-2. **Is the problem continuous/linear with fractions allowed?**
-   - Fractional knapsack-style greedy by density may work.
-
-3. **Is the problem NP-hard (or suspected to be)?**
-   - Think in terms of approximation; greedy may give good bounds.
-
-4. **Is the system online (sequence of requests with no future knowledge)?**
-   - Greedy heuristics like LRU are often used; evaluate them via competitive analysis or empirical results.
-
-### Socratic Reflection
-
-1. **Why does the MST cut property make greedy safe, whereas no analogous simple property exists for shortest paths with negative weights?**
-
-2. **In caching, why does a “future-aware” but impossible policy (Belady’s) help us reason about the quality of practical greedy policies like LRU?**
-
-3. **For set cover, why does picking the set that covers the most uncovered elements “feel” greedy but still give strong theoretical guarantees?**
-
-### Retention Hook
-
-> **The Essence:** "Greedy in systems is about making fast, local decisions: pick the lightest edge to grow your network, route packets in the most promising direction, evict the least recently used data, or cover the most elements per step. Sometimes theory guarantees these choices are optimal. Sometimes they’re just good-enough heuristics. Mastery is knowing which is which."
+    return mst, total_weight
+```
 
 ---
 
-## 🧠 5 COGNITIVE LENSES
+### Pattern 3: High-Performance LRU Cache
 
-### 1. 💻 The Hardware & Systems Lens
+#### Production C# (.NET 8/9)
 
-- MST algorithms (Kruskal/Prim) are implemented with efficient data structures (heaps, union-find) and run at the core of network design tools.
-- LRU caches are realized via linked lists + hash maps or approximations like CLOCK in OS kernels.
-- Greedy algorithms are often **branch-light** and cache-friendly, making them attractive for performance-critical code.
+```csharp
+namespace DsaMastery.Systems;
 
-### 2. 📉 The Trade-off Lens
+using System;
+using System.Collections.Generic;
 
-- **Exact Greedy (MST):**
-  - Great when structural properties hold.
-  - Provides both correctness and speed.
+public sealed class LruCache<TKey, TValue> where TKey : notnull
+{
+    private readonly int _capacity;
+    private readonly Dictionary<TKey, LinkedListNode<(TKey Key, TValue Value)>> _map;
+    private readonly LinkedList<(TKey Key, TValue Value)> _list;
 
-- **Heuristic Greedy (LRU, routing):**
-  - Simple and fast but might be far from optimal in worst cases.
-  - Often chosen because alternatives are too complex or require impossible information.
+    public LruCache(int capacity)
+    {
+        if (capacity <= 0) throw new ArgumentOutOfRangeException(nameof(capacity), "Capacity must be positive.");
+        _capacity = capacity;
+        _map = new Dictionary<TKey, LinkedListNode<(TKey, TValue)>>(capacity);
+        _list = new LinkedList<(TKey, TValue)>();
+    }
 
-- **Approximate Greedy (Set Cover):**
-  - Balances tractability with guaranteed closeness to optimal.
-  - Crucial when problem is NP-hard.
+    public bool TryGet(TKey key, out TValue value)
+    {
+        if (_map.TryGetValue(key, out var node))
+        {
+            // Move accessed node to front (MRU)
+            _list.Remove(node);
+            _list.AddFirst(node);
+            value = node.Value.Value;
+            return true;
+        }
 
-### 3. 👶 The Learning Lens
+        value = default!;
+        return false;
+    }
 
-Students often:
+    public void Put(TKey key, TValue value)
+    {
+        if (_map.TryGetValue(key, out var existingNode))
+        {
+            _list.Remove(existingNode);
+            var updatedNode = new LinkedListNode<(TKey, TValue)>((key, value));
+            _list.AddFirst(updatedNode);
+            _map[key] = updatedNode;
+            return;
+        }
 
-- Overgeneralize: believing greedy is always good or always bad.
-- Fail to distinguish between **provably optimal greedy** vs **heuristic greedy**.
-- Struggle to connect abstract greedy proofs to concrete systems (networks, caches).
+        if (_map.Count >= _capacity)
+        {
+            // Evict least recently used (Tail)
+            var lru = _list.Last ?? throw new InvalidOperationException("LRU list empty during eviction.");
+            _list.RemoveLast();
+            _map.Remove(lru.Value.Key);
+        }
 
-This day is meant to close that gap.
+        var newNode = new LinkedListNode<(TKey, TValue)>((key, value));
+        _list.AddFirst(newNode);
+        _map[key] = newNode;
+    }
+}
+```
 
-### 4. 🤖 The AI/ML Lens
+#### Production Python (3.11+)
 
-- MST-like structures appear in clustering (e.g., single-linkage clustering builds an MST).
-- Greedy feature selection in ML can be seen as a set cover-like process.
-- Memory and parameter caches in large ML systems often approximate LRU.
+```python
+from collections import OrderedDict
+from typing import Generic, Optional, TypeVar
 
-Understanding greedy’s behavior in these contexts helps in debugging and optimizing ML pipelines.
+K = TypeVar('K')
+V = TypeVar('V')
 
-### 5. 📜 The Historical Lens
+class LRUCache(Generic[K, V]):
+    """
+    O(1) LRU Cache using Python OrderedDict.
+    OrderedDict maintains key insertion and access order efficiently.
+    """
+    def __init__(self, capacity: int):
+        if capacity <= 0:
+            raise ValueError("Capacity must be positive.")
+        self.capacity = capacity
+        self.cache: OrderedDict[K, V] = OrderedDict()
 
-- Kruskal (1956) and Prim (1957) provided early, elegant greedy algorithms for MST.
-- Belady’s optimal caching policy (1966) gave a theoretical gold standard for replacement strategies.
-- Approximation algorithms for set cover and related problems matured in the 1970s–1980s, solidifying greedy as a central tool in theoretical CS.
+    def get(self, key: K) -> Optional[V]:
+        if key not in self.cache:
+            return None
+        # Move key to end to denote most recently used (MRU)
+        self.cache.move_to_end(key)
+        return self.cache[key]
+
+    def put(self, key: K, value: V) -> None:
+        if key in self.cache:
+            self.cache.move_to_end(key)
+        self.cache[key] = value
+
+        if len(self.cache) > self.capacity:
+            # Evict first item (least recently used, FIFO pop)
+            self.cache.popitem(last=False)
+```
+
+---
+
+## ⚖️ CHAPTER 5: PERFORMANCE & COMPLEXITY DECONSTRUCTION
+
+### Systems Performance Matrix
+
+| Component | Time Complexity | Auxiliary Space | Cache Friendliness | Critical Failure Mode |
+| :--- | :--- | :--- | :--- | :--- |
+| **Kruskal MST** | `O(E log E)` | `O(V)` | High (flat edge array) | Disconnected graphs (check `Count == V - 1`) |
+| **Prim MST** | `O(E log V)` | `O(V + E)` | Moderate (pointer chasing) | Dense graph memory explosion |
+| **LRU Cache** | `O(1)` per op | `O(Capacity)` | Low (linked node hopping) | Thrashing under looping scan patterns |
+| **Greedy Set Cover**| `O(U * S)` | `O(U)` | High (hash set bitsets) | Suboptimal on adversarial subset overlaps |
+
+#### Architectural Takeaways:
+1. **Cache Thrashing:** If a sequential access loop reads `K + 1` distinct elements repeatedly into a cache of capacity `K`, LRU achieves a **0% hit rate**! Modern databases (e.g., PostgreSQL buffer pool, Linux page cache) use **2Q** or **LRU-K** to guard against sequential scan thrashing.
+2. **Kruskal's DSU Nearly O(1) Operations:** With both Path Compression and Union by Rank, the Inverse Ackermann function `α(V) <= 4` for all practical values of `V < 10^80`. DSU operations are practically instantaneous.
+
+---
+
+## 🎙️ CHAPTER 6: 45-MINUTE INTERVIEW VERBAL SCRIPT
+
+```
+[00:00 - 05:00] Clarifying Systems Problem Scoping
+"Let's clarify the scenario:
+ 1. For MST: Is the graph guaranteed connected? Are edge weights positive, negative, or zero?
+    (MST works identically with negative weights!).
+ 2. For LRU Cache: What are our thread-safety requirements?
+    What capacity constraints apply? All get and put operations must execute in strict O(1) time."
+
+[05:00 - 12:00] Proving the Correctness of MST Greediness
+"Why does greedy edge selection work for MST without backtracking?
+ It relies directly on the Cut Property: For any partition of vertices into two non-empty sets S
+ and V \ S, the minimum-weight edge crossing the cut must belong to some MST.
+ Kruskal iteratively connects disconnected components using the globally cheapest edge.
+ Prim iteratively extends a single cut boundary using the locally cheapest frontier edge.
+ Neither algorithm ever needs to undo a choice."
+
+[12:00 - 25:00] Architecture Selection: Kruskal vs Prim
+"Which algorithm do we choose?
+ If the graph is sparse (E ≈ V), Kruskal's edge sorting takes O(E log E) and DSU operations
+ run in nearly linear time O(E * α(V)). Kruskal is clean and memory-efficient.
+ If the graph is dense (E ≈ V^2), Prim's algorithm runs in O(E log V) or O(V^2) with an
+ adjacency matrix, avoiding the need to sort V^2 edges upfront.
+ I will implement Kruskal using Disjoint Set Union with Path Compression and Union by Rank."
+
+[25:00 - 35:00] Coding LRU Cache & MST
+"For the LRU Cache, we combine a Hash Map with a Doubly-Linked List.
+ The map provides O(1) key lookup to node pointers.
+ The doubly-linked list provides O(1) node detachment and head insertion without array shifts.
+ Let's write the C# / Python implementation..."
+
+[35:00 - 42:00] Complexity Verification
+"Kruskal: Edge sort takes O(E log E). DSU Find/Union takes O(E * α(V)). Total time: O(E log E).
+ Space: O(V) for DSU parent and rank arrays.
+ LRU Cache: get(key) is O(1) map lookup + O(1) node reparenting.
+ put(key, val) is O(1) map insert + O(1) eviction of tail node. Space is strictly O(Capacity)."
+
+[42:00 - 45:00] Edge Cases & Systems Defenses
+"Edge cases covered:
+ - Disconnected Graph: Detected when mst.Count < V - 1; throws descriptive exception.
+ - Cache Capacity = 1: Safely evicts previous entry on second insert.
+ - Re-inserting existing key: Updates value in place and bumps node to MRU head."
+```
 
 ---
 
 ## ⚔️ SUPPLEMENTARY OUTCOMES
 
-### 🏋️ Practice Problems (8–10)
+### 🏋️ Practice Problems
 
 | # | Problem | Source | Difficulty | Key Concept |
 | :--- | :--- | :--- | :--- | :--- |
-| 1 | Kruskal’s MST | Standard textbook / online judges | Easy | Edge-based greedy MST |
-| 2 | Prim’s MST | Standard | Easy-Medium | Vertex-based greedy MST |
-| 3 | Network Design (Min Cost) | Custom | Medium | Apply MST to real network cost models |
-| 4 | LRU Cache | LeetCode 146 | Medium | Design LRU data structure |
-| 5 | LFU Cache | LeetCode 460 | Hard | Explore alternative greedy caching |
-| 6 | Set Cover (small instances) | Custom | Medium | Implement greedy and compare with brute force |
-| 7 | Greedy Routing Simulation | Custom | Medium | Simulate greedy forwarding in a small graph |
-| 8 | Cache Miss Analysis | Custom | Medium | Compare LRU vs random vs FIFO on sequences |
+| 1 | Min Cost to Connect All Points | LeetCode 1584 | Medium | Kruskal / Prim on complete Manhattan graph |
+| 2 | LRU Cache | LeetCode 146 | Medium | Hash Map + Doubly Linked List |
+| 3 | LFU Cache | LeetCode 460 | Hard | Dual Hash Map with frequency buckets |
+| 4 | Connecting Cities With Minimum Cost | LeetCode 1135 | Medium | Kruskal MST with DSU |
+| 5 | Optimize Water Distribution in a Village | LeetCode 1168 | Hard | Virtual source node + MST |
 
-### 🎙️ Interview Questions (6–8)
+### 🎙️ Interview Questions
 
-1. **Q:** Explain why Kruskal’s and Prim’s algorithms are considered greedy. What properties of MST make greedy safe here?
-
-2. **Q:** Describe LRU cache replacement. In what sense is LRU a greedy strategy? Can you give a scenario where it performs poorly?
-
-3. **Q:** What is the set cover problem, and how does the greedy algorithm approximate it? What guarantee does it provide?
-
-4. **Q:** Contrast a greedy heuristic used for caching with a greedy algorithm that is provably optimal (like Huffman or MST). How should an engineer treat these differently?
-
-5. **Q:** In network routing, what information is needed for purely local greedy forwarding? What are the risks of relying solely on local information?
-
-6. **Q:** How would you argue to a stakeholder that an approximation algorithm is acceptable for a production system where exact optimization is infeasible?
-
-### ❌ Common Misconceptions (3–5)
-
-1. **Myth:** If greedy works for MST and Huffman, it will also be optimal for most other problems.
-   - **Reality:** MST and Huffman have special structure (cut property, tree representation). Many problems (like TSP or general set cover) do not.
-
-2. **Myth:** LRU caching is always close to optimal.
-   - **Reality:** LRU can be arbitrarily bad on adversarial sequences; it just tends to work well on real workloads.
-
-3. **Myth:** Approximation algorithms are “just heuristics” with no theoretical backing.
-   - **Reality:** Many greedy approximations come with provable bounds (e.g., O(log n) for set cover), offering strong guarantees.
-
-4. **Myth:** Greedy routing is equivalent to running a global shortest-path algorithm.
-   - **Reality:** Greedy routing typically uses only local information and can get stuck in local minima; shortest-path algorithms use global topology.
-
-### 🚀 Advanced Concepts (3–5)
-
-1. **Online Algorithms & Competitive Analysis:**
-   - Framework for analyzing algorithms like LRU where input arrives over time.
-   - Compare cost of online algorithm to optimal offline algorithm.
-
-2. **Primal-Dual Methods for Approximation:**
-   - Many greedy approximations (like set cover) can be interpreted via primal-dual linear programming.
-
-3. **Greedy Spanners & Network Design:**
-   - Building sparse subgraphs (spanners) that approximately preserve distances using greedy edge selection.
-
-4. **Hierarchical Caching & Multi-Level LRU:**
-   - Real systems use multi-level caches; combining local greedy decisions at each level leads to complex global behavior.
-
-5. **Greedy in Clustering (e.g., MST-based clustering):**
-   - Use MST and cut edges to form clusters; greedy choices affect final partitioning.
-
-### 📚 External Resources
-
-- **CLRS — Chapters on Greedy Algorithms & MST:** For formal MST proofs and cut property.
-- **Algorithm Design (Kleinberg & Tardos):** Sections on approximation algorithms and set cover.
-- **Operating Systems Texts (e.g., Tanenbaum, Silberschatz):** For cache replacement policies and LRU variants.
-- **Networking Texts (e.g., Kurose & Ross):** For routing protocols and local vs global routing decisions.
-- **Online Lectures (MIT, Stanford) on Approximation Algorithms:** For deeper treatment of greedy as approximation.
+1. **Q:** What is the difference between an MST and a Shortest Path Tree (Dijkstra)?
+   - *Answer:* An MST minimizes the total weight of *all* edges combined. A Shortest Path Tree minimizes the distance from a *single source* to each individual destination.
+2. **Q:** Why does Dijkstra fail with negative edges, but Kruskal and Prim succeed?
+   - *Answer:* Dijkstra assumes that extending a path cannot decrease its total distance (greedy stays ahead). MST algorithms only compare individual edge weights across cuts; negative weights simply represent cheaper edges.
+3. **Q:** Why does LRU use a Doubly-Linked List instead of a Singly-Linked List?
+   - *Answer:* Removing a node in `O(1)` requires access to `node.Prev` to stitch `prev.Next = next`. A singly-linked list would require an `O(N)` scan from the head to find the predecessor.
 
 ---
 

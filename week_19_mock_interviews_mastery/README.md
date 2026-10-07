@@ -1,4 +1,4 @@
-# 📘 Mock Interviews & Final Review
+﻿# 📘 Mock Interviews & Final Review
 
 > 🧭 **Navigation:** [← Previous: Week 18](../week_18_probabilistic_ds_systems/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Final Synthesis](../COMPLETE_SYLLABUS.md)
 
@@ -14,7 +14,7 @@
 Full-spectrum FAANG technical interview simulations: live problem solving, state narration, complexity defense, weakness diagnostics, and offer strategy.
 
 ```mermaid
-flowchart LR
+flowchart TD
     Start["Week 19 Start"] --> Daily["Daily Invariant Deep Dives"]
     Daily --> Playbook["Consolidated Playbook & Visuals"]
     Playbook --> DualLang["Dual-Language Practice (C# & Python)"]
@@ -27,11 +27,11 @@ flowchart LR
 
 | Day | Instructional Module | Focus & Core Objective |
 | :--- | :--- | :--- |
-| **Day 01** | [Mock Arrays Strings](Week_19_Day_01_Mock_Arrays_Strings_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 02** | [Mock Trees Graphs](Week_19_Day_02_Mock_Trees_Graphs_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 03** | [Mock Dynamic Programming](Week_19_Day_03_Mock_Dynamic_Programming_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 04** | [Mock Mixed Complex Rounds](Week_19_Day_04_Mock_Mixed_Complex_Rounds_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 05** | [Weakness Diagnosis And Strategy](Week_19_Day_05_Weakness_Diagnosis_And_Strategy_Instructional.md) | Core Daily Concept Deep Dive |
+| **Day 01** | [Mock Arrays Strings](Week_19_Day_01_Mock_Arrays_Strings_Instructional.md) | Two-pointer water pooling (LC 42), direct-address sliding window (LC 3), `O(1)` memory proof |
+| **Day 02** | [Mock Trees Graphs](Week_19_Day_02_Mock_Trees_Graphs_Instructional.md) | Binary lifting LCA `O(log N)` (LC 1483), Kahn's topological sort with cycle detection (LC 210) |
+| **Day 03** | [Mock Dynamic Programming](Week_19_Day_03_Mock_Dynamic_Programming_Instructional.md) | Space-compressed Levenshtein edit distance (100 MB -> 20 KB L1 cache), greedy Jump Game II |
+| **Day 04** | [Mock Mixed Complex Rounds](Week_19_Day_04_Mock_Mixed_Complex_Rounds_Instructional.md) | Monotonic deque sliding window maximum (LC 239), production LRU Cache DLL + Sentinel nodes (LC 146) |
+| **Day 05** | [Weakness Diagnosis And Strategy](Week_19_Day_05_Weakness_Diagnosis_And_Strategy_Instructional.md) | Median of Two Sorted Arrays `O(log(min(M, N)))` partition bisection, 6 failure archetypes, offer strategy |
 
 ---
 

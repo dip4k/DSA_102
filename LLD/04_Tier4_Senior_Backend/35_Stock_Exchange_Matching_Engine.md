@@ -1,4 +1,4 @@
-# 35. Stock Exchange Order Matching Engine (Nasdaq Lite)
+﻿# 35. Stock Exchange Order Matching Engine (Nasdaq Lite)
 
 ## 📌 Context
 An Order Matching Engine is the beating heart of financial exchanges (Nasdaq, NYSE, Binance, Zerodha). In senior technical interviews, it evaluates your ability to handle **complex multi-key sorting (Price-Time Priority)**, **efficient data structures ($O(\log N)$ or $O(1)$ operations)**, **partial order fills**, and **high-throughput concurrency**.
@@ -287,8 +287,8 @@ public class OrderBook
 flowchart TD
     Start["Incoming Order Arrives"] --> CheckSide{"Is Buy or Sell?"}
 
-    CheckSide -->|Buy Order| MatchAsk{"Is Lowest Ask <= Buy Price?"}
-    MatchAsk -->|Yes| ExecBuy["Match Quantity = Min(Buy.Remaining, Ask.Remaining)\nPrice = Ask.Price\nEmit Trade"]
+    CheckSide -->|Buy Order| MatchAsk{"Is Lowest Ask &le; Buy Price?"}
+    MatchAsk -->|Yes| ExecBuy["Match Quantity = Min(Buy.Remaining, Ask.Remaining)<br/>Price = Ask.Price<br/>Emit Trade"]
     ExecBuy --> RemoveAsk{"Is Ask Fully Filled?"}
     RemoveAsk -->|Yes| PopAsk["Remove Ask from OrderBook"]
     RemoveAsk -->|No| CheckRemainingBuy{"Buy Remaining > 0?"}
@@ -298,7 +298,7 @@ flowchart TD
     MatchAsk -->|No / Book Empty| AddBuyToBook["Add Buy Order to Bids SortedSet"]
 
     CheckSide -->|Sell Order| MatchBid{"Is Highest Bid >= Sell Price?"}
-    MatchBid -->|Yes| ExecSell["Match Quantity = Min(Sell.Remaining, Bid.Remaining)\nPrice = Bid.Price\nEmit Trade"]
+    MatchBid -->|Yes| ExecSell["Match Quantity = Min(Sell.Remaining, Bid.Remaining)<br/>Price = Bid.Price<br/>Emit Trade"]
     ExecSell --> RemoveBid{"Is Bid Fully Filled?"}
     RemoveBid -->|Yes| PopBid["Remove Bid from OrderBook"]
     RemoveBid -->|No| CheckRemainingSell{"Sell Remaining > 0?"}

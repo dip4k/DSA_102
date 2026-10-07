@@ -1,4 +1,4 @@
-# 🏢 Top 10 Product Companies: High-ROI DSA Interview Curriculum
+﻿# 🏢 Top 10 Product Companies: High-ROI DSA Interview Curriculum
 
 > **Target Level:** Senior / Staff / Lead Software Engineer (.NET / C# / Polyglot)  
 > **Core Philosophy:** Invariant Derivation `->` Pattern Recognition `->` Production Code `->` Defensive Verification.  
@@ -381,7 +381,7 @@ Different product tech companies evaluate algorithmic competence through vastly 
 When you are on the clock in a Senior/Lead interview, follow this exact cadence:
 
 ```mermaid
-flowchart LR
+flowchart TD
     S1["1. Clarify & Bounds"] --> S2["2. Naive Baseline"]
     S2 --> S3["3. Identify Bottleneck"]
     S3 --> S4["4. Invariant Selection"]

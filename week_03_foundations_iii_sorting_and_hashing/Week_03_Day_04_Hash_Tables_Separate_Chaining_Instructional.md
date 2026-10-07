@@ -183,16 +183,148 @@ Strategy: When α exceeds threshold (e.g., 0.75), resize to double buckets
 
 ## ⚙️ CHAPTER 3: MECHANICS & IMPLEMENTATION
 
-### The State Machine: Hash, Insert, Search, Delete
+### The State Machine: Complete Hash Table CRUD Operations
 
-**Core Operations:**
-- **Hash:** Compute index from key
-- **Insert:** Find bucket via hash, add to chain (handle update if key exists)
-- **Search:** Find bucket via hash, scan chain for key
-- **Delete:** Find bucket via hash, remove from chain
-- **Resize:** When load factor exceeds threshold, allocate larger table, rehash all
+A production-grade hash table with separate chaining exposes 5 core operations:
+
+| Operation | Purpose | Time (Average) | Time (Worst-Case) | Invariant / Mechanism |
+| :--- | :--- | :---: | :---: | :--- |
+| **`Put(K key, V value)`** | Insert or update (upsert) key-value pair | `O(1 + alpha)` | `O(N)` | Traverses bucket chain; appends or updates inplace. Triggers `Resize` if `alpha > 0.75`. |
+| **`Get(K key)` / `TryGetValue`**| Retrieve value for given key | `O(1 + alpha)` | `O(N)` | Hashes key to bucket index; scans chain comparing via `Equals()`. |
+| **`Remove(K key)`** | Delete key-value entry from table | `O(1 + alpha)` | `O(N)` | Traverses target chain; unlinks target node in `O(1)` list operation. Decrements count. |
+| **`ContainsKey(K key)`** | Test key membership | `O(1 + alpha)` | `O(N)` | Direct bucket hash; scans chain for key equality without returning value payload. |
+| **`Resize(2M)` & Rehash** | Double capacity and redistribute all entries | `O(N + M)` | `O(N + M)` | Allocates `2M` bucket array; re-evaluates `hash(k) % (2M)` for every active item. |
+
+---
+
+### 📊 Load Factor (`alpha = N / M`) as the Performance Trigger
+
+The load factor `alpha` represents the average number of elements residing in each bucket:
+- **Formula:** `alpha = N / M` where `N` is the total number of key-value pairs and `M` is the number of array buckets.
+- **Why `alpha = 0.75` is the Industry Standard:**
+  Assuming uniform distribution under the Poisson distribution `P(k) = (alpha^k * e^(-alpha)) / k!`:
+  - With `alpha = 0.75`, the probability of an empty bucket is `e^(-0.75) ≈ 47.2%`.
+  - The probability of a chain of length 1 is `0.75 * e^(-0.75) ≈ 35.4%`.
+  - The probability of a chain of length 2 is `≈ 13.3%`.
+  - The probability of a chain having 4 or more collisions is `< 0.8%`!
+  Setting the resize threshold at `0.75` guarantees that average chain traversals stay under 2 comparisons while maintaining low memory wastage.
+
+---
+
+### 🔄 Detailed Trace: Dynamic Resizing (`2M`) & Rehashing
+
+When `N / M > 0.75`, the table doubles its capacity (`M -> 2M`) and redistributes all keys.
+
+```text
+REHASHING TRACE: Resizing from M = 4 to M = 8 (alpha = 4 / 4 = 1.0 > 0.75)
+
+Before Resize: Capacity M = 4, Stored Elements N = 4
+Bucket Hash Index Formula: index = hash(key) % 4 (or hash & 3)
+
+Bucket Array [0..3]:
++-------+
+| [ 0 ] | ───> [ "cat" : 10 ] (hash: 8  -> 8 % 4 = 0)
+|       |      └───> [ "act" : 4 ] (hash: 12 -> 12 % 4 = 0)  <-- Collision Chain!
++-------+
+| [ 1 ] | ───> [ "dog" : 7  ] (hash: 5  -> 5 % 4 = 1)
++-------+
+| [ 2 ] | ───> null
++-------+
+| [ 3 ] | ───> [ "fish": 9  ] (hash: 7  -> 7 % 4 = 3)
++-------+
+
+Resize Triggered: Allocate new bucket array of size 2 * M = 8.
+New Bucket Hash Index Formula: index = hash(key) % 8 (or hash & 7)
+
+Rehashing Mechanics for Each Item:
+  - "cat"  (hash: 8)  : 8 % 8  = 0  ──> Bucket [ 0 ]
+  - "act"  (hash: 12) : 12 % 8 = 4  ──> Bucket [ 4 ]  <-- COLLISION RESOLVED!
+  - "dog"  (hash: 5)  : 5 % 8  = 5  ──> Bucket [ 5 ]
+  - "fish" (hash: 7)  : 7 % 8  = 7  ──> Bucket [ 7 ]
+
+After Resize: Capacity M = 8, Elements N = 4 (alpha = 4 / 8 = 0.50)
+Bucket Array [0..7]:
++-------+
+| [ 0 ] | ───> [ "cat"  : 10 ] ───> null
++-------+
+| [ 1 ] | ───> null
++-------+
+| [ 2 ] | ───> null
++-------+
+| [ 3 ] | ───> null
++-------+
+| [ 4 ] | ───> [ "act"  : 4  ] ───> null  (Split from bucket 0!)
++-------+
+| [ 5 ] | ───> [ "dog"  : 7  ] ───> null
++-------+
+| [ 6 ] | ───> null
++-------+
+| [ 7 ] | ───> [ "fish" : 9  ] ───> null
++-------+
+
+The Power-of-2 Bit Splitting Secret:
+When capacity doubles from 2^k to 2^(k+1), index = hash & (2^(k+1) - 1).
+Only ONE new bit is considered:
+- If the new bit is 0, the key stays in bucket [idx].
+- If the new bit is 1, the key moves to bucket [idx + oldCapacity].
+This allows blazing-fast bitwise rehashing without expensive integer division!
+```
+
+---
+
+### 🧩 Collision Resolution Variations: Separate Chaining Models
+
+Not all separate chaining implementations use simple singly linked lists. In systems engineering, 3 primary variations exist:
+
+```text
+VARIATION 1: Singly Linked List Buckets (Standard / Classic)
+Bucket [ 2 ] ───> [ KeyA:ValA | Next ] ───> [ KeyB:ValB | Next ] ───> null
+Pros: Minimal node overhead (1 reference pointer `Next`).
+Cons: Linear scan O(K) for deletion; poor spatial cache locality.
+
+VARIATION 2: Doubly Linked List Buckets (LRU-Integrated)
+Bucket [ 2 ] ───> [ Prev | KeyA:ValA | Next ] <===> [ Prev | KeyB:ValB | Next ]
+Pros: Node can unlink itself in O(1) time if node reference is cached (critical in LRU caches).
+Cons: 2 pointer references per entry (16 bytes pointer overhead on 64-bit).
+
+VARIATION 3: Treeification into Self-Balancing Trees (Java 8+ HashMap)
+When any individual bucket chain exceeds TREEIFY_THRESHOLD (default = 8) and total
+capacity >= 64, convert the linked list into a balanced Red-Black Tree.
+
+Chain length < 8 (Linked List):
+Bucket [ 2 ] ───> [ K1 ] ───> [ K2 ] ───> [ K3 ] ───> [ K4 ] ───> [ K5 ] ───> [ K6 ] ───> [ K7 ]
+
+Chain length >= 8 (Treeified into Red-Black Tree):
+Bucket [ 2 ] ───>           [ K4 (Black) ]
+                           /              \
+                  [ K2 (Red) ]          [ K6 (Red) ]
+                 /            \        /            \
+             [ K1 ]          [ K3 ]  [ K5 ]        [ K7 ]
+                                                     \
+                                                    [ K8 (Red) ]
+Pros: Neutralizes Hash-Flooding DoS attacks! Worst-case lookup drops from O(N) to O(log K).
+Cons: Node overhead increases (left, right, parent pointers + color bit).
+```
+
+---
 
 ### 🔧 Operation 1: Hash Table with Separate Chaining
+
+```text
+Separate Chaining Memory Architecture:
+Bucket Array [0..M-1]
++-------+
+| [ 0 ] | ───> [ "cat" : 10 ] ───> [ "act" : 4 ] ───> null  (Collision Chain)
++-------+
+| [ 1 ] | ───> null
++-------+
+| [ 2 ] | ───> [ "dog" : 7  ] ───> null
++-------+
+| [ 3 ] | ───> [ "bird": 2  ] ───> [ "fish": 9 ] ───> null
++-------+
+```
+
+#### C# Implementation (Separate Chaining with Complete CRUD & Resizing)
 
 ```csharp
 using System;
@@ -210,19 +342,14 @@ public class HashTableChaining<K, V> where K : notnull {
         }
     }
     
-    // Hash function: map arbitrary key to bucket index
     private int Hash(K key) {
-        // Use built-in GetHashCode, convert to index
-        // Math.Abs to handle negative hashes
         return Math.Abs(key.GetHashCode()) % buckets.Length;
     }
     
-    // Insert key-value pair (or update if key exists)
     public void Insert(K key, V value) {
         int bucketIdx = Hash(key);
         var bucket = buckets[bucketIdx];
         
-        // Check if key already exists; if so, update
         for (int i = 0; i < bucket.Count; i++) {
             if (bucket[i].Item1.Equals(key)) {
                 bucket[i] = (key, value);
@@ -230,17 +357,14 @@ public class HashTableChaining<K, V> where K : notnull {
             }
         }
         
-        // Key doesn't exist; add new entry
         bucket.Add((key, value));
         count++;
         
-        // Check if resize needed
         if ((float)count / buckets.Length > LoadFactorThreshold) {
             Resize();
         }
     }
     
-    // Search for key; return (true, value) if found, else (false, default)
     public bool TryGetValue(K key, out V value) {
         int bucketIdx = Hash(key);
         var bucket = buckets[bucketIdx];
@@ -256,7 +380,15 @@ public class HashTableChaining<K, V> where K : notnull {
         return false;
     }
     
-    // Delete key from table
+    public bool ContainsKey(K key) {
+        int bucketIdx = Hash(key);
+        var bucket = buckets[bucketIdx];
+        foreach (var (k, _) in bucket) {
+            if (k.Equals(key)) return true;
+        }
+        return false;
+    }
+    
     public bool Remove(K key) {
         int bucketIdx = Hash(key);
         var bucket = buckets[bucketIdx];
@@ -272,20 +404,17 @@ public class HashTableChaining<K, V> where K : notnull {
         return false;
     }
     
-    // Resize when load factor exceeds threshold
     private void Resize() {
-        // Create new table with double capacity
         var oldBuckets = buckets;
         buckets = new List<(K, V)>[oldBuckets.Length * 2];
         for (int i = 0; i < buckets.Length; i++) {
             buckets[i] = new List<(K, V)>();
         }
         
-        // Rehash all existing entries
-        count = 0;  // Reset count; Insert increments it
+        count = 0;
         foreach (var bucket in oldBuckets) {
             foreach (var (k, v) in bucket) {
-                Insert(k, v);  // Re-insert with new hash function
+                Insert(k, v);
             }
         }
     }
@@ -294,46 +423,81 @@ public class HashTableChaining<K, V> where K : notnull {
     public int BucketCount => buckets.Length;
     public float LoadFactor => (float)count / buckets.Length;
 }
+```
 
-// Trace: Insert [(5, v5), (8, v8), (12, v12), (11, v11)]
-// Initial: m = 4 buckets, α = 0/4 = 0
+#### Python Implementation (Separate Chaining with Dynamic Resizing)
 
-// Insert (5, v5):
-//   h(5) = 5 mod 4 = 1
-//   Bucket 1: [(5, v5)]
-//   count = 1, α = 1/4 = 0.25
+```python
+class HashTableChaining[K, V]:
+    """Production-grade separate chaining hash table with dynamic resizing.
+    
+    Time: O(1) expected lookup/insert/delete under SUHA | Space: O(N + M)
+    """
+    def __init__(self, initial_capacity: int = 16, load_factor_threshold: float = 0.75) -> None:
+        self.capacity: int = max(4, initial_capacity)
+        self.load_factor_threshold: float = load_factor_threshold
+        self.size: int = 0
+        self.buckets: list[list[tuple[K, V]]] = [[] for _ in range(self.capacity)]
+        
+    def _hash(self, key: K) -> int:
+        return abs(hash(key)) % self.capacity
+        
+    def insert(self, key: K, value: V) -> None:
+        """Insert or update (upsert) key-value pair."""
+        idx = self._hash(key)
+        bucket = self.buckets[idx]
+        for i, (k, _) in enumerate(bucket):
+            if k == key:
+                bucket[i] = (key, value)
+                return
+        bucket.append((key, value))
+        self.size += 1
+        if self.size / self.capacity > self.load_factor_threshold:
+            self._resize()
 
-// Insert (8, v8):
-//   h(8) = 8 mod 4 = 0
-//   Bucket 0: [(8, v8)]
-//   count = 2, α = 2/4 = 0.50
+    def get(self, key: K) -> V:
+        """Retrieve value by key; raises KeyError if absent."""
+        idx = self._hash(key)
+        for k, v in self.buckets[idx]:
+            if k == key:
+                return v
+        raise KeyError(f"Key not found: {key}")
 
-// Insert (12, v12):
-//   h(12) = 12 mod 4 = 0
-//   Bucket 0: [(8, v8)] → [(8, v8), (12, v12)]  (collision!)
-//   count = 3, α = 3/4 = 0.75
+    def contains_key(self, key: K) -> bool:
+        """Return True if key is present in table, False otherwise."""
+        idx = self._hash(key)
+        for k, _ in self.buckets[idx]:
+            if k == key:
+                return True
+        return False
 
-// Insert (11, v11):
-//   h(11) = 11 mod 4 = 3
-//   Bucket 3: [(11, v11)]
-//   count = 4, α = 4/4 = 1.0
-//   α > 0.75, so RESIZE!
+    def __contains__(self, key: K) -> bool:
+        return self.contains_key(key)
 
-// Resize: m = 4 → 8 buckets
-//   Rehash all 4 entries with new h'(k) = k mod 8
-//   h'(5) = 5, h'(8) = 0, h'(12) = 4, h'(11) = 3
-//   New buckets:
-//     0: [(8, v8)]
-//     3: [(11, v11)]
-//     4: [(12, v12)]
-//     5: [(5, v5)]
-//   α = 4/8 = 0.50
+    def remove(self, key: K) -> bool:
+        """Remove key; returns True if removed, False otherwise."""
+        idx = self._hash(key)
+        bucket = self.buckets[idx]
+        for i, (k, _) in enumerate(bucket):
+            if k == key:
+                del bucket[i]
+                self.size -= 1
+                return True
+        return False
 
-// Search (12, v12):
-//   h(12) = 12 mod 8 = 4
-//   Bucket 4: [(12, v12)]
-//   Found! Return v12
-//   Time: O(1 + α) = O(1.5) expected
+    def _resize(self) -> None:
+        """Double table capacity and rehash all key-value entries."""
+        old_buckets = self.buckets
+        self.capacity *= 2
+        self.buckets = [[] for _ in range(self.capacity)]
+        self.size = 0
+        for bucket in old_buckets:
+            for k, v in bucket:
+                self.insert(k, v)
+
+    @property
+    def load_factor(self) -> float:
+        return self.size / self.capacity
 ```
 
 ### 🔧 Operation 2: Custom Hash Function for Strings
@@ -533,71 +697,75 @@ class ImmutableKey {
 - Keys arrive randomly (not adversarially)
 
 **Worst case:**
-- Adversarial keys designed to all hash to same bucket
-- Load factor grows unbounded (no resizing)
-- O(n) chain scan for each operation
+- Adversarial keys designed to all hash to the same bucket (Hash-Flooding DoS).
+- Load factor grows unbounded without resizing.
+- Chain length degrades to `O(N)`, requiring linear search per operation (mitigated by Treeification to `O(log K)`).
 
-### Real Systems: Where Hash Tables Appear
+---
 
-> **🏭 Real-World Systems Story 1: Database Indices and Query Execution**
+### ⚖️ Differences & Trade-off Matrix: Separate Chaining vs Open Addressing vs TreeMap
 
-Databases use hash indices for exact match queries:
+Choosing the right associative container depends heavily on access patterns, memory budget, hardware cache architecture, and ordering requirements:
 
-```sql
-SELECT * FROM users WHERE user_id = 12345;
-```
+| Dimension / Metric | Separate Chaining (Linked Lists / Trees) | Open Addressing (Linear Probing / SwissTable) | TreeMap / Balanced BST (Red-Black Tree) |
+| :--- | :--- | :--- | :--- |
+| **Lookup (Average)** | `O(1)` (typically 1-2 chain comparisons) | `O(1)` (1 probe step under `alpha <= 0.5`) | `O(log N)` (strict height traversal) |
+| **Lookup (Worst-Case)**| `O(N)` (or `O(log K)` with Treeification) | `O(N)` (table clustering) | `O(log N)` (guaranteed self-balancing) |
+| **Insert / Upsert (Avg)**| `O(1)` amortized | `O(1)` amortized | `O(log N)` (includes tree rebalancing) |
+| **Delete / Remove (Avg)**| `O(1)` (unlink list node) | `O(1)` (requires Tombstone marking) | `O(log N)` (tree node rebalancing) |
+| **ContainsKey** | `O(1)` average | `O(1)` average | `O(log N)` guaranteed |
+| **Ordered Key Traversal**| No (arbitrary bucket hash order) | No (arbitrary probe slot order) | **Yes**: `O(N)` strictly sorted in-order walk |
+| **Range Queries (`[L, R]`)**| `O(N)` (must scan entire table) | `O(N)` (must scan entire table) | **Yes**: `O(log N + K)` optimal range scan |
+| **Min / Max Key** | `O(N)` (unsupported without full scan) | `O(N)` (unsupported without full scan) | **`O(log N)`** (or `O(1)` with min/max pointer) |
+| **Memory Overhead** | High (1-2 pointers + node header per entry) | **Low** (flat array, zero pointer overhead) | High (3 pointers: left, right, parent + color) |
+| **Cache Locality** | Poor (chasing heap pointers across memory) | **Maximum** (contiguous array, CPU prefetching)| Poor (traversing pointers in heap nodes) |
+| **Load Factor Tolerance**| Tolerates `alpha > 1.0` gracefully | Strictly requires `alpha <= 0.5 - 0.7` | Not applicable (dynamic node allocation) |
+| **Key Requirements** | `GetHashCode()` + `Equals()` | `GetHashCode()` + `Equals()` | `IComparable<T>` / Strict Total Ordering |
+| **Real-World Standard** | Java `HashMap` (< Java 8 lists, >= 8 trees) | Python `dict`, Rust `hashbrown`, Google SwissTable | C# `SortedDictionary`, C++ `std::map`, Java `TreeMap` |
 
-**With hash index:**
-- Hash user_id → bucket
-- Scan bucket for exact match
-- Time: O(1) expected
+#### Architectural Selection Guidelines:
+1. **Choose Separate Chaining when:**
+   - Elements or values are large (storing pointers to large objects rather than moving values in arrays).
+   - Load spikes are unpredictable and the table cannot afford hard resizing stalls immediately.
+   - Deletions are frequent and you want to avoid tombstone accumulation.
+2. **Choose Open Addressing (Linear Probing / SwissTable) when:**
+   - Raw CPU throughput and cache locality are critical (near 100% L1 cache hits).
+   - Keys and values are compact (integers, floats, small structs, strings).
+   - Memory allocation overhead and GC pressure must be minimized.
+3. **Choose TreeMap / Balanced BST when:**
+   - Keys must be kept in sorted order at all times.
+   - You need range queries, nearest predecessor / successor searches, or `Floor` / `Ceiling` operations.
+   - Worst-case `O(log N)` time guarantees are strictly required by SLA.
 
-**Without index (table scan):**
-- Scan all rows
-- Time: O(n)
+### 🏭 Real-World Systems & Engineering Context
 
-For tables with millions of rows, hash index is 1,000,000x faster.
+> [!NOTE]
+> **Production Engineering Context:** Hash tables are the ubiquitous foundation of in-memory caching (Redis dictionary layers), relational and NoSQL database indexing (hash join executors, hash index lookups), and compiler symbol resolution tables. In web servers and distributed endpoints, separate chaining provides resilience against burst traffic because chains can expand dynamically past nominal load factor limits without hard failure. However, unseeded hash functions present severe vulnerabilities: attackers can exploit Hash-Flooding DoS attacks by generating inputs that collide to a single bucket, collapsing `O(1)` operations into `O(N)` Denial-of-Service bottlenecks. Modern platforms neutralize this via randomized hash seed injection (e.g., SipHash in Python and .NET).
 
-> **🏭 Real-World Systems Story 2: In-Memory Caches (Redis, Memcached)**
+### 📊 Complexity Deconstruction
 
-Caches store key-value pairs and retrieve via hash table:
+| Operation | Best-Case Time | Average-Case (SUHA) | Adversarial Worst-Case | Auxiliary Space | Output Space | Key Governing Condition |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Search / Lookup** | `O(1)` | `O(1 + alpha)` | `O(N)` | `O(1)` | `O(1)` | Simple Uniform Hashing Assumption (SUHA); `alpha = N/M`. |
+| **Insertion (`Upsert`)**| `O(1)` | `O(1 + alpha)` amortized | `O(N)` | `O(1)` | `O(1)` | Cost amortized over doubling resizing events. |
+| **Deletion (`Remove`)**| `O(1)` | `O(1 + alpha)` | `O(N)` | `O(1)` | `O(1)` | Linear scan of the target bucket's collision chain. |
+| **Dynamic Resizing** | `O(N + M)` | `O(N + M)` | `O(N + M)` | `O(N + M)` | `O(1)` | Allocates `2M` buckets and rehashes all `N` entries. |
 
-```
-GET key123 → hash(key123) → bucket → O(1) lookup
-SET key123 value456 → hash(key123) → bucket → O(1) insert
-```
+- **SUHA Time Breakdown:** Under the Simple Uniform Hashing Assumption, the expected length of any collision chain is exactly the load factor `alpha = N / M`. Searching an item takes 1 hash computation plus `alpha / 2` comparisons on average, yielding strict `O(1 + alpha) = O(1)` time when `alpha <= 0.75`.
+- **Auxiliary Space:** `O(N + M)` memory: `M` bucket references in the primary array plus `N` node allocations across the active collision chains.
 
-All operations are O(1) expected, enabling millions of requests per second.
+### 🎙️ 45-Minute Interview Verbal Script
 
-> **🏭 Real-World Systems Story 3: Compiler Symbol Tables**
+**Interviewer:** *"How does a hash table with separate chaining achieve O(1) expected operations, and what happens behind the scenes during resizing?"*
 
-Compilers use hash tables for symbol tables (variable names, function names):
-
-```
-During parsing:
-  Symbol myVariable → hash to bucket → O(1) insert
-During compilation:
-  Reference myVariable → hash to bucket → O(1) lookup to get type, scope
-```
-
-Without hash tables, symbol resolution would be O(log n) or O(n).
-
-### Collision Resolution Strategies Comparison
-
-| Strategy | Chaining | Linear Probing | Quadratic Probing | Double Hashing |
-|----------|----------|---|---|---|
-| **Space** | O(n) for chains | O(n) total | O(n) total | O(n) total |
-| **Worst Search** | O(n) | O(n) | O(n) | O(n) |
-| **Average Search** | O(1+α) | O(1/(1-α)) | O(1/(1-α)) | O(1/(1-α)) |
-| **Clustering** | Linear chains | Primary | Reduced | Minimal |
-| **Implementation** | Simple | Medium | Medium | Complex |
-| **Cache Friendly** | Poor (pointers) | Excellent | Excellent | Excellent |
-
-**When to use:**
-- **Chaining:** Simple, memory-friendly for sparse tables, used in Java/Python
-- **Linear Probing:** Cache-friendly, fast for moderate α, used in C++ (Google)
-- **Double Hashing:** Reduces clustering, good for high α
-- **Quadratic Probing:** Middle ground between linear and double hashing
+**Candidate Verbal Response:**
+> "A separate chaining hash table uses an array of `M` buckets, where each bucket anchors a linked list of key-value pairs that collide at that index.
+> 
+> 1. **Expected O(1) Mechanics:** When a key is queried or inserted, we compute its hash code modulo the table capacity `M`. Under the Simple Uniform Hashing Assumption, keys distribute uniformly across buckets. The expected time for search and insertion is `O(1 + alpha)`, where `alpha = N / M` is the load factor. By enforcing a threshold—typically `alpha <= 0.75`—the expected chain length never exceeds a small constant, guaranteeing average `O(1)` operations.
+> 2. **Amortized Resizing:** As elements are added and `alpha` exceeds `0.75`, we double the capacity to `2M` and rehash every item. While this single resizing operation takes `O(N + M)` time, doubling occurs geometrically. Amortized across all preceding insertions, the per-operation cost remains `O(1)`.
+> 3. **Worst-Case Vulnerability & Defenses:** If an adversary crafts inputs that hash to the exact same bucket, chain lengths degrade to `N`, collapsing performance to `O(N)`. Production systems solve this in two ways:
+>    - Using randomized, salted hash functions like SipHash so hash values cannot be predicted offline.
+>    - Converting long chains (>= 8 items) into balanced Red-Black Trees (as Java's `HashMap` does), guaranteeing an `O(log N)` worst-case safety net."
 
 ---
 
@@ -611,7 +779,7 @@ Without hash tables, symbol resolution would be O(log n) or O(n).
 - **Binary Search (Week 2 Day 5):** Hash tables beat binary search for exact match
 
 **Building on Week 3 Days 1–3:**
-- **Sorting (Days 1–2):** Sorting requires O(n log n); hash tables achieve O(1) average
+- **Sorting (Days 1–2):** Sorting requires `O(n log n)`; hash tables achieve `O(1)` average
 - **Heaps (Day 3):** Priority queues use heaps; hash tables handle exact lookup
 
 **Foreshadowing Future Weeks:**
@@ -624,15 +792,15 @@ Without hash tables, symbol resolution would be O(log n) or O(n).
 **Pattern 1: Randomization for Determinism**
 - Good hash function acts as randomizer
 - Maps arbitrary keys to uniform distribution
-- Enables average-case O(1) in worst-case scenario
+- Enables average-case `O(1)` in worst-case scenario
 
 **Pattern 2: Load Factor as Performance Dial**
-- α = n/m (number of keys / number of buckets)
-- Resize when α exceeds threshold
-- Maintains O(1) operations as table grows
+- `alpha = n/m` (number of keys / number of buckets)
+- Resize when `alpha` exceeds threshold
+- Maintains `O(1)` operations as table grows
 
 **Pattern 3: Amortized Analysis**
-- Resize is O(n), but amortized to O(1) per insertion
+- Resize is `O(n)`, but amortized to `O(1)` per insertion
 - Appears in dynamic arrays, hash tables, and many other data structures
 
 ### Socratic Reflection
@@ -641,42 +809,15 @@ Without hash tables, symbol resolution would be O(log n) or O(n).
 
 2. **On Collisions:** Why are collisions inevitable, and what's the impact?
 
-3. **On Load Factor:** Why is α important, and when should you resize?
+3. **On Load Factor:** Why is `alpha` important, and when should you resize?
 
-4. **On Worst-Case:** Why do we care about O(1) average instead of O(1) worst-case?
+4. **On Worst-Case:** Why do we care about `O(1)` average instead of `O(1)` worst-case?
 
 5. **On Applications:** How do hash tables enable billion-operation systems?
 
 ### 📌 Retention Hook
 
-> **The Essence:** *"Hash tables are systems design in microcosm. They trade worst-case O(n) for average-case O(1) by exploiting randomness via hash functions. They manage load via resizing to maintain performance as scale grows. Understanding hash tables—their design, their trade-offs, their real-world applications—teaches principles that scale to databases, caches, distributed systems, and security."*
-
----
-
-## 🧠 5 COGNITIVE LENSES
-
-### 💻 The Hardware Lens: CPU Cache and Hash Table Performance
-
-Hash table with chaining suffers cache misses (pointer chasing in linked lists). Open addressing (next week) is more cache-friendly.
-
-### 📉 The Trade-off Lens: Simplicity vs Performance
-
-Chaining is simple to implement and understand. Open addressing is more complex but faster in practice (cache locality).
-
-### 👶 The Learning Lens: Probability in Algorithms
-
-Hash tables introduce probabilistic thinking: we accept O(n) worst-case for O(1) average. This is fundamental to randomized algorithms.
-
-### 🤖 The AI/ML Lens: Hashing for Scalability
-
-Machine learning systems use hash tables for:
-- Feature hashing (map sparse features to hash buckets)
-- Deduplication (identify duplicate training examples)
-- Approximate nearest neighbor (locality-sensitive hashing)
-
-### 📜 The Historical Lens: From Perfect Hash to Approximate
-
-Perfect hashing (1979) → Cuckoo hashing (2001) → Consistent hashing (2003). Evolution shows increasing sophistication for specific constraints.
+> **The Essence:** *"Hash tables are systems design in microcosm. They trade worst-case `O(n)` for average-case `O(1)` by exploiting randomness via hash functions. They manage load via resizing to maintain performance as scale grows. Understanding hash tables—their design, their trade-offs, their real-world applications—teaches principles that scale to databases, caches, distributed systems, and security."*
 
 ---
 

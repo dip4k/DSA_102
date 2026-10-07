@@ -1,4 +1,4 @@
-# 🏢 Top 20 Product Companies: High-ROI DSA Interview Curriculum
+﻿# 🏢 Top 20 Product Companies: High-ROI DSA Interview Curriculum
 
 > **Target Level:** Senior / Staff / Principal / Lead Software Engineer (.NET / C# / Polyglot)  
 > **Core Philosophy:** Invariant Derivation `->` Pattern Recognition `->` Production Code `->` Defensive Verification.  
@@ -796,11 +796,11 @@ Senior and Staff candidates fail interviews not because they cannot solve the pr
 Follow this disciplined **5-Step Rhythm** in every 45-minute live round:
 
 ```mermaid
-flowchart LR
-    S1["Step 1: Scoping & Contracts<br>(0–5 min)"] --> S2["Step 2: Dual Baselines & Diagnosis<br>(5–10 min)"]
-    S2 --> S3["Step 3: Invariant Formalization<br>(10–15 min)"]
-    S3 --> S4["Step 4: Idiomatic Production Code<br>(15–32 min)"]
-    S4 --> S5["Step 5: Systematic Multi-Vector Dry Run<br>(32–45 min)"]
+flowchart TD
+    S1["Step 1: Scoping and Contracts<br/>(0–5 min)"] --> S2["Step 2: Dual Baselines and Diagnosis<br/>(5–10 min)"]
+    S2 --> S3["Step 3: Invariant Formalization<br/>(10–15 min)"]
+    S3 --> S4["Step 4: Idiomatic Production Code<br/>(15–32 min)"]
+    S4 --> S5["Step 5: Systematic Multi-Vector Dry Run<br/>(32–45 min)"]
 ```
 
 #### Step 1: Scoping, Boundary Defense & Contract Negotiation (0–5 min)
