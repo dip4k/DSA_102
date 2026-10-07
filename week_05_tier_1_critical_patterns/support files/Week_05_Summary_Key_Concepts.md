@@ -34,40 +34,39 @@
 ## 🧠 Concept Map: Pattern Relationships
 
 
-```mermaid
-flowchart TD
-    R["Week 05 Patterns Space"]
-    R --> N1["LOOKUP SPEED (Hash)"]
-    N1 --> N2["Time: O(1) average, O(n) worst"]
-    N1 --> N3["Space: O(n)"]
-    N1 --> N4["Use: Complement search, frequency, membership"]
-    N1 --> N5["When: Need fast O(1) lookups"]
-    R --> N6["STACK ORDER (Monotonic Stack)"]
-    N6 --> N7["Time: O(n) single pass"]
-    N6 --> N8["Space: O(n) stack"]
-    N6 --> N9["Use: Next/previous element, rain water, histogram"]
-    N6 --> N10["When: Need previous element processing"]
-    R --> N11["MERGE STRATEGY (Intervals)"]
-    N11 --> N12["Time: O(n log n) sort + O(n) merge = O(n log n)"]
-    N11 --> N13["Space: O(1) or O(n) depending on output"]
-    N11 --> N14["Use: Merge intervals, insert interval, merge lists"]
-    N11 --> N15["When: Ranges need combining"]
-    R --> N16["REARRANGE METHOD (Partition)"]
-    N16 --> N17["Time: O(n) partition, O(n) cyclic sort"]
-    N16 --> N18["Space: O(1) in-place"]
-    N16 --> N19["Use: 0-1-2 sort, find missing/duplicate"]
-    N16 --> N20["When: In-place rearrangement required"]
-    R --> N21["SUBARRAY OPTIMIZATION (Kadane)"]
-    N21 --> N22["Time: O(n) single pass"]
-    N21 --> N23["Space: O(1) auxiliary"]
-    N21 --> N24["Use: Max/min subarray, max product, circular"]
-    N21 --> N25["When: Optimizing contiguous subarrays"]
-    R --> N26["CYCLE FINDING (Fast-Slow)"]
-    N26 --> N27["Time: O(n)"]
-    N26 --> N28["Space: O(1)"]
-    N26 --> N29["Use: Cycle detection, midpoint, palindrome"]
-    N26 --> N30["When: Linked list analysis needed"]
-```
+### 📌 Week 05 Patterns Space
+
+- **LOOKUP SPEED (Hash)**
+  - Time: O(1) average, O(n) worst
+  - Space: O(n)
+  - Use: Complement search, frequency, membership
+  - When: Need fast O(1) lookups
+- **STACK ORDER (Monotonic Stack)**
+  - Time: O(n) single pass
+  - Space: O(n) stack
+  - Use: Next/previous element, rain water, histogram
+  - When: Need previous element processing
+- **MERGE STRATEGY (Intervals)**
+  - Time: O(n log n) sort + O(n) merge = O(n log n)
+  - Space: O(1) or O(n) depending on output
+  - Use: Merge intervals, insert interval, merge lists
+  - When: Ranges need combining
+- **REARRANGE METHOD (Partition)**
+  - Time: O(n) partition, O(n) cyclic sort
+  - Space: O(1) in-place
+  - Use: 0-1-2 sort, find missing/duplicate
+  - When: In-place rearrangement required
+- **SUBARRAY OPTIMIZATION (Kadane)**
+  - Time: O(n) single pass
+  - Space: O(1) auxiliary
+  - Use: Max/min subarray, max product, circular
+  - When: Optimizing contiguous subarrays
+- **CYCLE FINDING (Fast-Slow)**
+  - Time: O(n)
+  - Space: O(1)
+  - Use: Cycle detection, midpoint, palindrome
+  - When: Linked list analysis needed
+
 
 
 ---

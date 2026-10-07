@@ -135,21 +135,25 @@ A valid topological order is: A → B → C → D. You could also have A first, 
 
 Let's trace DFS on a simple directed graph:
 
-```
-Graph:
-    0 -----> 1
-    |        |
-    v        v
-    3 -----> 2
+```mermaid
+flowchart TD
+    classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
 
-Adjacency List:
-0: [1, 3]
-1: [2]
-2: []
-3: [2]
+    N0["0 (Start)"]:::nodeStyle
+    N1["1"]:::nodeStyle
+    N2["2 (Sink)"]:::nodeStyle
+    N3["3"]:::nodeStyle
+
+    N0 --> N1
+    N0 --> N3
+    N1 --> N2
+    N3 --> N2
+```
+
+**Adjacency List:**  
+`0: [1, 3]`, `1: [2]`, `2: []`, `3: [2]`
 
 DFS starting from node 0:
-```
 
 **Step-by-step trace:**
 
@@ -1123,14 +1127,13 @@ The stability of DFS in the algorithm canon—unchanged for 60+ years—is a tes
 Gradle uses topological sorting to compile modules:
 
 
-```mermaid
-flowchart TD
-    R["Project structure"]
-    R --> N1["build.gradle (depends on lib, utils)"]
-    R --> N2["build.gradle (depends on core)"]
-    R --> N3["build.gradle (depends on core)"]
-    R --> N4["build.gradle (no dependencies)"]
-```
+### 📌 Project structure
+
+- build.gradle (depends on lib, utils)
+- build.gradle (depends on core)
+- build.gradle (depends on core)
+- build.gradle (no dependencies)
+
 
 
 **Algorithm:** Gradle uses DFS-based topological sort (or Kahn's algorithm variant) to determine build order and detect cyclic dependencies.

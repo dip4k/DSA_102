@@ -2110,7 +2110,4 @@ DSU_WithSize:
 - Forgetting path compression or union-by-rank in DSU
 
 ---
-
----
-
 > 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS.md)

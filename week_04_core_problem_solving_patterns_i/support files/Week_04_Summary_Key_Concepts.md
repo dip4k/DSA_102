@@ -32,26 +32,25 @@
 ## 🧠 Concept Map: Pattern Relationships
 
 
-```mermaid
-flowchart TD
-    R["Week 04 Patterns Building Blocks"]
-    R --> N1["TWO-POINTER (Invariant Maintenance)"]
-    N1 --> N2["Same-direction (merge, remove)"]
-    N1 --> N3["Opposite-direction (water, complement)"]
-    N1 --> N4["Key: Maintain 'what's processed' invariant"]
-    R --> N5["SLIDING WINDOW (Incremental State)"]
-    N5 --> N6["Fixed-size (running computation)"]
-    N5 --> N7["Variable-size (constraint satisfaction)"]
-    N5 --> N8["Key: Track state, slide in O(1) per step"]
-    R --> N9["DIVIDE-CONQUER (Recursive Split)"]
-    N9 --> N10["Split: partition problem"]
-    N9 --> N11["Conquer: solve independently"]
-    N9 --> N12["Combine: merge sub-solutions"]
-    R --> N13["BINARY SEARCH (Monotone Narrowing)"]
-    N13 --> N14["On arrays (classic)"]
-    N13 --> N15["On answer space (feasibility)"]
-    N13 --> N16["Key: Maintain 'target in [low, high)' invariant"]
-```
+### 📌 Week 04 Patterns Building Blocks
+
+- **TWO-POINTER (Invariant Maintenance)**
+  - Same-direction (merge, remove)
+  - Opposite-direction (water, complement)
+  - Key: Maintain 'what's processed' invariant
+- **SLIDING WINDOW (Incremental State)**
+  - Fixed-size (running computation)
+  - Variable-size (constraint satisfaction)
+  - Key: Track state, slide in O(1) per step
+- **DIVIDE-CONQUER (Recursive Split)**
+  - Split: partition problem
+  - Conquer: solve independently
+  - Combine: merge sub-solutions
+- **BINARY SEARCH (Monotone Narrowing)**
+  - On arrays (classic)
+  - On answer space (feasibility)
+  - Key: Maintain 'target in [low, high)' invariant
+
 
 
 ---

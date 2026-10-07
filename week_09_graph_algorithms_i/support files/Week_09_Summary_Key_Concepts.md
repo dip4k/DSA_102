@@ -34,23 +34,22 @@
 **START: What's your goal?**
 
 
-```mermaid
-flowchart TD
-    R["Is it a shortest-path problem?"]
-    R --> N1["YES: Do all paths have non-negative weights?"]
-    N1 --> N2["YES: Do you need one-to-many or one-to-one?"]
-    N2 --> N3["One-to-many (single source): Use DIJKSTRA [O((V+E) log V)]"]
-    N2 --> N4["One-to-one: Use BFS if unweighted; Dijkstra if weighted"]
-    N1 --> N5["NO (negative weights): Do you need all-pairs?"]
-    N5 --> N6["YES: Use FLOYD–WARSHALL [O(V³)]"]
-    N5 --> N7["NO: Use BELLMAN–FORD [O(VE)]"]
-    R --> N8["YES: How many queries do you have?"]
-    N8 --> N9["Many: Use KRUSKAL [O(E log E) with DSU]"]
-    N8 --> N10["Few, dense graph: Use PRIM [O((V+E) log V)]"]
-    R --> N11["YES: Are edges added incrementally (dynamic)?"]
-    N11 --> N12["YES: Use DSU [O(α(n)) amortized per operation]"]
-    N11 --> N13["NO: Use BFS/DFS once [O(V+E) for preprocessing]"]
-```
+### 📌 Is it a shortest-path problem?
+
+- **YES: Do all paths have non-negative weights?**
+  - **YES: Do you need one-to-many or one-to-one?**
+    - One-to-many (single source): Use DIJKSTRA [O((V+E) log V)]
+    - One-to-one: Use BFS if unweighted; Dijkstra if weighted
+  - **NO (negative weights): Do you need all-pairs?**
+    - YES: Use FLOYD–WARSHALL [O(V³)]
+    - NO: Use BELLMAN–FORD [O(VE)]
+- **YES: How many queries do you have?**
+  - Many: Use KRUSKAL [O(E log E) with DSU]
+  - Few, dense graph: Use PRIM [O((V+E) log V)]
+- **YES: Are edges added incrementally (dynamic)?**
+  - YES: Use DSU [O(α(n)) amortized per operation]
+  - NO: Use BFS/DFS once [O(V+E) for preprocessing]
+
 
 
 ---
@@ -451,7 +450,4 @@ Kruskal(Graph):
 - [ ] Ready for graph interview questions
 
 ---
-
----
-
 > 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS.md)

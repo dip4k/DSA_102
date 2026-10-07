@@ -62,23 +62,30 @@ This is fundamentally different from searching a sorted array. You're searching 
 
 Imagine a graph where the x-axis is the "answer candidate" and the y-axis is "feasible (yes/no)":
 
-```
-Answer Space: [0, 100]
+```mermaid
+flowchart LR
+    classDef infeasible fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
+    classDef boundary fill:#fff8e1,stroke:#f57f17,stroke-width:3px,color:#e65100
+    classDef feasible fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
 
-Feasibility:
-NO  |
-    |  ╭---------------------
-    |  |
-    |  |
-    |  |
-    |  |
-YES |--+
-    +-------------------------
-      0    10   20   30   40 (boundary) 50 ... 100
+    subgraph S1["❌ Infeasible Region (Condition Fails)"]
+        A0["0"]:::infeasible
+        A10["10"]:::infeasible
+        A20["20"]:::infeasible
+        A30["30"]:::infeasible
+    end
 
-Boundary at answer = 40:
-- Answers < 40: NOT feasible
-- Answers >= 40: feasible
+    subgraph S2["🎯 Monotonic Boundary"]
+        A40["40<br/><b>First Feasible Target</b>"]:::boundary
+    end
+
+    subgraph S3["✅ Feasible Region (Condition Holds)"]
+        A50["50"]:::feasible
+        A60["... 100"]:::feasible
+    end
+
+    S1 -->|"Binary Search Narrowing"| S2
+    S2 --> S3
 ```
 
 Binary search finds this boundary. We don't check every answer from 0 to 100. Instead:

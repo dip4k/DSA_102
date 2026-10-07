@@ -71,11 +71,19 @@ Done. O(1) insertion.
 
 
 ```mermaid
-flowchart TD
-    R["Singly Linked List"]
-    R --> N1["State"]
-    N1 --> N2["State"]
-    N2 --> N3["State"]
+flowchart LR
+    classDef headNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+    classDef node fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+    classDef nullNode fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,color:#616161
+
+    Head["🟢 Head: [Val: 10 | Next]"]:::headNode
+    Node2["📦 Node 2: [Val: 20 | Next]"]:::node
+    Node3["📦 Node 3: [Val: 30 | Next]"]:::node
+    Null["🛑 null"]:::nullNode
+
+    Head --> Node2
+    Node2 --> Node3
+    Node3 --> Null
 ```
 
 
@@ -83,11 +91,21 @@ flowchart TD
 
 
 ```mermaid
-flowchart TD
-    R["Doubly Linked List"]
-    R --> N1["Step"]
-    N1 --> N2["State"]
-    N1 --> N3["State"]
+flowchart LR
+    classDef headNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+    classDef node fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+    classDef nullNode fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,color:#616161
+
+    NullL["🛑 null"]:::nullNode
+    Head["🟢 Head: [Prev | Val: 10 | Next]"]:::headNode
+    Node2["📦 Node 2: [Prev | Val: 20 | Next]"]:::node
+    Node3["📦 Node 3: [Prev | Val: 30 | Next]"]:::node
+    NullR["🛑 null"]:::nullNode
+
+    Head <-->|"Next / Prev"| Node2
+    Node2 <-->|"Next / Prev"| Node3
+    Head -->|"Prev"| NullL
+    Node3 -->|"Next"| NullR
 ```
 
 

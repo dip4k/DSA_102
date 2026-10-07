@@ -249,13 +249,12 @@ Layer 3: DP for subpath optimization (Held-Karp)
 
 **Visual: Layered TSP Hybrid**
 
-```mermaid
-flowchart TD
-    R["State"]
-    R --> N1["Step"]
-    R --> N2["Step"]
-    R --> N3["State"]
+**🏰 Layered TSP Hybrid Architecture**
+
+```text
+• Layer 1: Fast Greedy (Nearest Neighbor)<br/>Generates valid feasible tour → establishes Initial Upper Bound U
 ```
+
 
 
 ---
@@ -1006,13 +1005,17 @@ class Program
 
 
 ```mermaid
-flowchart TD
-    R["State"]
-    R --> N1["Step"]
-    N1 --> N2["Step"]
-    N1 --> N3["Step"]
-    N1 --> N4["Step"]
-    R --> N5["State"]
+flowchart LR
+    classDef stage fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef proc fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:1.5px;
+    classDef opt fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+
+    S1["1️⃣ Input Constraints<br/>Deadlines, Dependencies, Profits"]:::stage
+    S2["2️⃣ Backtracking Filter<br/>Prune illegal dependency sequences"]:::proc
+    S3["3️⃣ Greedy Priority Heuristic<br/>Rank candidates by earliest deadline"]:::proc
+    S4["4️⃣ DP Profit Maximizer<br/>Optimal profit via memoized subset choice"]:::opt
+
+    S1 --> S2 --> S3 --> S4
 ```
 
 
@@ -1653,43 +1656,28 @@ Amortized Analysis:
 ## Decision Tree: Choosing Hybrid Paradigms
 
 
-```mermaid
-flowchart TD
-    R["Problem Analysis"]
-    R --> N1["Is solution constructive (build incrementally)?"]
-    N1 --> N2["YES → Consider Backtracking/Branch & Bound"]
-    N2 --> N3["Are there overlapping subproblems?"]
-    N3 --> N4["YES → ADD DP Memoization"]
-    N3 --> N5["NO → Pure Backtracking"]
-    N2 --> N6["Can you compute bounds cheaply?"]
-    N6 --> N7["YES → ADD Greedy Bounds (Branch & Bound)"]
-    N6 --> N8["NO → Use DP for exact bounds"]
-    N2 --> N9["Are there good heuristics for ordering choices?"]
-    N9 --> N10["YES → ADD Greedy Ordering"]
-    N9 --> N11["NO → Use random/arbitrary ordering"]
-    N1 --> N12["NO → Continue"]
-    R --> N13["Does problem have optimal substructure?"]
-    N13 --> N14["YES → Base: DP"]
-    N14 --> N15["Are DP transitions expensive?"]
-    N15 --> N16["YES → ADD Amortized Data Structures"]
-    N15 --> N17["NO → Pure DP"]
-    N14 --> N18["Is state space large but sparse?"]
-    N18 --> N19["YES → ADD Branch & Bound pruning"]
-    N18 --> N20["NO → Pure DP"]
-    N13 --> N21["NO → Continue"]
-    R --> N22["Is greedy choice property present?"]
-    N22 --> N23["YES → Base: Greedy"]
-    N23 --> N24["Is greedy solution suboptimal?"]
-    N24 --> N25["YES → ADD Local Search or Backtracking refinement"]
-    N24 --> N26["NO → Pure Greedy"]
-    N23 --> N27["Can greedy provide bounds?"]
-    N27 --> N28["YES → Use as bound in Branch & Bound"]
-    N27 --> N29["NO → Standalone Greedy"]
-    N22 --> N30["NO → Continue"]
-    R --> N31["Is problem NP-hard requiring approximation?"]
-    N31 --> N32["YES → Hybrid Strategy:"]
-    N31 --> N33["NO → Revisit problem structure"]
-```
+### 📌 Problem Analysis
+
+- **Is solution constructive (build incrementally)?**
+  - **YES → Consider Backtracking/Branch & Bound**
+    - Are there overlapping subproblems?
+    - Can you compute bounds cheaply?
+    - Are there good heuristics for ordering choices?
+  - NO → Continue
+- **Does problem have optimal substructure?**
+  - **YES → Base: DP**
+    - Are DP transitions expensive?
+    - Is state space large but sparse?
+  - NO → Continue
+- **Is greedy choice property present?**
+  - **YES → Base: Greedy**
+    - Is greedy solution suboptimal?
+    - Can greedy provide bounds?
+  - NO → Continue
+- **Is problem NP-hard requiring approximation?**
+  - YES → Hybrid Strategy:
+  - NO → Revisit problem structure
+
 
 
 ---
@@ -1795,13 +1783,12 @@ Key: Hybrid doesn't change worst-case (still exponential),
 
 **Spectrum**:
 
-```mermaid
-flowchart TD
-    R["Pure Greedy ←→ Pure Exact"]
-    R --> N1["Greedy + Local Search (Medium, Good)"]
-    R --> N2["Greedy + Branch & Bound (Medium-Slow, Optimal)"]
-    R --> N3["DP + Greedy Bounds (Slow, Optimal)"]
-```
+### 📌 Pure Greedy ←→ Pure Exact
+
+- Greedy + Local Search (Medium, Good)
+- Greedy + Branch & Bound (Medium-Slow, Optimal)
+- DP + Greedy Bounds (Slow, Optimal)
+
 
 
 ## 3. The Learning Lens: Common Mistakes

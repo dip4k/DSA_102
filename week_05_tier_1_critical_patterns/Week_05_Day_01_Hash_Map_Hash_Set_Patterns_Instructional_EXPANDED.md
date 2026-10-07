@@ -994,6 +994,4 @@ By mastering this week, you're learning to think like a systems engineer. You're
 Each sub-problem has a pattern. Hash patterns are the first bucket of patterns you'll solve again and again throughout your career.
 
 ---
----
-
 > 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_05_Day_02_Monotonic_Stack_Patterns_Instructional.md)

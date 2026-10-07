@@ -36,20 +36,19 @@ By end of Week 11, you'll:
 ## 📚 WEEK 11 STRUCTURE
 
 
-```mermaid
-flowchart TD
-    R["WEEK 11 DYNAMIC PROGRAMMING II"]
-    R --> N1["DAY 1: DP ON TREES (120 min)"]
-    N1 --> N2["Post-order traversal, independent set, tree diameter, coloring, rerooting"]
-    R --> N3["DAY 2: DP ON DAGS (120 min)"]
-    N3 --> N4["Topological ordering, longest/shortest paths, critical paths"]
-    R --> N5["DAY 3: BITMASK & SUBSET DP (120 min)"]
-    N5 --> N6["Bitmask representation, TSP, subset sum, independent set (small graphs)"]
-    R --> N7["DAY 4: STATE COMPRESSION & OPTIMIZATIONS (90 min) [OPTIONAL]"]
-    N7 --> N8["Sliding window, dimension reduction, memoization vs tabulation, pruning"]
-    R --> N9["DAY 5: MIXED DP PROBLEMS (90 min) [OPTIONAL]"]
-    N9 --> N10["Recognition framework, multi-concept problems, problem-solving strategy"]
-```
+### 📌 WEEK 11 DYNAMIC PROGRAMMING II
+
+- **DAY 1: DP ON TREES (120 min)**
+  - Post-order traversal, independent set, tree diameter, coloring, rerooting
+- **DAY 2: DP ON DAGS (120 min)**
+  - Topological ordering, longest/shortest paths, critical paths
+- **DAY 3: BITMASK & SUBSET DP (120 min)**
+  - Bitmask representation, TSP, subset sum, independent set (small graphs)
+- **DAY 4: STATE COMPRESSION & OPTIMIZATIONS (90 min) [OPTIONAL]**
+  - Sliding window, dimension reduction, memoization vs tabulation, pruning
+- **DAY 5: MIXED DP PROBLEMS (90 min) [OPTIONAL]**
+  - Recognition framework, multi-concept problems, problem-solving strategy
+
 
 
 ---
@@ -110,22 +109,27 @@ The key: *each node's solution depends only on its children's solutions*, not on
 ### 🖼 Visualizing Tree DP
 
 **Example tree:**
-```
-       A (root)
-      / \
-     B   C
-    / \
-   D   E
 
-Post-order traversal order: D → E → B → C → A
+```mermaid
+flowchart TD
+    A["A (Root)"]:::rootNode --> B["B"]:::internalNode
+    A --> C["C (Leaf)"]:::leafNode
+    B --> D["D (Leaf)"]:::leafNode
+    B --> E["E (Leaf)"]:::leafNode
 
-Compute:
-  1. D (leaf) → dp[D] = [value]
-  2. E (leaf) → dp[E] = [value]
-  3. B (combine D, E) → dp[B] = f(dp[D], dp[E])
-  4. C (leaf) → dp[C] = [value]
-  5. A (combine B, C) → dp[A] = f(dp[B], dp[C])
+    classDef rootNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
+    classDef internalNode fill:#37474f,stroke:#90a4ae,stroke-width:2px,color:#ffffff
+    classDef leafNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
 ```
+
+**Post-order traversal order:** `D -> E -> B -> C -> A`
+
+**Bottom-Up DP Evaluation:**
+1. `D (leaf)` -> `dp[D] = base_val`
+2. `E (leaf)` -> `dp[E] = base_val`
+3. `B (combine D, E)` -> `dp[B] = f(dp[D], dp[E])`
+4. `C (leaf)` -> `dp[C] = base_val`
+5. `A (combine B, C)` -> `dp[A] = f(dp[B], dp[C])`
 
 **Key invariant:** When computing dp[node], all children's DP values are already computed. No circular dependencies.
 
@@ -265,29 +269,26 @@ Answer: max(diameter_at_node for all nodes)
 ```
 
 **Inline Trace:**
-```
-Tree:
-        A
-       /  \
-      B    C
-     / \
-    D   E
 
-Compute (post-order):
-  D: dp[D] = 0 (leaf, no path down)
-  E: dp[E] = 0 (leaf)
-  B: dp[B] = max(1 + 0, 1 + 0) = 1 (longest path from B downward)
-     diameter_at_B = 1 + 1 + 1 = 3 (path D-B-E has length 3 nodes, so 2 edges)
-  
-  C: dp[C] = 0 (leaf)
-  A: dp[A] = max(1 + 1, 1 + 0) = 2 (longest path from A is to D or E via B)
-     diameter_at_A = 1 + 2 + 0 = 3 (path D-B-A is length 3 nodes)
-  
-Overall diameter: max(3 at B, 3 at A, 0 at others) = 3
-Longest path: D-B-E (length 2 edges, 3 nodes) or D-B-A (length 2 edges)
+```mermaid
+flowchart TD
+    D_A["A (dp: 2)"]:::rootNode --> D_B["B (dp: 1, diam: 2)"]:::internalNode
+    D_A --> D_C["C (dp: 0)"]:::leafNode
+    D_B --> D_D["D (dp: 0)"]:::leafNode
+    D_B --> D_E["E (dp: 0)"]:::leafNode
+
+    classDef rootNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
+    classDef internalNode fill:#37474f,stroke:#90a4ae,stroke-width:2px,color:#ffffff
+    classDef leafNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
 ```
 
-Time: O(n) | Space: O(n)
+**Post-Order Evaluation:**
+- **Leaves `D, E, C`:** `dp[node] = 0` (leaf has downward path length 0).
+- **Node `B`:** `dp[B] = max(1 + 0, 1 + 0) = 1`. Subtree diameter through `B`: `1 + 1 = 2` edges (path `D - B - E`).
+- **Node `A`:** `dp[A] = max(1 + 1, 1 + 0) = 2`. Subtree diameter through `A`: `1 + dp[B] + 1 + dp[C] = 1 + 1 + 0 = 2` edges.
+- **Overall Diameter:** `2` edges (path `D - B - E`).
+
+Time: `O(N)` | Space: `O(N)`
 
 ---
 
@@ -312,7 +313,7 @@ dp[node] = node.value + sum(dp[child] for each child)
 
 ### 🔧 Operation 4: Tree Coloring (k Colors)
 
-**Problem:** Color nodes with k colors such that parent and child have different colors. Count the number of valid colorings.
+**Problem:** Color nodes with `k` colors such that parent and child have different colors. Count the number of valid colorings.
 
 **State Design:**
 ```
@@ -329,24 +330,24 @@ For each node with color c:
 ```
 
 **Inline Trace:**
-```
-Tree with k=2 colors (Red, Blue):
-    A
-   / \
-  B   C
 
-dp[B][Red] = 1 (leaf, just B)
-dp[B][Blue] = 1
-dp[C][Red] = 1
-dp[C][Blue] = 1
+```mermaid
+flowchart TD
+    CA["A"]:::rootNode --> CB["B (Leaf)"]:::leafNode
+    CA --> CC["C (Leaf)"]:::leafNode
 
-dp[A][Red] = dp[B][Blue] * dp[C][Blue] = 1 * 1 = 1 (A red, B blue, C blue)
-dp[A][Blue] = dp[B][Red] * dp[C][Red] = 1 * 1 = 1 (A blue, B red, C red)
-
-Total valid colorings: 1 + 1 = 2
+    classDef rootNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
+    classDef leafNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
 ```
 
-Time: O(n × k) | Space: O(n × k)
+For `k = 2` colors (Red, Blue):
+- `dp[B][Red] = 1`, `dp[B][Blue] = 1`
+- `dp[C][Red] = 1`, `dp[C][Blue] = 1`
+- `dp[A][Red] = dp[B][Blue] * dp[C][Blue] = 1 * 1 = 1` (A=Red, B=Blue, C=Blue)
+- `dp[A][Blue] = dp[B][Red] * dp[C][Red] = 1 * 1 = 1` (A=Blue, B=Red, C=Red)
+- **Total Valid Colorings:** `1 + 1 = 2`.
+
+Time: `O(N * K)` | Space: `O(N * K)`
 
 ---
 
@@ -1328,9 +1329,6 @@ Level 4: Master (Weeks 15+ with breadth)
 4. **Q: Design DP for [novel problem]. Assume 30 minutes.**
 
 ---
-
----
-
 ## 📊 WEEK 11 SUMMARY
 
 ### Mastery Checklist

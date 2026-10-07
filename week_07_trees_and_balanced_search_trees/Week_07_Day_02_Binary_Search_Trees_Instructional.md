@@ -751,6 +751,4 @@ BSTs were formalized in the 1960s as computer scientists moved from arrays to dy
 - **Auxiliary Space:** `O(H)` for recursive implementations due to call stack frames (`O(1)` auxiliary for iterative search and insertion).
 
 ---
----
-
 > 🧭 **Navigation:** [← Previous Day](Week_07_Day_01_Binary_Trees_And_Traversals_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_07_Day_03_Balanced_BSTs_AVL_And_RedBlack_Instructional.md)

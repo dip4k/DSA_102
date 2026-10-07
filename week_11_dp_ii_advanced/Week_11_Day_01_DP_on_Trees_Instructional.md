@@ -9,9 +9,6 @@
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
-
----
-
 ## 📋 TABLE OF CONTENTS
 
 1. **Introduction to Tree DP**
@@ -125,22 +122,20 @@ Example: For a leaf node in maximum independent set:
 
 **Post-Order Traversal Pattern:**
 
+```mermaid
+flowchart TD
+    N1["1 (Root: 5️⃣)"]:::rootNode --> N2["2 (3️⃣)"]:::internalNode
+    N1 --> N3["3 (4️⃣)"]:::leafNode
+    N2 --> N4["4 (1️⃣)"]:::leafNode
+    N2 --> N5["5 (2️⃣)"]:::leafNode
+
+    classDef rootNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
+    classDef internalNode fill:#37474f,stroke:#90a4ae,stroke-width:2px,color:#ffffff
+    classDef leafNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
 ```
-Process tree bottom-up (leaves first):
 
-           1
-         /   \
-        2     3
-       / \
-      4   5
-
-Order: 4 → 5 → 2 → 3 → 1
-
-Why? When processing node N:
-- All children already processed
-- Can use their DP values
-- Can compute N's DP value
-```
+- **Bottom-up Evaluation Order:** `4 -> 5 -> 2 -> 3 -> 1`
+- **Why?** When processing node `N`, all children are guaranteed to have computed their optimal DP states, completely eliminating circular dependencies!
 
 ### Template Structure
 
@@ -174,25 +169,30 @@ Function TreeDP(node, parent):
 
 ### Problem Definition
 
-**Given:** A tree with node values
+**Given:** A tree with node values  
 **Find:** A set of nodes such that:
-- No two nodes in the set are adjacent (connected by edge)
-- Sum of node values is maximized
+- No two nodes in the set are adjacent (connected by an edge)
+- The sum of node values is maximized
 
 **Example:**
-```
-      10
-      / \
-     3   5
-    / \
-   2   7
 
-Possible independent sets:
-- {10}: value = 10
-- {3, 5}: value = 8
-- {2, 7, 5}: value = 14 ✓ Maximum
-- {10, 2, 7}: value = 19 ✓ Maximum (no edges between them)
+```mermaid
+flowchart TD
+    M10["10 (A)"]:::rootNode --> M3["3 (B)"]:::internalNode
+    M10 --> M5["5 (C)"]:::leafNode
+    M3 --> M2["2 (D)"]:::leafNode
+    M3 --> M7["7 (E)"]:::leafNode
+
+    classDef rootNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
+    classDef internalNode fill:#37474f,stroke:#90a4ae,stroke-width:2px,color:#ffffff
+    classDef leafNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
 ```
+
+- **Possible Independent Sets:**
+  - `{10}`: value = `10`
+  - `{3, 5}`: value = `8`
+  - `{2, 7, 5}`: value = `14`
+  - `{10, 2, 7}`: value = `19` (Optimal maximum: no two selected nodes share an edge!)
 
 ### DP State Definition
 
@@ -263,55 +263,40 @@ Answer = max(dp[root][0], dp[root][1])
 
 ### Step-by-Step Example
 
+```mermaid
+flowchart TD
+    TA["10 (A)"]:::rootNode --> TB["3 (B)"]:::internalNode
+    TA --> TC["5 (C)"]:::leafNode
+    TB --> TD["2 (D)"]:::leafNode
+    TB --> TE["7 (E)"]:::leafNode
+
+    classDef rootNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
+    classDef internalNode fill:#37474f,stroke:#90a4ae,stroke-width:2px,color:#ffffff
+    classDef leafNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
 ```
-Tree:
-      10(A)
-      /    \
-    3(B)   5(C)
-    / \
-  2(D) 7(E)
 
-Node values: A=10, B=3, C=5, D=2, E=7
+**Node values:** `A=10, B=3, C=5, D=2, E=7`
 
-Step 1: Process leaf D
-  dp[D][0] = 0 (exclude D)
-  dp[D][1] = 2 (include D)
+**Step-by-step DP Evaluation:**
 
-Step 2: Process leaf E
-  dp[E][0] = 0 (exclude E)
-  dp[E][1] = 7 (include E)
+1. **Step 1: Process leaf D**
+   - `dp[D][0] = 0` (exclude D)
+   - `dp[D][1] = 2` (include D)
+2. **Step 2: Process leaf E**
+   - `dp[E][0] = 0` (exclude E)
+   - `dp[E][1] = 7` (include E)
+3. **Step 3: Process node B (children D, E)**
+   - Include B: `include_val = 3 + dp[D][0] + dp[E][0] = 3 + 0 + 0 = 3` -> `dp[B][1] = 3`
+   - Exclude B: `exclude_val = max(dp[D][0], dp[D][1]) + max(dp[E][0], dp[E][1]) = max(0, 2) + max(0, 7) = 9` -> `dp[B][0] = 9`
+4. **Step 4: Process leaf C**
+   - `dp[C][0] = 0`
+   - `dp[C][1] = 5`
+5. **Step 5: Process root A (children B, C)**
+   - Include A: `include_val = 10 + dp[B][0] + dp[C][0] = 10 + 9 + 0 = 19` -> `dp[A][1] = 19`
+   - Exclude A: `exclude_val = max(dp[B][0], dp[B][1]) + max(dp[C][0], dp[C][1]) = max(9, 3) + max(0, 5) = 14` -> `dp[A][0] = 14`
 
-Step 3: Process node B (children D, E)
-  Include B:
-    include_value = 3 + dp[D][0] + dp[E][0]
-    = 3 + 0 + 0 = 3
-    dp[B][1] = 3
-  
-  Exclude B:
-    exclude_value = max(dp[D][0], dp[D][1]) + max(dp[E][0], dp[E][1])
-    = max(0, 2) + max(0, 7)
-    = 2 + 7 = 9
-    dp[B][0] = 9
-
-Step 4: Process leaf C
-  dp[C][0] = 0
-  dp[C][1] = 5
-
-Step 5: Process root A (children B, C)
-  Include A:
-    include_value = 10 + dp[B][0] + dp[C][0]
-    = 10 + 9 + 0 = 19
-    dp[A][1] = 19
-  
-  Exclude A:
-    exclude_value = max(dp[B][0], dp[B][1]) + max(dp[C][0], dp[C][1])
-    = max(9, 3) + max(0, 5)
-    = 9 + 5 = 14
-    dp[A][0] = 14
-
-Answer = max(dp[A][0], dp[A][1]) = max(14, 19) = 19
-Selected nodes: A, D, E (values 10 + 2 + 7)
-```
+- **Final Answer:** `max(dp[A][0], dp[A][1]) = max(14, 19) = 19`
+- **Selected Independent Set:** `{A, D, E}` (sum: `10 + 2 + 7 = 19`).
 
 ### C# Implementation
 
@@ -407,15 +392,21 @@ Total: O(n) space
 **Find:** The longest path between any two nodes (diameter)
 
 **Visual Example:**
-```
-       1
-      / \
-     2   3
-    / \   \
-   4   5   6
 
-Diameter: 4 → 2 → 1 → 3 → 6 (path length = longest)
+```mermaid
+flowchart TD
+    N1["1"]:::rootNode --> N2["2"]:::pathNode
+    N1 --> N3["3"]:::pathNode
+    N2 --> N4["4 (Endpoint)"]:::pathNode
+    N2 --> N5["5"]
+    N3 --> N6["6 (Endpoint)"]:::pathNode
+
+    classDef rootNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
+    classDef pathNode fill:#e65100,stroke:#ffb74d,stroke-width:2px,color:#ffffff
+    classDef default fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#ffffff
 ```
+
+- **Diameter Path:** `4 -> 2 -> 1 -> 3 -> 6` (Longest distance = 4 edges, 5 nodes).
 
 ### Why DP Works for Diameter
 
@@ -480,39 +471,32 @@ Algorithm TreeDiameter(node, parent):
 
 ### Step-by-Step Example
 
+```mermaid
+flowchart TD
+    DA["A (depth: 2)"]:::rootNode --> DB["B (depth: 1)"]:::internalNode
+    DA --> DC["C (depth: 0)"]:::leafNode
+    DB --> DD["D (depth: 0)"]:::leafNode
+    DB --> DE["E (depth: 0)"]:::leafNode
+
+    classDef rootNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
+    classDef internalNode fill:#37474f,stroke:#90a4ae,stroke-width:2px,color:#ffffff
+    classDef leafNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
 ```
-Tree with edges (parent → child):
-       A
-      / \
-     B   C
-    / \
-   D   E
 
-Step 1: Compute depths (distance to farthest leaf)
-  D: depth = 0 (leaf)
-  E: depth = 0 (leaf)
-  B: depth = 1 + max(0, 0) = 1
-  C: depth = 0 (leaf)
-  A: depth = 1 + max(1, 0) = 2
+**Step-by-step Execution:**
 
-Step 2: Find diameter through each node
-  Through A:
-    Children: B (depth 1), C (depth 0)
-    diameter = 1 + 0 + 2 = 3 ✓
-  
-  Through B:
-    Children: D (depth 0), E (depth 0)
-    diameter = 0 + 0 + 2 = 2
-  
-  Through C:
-    No children
-    diameter = 0
-  
-  Through D, E:
-    Leaves, diameter = 0
+1. **Step 1: Compute depths (distance to farthest leaf)**
+   - `D`: depth = `0` (leaf)
+   - `E`: depth = `0` (leaf)
+   - `B`: depth = `1 + max(0, 0) = 1`
+   - `C`: depth = `0` (leaf)
+   - `A`: depth = `1 + max(1, 0) = 2`
+2. **Step 2: Find diameter through each node**
+   - Through `A`: Children `B` (depth 1), `C` (depth 0) -> `diameter = 1 + 0 + 2 = 3` edges (`D-B-A-C` or `E-B-A-C`)
+   - Through `B`: Children `D` (depth 0), `E` (depth 0) -> `diameter = 0 + 0 + 2 = 2` edges (`D-B-E`)
+   - Through `C, D, E`: Leaves -> `diameter = 0`
 
-Maximum diameter = 3 (path: D-B-A-C or E-B-A-C)
-```
+- **Maximum Tree Diameter:** `3` edges (4 nodes: `D-B-A-C` or `E-B-A-C`).
 
 ### C# Implementation
 
@@ -611,20 +595,22 @@ Many tree problems involve computing something for each subtree:
 
 **Definition:** For each node, compute the sum of all values in its subtree.
 
-```
-Tree:
-      1(5)
-      / \
-    2(3) 3(4)
-    /
-  4(2)
+```mermaid
+flowchart TD
+    S1["1 (val: 5, sum: 14)"]:::rootNode --> S2["2 (val: 3, sum: 5)"]:::internalNode
+    S1 --> S3["3 (val: 4, sum: 4)"]:::leafNode
+    S2 --> S4["4 (val: 2, sum: 2)"]:::leafNode
 
-Subtree sums:
-- sum[4] = 2 (just itself)
-- sum[2] = 3 + 2 = 5 (itself + child 4)
-- sum[3] = 4
-- sum[1] = 5 + 5 + 4 = 14
+    classDef rootNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
+    classDef internalNode fill:#37474f,stroke:#90a4ae,stroke-width:2px,color:#ffffff
+    classDef leafNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
 ```
+
+**Subtree Sum Accumulation:**
+- `sum[4] = 2` (leaf)
+- `sum[2] = 3 + 2 = 5` (itself + child 4)
+- `sum[3] = 4` (leaf)
+- `sum[1] = 5 + 5 + 4 = 14` (root + both child subtrees)
 
 ### Algorithm
 
@@ -709,15 +695,20 @@ public class SubtreeAggregation
 - Count the total number of valid colorings
 
 **Visual Example (K=3):**
-```
-      R
-     / \
-    G   B
-   / \
-  B   R
 
-Total valid colorings: varies based on structure
+```mermaid
+flowchart TD
+    CR["R (Root)"]:::redNode --> CG["G"]:::greenNode
+    CR --> CB["B"]:::blueNode
+    CG --> CB2["B"]:::blueNode
+    CG --> CR2["R"]:::redNode
+
+    classDef redNode fill:#b71c1c,stroke:#ff8a80,stroke-width:2px,color:#ffffff
+    classDef greenNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
+    classDef blueNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
 ```
+
+- Total valid colorings vary dynamically by structure.
 
 ### DP State
 
@@ -766,18 +757,20 @@ Total = sum of TreeColoring(root, -1, c) for all c in K colors
 
 ### Example with K=2 (Bipartite Coloring)
 
-```
-Tree:
-    A
-   / \
-  B   C
+```mermaid
+flowchart TD
+    CA["A"]:::rootNode --> CB_B["B"]:::leafNode
+    CA --> CC_C["C"]:::leafNode
 
-Colorings:
-1. A=0, B=1, C=1
-2. A=1, B=0, C=0
-
-Total = 2 (or K × (K-1)^(n-1) for a tree)
+    classDef rootNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
+    classDef leafNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
 ```
+
+Valid colorings:
+1. `A = 0, B = 1, C = 1`
+2. `A = 1, B = 0, C = 0`
+
+- **Total:** `2` (Satisfies closed-form formula `K * (K - 1)^(N - 1) = 2 * (1)^2 = 2`).
 
 ### C# Implementation
 
@@ -879,23 +872,26 @@ For each node:
 
 **Phase 1: DP from root 0**
 
-```
-Compute subtree_sum[node] = sum of all nodes in subtree
+```mermaid
+flowchart TD
+    subgraph RootAt1["Phase 1: Rooted at Node 1"]
+        R1["1 (val: 1, sum: 15)"]:::rootNode --> R2["2 (val: 2, sum: 11)"]:::internalNode
+        R1 --> R3["3 (val: 3, sum: 3)"]:::leafNode
+        R2 --> R4["4 (val: 4, sum: 4)"]:::leafNode
+        R2 --> R5["5 (val: 5, sum: 5)"]:::leafNode
+    end
 
-Tree:
-    1(value=1)
-   / \
-  2   3
- / \
-4   5
-
-subtree_sum from root 1:
-- subtree_sum[4] = 4
-- subtree_sum[5] = 5
-- subtree_sum[2] = 2 + 4 + 5 = 11
-- subtree_sum[3] = 3
-- subtree_sum[1] = 1 + 11 + 3 = 15
+    classDef rootNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
+    classDef internalNode fill:#37474f,stroke:#90a4ae,stroke-width:2px,color:#ffffff
+    classDef leafNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
 ```
+
+**Subtree Sums computed relative to root 1:**
+- `subtree_sum[4] = 4`
+- `subtree_sum[5] = 5`
+- `subtree_sum[2] = 2 + 4 + 5 = 11`
+- `subtree_sum[3] = 3`
+- `subtree_sum[1] = 1 + 11 + 3 = 15`
 
 **Phase 2: Reroot**
 

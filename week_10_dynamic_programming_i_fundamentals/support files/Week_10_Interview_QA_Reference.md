@@ -633,7 +633,4 @@ After each question, rate yourself:
 Track trends. By week's end, aim for mostly Green on basic/intermediate, mostly Yellow on advanced.
 
 ---
-
----
-
 > 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS.md)

@@ -112,23 +112,22 @@ Intuition:
 ## 🔁 3. Concept Map – How Ideas Connect
 
 
-```mermaid
-flowchart TD
-    R["Trees (Week 07)"]
-    R --> N1["Graph Types & Representations (Day 1)"]
-    N1 --> N2["Directed / Undirected"]
-    N1 --> N3["Weighted / Unweighted"]
-    N1 --> N4["Explicit / Implicit"]
-    R --> N5["Traversals (Day 2 & 3)"]
-    N5 --> N6["BFS → Shortest Paths (Unweighted), Layers"]
-    N5 --> N7["DFS → Structure (Cycles, Orders)"]
-    N7 --> N8["Topological Sort (DAGs)"]
-    R --> N9["Structure Queries (Day 4)"]
-    N9 --> N10["Connected Components (Islands)"]
-    N9 --> N11["Bipartite Graphs (2-Colorability)"]
-    R --> N12["Advanced Structure (Day 5)"]
-    N12 --> N13["SCCs → Condensation DAG"]
-```
+### 📌 Trees (Week 07)
+
+- **Graph Types & Representations (Day 1)**
+  - Directed / Undirected
+  - Weighted / Unweighted
+  - Explicit / Implicit
+- **Traversals (Day 2 & 3)**
+  - BFS → Shortest Paths (Unweighted), Layers
+  - **DFS → Structure (Cycles, Orders)**
+    - Topological Sort (DAGs)
+- **Structure Queries (Day 4)**
+  - Connected Components (Islands)
+  - Bipartite Graphs (2-Colorability)
+- **Advanced Structure (Day 5)**
+  - SCCs → Condensation DAG
+
 
 
 Takeaway: **representation → traversal → structure** is the flow of Week 08.

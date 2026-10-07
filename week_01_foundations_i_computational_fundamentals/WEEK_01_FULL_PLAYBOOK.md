@@ -73,15 +73,14 @@ A company needs to build a search system for 1 billion items. Two algorithm opti
 - **Cost Model:** Analyze how many operations algorithm performs
 
 
-```mermaid
-flowchart TD
-    R["RAM Model Components"]
-    R --> N1["Read/write memory: 1 operation"]
-    R --> N2["Arithmetic (+, -, ×, ÷): 1 operation"]
-    R --> N3["Comparison (==, <, >): 1 operation"]
-    R --> N4["Assignment (a = b): 1 operation"]
-    R --> N5["Function call/return: 1 operation"]
-```
+### 📌 RAM Model Components
+
+- Read/write memory: 1 operation
+- Arithmetic (+, -, ×, ÷): 1 operation
+- Comparison (==, <, >): 1 operation
+- Assignment (a = b): 1 operation
+- Function call/return: 1 operation
+
 
 
 ---
@@ -379,9 +378,6 @@ C) Scales with parameter size
 D) Ignored in analysis  
 
 ---
-
----
-
 # 📊 DAY 2: BIG-O ANALYSIS AND COMPLEXITY CLASSES
 
 ## 🎓 Context: Comparing Algorithms
@@ -750,9 +746,6 @@ C) O(N²)
 D) O(N)  
 
 ---
-
----
-
 # 💾 DAY 3: SPACE COMPLEXITY AND TRADE-OFFS
 
 ## 🎓 Context: Memory Constraints
@@ -944,22 +937,21 @@ public class SpaceComplexityExamples
 ### Trace Table: Space Analysis for Recursive Algorithm
 
 
-```mermaid
-flowchart TD
-    R["Function BinarySearch(arr, target, 0, 1023)"]
-    R --> N1["Return address: 8 bytes"]
-    R --> N2["Parameters (arr, target, left, right): 32 bytes"]
-    R --> N3["Local variable (mid): 4 bytes"]
-    R --> N4["Total per frame: ~64 bytes"]
-    R --> N5["Input array: 1024 × 4 = 4KB"]
-    R --> N6["Call stack: 10 frames × 64 bytes = 640 bytes"]
-    R --> N7["Auxiliary variables: negligible"]
-    R --> N8["Total: ~4.6 KB = O(log N) space!"]
-    R --> N9["If array had 1 Billion items:"]
-    N9 --> N10["Input: 4GB"]
-    N9 --> N11["Call stack: log₂(1B) × 64 = 30 × 64 = 1.9 KB"]
-    N9 --> N12["Total: ~4GB (dominantly the input!)"]
-```
+### 📌 Function BinarySearch(arr, target, 0, 1023)
+
+- Return address: 8 bytes
+- Parameters (arr, target, left, right): 32 bytes
+- Local variable (mid): 4 bytes
+- Total per frame: ~64 bytes
+- Input array: 1024 × 4 = 4KB
+- Call stack: 10 frames × 64 bytes = 640 bytes
+- Auxiliary variables: negligible
+- Total: ~4.6 KB = O(log N) space!
+- **If array had 1 Billion items:**
+  - Input: 4GB
+  - Call stack: log₂(1B) × 64 = 30 × 64 = 1.9 KB
+  - Total: ~4GB (dominantly the input!)
+
 
 
 ---
@@ -1100,9 +1092,6 @@ C) Nothing, just slower
 D) Doesn't help at all  
 
 ---
-
----
-
 # 🔄 DAY 4: RECURSION - THEORY AND PRACTICE
 
 ## 🎓 Context: Divide and Conquer Thinking
@@ -1127,19 +1116,15 @@ Algorithm needs factorial of N. Two approaches:
 - **Call stack:** Each call added to stack, unwound on return
 
 
-```mermaid
-flowchart TD
-    R["Recursion structure"]
-    R --> N1["Recursive(4)"]
-    N1 --> N2["Recursive(3)"]
-    N2 --> N3["Recursive(2)"]
-    N3 --> N4["Recursive(1)"]
-    N4 --> N5["Base case: return 1"]
-    N3 --> N6["return 2 × 1 = 2"]
-    N2 --> N7["return 3 × 2 = 6"]
-    N1 --> N8["return 4 × 6 = 24"]
-    R --> N9["return 5 × 24 = 120"]
-```
+### 📌 Recursion structure
+
+- **Recursive(4)**
+  - **Recursive(3)**
+    - Recursive(2)
+    - return 3 × 2 = 6
+  - return 4 × 6 = 24
+- return 5 × 24 = 120
+
 
 
 ---
@@ -1156,11 +1141,22 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    R["Russian Dolls Analogy"]
-    R --> N1["State"]
-    R --> N2["State"]
-    R --> N3["State"]
-    R --> N4["State"]
+    classDef dollLarge fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef dollMed fill:#b3e5fc,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef dollSmall fill:#81d4fa,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef baseDoll fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+
+    D4["🪆 Large Doll: Original Problem (N=4)<br/>Break into smaller subproblem"]:::dollLarge
+    D3["🪆 Medium Doll: Subproblem (N=3)<br/>Break into smaller subproblem"]:::dollMed
+    D2["🪆 Small Doll: Subproblem (N=2)<br/>Break into smaller subproblem"]:::dollSmall
+    D1["🪆 Tiny Doll: Base Case (N=1 or 0)<br/>🛑 Solid doll: returns known base answer"]:::baseDoll
+
+    D4 -->|"Unpack"| D3
+    D3 -->|"Unpack"| D2
+    D2 -->|"Unpack"| D1
+    D1 -->|"Return result & assemble"| D2
+    D2 -->|"Return result & assemble"| D3
+    D3 -->|"Return final answer"| D4
 ```
 
 
@@ -1486,9 +1482,6 @@ C) O(N)  ✅
 D) O(log N)  
 
 ---
-
----
-
 # 🔍 DAY 5: PEAK FINDING AND DIVIDE & CONQUER
 
 ## 🎓 Context: Optimal Search Strategies
@@ -1516,15 +1509,14 @@ Stock market algorithm monitors price stream. Must find peak (local maximum wher
 - **Guarantee:** Sorted array always has peak at one end
 
 
-```mermaid
-flowchart TD
-    R["Array [1, 3, 5, 4, 2]"]
-    R --> N1["Index 0 (1): 1 ≥ 3? NO"]
-    R --> N2["Index 1 (3): 3 ≥ 1 and 3 ≥ 5? NO"]
-    R --> N3["Index 2 (5): 5 ≥ 3 and 5 ≥ 4? YES ✅ Peak!"]
-    R --> N4["Index 3 (4): 4 ≥ 5 and 4 ≥ 2? NO"]
-    R --> N5["Index 4 (2): 2 ≥ 4? NO"]
-```
+### 📌 Array [1, 3, 5, 4, 2]
+
+- Index 0 (1): 1 ≥ 3? NO
+- Index 1 (3): 3 ≥ 1 and 3 ≥ 5? NO
+- Index 2 (5): 5 ≥ 3 and 5 ≥ 4? YES ✅ Peak!
+- Index 3 (4): 4 ≥ 5 and 4 ≥ 2? NO
+- Index 4 (2): 2 ≥ 4? NO
+
 
 
 ---
@@ -1538,19 +1530,20 @@ flowchart TD
 - **Peak found:** When neighbors are lower
 
 
-```mermaid
-flowchart TD
-    R["Mountain Climbing"]
-    R --> N1["5 > 3 (left)?  YES"]
-    R --> N2["5 > 4 (right)? YES"]
-    R --> N3["Both neighbors lower → Peak found! ✅"]
-    R --> N4["5 > 3 (left)?  YES"]
-    R --> N5["5 > 7 (right)? NO → Go right"]
-    R --> N6["7 > 5 (left)?  YES"]
-    R --> N7["7 > 9 (right)? NO → Go right"]
-    R --> N8["9 > 7 (left)?  YES"]
-    R --> N9["9 > none (right) → Peak found! ✅"]
+**Mountain Climbing**
+
+```text
+• 5 > 3 (left)?  YES
+• 5 > 4 (right)? YES
+• Both neighbors lower → Peak found! ✅
+• 5 > 3 (left)?  YES
+• 5 > 7 (right)? NO → Go right
+• 7 > 5 (left)?  YES
+• 7 > 9 (right)? NO → Go right
+• 9 > 7 (left)?  YES
+• 9 > none (right) → Peak found! ✅
 ```
+
 
 
 ---
@@ -1863,9 +1856,6 @@ C) Middle is peak
 D) No peak exists  
 
 ---
-
----
-
 # 🎓 WEEK 01: INTEGRATION & SYNTHESIS
 
 ## 📊 Week 1 Complexity Reference Table
@@ -1918,23 +1908,20 @@ D) No peak exists
 ## 🎯 Pattern Selection Decision Tree
 
 
-```mermaid
-flowchart TD
-    R["Choosing algorithm efficiency"]
-    R --> N1["Yes, many operations (N > 1000)"]
-    N1 --> N2["Linear scan O(N) acceptable?"]
-    N2 --> N3["No → Need O(log N)?"]
-    N3 --> N4["Data sorted? → Binary search O(log N) ✅"]
-    N3 --> N5["Need recursion? → Divide & conquer"]
-    N2 --> N6["Yes → Simple O(N) solution"]
-    N1 --> N7["Never use O(N²) on large N"]
-    R --> N8["Small N (< 100)"]
-    N8 --> N9["Simplicity > performance"]
-    R --> N10["Yes (embedded, mobile)"]
-    N10 --> N11["Use O(1) space, O(N) time acceptable"]
-    R --> N12["No (server)"]
-    N12 --> N13["Trade space for speed (O(log N) recursion fine)"]
-```
+### 📌 Choosing algorithm efficiency
+
+- **Yes, many operations (N > 1000)**
+  - **Linear scan O(N) acceptable?**
+    - No → Need O(log N)?
+    - Yes → Simple O(N) solution
+  - Never use O(N²) on large N
+- **Small N (< 100)**
+  - Simplicity > performance
+- **Yes (embedded, mobile)**
+  - Use O(1) space, O(N) time acceptable
+- **No (server)**
+  - Trade space for speed (O(log N) recursion fine)
+
 
 
 ---

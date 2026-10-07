@@ -228,23 +228,22 @@ while low < high:  # [low, high) invariant
 Given a problem, which pattern(s) fit?
 
 
-```mermaid
-flowchart TD
-    R["Does the problem ask about"]
-    R --> N1["'Merge or combine two sorted'?"]
-    N1 --> N2["Use Two-Pointer same-direction"]
-    R --> N3["'Max/min in contiguous subarray'?"]
-    N3 --> N4["Use Sliding Window (fixed or variable)"]
-    R --> N5["'Find complement or opposite direction'?"]
-    N5 --> N6["Use Two-Pointer opposite-direction"]
-    R --> N7["'Recursively solve subproblems'?"]
-    N7 --> N8["Use Divide-Conquer"]
-    R --> N9["'Optimize within monotone constraint'?"]
-    N9 --> N10["Use Binary Search on answer space"]
-    R --> N11["'Unsure'?"]
-    N11 --> N12["Check: sorted? Contiguous? Complement? Recursive? Monotone?"]
-    N12 --> N13["These hints suggest pattern family"]
-```
+### 📌 Does the problem ask about
+
+- **'Merge or combine two sorted'?**
+  - Use Two-Pointer same-direction
+- **'Max/min in contiguous subarray'?**
+  - Use Sliding Window (fixed or variable)
+- **'Find complement or opposite direction'?**
+  - Use Two-Pointer opposite-direction
+- **'Recursively solve subproblems'?**
+  - Use Divide-Conquer
+- **'Optimize within monotone constraint'?**
+  - Use Binary Search on answer space
+- **'Unsure'?**
+  - **Check: sorted? Contiguous? Complement? Recursive? Monotone?**
+    - These hints suggest pattern family
+
 
 
 ---

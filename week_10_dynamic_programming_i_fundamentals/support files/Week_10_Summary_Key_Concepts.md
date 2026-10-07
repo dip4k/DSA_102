@@ -324,16 +324,13 @@ DP is about **problem structure**, not just caching. A memoized solution isn't D
 ## 🎯 DECISION FLOWCHART (When to Use DP)
 
 
-```mermaid
-flowchart TD
-    R["Problem Find optimal solution?"]
-    R --> N1["YES → Has optimal substructure? (Optimal solution = f(optimal subsolutions))"]
-    N1 --> N2["YES → Has overlapping subproblems? (Same subproblem solved multiple times)"]
-    N2 --> N3["YES → DP is suitable! ✓"]
-    N2 --> N4["NO → Greedy or divide-and-conquer may work"]
-    N1 --> N5["NO → Greedy, divide-and-conquer, or brute-force"]
-    R --> N6["NO → Not an optimization problem; may need heuristics or approximation"]
+**Problem Find optimal solution?**
+
+```text
+• YES → Has optimal substructure? (Optimal solution = f(optimal subsolutions))
+• NO → Not an optimization problem; may need heuristics or approximation
 ```
+
 
 
 ---
@@ -388,7 +385,4 @@ flowchart TD
 | **5** | Sequences | LIS & LCS | Track indices into two strings/arrays; build solution bottom-up |
 
 ---
-
----
-
 > 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS.md)

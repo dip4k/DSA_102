@@ -9,9 +9,6 @@
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
-
----
-
 ## 🎯 LEARNING OBJECTIVES
 
 *By the end of this chapter, you will be able to:*
@@ -631,6 +628,4 @@ Understanding greedy’s behavior in these contexts helps in debugging and optim
 **End of Week 12 Day 05 Instructional File**
 
 ---
----
-
 > 🧭 **Navigation:** [← Previous Day](Week_12_Day_04_Fractional_Knapsack_And_Scheduling_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_12_FULL_PLAYBOOK.md)

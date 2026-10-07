@@ -200,15 +200,13 @@ Given a directed graph G = (V, E) with a weight function w: E → ℝ (allowing 
 
 **Bellman–Ford State:**
 
-```mermaid
-flowchart TD
-    R["State Variables"]
-    R --> N1["distance[0..V-1]  : Shortest distance from source to each vertex"]
-    R --> N2["predecessor[0..V-1]: For path reconstruction"]
-    R --> N3["source            : Starting vertex"]
-    R --> N4["edges[]           : All edges in graph (u, v, w)"]
-    R --> N5["State"]
-```
+### 📌 ⚡ Bellman–Ford State Machine Variables
+
+- 📊 distance[0..V-1]: Shortest distance from source to each vertex
+- 🔗 predecessor[0..V-1]: Predecessor vertex for path reconstruction
+- 📍 source: Designated starting vertex (dist[source] = 0)
+- 📦 edges[]: Complete edge list (u, v, weight) relaxed V-1 times
+
 
 
 ### 🔧 Operation 1: Bellman–Ford Algorithm — Detailed Walkthrough
@@ -252,45 +250,44 @@ BellmanFord(Graph G with V vertices, E edges, source vertex s):
 **Detailed Trace (Using Our Example Graph):**
 
 
-```mermaid
-flowchart TD
-    R["Graph"]
-    R --> N1["distance[A] = 0 (not ∞)"]
-    R --> N2["Check: 0 + 4 < ∞? YES"]
-    R --> N3["Update: distance[B] = 4"]
-    R --> N4["predecessor[B] = A"]
-    R --> N5["distance[A] = 0 (not ∞)"]
-    R --> N6["Check: 0 + 2 < ∞? YES"]
-    R --> N7["Update: distance[C] = 2"]
-    R --> N8["predecessor[C] = A"]
-    R --> N9["distance[B] = 4 (not ∞)"]
-    R --> N10["Check: 4 + 1 < ∞? YES"]
-    R --> N11["Update: distance[D] = 5"]
-    R --> N12["predecessor[D] = B"]
-    R --> N13["distance[C] = 2 (not ∞)"]
-    R --> N14["Check: 2 + (-3) < 4? YES (because -1 < 4)"]
-    R --> N15["Update: distance[B] = -1"]
-    R --> N16["predecessor[B] = C"]
-    R --> N17["distance[C] = 2 (not ∞)"]
-    R --> N18["Check: 2 + 5 < 5? NO (because 7 ≮ 5)"]
-    R --> N19["No update"]
-    R --> N20["distance[A] = 0"]
-    R --> N21["Check: 0 + 4 < -1? NO"]
-    R --> N22["No update"]
-    R --> N23["distance[A] = 0"]
-    R --> N24["Check: 0 + 2 < 2? NO"]
-    R --> N25["No update"]
-    R --> N26["distance[B] = -1"]
-    R --> N27["Check: -1 + 1 < 5? YES (because 0 < 5)"]
-    R --> N28["Update: distance[D] = 0"]
-    R --> N29["predecessor[D] = B"]
-    R --> N30["distance[C] = 2"]
-    R --> N31["Check: 2 + (-3) < -1? NO (because -1 ≮ -1)"]
-    R --> N32["No update"]
-    R --> N33["distance[C] = 2"]
-    R --> N34["Check: 2 + 5 < 0? NO"]
-    R --> N35["No update"]
-```
+### 📌 Graph
+
+- distance[A] = 0 (not ∞)
+- Check: 0 + 4 < ∞? YES
+- Update: distance[B] = 4
+- predecessor[B] = A
+- distance[A] = 0 (not ∞)
+- Check: 0 + 2 < ∞? YES
+- Update: distance[C] = 2
+- predecessor[C] = A
+- distance[B] = 4 (not ∞)
+- Check: 4 + 1 < ∞? YES
+- Update: distance[D] = 5
+- predecessor[D] = B
+- distance[C] = 2 (not ∞)
+- Check: 2 + (-3) < 4? YES (because -1 < 4)
+- Update: distance[B] = -1
+- predecessor[B] = C
+- distance[C] = 2 (not ∞)
+- Check: 2 + 5 < 5? NO (because 7 ≮ 5)
+- No update
+- distance[A] = 0
+- Check: 0 + 4 < -1? NO
+- No update
+- distance[A] = 0
+- Check: 0 + 2 < 2? NO
+- No update
+- distance[B] = -1
+- Check: -1 + 1 < 5? YES (because 0 < 5)
+- Update: distance[D] = 0
+- predecessor[D] = B
+- distance[C] = 2
+- Check: 2 + (-3) < -1? NO (because -1 ≮ -1)
+- No update
+- distance[C] = 2
+- Check: 2 + 5 < 0? NO
+- No update
+
 
 
 **Critical Implementation Details:**
@@ -759,12 +756,6 @@ This analogy breaks down for nonconvex optimization, but it highlights the diffe
 **Result: All checks passed ✅ Content ready for delivery.**
 
 ---
-
-
-
-
----
-
 ## 📊 Complexity Recap
 
 - Time Complexity: Explicit complexity should be stated for each core approach discussed in this lesson.

@@ -519,21 +519,20 @@ CORRECT (if possible):
 **Decision Tree:**
 
 
-```mermaid
-flowchart TD
-    R["Is the problem about BRACKET VALIDATION?"]
-    R --> N1["Yes, simple valid check?"]
-    N1 --> N2["Use stack-based validation: O(n) time, O(n) space"]
-    R --> N3["Yes, find longest valid substring?"]
-    N3 --> N4["Use DP: O(n) time, O(n) space"]
-    N3 --> N5["Or stack with index tracking"]
-    R --> N6["Yes, remove minimum to make valid?"]
-    N6 --> N7["Use stack + greedy removal"]
-    R --> N8["Yes, generate all valid combinations?"]
-    N8 --> N9["Use backtracking/recursion"]
-    R --> N10["No, different bracket problem?"]
-    N10 --> N11["Clarify constraints"]
-```
+### 📌 Is the problem about BRACKET VALIDATION?
+
+- **Yes, simple valid check?**
+  - Use stack-based validation: O(n) time, O(n) space
+- **Yes, find longest valid substring?**
+  - Use DP: O(n) time, O(n) space
+  - Or stack with index tracking
+- **Yes, remove minimum to make valid?**
+  - Use stack + greedy removal
+- **Yes, generate all valid combinations?**
+  - Use backtracking/recursion
+- **No, different bracket problem?**
+  - Clarify constraints
+
 
 
 - **✅ Use when:** Validating syntax, finding bracket pairs, checking nesting
@@ -712,6 +711,4 @@ This principle extends far beyond brackets:
 When you encounter a problem involving nesting, hierarchies, or "last-in-first-out" semantics, pause. Ask: **"Can I model this as a stack problem?"** More often than not, the answer is yes, and the solution becomes clear.
 
 ---
----
-
 > 🧭 **Navigation:** [← Previous Day](Week_06_Day_02_Substring_Sliding_Window_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_06_Day_04_String_Transformations_Building_Instructional.md)

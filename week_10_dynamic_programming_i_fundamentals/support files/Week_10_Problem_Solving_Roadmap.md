@@ -511,7 +511,4 @@ These problems require combining multiple DP ideas or deep understanding of DP m
 - ✅ Handle edge cases
 
 ---
-
----
-
 > 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS.md)

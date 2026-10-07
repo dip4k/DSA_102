@@ -31,7 +31,52 @@ We provide two distinct paths through this syllabus to fit your background and t
 | **Pace** | 8–12 hours / week (deep, comprehensive) | 15–20 hours / week (high velocity) |
 | **Best For** | University students, career switchers, staff-level depth | Engineers with interviews scheduled in 2–3 months |
 | **Coverage** | Full 19 Weeks (Architecture, Memory, CP deep dives) | High-yield 12 Weeks (Core Patterns, Trees, DP, Graphs, Mocks) |
-| **Cognitive Sequencing** | Sequential modular order (Phases A through G) | **Optimized Cognitive Flow:**<br/>1. Arrays, Two Pointers & Sliding Window (W1–4)<br/>2. Stacks, Queues & Linked Lists (W2, W5)<br/>3. Trees & Binary Search Trees (W7)<br/>4. **Backtracking & Decision Trees (W13)** *(Bridging step)*<br/>5. **Dynamic Programming I & II (W10–11)** *(Memoized Backtracking)*<br/>6. Graphs & Traversals (W8)<br/>7. **Union-Find before Kruskal's MST (W9)**<br/>8. Shortest Paths & Intervals (W9, W5, W12)<br/>9. Full Mock Simulation (W19) |
+| **Cognitive Sequencing** | Modular progression with foundational grounding | **Optimized Cognitive Flow:**<br/>1. Arrays, Two Pointers & Sliding Window (W1–4)<br/>2. Stacks, Queues & Linked Lists (W2, W5)<br/>3. Trees & Binary Search Trees (W7)<br/>4. **Backtracking & Decision Trees (W13)** *(Bridging step)*<br/>5. **Dynamic Programming I & II (W10–11)** *(Memoized Backtracking)*<br/>6. Graphs & Traversals (W8)<br/>7. **Union-Find before Kruskal's MST (W9)**<br/>8. Shortest Paths & Intervals (W9, W5, W12)<br/>9. Full Mock Simulation (W19) |
+
+---
+
+### 🗺️ Cognitive Sequencing & Pedagogical Bridge
+
+Why teach **Backtracking & Decision Trees before Dynamic Programming**?
+
+Dynamic Programming is simply **Backtracking with Memoization**:
+1. In **Backtracking**, you explore an implicit combinatorial decision tree using recursive DFS.
+2. In **Dynamic Programming**, you recognize that the exact same sub-trees are visited multiple times; you memoize state results to collapse exponential time `O(2^N)` down to polynomial time `O(N)`.
+3. Mastering decision trees first gives learners an intuitive mental model for what a **state** is and why transitions work.
+
+```mermaid
+flowchart TD
+    classDef foundation fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef core fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+    classDef bridge fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
+    classDef dp fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:2px;
+    classDef graph fill:#ede7f6,stroke:#5e35b1,color:#311b92,stroke-width:2px;
+    classDef opt fill:#f5f5f5,stroke:#9e9e9e,color:#616161,stroke-width:1.5px,stroke-dasharray: 5 5;
+
+    subgraph Tier1["⭐ FAANG Core Curriculum (Weeks 1–14 & 19)"]
+        F["1️⃣ Foundations & Memory (W1–3)<br/>RAM Model, Pointers, Arrays, Stacks, Queues"]:::foundation
+        P["2️⃣ Core Patterns (W4–6)<br/>Two Pointers, Sliding Window, Monotonic Deque, Strings"]:::core
+        T["3️⃣ Trees & Traversals (W7)<br/>Binary Trees, BSTs, Invariants, DFS/BFS"]:::core
+        BT["4️⃣ Backtracking & Decision Trees (W13)<br/>Combinatorial Choices, Pruning, State Tree Exploration"]:::bridge
+        DP["5️⃣ Dynamic Programming I & II (W10–11)<br/>Memoized Decision Trees, Tabulation, Rolling Variables"]:::dp
+        G["6️⃣ Graphs & Greedy (W8–9, W12)<br/>DFS/BFS, DSU, Dijkstra, MST, Greedy Intervals"]:::graph
+        M["7️⃣ Bitmasks & Matrix Patterns (W14)<br/>State Compression, Grid Traversals"]:::core
+        Mock["8️⃣ Full Mock Interviews & Review (W19)<br/>Timed Live Simulations, Architecture Defense"]:::foundation
+
+        F --> P --> T --> BT
+        BT -->|Intuitive Bridge: Memoize the Decision Tree| DP
+        T --> G
+        DP --> M
+        G --> M
+        M --> Mock
+    end
+
+    subgraph Tier2["🧪 Competitive Programming & Specialist Electives (Weeks 15–18)"]
+        E["Weeks 15–18: Optional Advanced Extensions<br/>• Network Flow (Ford-Fulkerson, Dinic's)<br/>• Heavy Range Structures (Segment Trees, Treaps, Link-Cut Trees)<br/>• Suffix Automata & String Kernels<br/>• Fast Fourier Transform (FFT) & Math Geometry"]:::opt
+    end
+
+    Tier1 -.->|Optional Post-Mastery Elective| Tier2
+```
 
 ---
 
@@ -57,16 +102,16 @@ Use this reference table to immediately decode interview problem descriptions:
 
 ## Phase Structure & Duration
 
-| Phase | Name | Weeks | Duration | Focus Area |
-| :--- | :--- | :--- | :--- | :--- |
-| **A** | 🟦 Foundations & Computational Thinking | 1-3 | 40-45 hrs | Fundamentals, Memory, Complexity |
-| **B** | 🟩 Core Patterns & String Manipulation | 4-6 | 40-45 hrs | Problem-Solving Patterns |
-| **C** | 🟨 Trees, Graphs & Dynamic Programming | 7-11 | 60-70 hrs | Advanced Data Structures |
-| **D** | 🟧 Algorithm Paradigms | 12-13 | 25-30 hrs | Greedy, Backtracking, Analysis |
-| **E** | 🟪 Integration & Extensions | 14-15 | 25-30 hrs | Specialized Techniques |
-| **F** | 🟫 Advanced Deep Dives (Optional) | 16-18 | 35-40 hrs | Competitive Programming |
-| **G** | 🔴 Mock Interviews & Final Review | 19 | 10-12 hrs | Interview Preparation |
-| **TOTAL** | Complete DSA Mastery | 19 weeks | 235-270 hrs | Professional Competency |
+| Phase | Name | Weeks | Duration | Focus Area | Tier |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **A** | 🟦 Foundations & Computational Thinking | 1-3 | 40-45 hrs | Fundamentals, Memory, Complexity | ⭐ Must (FAANG Core) |
+| **B** | 🟩 Core Patterns & String Manipulation | 4-6 | 40-45 hrs | Problem-Solving Patterns | ⭐ Must (FAANG Core) |
+| **C** | 🟨 Trees & Graph Traversals | 7-9 | 40-45 hrs | Binary Trees, BSTs, Graph BFS/DFS, DSU, Shortest Paths | ⭐ Must (FAANG Core) |
+| **D** | 🟧 Decision Trees & Dynamic Programming | 10-11, 13 | 40-45 hrs | Backtracking Decision Trees, Memoization, 1D/2D DP | ⭐ Must (FAANG Core) |
+| **E** | 🟪 Greedy Paradigms & Bitmask Integration | 12, 14 | 25-30 hrs | Greedy Intervals, Bitwise Manipulation, Matrices | ⭐ Must (FAANG Core) |
+| **F** | 🟫 Advanced Deep Dives (Specialist Elective) | 15-18 | 40-50 hrs | Network Flow, Segment Trees, Suffix Automata, Treaps | 🧪 Optional (Elective / CP) |
+| **G** | 🔴 Mock Interviews & Final Review | 19 | 10-12 hrs | Live Interview Simulations & Communication Defense | ⭐ Must (FAANG Core) |
+| **TOTAL** | Complete DSA Mastery | 19 weeks | 235-270 hrs | Professional Competency | High-Yield FAANG Readiness |
 
 ---
 
@@ -75,14 +120,14 @@ Use this reference table to immediately decode interview problem descriptions:
 ### Topic Priority Tags
 
 Use these tags mentally while studying each day:
-- `Must`: high-frequency FAANG/MAANG interview topics that should be mastered end-to-end.
+- `Must`: high-frequency FAANG/MAANG Tier-1 interview topics that should be mastered end-to-end (Phases A–E, Weeks 1–14 + Week 19).
 - `Should`: important extensions that improve depth and variant handling.
-- `Optional`: advanced/competitive material for stretch goals.
+- `Optional`: advanced competitive programming / specialist material (Phase F, Weeks 15–18).
 
 Recommended mapping by phase:
-- Phases A-E (Weeks 1-15): treat almost all core day topics as `Must`.
-- Phase F (Weeks 16-18): treat as `Should/Optional` depending on target role.
-- Phase G (Week 19): treat as `Must` for interview simulation and communication practice.
+- Phases A-E (Weeks 1-14): treat all core day topics as `Must`.
+- Phase F (Weeks 15-18): treat as `Optional Elective` for FAANG General SWE roles; recommended for Trading Firms (Citadel, Jane Street) or Staff-level deep systems.
+- Phase G (Week 19): treat as `Must` for timed interview simulation and verbal defense.
 
 ### Interview Execution Objectives (High ROI)
 

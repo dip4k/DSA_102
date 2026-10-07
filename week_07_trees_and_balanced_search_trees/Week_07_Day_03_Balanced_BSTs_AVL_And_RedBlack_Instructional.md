@@ -91,14 +91,23 @@ Height = 5, O(n) search
 
 The same values in an AVL tree (perfectly balanced):
 
+```mermaid
+graph TD
+    classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+
+    N3["3 (Root)"]:::nodeStyle
+    N2["2"]:::nodeStyle
+    N4["4"]:::nodeStyle
+    N1["1"]:::nodeStyle
+    N5["5"]:::nodeStyle
+
+    N3 --> N2
+    N3 --> N4
+    N2 --> N1
+    N4 --> N5
 ```
-          3
-         / \
-        2   4
-       /     \
-      1       5
-Height = 2, O(log n) search
-```
+
+Height = 2, guaranteeing `O(log N)` search time.
 
 The AVL tree restructures itself to maintain balance. How? Through **rotations**—local rearrangements of pointers that preserve the BST invariant.
 
@@ -212,32 +221,31 @@ The balance factor tells you what rotation is needed:
 
 Insert [1, 2, 3] into an AVL tree:
 
+```mermaid
+flowchart LR
+    classDef skewed fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
+    classDef balanced fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+
+    subgraph Before["❌ Before: Right-Heavy (RR Case, Balance = +2)"]
+        direction TB
+        B1["1"]:::skewed --> B2["2"]:::skewed
+        B2 --> B3["3"]:::skewed
+    end
+
+    subgraph After["✅ After: Left Rotation on Node 1"]
+        direction TB
+        A2["2 (New Root)"]:::balanced
+        A1["1"]:::balanced
+        A3["3"]:::balanced
+        A2 --> A1
+        A2 --> A3
+    end
+
+    Before -->|"Left Rotate(1)"| After
 ```
-Step 1: Insert 1
-    1
 
-Step 2: Insert 2
-    1
-     \
-      2
-
-Step 3: Insert 3 (triggers rebalancing)
-    1          After BST insert:    1
-     \                               \
-      2                               2
-       \                               \
-        3                               3
-
-Check balance at node 1:
-  balance_factor = height(right) - height(left) = 2 - 0 = 2 (right heavy, RR case)
-  
-Perform left rotation on node 1:
-       2
-      / \
-     1   3
-
-Verify: balance factors are now 0 at all nodes. Done.
-```
+- **Balance Check at 1:** `height(right) - height(left) = 2 - 0 = +2` (Right heavy, RR case).
+- **Resolution:** Left rotate around root `1`. Node `2` ascends to root, pulling `1` into its left subtree and keeping `3` in its right subtree. Balance factors reset to `0`.
 
 **Trace table—detailed walkthrough:**
 
@@ -254,43 +262,40 @@ Verify: balance factors are now 0 at all nodes. Done.
 
 Insert [1, 3, 2] into AVL:
 
+```mermaid
+flowchart LR
+    classDef warn fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
+    classDef balanced fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+
+    subgraph S1["1️⃣ Insertion (RL Zig-Zag)"]
+        direction TB
+        N1["1 (BF: +2)"]:::warn --> N3["3 (BF: -1)"]:::warn
+        N3 --> N2["2"]:::warn
+    end
+
+    subgraph S2["2️⃣ Right-Rotate on 3"]
+        direction TB
+        M1["1 (BF: +2)"]:::warn --> M2["2 (BF: +1)"]:::warn
+        M2 --> M3["3"]:::warn
+    end
+
+    subgraph S3["3️⃣ Left-Rotate on 1"]
+        direction TB
+        R2["2 (Balanced Root)"]:::balanced
+        R1["1"]:::balanced
+        R3["3"]:::balanced
+        R2 --> R1
+        R2 --> R3
+    end
+
+    S1 -->|"Right Rotate(3)<br/>Straighten line"| S2
+    S2 -->|"Left Rotate(1)<br/>Balance tree"| S3
 ```
-Step 1: Insert 1
-    1
 
-Step 2: Insert 3
-    1
-     \
-      3
-
-Step 3: Insert 2 (triggers rebalancing)
-After BST insert:
-    1
-     \
-      3
-     /
-    2
-
-Balance factor at 1: height(right subtree with root 3) = 2, height(left) = 0, so +2 (right heavy).
-But right child (3) has balance factor -1 (left-heavy). This is LR case.
-
-Solution: 
-  First, left-rotate on right child (node 3):
-    1          1
-     \          \
-      3   -->    2
-     /            \
-    2              3
-
-  Then, right-rotate on node 1:
-    1          2
-     \        / \
-      2  --> 1   3
-       \
-        3
-
-Final: perfectly balanced.
-```
+- **Diagnosis:** `BalanceFactor(1) = +2` (right heavy) and `BalanceFactor(3) = -1` (left heavy). A single rotation cannot fix a "knee/zig-zag" bend!
+- **Double Rotation Fix:**
+  1. **Right rotate on child `3`:** Straightens the zig-zag `1 -> 3 -> 2` into a straight line `1 -> 2 -> 3`.
+  2. **Left rotate on grandparent `1`:** Pulls `2` up as the balanced root with children `1` and `3`. Balance factors return to `0`.
 
 ### 🔧 Operation 2: Red-Black Insertion & Rebalancing
 
@@ -310,56 +315,53 @@ Why red for new nodes? Because flipping colors from red to black reduces the num
 
 **Inline trace 🧪—watch it execute:**
 
-Insert [1, 2, 3] into Red-Black tree:
+Insert `[1, 2, 3]` into Red-Black tree:
 
+```mermaid
+flowchart TD
+    subgraph Step1["Step 1: Insert 1"]
+        R1["1 (Black Root)"]:::blackNode
+    end
+
+    subgraph Step2["Step 2: Insert 2"]
+        R2["1 (Black)"]:::blackNode
+        C2["2 (Red)"]:::redNode
+        R2 --> C2
+    end
+
+    subgraph Step3["Step 3: Insert 3 (Violation!)"]
+        R3["1 (Black)"]:::blackNode
+        C3["2 (Red)"]:::redNode
+        C3_3["3 (Red)"]:::redNode
+        R3 --> C3
+        C3 --> C3_3
+    end
+
+    subgraph Step4["Step 4: Left Rotate(1) & Recolor"]
+        N2["2 (Black - New Root)"]:::blackNode
+        N1["1 (Red)"]:::redNode
+        N3["3 (Red)"]:::redNode
+        N2 --> N1
+        N2 --> N3
+    end
+
+    Step1 --> Step2 --> Step3 --> Step4
+
+    classDef blackNode fill:#263238,stroke:#eceff1,stroke-width:2px,color:#ffffff
+    classDef redNode fill:#b71c1c,stroke:#ff8a80,stroke-width:2px,color:#ffffff
 ```
-Step 1: Insert 1 (as red, then color black because it's root)
-    1(B)    [root must be black]
 
-Step 2: Insert 2 (as red)
-    1(B)
-     \
-      2(R)   [OK, parent is black]
-
-Step 3: Insert 3 (as red)
-    1(B)       After BST insert:
-     \          1(B)
-      2(R)       \
-       \          2(R)  [Violation! Two reds in a row]
-        3(R)       \
-                   3(R)
-
-Now we need to fix. Node 3's parent is 2 (red), grandparent is 1 (black).
-Uncle of 2 is null (black). This triggers rotation.
-
-Perform right rotation on node 1:
-    2(B)
-   / \
-  1(R) 3(R)  [Hmm, both children are red. Need color flip]
-
-Color flip: 2 becomes red, 1 and 3 become black? No, wait...
-
-Actually, after rotation:
-  2(R)
- / \
-1(R) 3(R)
-
-But node 2 is the root now, so it must be black:
-  2(B)
- / \
-1(R) 3(R)
-
-Now check black-height property:
-  - Path 2→1→null: 1 black (2) + 1 black (null) = 2 black
-  - Path 2→3→null: 1 black (2) + 1 black (null) = 2 black
-  
-Balanced! All paths have the same black-height.
-```
+**Step Breakdown:**
+- **Step 1:** Insert `1` (colored black as root).
+- **Step 2:** Insert `2` as red right child. Valid because parent `1` is black.
+- **Step 3:** Insert `3` as red right child of `2`. **Violation:** consecutive red nodes (`2(R) -> 3(R)`). Node `3`'s uncle is `null` (black).
+- **Step 4:** Left rotation around grandparent `1` lifts `2` to the sub-root with `1` and `3` as children. Recolor `2` to black and `1` to red. Root is black.
+- **Black-height check:** Path `2 -> 1 -> null` has 2 black nodes; path `2 -> 3 -> null` has 2 black nodes. All paths maintain identical black-height.
 
 **Why Red-Black is more practical:**
 - AVL has stricter balance, requiring more rotations on insertion.
-- Red-Black allows some height imbalance but guarantees O(log n) through black-height property.
-- Red-Black has fewer rotations in practice (important for disk-based systems where rotations are expensive).
+- Red-Black allows some height imbalance but guarantees `O(log N)` through the black-height property.
+- Red-Black requires fewer rotations in practice (at most 2 rotations per insertion), making it the standard choice for language standard libraries (C++ `std::map`, Java `TreeMap`, Linux kernel CFS scheduler).
 
 ### 🔧 Operation 3: Rotations (The Core Mechanic)
 
@@ -367,101 +369,96 @@ A rotation is a local restructuring operation that preserves the BST invariant w
 
 **Left rotation on node x:**
 
-Before:
-```
-    x
-     \
-      y
-     / \
-    b   c
-```
+```mermaid
+flowchart LR
+    subgraph Before["Before: Left-Rotate(x)"]
+        direction TB
+        BX["Node x"]:::focusNode
+        BY["Node y"]:::subNode
+        BB["Subtree b"]:::subNode
+        BC["Subtree c"]:::subNode
+        BX --> BY
+        BY --> BB
+        BY --> BC
+    end
 
-After (left-rotate(x)):
-```
-      y
-     / \
-    x   c
-     \
-      b
+    subgraph After["After: Left-Rotate(x)"]
+        direction TB
+        AY["Node y (New Root)"]:::focusNode
+        AX["Node x"]:::subNode
+        AB["Subtree b"]:::subNode
+        AC["Subtree c"]:::subNode
+        AY --> AX
+        AY --> AC
+        AX --> AB
+    end
+
+    Before ==>|"Rotate Left around x"| After
+
+    classDef focusNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
+    classDef subNode fill:#37474f,stroke:#cfd8dc,stroke-width:2px,color:#ffffff
 ```
 
 **BST invariant check:**
-- Before: all values < x go left (none here), all > x can go right (to y). At y: all < y go left (b), all > y go right (c).
-- After: all values < y go left (x and its subtree). At x: all > x go right (b).
-- Result: order is preserved. All < x stay to left of y, all > x go right of y.
+- **Before:** All values `< x` go left (none shown), all `> x` go right (to `y`). At `y`: all `< y` go left (`b`), all `> y` go right (`c`). Thus `x < b < y < c`.
+- **After:** All values `< y` go left (`x` and its subtree). At `x`: all `> x` go right (`b`). Order `x < b < y < c` is strictly preserved!
+- **Height effect:** If subtree `c` was deep, lifting `y` decreases overall tree depth.
+- **Cost:** `O(1)` pointer updates (5–6 pointer reassignments in total).
 
-**Height effect:**
-- Before: height ≈ 1 + height(y) = 1 + (1 + height(c)) = 2 + height(c)
-- After: height ≈ 1 + height(y), but y now has b as left child instead of having y as right child of x.
-- The tree is rebalanced: if c was very tall, x becomes less deep.
-
-**Cost:** O(1) pointer updates. In practice, 5–6 pointer assignments.
-
-**Right rotation:** Mirror of left rotation. All logic symmetric.
+**Right rotation:** Mirror of left rotation. All logic is symmetric.
 
 **Double rotation (LR case):**
 - Left rotation on left child, then right rotation on parent.
-- Handles the case where left child is right-heavy.
-- Still O(1) rotations (2 rotations = O(1) constant).
+- Straightens a zig-zag before lifting the middle node.
+- Still `O(1)` rotations (exactly 2 constant-time rotations).
 
 ### 📉 Progressive Example: Building an AVL Tree
 
-Insert [5, 3, 7, 2, 4, 6, 8, 1] into AVL tree, showing rebalancing at each step:
+Inserting `[5, 3, 7, 2, 4, 6, 8, 1]` step-by-step into an AVL tree:
 
-```
-Insert 5:           5
-                   / \
+| Step | Inserted Key | Structure Action | Balance Status |
+| :--- | :--- | :--- | :--- |
+| **1** | `5` | Single root node | Balanced (`BF = 0`) |
+| **2** | `3` | Left child of `5` | Balanced (`BF(5) = -1`) |
+| **3** | `7` | Right child of `5` | Perfectly balanced (`BF(5) = 0`) |
+| **4** | `2` | Left child of `3` | Balanced (`BF(3) = -1`, `BF(5) = -1`) |
+| **5** | `4` | Right child of `3` | Balanced (`BF(3) = 0`, `BF(5) = -1`) |
+| **6** | `6` | Left child of `7` | Balanced (`BF(7) = -1`) |
+| **7** | `8` | Right child of `7` | Balanced (`BF(7) = 0`, `BF(5) = 0`) |
+| **8** | `1` | Left child of `2` | Balanced (`BF(2) = -1`, `BF(3) = -1`, `BF(5) = -1`) |
 
-Insert 3:          5
-                  /
-                 3
+```mermaid
+flowchart TD
+    subgraph FinalAVL["Balanced AVL Tree with Keys [5, 3, 7, 2, 4, 6, 8, 1]"]
+        N5["5 (BF: -1)"]:::balancedNode
+        N3["3 (BF: -1)"]:::balancedNode
+        N7["7 (BF: 0)"]:::balancedNode
+        N2["2 (BF: -1)"]:::balancedNode
+        N4["4 (BF: 0)"]:::balancedNode
+        N6["6 (BF: 0)"]:::balancedNode
+        N8["8 (BF: 0)"]:::balancedNode
+        N1["1 (BF: 0)"]:::leafNode
 
-Insert 7:          5
-                  / \
-                 3   7
+        N5 --> N3
+        N5 --> N7
+        N3 --> N2
+        N3 --> N4
+        N7 --> N6
+        N7 --> N8
+        N2 --> N1
+    end
 
-Insert 2:          5       Balance at 3: -1 (left heavy, but OK)
-                  / \
-                 3   7
-                /
-               2
-
-Insert 4:          5       Balance at 3: 0 (still OK)
-                  / \
-                 3   7
-                / \
-               2   4
-
-Insert 6:          5       Balance factors all OK
-                  / \
-                 3   7
-                / \ /
-               2  4 6
-
-Insert 8:          5       Balance at 7: +1 (right heavy, but OK)
-                  / \
-                 3   7
-                / \ / \
-               2  4 6  8
-
-Insert 1:          5       Balance at 2: +1 (right heavy, OK so far)
-                  / \
-                 3   7
-                / \ / \
-               2  4 6  8
-              /
-             1
-
-Now check balance at 3:
-  height(2's subtree) = 2 (path: 2→1→null)
-  height(4) = 1 (just 4)
-  balance = 2 - 1 = +1 (left heavy, but still OK, ≤ 1)
-
-But if we continued inserting sorted data [1, 2, 3, ...], eventually the tree would
-trigger rebalancing. The beauty: AVL automatically prevents this.
+    classDef balancedNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
+    classDef leafNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
 ```
 
-> **⚠️ Watch Out:** AVL rotations can be tricky. The four cases (LL, LR, RR, RL) each require different rotation sequences. A common mistake: performing a single rotation when a double rotation is needed. Always check the balance factor of the child to determine which case you're in.
+**Balance Verification at Node 3 after inserting 1:**
+- Height of left subtree (`2 -> 1`): `2`
+- Height of right subtree (`4`): `1`
+- `BalanceFactor(3) = height(left) - height(right) = 2 - 1 = +1` (within acceptable AVL range `[-1, 1]`). No rebalance needed!
+
+> [!WARNING]
+> AVL rotations can be tricky. The four cases (LL, LR, RR, RL) each require distinct rotation sequences. A common interview bug is applying a single rotation when a double rotation is required. Always evaluate the balance factor of the child to verify whether a zig-zag knee exists!
 
 ---
 

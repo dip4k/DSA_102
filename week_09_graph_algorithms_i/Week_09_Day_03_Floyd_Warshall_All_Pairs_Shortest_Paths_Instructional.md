@@ -323,14 +323,14 @@ Since dist[i][j][k] depends only on dist[...][...][k-1], we can use a single 2D 
 
 **Floyd–Warshall State:**
 
-```mermaid
-flowchart TD
-    R["State Variables"]
-    R --> N1["dist[0..V-1][0..V-1]  : Distance matrix; dist[i][j] = shortest distance i→j"]
-    R --> N2["next[0..V-1][0..V-1]  : Path reconstruction; next[i][j] = next vertex on shortest i→j path"]
-    R --> N3["V                      : Number of vertices"]
-    R --> N4["State"]
+**⚡ Floyd–Warshall State Machine Variables**
+
+```text
+• 📊 dist[0..V-1][0..V-1]: Distance matrix where dist[i][j] = shortest path distance i→j
+• 🔗 next[0..V-1][0..V-1]: Intermediate routing matrix for full path reconstruction
+• 🔢 V: Total number of vertices in graph
 ```
+
 
 
 ### 🔧 Operation 1: Floyd–Warshall Algorithm — Detailed Walkthrough
@@ -989,6 +989,4 @@ Floyd–Warshall represents the culmination of shortest-path algorithms: it hand
 **Overall Result:** ✅ ALL CHECKS PASSED — Content verified for accuracy and ready for delivery.
 
 ---
----
-
 > 🧭 **Navigation:** [← Previous Day](Week_09_Day_02_Bellman_Ford_Negative_Weights_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_09_Day_04_Minimum_Spanning_Trees_Kruskal_Prim_Instructional.md)

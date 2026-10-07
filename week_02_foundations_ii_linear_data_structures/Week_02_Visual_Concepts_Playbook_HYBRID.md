@@ -47,22 +47,21 @@
 ### Pattern Map: Array Family Tree
 
 
-```mermaid
-flowchart TD
-    R["ARRAY STRUCTURES"]
-    R --> N1["Static Arrays (Fixed Size)"]
-    N1 --> N2["Contiguous memory"]
-    N1 --> N3["O(1) random access"]
-    N1 --> N4["O(n) for insert/delete"]
-    R --> N5["Dynamic Arrays (Resizable)"]
-    N5 --> N6["Doubling strategy"]
-    N5 --> N7["Amortized O(1) append"]
-    N5 --> N8["O(n) for reallocation"]
-    R --> N9["Multi-Dimensional"]
-    N9 --> N10["Row-major layout"]
-    N9 --> N11["Column-major layout"]
-    N9 --> N12["Cache implications"]
-```
+### 📌 ARRAY STRUCTURES
+
+- **Static Arrays (Fixed Size)**
+  - Contiguous memory
+  - O(1) random access
+  - O(n) for insert/delete
+- **Dynamic Arrays (Resizable)**
+  - Doubling strategy
+  - Amortized O(1) append
+  - O(n) for reallocation
+- **Multi-Dimensional**
+  - Row-major layout
+  - Column-major layout
+  - Cache implications
+
 
 
 ---
@@ -90,20 +89,13 @@ flowchart TD
 #### Visual 1: Matrix Memory Ordering
 
 
-```mermaid
-flowchart TD
-    R["MATRIX (3×3)"]
-    R --> N1["State"]
-    R --> N2["Rows stored sequentially"]
-    R --> N3["Memory: [1,2,3, 4,5,6, 7,8,9]"]
-    R --> N4["Iterate rows for cache efficiency"]
-    R --> N5["Formula: address = base + (row×cols + col)×size"]
-    R --> N6["Columns stored sequentially"]
-    R --> N7["Memory: [1,4,7, 2,5,8, 3,6,9]"]
-    R --> N8["Iterate columns for cache efficiency"]
-    R --> N9["Formula: address = base + (col×rows + row)×size"]
-    R --> N10["State"]
-```
+### 📌 📊 2D Matrix (3x3 Rows & Columns)
+
+- Row 0: [1, 2, 3]
+- Row 1: [4, 5, 6]
+- **Row 2: [7, 8, 9]**
+  - ⚙️ Row-Major Flat Array: [1, 2, 3, 4, 5, 6, 7, 8, 9]<br/>Address = Base + (row * cols + col) * elementSize
+
 
 
 ---
@@ -113,22 +105,21 @@ flowchart TD
 ### Pattern Map: Dynamic Array Growth
 
 
-```mermaid
-flowchart TD
-    R["DYNAMIC ARRAY PATTERNS"]
-    R --> N1["Capacity vs Size"]
-    N1 --> N2["Logical size (elements)"]
-    N1 --> N3["Physical capacity (allocated)"]
-    N1 --> N4["Load factor (size/capacity)"]
-    R --> N5["Resize Strategy"]
-    N5 --> N6["Doubling (2×)"]
-    N5 --> N7["Linear growth (+ constant)"]
-    N5 --> N8["Fibonacci growth"]
-    R --> N9["Amortized Cost"]
-    N9 --> N10["Average per operation"]
-    N9 --> N11["Expensive reallocation rare"]
-    N9 --> N12["O(1) amortized append"]
-```
+### 📌 DYNAMIC ARRAY PATTERNS
+
+- **Capacity vs Size**
+  - Logical size (elements)
+  - Physical capacity (allocated)
+  - Load factor (size/capacity)
+- **Resize Strategy**
+  - Doubling (2×)
+  - Linear growth (+ constant)
+  - Fibonacci growth
+- **Amortized Cost**
+  - Average per operation
+  - Expensive reallocation rare
+  - O(1) amortized append
+
 
 
 ---
@@ -140,26 +131,12 @@ flowchart TD
 #### Visual 1: Capacity Growing Process
 
 
-```mermaid
-flowchart TD
-    R["DYNAMIC ARRAY Starting with []"]
-    R --> N1["Capacity full (1 == 1)"]
-    R --> N2["Reallocate: capacity = 2×1 = 2"]
-    R --> N3["Copy: [10, 20]"]
-    R --> N4["Size: 2, Capacity: 2"]
-    R --> N5["Capacity full (2 == 2)"]
-    R --> N6["Reallocate: capacity = 2×2 = 4"]
-    R --> N7["Copy: [10, 20, 30, _, ]"]
-    R --> N8["Size: 3, Capacity: 4"]
-    R --> N9["Room available (3 < 4)"]
-    R --> N10["[10, 20, 30, 40]"]
-    R --> N11["Size: 4, Capacity: 4"]
-    R --> N12["Capacity full (4 == 4)"]
-    R --> N13["Reallocate: capacity = 2×4 = 8"]
-    R --> N14["Copy: [10, 20, 30, 40, 50, _, _, _]"]
-    R --> N15["Size: 5, Capacity: 8"]
-    R --> N16["State"]
+**📦 Dynamic Array Resizing Evolution**
+
+```text
+• Size: 1, Capacity: 1 → Full!
 ```
+
 
 
 ---
@@ -170,9 +147,17 @@ flowchart TD
 
 
 ```mermaid
-flowchart TD
-    R["AMORTIZED ANALYSIS (Aggregate Method)"]
-    R --> N1["State"]
+flowchart LR
+    classDef cheap fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+    classDef resize fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
+    classDef total fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+
+    N1["🟢 Normal Insert (N-1 operations)<br/>O(1) write each"]:::cheap
+    N2["🔴 Array Doubling (1 operation)<br/>Allocate 2N & copy elements O(N)"]:::resize
+    TOT["📊 Total Aggregate Cost: O(N) for N inserts<br/>Average Amortized Cost: O(1) per insert"]:::total
+
+    N1 --> TOT
+    N2 --> TOT
 ```
 
 
@@ -183,22 +168,21 @@ flowchart TD
 ### Pattern Map: Linked List Variants
 
 
-```mermaid
-flowchart TD
-    R["LINKED LIST PATTERNS"]
-    R --> N1["Singly Linked List"]
-    N1 --> N2["One directional link"]
-    N1 --> N3["Forward traversal only"]
-    N1 --> N4["O(n) search, O(1) insert/delete"]
-    R --> N5["Doubly Linked List"]
-    N5 --> N6["Bidirectional links"]
-    N5 --> N7["Forward & backward traversal"]
-    N5 --> N8["More memory, flexible"]
-    R --> N9["Circular Linked List"]
-    N9 --> N10["Last node points to first"]
-    N9 --> N11["No null terminator"]
-    N9 --> N12["Use case: round-robin"]
-```
+### 📌 LINKED LIST PATTERNS
+
+- **Singly Linked List**
+  - One directional link
+  - Forward traversal only
+  - O(n) search, O(1) insert/delete
+- **Doubly Linked List**
+  - Bidirectional links
+  - Forward & backward traversal
+  - More memory, flexible
+- **Circular Linked List**
+  - Last node points to first
+  - No null terminator
+  - Use case: round-robin
+
 
 
 ---
@@ -211,15 +195,17 @@ flowchart TD
 
 
 ```mermaid
-flowchart TD
-    R["LINKED LIST [10] → [20] → [30] → null"]
-    R --> N1["State"]
-    R --> N2["State"]
-    R --> N3["State"]
-    R --> N4["State"]
-    R --> N5["State"]
-    R --> N6["State"]
-    R --> N7["State"]
+flowchart LR
+    classDef headNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+    classDef node fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+    classDef nullNode fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,color:#616161
+
+    H["🟢 Head: [10 | Next]"]:::headNode
+    N2["📦 Node: [20 | Next]"]:::node
+    N3["📦 Node: [30 | Next]"]:::node
+    Null["🛑 null"]:::nullNode
+
+    H --> N2 --> N3 --> Null
 ```
 
 
@@ -231,9 +217,16 @@ flowchart TD
 
 
 ```mermaid
-flowchart TD
-    R["INSERT 15 AT HEAD"]
-    R --> N1["State"]
+flowchart LR
+    classDef newHead fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+    classDef existing fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+
+    New["🟢 New Node: [15 | Next]"]:::newHead
+    OldH["📦 Old Head: [10 | Next]"]:::existing
+    N2["📦 Node: [20 | Next]"]:::existing
+
+    New -->|"1. New.Next = OldHead<br/>2. Head = New Node"| OldH
+    OldH --> N2
 ```
 
 
@@ -244,22 +237,21 @@ flowchart TD
 ### Pattern Map: Linear Structures
 
 
-```mermaid
-flowchart TD
-    R["STACK/QUEUE/DEQUE PATTERNS"]
-    R --> N1["Stack (LIFO)"]
-    N1 --> N2["Last-In-First-Out"]
-    N1 --> N3["Push/Pop from end"]
-    N1 --> N4["Use: DFS, undo/redo, parsing"]
-    R --> N5["Queue (FIFO)"]
-    N5 --> N6["First-In-First-Out"]
-    N5 --> N7["Enqueue/Dequeue"]
-    N5 --> N8["Use: BFS, task scheduling"]
-    R --> N9["Deque (Double-Ended)"]
-    N9 --> N10["Both ends operations"]
-    N9 --> N11["Push/pop front & back"]
-    N9 --> N12["Use: Sliding window, rotate"]
-```
+### 📌 STACK/QUEUE/DEQUE PATTERNS
+
+- **Stack (LIFO)**
+  - Last-In-First-Out
+  - Push/Pop from end
+  - Use: DFS, undo/redo, parsing
+- **Queue (FIFO)**
+  - First-In-First-Out
+  - Enqueue/Dequeue
+  - Use: BFS, task scheduling
+- **Deque (Double-Ended)**
+  - Both ends operations
+  - Push/pop front & back
+  - Use: Sliding window, rotate
+
 
 
 ---
@@ -335,10 +327,16 @@ SPACE: O(n) for capacity items
 
 
 ```mermaid
-flowchart TD
-    R["DEQUE [10, 20, 30, 40, 50]"]
-    R --> N1["State"]
-    R --> N2["State"]
+flowchart LR
+    classDef front fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+    classDef mid fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+    classDef back fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
+
+    F["🟢 Front: 10<br/>PushFront / PopFront O(1)"]:::front
+    M["📦 Middle Elements: [20, 30, 40]"]:::mid
+    B["👈 Back: 50<br/>PushBack / PopBack O(1)"]:::back
+
+    F <--> M <--> B
 ```
 
 
@@ -349,22 +347,21 @@ flowchart TD
 ### Pattern Map: Binary Search Variants
 
 
-```mermaid
-flowchart TD
-    R["BINARY SEARCH PATTERNS"]
-    R --> N1["Classic Search"]
-    N1 --> N2["Standard target find"]
-    N1 --> N3["First occurrence"]
-    N1 --> N4["Last occurrence"]
-    R --> N5["Bounded Search"]
-    N5 --> N6["Lower bound"]
-    N5 --> N7["Upper bound"]
-    N5 --> N8["Range queries"]
-    R --> N9["Answer Space Search"]
-    N9 --> N10["Feasibility check"]
-    N9 --> N11["Minimize/maximize"]
-    N9 --> N12["Continuous search"]
-```
+### 📌 BINARY SEARCH PATTERNS
+
+- **Classic Search**
+  - Standard target find
+  - First occurrence
+  - Last occurrence
+- **Bounded Search**
+  - Lower bound
+  - Upper bound
+  - Range queries
+- **Answer Space Search**
+  - Feasibility check
+  - Minimize/maximize
+  - Continuous search
+
 
 
 ---
@@ -378,8 +375,14 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    R["BINARY SEARCH FOR 7 IN SORTED ARRAY"]
-    R --> N1["State"]
+    classDef check fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
+    classDef match fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+
+    Array["📦 Sorted Array: [1, 3, 5, 7, 9, 11, 13]<br/>Low=0, High=6"]
+    Probe["🔍 Calculate Mid = 0 + (6 - 0) / 2 = 3<br/>Value at Index 3 is 7"]:::check
+    Match["✅ Target 7 matches Mid Value (7)<br/>Return Index 3"]:::match
+
+    Array --> Probe --> Match
 ```
 
 
@@ -390,21 +393,12 @@ flowchart TD
 #### Visual 1: Find Boundaries
 
 
-```mermaid
-flowchart TD
-    R["FIND FIRST OCCURRENCE OF 5"]
-    R --> N1["Found a match! Record it: result = 3"]
-    R --> N2["But check if leftmost: search left half"]
-    R --> N3["hi = mid - 1 = 2"]
-    R --> N4["lo = mid + 1 = 2"]
-    R --> N5["Found! Record it: result = 2"]
-    R --> N6["Check left again (might be more)"]
-    R --> N7["hi = mid - 1 = 1"]
-    R --> N8["Found! Record: result = 3"]
-    R --> N9["Check if rightmost: search right half"]
-    R --> N10["lo = mid + 1 = 4"]
-    R --> N11["State"]
-```
+### 📌 🔍 Find First (Leftmost) Occurrence of Target 5
+
+- **Mid matches target: arr[mid] == 5<br/>Record candidate answer: result = mid**
+  - **👈 Continue Search in Left Half: hi = mid - 1<br/>Why? An earlier matching element might exist at index < mid**
+    - Loop continues until lo > hi<br/>🎯 Final recorded candidate is the guaranteed leftmost occurrence!
+
 
 
 ---

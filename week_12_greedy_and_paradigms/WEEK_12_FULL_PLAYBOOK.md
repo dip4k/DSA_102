@@ -54,17 +54,16 @@ Understand the greedy algorithm paradigm, when it guarantees optimality, and how
 **Definition:** A greedy algorithm makes locally optimal choices at each step, hoping to find a globally optimal solution.
 
 
-```mermaid
-flowchart TD
-    R["GREEDY ALGORITHM STRUCTURE"]
-    R --> N1["At each step, make the choice that looks best RIGHT NOW"]
-    R --> N2["Don't consider future consequences"]
-    R --> N3["Make irreversible decision"]
-    R --> N4["Problem reduced to smaller instance"]
-    R --> N5["Continue until problem is solved"]
-    R --> N6["Ensure choice doesn't violate constraints"]
-    R --> N7["Backtrack if necessary (but rarely)"]
-```
+### 📌 GREEDY ALGORITHM STRUCTURE
+
+- At each step, make the choice that looks best RIGHT NOW
+- Don't consider future consequences
+- Make irreversible decision
+- Problem reduced to smaller instance
+- Continue until problem is solved
+- Ensure choice doesn't violate constraints
+- Backtrack if necessary (but rarely)
+
 
 
 ### Why "Greedy"?
@@ -282,14 +281,13 @@ CONCLUSION: Greedy produces optimal solution ✓
 ### The Generic Structure
 
 
-```mermaid
-flowchart TD
-    R["GREEDY ALGORITHM TEMPLATE"]
-    R --> N1["Sort input (usually by some criteria)"]
-    R --> N2["Initialize data structures"]
-    R --> N3["Set baseline/empty solution"]
-    R --> N4["Return accumulated solution"]
-```
+### 📌 GREEDY ALGORITHM TEMPLATE
+
+- Sort input (usually by some criteria)
+- Initialize data structures
+- Set baseline/empty solution
+- Return accumulated solution
+
 
 
 ### Key Design Choices
@@ -325,16 +323,15 @@ WHEN IMPLEMENTING GREEDY, DECIDE:
 ### Visualization: Template in Action
 
 
-```mermaid
-flowchart TD
-    R["INPUT Collection of items with properties"]
-    R --> N1["Is item feasible?"]
-    N1 --> N2["Check constraints"]
-    R --> N3["Can add to solution?"]
-    N3 --> N4["Check space/capacity/validity"]
-    R --> N5["If feasible:"]
-    N5 --> N6["Add to solution"]
-```
+### 📌 INPUT Collection of items with properties
+
+- **Is item feasible?**
+  - Check constraints
+- **Can add to solution?**
+  - Check space/capacity/validity
+- **If feasible:**
+  - Add to solution
+
 
 
 ---
@@ -344,25 +341,26 @@ flowchart TD
 ### Five-Step Proof Structure
 
 
-```mermaid
-flowchart TD
-    R["PROVING GREEDY IS CORRECT"]
-    R --> N1["Assume optimal solution exists"]
-    R --> N2["Remove first greedy choice"]
-    R --> N3["Show remainder is optimal for subproblem"]
-    R --> N4["Show greedy choice in SOME optimal solution"]
-    R --> N5["Use exchange argument"]
-    R --> N6["Prove: can always exchange non-greedy for greedy"]
-    R --> N7["After greedy choice, subproblem is same type"]
-    R --> N8["Subproblem is independent (no cross-constraints)"]
-    R --> N9["Can apply greedy to subproblem"]
-    R --> N10["Base case: 1 element → greedy obviously optimal"]
-    R --> N11["Inductive step: if greedy works for k, works for k+1"]
-    R --> N12["Conclusion: works for all n elements"]
-    R --> N13["Time complexity of greedy"]
-    R --> N14["Compare to known lower bounds"]
-    R --> N15["Confirm greedy achieves optimality"]
+**PROVING GREEDY IS CORRECT**
+
+```text
+• Assume optimal solution exists
+• Remove first greedy choice
+• Show remainder is optimal for subproblem
+• Show greedy choice in SOME optimal solution
+• Use exchange argument
+• Prove: can always exchange non-greedy for greedy
+• After greedy choice, subproblem is same type
+• Subproblem is independent (no cross-constraints)
+• Can apply greedy to subproblem
+• Base case: 1 element → greedy obviously optimal
+• Inductive step: if greedy works for k, works for k+1
+• Conclusion: works for all n elements
+• Time complexity of greedy
+• Compare to known lower bounds
+• Confirm greedy achieves optimality
 ```
+
 
 
 ### Example: Correctness Proof for Activity Selection
@@ -532,31 +530,24 @@ Why is greedy better?
 
 ### The Greedy Choice: Finish Time
 
+```mermaid
+gantt
+    title Earliest Finish Time Preserves Future Capacity
+    dateFormat X
+    axisFormat %s
+    section Candidates
+    Activity A [1 to 4] (Earliest Finish): active, a1, 1, 4
+    Activity B [3 to 7] (Finishes Late) : crit, b1, 3, 7
+    section Future Window
+    Remaining Opportunity Window [4 to 16]: done, rem, 4, 16
 ```
-WHY SORT BY FINISH TIME?
-=====================================================
 
-The key insight: Once you pick an activity, you want
-                to leave as much time as possible
-                for future activities
-
-REASONING:
-  - If you pick activity finishing early: more time left
-  - If you pick activity finishing late: less time left
-  - Activity with earliest finish allows most future picks
-
-VISUALIZATION:
-  Time:  0--|--|--|--|--|--|--|--|--|--|--|--|--|--|--16
-            1  2  3  4  5  6  7  8  9 10 11 12 13 14 15
-
-  Activity A: [1------4]          ← Finishes early
-  Activity B: [3------------5]    ← Finishes later
-
-  If pick A: Time [4----------16] = 12 units left
-  If pick B: Time [5----------16] = 11 units left
-
-  Greedy picks A to maximize future opportunities
-```
+> [!NOTE]
+> **Why Sort by Finish Time?**
+> The core greedy principle: **Greedy Choice Property**.
+> - When we select the activity that finishes earliest (e.g., Activity A at time `4`), we leave the largest possible contiguous time window remaining (`[4 ... 16] = 12` units of time).
+> - Choosing an activity that finishes later (e.g., Activity B at time `7`) leaves less room (`[7 ... 16] = 9` units), strictly reducing the set of future non-overlapping candidates we could ever pick.
+> - Therefore, picking the earliest finishing compatible task never restricts future choices more than any alternative.
 
 ### The Algorithm in Action
 
@@ -779,66 +770,42 @@ SOLUTION: Use Dynamic Programming
 
 ### Variation 2: Interval Partitioning (Minimum Rooms)
 
+**Problem Statement:**
+- Each activity requires an exclusive meeting room throughout its active interval `[start, end)`.
+- If two activities overlap in time, they cannot share a room.
+- Goal: Minimize the peak number of rooms concurrently required.
+
+**Example Intervals:** `(1,3), (2,4), (3,5), (1,2), (4,6)`
+
+```mermaid
+gantt
+    title Overlapping Meeting Intervals
+    dateFormat X
+    axisFormat %s
+    section Room 1
+    (1 to 3) : active, m1, 1, 3
+    (4 to 6) : active, m2, 4, 6
+    section Room 2
+    (2 to 4) : crit, m3, 2, 4
+    section Room 3
+    (3 to 5) : done, m4, 3, 5
+    section Room 1 Again
+    (1 to 2) : active, m5, 1, 2
 ```
-VARIATION 2: MINIMIZE ROOMS NEEDED
-=====================================================
 
-Problem:
-  - Each activity needs a room during its time
-  - Activities overlap = need different rooms
-  - Minimize total rooms needed
+#### Event Timeline & Sweep Line Trace
 
-Example:
-  Activities: (1,3), (2,4), (3,5), (1,2), (4,6)
-  
-  Room 1: (1,3), (4,6)
-  Room 2: (2,4), (5,?)  ← Need 2 rooms, then 1, then...
-  Room 3: (3,5)
-  
-  Minimum rooms needed: 3
+| Event Time | Event Trigger | Delta (`Δ`) | Active Rooms (`current`) | Peak Rooms Recorded (`max`) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Time 1** | `START(1,3)`, `START(1,2)` | `+2` | 2 | 2 |
+| **Time 2** | `END(1,2)`, `START(2,4)` | `0` (reused!) | 2 | 2 |
+| **Time 3** | `END(1,3)`, `START(3,5)` | `0` (reused!) | 2 | 2 |
+| **Time 4** | `END(2,4)`, `START(4,6)` | `0` (reused!) | 2 | 2 |
+| **Time 5** | `END(3,5)` | `-1` | 1 | 2 |
+| **Time 6** | `END(4,6)` | `-1` | 0 | 2 |
 
-KEY INSIGHT: Use SWEEP LINE / INTERVAL GRAPH algorithm
-=====================================================
-
-Algorithm:
-1. Create events for each activity:
-   - START event at start time
-   - END event at finish time
-
-2. Sort events by time
-   (If tied: process END before START
-    so room can be reused)
-
-3. Track rooms in use:
-   - At each START: increment room count
-   - At each END: decrement room count
-
-4. Max rooms ever needed = answer
-
-Visualization:
-
-Time:  0--|--|--|--|--|--|--6
-       1  2  3  4  5
-
-Activity (1,3):  START at 1, END at 3
-Activity (2,4):  START at 2, END at 4
-Activity (3,5):  START at 3, END at 5
-Activity (1,2):  START at 1, END at 2
-Activity (4,6):  START at 4, END at 6
-
-Timeline of events:
-  Time 1: START(1,3), START(1,2)     → rooms = 2
-  Time 2: END(1,2), START(2,4)       → rooms = 2
-  Time 3: END(1,3), START(3,5)       → rooms = 2
-  Time 4: END(2,4), START(4,6)       → rooms = 2
-  Time 5: END(3,5)                   → rooms = 1
-  Time 6: END(4,6)                   → rooms = 0
-
-Max rooms = 3
-
-Time: O(n log n)
-Space: O(n)
-```
+- **Time Complexity:** `O(N log N)` (sorting events by timestamp)  
+- **Auxiliary Space:** `O(N)` (storing event tuples)
 
 ### Variation 3: Interval Scheduling with Weights
 
@@ -878,8 +845,15 @@ WHY NOT GREEDY:
 
 ```mermaid
 flowchart TD
-    R["VARIATION 4 JOBS WITH DEADLINES AND PROFITS"]
-    R --> N1["Step"]
+    classDef sort fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef slot fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+    classDef prune fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:1.5px;
+
+    R["💼 Job Sequencing with Deadlines & Profits"]:::sort
+    R --> S1["1️⃣ Sort all jobs in descending order of profit (Greedy Choice)"]:::sort
+    S1 --> S2["2️⃣ For each job j: Find latest available time slot t <= deadline[j]"]:::slot
+    S2 -->|Slot available| Sched["✅ Schedule job j in slot t<br/>Add profit[j], mark slot t occupied"]:::slot
+    S2 -->|No slot <= deadline[j]| Drop["❌ All prior slots taken: Drop job j"]:::prune
 ```
 
 
@@ -971,47 +945,32 @@ UNAMBIGUOUS! Decode left to right
 
 ### The Prefix Code Tree
 
+```mermaid
+graph TD
+    classDef internalNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef charLeaf fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+
+    Root["👑 Root"]:::internalNode
+    LeafA["🅰️ 'A' (Code: 0)"]:::charLeaf
+    InternalB["Internal Node"]:::internalNode
+    LeafC["🅲 'C' (Code: 10)"]:::charLeaf
+    LeafD["🅳 'D' (Code: 11)"]:::charLeaf
+
+    Root -->|"0 (Left)"| LeafA
+    Root -->|"1 (Right)"| InternalB
+    InternalB -->|"0 (Left)"| LeafC
+    InternalB -->|"1 (Right)"| LeafD
 ```
-REPRESENTING CODES AS A BINARY TREE
-=====================================================
 
-Each prefix code can be represented as a BINARY TREE:
-  - Leaf nodes = characters to encode
-  - Edge labels = 0 (left) or 1 (right)
-  - Path from root to leaf = codeword for that character
+#### Prefix Decoding Example: Bitstream `"01011"`
 
-Example:
+1. `0` -> Traverses Left -> Reaches Leaf **A** (Codeword `"0"`, output `'A'`). Returns to Root.
+2. `1` -> Traverses Right -> Enters Internal Node.
+3. `0` -> Traverses Left -> Reaches Leaf **C** (Codeword `"10"`, output `'C'`). Returns to Root.
+4. `1` -> Traverses Right -> Enters Internal Node.
+5. `1` -> Traverses Right -> Reaches Leaf **D** (Codeword `"11"`, output `'D'`). Returns to Root.
 
-              ROOT
-              /  \
-            0/    \1
-            /      \
-           A        B
-                   / \
-                 0/   \1
-                /      \
-               C        D
-
-Decoding tree:
-  A = 0 (one step left)
-  B path doesn't end here, keep going
-  C = 10 (right, then left)
-  D = 11 (right, then right)
-  
-Codeword lengths:
-  A: length 1 (1 bit)
-  C: length 2 (2 bits)
-  D: length 2 (2 bits)
-
-Decoding "01011":
-  0 → Check left: Found A ✓ (codeword "0")
-  1 → Check right: Go to B node
-  0 → Check left: Found C ✓ (codeword "10")
-  1 → Check right: Go to D node
-  1 → Check right: Found D ✓ (codeword "11")
-  
-Decoded: A, C, D
-```
+**Decoded Message:** `'A', 'C', 'D'` (Unique, instantaneous prefix-free decoding)
 
 ### Fixed-Length vs Variable-Length Codes
 
@@ -1423,25 +1382,24 @@ Master knapsack variants, scheduling problems, and understand why greedy works f
 ### The Three Variants
 
 
-```mermaid
-flowchart TD
-    R["KNAPSACK PROBLEM VARIANTS"]
-    R --> N1["Unlimited copies of each item"]
-    R --> N2["Can take same item multiple times"]
-    R --> N3["Solution: DP"]
-    R --> N4["Time: O(n×W)"]
-    R --> N5["Greedy: FAILS (might need multiple copies)"]
-    R --> N6["Can take FRACTION of each item"]
-    R --> N7["Can take 0.5 kg of 1 kg item"]
-    R --> N8["Solution: GREEDY works!"]
-    R --> N9["Time: O(n log n)"]
-    R --> N10["Greedy: Sort by value/weight ratio, pick greedily"]
-    R --> N11["Either take entire item or leave it"]
-    R --> N12["Can't split items"]
-    R --> N13["Solution: DP"]
-    R --> N14["Time: O(n×W)"]
-    R --> N15["Greedy: FAILS (can't split, decisions complex)"]
-```
+### 📌 KNAPSACK PROBLEM VARIANTS
+
+- Unlimited copies of each item
+- Can take same item multiple times
+- Solution: DP
+- Time: O(n×W)
+- Greedy: FAILS (might need multiple copies)
+- Can take FRACTION of each item
+- Can take 0.5 kg of 1 kg item
+- Solution: GREEDY works!
+- Time: O(n log n)
+- Greedy: Sort by value/weight ratio, pick greedily
+- Either take entire item or leave it
+- Can't split items
+- Solution: DP
+- Time: O(n×W)
+- Greedy: FAILS (can't split, decisions complex)
+
 
 
 ### Visual Comparison
@@ -2694,13 +2652,14 @@ RESULT:
 ### Week 12 Complete Mastery Map
 
 
-```mermaid
-flowchart TD
-    R["GREEDY ALGORITHMS COMPLETE FRAMEWORK"]
-    R --> N1["|    3. LOOP              Graph Color"]
-    N1 --> N2["State"]
-    R --> N3["State"]
-```
+### 📌 🏆 Greedy Algorithms Complete Framework
+
+- 📅 Day 1: Theoretical Foundations<br/>Greedy Choice Property & Exchange Arguments
+- 📅 Day 2: Interval Scheduling & Partitioning<br/>Sort by End Time, Merge Intervals, Meeting Rooms
+- 📅 Day 3: Greedy Trees & Encoding<br/>Huffman Prefix Codes, Fractional Knapsack
+- 📅 Day 4: Graph Greedy Paradigms<br/>Kruskal's MST, Prim's MST, Dijkstra's Shortest Path
+- 📅 Day 5: Greedy Failure Detection & DP Fallback<br/>0/1 Knapsack, Arbitrary Coin Change (Switch to DP!)
+
 
 
 ---

@@ -468,7 +468,4 @@
 **Finalization:** Section 6 (Meta Skills) + Mock Interviews  
 
 ---
-
----
-
 > 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS.md)

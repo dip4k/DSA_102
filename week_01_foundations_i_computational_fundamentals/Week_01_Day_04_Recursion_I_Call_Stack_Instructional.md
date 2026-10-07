@@ -81,9 +81,13 @@ Now let's call `Factorial(4)` and freeze-frame the stack at key moments.
 
 ```mermaid
 flowchart TD
-    R["Stack (Memory grows upward)"]
-    R --> N1["State"]
-    R --> N2["State"]
+    classDef active fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+    classDef caller fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+
+    F1["🟢 Factorial(n=4) Frame (Active)<br/>- Parameter n = 4<br/>- Checks n == 0 -> false<br/>- Prepares call to Factorial(3)"]:::active
+    M["🏠 Main() Frame"]:::caller
+
+    F1 -->|"Pushed onto stack"| M
 ```
 
 
@@ -108,8 +112,16 @@ When `Factorial(1)` calls `Factorial(0)`, the base case triggers:
 
 ```mermaid
 flowchart TD
-    R["State"]
-    R --> N1["State"]
+    classDef base fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
+    classDef waiting fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,color:#424242
+
+    F0["🛑 Factorial(n=0) Frame: Base Case Hit!<br/>- n == 0 is true -> returns 1 immediately"]:::base
+    F1["⏳ Factorial(n=1) Frame: Paused (waiting)"]:::waiting
+    F2["⏳ Factorial(n=2) Frame: Paused (waiting)"]:::waiting
+    F3["⏳ Factorial(n=3) Frame: Paused (waiting)"]:::waiting
+    F4["⏳ Factorial(n=4) Frame: Paused (waiting)"]:::waiting
+
+    F0 --> F1 --> F2 --> F3 --> F4
 ```
 
 
@@ -122,9 +134,18 @@ After `Factorial(0)` returns, its frame is popped:
 
 ```mermaid
 flowchart TD
-    R["State"]
-    R --> N1["State"]
-    R --> N2["State"]
+    classDef popped fill:#e0e0e0,stroke:#9e9e9e,stroke-dasharray: 5 5,color:#757575
+    classDef active fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+    classDef waiting fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,color:#424242
+
+    F0["💨 Factorial(0): Popped off stack (Returned 1)"]:::popped
+    F1["🟢 Factorial(1): Resumed Active<br/>- Computes 1 * 1 = 1, ready to return 1"]:::active
+    F2["⏳ Factorial(2): Paused (waiting)"]:::waiting
+    F3["⏳ Factorial(3): Paused (waiting)"]:::waiting
+    F4["⏳ Factorial(4): Paused (waiting)"]:::waiting
+
+    F0 -.->|"Return value 1"| F1
+    F1 --> F2 --> F3 --> F4
 ```
 
 

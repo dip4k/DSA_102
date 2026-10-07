@@ -276,7 +276,4 @@ If NO to some → **Practice those specifically**
 > **"Trees are hierarchical ordered structures. Traversals visit every node. BST invariant enables searching. Balance maintains O(log n). Patterns combine traversal + algorithm. Serialization encodes structure uniquely."**
 
 ---
-
----
-
 > 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS.md)

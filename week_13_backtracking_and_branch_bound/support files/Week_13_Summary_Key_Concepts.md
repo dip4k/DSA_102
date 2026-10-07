@@ -31,87 +31,75 @@ Week 13 introduces **backtracking** as a systematic method for exploring solutio
 ## 📊 CONCEPTUAL HIERARCHY MAP
 
 
-```mermaid
-flowchart TD
-    R["WEEK 13 BACKTRACKING, BRANCH & BOUND, AMORTIZED ANALYSIS"]
-    R --> N1["BACKTRACKING PARADIGM"]
-    N1 --> N2["Core Mechanism"]
-    N2 --> N3["State space tree exploration (DFS)"]
-    N2 --> N4["Incremental solution building"]
-    N2 --> N5["State restoration after recursion"]
-    N2 --> N6["Constraint-based pruning"]
-    N1 --> N7["Universal Template"]
-    N7 --> N8["State: current partial solution"]
-    N7 --> N9["Choices: decisions to try"]
-    N7 --> N10["Constraints: validity checks"]
-    N7 --> N11["DFS: recursive exploration"]
-    N7 --> N12["Restore: undo choice after recursion"]
-    N1 --> N13["Classic Problems"]
-    N13 --> N14["N-Queens (placement constraints)"]
-    N13 --> N15["Sudoku (grid constraints)"]
-    N13 --> N16["Permutations (all orderings)"]
-    N13 --> N17["Combinations (unordered subsets)"]
-    N13 --> N18["Word Search (grid path finding)"]
-    N13 --> N19["Maze Solving (navigation)"]
-    N1 --> N20["Optimization Techniques"]
-    N20 --> N21["Constraint propagation"]
-    N20 --> N22["Variable ordering (most constrained first)"]
-    N20 --> N23["Value ordering (least constraining first)"]
-    N20 --> N24["Symmetry breaking"]
-    R --> N25["BRANCH & BOUND PARADIGM"]
-    N25 --> N26["Core Enhancement Over Backtracking"]
-    N26 --> N27["Optimization focus (find best, not just feasible)"]
-    N26 --> N28["Bound calculation (estimate best possible)"]
-    N26 --> N29["Bound-based pruning (skip inferior branches)"]
-    N26 --> N30["Best-first search (priority queue ordering)"]
-    N25 --> N31["Bounding Techniques"]
-    N31 --> N32["Relaxation (simplify problem for optimistic bound)"]
-    N31 --> N33["MST for TSP lower bound"]
-    N31 --> N34["Fractional knapsack for 0/1 upper bound"]
-    N31 --> N35["Linear programming relaxation"]
-    N25 --> N36["Search Strategies"]
-    N36 --> N37["Best-first (priority queue by bound)"]
-    N36 --> N38["Depth-first (DFS with pruning)"]
-    N36 --> N39["Breadth-first (level-by-level)"]
-    N36 --> N40["Hybrid approaches"]
-    N25 --> N41["Classic Applications"]
-    N41 --> N42["Traveling Salesman Problem (TSP)"]
-    N41 --> N43["0/1 Knapsack"]
-    N41 --> N44["Job Scheduling"]
-    N41 --> N45["Integer Programming"]
-    R --> N46["AMORTIZED ANALYSIS PARADIGM"]
-    N46 --> N47["Core Concept"]
-    N47 --> N48["Average cost over sequence of operations"]
-    N47 --> N49["Some operations expensive, most cheap"]
-    N47 --> N50["Amortized = total cost / number operations"]
-    N47 --> N51["Differs from worst-case and average-case"]
-    N46 --> N52["Analysis Methods"]
-    N52 --> N53["Aggregate Analysis"]
-    N53 --> N54["Compute total cost for n operations"]
-    N53 --> N55["Divide by n for amortized"]
-    N53 --> N56["Simplest when total easy to compute"]
-    N52 --> N57["Accounting Method"]
-    N57 --> N58["Assign charged cost to operations"]
-    N57 --> N59["Build credit for future expensive ops"]
-    N57 --> N60["Prove credit never negative"]
-    N57 --> N61["Intuitive budgeting metaphor"]
-    N52 --> N62["Potential Method"]
-    N62 --> N63["Define potential function Φ"]
-    N62 --> N64["Amortized = actual + ΔΦ"]
-    N62 --> N65["Sum amortized bounds sum actual"]
-    N62 --> N66["Most powerful, complex cases"]
-    N46 --> N67["Classic Examples"]
-    N67 --> N68["Dynamic Arrays (doubling strategy)"]
-    N67 --> N69["Stack Multipop"]
-    N67 --> N70["Binary Counter Increment"]
-    N67 --> N71["Splay Trees"]
-    N67 --> N72["Union-Find with Path Compression"]
-    R --> N73["PARADIGM INTEGRATION"]
-    N73 --> N74["Backtracking + DP (memoize repeated states)"]
-    N73 --> N75["Branch & Bound + Greedy (heuristic bounds)"]
-    N73 --> N76["Branch & Bound + DP (Held-Karp TSP)"]
-    N73 --> N77["Amortized Analysis for Data Structure Design"]
-```
+### 📌 WEEK 13 BACKTRACKING, BRANCH & BOUND, AMORTIZED ANALYSIS
+
+- **BACKTRACKING PARADIGM**
+  - **Core Mechanism**
+    - State space tree exploration (DFS)
+    - Incremental solution building
+    - State restoration after recursion
+    - Constraint-based pruning
+  - **Universal Template**
+    - State: current partial solution
+    - Choices: decisions to try
+    - Constraints: validity checks
+    - DFS: recursive exploration
+    - Restore: undo choice after recursion
+  - **Classic Problems**
+    - N-Queens (placement constraints)
+    - Sudoku (grid constraints)
+    - Permutations (all orderings)
+    - Combinations (unordered subsets)
+    - Word Search (grid path finding)
+    - Maze Solving (navigation)
+  - **Optimization Techniques**
+    - Constraint propagation
+    - Variable ordering (most constrained first)
+    - Value ordering (least constraining first)
+    - Symmetry breaking
+- **BRANCH & BOUND PARADIGM**
+  - **Core Enhancement Over Backtracking**
+    - Optimization focus (find best, not just feasible)
+    - Bound calculation (estimate best possible)
+    - Bound-based pruning (skip inferior branches)
+    - Best-first search (priority queue ordering)
+  - **Bounding Techniques**
+    - Relaxation (simplify problem for optimistic bound)
+    - MST for TSP lower bound
+    - Fractional knapsack for 0/1 upper bound
+    - Linear programming relaxation
+  - **Search Strategies**
+    - Best-first (priority queue by bound)
+    - Depth-first (DFS with pruning)
+    - Breadth-first (level-by-level)
+    - Hybrid approaches
+  - **Classic Applications**
+    - Traveling Salesman Problem (TSP)
+    - 0/1 Knapsack
+    - Job Scheduling
+    - Integer Programming
+- **AMORTIZED ANALYSIS PARADIGM**
+  - **Core Concept**
+    - Average cost over sequence of operations
+    - Some operations expensive, most cheap
+    - Amortized = total cost / number operations
+    - Differs from worst-case and average-case
+  - **Analysis Methods**
+    - Aggregate Analysis
+    - Accounting Method
+    - Potential Method
+  - **Classic Examples**
+    - Dynamic Arrays (doubling strategy)
+    - Stack Multipop
+    - Binary Counter Increment
+    - Splay Trees
+    - Union-Find with Path Compression
+- **PARADIGM INTEGRATION**
+  - Backtracking + DP (memoize repeated states)
+  - Branch & Bound + Greedy (heuristic bounds)
+  - Branch & Bound + DP (Held-Karp TSP)
+  - Amortized Analysis for Data Structure Design
+
 
 
 ---

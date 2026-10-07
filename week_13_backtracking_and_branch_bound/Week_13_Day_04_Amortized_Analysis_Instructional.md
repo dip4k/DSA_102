@@ -84,27 +84,19 @@ Amortized cost per insert: O(1)
 
 **Visual: Cost Distribution**
 
+```mermaid
+xychart-beta
+    title "Dynamic Array Insertion: Rare O(N) Resizing Spikes vs Common O(1) Appends"
+    x-axis ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"]
+    y-axis "Actual Operation Cost" 0 --> 16
+    bar [1, 2, 1, 4, 1, 1, 1, 8, 1, 1, 1, 1, 1, 1, 1, 16]
+    line [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
 ```
-Operation Cost Over Time (Dynamic Array Insertions):
 
-Cost per Insert
-    ⬆
- n  ┃     ┃              ┃                    ┃
-    ┃     ┃              ┃                    ┃
-    ┃     ┃              ┃                    ┃
-    ┃ ====+==============+====================+=== Amortized Cost (O(1))
-    ┃  |  ┃  |  |  |  |  ┃  |  |  |  |  |  |  ┃
- 1  ┃  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-    ┗━━┻━━┻━━┻━━┻━━┻━━┻━━┻━━┻━━┻━━┻━━┻━━┻━━┻━━➜ Operations
-      1  2  3  4  5  6  7  8  9 10 11 12 13 14
-
-Legend:
-| = O(1) insertion (array has space)
-┃ = O(n) resize operation (rare)
-== = Amortized cost line (average of both)
-
-Observation: Expensive operations (┃) are rare, cheap operations (|) are common.
-```
+> [!NOTE]
+> **Key Amortized Takeaway:**
+> - **Bars:** The actual cost of each append. The vast majority of insertions cost exactly `1` work unit. Occasional doublings at powers of 2 (`1, 2, 4, 8, 16`) require copying all elements.
+> - **Line:** The amortized cost line (`~3` work units per insertion). By charging a nominal deposit of 3 units per insert (1 to insert, 2 saved in the "bank" to pay for moving itself and an older element during the next doubling), the expensive copy spikes are fully prepaid in advance!
 
 ### The Innovation: Three Proof Techniques
 
@@ -1730,20 +1722,21 @@ Equivalent Potential:
 ## Decision Framework: Should I Use Amortized Analysis?
 
 
-```mermaid
-flowchart TD
-    R["Checklist"]
-    R --> N1["No → Standard worst-case analysis sufficient"]
-    R --> N2["Yes → Continue"]
-    R --> N3["No → Amortized won't help much"]
-    R --> N4["Yes → Continue"]
-    R --> N5["No → Amortized analysis may not apply"]
-    R --> N6["Yes → Continue"]
-    R --> N7["No → Use average-case analysis"]
-    R --> N8["Yes → Use amortized analysis"]
-    R --> N9["Yes → Amortized analysis provides rigorous proof"]
-    R --> N10["No → Back-of-envelope estimate may suffice"]
+**Checklist**
+
+```text
+• No → Standard worst-case analysis sufficient
+• Yes → Continue
+• No → Amortized won't help much
+• Yes → Continue
+• No → Amortized analysis may not apply
+• Yes → Continue
+• No → Use average-case analysis
+• Yes → Use amortized analysis
+• Yes → Amortized analysis provides rigorous proof
+• No → Back-of-envelope estimate may suffice
 ```
+
 
 
 ## Real-World Design Patterns

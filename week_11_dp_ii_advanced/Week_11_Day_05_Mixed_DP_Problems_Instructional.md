@@ -84,12 +84,15 @@ If **all three answer YES**, DP is likely the right approach (or at least a viab
 DP problems fall into recognizable categories:
 
 
-```mermaid
-flowchart TD
-    R["State"]
-    R --> N1["State"]
-    R --> N2["State"]
-```
+### 📌 🗺️ Advanced Dynamic Programming Taxonomy
+
+- 🔤 Sequence & String DP<br/>LIS, LCS, Edit Distance, Palindromic Substrings
+- 🎒 Subset & Knapsack DP<br/>0/1 Knapsack, Subset Sum, Unbounded Coin Change
+- 📏 Interval DP<br/>Matrix Chain Multiplication, Burst Balloons, Merge Stones
+- 🌲 Tree DP<br/>Tree Diameter, House Robber III, Subtree Aggregations
+- 🔢 Bitmask DP (N <= 20)<br/>TSP, Minimum Hamiltonian Path, Hungarian Assignment
+- 📊 Digit DP<br/>Counting numbers with digit constraints in range [L, R]
+
 
 
 ### Invariants & Properties: Confidence Signals

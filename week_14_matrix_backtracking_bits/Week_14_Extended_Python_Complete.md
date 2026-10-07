@@ -638,8 +638,6 @@ def solve_crt(a: list[int], m: list[int]) -> int:
     return result
 ```
 
-```
-
 ---
 
 > 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)

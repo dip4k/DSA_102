@@ -9,9 +9,6 @@
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
-
----
-
 ## 🎯 LEARNING OBJECTIVES
 
 *By the end of this chapter, you will be able to:*
@@ -694,6 +691,4 @@ Clarity on **constraints** (fractional vs whole, deadlines vs none) is key.
 **End of Week 12 Day 04 Instructional File**
 
 ---
----
-
 > 🧭 **Navigation:** [← Previous Day](Week_12_Day_03_Huffman_Coding_And_Optimal_Trees_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_12_Day_05_Greedy_In_Systems_Instructional.md)

@@ -78,24 +78,25 @@ The structure can be:
 
 Let's look at a concrete example. Here's a small directed, weighted graph:
 
-```
-    A ----5----> B
-    |            /
-    |           /
-    2          3
-    |         /
-    v        /
-    D <-----
-    |       C (weight: 4)
-    |       ^
-    1       |
-    |       7
-    v       |
-    E ------+
+```mermaid
+flowchart TD
+    classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
 
-Nodes: {A, B, C, D, E}
-Edges: {A→B(5), A→D(2), B→C(3), C→E(7), D→E(1)}
+    A["A"]:::nodeStyle
+    B["B"]:::nodeStyle
+    C["C"]:::nodeStyle
+    D["D"]:::nodeStyle
+    E["E"]:::nodeStyle
+
+    A -->|"5"| B
+    A -->|"2"| D
+    B -->|"3"| C
+    C -->|"7"| E
+    D -->|"1"| E
 ```
+
+Nodes: `{A, B, C, D, E}`  
+Edges: `{A -> B (weight 5), A -> D (weight 2), B -> C (weight 3), C -> E (weight 7), D -> E (weight 1)}`
 
 Notice several things:
 - Node A has 2 outgoing edges (to B and D) and 0 incoming edges.
@@ -151,24 +152,23 @@ Now let's get concrete. We'll represent the same graph in three fundamentally di
 
 For all examples, we'll use this simple graph:
 
-```
-    0 ---1---> 1
-    |         /
-    |        /
-    2       3
-    |      /
-    v     /
-    2 ---4---> 3
-    
-Nodes: {0, 1, 2, 3}
-Directed, Weighted
+```mermaid
+flowchart LR
+    classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
 
-Edges:
-  0 → 1 (weight 1)
-  0 → 2 (weight 2)
-  1 → 3 (weight 3)
-  2 → 3 (weight 4)
+    N0["0"]:::nodeStyle
+    N1["1"]:::nodeStyle
+    N2["2"]:::nodeStyle
+    N3["3"]:::nodeStyle
+
+    N0 -->|"1"| N1
+    N0 -->|"2"| N2
+    N1 -->|"3"| N3
+    N2 -->|"4"| N3
 ```
+
+Nodes: `{0, 1, 2, 3}` (Directed, Weighted)  
+Edges: `{0 -> 1 (w:1), 0 -> 2 (w:2), 1 -> 3 (w:3), 2 -> 3 (w:4)}`
 
 ### 🔧 Representation 1: Adjacency List
 

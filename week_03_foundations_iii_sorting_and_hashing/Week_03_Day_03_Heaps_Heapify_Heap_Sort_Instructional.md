@@ -75,66 +75,81 @@ If you want to find the highest-paid person, look at the CEO—O(1). If someone 
 
 ### 🖼 Visualizing Heap as Complete Binary Tree
 
+```mermaid
+flowchart TD
+    N50["Index 0: 50 (CEO)"]:::rootNode
+    N30["Index 1: 30 (VP)"]:::internalNode
+    N20["Index 2: 20 (VP)"]:::internalNode
+    N10["Index 3: 10 (Director)"]:::leafNode
+    N5["Index 4: 5 (Director)"]:::leafNode
+    N15["Index 5: 15 (Director)"]:::leafNode
+
+    N50 --> N30
+    N50 --> N20
+    N30 --> N10
+    N30 --> N5
+    N20 --> N15
+
+    classDef rootNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
+    classDef internalNode fill:#37474f,stroke:#90a4ae,stroke-width:2px,color:#ffffff
+    classDef leafNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
 ```
-Max-Heap (Tree View):
-            50 (CEO)
-           /  \
-          30   20  (VPs)
-         / \   /
-        10  5 15  (Directors/Managers)
 
-Same heap as Array:
-Index:    0   1   2   3   4   5
-Array:   [50, 30, 20, 10, 5, 15]
+**Heap as Contiguous 1D Array:**
 
-Index arithmetic (0-indexed):
-- Parent of index i: (i - 1) / 2
-- Left child of index i: 2*i + 1
-- Right child of index i: 2*i + 2
+| Index | `0` | `1` | `2` | `3` | `4` | `5` |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Value** | `50` | `30` | `20` | `10` | `5` | `15` |
 
-Verify:
-- Parent of 1 (30): (1-1)/2 = 0 (50) ✓ [30 < 50, heap property holds]
-- Left child of 0 (50): 2*0+1 = 1 (30) ✓
-- Right child of 0 (50): 2*0+2 = 2 (20) ✓
-- Parent of 4 (5): (4-1)/2 = 1 (30) ✓ [5 < 30, heap property holds]
+**Index Arithmetic (0-indexed):**
+- **Parent of index `i`:** `(i - 1) / 2`
+- **Left child of index `i`:** `2 * i + 1`
+- **Right child of index `i`:** `2 * i + 2`
 
-Key insight: Index arithmetic replaces pointer dereferencing!
-```
+**Verification:**
+- Parent of `1` (`30`): `(1 - 1) / 2 = 0` (`50`) (holds max-heap property: `30 <= 50`)
+- Left child of `0` (`50`): `2 * 0 + 1 = 1` (`30`)
+- Right child of `0` (`50`): `2 * 0 + 2 = 2` (`20`)
+- Parent of `4` (`5`): `(4 - 1) / 2 = 1` (`30`) (holds max-heap property: `5 <= 30`)
+
+> [!TIP]
+> Key insight: Contiguous array indexing completely eliminates pointer chasing, enabling cache-friendly `O(log N)` operations with zero memory overhead!
 
 ### The Heap Invariant: Maintaining Order
 
-**Max-Heap Invariant:** Every parent ≥ both children.
-**Min-Heap Invariant:** Every parent ≤ both children.
+- **Max-Heap Invariant:** Every parent `>=` both children (`arr[parent] >= arr[child]`).
+- **Min-Heap Invariant:** Every parent `<=` both children (`arr[parent] <= arr[child]`).
 
 These invariants ensure:
 - Root is always max (or min)
-- Tree is **complete binary tree** (all levels filled except possibly last, which fills left-to-right)
-- Height = O(log n)
-- All operations involve O(log n) bubble/float operations
+- Tree is a **complete binary tree** (all levels filled except possibly last, which fills left-to-right)
+- Height = `O(log N)`
+- All operations involve at most `O(log N)` sift-up/sift-down comparisons
 
 ### 🖼 Complete vs Incomplete Trees
 
+```mermaid
+flowchart TD
+    subgraph CompleteHeap["✅ Complete Tree (Valid Heap Array Representation)"]
+        C50["50 (idx: 0)"] --> C30["30 (idx: 1)"]
+        C50 --> C20["20 (idx: 2)"]
+        C30 --> C10["10 (idx: 3)"]
+        C30 --> C5["5 (idx: 4)"]
+    end
+
+    subgraph IncompleteHeap["❌ Incomplete Tree (Gap at Left Child idx: 3)"]
+        I50["50 (idx: 0)"] --> I30["30 (idx: 1)"]
+        I50 --> I20["20 (idx: 2)"]
+        I30 -.-> IG["Gap at idx: 3!"]:::errorNode
+        I30 --> I15["15 (Right child only)"]:::errorNode
+    end
+
+    classDef default fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#ffffff
+    classDef errorNode fill:#b71c1c,stroke:#ff8a80,stroke-width:2px,color:#ffffff
 ```
-Complete (valid for heap):
-        50
-       /  \
-      30   20
-     / \
-    10  5
 
-Array: [50, 30, 20, 10, 5]
-All levels filled; last level left-to-right.
-
-Incomplete (invalid for heap array representation):
-        50
-       /  \
-      30   20
-        \
-        15
-
-Why invalid: Index 3 would be left child of 1, but we have a right child instead.
-Violates complete tree structure; index arithmetic breaks down.
-```
+- **Array for Complete Tree:** `[50, 30, 20, 10, 5]` — dense with 0 memory holes.
+- **Why Incomplete Tree is Invalid:** Index 3 would correspond to a non-existent left child, breaking index arithmetic formulas and violating array packing invariants.
 
 ---
 

@@ -30,27 +30,26 @@
 ### 1.1 The DP Landscape — Week 10 Overview
 
 
-```mermaid
-flowchart TD
-    R["State"]
-    R --> N1["Step"]
-    R --> N2["Step"]
-    N2 --> N3["Step"]
-```
+### 📌 🗺️ Week 10: Dynamic Programming Fundamentals
+
+- 📅 Day 1: Recursion & Memoization (Top-Down vs Bottom-Up)
+- 📅 Day 2: 1D Dynamic Programming (House Robber, Coin Change)
+- 📅 Day 3: 2D Grid DP (Unique Paths, Minimum Path Sum)
+- 📅 Day 4: Subsequence & Knapsack (LIS, 0/1 Knapsack)
+- 📅 Day 5: State Machine DP (Stock Trading with Cooldown)
+
 
 
 ### 1.2 The Four Pillars of DP (Conceptual Foundation)
 
 
-```mermaid
-flowchart TD
-    R["State"]
-    R --> N1["State"]
-    N1 --> N2["State"]
-    N1 --> N3["State"]
-    N1 --> N4["State"]
-    N1 --> N5["State"]
-```
+### 📌 🏛️ The Four Pillars of Dynamic Programming
+
+- 1️⃣ Optimal Substructure<br/>Global optimal solution can be constructed from optimal sub-solutions
+- 2️⃣ Overlapping Subproblems<br/>Same state sub-problems are evaluated multiple times across recursion
+- 3️⃣ Precise State Definition<br/>dp[i][j] uniquely captures minimal parameters needed to make decisions
+- 4️⃣ Transition & Base Cases<br/>Mathematical recurrence relation and terminating base cases
+
 
 
 ### 1.3 DP Approach Selection Tree
@@ -58,11 +57,19 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    R["Problem Given"]
-    R --> N1["→ Not DP material"]
-    R --> N2["→ Try Divide & Conquer"]
-    R --> N3["→ Infeasible (exponential)"]
-    R --> N4["State"]
+    classDef start fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef test fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:1.5px;
+    classDef result fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+    classDef no fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:1.5px;
+
+    R["Problem Given"]:::start
+    R --> T1{"Overlapping Subproblems?"}:::test
+    T1 -->|No| N1["❌ Not DP material → Try Greedy / Divide & Conquer"]:::no
+    T1 -->|Yes| T2{"Optimal Substructure?"}:::test
+    T2 -->|No| N2["❌ Try Backtracking / Brute Force"]:::no
+    T2 -->|Yes| T3{"Does Greedy Choice Hold?"}:::test
+    T3 -->|Yes| N3["⚡ Use Greedy (O(N) / O(N log N))"]:::result
+    T3 -->|No| DP["⚡ Dynamic Programming (Memoization or Tabulation)"]:::result
 ```
 
 
@@ -75,10 +82,26 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    R[" WITHOUT MEMOIZATION "]
-    R --> N1["State"]
-    R --> N2["State"]
-    R --> N3["State"]
+    classDef naive fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:1.5px;
+    classDef memo fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+
+    subgraph Naive["❌ Naive Recursion: O(2^N) Exponential Redundancy"]
+        F5["fib(5)"]:::naive
+        F4A["fib(4)"]:::naive
+        F3A["fib(3) (Redundant)"]:::naive
+        F3B["fib(3) (Redundant)"]:::naive
+        F2A["fib(2) (Redundant x3)"]:::naive
+        F5 --> F4A & F3A
+        F4A --> F3B & F2A
+    end
+
+    subgraph DP["✅ With Memoization / Tabulation: O(N) Linear Time"]
+        D0["Compute fib(0..1) = Base cases"]:::memo
+        D0 --> D2["Compute fib(2) = 1"]:::memo
+        D2 --> D3["Compute fib(3) = 2"]:::memo
+        D3 --> D4["Compute fib(4) = 3"]:::memo
+        D4 --> D5["Compute fib(5) = 5 (Each state solved ONCE!)"]:::memo
+    end
 ```
 
 
@@ -310,13 +333,20 @@ Answer: Length = tails.length = 3  |  LIS tail ends with 20
 
 ```mermaid
 flowchart TD
-    R["State"]
-    R --> N1["State"]
-    R --> N2["State"]
-    R --> N3["State"]
-    R --> N4["State"]
-    R --> N5["State"]
-    R --> N6["State"]
+    classDef top fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef bot fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+
+    subgraph TopDown["🧠 Top-Down (Memoization)"]
+        T1["Direction: Target State → Base Cases (Recursion)"]:::top
+        T2["Evaluation: Solves only states visited along call graph"]:::top
+        T3["Overhead: Function call stack overhead & potential stack overflow"]:::top
+    end
+
+    subgraph BottomUp["📊 Bottom-Up (Tabulation)"]
+        B1["Direction: Base Cases → Target State (Iteration)"]:::bot
+        B2["Evaluation: Fills tabular states systematically in topological order"]:::bot
+        B3["Optimization: Rolling variables allow O(1) space optimization!"]:::bot
+    end
 ```
 
 
@@ -392,42 +422,27 @@ PROBLEM TYPE                    PATTERN                   EXAMPLE
 
 ### 6.1 Time & Space Complexity Reference (Week 10)
 
-```
-+========================================================================+
-|                    DP COMPLEXITY QUICK REFERENCE                       |
-+========================================================================+
-| ALGORITHM              TIME              SPACE            NOTES         |
-+========================================================================+
-| Fibonacci              O(2^n) → O(n)     O(n) → O(1)     Memoization   |
-| Climbing Stairs        O(n)              O(n) → O(1)     Space optim   |
-| House Robber           O(n)              O(1)            2 variables   |
-| Coin Change            O(n×coins)        O(n)            Unbounded     |
-| 0/1 Knapsack           O(n×W)            O(W)            W = capacity  |
-| Unbounded Knapsack     O(W×n)            O(W)            Each item ∞  |
-|-----------------------------------------------------------------------|
-| Grid Paths             O(m×n)            O(m×n) → O(n)   Obstacles    |
-| Min Path Sum           O(m×n)            O(m×n) → O(n)   Cost acctum  |
-| Edit Distance          O(m×n)            O(m×n) → O(n)   Space optim  |
-| LCS                    O(m×n)            O(m×n) → O(n)   Reconstruct  |
-|-----------------------------------------------------------------------|
-| LIS (DP)               O(n²)             O(n)            All pairs    |
-| LIS (Binary Search)    O(n log n)        O(n)            Binary search|
-| Kadane                 O(n)              O(1)            Single pass  |
-| Weighted Intervals     O(n log n)        O(n)            Binary search|
-| Distinct Subsequences  O(m×n)            O(m×n) → O(n)   2D string    |
-+========================================================================+
+| Algorithm / Problem | Naive Time | Optimized DP Time | Auxiliary Space | Space Optimization Technique |
+| :--- | :--- | :--- | :--- | :--- |
+| **Fibonacci Numbers** | `O(2^N)` | `O(N)` | `O(1)` | Keep only two state variables (`prev1`, `prev2`) |
+| **Climbing Stairs** | `O(2^N)` | `O(N)` | `O(1)` | Two running state variables |
+| **House Robber** | `O(2^N)` | `O(N)` | `O(1)` | Rolling `rob` vs `skip` state variables |
+| **Coin Change (Min Coins)** | `O(coins^Amount)` | `O(Amount * coins)` | `O(Amount)` | 1D DP array from `1` to `Amount` |
+| **0/1 Knapsack** | `O(2^N)` | `O(N * W)` | `O(W)` | 1D array traversed in reverse (`W down to w_i`) |
+| **Unbounded Knapsack** | Exponential | `O(N * W)` | `O(W)` | 1D array traversed forward (`w_i up to W`) |
+| **Unique Grid Paths** | Exponential | `O(M * N)` | `O(N)` | Keep single row buffer |
+| **Minimum Path Sum** | Exponential | `O(M * N)` | `O(N)` | In-place or 1D rolling buffer |
+| **Edit Distance (Levenshtein)**| `O(3^(M+N))` | `O(M * N)` | `O(N)` | Two rolling rows (`prev_row`, `curr_row`) |
+| **Longest Common Subsequence** | `O(2^(M+N))` | `O(M * N)` | `O(N)` | Two rolling rows |
+| **Longest Increasing Subsequence** | `O(2^N)` | `O(N log N)` | `O(N)` | Patience sorting / Binary search (`tails` array) |
+| **Maximum Subarray (Kadane)**| `O(N^2)` | `O(N)` | `O(1)` | Single running prefix accumulation variable |
+| **Weighted Interval Scheduling**| `O(2^N)` | `O(N log N)` | `O(N)` | Sort by end times + Binary Search (`bisect`) |
 
-Notation:
-  n = sequence/array length
-  m, n = two different lengths (strings, grid dimensions)
-  W = weight/capacity (knapsack)
-  coins = number of coin types
-  
-Space Optimization Indicators:
-  O(n) → O(1):  Store only previous row/values
-  O(m×n) → O(n): Keep only previous row for grid DP
-  O(n) → O(1):  Track min variables instead of array
-```
+> [!TIP]
+> **Space Optimization Rules of Thumb:**
+> - **1D recurrence (`dp[i] = f(dp[i-1], dp[i-2])`):** Always compress from `O(N)` to `O(1)` using 2 scalar variables.
+> - **2D grid/string recurrence (`dp[i][j] = f(dp[i-1][j], dp[i][j-1], dp[i-1][j-1])`):** Compress from `O(M * N)` to `O(min(M, N))` by allocating only one or two rows.
+> - **0/1 Knapsack (`dp[i][w]` depends only on `dp[i-1][w]` and `dp[i-1][w - weight]`):** Iterate capacity backwards to update in-place within a single 1D array of size `W + 1`.
 
 ### 6.2 When Each Algorithm is Optimal
 
@@ -458,17 +473,27 @@ Trade-off Summary:
 
 ```mermaid
 flowchart TD
-    R["State"]
-    R --> N1["State"]
+    classDef key fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef pat fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:1.5px;
+
+    K["🔍 Interview Problem Clues & Keywords"]:::key
+    K --> P1["🎯 'Min/Max Cost/Value/Weight' → 1D/2D Optimization DP (Coin Change, Knapsack)"]:::pat
+    K --> P2["🔢 'Count the number of ways' → Additive Counting DP (Climbing Stairs, Unique Paths)"]:::pat
+    K --> P3["❓ 'Can partition / Is reachable' → Boolean Feasibility DP (Partition Equal Subset Sum)"]:::pat
+    K --> P4["🔤 'Longest subsequence / substring' → String/Array Matching DP (LCS, LIS, Edit Distance)"]:::pat
+    K --> P5["🔄 'Cooldown, Hold/Sell/Rest states' → Finite State Machine DP (Stock Trading)"]:::pat
 ```
 
 
 ### 7.2 DP Pattern Visual Flowchart
 
 
-|  |  |  |
+| Problem Shape | Primary Decision | Core Transition Sketch |
 | :--- | :--- | :--- |
-|  |  |  |
+| Sequence / 1D | Include or Skip element i | `dp[i] = max(dp[i-1], dp[i-2] + val[i])` |
+| Grid / 2D Matrix | Move Right or Move Down | `dp[r][c] = grid[r][c] + min(dp[r-1][c], dp[r][c-1])` |
+| Two Strings | Match, Insert, Delete, Replace | `dp[i][j] = (s[i]==t[j]) ? dp[i-1][j-1] : 1 + min(...)` |
+| Knapsack / Capacity | Take item with weight w or skip | `dp[w] = max(dp[w], dp[w - weight] + val)` |
 
 
 ---
@@ -478,20 +503,30 @@ flowchart TD
 ### 8.1 DP Applications Across Industries
 
 
-```mermaid
-flowchart TD
-    R["State"]
-    R --> N1["State"]
-```
+### 📌 🏢 Industrial Applications of Dynamic Programming
+
+- **🧬 Bioinformatics: DNA / RNA Sequence Alignment (Smith-Waterman / LCS)**
+  - Aligning genomic sequences with edit distance penalties
+- **💻 Software Dev: Git Diff, Auto-correct & Spell Check (Edit Distance)**
+  - Minimal insertions, deletions, and replacements between text revisions
+- **☁️ Cloud Computing: VM & Resource Bin Packing (0/1 & Multi-Knapsack)**
+  - Maximizing compute density across fixed physical servers
+- **📈 Quantitative Finance: Multi-Period Portfolio Optimization & Option Pricing**
+  - State-machine transitions over price and time horizons
+
 
 
 ### 8.2 Real-World Problem Translation Example
 
 
 ```mermaid
-flowchart TD
-    R["State"]
-    R --> N1["State"]
+flowchart LR
+    classDef real fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
+    classDef arrow fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:1.5px;
+    classDef dppat fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+
+    R1["Business Problem:<br/>Minimum server costs to serve R requests"]:::real --> M1["Map to State:<br/>dp[r] = min cost for r capacity"]:::arrow --> P1["Formal Pattern:<br/>Coin Change / Unbounded Knapsack"]:::dppat
+    R2["Business Problem:<br/>Minimal file changes in Git merge"]:::real --> M2["Map to State:<br/>dp[i][j] = common line count"]:::arrow --> P2["Formal Pattern:<br/>Longest Common Subsequence (LCS)"]:::dppat
 ```
 
 
@@ -546,30 +581,29 @@ Schedule "non-overlapping" Weighted intervals + binary   O(n log n)
 ### 10.1 Recommended Visual Learning Progression
 
 
-```mermaid
-flowchart TD
-    R["Week 10 Learning Path (Visual Approach)"]
-    R --> N1["WATCH: Exponential tree vs memoization diagram (Part 2.1)"]
-    R --> N2["TRACE: Fibonacci table build (manually on paper)"]
-    R --> N3["DRAW: Recursive call tree for fib(5) with cache hits"]
-    R --> N4["PRACTICE: Hand-trace climbing stairs for n=5"]
-    R --> N5["STUDY: Comparison chart (Part 4.2)"]
-    R --> N6["TRACE: House robber DP table"]
-    R --> N7["DRAW: Decision tree for knapsack (take vs skip)"]
-    R --> N8["PRACTICE: Build coin change table step-by-step"]
-    R --> N9["WATCH: Edit distance state propagation (Part 3.1)"]
-    R --> N10["TRACE: LCS diagonal matching (Part 3.2)"]
-    R --> N11["DRAW: Grid navigation with obstacles"]
-    R --> N12["PRACTICE: Fill edit distance table by hand"]
-    R --> N13["STUDY: LIS comparison (both approaches, Part 3.3)"]
-    R --> N14["TRACE: Binary search optimization"]
-    R --> N15["DRAW: Kadane progression"]
-    R --> N16["PRACTICE: Find LIS length manually"]
-    R --> N17["TRANSLATE: Story problem to DP state (Part 8.2)"]
-    R --> N18["DESIGN: Custom state for novel problem"]
-    R --> N19["DRAW: Problem decomposition tree"]
-    R --> N20["PRACTICE: Formulate recurrence for new scenario"]
-```
+### 📌 Week 10 Learning Path (Visual Approach)
+
+- WATCH: Exponential tree vs memoization diagram (Part 2.1)
+- TRACE: Fibonacci table build (manually on paper)
+- DRAW: Recursive call tree for fib(5) with cache hits
+- PRACTICE: Hand-trace climbing stairs for n=5
+- STUDY: Comparison chart (Part 4.2)
+- TRACE: House robber DP table
+- DRAW: Decision tree for knapsack (take vs skip)
+- PRACTICE: Build coin change table step-by-step
+- WATCH: Edit distance state propagation (Part 3.1)
+- TRACE: LCS diagonal matching (Part 3.2)
+- DRAW: Grid navigation with obstacles
+- PRACTICE: Fill edit distance table by hand
+- STUDY: LIS comparison (both approaches, Part 3.3)
+- TRACE: Binary search optimization
+- DRAW: Kadane progression
+- PRACTICE: Find LIS length manually
+- TRANSLATE: Story problem to DP state (Part 8.2)
+- DESIGN: Custom state for novel problem
+- DRAW: Problem decomposition tree
+- PRACTICE: Formulate recurrence for new scenario
+
 
 
 ### 10.2 Visual Debugging Checklist

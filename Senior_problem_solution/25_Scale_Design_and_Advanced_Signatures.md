@@ -1,4 +1,4 @@
-# Phase 25 — Scale, Design & Advanced Signatures
+﻿# Phase 25 — Scale, Design & Advanced Signatures
 
 > **Curriculum Phase:** 25  
 > **Topic Domain:** Scaled Stream Counters, Time-Indexed Key-Value Stores, Weighted Interval DP, 2-Coloring Graphs, Matrix DAG Memoization, Combinatorial Scheduling, and Origin-Destination Transit Aggregators  
@@ -2210,7 +2210,7 @@ public class SolutionTopDown
 - **Sample 1:**
   - **Input:** `nums = [1, 2, 3]`
   - **Output:** `[1, 3, 2]`
-  - **Explanation:** Suffix is `[3]`, pivot is `2`. Smallest suffix element > 2 is `3`. Swap `2` and `3` $	o$ `[1, 3, 2]`. Suffix reversed is `[2]`. Result: `[1, 3, 2]`.
+  - **Explanation:** Suffix is `[3]`, pivot is `2`. Smallest suffix element > 2 is `3`. Swap `2` and `3` -> `[1, 3, 2]`. Suffix reversed is `[2]`. Result: `[1, 3, 2]`.
 - **Sample 2 (Maximal Suffix Wrap):**
   - **Input:** `nums = [3, 2, 1]`
   - **Output:** `[1, 2, 3]`
@@ -3134,7 +3134,7 @@ A brute-force solution generates all (2n)! permutations using recursive backtrac
 - **Factorial Product Decomposition:**
   Notice the algebraic factorization:
   rac{(2n)!}{2^n} = rac{1 	imes 2 	imes 3 	imes 4 	imes ... 	imes (2n - 1) 	imes 2n}{2 	imes 2 	imes ... 	imes 2}
-  Pair each even factor 2k with a 2 in the denominator: $rac{2k}{2} = k$.
+  Pair each even factor 2k with a 2 in the denominator: (2k) / 2 = k.
   rac{(2n)!}{2^n} = Product(k=1..n) k 	imes (2k - 1)
 - **Inductive Dynamic Programming Recurrence:**
   DP[1] = 1
@@ -3371,7 +3371,7 @@ public class Solution2DDP
   2. `_routeStats`: Maps `RouteKey(start, end) -> (totalDuration, tripCount)` representing completed journey metrics.
   On `CheckIn`: Ingest into `_activeCheckIns`.
   On `CheckOut`: Evict customer from `_activeCheckIns`, compute trip duration t - t_start, and atomically update the running total and count in `_routeStats`.
-  On `GetAverageTime`: Query `_routeStats` and compute $rac{	ext{totalDuration}}{	ext{tripCount}}$ in O(1) time.
+  On `GetAverageTime`: Query `_routeStats` and compute totalDuration / tripCount in O(1) time.
 - **Sample Execution Trace:**
   - `UndergroundSystem sys = new UndergroundSystem();`
   - `sys.CheckIn(45, "Leyton", 3);`
@@ -3426,8 +3426,8 @@ Underground System Data Flow Architecture:
    Direct O(1) Probe -> 12 / 1 = 12.0
 ```
 
-- `_activeCheckIns`: Ephemeral hash table (`int id` $	o$ `(string Station, int Time)`).
-- `_routeStats`: Permanent aggregate hash table (`RouteKey` $	o$ `(long TotalDuration, int TripCount)`).
+- `_activeCheckIns`: Ephemeral hash table (`int id` -> `(string Station, int Time)`).
+- `_routeStats`: Permanent aggregate hash table (`RouteKey` -> `(long TotalDuration, int TripCount)`).
 
 #### 3.5 State Transition Triggers & Decision Gates
 1. **CheckIn Gate:**

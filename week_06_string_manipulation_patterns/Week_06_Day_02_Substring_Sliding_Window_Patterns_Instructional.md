@@ -59,12 +59,12 @@ This "caterpillar" motion—expanding the right edge, contracting the left edge�
 Let's see how the window moves for "longest substring without repeating characters":
 
 
-```mermaid
-flowchart TD
-    R["String "abcabcbb""]
-    R --> N1["State"]
-    R --> N2["State"]
-```
+### 📌 🔤 String: 'abcabcbb' | Goal: Longest Substring Without Repeating Characters
+
+- **1️⃣ L=0, R=0..2: Window 'abc'<br/>All unique | maxLen = 3**
+  - **2️⃣ R=3: Incoming 'a' seen at idx 0<br/>Duplicate detected!**
+    - 3️⃣ Contract Left: L moves to idx 1<br/>New Window: 'bca' | Length = 3
+
 
 
 The key insight: **we never go backward**. Left only moves right, right only moves right. This ensures O(n) total iterations.
@@ -496,20 +496,17 @@ CORRECT:
 **Decision Framework:**
 
 
-```mermaid
-flowchart TD
-    R["Is the problem about SUBSTRINGS (contiguous)?"]
-    R --> N1["Yes, with CONSTRAINTS on characters:"]
-    N1 --> N2["Fixed-size window? (constant substring length needed)"]
-    N2 --> N3["Use fixed-size sliding window"]
-    N1 --> N4["Variable-size window? (constraint-based)"]
-    N4 --> N5["Optimize? (shrink to find minimum)"]
-    N5 --> N6["Use variable-size with hashmap, two-pointer"]
-    N4 --> N7["Constraint: frequency-based"]
-    N7 --> N8["Frequency map to track counts"]
-    R --> N9["No, is it about SUBSEQUENCES or PATTERNS?"]
-    N9 --> N10["Different approach (DP or advanced string algorithms)"]
-```
+### 📌 Is the problem about SUBSTRINGS (contiguous)?
+
+- **Yes, with CONSTRAINTS on characters:**
+  - **Fixed-size window? (constant substring length needed)**
+    - Use fixed-size sliding window
+  - **Variable-size window? (constraint-based)**
+    - Optimize? (shrink to find minimum)
+    - Constraint: frequency-based
+- **No, is it about SUBSEQUENCES or PATTERNS?**
+  - Different approach (DP or advanced string algorithms)
+
 
 
 - **✅ Use when:** Finding substrings with character constraints, frequency limits, pattern containment
@@ -690,6 +687,4 @@ This pattern isn't limited to strings. You'll encounter similar adaptive-window 
 When you see a problem involving sequences and constraints, pause. Ask: **"Can I maintain a sliding window to solve this?"** More often than not, the answer is yes, and the solution is elegant.
 
 ---
----
-
 > 🧭 **Navigation:** [← Previous Day](Week_06_Day_01_Palindrome_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_06_Day_03_Parentheses_Bracket_Matching_Instructional.md)

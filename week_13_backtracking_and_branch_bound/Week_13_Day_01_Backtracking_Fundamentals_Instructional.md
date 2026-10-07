@@ -89,16 +89,34 @@ In code, this translates to:
 
 Backtracking operates on an **implicit tree** called the **state space tree**:
 
-```
-                       Root (empty solution)
-                      /      |      \
-                    c1      c2      c3   ← Level 1: First decision
-                   / \      / \     / \
-                 c1 c2   c1 c3   ...    ← Level 2: Second decision
-                 /  \    /  \
-               ...  ... ... ...          ← Deeper levels
-              /
-          Leaf (complete solution or pruned node)
+```mermaid
+graph TD
+    classDef rootNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef choiceNode fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
+    classDef validLeaf fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+    classDef prunedLeaf fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
+
+    Root["👑 Root (Empty State)"]:::rootNode
+
+    C1["Choice 1"]:::choiceNode
+    C2["Choice 2"]:::choiceNode
+    C3["Choice 3"]:::choiceNode
+
+    L1["Partial State"]:::choiceNode
+    L2["Partial State"]:::choiceNode
+    P1["❌ Pruned (Dead End)"]:::prunedLeaf
+
+    Goal["✅ Valid Goal Found"]:::validLeaf
+    P2["❌ Pruned (Dead End)"]:::prunedLeaf
+
+    Root --> C1
+    Root --> C2
+    Root --> C3
+    C1 --> L1
+    C1 --> P1
+    C2 --> L2
+    L1 --> Goal
+    L1 --> P2
 ```
 
 **Structure**:
@@ -114,14 +132,45 @@ Backtracking operates on an **implicit tree** called the **state space tree**:
 Suppose you want all strings of length 3 using letters `{A, B}`.
 
 **State Space Tree**:
-```
-                    ""
-                  /    \
-                A        B          ← 1 character chosen
-              /  \      /  \
-            AA   AB    BA   BB      ← 2 characters chosen
-           / \   / \   / \   / \
-         AAA AAB ABA ABB BAA BAB BBA BBB ← 3 characters (complete solutions)
+```mermaid
+graph TD
+    classDef rootNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef midNode fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
+    classDef leafNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+
+    R["Root: &quot;&quot;"]:::rootNode
+
+    A["A"]:::midNode
+    B["B"]:::midNode
+
+    AA["AA"]:::midNode
+    AB["AB"]:::midNode
+    BA["BA"]:::midNode
+    BB["BB"]:::midNode
+
+    AAA["AAA"]:::leafNode
+    AAB["AAB"]:::leafNode
+    ABA["ABA"]:::leafNode
+    ABB["ABB"]:::leafNode
+    BAA["BAA"]:::leafNode
+    BAB["BAB"]:::leafNode
+    BBA["BBA"]:::leafNode
+    BBB["BBB"]:::leafNode
+
+    R -->|"Choice A"| A
+    R -->|"Choice B"| B
+    A --> AA
+    A --> AB
+    B --> BA
+    B --> BB
+    AA --> AAA
+    AA --> AAB
+    AB --> ABA
+    AB --> ABB
+    BA --> BAA
+    BA --> BAB
+    BB --> BBA
+    BB --> BBB
 ```
 
 **Observations**:
@@ -190,28 +239,17 @@ If we added a constraint (e.g., "no two consecutive A's"), we'd **prune** at nod
 ## Taxonomy of Backtracking Problems
 
 
-```mermaid
-flowchart TD
-    R["State"]
-    R --> N1["State"]
-    N1 --> N2["Permutations & Combinations"]
-    N2 --> N3["All permutations of [1,2,3]"]
-    N2 --> N4["All subsets (power set)"]
-    N2 --> N5["Combinations with constraints (sum = target)"]
-    N1 --> N6["Constraint Satisfaction (CSP)"]
-    N6 --> N7["N-Queens: No two queens attack each other"]
-    N6 --> N8["Sudoku: Fill grid respecting row/col/box rules"]
-    N6 --> N9["Graph Coloring: Color nodes with k colors, no adjacent same"]
-    N6 --> N10["Crossword Puzzles: Words fit and intersect correctly"]
-    N1 --> N11["Path Finding with Constraints"]
-    N11 --> N12["Maze solving: Find path from start to exit"]
-    N11 --> N13["Word Search: Find word in grid (DFS with backtracking)"]
-    N11 --> N14["Knight's Tour: Visit all squares exactly once"]
-    N1 --> N15["Optimization with Pruning"]
-    N15 --> N16["Traveling Salesman (small n)"]
-    N15 --> N17["0/1 Knapsack (when DP impractical)"]
-    N15 --> N18["Job Scheduling with deadlines"]
-```
+### 📌 🌳 Master Taxonomy of Backtracking Problems
+
+- **🎲 Permutations & Subsets**
+  - • All permutations of [1,2,3]<br/>• All subsets / Power set<br/>• Combination Sum with target
+- **🧩 Constraint Satisfaction (CSP)**
+  - • N-Queens: Non-attacking queens<br/>• Sudoku: Row/Col/Box constraints<br/>• Graph Coloring: Adjacent nodes different
+- **🗺️ Constrained Path Finding**
+  - • Maze Solving & Robot Navigation<br/>• Word Search in 2D Matrix<br/>• Knight's Tour Hamiltonian Path
+- **⚡ Combinatorial Optimization**
+  - • Traveling Salesperson (Branch & Bound)<br/>• 0/1 Knapsack (Pruned tree)<br/>• Job Shop Scheduling with deadlines
+
 
 
 **Key Distinction**:
@@ -238,11 +276,24 @@ Every backtracking algorithm has four components:
 
 **Stack Frame** (per recursive call):
 
+
 ```mermaid
 flowchart TD
-    R["State"]
-    R --> N1["State"]
-    R --> N2["State"]
+    classDef frame fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef local fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:1.5px;
+    classDef shared fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:1.5px;
+
+    subgraph Stack["🥞 Recursive Call Stack (Depth d)"]
+        F1["Stack Frame (Depth d):<br/>• Parameter: index / step<br/>• Local choice iteration pointer i"]:::frame
+        F2["Stack Frame (Depth d-1):<br/>• Paused waiting for child recursive call"]:::frame
+        F3["Stack Frame (Depth 0 - Root):<br/>• Initial invocation"]:::frame
+        F1 --> F2 --> F3
+    end
+
+    subgraph Heap["💾 Shared In-Place State (Memory O(N))"]
+        S["Current Path / Board Array: mutated on DO, restored on UNDO"]:::shared
+        V["Visited Set / Bitmask: tracks currently used elements"]:::shared
+    end
 ```
 
 
@@ -966,6 +1017,4 @@ Before moving to Day 2, ensure you can:
 If you can do all of these, you're ready for **Day 2: Backtracking Problems** (N-Queens, Sudoku, Word Search in depth).
 
 ---
----
-
 > 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_13_Day_02_Backtracking_Problems_Instructional.md)

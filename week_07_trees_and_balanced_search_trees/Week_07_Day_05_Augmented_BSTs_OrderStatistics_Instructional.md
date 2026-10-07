@@ -75,10 +75,16 @@ Or think of it like a **financial portfolio.** Each stock in your portfolio has 
 
 Here's a simple augmented BST with subtree size stored at each node:
 
-```
-           5(3)              ← Node value=5, subtree size=3
-           /  \
-         3(1)  8(1)          ← Leaf nodes have size=1
+```mermaid
+graph TD
+    classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+
+    N5["5 (size=3)"]:::nodeStyle
+    N3["3 (size=1)"]:::nodeStyle
+    N8["8 (size=1)"]:::nodeStyle
+
+    N5 --> N3
+    N5 --> N8
 ```
 
 The augmentation (size) at each node tells us:
@@ -86,19 +92,31 @@ The augmentation (size) at each node tells us:
 - `size(3) = 1` means the left subtree has 1 node (just node 3)
 - `size(8) = 1` means the right subtree has 1 node (just node 8)
 
-Now, to find the **rank of 5** (how many nodes are ≤ 5):
-- Answer: `size(left subtree of 5) + 1 = 1 + 1 = 2` nodes are < 5, so rank = 2
+Now, to find the **rank of 5** (how many nodes are <= 5):
+- Answer: `size(left subtree of 5) + 1 = 1 + 1 = 2` nodes are <= 5, so rank = 2
 
 This is O(log n) instead of O(n)!
 
 More complex example with multiple levels:
 
-```
-              10(7)
-             /     \
-          5(3)      15(3)
-         /   \      /   \
-       3(1) 7(1)  12(1) 20(1)
+```mermaid
+graph TD
+    classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+
+    N10["10 (size=7)"]:::nodeStyle
+    N5["5 (size=3)"]:::nodeStyle
+    N15["15 (size=3)"]:::nodeStyle
+    N3["3 (size=1)"]:::nodeStyle
+    N7["7 (size=1)"]:::nodeStyle
+    N12["12 (size=1)"]:::nodeStyle
+    N20["20 (size=1)"]:::nodeStyle
+
+    N10 --> N5
+    N10 --> N15
+    N5 --> N3
+    N5 --> N7
+    N15 --> N12
+    N15 --> N20
 ```
 
 To find **rank of 12:**
@@ -190,12 +208,26 @@ The algorithm exploits the augmentation (subtree size):
 **Inline trace 🧪—watch it execute:**
 
 Find 3rd smallest in tree:
-```
-           10(7)
-          /     \
-       5(3)      15(3)
-      /   \      /   \
-    3(1) 7(1)  12(1) 20(1)
+```mermaid
+graph TD
+    classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef pathStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
+    classDef foundStyle fill:#e8f5e9,stroke:#2e7d32,stroke-width:3px,color:#1b5e20
+
+    N10["10 (size=7) 👉 Check"]:::pathStyle
+    N5["5 (size=3) 👉 Check"]:::pathStyle
+    N15["15 (size=3)"]:::nodeStyle
+    N3["3 (size=1)"]:::nodeStyle
+    N7["🎯 7 (size=1) ✅ 3rd Smallest"]:::foundStyle
+    N12["12 (size=1)"]:::nodeStyle
+    N20["20 (size=1)"]:::nodeStyle
+
+    N10 --> N5
+    N10 --> N15
+    N5 --> N3
+    N5 --> N7
+    N15 --> N12
+    N15 --> N20
 ```
 
 Execution:
@@ -238,12 +270,26 @@ function rank(node, x):
 **Inline trace 🧪—watch it execute:**
 
 Find rank of 12:
-```
-           10(7)
-          /     \
-       5(3)      15(3)
-      /   \      /   \
-    3(1) 7(1)  12(1) 20(1)
+```mermaid
+graph TD
+    classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef pathStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
+    classDef foundStyle fill:#e8f5e9,stroke:#2e7d32,stroke-width:3px,color:#1b5e20
+
+    N10["10 (size=7) 👉 Accumulate 3+1=4"]:::pathStyle
+    N5["5 (size=3) (Skipped left)"]:::nodeStyle
+    N15["15 (size=3) 👉 12 < 15"]:::pathStyle
+    N3["3 (size=1)"]:::nodeStyle
+    N7["7 (size=1)"]:::nodeStyle
+    N12["🎯 12 (size=1) ✅ Match! Total=5"]:::foundStyle
+    N20["20 (size=1)"]:::nodeStyle
+
+    N10 --> N5
+    N10 --> N15
+    N5 --> N3
+    N5 --> N7
+    N15 --> N12
+    N15 --> N20
 ```
 
 Execution:
@@ -293,12 +339,25 @@ function rangeCount(root, L, R):
 **Inline trace 🧪—watch it execute:**
 
 Count values in range [7, 12]:
-```
-           10(7)
-          /     \
-       5(3)      15(3)
-      /   \      /   \
-    3(1) 7(1)  12(1) 20(1)
+```mermaid
+graph TD
+    classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef inRange fill:#e8f5e9,stroke:#2e7d32,stroke-width:3px,color:#1b5e20
+
+    N10["🎯 10 (In Range)"]:::inRange
+    N5["5"]:::nodeStyle
+    N15["15"]:::nodeStyle
+    N3["3"]:::nodeStyle
+    N7["🎯 7 (In Range)"]:::inRange
+    N12["🎯 12 (In Range)"]:::inRange
+    N20["20"]:::nodeStyle
+
+    N10 --> N5
+    N10 --> N15
+    N5 --> N3
+    N5 --> N7
+    N15 --> N12
+    N15 --> N20
 ```
 
 Step 1: rankUpTo(root, 12) = 5 (nodes ≤ 12: [3, 5, 7, 10, 12])
@@ -347,90 +406,80 @@ The key: after recursive insertion, update the augmentation before returning.
 **Inline trace 🧪—watch it execute:**
 
 Insert 8 into:
-```
-        5(2)
-       /    \
-     3(1)   10(1)
+```mermaid
+graph TD
+    classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+
+    N5["5 (size=3)"]:::nodeStyle
+    N3["3 (size=1)"]:::nodeStyle
+    N10["10 (size=1)"]:::nodeStyle
+
+    N5 --> N3
+    N5 --> N10
 ```
 
-Result should be:
-```
-        5(3)        ← size updated from 2 to 3
-       /    \
-     3(1)  10(2)    ← size updated from 1 to 2
-           /
-         8(1)       ← new node
-```
+Result after inserting 8:
+```mermaid
+graph TD
+    classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef newNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
 
-Execution:
+    N5["5 (size=4: updated)"]:::nodeStyle
+    N3["3 (size=1)"]:::nodeStyle
+    N10["10 (size=2: updated)"]:::nodeStyle
+    N8["8 (size=1) 🟢 New Node"]:::newNode
 
-```
-| Step | Node | Value | Action | Update |
-|------|------|-------|--------|--------|
-| 1    | 5    | 8     | 8 > 5, go right | - |
-| 2    | 10   | 8     | 8 < 10, go left | - |
-| 3    | null | 8     | Create new node 8 with size=1 | - |
-| 4    | 10   | (back) | Update size = 1+1+0 = 2 | node.size = 2 |
-| 5    | 5    | (back) | Update size = 1+1+2 = 4 | Wait, should be 3... |
+    N5 --> N3
+    N5 --> N10
+    N10 --> N8
 ```
 
-Hmm, let me recalculate. The tree after insertion should have 3 total nodes (5, 3, 10, 8). But I counted 4. Let me redo:
+Execution trace:
 
-Actually, the original tree has nodes: 5, 3, 10 = 3 nodes total. After inserting 8, we have 5, 3, 10, 8 = 4 nodes. So the sizes should be:
-- size(3) = 1 (leaf)
-- size(8) = 1 (leaf)
-- size(10) = 1 + 0 + 1 = 2 (one left child 8)
-- size(5) = 1 + 1 + 2 = 4 (one left child 3, one right child 10 with size 2)
+| Step | Node | Value | Action | Size Recalculation |
+| :--- | :--- | :--- | :--- | :--- |
+| **1** | `5` | `8` | `8 > 5`, traverse right to `10` | Pending post-recursion |
+| **2** | `10` | `8` | `8 < 10`, traverse left | Pending post-recursion |
+| **3** | `null` | `8` | Create new node `8` with `size = 1` | `size = 1` |
+| **4** | `10` | `8` | Return from recursion | `10.size = 1 + size(8) + size(null) = 1 + 1 + 0 = 2` |
+| **5** | `5` | `8` | Return from recursion | `5.size = 1 + size(3) + size(10) = 1 + 1 + 2 = 4` |
 
-Final tree:
-```
-        5(4)
-       /    \
-     3(1)   10(2)
-           /
-         8(1)
-```
-
-Total nodes = 4 ✓
+Final node count = 4 nodes total.
 
 ### 📉 Progressive Example: Building an Augmented Order-Statistics Tree
 
 Insert [10, 5, 15, 3, 7, 12, 20] building an augmented BST:
 
-```
-Insert 10:       10(1)
+| Step | Value Inserted | Tree Structure Change | Subtree Sizes Affected |
+| :--- | :--- | :--- | :--- |
+| **1** | `10` | Root created | `10(1)` |
+| **2** | `5` | Left child of `10` | `10(2)`, `5(1)` |
+| **3** | `15` | Right child of `10` | `10(3)`, `15(1)` |
+| **4** | `3` | Left child of `5` | `10(4)`, `5(2)`, `3(1)` |
+| **5** | `7` | Right child of `5` | `10(5)`, `5(3)`, `7(1)` |
+| **6** | `12` | Left child of `15` | `10(6)`, `15(2)`, `12(1)` |
+| **7** | `20` | Right child of `15` | `10(7)`, `15(3)`, `20(1)` |
 
-Insert 5:        10(2)
-                 /
-                5(1)
+Final constructed tree:
 
-Insert 15:       10(3)
-                /     \
-              5(1)    15(1)
+```mermaid
+graph TD
+    classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
 
-Insert 3:        10(4)
-                /     \
-              5(2)     15(1)
-             /
-            3(1)
+    N10["10 (size=7)"]:::nodeStyle
+    N5["5 (size=3)"]:::nodeStyle
+    N15["15 (size=3)"]:::nodeStyle
+    N3["3 (size=1)"]:::nodeStyle
+    N7["7 (size=1)"]:::nodeStyle
+    N12["12 (size=1)"]:::nodeStyle
+    N20["20 (size=1)"]:::nodeStyle
 
-Insert 7:        10(5)
-                /     \
-              5(3)     15(1)
-             /   \
-            3(1) 7(1)
-
-Insert 12:       10(6)
-                /     \
-              5(3)     15(2)
-             /   \     /
-            3(1) 7(1) 12(1)
-
-Insert 20:       10(7)
-                /     \
-              5(3)     15(3)
-             /   \     /   \
-            3(1) 7(1) 12(1) 20(1)
+    N10 --> N5
+    N10 --> N15
+    N5 --> N3
+    N5 --> N7
+    N15 --> N12
+    N15 --> N20
 ```
 
 Now queries:

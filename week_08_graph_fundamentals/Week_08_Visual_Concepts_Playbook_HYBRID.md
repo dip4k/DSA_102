@@ -66,24 +66,23 @@ When using these tools: always **recreate** at least one ASCII diagram from this
 ### 1.1 Pattern Map – Graph Representation Family Tree 🌳
 
 
-```mermaid
-flowchart TD
-    R["GRAPH MODELS & REPRESENTATIONS"]
-    R --> N1["Graph Types"]
-    N1 --> N2["Undirected"]
-    N1 --> N3["Directed"]
-    R --> N4["Edge Weights"]
-    N4 --> N5["Unweighted"]
-    N4 --> N6["Weighted"]
-    R --> N7["Explicit Representations"]
-    N7 --> N8["Adjacency List"]
-    N7 --> N9["Adjacency Matrix"]
-    N7 --> N10["Edge List"]
-    R --> N11["Implicit Graphs"]
-    N11 --> N12["Grids"]
-    N11 --> N13["Puzzles"]
-    N11 --> N14["State Spaces"]
-```
+### 📌 GRAPH MODELS & REPRESENTATIONS
+
+- **Graph Types**
+  - Undirected
+  - Directed
+- **Edge Weights**
+  - Unweighted
+  - Weighted
+- **Explicit Representations**
+  - Adjacency List
+  - Adjacency Matrix
+  - Edge List
+- **Implicit Graphs**
+  - Grids
+  - Puzzles
+  - State Spaces
+
 
 
 Key idea: **representation choice depends on density (sparse vs dense), operations (lookups vs traversal), and memory constraints.**
@@ -91,12 +90,11 @@ Key idea: **representation choice depends on density (sparse vs dense), operatio
 ### 1.2 Visual 1 – Graph Types & Directions 🔀
 
 
-```mermaid
-flowchart TD
-    R["Undirected vs Directed vs Weighted"]
-    R --> N1["D"]
-    R --> N2["10------"]
-```
+### 📌 Undirected vs Directed vs Weighted
+
+- D
+- 10------
+
 
 
 - In undirected graphs, edges **do not have direction** and connectivity is symmetric.  
@@ -222,33 +220,43 @@ No adjacency matrix stored; neighbors computed on-the-fly.
 ### 2.1 Pattern Map – BFS Family Tree 🌳
 
 
-```mermaid
-flowchart TD
-    R["BREADTH-FIRST SEARCH"]
-    R --> N1["Mechanics"]
-    N1 --> N2["Queue frontier"]
-    N1 --> N3["Layered exploration"]
-    N1 --> N4["Visited marking"]
-    R --> N5["Distance"]
-    N5 --> N6["Unweighted shortest path"]
-    N5 --> N7["Parent pointers (path recovery)"]
-    R --> N8["Applications"]
-    N8 --> N9["Social network hop-distance"]
-    N8 --> N10["Level order in trees"]
-    N8 --> N11["Components & bipartite (conceptually)"]
-```
+### 📌 BREADTH-FIRST SEARCH
+
+- **Mechanics**
+  - Queue frontier
+  - Layered exploration
+  - Visited marking
+- **Distance**
+  - Unweighted shortest path
+  - Parent pointers (path recovery)
+- **Applications**
+  - Social network hop-distance
+  - Level order in trees
+  - Components & bipartite (conceptually)
+
 
 
 ### 2.2 Visual 1 – BFS Frontier & Layers 🎯
 
 Graph:
 
-```text
-      1
-     / \
-    0   2
-    |   |
-    3 - 4 - 5
+```mermaid
+graph TD
+    classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+
+    N0["0"]:::nodeStyle
+    N1["1"]:::nodeStyle
+    N2["2"]:::nodeStyle
+    N3["3"]:::nodeStyle
+    N4["4"]:::nodeStyle
+    N5["5"]:::nodeStyle
+
+    N0 --- N1
+    N1 --- N2
+    N0 --- N3
+    N3 --- N4
+    N2 --- N4
+    N4 --- N5
 ```
 
 BFS from `0`:
@@ -298,16 +306,24 @@ Distance from 0:
 
 ### 2.3 Visual 2 – BFS vs DFS Order 🔍
 
-```text
-      0
-     / \
-    1   2
-   / \
-  3   4
+```mermaid
+graph TD
+    classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
 
-BFS order (from 0): 0, 1, 2, 3, 4
-DFS order (one possible): 0, 1, 3, 4, 2
+    N0["0"]:::nodeStyle
+    N1["1"]:::nodeStyle
+    N2["2"]:::nodeStyle
+    N3["3"]:::nodeStyle
+    N4["4"]:::nodeStyle
+
+    N0 --- N1
+    N0 --- N2
+    N1 --- N3
+    N1 --- N4
 ```
+
+- **BFS order (from 0):** `0, 1, 2, 3, 4`  
+- **DFS order (one possible):** `0, 1, 3, 4, 2`
 
 BFS sees nodes **by distance**, DFS sees nodes **by depth of exploration**.
 
@@ -390,19 +406,18 @@ You can imagine a “water fill” from S; BFS finds the **shortest number of st
 ### 3.1 Pattern Map – DFS & Topo Sort 🌳
 
 
-```mermaid
-flowchart TD
-    R["DFS & TOPOLOGICAL SORT"]
-    R --> N1["DFS Mechanics"]
-    N1 --> N2["Recursion / Stack"]
-    N1 --> N3["Discovery & Finish times"]
-    N1 --> N4["Edge classification"]
-    R --> N5["Cycle Detection (Directed)"]
-    N5 --> N6["Back edges (ancestor on stack)"]
-    R --> N7["Topological Sort"]
-    N7 --> N8["DFS post-order"]
-    N7 --> N9["Kahn's algorithm (in-degree + queue)"]
-```
+### 📌 DFS & TOPOLOGICAL SORT
+
+- **DFS Mechanics**
+  - Recursion / Stack
+  - Discovery & Finish times
+  - Edge classification
+- **Cycle Detection (Directed)**
+  - Back edges (ancestor on stack)
+- **Topological Sort**
+  - DFS post-order
+  - Kahn's algorithm (in-degree + queue)
+
 
 
 ### 3.2 Visual 1 – DFS Recursion Tree 🌲
@@ -569,39 +584,48 @@ If at the end some vertices remain with non-zero in-degree, the graph has a **cy
 ### 4.1 Pattern Map – Connectivity & Bipartite 🌳
 
 
-```mermaid
-flowchart TD
-    R["CONNECTIVITY & BIPARTITE GRAPHS"]
-    R --> N1["Connected Components"]
-    N1 --> N2["BFS/DFS labeling"]
-    N1 --> N3["Island counting"]
-    R --> N4["Bipartite Testing"]
-    N4 --> N5["Two-coloring"]
-    N4 --> N6["Odd cycle detection"]
-    R --> N7["Union–Find / DSU"]
-    N7 --> N8["Offline connectivity"]
-    N7 --> N9["Dynamic merging of components"]
-```
+### 📌 CONNECTIVITY & BIPARTITE GRAPHS
+
+- **Connected Components**
+  - BFS/DFS labeling
+  - Island counting
+- **Bipartite Testing**
+  - Two-coloring
+  - Odd cycle detection
+- **Union–Find / DSU**
+  - Offline connectivity
+  - Dynamic merging of components
+
 
 
 ### 4.2 Visual 1 – Components as Islands 🏝️
 
-```text
-Graph:
+```mermaid
+flowchart TB
+    classDef c1 fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+    classDef c2 fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef c3 fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
+    classDef c4 fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
 
-Component 1:
- A -- B
- |   |
- C -- D
+    subgraph C1["🏝️ Component 1"]
+        A["A"]:::c1 --- B["B"]:::c1
+        A --- C["C"]:::c1
+        B --- D["D"]:::c1
+        C --- D
+    end
 
-Component 2:
- E -- F
+    subgraph C2["🏝️ Component 2"]
+        E["E"]:::c2 --- F["F"]:::c2
+    end
 
-Component 3:
- G
+    subgraph C3["🏝️ Component 3"]
+        G["G"]:::c3
+    end
 
-Component 4:
- H -- I -- J
+    subgraph C4["🏝️ Component 4"]
+        H["H"]:::c4 --- I["I"]:::c4
+        I --- J["J"]:::c4
+    end
 ```
 
 Running BFS/DFS from each unvisited node identifies each component:
@@ -617,20 +641,25 @@ Each set is a **connected component**.
 
 ### 4.3 Visual 2 – Bipartite Graph 2-Coloring ⚖️
 
-```text
-Example bipartite graph:
+```mermaid
+flowchart LR
+    classDef redNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
+    classDef blueNode fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
 
-Left (L)       Right (R)
-
-  u1   u2       v1   v2
-   \  /         |   /
-    v1          v2
-
-Coloring:
-- Color(L) = Red
-- Color(R) = Blue
-
-All edges cross Red ↔ Blue.
+    subgraph Bipartite["✅ Bipartite Graph (2-Colorable)"]
+        direction TB
+        subgraph SetL["Left Set (🔴 Red)"]
+            U1["u1"]:::redNode
+            U2["u2"]:::redNode
+        end
+        subgraph SetR["Right Set (🔵 Blue)"]
+            V1["v1"]:::blueNode
+            V2["v2"]:::blueNode
+        end
+        U1 --- V1
+        U2 --- V1
+        U2 --- V2
+    end
 ```
 
 **Two-coloring algorithm:**
@@ -641,21 +670,21 @@ All edges cross Red ↔ Blue.
 
 ### 4.4 Visual 3 – Odd Cycle = Not Bipartite 🚫
 
-```text
-Triangle graph:
+```mermaid
+flowchart TB
+    classDef redNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
+    classDef blueNode fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
 
-  1
- / \
-2---3
+    N1["1 (🔴 Red)"]:::redNode
+    N2["2 (🔵 Blue)"]:::blueNode
+    N3["3 (⚠️ Conflict!)"]:::redNode
 
-Attempt two-coloring:
-- Color(1) = Red
-- Color(2) = Blue (neighbor of 1)
-- Color(3) = Blue (neighbor of 1)
-Now edge (2,3) connects Blue–Blue → conflict.
+    N1 --- N2
+    N2 --- N3
+    N3 -.-|"Conflict Edge!"| N1
+```
 
 Any 2-coloring will fail due to odd cycle length = 3.
-```
 
 Key theorem: **Graph is bipartite iff it has no odd cycle.**
 
@@ -743,18 +772,17 @@ Union–Find answers “are these in the same component?” quickly without trav
 ### 5.1 Pattern Map – SCC & Component DAG 🌳
 
 
-```mermaid
-flowchart TD
-    R["STRONGLY CONNECTED COMPONENTS"]
-    R --> N1["Strong Connectivity"]
-    N1 --> N2["Mutual reachability (u⇄v)"]
-    R --> N3["Algorithms"]
-    N3 --> N4["Kosaraju (2 DFS + transpose)"]
-    N3 --> N5["Tarjan (1 DFS + low-link)"]
-    R --> N6["Component DAG"]
-    N6 --> N7["Collapse SCCs into nodes"]
-    N6 --> N8["Result is always a DAG"]
-```
+### 📌 STRONGLY CONNECTED COMPONENTS
+
+- **Strong Connectivity**
+  - Mutual reachability (u⇄v)
+- **Algorithms**
+  - Kosaraju (2 DFS + transpose)
+  - Tarjan (1 DFS + low-link)
+- **Component DAG**
+  - Collapse SCCs into nodes
+  - Result is always a DAG
+
 
 
 ### 5.2 Visual 1 – SCC Decomposition ♻️
@@ -763,9 +791,27 @@ Directed graph:
 
 
 ```mermaid
-flowchart TD
-    R["1 → 2 → 3 → 4"]
-    R --> N1["State"]
+flowchart LR
+    classDef scc1 fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+    classDef scc2 fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:2px;
+
+    subgraph SCC1["🔄 Strongly Connected Component 1: {1, 2, 3, 5}"]
+        N1["Node 1"]:::scc1
+        N2["Node 2"]:::scc1
+        N3["Node 3"]:::scc1
+        N5["Node 5"]:::scc1
+        N1 --> N2 --> N3 --> N1
+        N2 --> N5 --> N3
+    end
+
+    subgraph SCC2["🎯 Singleton SCCs"]
+        N4["Node 4"]:::scc2
+        N6["Node 6"]:::scc2
+        N7["Node 7"]:::scc2
+        N8["Node 8"]:::scc2
+    end
+
+    N3 -->|Cross edge| N4
 ```
 
 

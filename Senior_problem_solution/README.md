@@ -1,9 +1,9 @@
-# 🎯 Senior & Lead DSA Solutions Master Index
+﻿# 🎯 Senior & Lead DSA Solutions Master Index
 
 > **A curated, first-principles algorithmic solution repository for Senior and Lead Software Engineers (.NET / C#).**  
 > **Source Curriculum:** [`Senior_dsa_question_list.md`](../Senior_dsa_question_list.md) & [`Top_10_Company_High_ROI_DSA_Curriculum.md`](../Top_10_Company_High_ROI_DSA_Curriculum.md)  
 > **Target Level:** Senior / Staff / Lead Software Engineer  
-> **Methodology:** Invariant derivation $	o$ Step flow $	o$ Complexity deconstruction $	o$ Production C#
+> **Methodology:** Invariant derivation -> Step flow -> Complexity deconstruction -> Production C#
 
 ---
 

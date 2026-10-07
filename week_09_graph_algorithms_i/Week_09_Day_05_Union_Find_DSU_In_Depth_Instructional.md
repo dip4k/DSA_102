@@ -65,118 +65,72 @@ Imagine each friendship group is a tree:
 
 Let's trace union-find on a concrete example:
 
+Initially, 8 independent elements: `{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}`.  
+Each element begins as its own representative root: `parent[i] = i` and `rank[i] = 0`.
+
+| Element `i` | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **`parent[i]`** | `0` | `1` | `2` | `3` | `4` | `5` | `6` | `7` |
+| **`rank[i]`** | `0` | `0` | `0` | `0` | `0` | `0` | `0` | `0` |
+
+#### Step-by-Step Operations Walkthrough
+
+```mermaid
+flowchart TD
+    classDef rootNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+    classDef childNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef compressed fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
+
+    subgraph BeforeCompression["🌳 Before find(3) Path Compression"]
+        direction TB
+        R0["0 (Root, Rank 2)"]:::rootNode
+        C1["1"]:::childNode
+        C2["2 (Rank 1)"]:::childNode
+        C3["3"]:::childNode
+        R0 --> C1
+        R0 --> C2
+        C2 --> C3
+    end
+
+    subgraph AfterCompression["⚡ After find(3) Flattening"]
+        direction TB
+        R0_comp["0 (Root, Rank 2)"]:::rootNode
+        C1_comp["1"]:::childNode
+        C2_comp["2"]:::childNode
+        C3_comp["3 🚀 Direct pointer!"]:::compressed
+        R0_comp --> C1_comp
+        R0_comp --> C2_comp
+        R0_comp --> C3_comp
+    end
 ```
-Initially, 8 elements: {0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}
-Each element is its own set; parent[i] = i, rank[i] = 0.
 
-Visualization:
-0   1   2   3   4   5   6   7
-↑   ↑   ↑   ↑   ↑   ↑   ↑   ↑
-(each points to itself)
+| Operation | Action & Union-by-Rank Logic | `parent` Array State | `rank` State | Key Insight |
+| :--- | :--- | :--- | :--- | :--- |
+| **`union(0, 1)`** | Ranks equal (`0 == 0`). Make `0` parent of `1`. | `parent[1] = 0` | `rank[0] = 1` | `0` becomes root |
+| **`union(2, 3)`** | Ranks equal (`0 == 0`). Make `2` parent of `3`. | `parent[3] = 2` | `rank[2] = 1` | `2` becomes root |
+| **`union(0, 2)`** | Ranks equal (`1 == 1`). Attach `2` under `0`. | `parent[2] = 0` | `rank[0] = 2` | Height increases; `rank[0]` becomes 2 |
+| **`union(4, 5)`** | Ranks equal (`0 == 0`). Make `4` parent of `5`. | `parent[5] = 4` | `rank[4] = 1` | Tree rooted at `4` |
+| **`union(6, 7)`** | Ranks equal (`0 == 0`). Make `6` parent of `7`. | `parent[7] = 6` | `rank[6] = 1` | Tree rooted at `6` |
+| **`union(0, 4)`** | `rank[0] (2) > rank[4] (1)`. Attach `4` under `0`. | `parent[4] = 0` | `rank[0] = 2` | Rank unchanged because `rank[0] > rank[4]` |
+| **`find(3)`** | Traverses `3 -> 2 -> 0`. **Path compression** reparents `3 -> 0`. | `parent[3] = 0` | `rank[0] = 2` | Path flattened to `O(1)` depth! |
+| **`find(5)`** | Traverses `5 -> 4 -> 0`. **Path compression** reparents `5 -> 0`. | `parent[5] = 0` | `rank[0] = 2` | Path flattened directly to root |
+| **`union(0, 6)`** | `rank[0] (2) > rank[6] (1)`. Attach `6` under `0`. | `parent[6] = 0` | `rank[0] = 2` | Entire component unified under `0` |
 
-Operations:
-1. union(0, 1) → Merge {0} and {1}
-   parent[1] = 0  (or parent[0] = 1, but we use union-by-rank)
-   rank[0] = 1 (0 becomes root)
-   
-   Visualization:
-   0       2   3   4   5   6   7
-   |
-   1
+### 📌 👑 0 (Global Representative Root)
 
-2. union(2, 3) → Merge {2} and {3}
-   parent[3] = 2
-   
-   Visualization:
-   0   2       4   5   6   7
-   |   |
-   1   3
+- 1
+- 2
+- 3
+- 4
+- 5
+- **6**
+  - 7
 
-3. union(0, 2) → Merge {0,1} and {2,3}
-   find(0) = 0, find(2) = 2, so merge two trees
-   parent[2] = 0 (0 becomes root; rank[0] = rank[2] = 1, so either works; we pick consistently)
-   rank[0] = 2
-   
-   Visualization:
-   0           4   5   6   7
-   |\_
-   1  2
-      |
-      3
 
-4. union(4, 5) → Merge {4} and {5}
-   parent[5] = 4, rank[4] = 1
-   
-   Visualization:
-   0           4   6   7
-   |\_         |
-   1  2        5
-      |
-
-5. union(6, 7) → Merge {6} and {7}
-   parent[7] = 6, rank[6] = 1
-   
-   Visualization:
-   0           4       6
-   |\_         |       |
-   1  2        5       7
-      |
-
-6. union(0, 4) → Merge {0,1,2,3} and {4,5}
-   find(0) = 0 (rank 2), find(4) = 4 (rank 1)
-   parent[4] = 0 (0 has higher rank, so becomes parent)
-   rank[0] = 2 (unchanged, since it's already higher)
-   
-   Visualization:
-   0                   6
-   |\_                 |
-   1  2       4        7
-      |       |
-      3       5
-
-7. find(3) → Trace path to root
-   find(3): 3→parent[3]=2→parent[2]=0→parent[0]=0 (found root 0)
-   During find, apply path compression:
-   path: 3→2→0
-   After compression: 3→0, 2→0 (all point directly to root)
-   
-   Visualization after path compression:
-   0                   6
-   |\\\                |
-   1 2 3 4 5           7
-       (all now point to 0)
-       Actually, let me redraw:
-   
-   0                   6
-   |\ \ \ \            |
-   1 2 3 4 5           7
-       (3 and 5 shortened their paths; 4 still points through old parent initially, but recompressed after find)
-
-8. find(5) → Trace path with path compression
-   find(5): 5→parent[5]=4→parent[4]=0→parent[0]=0 (found root 0)
-   After compression: 5→0 (direct)
-   
-   Final visualization:
-   0                   6
-   |\ \ \ \ \          |
-   1 2 3 4 5           7
-       (all point to 0 except 1, 2 which maintain tree structure)
-
-9. union(0, 6) → Merge all elements into one set
-   find(0) = 0, find(6) = 6
-   parent[6] = 0 (0 has higher rank), rank[0] = 2 (unchanged)
-   
-   Final:
-   0
-   |\ \ \ \ \ \
-   1 2 3 4 5 6 7
-      (all reachable from root 0)
-
-Queries after all operations:
-- find(0) = 0, find(5) = 0 → find(0) == find(5)? YES, same set
-- find(3) = 0, find(7) = 0 → find(3) == find(7)? YES, same set
-- All elements in same set ✓
-```
+**Post-Operation Queries:**
+- `find(0) == find(5)` -> Both return `0` -> **True (Connected)**
+- `find(3) == find(7)` -> Both return `0` -> **True (Connected)**
+- All elements belong to the identical equivalence class.
 
 **Key observations:**
 1. **Tree structure:** Each set is implicitly a tree with root as representative.
@@ -249,14 +203,12 @@ Given a dynamic set of elements, support three operations:
 
 **Disjoint Set Union State:**
 
-```mermaid
-flowchart TD
-    R["State Variables"]
-    R --> N1["parent[0..n-1]   : Parent pointer; parent[i] is i's parent in tree"]
-    R --> N2["rank[0..n-1]     : Rank (approximate height) of subtree rooted at i"]
-    R --> N3["n                 : Number of elements"]
-    R --> N4["State"]
-```
+### 📌 ⚡ Disjoint Set Union (DSU) State Variables
+
+- 🔗 parent[0..n-1]: Parent pointer array where parent[i] is immediate parent in tree
+- 📐 rank[0..n-1]: Upper bound on tree height used for union-by-rank optimization
+- 🔢 n: Total number of disjoint elements
+
 
 
 ### 🔧 Operation 1: Make-Set — Initialize a Disjoint Set
@@ -455,67 +407,46 @@ If we continued and found cycle, we'd know the graph is not a forest.
 
 ### 📊 Detailed State Evolution Example
 
-```
-Operations: make_set(0..4), union(0,1), union(2,3), union(0,2)
+| Step | Operation | `parent` Array | `rank` Array | Forest Forest State |
+| :--- | :--- | :--- | :--- | :--- |
+| **0** | `make_set(0..4)` | `[0, 1, 2, 3, 4]` | `[0, 0, 0, 0, 0]` | 5 disjoint singletons |
+| **1** | `union(0, 1)` | `[0, 0, 2, 3, 4]` | `[1, 0, 0, 0, 0]` | Set `{0, 1}` rooted at `0` |
+| **2** | `union(2, 3)` | `[0, 0, 2, 2, 4]` | `[1, 0, 1, 0, 0]` | Set `{2, 3}` rooted at `2` |
+| **3** | `union(0, 2)` | `[0, 0, 0, 2, 4]` | `[2, 0, 1, 0, 0]` | Merged sets under `0` (depth 2) |
+| **4** | `find(3)` (compression) | `[0, 0, 0, 0, 4]` | `[2, 0, 1, 0, 0]` | `3` directly reparents to `0` |
 
-Step 1: make_set(0..4)
-parent = [0, 1, 2, 3, 4]
-rank = [0, 0, 0, 0, 0]
+```mermaid
+flowchart TD
+    classDef rootNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+    classDef childNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef compNode fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
+    classDef singleNode fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
 
-Trees:
-0   1   2   3   4
-(each singleton)
+    subgraph Before["Step 3: After union(0, 2)"]
+        direction TB
+        B0["0 (Root, Rank 2)"]:::rootNode
+        B1["1"]:::childNode
+        B2["2 (Rank 1)"]:::childNode
+        B3["3"]:::childNode
+        B4["4 (Singleton)"]:::singleNode
 
-Step 2: union(0, 1)
-Find(0)=0, Find(1)=1, rank[0]=0, rank[1]=0
-parent[1] = 0, rank[0] = 1
-parent = [0, 0, 2, 3, 4]
-rank = [1, 0, 0, 0, 0]
+        B0 --> B1
+        B0 --> B2
+        B2 --> B3
+    end
 
-Trees:
-0   2   3   4
-|
-1
+    subgraph After["Step 4: After find(3) Path Compression"]
+        direction TB
+        A0["0 (Root, Rank 2)"]:::rootNode
+        A1["1"]:::childNode
+        A2["2"]:::childNode
+        A3["3 🚀 Compressed!"]:::compNode
+        A4["4 (Singleton)"]:::singleNode
 
-Step 3: union(2, 3)
-Find(2)=2, Find(3)=3, rank[2]=0, rank[3]=0
-parent[3] = 2, rank[2] = 1
-parent = [0, 0, 2, 2, 4]
-rank = [1, 0, 1, 0, 0]
-
-Trees:
-0   2   4
-|   |
-1   3
-
-Step 4: union(0, 2)
-Find(0)=0, Find(2)=2, rank[0]=1, rank[2]=1
-(ranks equal, pick 0 as parent)
-parent[2] = 0, rank[0] = 2
-parent = [0, 0, 0, 2, 4]
-rank = [2, 0, 1, 0, 0]
-
-Trees:
-0       4
-|\
-1 2
-  |
-  3
-
-But wait, this shows 2's old structure. After union and potential path compression:
-If we access element 3 later via find(3), it would compress:
-find(3): 3→2→0, compress to 3→0
-So 3 now points directly to 0.
-
-After path compression via find(3):
-parent = [0, 0, 0, 0, 4]
-rank = [2, 0, 1, 0, 0]
-
-Trees:
-0   4
-|\\\
-1 2 3
-  (3's path compressed)
+        A0 --> A1
+        A0 --> A2
+        A0 --> A3
+    end
 ```
 
 ---
@@ -1010,6 +941,4 @@ This analogy extends to single-link clustering: DSU implicitly computes the clus
 **Overall Result:** ✅ ALL CHECKS PASSED — Content verified for accuracy and ready for delivery.
 
 ---
----
-
 > 🧭 **Navigation:** [← Previous Day](Week_09_Day_04_Minimum_Spanning_Trees_Kruskal_Prim_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_09_FULL_PLAYBOOK.md)

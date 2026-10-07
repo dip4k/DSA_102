@@ -49,27 +49,26 @@
 ### Pattern Map: Palindrome Detection Family Tree
 
 
-```mermaid
-flowchart TD
-    R["Palindrome Detection Concepts"]
-    R --> N1["Symmetry Detection"]
-    N1 --> N2["Odd-length center (single char)"]
-    N2 --> N3["Example: 'aba' centered at 'b'"]
-    N1 --> N4["Even-length center (between chars)"]
-    N4 --> N5["Example: 'abba' centered between two 'b's"]
-    R --> N6["Expansion Strategy"]
-    N6 --> N7["Naive: Check all substrings O(n²)"]
-    N6 --> N8["Expand-Around-Center: Check from centers O(n²)"]
-    N6 --> N9["Dynamic Programming: Build table O(n²) space"]
-    R --> N10["Applications"]
-    N10 --> N11["String validation (is it palindrome?)"]
-    N10 --> N12["DNA pattern detection (symmetric sequences)"]
-    N10 --> N13["Compression detection (repeating patterns)"]
-    R --> N14["Complexity Analysis"]
-    N14 --> N15["Time: O(n²) for longest palindrome"]
-    N14 --> N16["Space: O(1) for expand-around-center"]
-    N14 --> N17["Why: 2n-1 centers × expansion per center"]
-```
+### 📌 Palindrome Detection Concepts
+
+- **Symmetry Detection**
+  - **Odd-length center (single char)**
+    - Example: 'aba' centered at 'b'
+  - **Even-length center (between chars)**
+    - Example: 'abba' centered between two 'b's
+- **Expansion Strategy**
+  - Naive: Check all substrings O(n²)
+  - Expand-Around-Center: Check from centers O(n²)
+  - Dynamic Programming: Build table O(n²) space
+- **Applications**
+  - String validation (is it palindrome?)
+  - DNA pattern detection (symmetric sequences)
+  - Compression detection (repeating patterns)
+- **Complexity Analysis**
+  - Time: O(n²) for longest palindrome
+  - Space: O(1) for expand-around-center
+  - Why: 2n-1 centers × expansion per center
+
 
 
 ### 🔄 Pattern 1.1: Expand-Around-Center for Palindromes
@@ -239,32 +238,30 @@ In DNA analysis, a palindromic sequence can form a hairpin loop (important for p
 ### Pattern Map: Sliding Window Family Tree
 
 
-```mermaid
-flowchart TD
-    R["Substring Search Concepts"]
-    R --> N1["Window Types"]
-    N1 --> N2["Fixed-size window"]
-    N2 --> N3["Move by 1, recompute constraints"]
-    N3 --> N4["O(n) amortized with smart tracking"]
-    N1 --> N5["Variable-size window (Day 2 focus)"]
-    N5 --> N6["Expand when constraint not satisfied"]
-    N5 --> N7["Shrink when constraint violated"]
-    N5 --> N8["O(n) amortized (each element visited twice)"]
-    R --> N9["Constraint Types"]
-    N9 --> N10["'Longest without repeating' (uniqueness)"]
-    N9 --> N11["'At most K distinct' (bounded diversity)"]
-    N9 --> N12["'All characters of pattern' (coverage)"]
-    N9 --> N13["'At most K changes' (modification budget)"]
-    R --> N14["Tracking Methods"]
-    N14 --> N15["Frequency map (character → count)"]
-    N14 --> N16["Index map (character → last position)"]
-    N14 --> N17["Constraint counter (violations so far)"]
-    N14 --> N18["Validation function (true/false)"]
-    R --> N19["Optimization Patterns"]
-    N19 --> N20["Expand then shrink"]
-    N19 --> N21["Shrink completely then expand"]
-    N19 --> N22["Twin pointer with lazy updates"]
-```
+### 📌 Substring Search Concepts
+
+- **Window Types**
+  - **Fixed-size window**
+    - Move by 1, recompute constraints
+  - **Variable-size window (Day 2 focus)**
+    - Expand when constraint not satisfied
+    - Shrink when constraint violated
+    - O(n) amortized (each element visited twice)
+- **Constraint Types**
+  - 'Longest without repeating' (uniqueness)
+  - 'At most K distinct' (bounded diversity)
+  - 'All characters of pattern' (coverage)
+  - 'At most K changes' (modification budget)
+- **Tracking Methods**
+  - Frequency map (character → count)
+  - Index map (character → last position)
+  - Constraint counter (violations so far)
+  - Validation function (true/false)
+- **Optimization Patterns**
+  - Expand then shrink
+  - Shrink completely then expand
+  - Twin pointer with lazy updates
+
 
 
 ### 🔄 Pattern 2.1: Variable-Size Window with Frequency Tracking
@@ -433,35 +430,13 @@ Email input validation needs to find the longest substring without special chara
 ### Pattern Map: Bracket Matching Family Tree
 
 
-```mermaid
-flowchart TD
-    R["Bracket Matching Concepts"]
-    R --> N1["Problem Types"]
-    N1 --> N2["Validation: Is the string balanced?"]
-    N1 --> N3["Extraction: Find longest valid substring"]
-    N1 --> N4["Generation: Produce all valid combinations"]
-    N1 --> N5["Transformation: Make invalid string valid"]
-    R --> N6["Stack Discipline (LIFO)"]
-    N6 --> N7["Open bracket → Push to stack"]
-    N6 --> N8["Close bracket → Must match top of stack"]
-    N6 --> N9["Mismatch → Invalid (e.g., {[}])"]
-    N6 --> N10["Empty stack on close → Invalid"]
-    R --> N11["Matching Rules"]
-    N11 --> N12[") matches only ("]
-    N11 --> N13["] matches only ["]
-    N11 --> N14["} matches only {"]
-    N11 --> N15["Order matters (nesting)"]
-    R --> N16["Variations"]
-    N16 --> N17["Single bracket type: ()"]
-    N16 --> N18["Multiple types: (){[]}"]
-    N16 --> N19["With other chars: a(b[c])d"]
-    N16 --> N20["Weights/points assigned per type"]
-    R --> N21["Applications"]
-    N21 --> N22["Compiler syntax checking"]
-    N21 --> N23["JSON/XML parsing"]
-    N21 --> N24["Expression evaluation"]
-    N21 --> N25["Code editor matching"]
-```
+| Dimension | Principle | Invariant / Rule |
+| :--- | :--- | :--- |
+| **Problem Types** | Validation, Extraction, Generation, Transformation | Is balanced, Longest valid substring, Generate all valid combinations |
+| **Stack Discipline** | LIFO order for nested scopes | Open bracket -> Push; Close bracket -> Match with stack top |
+| **Matching Rules** | Strict pair matching | `)` pairs with `(`, `]` pairs with `[`, `}` pairs with `{` |
+| **Edge Cases** | Guard clauses | Empty stack on close -> Invalid; Unmatched open at end -> Invalid |
+
 
 
 ### 🏗️ Pattern 3.1: Stack-Based Validation
@@ -651,35 +626,16 @@ How does a code editor highlight matching brackets? Does it use a stack? What if
 ### Pattern Map: String Transformation Family Tree
 
 
-```mermaid
-flowchart TD
-    R["String Transformation Concepts"]
-    R --> N1["Parsing (String → Structured)"]
-    N1 --> N2["atoi: Parse string to integer"]
-    N1 --> N3["Validation: Check format correctness"]
-    N1 --> N4["Overflow detection: Handle boundary values"]
-    N1 --> N5["Error handling: Manage invalid input"]
-    R --> N6["Building (Structured → String)"]
-    N6 --> N7["StringBuilder: O(n) concatenation (NOT naive O(n²))"]
-    N6 --> N8["Greedy mapping: Integer to Roman"]
-    N6 --> N9["Character-by-character: Compression encoding"]
-    N6 --> N10["Formatting: Alignment, padding, spacing"]
-    R --> N11["Format Conversion"]
-    N11 --> N12["Integer to Roman: Greedy from largest"]
-    N11 --> N13["Roman to Integer: Additive vs subtractive rules"]
-    N11 --> N14["Binary to Hex: Digit grouping"]
-    N11 --> N15["Compression: Run-length encoding"]
-    R --> N16["Efficiency Pitfalls"]
-    N16 --> N17["Naive concatenation: O(n²) disaster"]
-    N16 --> N18["String immutability cost: Hidden allocations"]
-    N16 --> N19["Bounds checking: Off-by-one in parsing"]
-    N16 --> N20["Overflow detection: Integer limits"]
-    R --> N21["Real Systems"]
-    N21 --> N22["Logging: 10M entries/day, StringBuilder mandatory"]
-    N21 --> N23["Serialization: Protocol buffers, JSON encoding"]
-    N21 --> N24["User input validation: Defensive parsing"]
-    N21 --> N25["Data format conversion: Efficiency critical"]
+**String Transformation Concepts**
+
+```text
+• Parsing (String → Structured)
+• Building (Structured → String)
+• Format Conversion
+• Efficiency Pitfalls
+• Real Systems
 ```
+
 
 
 ### 🔨 Pattern 4.1: StringBuilder vs Naive Concatenation
@@ -935,34 +891,33 @@ A logging system writes 10 million events/day, each event with 5-10 fields. If e
 ### Pattern Map: Pattern Matching Family Tree
 
 
-```mermaid
-flowchart TD
-    R["String Matching Concepts"]
-    R --> N1["Naive Approach: O(nm)"]
-    N1 --> N2["For each position in text, compare all m characters of pattern"]
-    N1 --> N3["Worst case: 'aaaaa...' text, 'aaab' pattern"]
-    N1 --> N4["10 million characters text × 100 chars pattern = 1 billion comparisons"]
-    R --> N5["Rolling Hash: O(n+m) expected"]
-    N5 --> N6["Precompute hash of pattern once: O(m)"]
-    N5 --> N7["Hash each window of text in O(1): Remove-Shift-Add"]
-    N5 --> N8["Compare hashes in O(1), verify on match: O(m)"]
-    N5 --> N9["Rare collisions make this faster in practice"]
-    R --> N10["KMP: O(n+m) guaranteed"]
-    N10 --> N11["Build failure function: O(m)"]
-    N10 --> N12["Single pass through text: O(n)"]
-    N10 --> N13["No false positives, but more complex code"]
-    N10 --> N14["Best for single pattern, guaranteed linear time"]
-    R --> N15["Boyer-Moore: O(n/m) best case"]
-    N15 --> N16["Shift pattern by comparing from right to left"]
-    N15 --> N17["Best case: pattern doesn't occur, skip many chars"]
-    N15 --> N18["Worst case: O(nm) like naive"]
-    N15 --> N19["Practical best for long patterns"]
-    R --> N20["Rabin-Karp Use Cases"]
-    N20 --> N21["Multiple patterns in same text"]
-    N20 --> N22["Plagiarism detection (multiple documents)"]
-    N20 --> N23["DNA sequence matching (disease patterns)"]
-    N20 --> N24["Streaming data (incremental hashing)"]
-```
+### 📌 String Matching Concepts
+
+- **Naive Approach: O(nm)**
+  - For each position in text, compare all m characters of pattern
+  - Worst case: 'aaaaa...' text, 'aaab' pattern
+  - 10 million characters text × 100 chars pattern = 1 billion comparisons
+- **Rolling Hash: O(n+m) expected**
+  - Precompute hash of pattern once: O(m)
+  - Hash each window of text in O(1): Remove-Shift-Add
+  - Compare hashes in O(1), verify on match: O(m)
+  - Rare collisions make this faster in practice
+- **KMP: O(n+m) guaranteed**
+  - Build failure function: O(m)
+  - Single pass through text: O(n)
+  - No false positives, but more complex code
+  - Best for single pattern, guaranteed linear time
+- **Boyer-Moore: O(n/m) best case**
+  - Shift pattern by comparing from right to left
+  - Best case: pattern doesn't occur, skip many chars
+  - Worst case: O(nm) like naive
+  - Practical best for long patterns
+- **Rabin-Karp Use Cases**
+  - Multiple patterns in same text
+  - Plagiarism detection (multiple documents)
+  - DNA sequence matching (disease patterns)
+  - Streaming data (incremental hashing)
+
 
 
 ### 🔍 Pattern 5.1: Rolling Polynomial Hash
@@ -1188,190 +1143,3 @@ Turnitin plagiarism detection searches 100 million documents for plagiarized sub
 
 ---
 
-## 📚 Recommended Learning Resources
-
-### Resource 1: Interactive Visualization Sandbox
-**Tool:** Visualgo (visualgo.net)  
-**Best For:** Sliding window, bracket matching, algorithm animation  
-**How to Use:**
-1. Select "String Matching" or "Stack" from menu
-2. Enter your example string
-3. Step through algorithm watching state change
-4. Modify input to see edge cases
-
----
-
-### Resource 2: Algorithm Complexity Reference
-**Tool:** Big O Cheat Sheet (bigocheatsheet.com)  
-**Best For:** Complexity analysis, collection comparison, operation costs  
-**How to Use:**
-1. Search for data structure (Dictionary, Stack, etc.)
-2. Check time complexity for operations (lookup, insert, delete)
-3. Bookmark for interview prep
-
----
-
-### Resource 3: Visual Algorithm Learning
-**Tool:** CS.USFCA Visualization (cs.usfca.edu/~galles/visualization/)  
-**Best For:** Step-by-step algorithm execution, state tracking  
-**How to Use:**
-1. Select algorithm from dropdown
-2. Customize input data
-3. Hit "Animate" to see execution
-4. Use "Faster" / "Slower" for learning pace
-
----
-
-### Resource 4: Problem Database with Categorization
-**Tool:** LeetCode Problem Explore (leetcode.com/explore)  
-**Best For:** Categorized problems, difficulty progression, hints  
-**How to Use:**
-1. Navigate to "Explore → Topics → String"
-2. Select difficulty level (Easy, Medium, Hard)
-3. Work through problems in suggested order
-4. Review solutions and discussions
-
----
-
-### Resource 5: Performance Analysis Tool
-**Tool:** Desmos Calculator (desmos.com)  
-**Best For:** Visualizing complexity curves, comparing algorithms  
-**How to Use:**
-1. Plot y = x^2 (naive string concat)
-2. Plot y = x (StringBuilder)
-3. Observe where they diverge (for large n)
-4. Compare other complexity curves
-
----
-
-### Resource 6: Interview Problem Walkthrough
-**Tool:** Back to Back SWE (YouTube - @BackToBackSWE)  
-**Best For:** Complex problem explanation, approach walkthrough  
-**How to Use:**
-1. Search for "sliding window" or "bracket matching"
-2. Watch approach explanation (don't skip hard problems)
-3. Pause and code alongside video
-4. Rewatch mechanics section if stuck
-
----
-
-## 🎓 How to Use This Playbook
-
-### Scenario 1: Quick Revision (30 minutes)
-- Read Pattern Map for each day (5 min × 5 = 25 min)
-- Skim one failure mode per day (5 min)
-- Review complexity table (2 min)
-- **Outcome:** Mental refresh of core concepts
-
----
-
-### Scenario 2: Deep Learning (3-4 hours)
-- Study Pattern Map (5 min per day)
-- Read Visual 1 and 2 for each day (10 min per day)
-- Read Common Failure Modes (10 min per day)
-- Work through a quiz question per day (15 min per day)
-- Review complexity reference table (10 min)
-- **Outcome:** Comprehensive conceptual understanding
-
----
-
-### Scenario 3: Interview Prep (1 hour)
-- Review complexity reference table (5 min)
-- Read one failure mode per pattern (10 min)
-- Work through quiz questions (30 min)
-- Reference visuals for tricky patterns (10 min)
-- Review real-world applications (5 min)
-- **Outcome:** Interview readiness with common pitfall awareness
-
----
-
-## 🌍 Complete Week 06 Ecosystem
-
-### Tier 1: Core Learning
-**Instructional Files [12-16]** (74,000 words)
-- Week06Day1PalindromePatterns...Instructional.md
-- Week06Day2SubstringSlidingWindows...Instructional.md
-- Week06Day3BracketMatching...Instructional.md
-- Week06Day4StringTransformations...Instructional.md
-- Week06Day5AdvancedPatternMatching...Instructional.md
-
-### Tier 2: Practice & Guidance
-**Support Files [22-26]** (25,000 words)
-- Week06Guidelines.md
-- Week06Summary & KeyConcepts.md
-- Week06InterviewQAReference.md
-- Week06ProblemSolving Roadmap.md
-- Week06DailyProgressChecklist.md
-
-**Extended C# [27]** (7,500 words)
-- Week06ProblemSolving Roadmap ExtendedCSharp.md
-
-### Tier 3: Deep Revision
-**Visual Playbook [This File]** (18,000 words)
-- Week06VisualConceptsPlaybookHYBRID.md
-- 30+ ASCII diagrams, offline-ready
-- 6 professional web resources, web-enhanced
-- 15 quiz questions, self-testing
-- 8-10 failure modes, defensive learning
-
----
-
-## ✅ Quality Checklist: Week 06 Completeness
-
-### Standalone Functionality (Offline)
-- ✅ All 30+ ASCII diagrams render in GitHub markdown
-- ✅ No external images, pure text-based
-- ✅ Works on any markdown viewer
-- ✅ No code dependencies, no compiled components
-
-### Web Integration
-- ✅ 6 professional tools embedded as references
-- ✅ URLs valid and current (verified Jan 10, 2026)
-- ✅ How-to-use guide for each tool (3-4 steps)
-- ✅ Alternative resources mentioned for backup
-
-### Educational Completeness
-- ✅ 5 days covered (skip Day 6 Optional Advanced)
-- ✅ 30+ topics from COMPLETE_SYLLABUS.md
-- ✅ 15 quiz questions (3 per day)
-- ✅ 8-10 failure modes (2-3 per day)
-- ✅ Pattern family trees show relationships
-- ✅ Complexity stated for each concept
-- ✅ Real-world applications mentioned
-- ✅ References to syllabus extracted topics
-
-### Production Readiness
-- ✅ Professional Markdown formatting
-- ✅ Consistent terminology across 5 days
-- ✅ Clear navigation with pattern maps
-- ✅ 18,000 words target achieved
-- ✅ Syllabus topics correctly extracted
-- ✅ MIT-level content depth
-- ✅ Proven template tested
-
-### Consistency with Curriculum
-- ✅ Same hybrid structure (ASCII + web links)
-- ✅ Same visual style (ASCII diagrams)
-- ✅ Same resource embedding pattern
-- ✅ Same quiz/failure mode format
-- ✅ Same table formatting
-
----
-
-## 📍 Deployment Information
-
-**File Name:** Week06VisualConceptsPlaybookHYBRID.md  
-**Format:** Markdown (.md), UTF-8, LF line endings  
-**Size:** ~18,000 words, 30+ ASCII diagrams  
-**Deployment:** Immediate use, no modifications needed  
-**Syllabus Version:** COMPLETE_SYLLABUS.md (Week 06 topics only)  
-
----
-
-**Generation Date:** Saturday, January 10, 2026, 7:15 PM IST  
-**Template Used:** VISUAL_PLAYBOOK_GENERATION_PROMPT_v12_UPDATED.md  
-**Quality Standard:** v12 FINAL (MIT-level, narrative-driven)
-
----
-
-> 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)

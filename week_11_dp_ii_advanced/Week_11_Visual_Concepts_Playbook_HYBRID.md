@@ -58,30 +58,24 @@
 ### 1.1 Tree DP Execution Model
 
 
-```mermaid
-flowchart TD
-    R["CONCEPT Post-Order Traversal Execution"]
-    R --> N1["State"]
-```
+### 📌 🌳 Tree DP Post-Order Traversal Execution Flow
+
+- **1️⃣ Bottom-Up Base Cases: Leaf Nodes<br/>Return baseline values (e.g. depth=0, include=val)**
+  - **2️⃣ Recursive Child Aggregation:<br/>Current node collects subproblem results from left & right children**
+    - 3️⃣ Combine & Transition:<br/>dp[u] = combine(dp[v1], dp[v2], ...) using node u's value
+
 
 
 ### 1.2 State Design Patterns
 
 
-```mermaid
-flowchart TD
-    R["PATTERN 1 Single-State (Aggregation)"]
-    R --> N1["State"]
-    R --> N2["State"]
-    R --> N3["State"]
-    R --> N4["dp[node][0] = max value if node EXCLUDED"]
-    R --> N5["dp[node][1] = max value if node INCLUDED"]
-    N5 --> N6["Step"]
-    N5 --> N7["Step"]
-    N5 --> N8["State"]
-    N5 --> N9["Step"]
-    N5 --> N10["Step"]
-```
+### 📌 📐 Tree DP State Design Patterns
+
+- Pattern 1: Single State (Bottom-Up Aggregation)<br/>dp[u] = depth[u], subtree_size[u], max_path_to_leaf[u]
+- **Pattern 2: Multi-State (Include vs Exclude)<br/>Used in Maximum Independent Set & House Robber III**
+  - dp[u][0]: Max value if node u is EXCLUDED<br/>Children can be either included or excluded:<br/>dp[u][0] = Σ max(dp[v][0], dp[v][1])
+  - dp[u][1]: Max value if node u is INCLUDED<br/>Children MUST be excluded:<br/>dp[u][1] = val[u] + Σ dp[v][0]
+
 
 
 ### 1.3 Maximum Independent Set Visual Trace
@@ -111,21 +105,18 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    R["PROBLEM Color tree with K colors, adjacent nodes different"]
-    R --> N1["B=1        "]
-    R --> N2["C=1        "]
-    N2 --> N3["D=0    "]
-    R --> N4["State"]
-    N4 --> N5["B=0        "]
-    N4 --> N6["C=0        "]
-    N6 --> N7["D=1    "]
-    R --> N8["State"]
-    N8 --> N9["Step"]
-    N8 --> N10["State"]
-    N8 --> N11["Step"]
-    N8 --> N12["Step"]
-    N8 --> N13["State"]
-    N8 --> N14["Step"]
+    classDef node fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef color fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:1.5px;
+    classDef rule fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+
+    R["🎨 Tree DP: K-Coloring (Adjacent Nodes Different)"]:::node
+    R --> S["State: dp[u][c] = Valid colorings of subtree rooted at u where color(u) = c"]:::node
+    S --> C0["If node u is assigned Color Red (c=0)"]:::color
+    S --> C1["If node u is assigned Color Blue (c=1)"]:::color
+    S --> C2["If node u is assigned Color Green (c=2)"]:::color
+
+    C0 --> Trans["⚖️ Constraint Rule for Children:<br/>Each child v can pick any color except u's color (c' != c)<br/>dp[u][c] = Π_{v in children} ( Σ_{c' != c} dp[v][c'] )"]:::rule
+    C1 & C2 --> Trans
 ```
 
 
@@ -529,33 +520,32 @@ BITMASK DP Path:
 ### Problem Recognition Guide
 
 
-```mermaid
-flowchart TD
-    R["Pattern recognition based on problem statement"]
-    R --> N1["Hierarchical structure (org chart, filesystem)"]
-    R --> N2["Parent-child relationships"]
-    R --> N3["Binary tree structure"]
-    R --> N4["Forest or subtree processing"]
-    R --> N5["Directed edges (one-way relationships)"]
-    R --> N6["Dependencies between tasks"]
-    R --> N7["No cycles explicitly mentioned"]
-    R --> N8["Process order matters"]
-    R --> N9["Precedence constraints"]
-    R --> N10["Array or sequence input"]
-    R --> N11["String matching/manipulation"]
-    R --> N12["Grid navigation"]
-    R --> N13["2D matrix operations"]
-    R --> N14["Bottom-up building"]
-    R --> N15["Small n (≤20)"]
-    R --> N16["2^n possibilities"]
-    R --> N17["Subset enumeration"]
-    R --> N18["All-pairs something"]
-    R --> N19["Permutation-like problems"]
-    R --> N20["Only current/previous layer needed"]
-    R --> N21["Only last k values matter"]
-    R --> N22["Current state independent of old states"]
-    R --> N23["Rolling window pattern"]
-```
+### 📌 Pattern recognition based on problem statement
+
+- Hierarchical structure (org chart, filesystem)
+- Parent-child relationships
+- Binary tree structure
+- Forest or subtree processing
+- Directed edges (one-way relationships)
+- Dependencies between tasks
+- No cycles explicitly mentioned
+- Process order matters
+- Precedence constraints
+- Array or sequence input
+- String matching/manipulation
+- Grid navigation
+- 2D matrix operations
+- Bottom-up building
+- Small n (≤20)
+- 2^n possibilities
+- Subset enumeration
+- All-pairs something
+- Permutation-like problems
+- Only current/previous layer needed
+- Only last k values matter
+- Current state independent of old states
+- Rolling window pattern
+
 
 
 ### Transition Pattern Diagrams

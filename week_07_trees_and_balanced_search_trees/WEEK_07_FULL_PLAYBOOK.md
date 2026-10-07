@@ -89,12 +89,25 @@ Think of a **family genealogy tree**:
 - Height = generations from ancestor to furthest descendant  
 
 In algorithms:
-```
-       5           <- Root (depth = 0)
-      / \
-     3   7         <- Internal nodes (depth = 1)
-    / \   \
-   1   4   8       <- Leaves (depth = 2, height = 0)
+
+```mermaid
+flowchart TD
+    N5["5 (Root, Depth 0, Height 2)"]:::rootNode
+    N3["3 (Internal, Depth 1, Height 1)"]:::internalNode
+    N7["7 (Internal, Depth 1, Height 1)"]:::internalNode
+    N1["1 (Leaf, Depth 2, Height 0)"]:::leafNode
+    N4["4 (Leaf, Depth 2, Height 0)"]:::leafNode
+    N8["8 (Leaf, Depth 2, Height 0)"]:::leafNode
+
+    N5 --> N3
+    N5 --> N7
+    N3 --> N1
+    N3 --> N4
+    N7 --> N8
+
+    classDef rootNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
+    classDef internalNode fill:#37474f,stroke:#90a4ae,stroke-width:2px,color:#ffffff
+    classDef leafNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
 ```
 
 #### Key Terminology
@@ -103,7 +116,7 @@ In algorithms:
 - Height of node 5: 2 (path 5→3→1)  
 - Height of node 3: 1 (path 3→1)  
 - Height of node 1: 0 (it's a leaf)  
-- **Formula:** height(node) = 1 + max(height(left), height(right))  
+- **Formula:** `height(node) = 1 + max(height(left), height(right))`  
 
 **Depth:** Distance from root to node  
 - Depth of 5: 0 (it's the root)  
@@ -111,28 +124,48 @@ In algorithms:
 - Depth of 1: 2  
 
 **Why This Matters:**
-- Height determines **operation time** in tree operations: O(height)  
-- In balanced tree, height ≈ log₂(n), so operations ≈ O(log n)  
-- In degenerate tree (like a linked list), height = n, so operations ≈ O(n)
+- Height determines **operation time** in tree operations: `O(height)`  
+- In a balanced tree, `height ≈ log2(n)`, so operations are `O(log n)`  
+- In a degenerate tree (like a linked list), `height = n`, degrading operations to `O(n)`
 
 #### Tree Classifications
 
-**Full Tree:** Every node has 0 or 2 children (no single-child nodes)  
-**Complete Tree:** All levels filled except last, which fills left-to-right  
-**Balanced Tree:** Heights of left and right subtrees differ by ≤ 1 (AVL definition)  
-**Degenerate Tree:** Essentially a linked list (height = n)  
+- **Full Tree:** Every node has 0 or 2 children (no single-child nodes).
+- **Complete Tree:** All levels are completely filled except possibly the last, which fills strictly left-to-right.
+- **Balanced Tree:** Heights of left and right subtrees differ by `<= 1` at every node (AVL definition).
+- **Degenerate Tree:** Every parent has only one child, forming an effective linked list (`height = n`).
 
-**Visualization:**
+```mermaid
+flowchart TD
+    subgraph FullTree["Full Tree (0 or 2 Children)"]
+        F1["1"] --> F2["2"]
+        F1 --> F3["3"]
+        F2 --> F4["4"]
+        F2 --> F5["5"]
+    end
 
-```
-Full Tree          Complete Tree        Balanced          Degenerate
-    1                   1                 1                  1
-   / \                 / \               / \                  \
-  2   3               2   3             2   3                  2
- / \                 / \ /             / \                      \
-4   5               4 5 6             4   5                      3
-                                                                  \
-                                                                   4
+    subgraph CompleteTree["Complete Tree (Left-to-Right)"]
+        C1["1"] --> C2["2"]
+        C1 --> C3["3"]
+        C2 --> C4["4"]
+        C2 --> C5["5"]
+        C3 --> C6["6"]
+    end
+
+    subgraph BalancedTree["Balanced Tree (|Δh| <= 1)"]
+        B1["1"] --> B2["2"]
+        B1 --> B3["3"]
+        B2 --> B4["4"]
+        B2 --> B5["5"]
+    end
+
+    subgraph DegenerateTree["Degenerate Tree (Height = N)"]
+        D1["1"] --> D2["2"]
+        D2 --> D3["3"]
+        D3 --> D4["4"]
+    end
+
+    classDef default fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#ffffff
 ```
 
 ---
@@ -145,18 +178,27 @@ A **traversal** visits every node in a tree exactly once, in a specific order. T
 
 Visit the parent **before** going to children. Used for **copying trees** and **serialization**.
 
-**Mental model:** "Tell me all parents, then their left family, then their right family."
+**Mental model:** "Process parent first, then explore its left branch completely, then right branch."
 
-```
-       5           Visit 5
-      / \          Visit 3 (left child)
-     3   7           Visit 1 (left-left child)
-    / \   \          Visit 4 (left-right child)
-   1   4   8       Visit 7 (right child)
-                     Visit 8 (right-right child)
+```mermaid
+flowchart TD
+    P5["1️⃣ Visit 5 (Root)"]:::stepNode
+    P3["2️⃣ Visit 3 (Left Sub-Root)"]:::stepNode
+    P1["3️⃣ Visit 1 (Leaf)"]:::stepNode
+    P4["4️⃣ Visit 4 (Leaf)"]:::stepNode
+    P7["5️⃣ Visit 7 (Right Sub-Root)"]:::stepNode
+    P8["6️⃣ Visit 8 (Leaf)"]:::stepNode
 
-Result: 5, 3, 1, 4, 7, 8
+    P5 --> P3
+    P5 --> P7
+    P3 --> P1
+    P3 --> P4
+    P7 --> P8
+
+    classDef stepNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
 ```
+
+- **Output Order:** `[5, 3, 1, 4, 7, 8]`
 
 **Pseudocode:**
 ```csharp
@@ -178,16 +220,25 @@ Visit children **around** the parent. For BSTs, produces **sorted order**. Used 
 
 **Mental model:** "Visit left family, then the parent, then right family."
 
-```
-       5           Visit 1 (left-left child)
-      / \          Visit 3 (left parent)
-     3   7         Visit 4 (left-right child)
-    / \   \        Visit 5 (root)
-   1   4   8       Visit 7 (right child)
-                   Visit 8 (right-right child)
+```mermaid
+flowchart TD
+    I5["4️⃣ Visit 5 (Root)"]:::stepNode
+    I3["2️⃣ Visit 3"]:::stepNode
+    I7["5️⃣ Visit 7"]:::stepNode
+    I1["1️⃣ Visit 1"]:::stepNode
+    I4["3️⃣ Visit 4"]:::stepNode
+    I8["6️⃣ Visit 8"]:::stepNode
 
-Result: 1, 3, 4, 5, 7, 8  <- SORTED!
+    I5 --> I3
+    I5 --> I7
+    I3 --> I1
+    I3 --> I4
+    I7 --> I8
+
+    classDef stepNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
 ```
+
+- **Output Order:** `[1, 3, 4, 5, 7, 8]` *(Monotonically ascending sorted order!)*
 
 **Pseudocode:**
 ```csharp
@@ -199,26 +250,35 @@ void InOrder(Node node) {
 }
 ```
 
-**Why BSTs produce sorted output:** For a valid BST, all left descendants < parent < all right descendants. Inorder respects this order.
+**Why BSTs produce sorted output:** For a valid BST, all left descendants `< parent <` all right descendants. Inorder respects this exact projection onto a 1D number line.
 
 ---
 
 #### Postorder (Left → Right → Parent)
 
-Visit children **before** the parent. Used for **deleting trees** and **computing subtree properties**.
+Visit children **before** the parent. Used for **deleting trees**, **computing subtree properties**, and **bottom-up dynamic programming**.
 
-**Mental model:** "Visit left family, visit right family, then process parent."
+**Mental model:** "Resolve both children first, then synthesize result at parent."
 
+```mermaid
+flowchart TD
+    O5["6️⃣ Visit 5 (Root Last)"]:::stepNode
+    O3["3️⃣ Visit 3"]:::stepNode
+    O7["5️⃣ Visit 7"]:::stepNode
+    O1["1️⃣ Visit 1"]:::stepNode
+    O4["2️⃣ Visit 4"]:::stepNode
+    O8["4️⃣ Visit 8"]:::stepNode
+
+    O5 --> O3
+    O5 --> O7
+    O3 --> O1
+    O3 --> O4
+    O7 --> O8
+
+    classDef stepNode fill:#e65100,stroke:#ffb74d,stroke-width:2px,color:#ffffff
 ```
-       5           Visit 1 (left-left child)
-      / \          Visit 4 (left-right child)
-     3   7         Visit 3 (left parent) after children processed
-    / \   \        Visit 8 (right child)
-   1   4   8       Visit 7 (right parent) after children processed
-                   Visit 5 (root) last
 
-Result: 1, 4, 3, 8, 7, 5
-```
+- **Output Order:** `[1, 4, 3, 8, 7, 5]`
 
 **Pseudocode:**
 ```csharp
@@ -236,17 +296,33 @@ void PostOrder(Node node) {
 
 #### Level-Order (BFS)
 
-Visit nodes **layer-by-layer** left-to-right. Uses a **queue**. Used for **breadth-first operations**.
+Visit nodes **layer-by-layer** left-to-right using a **FIFO Queue**. Used for **shortest path in unweighted trees** and **hierarchical serialization**.
 
-**Mental model:** "Process everyone at depth 0, then depth 1, then depth 2, etc."
+**Mental model:** "Process everyone at depth 0, then depth 1, then depth 2."
 
+```mermaid
+flowchart TD
+    subgraph BFSQueue["BFS Layer by Layer"]
+        L5["Depth 0: [5]"]:::lvl0
+        L3["Depth 1: [3]"]:::lvl1
+        L7["Depth 1: [7]"]:::lvl1
+        L1["Depth 2: [1]"]:::lvl2
+        L4["Depth 2: [4]"]:::lvl2
+        L8["Depth 2: [8]"]:::lvl2
+
+        L5 --> L3
+        L5 --> L7
+        L3 --> L1
+        L3 --> L4
+        L7 --> L8
+    end
+
+    classDef lvl0 fill:#4a148c,stroke:#ce93d8,stroke-width:2px,color:#ffffff
+    classDef lvl1 fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
+    classDef lvl2 fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
 ```
-       5           Depth 0: [5]
-      / \          Depth 1: [3, 7]
-     3   7         Depth 2: [1, 4, 8]
-    / \   \
-   1   4   8       Result: 5, 3, 7, 1, 4, 8
-```
+
+- **Output Order:** `[5, 3, 7, 1, 4, 8]`
 
 **Pseudocode:**
 ```csharp
@@ -312,19 +388,17 @@ void InOrderIterative(Node root) {
 }
 ```
 
-**Trace (tree: 3←1→2):**
+**Trace (tree with root 2, left 1, right 3):**
 
 ```
-Step 0: current = 1, stack = []
-Step 1: push 1, current = 3
-Step 2: push 3, current = null (dead end, go right is null from 3)
-Step 3: pop 3, print 3, current = null (3 has no right)
-Step 4: pop 1, print 1, current = 2
-Step 5: push 2, current = null (2 has no left)
-Step 6: pop 2, print 2, current = null
-Result: 3, 1, 2  ✓ Correct inorder for BST [3, 1, 2]? No, should be [1, 2, 3]
-        Wait, let's re-check tree structure. If 1 is root, 3 is left, 2 is right:
-        Tree: 1 / \ 3 2 (violates BST invariant, but logically for inorder: 3, 1, 2 is correct)
+Step 0: current = 2, stack = []
+Step 1: push 2, current = 1
+Step 2: push 1, current = null (left of 1 is null)
+Step 3: pop 1, print 1, current = 1.right = null
+Step 4: pop 2, print 2, current = 2.right = 3
+Step 5: push 3, current = null (left of 3 is null)
+Step 6: pop 3, print 3, current = 3.right = null
+Result: 1, 2, 3  ✓ Correct inorder for BST!
 ```
 
 ---
@@ -395,20 +469,40 @@ This **global constraint** (not just checking immediate children) is what enable
 
 **Visualize:**
 
-```
-       5
-      / \
-     3   7      ✓ Valid BST
-    / \   \     Left of 5: {3, 1, 4} all < 5
-   1   4   8    Right of 5: {7, 8} all > 5
-                Left of 3: {1} < 3; Right of 3: {4} > 3
-                (and so on)
+```mermaid
+flowchart TD
+    subgraph ValidBST["✅ Valid BST"]
+        V5["5"]
+        V3["3"]
+        V7["7"]
+        V1["1"]
+        V4["4"]
+        V8["8"]
+        V5 --> V3
+        V5 --> V7
+        V3 --> V1
+        V3 --> V4
+        V7 --> V8
+    end
 
-       5
-      / \
-     3   6      ❌ Invalid BST!
-    / \   \     6 < 7, but 6 is in right subtree of 5
-   1   4   7    Violates: all right descendants must be > 5
+    subgraph InvalidBST["❌ Invalid BST (6 < 5 in right subtree)"]
+        I5["5"]
+        I3["3"]
+        I6["6"]
+        I1["1"]
+        I4["4"]
+        I7["7"]
+        I5 --> I3
+        I5 --> I6
+        I3 --> I1
+        I3 --> I4
+        I6 --> I7
+    end
+
+    classDef valid fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
+    classDef invalid fill:#b71c1c,stroke:#ff8a80,stroke-width:2px,color:#ffffff
+    class V5,V3,V7,V1,V4,V8 valid
+    class I5,I3,I6,I1,I4,I7 invalid
 ```
 
 ---
@@ -445,8 +539,8 @@ Call Search(5, 4)
 ```
 
 **Complexity:**
-- **Best/Average:** O(log n) for balanced tree (height ≈ log n)  
-- **Worst:** O(n) for degenerate tree (height = n)
+- **Best/Average:** `O(log N)` for balanced tree (`height ≈ log N`)  
+- **Worst:** `O(N)` for degenerate tree (`height = N`)
 
 ---
 
@@ -482,24 +576,31 @@ Call Insert(5, 2)
     2 < 3, recurse left
     Call Insert(1, 2)
       2 > 1, recurse right
-      Call Insert(null, 2)
-        Create new Node(2)
-        Return new node
-      Set node1.right = new Node(2)
-      Return modified node 1
-    Set node3.left = modified node 1
-    Return modified node 3
-  Set node5.left = modified node 3
-  Return modified node 5
+      Call Insert(null, 2) -> returns new Node(2)
+      Set node1.right = Node(2)
+```
 
-Result:
-       5
-      / \
-     3   7
-    / \   \
-   1   4   8
-    \
-     2
+**Resulting Structure:**
+
+```mermaid
+flowchart TD
+    N5["5"]
+    N3["3"]
+    N7["7"]
+    N1["1"]
+    N4["4"]
+    N8["8"]
+    N2["2 (Newly Inserted)"]:::newInserted
+
+    N5 --> N3
+    N5 --> N7
+    N3 --> N1
+    N3 --> N4
+    N7 --> N8
+    N1 --> N2
+
+    classDef default fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#ffffff
+    classDef newInserted fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
 ```
 
 ---
@@ -509,59 +610,81 @@ Result:
 Deleting is trickier because you must maintain the tree structure and invariant.
 
 **Case 1: Node is a leaf**  
-Simply remove it.
+Simply remove it. No restructuring needed.
 
-```
-Before: 5         After: 5
-       / \               / \
-      3   7            3   7
-     /     \               \
-    1       8              8
+```mermaid
+flowchart LR
+    subgraph C1Before["Before"]
+        direction TB
+        B5_1["5"] --> B3_1["3"]
+        B5_1 --> B7_1["7"]
+        B3_1 --> B1_1["1 (Leaf to delete)"]:::deletedNode
+        B7_1 --> B8_1["8"]
+    end
+    subgraph C1After["After"]
+        direction TB
+        A5_1["5"] --> A3_1["3"]
+        A5_1 --> A7_1["7"]
+        A7_1 --> A8_1["8"]
+    end
+    C1Before ==>|"Delete Leaf 1"| C1After
 
-Delete 1: Just remove it, no restructuring needed.
+    classDef deletedNode fill:#b71c1c,stroke:#ff8a80,stroke-width:2px,color:#ffffff
+    classDef default fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#ffffff
 ```
 
 **Case 2: Node has one child**  
-Bypass the node (child replaces parent).
+Bypass the node (child directly replaces parent).
 
-```
-Before: 5         After: 5
-       / \               / \
-      3   7            4   7
-       \   \                \
-        4   8               8
+```mermaid
+flowchart LR
+    subgraph C2Before["Before"]
+        direction TB
+        B5_2["5"] --> B3_2["3 (To delete)"]:::deletedNode
+        B5_2 --> B7_2["7"]
+        B3_2 --> B4_2["4 (Single child)"]
+        B7_2 --> B8_2["8"]
+    end
+    subgraph C2After["After"]
+        direction TB
+        A5_2["5"] --> A4_2["4 (Promoted child)"]:::promotedNode
+        A5_2 --> A7_2["7"]
+        A7_2 --> A8_2["8"]
+    end
+    C2Before ==>|"Bypass 3 with 4"| C2After
 
-Delete 3: Promote its only child (4) to replace it.
-Invariant maintained: 5 has left child 4, which is < 5. ✓
+    classDef deletedNode fill:#b71c1c,stroke:#ff8a80,stroke-width:2px,color:#ffffff
+    classDef promotedNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
+    classDef default fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#ffffff
 ```
 
 **Case 3: Node has two children**  
-**Problem:** Can't just remove it; left and right both need a parent.  
-**Solution:** Find the **inorder successor** (smallest value in right subtree), copy its value to the node, then delete the successor.
+- **Problem:** Cannot simply sever the node; both left and right branches need a valid parent.
+- **Solution:** Find the **inorder successor** (smallest value in right subtree, which is the leftmost node in that right subtree), copy its value to the target node, and recursively delete the successor from the right subtree.
+- **Why successor works:** It is strictly greater than all nodes in the left subtree, and strictly less than all other nodes in the right subtree. Furthermore, the successor has at most one child (a right child), reducing its removal to Case 1 or 2!
 
-**Why successor works:**
-- Successor is larger than everything in left subtree (by BST property)  
-- Successor is smaller than everything in right subtree (it's the smallest there)  
-- Successor has **at most one child** (right), so delete is easy  
+```mermaid
+flowchart LR
+    subgraph C3Before["Before: Delete Root 5"]
+        direction TB
+        B5_3["5 (Target)"]:::deletedNode --> B3_3["3"]
+        B5_3 --> B7_3["7 (Inorder Successor)"]:::promotedNode
+        B3_3 --> B1_3["1"]
+        B3_3 --> B4_3["4"]
+        B7_3 --> B8_3["8"]
+    end
+    subgraph C3After["After: Successor 7 Replaces 5"]
+        direction TB
+        A7_3["7 (New Root)"]:::promotedNode --> A3_3["3"]
+        A7_3 --> A8_3["8"]
+        A3_3 --> A1_3["1"]
+        A3_3 --> A4_3["4"]
+    end
+    C3Before ==>|"Copy 7 to root & delete old 7"| C3After
 
-```
-Before: 5         After finding successor:
-       / \        successor = 7 (left-most in right subtree)
-      3   7       Copy value 7 to node 5
-     / \   \      Delete original node 7
-    1   4   8     
-                 Result: 5     (now contains 7)
-                        / \
-                       3   8
-                      / \
-                     1   4
-
-                 But actually:
-                 7      <- new root value
-                / \
-               3   8
-              / \
-             1   4
+    classDef deletedNode fill:#b71c1c,stroke:#ff8a80,stroke-width:2px,color:#ffffff
+    classDef promotedNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
+    classDef default fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#ffffff
 ```
 
 **Pseudocode (Case 3):**
@@ -608,55 +731,38 @@ For a valid BST, **inorder traversal gives you sorted values**. This is because:
 - Then the node itself  
 - Then right subtree (all larger)  
 
-```
-       5
-      / \
-     3   7
-    / \   \
-   1   4   8
+```mermaid
+flowchart TD
+    N5["5"] --> N3["3"]
+    N5 --> N7["7"]
+    N3 --> N1["1"]
+    N3 --> N4["4"]
+    N7 --> N8["8"]
 
-Inorder: 1, 3, 4, 5, 7, 8  ✓ Sorted!
+    classDef default fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#ffffff
 ```
+
+- **Inorder Sequence:** `[1, 3, 4, 5, 7, 8]` *(Monotonically sorted!)*
 
 ---
 
 #### Degenerate BSTs – The Problem
 
-Insert sorted input `[1, 2, 3, 4, 5]` into a BST:
+Insert sorted input `[1, 2, 3, 4, 5]` into an unbalanced BST:
 
-```
-Insert 1: Create root
-    1
+```mermaid
+flowchart TD
+    D1["1 (Root)"] --> D2["2"]
+    D2 --> D3["3"]
+    D3 --> D4["4"]
+    D4 --> D5["5 (Leaf)"]
 
-Insert 2: 2 > 1, goes right
-    1
-     \
-      2
-
-Insert 3: 3 > 1, go right; 3 > 2, goes right
-    1
-     \
-      2
-       \
-        3
-
-... continues ...
-
-Insert 5:
-    1
-     \
-      2
-       \
-        3
-         \
-          4
-           \
-            5
-
-Height = 5, Operations = O(n), essentially a linked list!
+    classDef default fill:#b71c1c,stroke:#ff8a80,stroke-width:2px,color:#ffffff
 ```
 
-**Problem:** Without balancing, adversarial input (sorted or reverse-sorted) degrades to O(n).
+- **Height:** `5` (equal to `N`).
+- **Operation Time:** Degrades from `O(log N)` to `O(N)`, behaving identically to a singly linked list.
+- **Problem:** Without automated self-balancing, adversarial sorted or reverse-sorted input destroys logarithmic performance.
 
 ---
 
@@ -664,51 +770,53 @@ Height = 5, Operations = O(n), essentially a linked list!
 
 #### Why Balance?
 
-A **balanced BST** maintains height ≈ O(log n) by rebalancing as you insert/delete.
+A **balanced BST** maintains `height ≈ O(log N)` by self-rebalancing during insertion and deletion.
 
 **Impact:**
-- Search: O(log n) guaranteed  
-- Insert/Delete: O(log n) guaranteed  
-- Sorted iteration: O(n) (no change)  
+- **Search:** `O(log N)` guaranteed  
+- **Insert/Delete:** `O(log N)` guaranteed  
+- **Sorted iteration:** `O(N)` (unaffected)  
 
-Two main strategies:
+Two primary self-balancing strategies:
 
-**AVL Trees (Strict Balance)**
-- Every node: |height(left) - height(right)| ≤ 1  
-- More balanced, fewer rotations needed per operation  
-- Higher insert/delete cost (more complex rebalancing)  
-
-**Red-Black Trees (Relaxed Balance)**
-- Nodes colored red or black, with 5 rules  
-- Less strictly balanced, more rotations during operations  
-- Production choice (Java TreeMap, C++ std::map, Linux kernel)  
+- **AVL Trees (Strict Balance):**
+  - Every node maintains `|height(left) - height(right)| <= 1`.
+  - Tighter search paths (`~1.0 * log2(N)`), ideal for read-heavy workloads.
+- **Red-Black Trees (Relaxed Balance):**
+  - Colors nodes red or black and enforces 5 balance invariants.
+  - Fewer rotations during updates, making it the de facto production standard (Java `TreeMap`, C++ `std::map`, Linux kernel CFS scheduler).
 
 ---
 
 #### Rotations – The Rebalancing Tool
 
-A **rotation** is a local tree restructuring that maintains BST invariant but changes heights.
+A **rotation** is a local tree restructuring that preserves the global BST invariant while adjusting subtree heights in `O(1)` time.
 
 ##### Right Rotation (Fixes Left-Heavy Trees)
 
+```mermaid
+flowchart LR
+    subgraph RRBefore["Before: Left-Heavy (BF = -2)"]
+        direction TB
+        B5["5"] --> B3["3"]
+        B3 --> B1["1"]
+    end
+    subgraph RRAfter["After: Rotate Right(5) (BF = 0)"]
+        direction TB
+        A3["3 (New Sub-Root)"] --> A1["1"]
+        A3 --> A5["5"]
+    end
+    RRBefore ==>|"Rotate Right around 5"| RRAfter
+
+    classDef default fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#ffffff
 ```
-Before:        After:
-    5            3
-   /            / \
-  3       →    1   5
- /
-1
 
-Check BST invariant:
-Before: 1 < 3 < 5 ✓
-After:  1 < 3 < 5 ✓ Still valid!
+**BST Invariant Verification:**
+- Before: `1 < 3 < 5`
+- After: `1 < 3 < 5` (strictly preserved)
+- Height: Reduced from 2 to 1!
 
-Check heights:
-Before: height(5) = 2
-After:  height(3) = 1 (more balanced)
-```
-
-**Implementation:** Just pointer rewiring  
+**Implementation:** Pure pointer reassignments:
 ```csharp
 Node RotateRight(Node root) {
     Node newRoot = root.left;
@@ -721,49 +829,56 @@ Node RotateRight(Node root) {
 
 ##### Left Rotation (Fixes Right-Heavy Trees)
 
-```
-Before:        After:
-    1            3
-     \          / \
-      3   →    1   5
-       \
-        5
+```mermaid
+flowchart LR
+    subgraph LRBefore["Before: Right-Heavy (BF = +2)"]
+        direction TB
+        B1_L["1"] --> B3_L["3"]
+        B3_L --> B5_L["5"]
+    end
+    subgraph LRAfter["After: Rotate Left(1) (BF = 0)"]
+        direction TB
+        A3_L["3 (New Sub-Root)"] --> A1_L["1"]
+        A3_L --> A5_L["5"]
+    end
+    LRBefore ==>|"Rotate Left around 1"| LRAfter
 
-Same invariant check, same principle, mirrored.
+    classDef default fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#ffffff
 ```
 
 ---
 
 #### AVL Trees – Balance Factor Approach
 
-**Balance factor** = height(left) - height(right)  
+**Balance factor:** `BF(node) = height(right) - height(left)` (or `left - right`).
 
-For AVL, |BF| ≤ 1 at every node.
+For AVL, `|BF| <= 1` at every node.
 
-**Four imbalance cases (and fixes):**
+**Four imbalance cases:**
+1. **LL (Left-Left):** Left child is left-heavy -> Single Right rotation.
+2. **RR (Right-Right):** Right child is right-heavy -> Single Left rotation.
+3. **LR (Left-Right):** Left child is right-heavy (zig-zag knee) -> Left rotate on child, then Right rotate on parent.
+4. **RL (Right-Left):** Right child is left-heavy (zig-zag knee) -> Right rotate on child, then Left rotate on parent.
 
-1. **LL (Left-Left):** Imbalance in left-left direction → Right rotation  
-2. **RR (Right-Right):** Imbalance in right-right direction → Left rotation  
-3. **LR (Left-Right):** Imbalance in left-right direction → Left-Right rotation  
-4. **RL (Right-Left):** Imbalance in right-left direction → Right-Left rotation  
+```mermaid
+flowchart TD
+    subgraph LL["LL Imbalance -> Single Right Rotate"]
+        LL_B5["5"] --> LL_B3["3"]
+        LL_B3 --> LL_B1["1"]
+        LL_B5 -.->|"Right Rotate(5)"| LL_A3["3 (Root)"]
+        LL_A3 --> LL_A1["1"]
+        LL_A3 --> LL_A5["5"]
+    end
 
-```
-LL Case:        LR Case:
-    5              5
-   /              /
-  3          →   2
- /               / \
-1               1   3
+    subgraph LR["LR Imbalance -> Double Rotation"]
+        LR_B5["5"] --> LR_B2["2"]
+        LR_B2 --> LR_B3["3"]
+        LR_B5 -.->|"1. Left Rotate(2)<br/>2. Right Rotate(5)"| LR_A3["3 (Root)"]
+        LR_A3 --> LR_A2["2"]
+        LR_A3 --> LR_A5["5"]
+    end
 
-Fix LL: Right rotate at 5
-    3
-   / \
-  1   5
-
-Fix LR: Left rotate at 3, then right rotate at 5
-    3
-   / \
-  1   5
+    classDef default fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#ffffff
 ```
 
 ---
@@ -863,38 +978,41 @@ void PathSum(Node root, int targetSum, List<int> path,
 
 **Example:**
 
-```
-Tree:       1 (target = 5)
-           / \
-          2   3
+```mermaid
+flowchart TD
+    N1["1 (Target = 5)"]:::rootNode
+    N2["2 (Leaf)"]:::leafNode
+    N3["3 (Leaf)"]:::leafNode
 
-Call PathSum(1, 5, [], results)
-  path = [1]
-  Not a leaf, recurse
-  Call PathSum(2, 5, [1], results)
-    path = [1, 2]
-    Is leaf, sum = 3 ≠ 5, skip
-    Backtrack: path = [1]
-  Call PathSum(3, 5, [1], results)
-    path = [1, 3]
-    Is leaf, sum = 4 ≠ 5, skip
-    Backtrack: path = [1]
+    N1 --> N2
+    N1 --> N3
 
-Result: No path sums to 5
+    classDef rootNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
+    classDef leafNode fill:#37474f,stroke:#90a4ae,stroke-width:2px,color:#ffffff
 ```
+
+**Backtracking Trace:**
+1. Call `PathSum(node=1, remaining=5, path=[])` -> Appends `1`, remaining sum = `4`.
+2. Recurse left: `PathSum(node=2, remaining=4, path=[1])` -> Appends `2`, remaining sum = `2`.
+   - Node `2` is a leaf, but remaining sum `2 != 0`. Path invalid.
+   - **Backtrack:** Pop `2` from `path` (restores `path` to `[1]`).
+3. Recurse right: `PathSum(node=3, remaining=4, path=[1])` -> Appends `3`, remaining sum = `1`.
+   - Node `3` is a leaf, but remaining sum `1 != 0`. Path invalid.
+   - **Backtrack:** Pop `3` from `path` (restores `path` to `[1]`).
+4. Backtrack from root: Pop `1`. Returns empty result list.
 
 ---
 
 ### 4.2 Tree Diameter – Longest Path
 
-**Problem:** Find the longest path between ANY two nodes (not necessarily through root).
+**Problem:** Find the longest path between ANY two nodes (not necessarily passing through the root).
 
-**Mental Model:** At each node, diameter involves either:
-- Left subtree only  
-- Right subtree only  
-- Path through this node (left_height + right_height)  
+**Mental Model:** At each node, the diameter is determined by:
+- Longest path contained entirely in left subtree
+- Longest path contained entirely in right subtree
+- Longest path passing through current node (`height(left) + height(right)`)
 
-**Key insight:** Return both `(height, max_diameter)` from DFS so parent can compute with it.
+**Key insight:** Return both `(height, maxDiameter)` from DFS so the parent can compute both values in a single bottom-up pass.
 
 ```csharp
 (int height, int maxDiameter) DFS(Node node) {
@@ -914,18 +1032,26 @@ Result: No path sums to 5
 
 **Example:**
 
-```
-       1
-      / \
-     2   3
-    /
-   4
+```mermaid
+flowchart TD
+    D1["1 (Height: 3, Diam: 3)"]:::rootNode
+    D2["2 (Height: 2, Diam: 1)"]:::internalNode
+    D3["3 (Height: 1, Diam: 0)"]:::leafNode
+    D4["4 (Height: 1, Diam: 0)"]:::leafNode
 
-At node 4: (height=1, diameter=0)
-At node 2: (height=2, diameter=1) [path through: 0+1=1]
-At node 3: (height=1, diameter=0)
-At node 1: (height=3, diameter=3) [path through: 2+1=3, longest is 4-2-1-3]
+    D1 --> D2
+    D1 --> D3
+    D2 --> D4
+
+    classDef rootNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
+    classDef internalNode fill:#37474f,stroke:#90a4ae,stroke-width:2px,color:#ffffff
+    classDef leafNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
 ```
+
+- At node `4`: `(height=1, diameter=0)`
+- At node `2`: `(height=2, diameter=1)` (path through node: `1 + 0 = 1`)
+- At node `3`: `(height=1, diameter=0)`
+- At node `1`: `(height=3, diameter=3)` (path through node: `2 + 1 = 3`, longest path is `4 -> 2 -> 1 -> 3`)
 
 ---
 
@@ -1004,24 +1130,28 @@ Node DeserializeDFS(Queue<string> queue) {
 
 **Example:**
 
-```
-Tree:       1
-           / \
-          2   3
+```mermaid
+flowchart TD
+    S1["1"]:::rootNode
+    S2["2"]:::leafNode
+    S3["3"]:::leafNode
 
-Serialize: "1,2,null,null,3,null,null,"
-Preorder: 1 (then left 2, then left null, then right null, then right 3, ...)
+    S1 --> S2
+    S1 --> S3
 
-Deserialize: Queue = [1, 2, null, null, 3, null, null]
-  Dequeue 1 → create Node(1)
-    Dequeue 2 → create Node(2)
-      Dequeue null → return null
-      Dequeue null → return null
-    Dequeue 3 → create Node(3)
-      Dequeue null → return null
-      Dequeue null → return null
-  Rebuild: 1 with left=2, right=3
+    classDef rootNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
+    classDef leafNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
 ```
+
+- **Serialize:** `"1,2,null,null,3,null,null,"`
+  - Preorder order: `1`, then left subtree `2` (leaves `null`, `null`), then right subtree `3` (leaves `null`, `null`).
+- **Deserialize:** Queue `[1, 2, null, null, 3, null, null]`
+  - Dequeue `1` -> Instantiate `Node(1)`
+  - Dequeue `2` -> Attach as `Node(1).left`
+  - Dequeue `null`, `null` -> Children of `2` are null
+  - Dequeue `3` -> Attach as `Node(1).right`
+  - Dequeue `null`, `null` -> Children of `3` are null
+- **Result:** Exact identical binary tree reconstructed in `O(N)` time.
 
 ---
 
@@ -1105,135 +1235,81 @@ Chosen over balanced BSTs because B-Trees minimize disk I/O (multiple keys per n
 
 Store `subtree_size` = number of nodes in subtree rooted here.
 
-```
-       1 (size=7)
-      / \
-     2   3 (size=3)
-    / \    \
-   4   5    6
-  (sz=1)(sz=1)(sz=1)
+```mermaid
+flowchart TD
+    A4["4 (size = 6)"]:::rootNode
+    A2["2 (size = 3)"]:::internalNode
+    A5["5 (size = 2)"]:::internalNode
+    A1["1 (size = 1)"]:::leafNode
+    A3["3 (size = 1)"]:::leafNode
+    A6["6 (size = 1)"]:::leafNode
 
-size[1] = 1 + size[2] + size[3]
-size[2] = 1 + size[4] + size[5]
-...
+    A4 --> A2
+    A4 --> A5
+    A2 --> A1
+    A2 --> A3
+    A5 --> A6
+
+    classDef rootNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
+    classDef internalNode fill:#37474f,stroke:#90a4ae,stroke-width:2px,color:#ffffff
+    classDef leafNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
 ```
+
+**Size Recurrence:**
+- `size[node] = 1 + size[node.left] + size[node.right]`
+- `size[1] = 1`, `size[3] = 1`, `size[6] = 1`
+- `size[2] = 1 + 1 + 1 = 3`
+- `size[5] = 1 + 0 + 1 = 2`
+- `size[4] = 1 + 3 + 2 = 6`
 
 **Benefits:**
-- Find kth smallest in O(log n)  
-- Count elements in range in O(log n)  
-- Rank queries (how many ≤ x) in O(log n)  
+- Find `k`-th smallest in `O(log N)`
+- Count elements in range in `O(log N)`
+- Rank queries (count elements `<= x`) in `O(log N)`
 
 ### 6.2 Order-Statistics: Find Kth Smallest
 
-**Without augmentation:** In-order traverse (O(n)), pick kth.
-
-**With size augmentation:**
+**Without augmentation:** Full in-order traversal takes `O(N)` time.  
+**With size augmentation:** Binary search down the tree in `O(height) = O(log N)` time.
 
 ```csharp
 Node KthSmallest(Node root, int k) {
+    if (root == null) return null;
     int leftSize = (root.left != null) ? root.left.size : 0;
     
     if (leftSize >= k) {
-        // k-th is in left subtree
+        // k-th smallest lies entirely in left subtree
         return KthSmallest(root.left, k);
     } else if (leftSize + 1 == k) {
-        // k-th is this node
+        // Current node is the exact k-th smallest element
         return root;
     } else {
-        // k-th is in right subtree (adjust k)
+        // k-th smallest lies in right subtree (subtract leftSize + 1)
         return KthSmallest(root.right, k - leftSize - 1);
     }
 }
 ```
 
-**Example:**
+**Step-by-Step Search Traces on Inorder Sequence `[1, 2, 3, 4, 5, 6]`:**
 
-```
-Tree:      1 (size=7)
-          / \
-         2   3 (size=3)
-        / \   \
-       4   5   6
+1. **Find 4th Smallest (`k = 4`):**
+   - At root `4`: `leftSize = 3`.
+   - `leftSize + 1 = 3 + 1 = 4 == k`.
+   - **Found:** Returns node `4`!
 
-Find 4th smallest:
-At 1: leftSize=2, need 4-th
-  4 > 2, so in right subtree
-  Adjust k = 4 - 2 - 1 = 1
-At 3: leftSize=0, need 1st
-  1 == 1, return 3
+2. **Find 5th Smallest (`k = 5`):**
+   - At root `4`: `leftSize = 3`, `k = 5 > 4`.
+   - Recurse right with adjusted `k' = 5 - 3 - 1 = 1`.
+   - At node `5`: `leftSize = 0`.
+   - `leftSize + 1 = 0 + 1 = 1 == k'`.
+   - **Found:** Returns node `5`!
 
-Result: 3 is the 4th smallest ✓ (in-order: 4,2,5,1,3,6,7 → 4th is 1... wait, let me recount)
-
-Actually, in-order: 4, 2, 5, 1, 3, 6
-4th is 1, not 3. Let me retrace:
-
-At 1: leftSize=2 (nodes 2,4,5), need 4th
-  4 > 2+1, so it's in right, adjust k=4-3=1
-At 3: leftSize=0, need 1st
-  1 == 1, return 3
-
-But 3 is in position... let me count: 4,2,5,1 [3rd is 1], 3, 6
-So 1 is 4th, and 3 is 5th. Algorithm returned 3, which is wrong!
-
-Checking algorithm logic: if leftSize >= k, go left
-At root 1: leftSize=2, k=4
-  2 >= 4? No
-  leftSize+1 == k? 3 == 4? No
-  Go right with k' = 4 - 2 - 1 = 1
-
-At node 3: leftSize=0, k=1
-  0 >= 1? No
-  leftSize+1 == k? 1 == 1? Yes
-  Return node 3
-
-But node 3 is the 5th smallest, not 4th. Issue: the kth position numbering.
-
-If we want the kth smallest from ALL nodes (not just this subtree), and rightSize=1 (node 6), then the algorithm is right that node 3 is in the right, but the adjustment is off. Let me reconsider.
-
-Actually wait, tree structure: which nodes are where?
-  1
- / \
-2   3
- / \   \
-4   5   6
-
-Inorder: 4, 2, 5, 1, 3, 6
-4th smallest is 1 (index 4 from left)
-
-At root 1: leftSize = size of subtree rooted at 2 = 3 (contains 4, 2, 5)
-If we want 4th out of {4,2,5,1,3,6}:
-  Left subtree has 3 nodes, so positions 1-3 are there
-  Position 4 (the 4th smallest) is node 1 itself
-  
-So at root 1: leftSize=3, k=4
-  3 >= 4? No
-  leftSize+1 == 4? 3+1==4? Yes!
-  Return root 1 ✓
-
-I made an error; leftSize should be 3, not 2. Let me re-calculate sizes:
-
-size[4]=1, size[5]=1, size[6]=1
-size[2] = 1 + size[4] + size[5] = 1 + 1 + 1 = 3
-size[3] = 1 + size[6] = 1 + 1 = 2 (no left child for 3)
-size[1] = 1 + size[2] + size[3] = 1 + 3 + 2 = 6
-
-Wait, I had node 3 with right child 6. Let me recheck:
-  1
- / \
-2   3
- / \ / \
-4  5  ? 6
-
-Node 3 has only right child 6, left is null:
-size[3] = 1 + 0 + 1 = 2
-
-So at root 1: leftSize = 3, k=4
-  3 >= 4? No
-  3+1==4? Yes
-  Return 1
-
-Good! The algorithm works.
-```
+3. **Find 2nd Smallest (`k = 2`):**
+   - At root `4`: `leftSize = 3`, `k = 2 <= 3`.
+   - Recurse left with `k = 2`.
+   - At node `2`: `leftSize = 1`.
+   - `leftSize + 1 = 1 + 1 = 2 == k`.
+   - **Found:** Returns node `2`!
 
 ---
 

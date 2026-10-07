@@ -265,27 +265,26 @@ while fast and fast.next and fast.next.next:
 Given a problem, which pattern(s) fit?
 
 
-```mermaid
-flowchart TD
-    R["Does the problem ask about"]
-    R --> N1["'Find pairs/elements with property'?"]
-    N1 --> N2["Use Hash (complement lookup, frequency)"]
-    R --> N3["'Next/Previous element greater/smaller'?"]
-    N3 --> N4["Use Monotonic Stack"]
-    R --> N5["'Merge overlapping ranges'?"]
-    N5 --> N6["Use Intervals (sort + greedy)"]
-    R --> N7["'Find missing/duplicate in 1..n'?"]
-    N7 --> N8["Use Partition / Cyclic Sort"]
-    R --> N9["'Maximum/minimum subarray sum'?"]
-    N9 --> N10["Use Kadane's Algorithm"]
-    R --> N11["'Linked list cycle/midpoint'?"]
-    N11 --> N12["Use Fast-Slow Pointers"]
-    R --> N13["'Combining two or more above'?"]
-    N13 --> N14["Use integration (multiple patterns)"]
-    R --> N15["'Unsure'?"]
-    N15 --> N16["Check: sorted? Space constraint? Streaming? Multiple solutions?"]
-    N16 --> N17["These hints suggest pattern family"]
-```
+### 📌 Does the problem ask about
+
+- **'Find pairs/elements with property'?**
+  - Use Hash (complement lookup, frequency)
+- **'Next/Previous element greater/smaller'?**
+  - Use Monotonic Stack
+- **'Merge overlapping ranges'?**
+  - Use Intervals (sort + greedy)
+- **'Find missing/duplicate in 1..n'?**
+  - Use Partition / Cyclic Sort
+- **'Maximum/minimum subarray sum'?**
+  - Use Kadane's Algorithm
+- **'Linked list cycle/midpoint'?**
+  - Use Fast-Slow Pointers
+- **'Combining two or more above'?**
+  - Use integration (multiple patterns)
+- **'Unsure'?**
+  - **Check: sorted? Space constraint? Streaming? Multiple solutions?**
+    - These hints suggest pattern family
+
 
 
 ---

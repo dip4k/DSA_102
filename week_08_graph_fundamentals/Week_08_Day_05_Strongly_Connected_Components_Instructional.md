@@ -45,9 +45,16 @@ In graph form:
 
 
 ```mermaid
-flowchart TD
-    R["A → B → C"]
-    R --> N1["State"]
+flowchart LR
+    classDef svc fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+
+    A["⚙️ Service A<br/>Auth Service"]:::svc
+    B["👤 Service B<br/>Profile Service"]:::svc
+    C["🔧 Service C<br/>Config Service"]:::svc
+
+    A -->|Calls| B
+    B -->|Calls| C
+    C -->|Calls back| A
 ```
 
 
@@ -57,9 +64,19 @@ Meanwhile, maybe D is a logging service used by C only:
 
 
 ```mermaid
-flowchart TD
-    R["A → B → C → D"]
-    R --> N1["State"]
+flowchart LR
+    classDef scc fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef ext fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
+
+    subgraph Cluster["🔄 Tightly Coupled Unit (Cycle / SCC)"]
+        A["⚙️ Service A"]:::scc
+        B["👤 Service B"]:::scc
+        C["🔧 Service C"]:::scc
+        A --> B --> C --> A
+    end
+
+    D["📝 Service D<br/>(One-way Logging)"]:::ext
+    C -->|Sends logs| D
 ```
 
 
@@ -130,9 +147,24 @@ Consider this directed graph:
 
 
 ```mermaid
-flowchart TD
-    R["1 → 2 → 3 → 4"]
-    R --> N1["State"]
+flowchart LR
+    classDef scc1 fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+    classDef scc2 fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:2px;
+
+    subgraph SCC1["🔄 Strongly Connected Component 1: {1, 2, 3, 5}"]
+        N1["Node 1"]:::scc1
+        N2["Node 2"]:::scc1
+        N3["Node 3"]:::scc1
+        N5["Node 5"]:::scc1
+        N1 --> N2 --> N3 --> N1
+        N2 --> N5 --> N3
+    end
+
+    subgraph SCC2["🎯 SCC 2: {4}"]
+        N4["Node 4"]:::scc2
+    end
+
+    N3 -->|One-way cross edge| N4
 ```
 
 
@@ -259,9 +291,23 @@ ASCII sketch:
 
 
 ```mermaid
-flowchart TD
-    R["A SCC              B SCC"]
-    R --> N1["State"]
+flowchart LR
+    classDef sccA fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef sccB fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
+
+    subgraph GroupA["📦 SCC Component A"]
+        A1["Node a1"]:::sccA
+        A2["Node a2"]:::sccA
+        A1 <--> A2
+    end
+
+    subgraph GroupB["📦 SCC Component B"]
+        B1["Node b1"]:::sccB
+        B2["Node b2"]:::sccB
+        B1 <--> B2
+    end
+
+    A2 -->|Original: A → B<br/>DFS finishes B first| B1
 ```
 
 
@@ -462,8 +508,18 @@ ASCII trace for a small component is helpful:
 
 ```mermaid
 flowchart TD
-    R["Indices   0   1   2"]
-    R --> N1["State"]
+    classDef visit fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef back fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:2px;
+    classDef root fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+
+    A["Node A: index=0, lowLink=0 (SCC Root)"]:::root
+    B["Node B: index=1, lowLink=1"]:::visit
+    C["Node C: index=2, lowLink=2"]:::visit
+
+    A -->|Tree Edge| B
+    B -->|Tree Edge| C
+    C -->|Back Edge to B (on stack)| B
+    C -.->|lowLink updated to min(2, index[B]=1)| B
 ```
 
 

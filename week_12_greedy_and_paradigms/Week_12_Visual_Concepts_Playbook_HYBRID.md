@@ -24,11 +24,14 @@
 ### 0.1 Topic Map
 
 
-```mermaid
-flowchart TD
-    R["State"]
-    R --> N1["Step"]
-```
+### 📌 🗺️ Week 12: Greedy Algorithms Topic Map
+
+- 📅 Day 1: Greedy Foundations & Proof Techniques (Exchange Argument)
+- 📅 Day 2: Intervals, Scheduling & Sweepline Mechanics
+- 📅 Day 3: Optimal Merging & Huffman Coding Trees
+- 📅 Day 4: Fractional Knapsack & Deadline Scheduling
+- 📅 Day 5: Graph Greedy (Kruskal, Prim) & Approximation Algorithms
+
 
 
 - **Day 1:** What is greedy? How do we prove it is correct? (templates, exchange argument)
@@ -57,9 +60,17 @@ Draw a left-to-right pipeline with 4 main stages:
 
 
 ```mermaid
-flowchart TD
-    R["State"]
-    R --> N1["State"]
+flowchart LR
+    classDef stage fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef loop fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
+    classDef out fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+
+    S1["1️⃣ Input Stage<br/>Raw items & constraints"]:::stage
+    S2["2️⃣ Preprocessing<br/>Sort by key / Build Priority Queue"]:::stage
+    S3["3️⃣ Greedy Choice Loop<br/>Locally optimal pick (no backtracks)"]:::loop
+    S4["4️⃣ Output / Solution<br/>Verified by exchange argument"]:::out
+
+    S1 --> S2 --> S3 --> S4
 ```
 
 
@@ -81,9 +92,17 @@ Add arrows above the pipeline to show which *proof technique* is typically used:
 
 ```mermaid
 flowchart TD
-    R["State"]
-    R --> N1["Step"]
-    R --> N2["Step"]
+    classDef start fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef choice fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
+    classDef gr fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+    classDef dp fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:2px;
+
+    R["🎯 Problem Decision: Greedy vs. Dynamic Programming"]:::start
+    R --> Q1{"Does local optimal choice guarantee<br/>global optimal solution? (Greedy Choice Property)"}:::choice
+    Q1 -->|Yes: Provable by Exchange Argument| G["⚡ Use Greedy Paradigm<br/>O(N log N) sort + O(N) single scan"]:::gr
+    Q1 -->|No: Earlier choices constrain future options| Q2{"Do overlapping subproblems exist?<br/>(Optimal substructure present)"}:::choice
+    Q2 -->|Yes| D["⚡ Use Dynamic Programming<br/>Evaluate state transitions (0/1 Knapsack, Coin Change)"]:::dp
+    Q2 -->|No| B["⚡ Use Backtracking / Branch & Bound"]:::choice
 ```
 
 
@@ -257,18 +276,16 @@ M3:                   [==M3==)
 
 3. Draw a simple table:
 
-```text
-Time | Event     | Active Count
------+-----------+-------------
- 1   | M1 start  | 1
- 2   | M2 start  | 2
- 3   | M4 start  | 3   <-- max overlap = 3 rooms
- 4   | M1 end    | 2
- 5   | M2 end    | 1
- 6   | M3 start  | 2
- 7   | M4 end    | 1
- 8   | M3 end    | 0
-```
+| Time | Event Trigger | Active Meeting Count | Note |
+| :--- | :--- | :--- | :--- |
+| **1** | M1 start | 1 | Room 1 occupied |
+| **2** | M2 start | 2 | Room 2 occupied |
+| **3** | M4 start | **3** | 🎯 **Peak overlap = 3 rooms required** |
+| **4** | M1 end | 2 | Room freed |
+| **5** | M2 end | 1 | Room freed |
+| **6** | M3 start | 2 | Room reused |
+| **7** | M4 end | 1 | Room freed |
+| **8** | M3 end | 0 | All rooms idle |
 
 The **peak of Active Count** visually shows the **minimum number of rooms** required.
 
@@ -363,58 +380,52 @@ At each step, draw:
 
 - **Step 5:** Merge `a(45)` and `N4(55)` → root `N5(100)`
 
-```text
-                N5(100)
-               /      \
-           a(45)      N4(55)
-                      /    \
-                   N2(25)  N3(30)
-                  /   \    /   \
-               c(12)b(13)N1(14)d(16)
-                         /   \
-                       f(5) e(9)
+```mermaid
+flowchart TD
+    N5["N5 (100)"]:::internalNode
+    A["a (45)"]:::leafNode
+    N4["N4 (55)"]:::internalNode
+    N2["N2 (25)"]:::internalNode
+    N3["N3 (30)"]:::internalNode
+    C["c (12)"]:::leafNode
+    B["b (13)"]:::leafNode
+    N1["N1 (14)"]:::internalNode
+    D["d (16)"]:::leafNode
+    F["f (5)"]:::leafNode
+    E["e (9)"]:::leafNode
+
+    N5 -->|"0"| A
+    N5 -->|"1"| N4
+    N4 -->|"0"| N2
+    N4 -->|"1"| N3
+    N2 -->|"0"| C
+    N2 -->|"1"| B
+    N3 -->|"0"| N1
+    N3 -->|"1"| D
+    N1 -->|"0"| F
+    N1 -->|"1"| E
+
+    classDef internalNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
+    classDef leafNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
 ```
 
 **Check consistency:**  
-Every internal node weight is sum of its children; final root = 100 = total frequency.
+Every internal node weight is the exact sum of its children; final root = `100` = total frequency count.
 
 ### 3.2 Code Assignment: Root-to-Leaf Paths
 
-Assign `0` to left edges and `1` to right edges.
+Assign `0` to left edges and `1` to right edges. Each root-to-leaf path produces a unique, prefix-free variable-length binary code:
 
-Draw final tree with bit labels on edges:
+| Symbol | Huffman Code | Tree Depth | Frequency Weight |
+| :--- | :--- | :--- | :--- |
+| **a** | `0` | 1 | 45 |
+| **c** | `100` | 3 | 12 |
+| **b** | `101` | 3 | 13 |
+| **d** | `111` | 3 | 16 |
+| **f** | `1100` | 4 | 5 |
+| **e** | `1101` | 4 | 9 |
 
-```text
-                ( )
-              0/   \1
-            a       ( )
-                 0 /   \ 1
-                ( )     ( )
-              0/  \1   0/  \1
-             c    b   ( )  d
-                      0/ \1
-                     e   f
-```
-
-Now list codes:
-
-```text
-Symbol   Code   Depth
- a        0       1
- c       100      3
- b       101      3
- e      1100      4
- f      1101      4
- d       111      3
-```
-
-Show a **table + bar plot idea** of lengths:
-
-```text
-Symbol: a   b   c   d   e   f
-Length: 1   3   3   3   4   4
-Bars:   █   ███ ███ ███ ████ ████
-```
+- Frequent characters (`a`) receive ultra-short 1-bit codes, while rare characters (`f`, `e`) receive 4-bit codes, minimizing expected message length.
 
 ### 3.3 Encoding/Decoding Visual Flow
 
@@ -440,16 +451,14 @@ Draw the same tree again, and a pointer on the bitstream:
 
 Use a 2-column table:
 
-```text
-Bit Prefix | Tree Position  | Output
-----------+----------------+--------
-0         | leaf a         | a
-101       | leaf b         | b
-100       | leaf c         | c
-111       | leaf d         | d
-1100      | leaf e         | e
-1101      | leaf f         | f
-```
+| Bit Prefix Codeword | Tree Position Reached | Decoded Character Output |
+| :--- | :--- | :--- |
+| `0` | Leaf `a` | `'a'` |
+| `101` | Leaf `b` | `'b'` |
+| `100` | Leaf `c` | `'c'` |
+| `111` | Leaf `d` | `'d'` |
+| `1100` | Leaf `e` | `'e'` |
+| `1101` | Leaf `f` | `'f'` |
 
 This shows prefix-free property visually: every code corresponds to a unique leaf.
 
@@ -683,17 +692,15 @@ Cache size: K = 3
 
 Create a table where rows are **time steps** and columns are **cache slots**:
 
-```text
-Time | Access | Cache State (LRU → MRU)
------+--------+------------------------
- 1   |   A    | [ A ]
- 2   |   B    | [ A B ]
- 3   |   C    | [ A B C ]
- 4   |   A    | [ B C A ]
- 5   |   D    | [ C A D ]   (evict B)
- 6   |   B    | [ A D B ]   (evict C)
- 7   |   E    | [ D B E ]   (evict A)
-```
+| Time | Access Key | Cache State (LRU -> MRU) | Cache Hit / Miss Action |
+| :--- | :--- | :--- | :--- |
+| **1** | `A` | `[ A ]` | Miss (Add `A`) |
+| **2** | `B` | `[ A, B ]` | Miss (Add `B`) |
+| **3** | `C` | `[ A, B, C ]` | Miss (Cache full) |
+| **4** | `A` | `[ B, C, A ]` | **Hit** (Move `A` to MRU) |
+| **5** | `D` | `[ C, A, D ]` | Miss (Evict LRU `B`) |
+| **6** | `B` | `[ A, D, B ]` | Miss (Evict LRU `C`) |
+| **7** | `E` | `[ D, B, E ]` | Miss (Evict LRU `A`) |
 
 For slides, turn cache state row into a **color-coded strip**, showing which item gets evicted at each miss.
 

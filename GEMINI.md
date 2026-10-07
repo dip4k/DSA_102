@@ -19,26 +19,26 @@ This repository is engineered to train Senior, Lead, and Staff Software Engineer
 
 ---
 
-## 🏛️ Senior Algorithmic Protocol (The 8-Step Framework)
+## 🏛️ Senior Algorithmic Protocol (Intuitive 8-Step Delivery Arc)
 
-Whenever analyzing, writing, or tutoring a DSA problem, **strictly follow the Senior 8-Step Delivery Arc**:
+Whenever analyzing, writing, or tutoring a DSA problem, **follow the Intuitive 8-Step Delivery Arc**:
 
 ```mermaid
 flowchart LR
     S1["1. Clarify & Bounds"] --> S2["2. Naive Baseline"]
     S2 --> S3["3. Spot Bottleneck"]
-    S3 --> S4["4. Invariant Selection"]
-    S4 --> S5["5. Proof of Correctness"]
+    S3 --> S4["4. Intuitive Hook & Pattern"]
+    S4 --> S5["5. Visual Proof & Why It Works"]
     S5 --> S6["6. Explicit Complexity"]
     S6 --> S7["7. Idiomatic Code (C# & Python)"]
     S7 --> S8["8. Edge-Case Dry Run"]
 ```
 
 1. **Clarify Inputs, Boundaries & Contracts:** Establish constraints (N, value ranges, nullability, duplicates, overflow, concurrency requirements).
-2. **Formulate Naive Baseline:** State the brute-force time and space complexity to anchor the discussion.
-3. **Identify Computational Bottleneck:** Point out repeated scanning, redundant subproblem recalculation, or unnecessary state exploration.
-4. **Select Governing Mathematical Invariant:** Name the exact invariant and optimal data structure (e.g., complement lookup, opposing pointer convergence, monotonic boundary, optimal substructure).
-5. **Prove Correctness & Termination Before Coding:** Explain why discarding candidates preserves the optimal solution and why the loop/recursion must terminate safely.
+2. **Formulate Naive Baseline:** State the brute-force time and space complexity to anchor the discussion simply and clearly.
+3. **Identify Computational Bottleneck:** Point out repeated work, redundant recalculation, or unindexed lookups in plain English.
+4. **Intuitive Hook & Pattern Selection:** Introduce the core intuition using a physical analogy (e.g. calipers, window sliding, book bookmarks) and name the underlying pattern/data structure without academic jargon.
+5. **Visual Proof & Why It Works:** Walk through a visual trace with real numbers showing why candidates can be safely skipped and why the algorithm terminates.
 6. **Explicit Complexity Deconstruction:** Always differentiate:
    - **Time Complexity** (`O(N)`, `O(N log N)`, etc.)
    - **Auxiliary Space** (internal working memory: pointers, hash tables, stacks)
@@ -64,9 +64,36 @@ flowchart LR
 ---
 
 ## ⚙️ Antigravity Operating Guidelines
-- **Strictly No LaTeX Math:** Never use LaTeX formatting (`$...$`, `$$...$$`, `\(...\)`, `\[...\]`, KaTeX, or TeX directives like `\frac`, `\to`, `\le`, `\times`, etc.) anywhere in generated responses, markdown documents, problem solutions, curriculum files, or comments. Always write mathematical formulas, complexities, bounds, and notations using standard plain text or markdown backticks (e.g., `O(N)`, `O(N log N)`, `O(1)`, `N <= 10^5`, `10^5`, `[0 ... N - 1]`, `A -> B`, `i != j`, `x * y`).
+- **Strictly GitHub Markdown (Zero LaTeX Math):** All curriculum guides, solutions, and responses are formatted strictly for GitHub Markdown. Never use LaTeX syntax (`$...$`, `$$...$$`, `\(...\)`, `\[...\]`, KaTeX, or directives like `\frac`, `\to`, `\le`, `\times`, etc.) anywhere. Express all math, complexity bounds, constraints, and notations using standard Markdown backticks or plain text (e.g., `O(N)`, `O(N log N)`, `O(1)`, `N <= 10^5`, `10^5`, `[0 ... N - 1]`, `A -> B`, `i != j`, `x * y`).
+- **Visual Pragmatism (Mermaid vs. ASCII vs. Simple Steps & Tables):**
+  - **When to Use Mermaid:** Use Mermaid ONLY where visual logic, state transitions, branching decisions, or true hierarchical structures truly clarify understanding:
+    - High-level decision trees & branching flowcharts (`flowchart TD` / `flowchart LR` with diamonds `{...}` and labeled branches `-->|Yes|`).
+    - True hierarchical tree and graph topologies (Binary Search Trees, AVL/Red-Black trees, Tries, DFS/BFS graphs).
+    - Multi-entity sequences (`sequenceDiagram`) or state machines (`stateDiagram-v2`).
+  - **Strictly FORBIDDEN Mermaid Anti-Patterns:**
+    - **No Tree/Star Sprawl on Linear Steps:** NEVER convert linear step-by-step algorithms, sequential dry-runs, or execution traces into artificial star/tree graphs (e.g. `R --> N1`, `R --> N2`, `R --> N3...`).
+    - **No Mind Maps / Tree Outlines in Mermaid:** Do NOT turn outlines, category lists, or bullet points into tree-shaped Mermaid boxes. Use clean Markdown headers and bullet lists instead.
+    - **No Tree Graphs for Failure Modes / Tips:** Do NOT create `R["WRONG"] --> Tip1, Tip2, Tip3`. Use clear warning alerts (`> [!WARNING]`), bullet points, and before-and-after code blocks (`❌ WRONG` vs `✅ CORRECT`).
+  - **When to Use ASCII Diagrams:**
+    - Linear arrays with pointer indices and boundary markers (e.g., `[ 2 | 7 | 11 | 15 ]`, `  L          R  `).
+    - Contiguous memory layouts, linked list node chains (`[Val|Next] -> [Val|Next]`), and stack frames (`| Top |` over `| Base |`). Text/ASCII blocks are vastly more compact, instant to parse, and immune to layout clipping.
+  - **When to Use Simple Sequential Steps & Trace Tables:**
+    - Dry-runs and step-by-step execution traces: Use clean numbered steps (`Step 1: ...`, `Step 2: ...`) or structured markdown trace tables (`| Step | Element | Stack / Window | Action |`).
+  - **Mermaid Quality & Styling Standards (When Used):**
+    - **Simplified Complexity & Node Depth:** Keep diagrams focused (under 8–10 nodes per visual) and cognitive load light.
+    - **Visually Appealing Colors & High Contrast:** Apply modern hex fills with sharp text contrast (e.g., `style Node fill:#e1f5fe,stroke:#0288d1,color:#01579b`).
+    - **Overflow Prevention & Safe Text:** Always wrap node labels in double quotes (e.g., `id["Label Text"]`) and keep label lengths concise.
+    - **Learner-Friendly Emojis & Icons:** Enhance visual hierarchy with intuitive emojis in node labels (e.g., `📦 Array`, `👉 Left`, `👈 Right`, `🎯 Target`, `⚡ Fast`, `🐢 Slow`, `🛑 Base`, `✅ Valid`, `❌ Pruned`, `🔍 Window`).
+- **Remove Non-Learning Metadata & Irrelevant Comparisons:**
+  - **Strip External Tool Dumps:** Remove generic lists of external tools (e.g., VisuAlgo, LeetCode Visualizer, Python Tutor, Excalidraw, Mermaid Live Editor, Big-O Cheat Sheet).
+  - **Remove Superficial Comparisons:** Remove generic comparison matrices, textbook trivia, or metadata sections that do not directly help in a 45-minute FAANG interview.
+  - Keep comparisons strictly focused on high-ROI algorithmic trade-offs (e.g., Two Pointers vs. Hash Table vs. Binary Search on Answer).
+- **Web Search for Audit, Verification & Generation:** Actively leverage web search (`search_web`) to verify LeetCode problem numbers, check current FAANG interview constraints, cross-reference boundary conditions, and pull real test cases during material audits and generation.
+- **Intuitive & Beginner-Friendly Pedagogy:** Avoid unnecessary academic jargon, formal mathematical proofs, and abstract textbook theorems. Use physical metaphors, conversational explanations, and progressive scaffolding (Intuition -> Napkin Trace -> Warm-up -> Classic FAANG Medium -> Edge Cases). Ensure content is accessible to a motivated beginner while reaching FAANG interview standards.
 - **No Copilot Diff Markers:** Never emit `// filepath: ...` or `// ...existing code...` comments. Antigravity uses native workspace editing tools directly.
-- **Linear & Practice-Ready:** When explaining or building exercises, present concepts sequentially. Avoid fragmented notes or circular jumps.
+- **Linear & Practice-Ready:** When explaining or building exercises, present concepts sequentially. Avoid fragmented notes, cognitive leaps, or circular jumps.
 - **Dual-Language Fluency:** Always provide C# as the primary, production-ready solution, and accompany it with a clean Python counterpart.
-- **Senior Engineering Rationale:** Frame discussions in terms of enterprise trade-offs (cache locality, GC allocations, thread safety, fault tolerance, and asymptotic complexity).
+- **FAANG Interview Pragmatism:** Focus on what is tested in actual 45-minute live technical interviews (problem clarification, communicating thought process, clean code, time/space trade-offs, edge-case testing).
+
+
 

@@ -171,19 +171,18 @@ flowchart TD
 #### Visual 1: Formal Notations Explained
 
 
-```mermaid
-flowchart TD
-    R["BIG-O (Upper Bound)"]
-    R --> N1["Worst case: element at end or not found = n comparisons"]
-    R --> N2["T(n) ≤ 1·n for all n ≥ 1 ✓"]
-    R --> N3["All cases: splits + merges = n log n operations"]
-    R --> N4["T(n) ≤ 1·(n log n) + small overhead ✓"]
-    R --> N5["Best case: Still need log n splits = n log n work"]
-    R --> N6["T(n) ≥ 1·(n log n) for all n ✓"]
-    R --> N7["Best case: n log n"]
-    R --> N8["Worst case: n log n"]
-    R --> N9["Always n log n (tight!) ✓"]
-```
+### 📌 BIG-O (Upper Bound)
+
+- Worst case: element at end or not found = n comparisons
+- T(n) ≤ 1·n for all n ≥ 1 ✓
+- All cases: splits + merges = n log n operations
+- T(n) ≤ 1·(n log n) + small overhead ✓
+- Best case: Still need log n splits = n log n work
+- T(n) ≥ 1·(n log n) for all n ✓
+- Best case: n log n
+- Worst case: n log n
+- Always n log n (tight!) ✓
+
 
 
 ---
@@ -193,26 +192,25 @@ flowchart TD
 ### Pattern Map: Where Memory Lives
 
 
-```mermaid
-flowchart TD
-    R["SPACE TYPES & LIFETIME"]
-    R --> N1["Stack Space"]
-    N1 --> N2["Function parameters"]
-    N1 --> N3["Local variables"]
-    N1 --> N4["Automatic cleanup on return"]
-    N1 --> N5["Limited size (typically 1-8 MB)"]
-    R --> N6["Heap Space"]
-    N6 --> N7["Dynamic allocation (malloc, new)"]
-    N6 --> N8["Manual deallocation required"]
-    N6 --> N9["Larger available space"]
-    N6 --> N10["Can cause memory leaks"]
-    R --> N11["Total Space"]
-    N11 --> N12["Input size + auxiliary space"]
-    N11 --> N13["Both matter for complexity"]
-    R --> N14["Input vs Auxiliary"]
-    N14 --> N15["Input: the data you're given"]
-    N14 --> N16["Auxiliary: extra space your algorithm allocates"]
-```
+### 📌 SPACE TYPES & LIFETIME
+
+- **Stack Space**
+  - Function parameters
+  - Local variables
+  - Automatic cleanup on return
+  - Limited size (typically 1-8 MB)
+- **Heap Space**
+  - Dynamic allocation (malloc, new)
+  - Manual deallocation required
+  - Larger available space
+  - Can cause memory leaks
+- **Total Space**
+  - Input size + auxiliary space
+  - Both matter for complexity
+- **Input vs Auxiliary**
+  - Input: the data you're given
+  - Auxiliary: extra space your algorithm allocates
+
 
 
 ---
@@ -248,29 +246,28 @@ flowchart TD
 ### Pattern Map: Recursion Structures
 
 
-```mermaid
-flowchart TD
-    R["RECURSION PATTERNS"]
-    R --> N1["Linear Recursion"]
-    N1 --> N2["Single recursive call per function"]
-    N1 --> N3["Chain-like call structure"]
-    N1 --> N4["Examples: factorial, sum, linear search"]
-    N1 --> N5["Depth: O(n)"]
-    R --> N6["Tree Recursion"]
-    N6 --> N7["Multiple recursive calls per function"]
-    N6 --> N8["Tree-like branching structure"]
-    N6 --> N9["Examples: Fibonacci, tree traversal"]
-    N6 --> N10["Depth: O(log n) to O(n)"]
-    R --> N11["Divide-and-Conquer"]
-    N11 --> N12["Splits problem, solves parts, combines"]
-    N11 --> N13["Balanced or unbalanced splits"]
-    N11 --> N14["Examples: merge sort, binary search"]
-    N11 --> N15["Depth: O(log n)"]
-    R --> N16["Mutual/Indirect Recursion"]
-    N16 --> N17["Function A calls B, B calls A"]
-    N16 --> N18["Careful about infinite loops"]
-    N16 --> N19["Rare but useful for certain problems"]
-```
+### 📌 RECURSION PATTERNS
+
+- **Linear Recursion**
+  - Single recursive call per function
+  - Chain-like call structure
+  - Examples: factorial, sum, linear search
+  - Depth: O(n)
+- **Tree Recursion**
+  - Multiple recursive calls per function
+  - Tree-like branching structure
+  - Examples: Fibonacci, tree traversal
+  - Depth: O(log n) to O(n)
+- **Divide-and-Conquer**
+  - Splits problem, solves parts, combines
+  - Balanced or unbalanced splits
+  - Examples: merge sort, binary search
+  - Depth: O(log n)
+- **Mutual/Indirect Recursion**
+  - Function A calls B, B calls A
+  - Careful about infinite loops
+  - Rare but useful for certain problems
+
 
 
 ---
@@ -395,22 +392,21 @@ Order of magnitude improvement!
 ### Pattern Map: Problem-Solving Approach
 
 
-```mermaid
-flowchart TD
-    R["PEAK FINDING STORY"]
-    R --> N1["1D Peak Finding"]
-    N1 --> N2["Brute force: O(n)"]
-    N1 --> N3["Divide-conquer: O(log n)"]
-    N1 --> N4["Key insight: Exploit monotonicity"]
-    R --> N5["2D Peak Finding"]
-    N5 --> N6["Naive: O(n²)"]
-    N5 --> N7["Smart: O(n log m)"]
-    N5 --> N8["Strategy: Mid-column approach"]
-    R --> N9["Meta-Lesson"]
-    N9 --> N10["Better-than-brute-force thinking"]
-    N9 --> N11["Use structure of problem"]
-    N9 --> N12["Design algorithm top-down"]
-```
+### 📌 PEAK FINDING STORY
+
+- **1D Peak Finding**
+  - Brute force: O(n)
+  - Divide-conquer: O(log n)
+  - Key insight: Exploit monotonicity
+- **2D Peak Finding**
+  - Naive: O(n²)
+  - Smart: O(n log m)
+  - Strategy: Mid-column approach
+- **Meta-Lesson**
+  - Better-than-brute-force thinking
+  - Use structure of problem
+  - Design algorithm top-down
+
 
 
 ---
@@ -604,24 +600,12 @@ MUCH BETTER: O(n log m) vs O(n²)!
 #### Visual 1: Better-Than-Brute-Force Thinking
 
 
-```mermaid
-flowchart TD
-    R["META-LESSONS FROM PEAK FINDING"]
-    R --> N1["What property can we exploit?"]
-    R --> N2["In 1D: Monotonicity (middle element leads us)"]
-    R --> N3["In 2D: Column structure (we can narrow down)"]
-    R --> N4["Key: Not all problems have obvious structure!"]
-    R --> N5["If mid > right: peak exists to left or is mid"]
-    R --> N6["If mid < right: peak exists to right"]
-    R --> N7["Halve search space each step"]
-    R --> N8["Algorithm: 'Compare and move'"]
-    R --> N9["Analysis: 'Halving → log n'"]
-    R --> N10["Always verify correctness!"]
-    R --> N11["Binary search: Works on ANY structure"]
-    R --> N12["Divide-conquer: Works when problem"]
-    R --> N13["Peak finding is just structured binary search!"]
-    R --> N14["State"]
-```
+### 📌 🏔️ Meta-Lessons From Peak Finding
+
+- 💡 1D Peak Principle: Slope Monotonicity<br/>If mid < mid+1, peak MUST exist in right half<br/>If mid > mid+1, peak MUST exist at mid or left half
+- 📐 2D Peak Principle: Column Maxima Projection<br/>Find column max, check left/right neighbors to halve grid
+- ⚡ Halving Search Space Invariant: O(log N) Time<br/>Peak finding is binary search over a discrete gradient!
+
 
 
 ---

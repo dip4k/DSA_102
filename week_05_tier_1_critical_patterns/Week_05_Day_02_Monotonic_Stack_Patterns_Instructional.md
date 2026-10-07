@@ -951,6 +951,4 @@ This principle—maintaining invariants, popping when violated—will appear aga
 By mastering monotonic stacks on Day 2, you're building the intuition for a whole category of O(n) algorithms.
 
 ---
----
-
 > 🧭 **Navigation:** [← Previous Day](Week_05_Day_01_Hash_Map_Hash_Set_Patterns_Instructional_EXPANDED.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_05_Day_03_Merge_Operations_Interval_Patterns_Instructional.md)

@@ -603,6 +603,4 @@ Sort (hard), then linear scan (easy). This principle applies to:
 By Week 15, you'll see this pattern in 30+ problems. Master it on Day 3.
 
 ---
----
-
 > 🧭 **Navigation:** [← Previous Day](Week_05_Day_02_Monotonic_Stack_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_05_Day_04_Part_A_Partition_Cyclic_Sort_Instructional.md)

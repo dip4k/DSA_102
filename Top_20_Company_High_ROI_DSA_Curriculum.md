@@ -1,7 +1,7 @@
 # 🏢 Top 20 Product Companies: High-ROI DSA Interview Curriculum
 
 > **Target Level:** Senior / Staff / Principal / Lead Software Engineer (.NET / C# / Polyglot)  
-> **Core Philosophy:** Invariant Derivation $\to$ Pattern Recognition $\to$ Production Code $\to$ Defensive Verification.  
+> **Core Philosophy:** Invariant Derivation `->` Pattern Recognition `->` Production Code `->` Defensive Verification.  
 > **Source Solutions Repository:** [`Senior_problem_solution/`](Senior_problem_solution/README.md) (164 Comprehensive Production Solutions across 25 Phased Modules).  
 > **Curriculum Purpose:** Maximize interview ROI across the world's top 20 product tech companies by mastering high-frequency invariants, identifying company-specific architectural archetypes, and executing bug-free solutions under live pressure.
 
@@ -106,7 +106,7 @@ Across all 20 elite tech companies, over **85% of interview questions derive fro
 ### 1. Google (Alphabet)
 
 > **Archetype:** *Scale, Invariant Rigor, Graph Traversal & Algorithmic Generalization*  
-> **Hiring Bar:** Google places exceptional weight on mathematical invariant proofs and boundary reasoning before a candidate writes a single line of code. Interviewers frequently modify standard LeetCode problems (introducing unbounded streaming inputs, dynamic edge weights, continuous time windows, or multi-dimensional constraints). Candidates must articulate $O(1)$ space trade-offs, state-space pruning proofs, and cache-friendly asymptotic bounds fluently.  
+> **Hiring Bar:** Google places exceptional weight on mathematical invariant proofs and boundary reasoning before a candidate writes a single line of code. Interviewers frequently modify standard LeetCode problems (introducing unbounded streaming inputs, dynamic edge weights, continuous time windows, or multi-dimensional constraints). Candidates must articulate `O(1)` space trade-offs, state-space pruning proofs, and cache-friendly asymptotic bounds fluently.  
 > **Interview Structure:** 1 Phone Technical Screen (45 min) + 4–5 Onsite Technical Loops (including 1 System Architecture round for Senior/Staff+, and 1 Googlyness & Leadership round).
 
 #### 🎯 Core High-ROI Question Roster
@@ -130,10 +130,10 @@ Across all 20 elite tech companies, over **85% of interview questions derive fro
 | 15 | Longest Increasing Path in a Matrix (LC #329) | 🔴 Hard | 👑 Lead Anchor | `#graph` `#memoization` `#topological-sort` `#matrix-dfs` | 🆕 New Signature Solution | [Longest Increasing Path in a Matrix](Senior_problem_solution/25_Scale_Design_and_Advanced_Signatures.md#158-longest-increasing-path-in-a-matrix-leetcode-329) |
 
 #### 💡 Signature Company Invariants & Defense Checklist
-- **Implicit Graph Modeling over Dense Adjacency:** In problems like Bus Routes (#136) and Word Ladder (#110), do not instantiate an $N \times N$ dense adjacency matrix. Model stops $\leftrightarrow$ routes as a bipartite graph or use intermediate wildcard buckets to keep edge relaxation strictly bounded by input volume.
-- **Binary Search on Monotonic Decision Predicates:** In Split Array Largest Sum (#134), recognize that feasibility predicate $P(\text{maxSum})$ is monotonically non-increasing. Binary search over $[\max(nums), \sum nums]$ with a greedy partition predicate in $O(N \log(\sum nums))$ time.
+- **Implicit Graph Modeling over Dense Adjacency:** In problems like Bus Routes (#136) and Word Ladder (#110), do not instantiate an `N x N` dense adjacency matrix. Model stops `\leftrightarrow` routes as a bipartite graph or use intermediate wildcard buckets to keep edge relaxation strictly bounded by input volume.
+- **Binary Search on Monotonic Decision Predicates:** In Split Array Largest Sum (#134), recognize that feasibility predicate `P(\text{maxSum})` is monotonically non-increasing. Binary search over `[\max(nums), \sum nums]` with a greedy partition predicate in `O(N log(\sum nums))` time.
 - **LCA Path Splicing Without Redundant Ancestor Walks:** In Step-By-Step Directions (#137), avoid separate path traversals from root. Find the Lowest Common Ancestor first, then string prefix pruning directly eliminates redundant ancestor branches to produce minimum-length directions.
-- **DAG Topo-Ordering via Memoized Grid DFS:** In Longest Increasing Path in a Matrix (#158), strictly increasing cell transitions enforce a Directed Acyclic Graph (DAG) structure; memoizing post-order cell DFS computes the global topological longest path in strictly $O(M \times N)$ time without explicit cycle detection.
+- **DAG Topo-Ordering via Memoized Grid DFS:** In Longest Increasing Path in a Matrix (#158), strictly increasing cell transitions enforce a Directed Acyclic Graph (DAG) structure; memoizing post-order cell DFS computes the global topological longest path in strictly `O(M x N)` time without explicit cycle detection.
 
 ---
 
@@ -165,9 +165,9 @@ Across all 20 elite tech companies, over **85% of interview questions derive fro
 
 #### 💡 Signature Company Invariants & Defense Checklist
 - **BFS Column Bounds for Vertical Traversal:** In Vertical Order Traversal (#123), maintaining min/max column bounds alongside a standard BFS queue guarantees top-to-bottom and left-to-right sorting without allocating an extra sorting pass over coordinates.
-- **Two-Pass Balanced Parentheses Filter:** In Minimum Remove (#1249), balance counter removes excess closing brackets left-to-right, then a reverse scan removes leftover unmatched opening brackets, achieving strictly linear $O(N)$ runtime with zero allocations beyond the string builder.
-- **Parent-Pointer LCA as Linked List Intersection:** In LCA III (#130), node-to-parent pointers reduce LCA to finding the intersection of two linked lists (Floyd's pointer swap technique) in $O(H)$ time and strictly $O(1)$ auxiliary space.
-- **Rightmost Level Extraction:** In Binary Tree Right Side View (#154), level-order BFS snapshots record the final element of each queue tier, or pre-order DFS with modified traversal order (Root $\to$ Right $\to$ Left) populates the first node encountered at depth $d$.
+- **Two-Pass Balanced Parentheses Filter:** In Minimum Remove (#1249), balance counter removes excess closing brackets left-to-right, then a reverse scan removes leftover unmatched opening brackets, achieving strictly linear `O(N)` runtime with zero allocations beyond the string builder.
+- **Parent-Pointer LCA as Linked List Intersection:** In LCA III (#130), node-to-parent pointers reduce LCA to finding the intersection of two linked lists (Floyd's pointer swap technique) in `O(H)` time and strictly `O(1)` auxiliary space.
+- **Rightmost Level Extraction:** In Binary Tree Right Side View (#154), level-order BFS snapshots record the final element of each queue tier, or pre-order DFS with modified traversal order (Root `->` Right `->` Left) populates the first node encountered at depth `d`.
 
 ---
 
@@ -198,10 +198,10 @@ Across all 20 elite tech companies, over **85% of interview questions derive fro
 | 15 | Maximum Profit in Job Scheduling (LC #1235) | 🔴 Hard | 👑 Lead Anchor | `#dp` `#binary-search` `#sorting` `#weighted-intervals` | 🆕 New Signature Solution | [Maximum Profit in Job Scheduling](Senior_problem_solution/25_Scale_Design_and_Advanced_Signatures.md#159-maximum-profit-in-job-scheduling-leetcode-1235) |
 
 #### 💡 Signature Company Invariants & Defense Checklist
-- **Simultaneous Multi-Source Wavefront BFS:** In Rotting Oranges (#133), enqueue all initially rotten grid coordinates at $t=0$. Layer-by-layer expansion models physical diffusion in $O(M \times N)$ time without maintaining secondary timestamp matrices.
-- **Monotonic Stack Contribution Principle:** In Sum of Subarray Ranges (#138), calculate $\sum \max - \sum \min$ across all contiguous subarrays in $O(N)$ by finding how many subarrays each index dominates as minimum and maximum via nearest-smaller/nearest-greater spans.
-- **Trie-Assisted Lexicographical Top-3 Buffers:** In Search Suggestions (#139), store up to 3 lexicographically smallest words directly at each Trie node during tree construction to answer prefix auto-complete queries in $O(L)$ time.
-- **Weighted Interval Scheduling DP with Binary Search:** In Maximum Profit in Job Scheduling (#159), sort jobs by end time and apply recurrence $\text{dp}[i] = \max(\text{dp}[i-1], \text{profit}[i] + \text{dp}[\text{prevNonOverlap}])$, finding previous compatible intervals in $O(\log N)$ time.
+- **Simultaneous Multi-Source Wavefront BFS:** In Rotting Oranges (#133), enqueue all initially rotten grid coordinates at `t=0`. Layer-by-layer expansion models physical diffusion in `O(M x N)` time without maintaining secondary timestamp matrices.
+- **Monotonic Stack Contribution Principle:** In Sum of Subarray Ranges (#138), calculate `\sum \max - \sum \min` across all contiguous subarrays in `O(N)` by finding how many subarrays each index dominates as minimum and maximum via nearest-smaller/nearest-greater spans.
+- **Trie-Assisted Lexicographical Top-3 Buffers:** In Search Suggestions (#139), store up to 3 lexicographically smallest words directly at each Trie node during tree construction to answer prefix auto-complete queries in `O(L)` time.
+- **Weighted Interval Scheduling DP with Binary Search:** In Maximum Profit in Job Scheduling (#159), sort jobs by end time and apply recurrence `\text{dp}[i] = \max(\text{dp}[i-1], \text{profit}[i] + \text{dp}[\text{prevNonOverlap}])`, finding previous compatible intervals in `O(log N)` time.
 
 ---
 
@@ -233,9 +233,9 @@ Across all 20 elite tech companies, over **85% of interview questions derive fro
 
 #### 💡 Signature Company Invariants & Defense Checklist
 - **4-Boundary Matrix Contraction:** In Spiral Matrix (#142), contract `top`, `bottom`, `left`, `right` boundaries strictly after completing each directional sweep, with guard clauses defending against single row/column collapses.
-- **In-Place State Flagging via Row/Col 0:** In Set Matrix Zeroes (#144), reuse the first row and column as bitmap markers, with two boolean scalars preserving the original zero status of row 0 and col 0 to achieve $O(1)$ space.
-- **Two-Pass String Inversion:** In Reverse Words (#145), trim and reverse the entire character span, then reverse each individual word in-place to achieve $O(1)$ auxiliary memory.
-- **Timestamp Ordered Binary Search:** In Time Based Key-Value Store (#156), store list of `(timestamp, value)` pairs in append order; query values using upper-bound binary search (`floorKey`) in $O(\log N)$ time.
+- **In-Place State Flagging via Row/Col 0:** In Set Matrix Zeroes (#144), reuse the first row and column as bitmap markers, with two boolean scalars preserving the original zero status of row 0 and col 0 to achieve `O(1)` space.
+- **Two-Pass String Inversion:** In Reverse Words (#145), trim and reverse the entire character span, then reverse each individual word in-place to achieve `O(1)` auxiliary memory.
+- **Timestamp Ordered Binary Search:** In Time Based Key-Value Store (#156), store list of `(timestamp, value)` pairs in append order; query values using upper-bound binary search (`floorKey`) in `O(log N)` time.
 
 ---
 
@@ -265,10 +265,10 @@ Across all 20 elite tech companies, over **85% of interview questions derive fro
 | 14 | Basic Calculator II (LC #227) | 🟡 Medium | 🔥 High Value | `#stack` `#string` `#expression-evaluation` `#operator-precedence` | 🆕 New Signature Solution | [Basic Calculator II](Senior_problem_solution/24_Matrix_Strings_Parsing_Signatures.md#152-basic-calculator-ii-leetcode-227) |
 
 #### 💡 Signature Company Invariants & Defense Checklist
-- **Swap-to-Back O(1) Deletion:** In Insert Delete GetRandom O(1) (#117), swap the target item with the dynamic array tail, update the hash table index mapping, and pop back in $O(1)$ without memory reallocation.
+- **Swap-to-Back O(1) Deletion:** In Insert Delete GetRandom O(1) (#117), swap the target item with the dynamic array tail, update the hash table index mapping, and pop back in `O(1)` without memory reallocation.
 - **Non-Reversing Linked List Addition:** In Add Two Numbers II (#149), push both list digit streams onto stacks to reverse digit significance without mutating original structures, then prepend carry nodes.
-- **Interleaved Cloning:** In Copy List with Random Pointer (#141), interleave cloned nodes directly between originals ($A \to A' \to B \to B'$) to copy random pointers in $O(1)$ auxiliary space without hash map overhead.
-- **Circular Array Ring Buffer for Rolling Counters:** In Design Hit Counter (#155), use a fixed-size 300-slot ring buffer storing `(timestamp, count)` pairs to handle concurrent hits in $O(1)$ space and $O(1)$ time.
+- **Interleaved Cloning:** In Copy List with Random Pointer (#141), interleave cloned nodes directly between originals (`A -> A' -> B -> B'`) to copy random pointers in `O(1)` auxiliary space without hash map overhead.
+- **Circular Array Ring Buffer for Rolling Counters:** In Design Hit Counter (#155), use a fixed-size 300-slot ring buffer storing `(timestamp, count)` pairs to handle concurrent hits in `O(1)` space and `O(1)` time.
 
 ---
 
@@ -298,10 +298,10 @@ Across all 20 elite tech companies, over **85% of interview questions derive fro
 | 14 | Time Based Key-Value Store (LC #981) | 🟡 Medium | ⭐ Core | `#hash-map` `#binary-search` `#design` `#timestamp` | 🆕 New Signature Solution | [Time Based Key-Value Store](Senior_problem_solution/25_Scale_Design_and_Advanced_Signatures.md#156-time-based-key-value-store-leetcode-981) |
 
 #### 💡 Signature Company Invariants & Defense Checklist
-- **LFU Frequency Buckets:** In LFU Cache (#118), organize keys into frequency-indexed doubly linked lists, tracking `minFrequency` to achieve guaranteed $O(1)$ evictions upon capacity exhaustion.
-- **Monotonic Deque Window Extremum:** In Sliding Window Maximum (#106), keep deque elements strictly monotonically decreasing; the front element is guaranteed to be the active window maximum in $O(1)$.
-- **Two Balanced Heaps Streaming Invariant:** In Find Median from Data Stream (#59), maintain $\text{MaxHeap} \le \text{MinHeap}$ with size difference $\le 1$ to return the median in $O(1)$ time.
-- **Interval Sweep Gaps via Min-Heap:** In Employee Free Time (#161), push the first interval of each employee into a min-heap; popping earliest start times and tracking running `maxEnd` exposes shared idle gaps in $O(N \log K)$ time.
+- **LFU Frequency Buckets:** In LFU Cache (#118), organize keys into frequency-indexed doubly linked lists, tracking `minFrequency` to achieve guaranteed `O(1)` evictions upon capacity exhaustion.
+- **Monotonic Deque Window Extremum:** In Sliding Window Maximum (#106), keep deque elements strictly monotonically decreasing; the front element is guaranteed to be the active window maximum in `O(1)`.
+- **Two Balanced Heaps Streaming Invariant:** In Find Median from Data Stream (#59), maintain `\text{MaxHeap} <= \text{MinHeap}` with size difference `<= 1` to return the median in `O(1)` time.
+- **Interval Sweep Gaps via Min-Heap:** In Employee Free Time (#161), push the first interval of each employee into a min-heap; popping earliest start times and tracking running `maxEnd` exposes shared idle gaps in `O(N log K)` time.
 
 ---
 
@@ -331,10 +331,10 @@ Across all 20 elite tech companies, over **85% of interview questions derive fro
 | 14 | Time Based Key-Value Store (LC #981) | 🟡 Medium | ⭐ Core | `#hash-map` `#binary-search` `#design` `#timestamp` | 🆕 New Signature Solution | [Time Based Key-Value Store](Senior_problem_solution/25_Scale_Design_and_Advanced_Signatures.md#156-time-based-key-value-store-leetcode-981) |
 
 #### 💡 Signature Company Invariants & Defense Checklist
-- **Route-to-Stop BFS Graph Inversion:** In Bus Routes (#136), traversing individual stops causes $O(N^2)$ path explosion; instead, traverse *bus routes* as graph nodes and transfer between intersecting routes.
+- **Route-to-Stop BFS Graph Inversion:** In Bus Routes (#136), traversing individual stops causes `O(N^2)` path explosion; instead, traverse *bus routes* as graph nodes and transfer between intersecting routes.
 - **Priority Queue Dijkstra Relaxation:** In Network Delay Time (#70), always relax the unvisited node with minimal cumulative latency; greedy choice guarantees optimal arrival times on directed weighted graphs.
-- **Two-Stage Transit Session Aggregation:** In Design Underground System (#164), decouple in-flight passenger check-in events `(id -> station, time)` from completed journey accumulators `((start, end) -> (totalTime, count))` for $O(1)$ updates and queries.
-- **Slot-Insertion Combinatorics for Order Dispatch:** In Pickup and Delivery Options (#163), placing the $i$-th pickup-delivery pair into $2i-1$ existing positions yields $\frac{(2i)(2i-1)}{2}$ configurations; multiply cumulatively modulo $10^9+7$.
+- **Two-Stage Transit Session Aggregation:** In Design Underground System (#164), decouple in-flight passenger check-in events `(id -> station, time)` from completed journey accumulators `((start, end) -> (totalTime, count))` for `O(1)` updates and queries.
+- **Slot-Insertion Combinatorics for Order Dispatch:** In Pickup and Delivery Options (#163), placing the `i`-th pickup-delivery pair into `2i-1` existing positions yields `(2i)(2i-1)/2` configurations; multiply cumulatively modulo `10^9+7`.
 
 ---
 
@@ -398,10 +398,10 @@ Across all 20 elite tech companies, over **85% of interview questions derive fro
 | 15 | Maximum Profit in Job Scheduling (LC #1235) | 🔴 Hard | 👑 Lead Anchor | `#dp` `#binary-search` `#sorting` `#weighted-intervals` | 🆕 New Signature Solution | [Maximum Profit in Job Scheduling](Senior_problem_solution/25_Scale_Design_and_Advanced_Signatures.md#159-maximum-profit-in-job-scheduling-leetcode-1235) |
 
 #### 💡 Signature Company Invariants & Defense Checklist
-- **Median Partition Border Invariant:** In Median of Two Sorted Arrays (#107), binary search the partition index in the smaller array such that $\text{left}_A \le \text{right}_B$ and $\text{left}_B \le \text{right}_A$ in $O(\log(\min(M, N)))$ time.
-- **Burst Balloons Interval DP Anchor:** In Burst Balloons (#114), frame recurrence around the *last* balloon to burst in interval $(i, j)$ so that boundary multipliers remain stable and subproblems remain independent.
-- **Longest Valid Parentheses Stack Indices:** In Longest Valid Parentheses (#112), push indices of opening brackets onto a stack with sentinel $-1$; popping matching brackets leaves the index immediately preceding the valid substring.
-- **Memoized Topological DFS in Matrices:** In Longest Increasing Path in a Matrix (#158), strictly increasing coordinates guarantee DAG structure; memoized 4-directional DFS yields $O(M \times N)$ complexity.
+- **Median Partition Border Invariant:** In Median of Two Sorted Arrays (#107), binary search the partition index in the smaller array such that `\text{left}_A <= \text{right}_B` and `\text{left}_B <= \text{right}_A` in `O(log(\min(M, N)))` time.
+- **Burst Balloons Interval DP Anchor:** In Burst Balloons (#114), frame recurrence around the *last* balloon to burst in interval `(i, j)` so that boundary multipliers remain stable and subproblems remain independent.
+- **Longest Valid Parentheses Stack Indices:** In Longest Valid Parentheses (#112), push indices of opening brackets onto a stack with sentinel `-1`; popping matching brackets leaves the index immediately preceding the valid substring.
+- **Memoized Topological DFS in Matrices:** In Longest Increasing Path in a Matrix (#158), strictly increasing coordinates guarantee DAG structure; memoized 4-directional DFS yields `O(M x N)` complexity.
 
 ---
 
@@ -431,10 +431,10 @@ Across all 20 elite tech companies, over **85% of interview questions derive fro
 | 14 | Search Suggestions System (LC #1268) | 🟡 Medium | 🔥 High Value | `#trie` `#binary-search` `#two-pointers` `#string` | 🆕 New Signature Solution | [Search Suggestions System](Senior_problem_solution/23_Amazon_Google_Uber_Signatures.md#139-search-suggestions-system-leetcode-1268) |
 
 #### 💡 Signature Company Invariants & Defense Checklist
-- **Lazy Stack Flattening:** In Nested List Iterator (#120), maintain a stack of enumerators and unroll only until the top element is confirmed to be an integer, preserving $O(D)$ memory bounds.
-- **Inverted Index Two-Pointer Convergence:** In Shortest Word Distance II (#121), pre-index word occurrence lists; two opposing pointers converge in $O(L_1 + L_2)$ time to find the minimum absolute difference.
+- **Lazy Stack Flattening:** In Nested List Iterator (#120), maintain a stack of enumerators and unroll only until the top element is confirmed to be an integer, preserving `O(D)` memory bounds.
+- **Inverted Index Two-Pointer Convergence:** In Shortest Word Distance II (#121), pre-index word occurrence lists; two opposing pointers converge in `O(L_1 + L_2)` time to find the minimum absolute difference.
 - **Depth-Weighted DFS Accumulation:** In Nested List Weight Sum (#131), pass running depth counter down recursive DFS frames; sum products directly without allocating intermediate flat collections.
-- **Bipartite 2-Coloring State Machine:** In Is Graph Bipartite? (#162), assign alternating colors ($0$ and $1$) across edges using BFS/DFS; conflicting assignments on any visited neighbor immediately disprove 2-colorability.
+- **Bipartite 2-Coloring State Machine:** In Is Graph Bipartite? (#162), assign alternating colors (`0` and `1`) across edges using BFS/DFS; conflicting assignments on any visited neighbor immediately disprove 2-colorability.
 
 ---
 
@@ -464,9 +464,9 @@ Across all 20 elite tech companies, over **85% of interview questions derive fro
 | 14 | Daily Temperatures (LC #739) | 🟡 Medium | ⭐ Core | `#monotonic-stack` `#nearest-greater` | ⭐ Covered in Curriculum | [Daily Temperatures](Senior_problem_solution/07_Stack_Monotonic_Stack.md#39-daily-temperatures-leetcode-739) |
 
 #### 💡 Signature Company Invariants & Defense Checklist
-- **Temporal Map Binary Search Isolation:** In Time Based Key-Value Store (#156), store values in chronological order per key; binary searching the largest timestamp $\le target$ provides audit log snapshots in $O(\log K)$ time.
-- **Monotonic Monolith Stack Invariant:** In Daily Temperatures (#39), maintaining a monotonically decreasing stack of indices guarantees that every encountered warmer temperature resolves all smaller waiting days in amortized $O(1)$ time.
-- **Dependency DAG Cycle Detection:** In Course Schedule (#207), Kahn's algorithm or 3-color DFS detects circular prerequisite dependencies in enterprise workflow triggers in strictly $O(V + E)$ time.
+- **Temporal Map Binary Search Isolation:** In Time Based Key-Value Store (#156), store values in chronological order per key; binary searching the largest timestamp `<= target` provides audit log snapshots in `O(log K)` time.
+- **Monotonic Monolith Stack Invariant:** In Daily Temperatures (#39), maintaining a monotonically decreasing stack of indices guarantees that every encountered warmer temperature resolves all smaller waiting days in amortized `O(1)` time.
+- **Dependency DAG Cycle Detection:** In Course Schedule (#207), Kahn's algorithm or 3-color DFS detects circular prerequisite dependencies in enterprise workflow triggers in strictly `O(V + E)` time.
 - **Operator Precedence Accumulator:** In Basic Calculator II (#152), parse continuous token streams evaluating higher-precedence operations (`*`, `/`) immediately with the stack head, while delaying `+` and `-` for linear accumulation.
 
 ---
@@ -497,10 +497,10 @@ Across all 20 elite tech companies, over **85% of interview questions derive fro
 | 14 | Design Hit Counter (LC #362) | 🟡 Medium | ⭐ Core | `#design` `#queue` `#circular-buffer` `#sliding-window` | 🆕 New Signature Solution | [Design Hit Counter](Senior_problem_solution/25_Scale_Design_and_Advanced_Signatures.md#155-design-hit-counter-leetcode-362) |
 
 #### 💡 Signature Company Invariants & Defense Checklist
-- **In-Place Transpose-and-Reflect Matrix Rotation:** In Rotate Image (#143), swap matrix along the main diagonal ($M[i][j] \leftrightarrow M[j][i]$), then reverse each horizontal row to achieve $90^\circ$ clockwise rotation in strictly $O(1)$ auxiliary space.
-- **Lexicographical Pivot Reversal:** In Next Permutation (#160), scan right-to-left to find the first decreasing element $i$, swap with the smallest element larger than $nums[i]$ to its right, and reverse the suffix to achieve the next lexicographical permutation in $O(N)$ time.
-- **Prefix Dictionary Pruning:** In Word Break (#139), maintain a boolean table $\text{dp}[i]$ indicating if prefix $s[0 \dots i]$ is segmentable; search backwards using maximum dictionary word length to limit inner loop bounds to $O(L)$ rather than $O(N)$.
-- **Center-Expansion Palindrome Envelope:** In Longest Palindromic Substring (#27), expand around each of the $2N-1$ candidate centers (odd and even) in $O(1)$ space, tracking max span without allocating full 2D dynamic programming matrices.
+- **In-Place Transpose-and-Reflect Matrix Rotation:** In Rotate Image (#143), swap matrix along the main diagonal (`M[i][j] \leftrightarrow M[j][i]`), then reverse each horizontal row to achieve `90^\circ` clockwise rotation in strictly `O(1)` auxiliary space.
+- **Lexicographical Pivot Reversal:** In Next Permutation (#160), scan right-to-left to find the first decreasing element `i`, swap with the smallest element larger than `nums[i]` to its right, and reverse the suffix to achieve the next lexicographical permutation in `O(N)` time.
+- **Prefix Dictionary Pruning:** In Word Break (#139), maintain a boolean table `\text{dp}[i]` indicating if prefix `s[0 \dots i]` is segmentable; search backwards using maximum dictionary word length to limit inner loop bounds to `O(L)` rather than `O(N)`.
+- **Center-Expansion Palindrome Envelope:** In Longest Palindromic Substring (#27), expand around each of the `2N-1` candidate centers (odd and even) in `O(1)` space, tracking max span without allocating full 2D dynamic programming matrices.
 
 ---
 
@@ -531,10 +531,10 @@ Across all 20 elite tech companies, over **85% of interview questions derive fro
 | 15 | Meeting Rooms II (LC #253) | 🟡 Medium | ⭐ Core | `#intervals` `#min-heap` `#sweep-line` | ⭐ Covered in Curriculum | [Meeting Rooms II](Senior_problem_solution/11_Intervals.md#63-meeting-rooms-ii-leetcode-253) |
 
 #### 💡 Signature Company Invariants & Defense Checklist
-- **Dual-Map Real-Time Event Correlator:** In Design Underground System (#164), partition check-in states by rider ID and pair with completed journey routes; computing rolling sum and total trips enables instantaneous $O(1)$ average query times.
+- **Dual-Map Real-Time Event Correlator:** In Design Underground System (#164), partition check-in states by rider ID and pair with completed journey routes; computing rolling sum and total trips enables instantaneous `O(1)` average query times.
 - **Postfix Stack Arithmetic Invariant:** In Evaluate Reverse Polish Notation (#38), push operands onto an integer stack; binary operator pops right then left operand, enforcing exact non-commutative subtraction and integer division truncations.
-- **3-Step Linked List Interleave:** In Reorder List (#33), find the middle node via fast/slow pointers, reverse the second half in-place, and merge alternate nodes in $O(N)$ time and strictly $O(1)$ space.
-- **Streaming Bucket Sort for Frequency Extremes:** In Top K Frequent Elements (#57), replace $O(N \log K)$ heap sorting with $O(N)$ bucket array where index represents frequency count; reverse scanning buckets returns top-K elements in linear time.
+- **3-Step Linked List Interleave:** In Reorder List (#33), find the middle node via fast/slow pointers, reverse the second half in-place, and merge alternate nodes in `O(N)` time and strictly `O(1)` space.
+- **Streaming Bucket Sort for Frequency Extremes:** In Top K Frequent Elements (#57), replace `O(N log K)` heap sorting with `O(N)` bucket array where index represents frequency count; reverse scanning buckets returns top-K elements in linear time.
 
 ---
 
@@ -567,7 +567,7 @@ Across all 20 elite tech companies, over **85% of interview questions derive fro
 - **Earliest End-Time Interval Sweep Line:** In Meeting Rooms II (#63) and Employee Free Time (#161), sort intervals by start time and track ongoing reservations with a min-heap keyed by end time; peak heap size equals maximum concurrent booking collision.
 - **Greedy Interval Elimination via Earliest Finish Time:** In Non-overlapping Intervals (#62), sort by interval end times; greedily choosing the interval that finishes earliest maximizes remaining room for subsequent reservations.
 - **Trie-Pruned State Space Backtracking:** In Word Search II (#101), navigate the board and Trie simultaneously; setting matched leaf words to null and pruning exhausted child branches eliminates duplicate work.
-- **Discrete Cumulative Distribution Sampling:** In Random Pick with Weight (#128), generate a random offset in $[1, \sum w]$ and binary search over the prefix sum array; strictly monotonic prefix sums guarantee $O(\log N)$ sampling.
+- **Discrete Cumulative Distribution Sampling:** In Random Pick with Weight (#128), generate a random offset in `[1, \sum w]` and binary search over the prefix sum array; strictly monotonic prefix sums guarantee `O(log N)` sampling.
 
 ---
 
@@ -597,9 +597,9 @@ Across all 20 elite tech companies, over **85% of interview questions derive fro
 | 14 | Sliding Window Maximum (LC #239) | 🟡 Medium | ⭐ Core | `#monotonic-deque` `#sliding-window` | ⭐ Covered in Curriculum | [Sliding Window Maximum](Senior_problem_solution/20_Advanced_Senior_Patterns.md#106-sliding-window-maximum-leetcode-239) |
 
 #### 💡 Signature Company Invariants & Defense Checklist
-- **Permutation Insertion with Strict Precedence:** In Pickup and Delivery Options (#163), each pair $(P_i, D_i)$ requires $P_i$ to precede $D_i$; inserting $n$ pairs across sequential slots yields $\prod_{i=1}^n \frac{(2i)(2i-1)}{2}$ valid routes.
-- **Bounded Step Shortest Path:** In Cheapest Flights Within K Stops (#72), use Bellman-Ford or BFS with an edge relaxation snapshot array to prevent path lengths from exceeding $K+1$ edges.
-- **Multi-Source Dispatch Wavefront:** In Rotting Oranges (#133), simultaneous multi-hub expansion models courier proximity dispatch across city coordinates in exact $O(M \times N)$ linear time.
+- **Permutation Insertion with Strict Precedence:** In Pickup and Delivery Options (#163), each pair `(P_i, D_i)` requires `P_i` to precede `D_i`; inserting `n` pairs across sequential slots yields `\prod_{i=1}^n (2i)(2i-1)/2` valid routes.
+- **Bounded Step Shortest Path:** In Cheapest Flights Within K Stops (#72), use Bellman-Ford or BFS with an edge relaxation snapshot array to prevent path lengths from exceeding `K+1` edges.
+- **Multi-Source Dispatch Wavefront:** In Rotting Oranges (#133), simultaneous multi-hub expansion models courier proximity dispatch across city coordinates in exact `O(M x N)` linear time.
 - **Weighted Dynamic Programming with Non-Overlapping Lookups:** In Job Scheduling (#159), maximize batch delivery earnings by sorting jobs by finish time and binary searching the latest non-conflicting dispatch slot.
 
 ---
@@ -630,9 +630,9 @@ Across all 20 elite tech companies, over **85% of interview questions derive fro
 | 14 | Search in Rotated Sorted Array (LC #33) | 🟡 Medium | ⭐ Core | `#binary-search` `#rotated-array` | ⭐ Covered in Curriculum | [Search in Rotated Sorted Array](Senior_problem_solution/08_Binary_Search.md#44-search-in-rotated-sorted-array-leetcode-33) |
 
 #### 💡 Signature Company Invariants & Defense Checklist
-- **K-Way Heap Merge for Columnar Partitions:** In Merge K Sorted Lists (#34), maintain a min-heap of size $K$ containing the current stream heads; extracting minimums produces unified sorted columnar runs in $O(N \log K)$ time.
-- **Weighted Graph Ratio Resolution:** In Evaluate Division (#157), represent symbolic equation variables as directed graph vertices with reciprocal edge weights ($u \xrightarrow{w} v \implies v \xrightarrow{1/w} u$); path search via DFS or Union-Find with path compression answers division queries in $O(Q \cdot (V + E))$.
-- **Prefix Vector Snapshot Invariant:** In Range Sum Query (#23), compute $P[i] = \sum_{k=0}^{i-1} A[k]$; range queries $\text{sum}(i, j) = P[j+1] - P[i]$ execute in strictly $O(1)$ time, forming the foundation of micro-partition zone maps.
+- **K-Way Heap Merge for Columnar Partitions:** In Merge K Sorted Lists (#34), maintain a min-heap of size `K` containing the current stream heads; extracting minimums produces unified sorted columnar runs in `O(N log K)` time.
+- **Weighted Graph Ratio Resolution:** In Evaluate Division (#157), represent symbolic equation variables as directed graph vertices with reciprocal edge weights (`u \xrightarrow{w} v \implies v \xrightarrow{1/w} u`); path search via DFS or Union-Find with path compression answers division queries in `O(Q \cdot (V + E))`.
+- **Prefix Vector Snapshot Invariant:** In Range Sum Query (#23), compute `P[i] = \sum_{k=0}^{i-1} A[k]`; range queries `\text{sum}(i, j) = P[j+1] - P[i]` execute in strictly `O(1)` time, forming the foundation of micro-partition zone maps.
 - **Time-Travel Snapshot Isolation:** In Time Based Key-Value Store (#156), maintain append-only timestamp arrays per key; binary search answers historical time-travel queries without acquiring database read locks.
 
 ---
@@ -663,10 +663,10 @@ Across all 20 elite tech companies, over **85% of interview questions derive fro
 | 14 | Top K Frequent Elements (LC #347) | 🟡 Medium | ⭐ Core | `#heap` `#hash-map` `#bucket-sort` | ⭐ Covered in Curriculum | [Top K Frequent Elements](Senior_problem_solution/10_Heap_Priority_Queue.md#57-top-k-frequent-elements-leetcode-347) |
 
 #### 💡 Signature Company Invariants & Defense Checklist
-- **DAG Stage Topological Sequencing:** In Course Schedule II (#69), compute in-degrees for all stage nodes; enqueuing 0-indegree nodes models Apache Spark catalyst plan stage scheduling in strictly $O(V + E)$ time.
-- **Tarjan's Bridge Invariant:** In Critical Connections (#1192), maintain discovery time `disc[u]` and lowest reachable discovery time `low[v]`; condition `low[v] > disc[u]` proves edge $(u, v)$ is a critical bridge whose failure partitions the cluster.
-- **Bipartite 2-Color Partitioning:** In Is Graph Bipartite? (#162), assign alternating colors ($0$ and $1$) across edges; finding an adjacent node with the identical color proves odd-length cycles exist and bipartite cluster allocation is impossible.
-- **Union-Find Path Compression & Rank:** In Accounts Merge (#104) and Redundant Connection (#71), disjoint set union with path compression and rank guarantees near-$O(1)$ amortized disjoint set merging ($O(\alpha(N))$ time).
+- **DAG Stage Topological Sequencing:** In Course Schedule II (#69), compute in-degrees for all stage nodes; enqueuing 0-indegree nodes models Apache Spark catalyst plan stage scheduling in strictly `O(V + E)` time.
+- **Tarjan's Bridge Invariant:** In Critical Connections (#1192), maintain discovery time `disc[u]` and lowest reachable discovery time `low[v]`; condition `low[v] > disc[u]` proves edge `(u, v)` is a critical bridge whose failure partitions the cluster.
+- **Bipartite 2-Color Partitioning:** In Is Graph Bipartite? (#162), assign alternating colors (`0` and `1`) across edges; finding an adjacent node with the identical color proves odd-length cycles exist and bipartite cluster allocation is impossible.
+- **Union-Find Path Compression & Rank:** In Accounts Merge (#104) and Redundant Connection (#71), disjoint set union with path compression and rank guarantees near-`O(1)` amortized disjoint set merging (`O(\alpha(N))` time).
 
 ---
 
@@ -696,10 +696,10 @@ Across all 20 elite tech companies, over **85% of interview questions derive fro
 | 14 | Critical Connections in a Network (LC #1192) | 🔴 Hard | 👑 Lead Anchor | `#graph` `#tarjan` `#bridges` `#dfs` | ⭐ Covered in Curriculum | [Critical Connections in a Network](Senior_problem_solution/13_Graph_Algorithms.md#74-critical-connections-in-a-network-leetcode-1192) |
 
 #### 💡 Signature Company Invariants & Defense Checklist
-- **Ontology Entity Unification via Disjoint Sets:** In Accounts Merge (#104), map heterogeneous email attributes to canonical owner IDs using Union-Find; path compression guarantees connected component resolution in near-linear $O(N \log N)$ time.
+- **Ontology Entity Unification via Disjoint Sets:** In Accounts Merge (#104), map heterogeneous email attributes to canonical owner IDs using Union-Find; path compression guarantees connected component resolution in near-linear `O(N log N)` time.
 - **Memoized Topological DFS in Implicit Graphs:** In Longest Increasing Path (#158), strictly increasing cell transitions enforce DAG ordering; memoizing longest paths prevents repeated exponential subproblem walks.
-- **Min-Max Bottleneck Dijkstra:** In Swim in Rising Water (#111), prioritize the lowest maximum elevation using a Min-Heap; the invariant guarantees the first time destination $(N-1, N-1)$ is popped, the bottleneck path is globally minimized.
-- **Weighted Union-Find for Symbolic Queries:** In Evaluate Division (#157), maintain parent pointers with scaling ratios `weight[x] = val(x) / val(parent(x))`; path compression multiplies ratios along paths for $O(1)$ query evaluation.
+- **Min-Max Bottleneck Dijkstra:** In Swim in Rising Water (#111), prioritize the lowest maximum elevation using a Min-Heap; the invariant guarantees the first time destination `(N-1, N-1)` is popped, the bottleneck path is globally minimized.
+- **Weighted Union-Find for Symbolic Queries:** In Evaluate Division (#157), maintain parent pointers with scaling ratios `weight[x] = val(x) / val(parent(x))`; path compression multiplies ratios along paths for `O(1)` query evaluation.
 
 ---
 
@@ -729,10 +729,10 @@ Across all 20 elite tech companies, over **85% of interview questions derive fro
 | 14 | Daily Temperatures (LC #739) | 🟡 Medium | ⭐ Core | `#monotonic-stack` `#nearest-greater` | ⭐ Covered in Curriculum | [Daily Temperatures](Senior_problem_solution/07_Stack_Monotonic_Stack.md#39-daily-temperatures-leetcode-739) |
 
 #### 💡 Signature Company Invariants & Defense Checklist
-- **Lazy Document Unrolling:** In Flatten Nested List Iterator (#120), maintain a stack of active enumerators; advance and push sub-lists on demand, ensuring next integer discovery in amortized $O(1)$ time without memory bloat.
+- **Lazy Document Unrolling:** In Flatten Nested List Iterator (#120), maintain a stack of active enumerators; advance and push sub-lists on demand, ensuring next integer discovery in amortized `O(1)` time without memory bloat.
 - **Semver Two-Pointer Stream Parsing:** In Compare Version Numbers (#146), parse numerical segments delimited by `.` on the fly, defaulting missing chunks to 0 without allocating large substring arrays.
-- **Sliding Window Rate Bucket Recycling:** In Design Hit Counter (#155), advance the circular array timestamp pointer to evict events older than 300 seconds; ring buffer index modulo operations guarantee $O(1)$ updates.
-- **Canonical Frequency Signature Invariant:** In Group Anagrams (#4), construct a 26-element character count string delimiter key (`#1#0#2...`) to group words in $O(N \cdot K)$ time without invoking sorting overhead.
+- **Sliding Window Rate Bucket Recycling:** In Design Hit Counter (#155), advance the circular array timestamp pointer to evict events older than 300 seconds; ring buffer index modulo operations guarantee `O(1)` updates.
+- **Canonical Frequency Signature Invariant:** In Group Anagrams (#4), construct a 26-element character count string delimiter key (`#1#0#2...`) to group words in `O(N \cdot K)` time without invoking sorting overhead.
 
 ---
 
@@ -762,10 +762,10 @@ Across all 20 elite tech companies, over **85% of interview questions derive fro
 | 14 | Next Permutation (LC #31) | 🟡 Medium | ⭐ Core | `#two-pointers` `#array` `#lexicographical` | 🆕 New Signature Solution | [Next Permutation](Senior_problem_solution/25_Scale_Design_and_Advanced_Signatures.md#160-next-permutation-leetcode-31) |
 
 #### 💡 Signature Company Invariants & Defense Checklist
-- **Bipartite 2-Color Partitioning:** In Is Graph Bipartite? (#162), assign alternating colors ($0$ and $1$) across graph edges; validating that pin-to-board associations contain no odd cycles verifies bipartite matching.
+- **Bipartite 2-Color Partitioning:** In Is Graph Bipartite? (#162), assign alternating colors (`0` and `1`) across graph edges; validating that pin-to-board associations contain no odd cycles verifies bipartite matching.
 - **BFS Column Coordinates for Waterfall Grids:** In Vertical Order Traversal (#123), maintaining min/max column bounds alongside a BFS queue groups pins strictly into column visual columns without post-hoc coordinate sorting.
-- **Prefix Sum Binary Search for Ad Sampling:** In Random Pick with Weight (#128), map cumulative weight intervals to prefix sums; binary search guarantees mathematically unbiased $O(\log N)$ sampling for feed ads.
-- **Max-Heap Pruning for Spatial Embeddings:** In K Closest Points to Origin (#58), maintain a max-heap of fixed size $K$; evicting elements further than the current $K$-th nearest neighbor bounds memory to $O(K)$.
+- **Prefix Sum Binary Search for Ad Sampling:** In Random Pick with Weight (#128), map cumulative weight intervals to prefix sums; binary search guarantees mathematically unbiased `O(log N)` sampling for feed ads.
+- **Max-Heap Pruning for Spatial Embeddings:** In K Closest Points to Origin (#58), maintain a max-heap of fixed size `K`; evicting elements further than the current `K`-th nearest neighbor bounds memory to `O(K)`.
 
 ---
 ## ⚡ Part III: 48-Hour Rapid Revision Playbook & Senior Delivery Framework
@@ -783,7 +783,7 @@ flowchart TD
 
 | Countdown Window | Strategic Focus | Curated High-ROI Target Problems | Operational Objective & Defense Checklist |
 | :--- | :--- | :--- | :--- |
-| **T-48 Hours**<br>*(The Universal Baseline)* | **Universal Core Anchors** | • [LRU Cache](Senior_problem_solution/21_System_Design_Data_Structures.md#116-lru-cache-leetcode-146)<br>• [Trapping Rain Water](Senior_problem_solution/20_Advanced_Senior_Patterns.md#109-trapping-rain-water-leetcode-42)<br>• [Number of Islands](Senior_problem_solution/12_Graph_Traversal.md#64-number-of-islands-leetcode-200)<br>• [Merge Intervals](Senior_problem_solution/11_Intervals.md#60-merge-intervals-leetcode-56)<br>• [Subarray Sum Equals K](Senior_problem_solution/04_Prefix_Sum_Subarray.md#21-subarray-sum-equals-k-leetcode-560) | **Lock in the 5 Universal Primitives:**<br>1. Map + DLL sentinels for $O(1)$ recency promotion.<br>2. Dual-pointer boundary invariant for trapped volume.<br>3. Grid DFS/BFS sinking to eliminate visited sets.<br>4. Interval sorting by start time with running end-time contraction.<br>5. Prefix sum difference $P[j] - P[i-1] = K$ with map frequencies. |
+| **T-48 Hours**<br>*(The Universal Baseline)* | **Universal Core Anchors** | • [LRU Cache](Senior_problem_solution/21_System_Design_Data_Structures.md#116-lru-cache-leetcode-146)<br>• [Trapping Rain Water](Senior_problem_solution/20_Advanced_Senior_Patterns.md#109-trapping-rain-water-leetcode-42)<br>• [Number of Islands](Senior_problem_solution/12_Graph_Traversal.md#64-number-of-islands-leetcode-200)<br>• [Merge Intervals](Senior_problem_solution/11_Intervals.md#60-merge-intervals-leetcode-56)<br>• [Subarray Sum Equals K](Senior_problem_solution/04_Prefix_Sum_Subarray.md#21-subarray-sum-equals-k-leetcode-560) | **Lock in the 5 Universal Primitives:**<br>1. Map + DLL sentinels for `O(1)` recency promotion.<br>2. Dual-pointer boundary invariant for trapped volume.<br>3. Grid DFS/BFS sinking to eliminate visited sets.<br>4. Interval sorting by start time with running end-time contraction.<br>5. Prefix sum difference `P[j] - P[i-1] = K` with map frequencies. |
 | **T-24 Hours**<br>*(Company Specialization)* | **Company-Specific Signatures** | • **Google:** [Word Ladder](Senior_problem_solution/20_Advanced_Senior_Patterns.md#110-word-ladder-leetcode-127), [Split Array Largest Sum](Senior_problem_solution/23_Amazon_Google_Uber_Signatures.md#134-split-array-largest-sum-leetcode-410), [Bus Routes](Senior_problem_solution/23_Amazon_Google_Uber_Signatures.md#136-bus-routes-leetcode-815)<br>• **Meta:** [Binary Tree Vertical Order](Senior_problem_solution/22_Meta_Signature_Patterns.md#123-binary-tree-vertical-order-traversal-leetcode-314), [Minimum Remove](Senior_problem_solution/22_Meta_Signature_Patterns.md#124-minimum-remove-to-make-valid-parentheses-leetcode-1249), [Ocean View](Senior_problem_solution/22_Meta_Signature_Patterns.md#127-buildings-with-an-ocean-view-leetcode-1762)<br>• **Amazon:** [Rotting Oranges](Senior_problem_solution/23_Amazon_Google_Uber_Signatures.md#133-rotting-oranges-leetcode-994), [Subarray Ranges](Senior_problem_solution/23_Amazon_Google_Uber_Signatures.md#138-sum-of-subarray-ranges-leetcode-2104), [Median Stream](Senior_problem_solution/10_Heap_Priority_Queue.md#59-find-median-from-data-stream-leetcode-295)<br>• **Microsoft:** [Spiral Matrix](Senior_problem_solution/24_Matrix_Strings_Parsing_Signatures.md#142-spiral-matrix-leetcode-54), [Rotate Image](Senior_problem_solution/24_Matrix_Strings_Parsing_Signatures.md#143-rotate-image-leetcode-48), [Set Matrix Zeroes](Senior_problem_solution/24_Matrix_Strings_Parsing_Signatures.md#144-set-matrix-zeroes-leetcode-73)<br>• **Stripe:** [Simplify Path](Senior_problem_solution/24_Matrix_Strings_Parsing_Signatures.md#150-simplify-path-leetcode-71), [Basic Calculator II](Senior_problem_solution/24_Matrix_Strings_Parsing_Signatures.md#152-basic-calculator-ii-leetcode-227), [Text Justification](Senior_problem_solution/24_Matrix_Strings_Parsing_Signatures.md#151-text-justification-leetcode-68)<br>• **Databricks/Snowflake:** [Course Schedule II](Senior_problem_solution/12_Graph_Traversal.md#69-course-schedule-ii-leetcode-210), [Evaluate Division](Senior_problem_solution/25_Scale_Design_and_Advanced_Signatures.md#157-evaluate-division-leetcode-399), [Time Map](Senior_problem_solution/25_Scale_Design_and_Advanced_Signatures.md#156-time-based-key-value-store-leetcode-981) | **Execute Target Company Invariants:**<br>Review the 3 signature problems of your target company from Part II. Do not write full code. Trace the invariants on paper, verify boundary indices, and mentally rehearse candidate discard justifications. |
 | **T-12 Hours**<br>*(Mental Calisthenics)* | **Whiteboard Edge Tracing & Zero-Compiler Run** | • 5 Random Selections from Target Roster (Whiteboard or Plain Text Editor only, zero compiler execution) | **Zero-Compiler Dry Run Routine:**<br>1. Trace empty array `[]`, single-element `[x]`, and duplicate inputs.<br>2. Check for integer overflow guard: `mid = left + (right - left) / 2`.<br>3. Check index boundaries: `< N` vs `<= N`, off-by-one fencepost errors.<br>4. State asymptotic bounds: Time (Best/Avg/Worst), Auxiliary Space (working memory), Output Space. |
 
@@ -805,25 +805,25 @@ flowchart LR
 
 #### Step 1: Scoping, Boundary Defense & Contract Negotiation (0–5 min)
 - **Clarify the Problem Contract:** Never assume standard LeetCode specifications. Ask explicit boundary questions:
-  - *Input Size:* What is the maximum value of $N$? ($10^3 \implies O(N^2)$, $10^5 \implies O(N \log N)$, $10^7 \implies O(N)$ or $O(\log N)$).
+  - *Input Size:* What is the maximum value of `N`? (`10^3 \implies O(N^2)`, `10^5 \implies O(N log N)`, `10^7 \implies O(N)` or `O(log N)`).
   - *Value Ranges:* Can values be negative? Are there duplicate keys? Can inputs be null or empty?
   - *Memory & Streaming Constraints:* Is the dataset resident in memory, or does it arrive as a continuous unbounded stream? Can we mutate the input in-place, or is it read-only?
 - **Define Explicit Guard Assertions:** Explicitly state the expected behavior for invalid inputs (throwing `ArgumentNullException` / `ArgumentException` vs returning empty collections).
 
 #### Step 2: Dual Complexity Baselines & Bottleneck Diagnosis (5–10 min)
-- **State the Naive Baseline Immediately:** Give the interviewer an immediate brute-force solution within 60 seconds (e.g., *"The brute-force approach enumerates all $O(N^2)$ subarrays and sums them in $O(N^3)$ or $O(N^2)$ with a running accumulator"*).
+- **State the Naive Baseline Immediately:** Give the interviewer an immediate brute-force solution within 60 seconds (e.g., *"The brute-force approach enumerates all `O(N^2)` subarrays and sums them in `O(N^3)` or `O(N^2)` with a running accumulator"*).
 - **Diagnose the Computational Bottleneck:** Point out precisely why the naive approach wastes CPU cycles:
   - *Repeated Scanning:* Scanning the same elements redundantly without caching intermediate results.
-  - *Premature Sorting:* Sorting $O(N \log N)$ when a partial heap or bucket partition suffices in $O(N)$ or $O(K)$.
+  - *Premature Sorting:* Sorting `O(N log N)` when a partial heap or bucket partition suffices in `O(N)` or `O(K)`.
   - *State Explosion:* Re-exploring identical subproblems in exponential recursion trees without memoization.
 
 #### Step 3: Invariant Formalization & Discard Safety Proof (10–15 min)
 - **Select the Algorithmic Invariant:** Formally state the data structure and mathematical property that will govern the algorithm:
-  - *"We will maintain a sliding window $[L, R]$ where invariant $P$ is satisfied: count of non-dominant characters $\le K$."*
+  - *"We will maintain a sliding window `[L, R]` where invariant `P` is satisfied: count of non-dominant characters `<= K`."*
   - *"We will maintain a monotonic stack of indices with strictly decreasing heights: stack top always stores nearest greater boundary."*
 - **Prove Candidate Discard Safety:** Explain why eliminating candidates does **not** discard the optimal answer:
   - *Two Pointers:* Explain why moving the smaller wall is safe (a taller inner wall cannot increase area with the current shorter outer bound).
-  - *Binary Search on Answer:* Prove that the feasibility predicate $P(x)$ is monotonic (if capacity $C$ works, any $C' > C$ is also guaranteed to work).
+  - *Binary Search on Answer:* Prove that the feasibility predicate `P(x)` is monotonic (if capacity `C` works, any `C' > C` is also guaranteed to work).
 - **Secure Interviewer Alignment:** Never begin writing code until the interviewer explicitly confirms: *"That approach sounds optimal, let's see the implementation."*
 
 #### Step 4: Clean Idiomatic Implementation (15–32 min)
@@ -841,7 +841,7 @@ flowchart LR
 - **Trace Adversarial Edge Cases:**
   1. *Empty / Null input:* Defend against `NullReferenceException` and empty collections.
   2. *Single-element input:* Verify loops terminate correctly and do not throw out-of-bounds exceptions.
-  3. *All duplicates / Uniform values:* Verify partition algorithms (Quickselect) don't degrade to $O(N^2)$.
+  3. *All duplicates / Uniform values:* Verify partition algorithms (Quickselect) don't degrade to `O(N^2)`.
   4. *Monotonic / Sorted inputs:* Verify binary search and monotonic stacks handle strictly increasing or decreasing runs.
 - **Explicit Complexity Breakdown:**
   - **Time Complexity:** Best-case, average-case, worst-case with formal Big-O derivation.

@@ -42,22 +42,21 @@
 ### Pattern Map: Two-Pointer Family Tree
 
 
-```mermaid
-flowchart TD
-    R["TWO-POINTER PATTERNS"]
-    R --> N1["Same-Direction (Read-Write)"]
-    N1 --> N2["Move Zeroes / Remove Duplicates"]
-    N1 --> N3["Partition Operations"]
-    N1 --> N4["In-place array transformations"]
-    R --> N5["Opposite-Direction (Converging)"]
-    N5 --> N6["Two-Sum (sorted array)"]
-    N5 --> N7["Container with Most Water"]
-    N5 --> N8["Three-Sum family"]
-    R --> N9["Slow-Fast (Cycle Detection)"]
-    N9 --> N10["Linked list cycles"]
-    N9 --> N11["Happy numbers"]
-    N9 --> N12["Floyd's algorithm"]
-```
+### 📌 TWO-POINTER PATTERNS
+
+- **Same-Direction (Read-Write)**
+  - Move Zeroes / Remove Duplicates
+  - Partition Operations
+  - In-place array transformations
+- **Opposite-Direction (Converging)**
+  - Two-Sum (sorted array)
+  - Container with Most Water
+  - Three-Sum family
+- **Slow-Fast (Cycle Detection)**
+  - Linked list cycles
+  - Happy numbers
+  - Floyd's algorithm
+
 
 
 ---
@@ -69,14 +68,12 @@ flowchart TD
 #### Visual 1: Array State Evolution
 
 
-```mermaid
-flowchart TD
-    R["INITIAL  [1, 0, 2, 0, 3]"]
-    R --> N1["Write pointer (not yet moved)"]
-    R --> N2["Write pointer (stays at 1)"]
-    R --> N3["Write pointer (now at 1)"]
-    R --> N4["State"]
-```
+### 📌 📦 Initial Array: [1, 0, 2, 0, 3]
+
+- **👉 Read=0: val=1 (Non-Zero)<br/>Write to idx 0, W becomes 1**
+  - **👉 Read=1: val=0 (Zero)<br/>Skip, W stays at 1**
+    - 👉 Read=2: val=2 (Non-Zero)<br/>Write to idx 1, W becomes 2
+
 
 
 #### Visual 2: Write Pointer as Safe Zone Boundary
@@ -84,8 +81,16 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    R["CONCEPT Write pointer tracks "where next non-zero goes""]
-    R --> N1["State"]
+    classDef safe fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+    classDef boundary fill:#fff9c4,stroke:#fbc02d,color:#f57f17,stroke-width:2px;
+    classDef explore fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:1.5px;
+
+    subgraph Memory["📦 In-Place Partition Boundary"]
+        Z1["✅ Processed Safe Zone<br/>Indices 0 to W-1: All Non-Zero Elements"]:::safe
+        B["📍 Write Pointer (W)<br/>Tracks Next Destination Slot"]:::boundary
+        Z2["🔍 Unprocessed Scan Zone<br/>Read Pointer advances to end of array"]:::explore
+        Z1 --> B --> Z2
+    end
 ```
 
 
@@ -100,10 +105,15 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    R["PROBLEM Find max water container [heights], pointers at ends"]
-    R --> N1["State"]
-    N1 --> N2["→ MOVE LEFT (not right!)"]
-    R --> N3["State"]
+    classDef state fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef move fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+    classDef dead fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:1.5px;
+
+    R["🎯 Container State: L at height[L], R at height[R]<br/>Area = min(height[L], height[R]) * (R - L)"]:::state
+    R --> Cond{"⚖️ Compare Heights:<br/>height[L] vs height[R]"}
+    Cond -->|height[L] < height[R]| ML["👉 Move Shorter Pointer: L++<br/>Only way to find taller bottleneck"]:::move
+    Cond -->|height[L] >= height[R]| MR["👈 Move Shorter Pointer: R--<br/>Only way to find taller bottleneck"]:::move
+    R -.->|Hypothetical: Move Taller Pointer| Dead["❌ Width shrinks AND bottleneck capped by shorter<br/>Area STRICTLY decreases; safely prune!"]:::dead
 ```
 
 
@@ -227,22 +237,21 @@ D) Makes code shorter
 ### Pattern Map: Fixed Window Family
 
 
-```mermaid
-flowchart TD
-    R["FIXED WINDOW PATTERNS"]
-    R --> N1["Simple Aggregation"]
-    N1 --> N2["Max/Min sum k consecutive"]
-    N1 --> N3["Average of k elements"]
-    N1 --> N4["Counting patterns in window"]
-    R --> N5["Complex Aggregation"]
-    N5 --> N6["Max sliding window (with deque)"]
-    N5 --> N7["Min sliding window (with deque)"]
-    N5 --> N8["Constraint checking (state machine)"]
-    R --> N9["Multi-Window Queries"]
-    N9 --> N10["All windows of size k"]
-    N9 --> N11["Prefix/suffix cache pre-computation"]
-    N9 --> N12["Range aggregate queries"]
-```
+### 📌 FIXED WINDOW PATTERNS
+
+- **Simple Aggregation**
+  - Max/Min sum k consecutive
+  - Average of k elements
+  - Counting patterns in window
+- **Complex Aggregation**
+  - Max sliding window (with deque)
+  - Min sliding window (with deque)
+  - Constraint checking (state machine)
+- **Multi-Window Queries**
+  - All windows of size k
+  - Prefix/suffix cache pre-computation
+  - Range aggregate queries
+
 
 
 ---
@@ -278,13 +287,13 @@ flowchart TD
 #### Visual 1: Monotonic Deque State Evolution
 
 
-```mermaid
-flowchart TD
-    R["PROBLEM Find max value in every window [1,3,-1,-3,5,3,6,7], k=3"]
-    R --> N1["Front = current window's maximum"]
-    R --> N2["Back = candidates for future windows"]
-    R --> N3["State"]
-```
+### 📌 🎯 Monotonic Decreasing Deque for Window Max: k=3
+
+- 👑 Front of Deque: deque.First()<br/>Stores index of current window maximum
+- **✂️ Ingestion Rule (Right End):<br/>Pop elements smaller than incoming nums[i]**
+  - 📥 Back of Deque: deque.Last()<br/>Stores indices in strictly decreasing value order
+- 🧹 Expire Out-of-Bound Indices:<br/>Remove from front when idx <= i - k
+
 
 
 ---
@@ -364,23 +373,22 @@ Result: Maintains strict decreasing order properly
 ### Pattern Map: Variable Window Family
 
 
-```mermaid
-flowchart TD
-    R["VARIABLE WINDOW PATTERNS"]
-    R --> N1["Expand/Contract Mechanics"]
-    N1 --> N2["At most K distinct"]
-    N1 --> N3["Min window substring"]
-    N1 --> N4["Longest subarray constraint"]
-    N1 --> N5["Permutation/anagram search"]
-    R --> N6["Frequency-Based Constraints"]
-    N6 --> N7["Exactly K distinct = AtMost(K) - AtMost(K-1)"]
-    N6 --> N8["Character count matching"]
-    N6 --> N9["Duplicate handling"]
-    R --> N10["Optimization Goals"]
-    N10 --> N11["Maximize valid window (longest)"]
-    N10 --> N12["Minimize valid window (shortest)"]
-    N10 --> N13["Find first occurrence"]
-```
+### 📌 VARIABLE WINDOW PATTERNS
+
+- **Expand/Contract Mechanics**
+  - At most K distinct
+  - Min window substring
+  - Longest subarray constraint
+  - Permutation/anagram search
+- **Frequency-Based Constraints**
+  - Exactly K distinct = AtMost(K) - AtMost(K-1)
+  - Character count matching
+  - Duplicate handling
+- **Optimization Goals**
+  - Maximize valid window (longest)
+  - Minimize valid window (shortest)
+  - Find first occurrence
+
 
 
 ---
@@ -394,11 +402,18 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    R["PROBLEM "Minimum window substring""]
-    R --> N1["State"]
-    R --> N2["State"]
-    R --> N3["State"]
-    R --> N4["State"]
+    classDef phase fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef expand fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+    classDef contract fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
+    classDef update fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:2px;
+
+    S["🎯 Two-Phase Sliding Window Loop"]:::phase
+    S --> E["1️⃣ Expand Window (Right Pointer ++)<br/>Add char s[R] to frequency map until valid"]:::expand
+    E --> C{"⚖️ Is Window Valid?<br/>All required target characters matched"}
+    C -->|No| E
+    C -->|Yes| U["2️⃣ Record Candidate Minimum<br/>Update best window: minLen = min(minLen, R - L + 1)"]:::update
+    U --> K["3️⃣ Contract Window (Left Pointer ++)<br/>Remove s[L] from map to find tighter window"]:::contract
+    K --> C
 ```
 
 
@@ -411,8 +426,15 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    R["PROBLEM Longest substring with AT MOST k=2 distinct chars"]
-    R --> N1["State"]
+    classDef valid fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+    classDef breach fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:2px;
+    classDef shrink fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:1.5px;
+
+    W["🔍 Current Window: s[L..R]"]
+    W --> V["✅ Valid State: Distinct Chars <= k<br/>Update maxLength = max(maxLength, R - L + 1)<br/>Expand Right Pointer: R++"]:::valid
+    W --> B["❌ Breach State: Distinct Chars > k<br/>Window violated invariant"]:::breach
+    B --> S["👈 Shrink Window: Decrement s[L] count and L++<br/>Repeat until distinct count returns to <= k"]:::shrink
+    S --> V
 ```
 
 
@@ -475,22 +497,21 @@ Result: charCount always accurate
 ### Pattern Map: D&C Family
 
 
-```mermaid
-flowchart TD
-    R["DIVIDE & CONQUER PATTERNS"]
-    R --> N1["Sorting & Merging"]
-    N1 --> N2["Merge Sort"]
-    N1 --> N3["Counting Inversions"]
-    N1 --> N4["Merge K Lists"]
-    R --> N5["Search & Selection"]
-    N5 --> N6["Binary Search Variants"]
-    N5 --> N7["Kth Smallest"]
-    N5 --> N8["Majority Element"]
-    R --> N9["Computation"]
-    N9 --> N10["Expression Evaluation"]
-    N9 --> N11["Matrix Multiplication"]
-    N9 --> N12["Closest Pair Problem"]
-```
+### 📌 DIVIDE & CONQUER PATTERNS
+
+- **Sorting & Merging**
+  - Merge Sort
+  - Counting Inversions
+  - Merge K Lists
+- **Search & Selection**
+  - Binary Search Variants
+  - Kth Smallest
+  - Majority Element
+- **Computation**
+  - Expression Evaluation
+  - Matrix Multiplication
+  - Closest Pair Problem
+
 
 
 ---
@@ -500,13 +521,19 @@ flowchart TD
 #### Visual 1: Tree Structure & Levels
 
 
-```mermaid
-flowchart TD
-    R["ARRAY [38, 27, 43, 3, 9, 82, 10]"]
-    R --> N1["Step"]
-    R --> N2["Step"]
-    R --> N3["State"]
-```
+### 📌 📦 Level 0: [38, 27, 43, 3, 9, 82, 10]
+
+- **✂️ Level 1 Left: [38, 27, 43, 3]**
+  - **Level 2: [38, 27]**
+    - ⚡ Merge & Sort: [27, 38]
+  - **Level 2: [43, 3]**
+    - ⚡ Merge & Sort: [3, 43]
+- **✂️ Level 1 Right: [9, 82, 10]**
+  - **Level 2: [9, 82]**
+    - ⚡ Merge & Sort: [9, 82]
+  - **Level 2: [10]**
+    - ⚡ Merge: [9, 10, 82]
+
 
 
 ---
@@ -518,8 +545,15 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    R["PROBLEM Count pairs (i,j) where i<j but arr[i]>arr[j]"]
-    R --> N1["State"]
+    classDef left fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef right fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
+    classDef count fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+
+    L["👈 Sorted Left Half: [3, 5, 8]<br/>Pointer i at idx 1 (val=5)"]:::left
+    R["👉 Sorted Right Half: [2, 4, 7]<br/>Pointer j at idx 1 (val=4)"]:::right
+    Comp{"⚖️ Compare: left[i] vs right[j]<br/>5 > 4"}
+    L & R --> Comp
+    Comp -->|left[i] > right[j]| Inv["🎯 Inversion Detected!<br/>Since left half is sorted, ALL elements from i..mid are > right[j]<br/>Inversions += (mid - i + 1)"]:::count
 ```
 
 
@@ -530,22 +564,21 @@ flowchart TD
 ### Pattern Map: Binary Search Variants
 
 
-```mermaid
-flowchart TD
-    R["BINARY SEARCH PATTERNS"]
-    R --> N1["Classic Search"]
-    N1 --> N2["Standard binary search"]
-    N1 --> N3["First/last occurrence"]
-    N1 --> N4["Rotated sorted array"]
-    R --> N5["Answer Space Search (Feasibility)"]
-    N5 --> N6["Minimize capacity needed"]
-    N5 --> N7["Maximize minimum distance"]
-    N5 --> N8["Minimize maximum load"]
-    R --> N9["Geometric Search"]
-    N9 --> N10["Peak finding"]
-    N9 --> N11["Bitonic search"]
-    N9 --> N12["Closest value"]
-```
+### 📌 BINARY SEARCH PATTERNS
+
+- **Classic Search**
+  - Standard binary search
+  - First/last occurrence
+  - Rotated sorted array
+- **Answer Space Search (Feasibility)**
+  - Minimize capacity needed
+  - Maximize minimum distance
+  - Minimize maximum load
+- **Geometric Search**
+  - Peak finding
+  - Bitonic search
+  - Closest value
+
 
 
 ---
@@ -557,11 +590,13 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    R["ARRAY [-3, -1, 0, 2, 4, 6, 8, 10]"]
-    R --> N1["State"]
-    N1 --> N2["State"]
-    N1 --> N3["State"]
-    R --> N4["State"]
+    classDef init fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef step fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:1.5px;
+    classDef found fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+
+    R["🎯 Search Target: 6 in [-3, -1, 0, 2, 4, 6, 8, 10] (Indices 0..7)"]:::init
+    R --> S1["🔍 Step 1: L=0, R=7, Mid=3 (val=2)<br/>val=2 < target=6 → Search Right: L = Mid + 1 = 4"]:::step
+    S1 --> S2["🔍 Step 2: L=4, R=7, Mid=5 (val=6)<br/>val=6 == target=6 → Target Found at Index 5!"]:::found
 ```
 
 

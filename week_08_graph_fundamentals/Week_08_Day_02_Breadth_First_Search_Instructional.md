@@ -105,24 +105,29 @@ The key insight: **we never expand a node until all nodes at the previous distan
 
 Let's use a concrete graph to see this in action:
 
-```
-    A
-   / \
-  B   C
- / \   \
-D   E   F
- \     /
-  \   /
-    G
+```mermaid
+graph TD
+    classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+    classDef level1 fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef level2 fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
+    classDef level3 fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
 
-Adjacency List:
-A → [B, C]
-B → [A, D, E]
-C → [A, F]
-D → [B, G]
-E → [B, G]
-F → [C, G]
-G → [D, E, F]
+    A["🟢 A (Dist: 0)"]:::startNode
+    B["⚡ B (Dist: 1)"]:::level1
+    C["⚡ C (Dist: 1)"]:::level1
+    D["📦 D (Dist: 2)"]:::level2
+    E["📦 E (Dist: 2)"]:::level2
+    F["📦 F (Dist: 2)"]:::level2
+    G["🎯 G (Dist: 3)"]:::level3
+
+    A --- B
+    A --- C
+    B --- D
+    B --- E
+    C --- F
+    D --- G
+    E --- G
+    F --- G
 ```
 
 Starting BFS from node A:

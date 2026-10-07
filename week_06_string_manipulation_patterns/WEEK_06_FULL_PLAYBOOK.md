@@ -389,9 +389,6 @@ C) Left always before right
 D) Exactly N/2 comparisons  
 
 ---
-
----
-
 # 🔤 DAY 2: LONGEST PALINDROMIC SUBSTRING
 
 ## 🎓 Context: Finding Maximum Palindrome Regions
@@ -446,17 +443,18 @@ DNA analysis needs longest palindromic region in 500-character sequence (1M sequ
 - **Maximum:** When bubble pops (characters don't match)
 
 
-```mermaid
-flowchart TD
-    R["Finding longest palindrome in "babad""]
-    R --> N1["'a' is palindrome ✅"]
-    R --> N2["Expand: b[a]d"]
-    R --> N3["Longest so far: 'a'"]
-    R --> N4["'b' is palindrome ✅"]
-    R --> N5["Expand: a[b]a"]
-    R --> N6["Expand: ?[a]b[a]?"]
-    R --> N7["Longest: 'aba' (length 3)"]
+**Finding longest palindrome in "babad"**
+
+```text
+• 'a' is palindrome ✅
+• Expand: b[a
+• Longest so far: 'a'
+• 'b' is palindrome ✅
+• Expand: a[b
+• Expand: ?[a
+• Longest: 'aba' (length 3)
 ```
+
 
 
 ---
@@ -775,9 +773,6 @@ C) In the middle
 D) At 0  
 
 ---
-
----
-
 # 🧩 DAY 3: SUBSTRING OPERATIONS AND PATTERNS
 
 ## 🎓 Context: Extracting and Comparing Substrings
@@ -1183,9 +1178,6 @@ C) Never (always false positive)
 D) Only 50% of time  
 
 ---
-
----
-
 # 🔵 DAY 4: PARENTHESES MATCHING AND PARSING
 
 ## 🎓 Context: Validating Nested Structures
@@ -1586,9 +1578,6 @@ C) Continue processing
 D) Push more brackets  
 
 ---
-
----
-
 # 🎨 DAY 5: ADVANCED STRING TECHNIQUES AND SYNTHESIS
 
 ## 🎓 Context: Combining String Skills
@@ -1618,13 +1607,12 @@ Password validator needs to check:
 4. **Optimize structure:** Choose data structures carefully
 
 
-```mermaid
-flowchart TD
-    R["Sequential checks (wrong)"]
-    R --> N1["Check palindrome property"]
-    R --> N2["Check bracket balance (stack)"]
-    R --> N3["Check pattern (hash table)"]
-```
+### 📌 Sequential checks (wrong)
+
+- Check palindrome property
+- Check bracket balance (stack)
+- Check pattern (hash table)
+
 
 
 ---
@@ -1638,13 +1626,14 @@ flowchart TD
 - **Result:** All checks complete in single pass
 
 
-```mermaid
-flowchart TD
-    R["Processing "a(b(c)b)a""]
-    R --> N1["Palindrome check: Track if symmetrical"]
-    R --> N2["Bracket check: Stack operations"]
-    R --> N3["Pattern check: Hash table lookups"]
+**Processing "a(b(c)b)a"**
+
+```text
+• Palindrome check: Track if symmetrical
+• Bracket check: Stack operations
+• Pattern check: Hash table lookups
 ```
+
 
 
 ---
@@ -2021,9 +2010,6 @@ C) Recursion only
 D) Stack-based parsing  
 
 ---
-
----
-
 # 🎓 WEEK 06: INTEGRATION & SYNTHESIS
 
 ## 📊 Week 6 Complexity Reference Table
@@ -2082,20 +2068,19 @@ D) Stack-based parsing
 ## 🎯 Pattern Selection Decision Tree
 
 
-```mermaid
-flowchart TD
-    R["String problem classification"]
-    R --> N1["Check if palindrome: O(N) two-pointer"]
-    R --> N2["Find longest: O(N²) expand-center"]
-    R --> N3["Generate all: O(Catalan) recursive"]
-    R --> N4["All substrings: O(N²) nested loops"]
-    R --> N5["Pattern search: O(N+M) hashing"]
-    R --> N6["Common substring: O(N·M) DP"]
-    R --> N7["Check valid: O(N) stack"]
-    R --> N8["Min removals: O(N) counter"]
-    R --> N9["Generate valid: O(Catalan) recursion"]
-    R --> N10["Combine: O(N) single pass"]
-```
+### 📌 String problem classification
+
+- Check if palindrome: O(N) two-pointer
+- Find longest: O(N²) expand-center
+- Generate all: O(Catalan) recursive
+- All substrings: O(N²) nested loops
+- Pattern search: O(N+M) hashing
+- Common substring: O(N·M) DP
+- Check valid: O(N) stack
+- Min removals: O(N) counter
+- Generate valid: O(Catalan) recursion
+- Combine: O(N) single pass
+
 
 
 ---

@@ -312,9 +312,6 @@ C) Arrays are smaller than linked lists
 D) CPU has special array instructions  
 
 ---
-
----
-
 # 📈 DAY 2: DYNAMIC ARRAYS AND AMORTIZED ANALYSIS
 
 ## 🎓 Context: Growing Storage
@@ -608,9 +605,6 @@ C) Triple capacity
 D) Allocate 1GB each time  
 
 ---
-
----
-
 # 🔗 DAY 3: LINKED LISTS
 
 ## 🎓 Context: Flexible Node-Based Storage
@@ -639,9 +633,18 @@ Music player maintains playlist. User inserts song at arbitrary position:
 
 
 ```mermaid
-flowchart TD
-    R["Linked List 10 → 20 → 30 → 40 → null"]
-    R --> N1["State"]
+flowchart LR
+    classDef headNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+    classDef node fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+    classDef nullNode fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,color:#616161
+
+    N1["🟢 Head: [10 | Next]"]:::headNode
+    N2["📦 Node: [20 | Next]"]:::node
+    N3["📦 Node: [30 | Next]"]:::node
+    N4["📦 Node: [40 | Next]"]:::node
+    N5["🛑 null"]:::nullNode
+
+    N1 --> N2 --> N3 --> N4 --> N5
 ```
 
 
@@ -961,9 +964,6 @@ C) Nothing (can recompute)
 D) Head pointer  
 
 ---
-
----
-
 # 📚 DAY 4: STACKS AND QUEUES
 
 ## 🎓 Context: Sequential Access Patterns
@@ -1340,16 +1340,13 @@ tasks.Enqueue("Task3");
 
 **Example: Recursive Fibonacci**
 
-```mermaid
-flowchart TD
-    R["fib(4) call → Push frame"]
-    R --> N1["fib(3) call → Push frame"]
-    N1 --> N2["fib(2) call → Push frame"]
-    N2 --> N3["fib(1) → Return 1 (pop)"]
-    N2 --> N4["fib(0) → Return 0 (pop)"]
-    N1 --> N5["Return 1 (pop)"]
-    R --> N6["Return 2 (pop)"]
+**fib(4) call → Push frame**
+
+```text
+• fib(3) call → Push frame
+• Return 2 (pop)
 ```
+
 
 
 ---
@@ -1385,9 +1382,6 @@ C) Array
 D) Hash table  
 
 ---
-
----
-
 # 🔍 DAY 5: BINARY SEARCH
 
 ## 🎓 Context: Efficient Search on Sorted Data
@@ -1658,9 +1652,6 @@ C) (left + right) % 2
 D) left / right  
 
 ---
-
----
-
 # 📦 DAY 6: STRINGS & NUMBERS - REPRESENTATION & CONVERSIONS
 
 ## 🎓 Context: Hardware-Level Primitives
@@ -1786,9 +1777,6 @@ C) 4 bytes
 D) 8 bytes  
 
 ---
-
----
-
 # 🎓 WEEK 02: INTEGRATION & SYNTHESIS
 
 ## 📊 Week 2 Complexity Reference Table
@@ -1851,21 +1839,20 @@ D) 8 bytes
 ## 🎯 Pattern Selection Decision Tree
 
 
-```mermaid
-flowchart TD
-    R["Need to store data?"]
-    R --> N1["Size known upfront?"]
-    N1 --> N2["Yes → Array (fast access)"]
-    N1 --> N3["No → Dynamic Array (grows as needed)"]
-    R --> N4["Frequent middle insertions?"]
-    N4 --> N5["Yes → Linked List"]
-    R --> N6["LIFO access (last in first out)?"]
-    N6 --> N7["Stack"]
-    R --> N8["FIFO access (first in first out)?"]
-    N8 --> N9["Queue"]
-    R --> N10["Search sorted data?"]
-    N10 --> N11["Binary Search (O(log N))"]
-```
+### 📌 Need to store data?
+
+- **Size known upfront?**
+  - Yes → Array (fast access)
+  - No → Dynamic Array (grows as needed)
+- **Frequent middle insertions?**
+  - Yes → Linked List
+- **LIFO access (last in first out)?**
+  - Stack
+- **FIFO access (first in first out)?**
+  - Queue
+- **Search sorted data?**
+  - Binary Search (O(log N))
+
 
 
 ---

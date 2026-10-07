@@ -32,32 +32,31 @@
 ## 🧠 Concept Map: Relationships Between Patterns
 
 
-```mermaid
-flowchart TD
-    R["String Problem Space"]
-    R --> N1["STRUCTURE ANALYSIS"]
-    N1 --> N2["Is it a palindrome?"]
-    N2 --> N3["Expand-around-center (Day 1)"]
-    N1 --> N4["Is it nested/balanced?"]
-    N4 --> N5["Stack validation (Day 3)"]
-    R --> N6["SUBSTRING SEARCH"]
-    N6 --> N7["Find longest with property P?"]
-    N7 --> N8["Sliding window (Day 2)"]
-    N6 --> N9["Find pattern M in text T?"]
-    N9 --> N10["Rabin-Karp rolling hash (Day 5, optional)"]
-    R --> N11["TRANSFORMATION"]
-    N11 --> N12["Parse input (string → integer)?"]
-    N12 --> N13["Defensive character-by-character (Day 4)"]
-    N11 --> N14["Convert format (integer → Roman)?"]
-    N14 --> N15["Greedy mapping (Day 4)"]
-    N11 --> N16["Compress data?"]
-    N16 --> N17["Run-length encoding (Day 4)"]
-    R --> N18["OPTIMIZATION"]
-    N18 --> N19["Single pattern, slow?"]
-    N19 --> N20["Use Rabin-Karp (Day 5)"]
-    N18 --> N21["Multiple patterns, multiple texts?"]
-    N21 --> N22["Pre-hash, then lookup (Day 5)"]
-```
+### 📌 String Problem Space
+
+- **STRUCTURE ANALYSIS**
+  - **Is it a palindrome?**
+    - Expand-around-center (Day 1)
+  - **Is it nested/balanced?**
+    - Stack validation (Day 3)
+- **SUBSTRING SEARCH**
+  - **Find longest with property P?**
+    - Sliding window (Day 2)
+  - **Find pattern M in text T?**
+    - Rabin-Karp rolling hash (Day 5, optional)
+- **TRANSFORMATION**
+  - **Parse input (string → integer)?**
+    - Defensive character-by-character (Day 4)
+  - **Convert format (integer → Roman)?**
+    - Greedy mapping (Day 4)
+  - **Compress data?**
+    - Run-length encoding (Day 4)
+- **OPTIMIZATION**
+  - **Single pattern, slow?**
+    - Use Rabin-Karp (Day 5)
+  - **Multiple patterns, multiple texts?**
+    - Pre-hash, then lookup (Day 5)
+
 
 
 ---

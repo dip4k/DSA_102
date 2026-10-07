@@ -45,22 +45,21 @@
 ### Pattern Map: Elementary Sorts Family Tree
 
 
-```mermaid
-flowchart TD
-    R["ELEMENTARY SORTS"]
-    R --> N1["Bubble Sort (Sinking)"]
-    N1 --> N2["Adjacent element swaps"]
-    N1 --> N3["Repeatedly bubbles largest to end"]
-    N1 --> N4["O(n²) time, O(1) space"]
-    R --> N5["Selection Sort (Finding)"]
-    N5 --> N6["Find min/max element"]
-    N5 --> N7["Place at correct position"]
-    N5 --> N8["O(n²) time, O(1) space"]
-    R --> N9["Insertion Sort (Growing)"]
-    N9 --> N10["Build sorted prefix"]
-    N9 --> N11["Insert next element"]
-    N9 --> N12["O(n²) but adaptive for nearly sorted"]
-```
+### 📌 ELEMENTARY SORTS
+
+- **Bubble Sort (Sinking)**
+  - Adjacent element swaps
+  - Repeatedly bubbles largest to end
+  - O(n²) time, O(1) space
+- **Selection Sort (Finding)**
+  - Find min/max element
+  - Place at correct position
+  - O(n²) time, O(1) space
+- **Insertion Sort (Growing)**
+  - Build sorted prefix
+  - Insert next element
+  - O(n²) but adaptive for nearly sorted
+
 
 
 ---
@@ -201,20 +200,19 @@ D) All equally bad
 ### Pattern Map: Advanced Sorting Family Tree
 
 
-```mermaid
-flowchart TD
-    R["ADVANCED SORTS (Divide & Conquer)"]
-    R --> N1["Merge Sort"]
-    N1 --> N2["Divide into halves"]
-    N1 --> N3["Recursively sort both"]
-    N1 --> N4["Merge sorted halves"]
-    N1 --> N5["O(n log n) guaranteed, stable"]
-    R --> N6["Quick Sort"]
-    N6 --> N7["Partition around pivot"]
-    N6 --> N8["Recursively sort partitions"]
-    N6 --> N9["In-place with excellent cache"]
-    N6 --> N10["O(n log n) average, O(n²) worst"]
-```
+### 📌 ADVANCED SORTS (Divide & Conquer)
+
+- **Merge Sort**
+  - Divide into halves
+  - Recursively sort both
+  - Merge sorted halves
+  - O(n log n) guaranteed, stable
+- **Quick Sort**
+  - Partition around pivot
+  - Recursively sort partitions
+  - In-place with excellent cache
+  - O(n log n) average, O(n²) worst
+
 
 
 ---
@@ -228,8 +226,16 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    R["ARRAY [38, 27, 43, 3, 9, 82, 10]"]
-    R --> N1["State"]
+    classDef orig fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+    classDef half fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
+
+    All["📦 [38, 27, 43, 3, 9, 82, 10]"]:::orig
+    L1["[38, 27, 43, 3]"]:::half
+    R1["[9, 82, 10]"]:::half
+    All -->|"Divide in half"| L1 & R1
+    L2["[38, 27]"]:::half
+    L3["[43, 3]"]:::half
+    L1 --> L2 & L3
 ```
 
 
@@ -307,22 +313,21 @@ Probability of bad pivot decreases exponentially
 ### Pattern Map: Heap Operations Family
 
 
-```mermaid
-flowchart TD
-    R["HEAP STRUCTURES"]
-    R --> N1["Binary Heap Array Representation"]
-    N1 --> N2["Min-heap (parent ≤ children)"]
-    N1 --> N3["Max-heap (parent ≥ children)"]
-    N1 --> N4["Complete binary tree in array"]
-    R --> N5["Core Operations"]
-    N5 --> N6["Insert (bubble up)"]
-    N5 --> N7["Extract-min/max (bubble down)"]
-    N5 --> N8["Build-heap (heapify all)"]
-    R --> N9["Applications"]
-    N9 --> N10["Heap sort"]
-    N9 --> N11["Priority queues"]
-    N9 --> N12["Top-k problems"]
-```
+### 📌 HEAP STRUCTURES
+
+- **Binary Heap Array Representation**
+  - Min-heap (parent ≤ children)
+  - Max-heap (parent ≥ children)
+  - Complete binary tree in array
+- **Core Operations**
+  - Insert (bubble up)
+  - Extract-min/max (bubble down)
+  - Build-heap (heapify all)
+- **Applications**
+  - Heap sort
+  - Priority queues
+  - Top-k problems
+
 
 
 ---
@@ -334,11 +339,11 @@ flowchart TD
 #### Visual 1: Array Index Mapping
 
 
-```mermaid
-flowchart TD
-    R["MIN-HEAP STRUCTURE"]
-    R --> N1["State"]
-```
+### 📌 🟢 Root: Min Element (1)
+
+- **📦 Left: 3**
+  - 7
+
 
 
 ---
@@ -350,8 +355,12 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    R["MIN-HEAP [1, 3, 2, 7, 4, 5]"]
-    R --> N1["State"]
+    classDef arr fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
+    classDef tree fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+
+    Tree["🌲 Heap Index Arithmetic:<br/>LeftChild = 2*i + 1<br/>RightChild = 2*i + 2<br/>Parent = (i - 1) / 2"]:::tree
+    Arr["📊 Array: [1, 3, 2, 7, 4, 5]<br/>Indices: 0, 1, 2, 3, 4, 5"]:::arr
+    Tree --> Arr
 ```
 
 
@@ -393,19 +402,24 @@ Children:
 
 No children, STOP
 
-RESULT: [2, 3, 5, 7, 4] ✓ Heap maintained
+RESULT: [2, 3, 5, 7, 4] (Heap property restored)
 Returned: 1
-
-TREE VIEW:
-        2            (was 5)
-       / \
-      3   5          (was 2)
-     / \
-    7   4
-
-TIME: O(log n) - height of heap
-SPACE: O(1) just swaps
 ```
+
+```mermaid
+flowchart TD
+    N2["2 (New Root)"]:::rootNode --> N3["3"]:::internalNode
+    N2 --> N5["5 (Sifted Down)"]:::internalNode
+    N3 --> N7["7"]:::leafNode
+    N3 --> N4["4"]:::leafNode
+
+    classDef rootNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
+    classDef internalNode fill:#37474f,stroke:#90a4ae,stroke-width:2px,color:#ffffff
+    classDef leafNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
+```
+
+- **Time Complexity:** `O(log N)` (bounded by tree height)
+- **Space Complexity:** `O(1)` (in-place index swaps)
 
 ---
 
@@ -415,9 +429,15 @@ SPACE: O(1) just swaps
 
 
 ```mermaid
-flowchart TD
-    R["ARRAY [38, 27, 43, 3, 9, 82, 10]"]
-    R --> N1["State"]
+flowchart LR
+    classDef heap fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+    classDef sorted fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+
+    H["📦 Max-Heap: [82, 43, 38, 27, 9, 10, 3]"]:::heap
+    Ext["⚡ Swap Max with End & Sift Down"]
+    S["✅ Sorted Suffix: [... 82]"]:::sorted
+
+    H --> Ext --> S
 ```
 
 
@@ -428,22 +448,21 @@ flowchart TD
 ### Pattern Map: Hash Table Design
 
 
-```mermaid
-flowchart TD
-    R["HASH TABLES"]
-    R --> N1["Hash Function"]
-    N1 --> N2["Map keys to bucket indices"]
-    N1 --> N3["Uniformity: avoid collisions"]
-    N1 --> N4["Fast to compute"]
-    R --> N5["Separate Chaining"]
-    N5 --> N6["Chain collisions with lists"]
-    N5 --> N7["Load factor control"]
-    N5 --> N8["Resizing strategy"]
-    R --> N9["Collision Handling"]
-    N9 --> N10["Good hash function"]
-    N9 --> N11["Adequate bucket count"]
-    N9 --> N12["Monitor load factor"]
-```
+### 📌 HASH TABLES
+
+- **Hash Function**
+  - Map keys to bucket indices
+  - Uniformity: avoid collisions
+  - Fast to compute
+- **Separate Chaining**
+  - Chain collisions with lists
+  - Load factor control
+  - Resizing strategy
+- **Collision Handling**
+  - Good hash function
+  - Adequate bucket count
+  - Monitor load factor
+
 
 
 ---
@@ -456,9 +475,16 @@ flowchart TD
 
 
 ```mermaid
-flowchart TD
-    R["HASH FUNCTION h(key) = key % 10"]
-    R --> N1["State"]
+flowchart LR
+    classDef key fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
+    classDef hash fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
+    classDef bucket fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+
+    Key["🔑 Key: 42"]:::key
+    Hash["⚙️ Hash Function: 42 % 10 = 2"]:::hash
+    Bucket["📦 Bucket Array: Slot [2]"]:::bucket
+
+    Key --> Hash --> Bucket
 ```
 
 
@@ -471,8 +497,13 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    R["SCENARIO Load factor exceeds 0.75"]
-    R --> N1["State"]
+    classDef alert fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
+    classDef grow fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+
+    Trigger["⚠️ Load Factor > 0.75 (Item Count / Capacity)"]:::alert
+    Action["📈 Rehash & Resize: Allocate Capacity * 2<br/>Recompute hash for all existing elements into new table"]:::grow
+
+    Trigger --> Action
 ```
 
 
@@ -483,20 +514,19 @@ flowchart TD
 ### Pattern Map: String Hashing
 
 
-```mermaid
-flowchart TD
-    R["STRING MATCHING PATTERNS"]
-    R --> N1["Naive: O(nm) compare"]
-    R --> N2["Rolling Hash (Rabin-Karp)"]
-    N2 --> N3["Compute hash once"]
-    N2 --> N4["Update in O(1) per position"]
-    N2 --> N5["Compare hashes instead of strings"]
-    N2 --> N6["O(n+m) expected time"]
-    R --> N7["Applications"]
-    N7 --> N8["Substring search"]
-    N7 --> N9["Plagiarism detection"]
-    N7 --> N10["DNA sequence matching"]
-```
+### 📌 STRING MATCHING PATTERNS
+
+- Naive: O(nm) compare
+- **Rolling Hash (Rabin-Karp)**
+  - Compute hash once
+  - Update in O(1) per position
+  - Compare hashes instead of strings
+  - O(n+m) expected time
+- **Applications**
+  - Substring search
+  - Plagiarism detection
+  - DNA sequence matching
+
 
 
 ---
@@ -509,9 +539,16 @@ flowchart TD
 
 
 ```mermaid
-flowchart TD
-    R["STRING "ABCDDE""]
-    R --> N1["State"]
+flowchart LR
+    classDef win fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+    classDef roll fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
+    classDef nextWin fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+
+    W1["🔍 Window 1: 'ABC'<br/>Hash = (A*B^2 + B*B^1 + C) % M"]:::win
+    Roll["⚡ O(1) Roll: Subtract 'A'*B^2, Multiply by B, Add 'D'"]:::roll
+    W2["🔍 Window 2: 'BCD'<br/>New Rolling Hash"]:::nextWin
+
+    W1 --> Roll --> W2
 ```
 
 

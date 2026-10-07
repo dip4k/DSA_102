@@ -745,7 +745,4 @@ After mastering Week 7 problems, you're ready for:
 - **Advanced:** Self-balancing tree implementations (AVL, Red-Black coding)
 
 ---
-
----
-
 > 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS.md)

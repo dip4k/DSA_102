@@ -77,8 +77,25 @@ This analogy explains everything:
 
 ```mermaid
 flowchart TD
-    R["Before concatenation"]
-    R --> N1["State"]
+    classDef heap fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+    classDef newHeap fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+    classDef stack fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
+
+    subgraph StackSpace["📦 Stack: Variable References"]
+        S1["str1 (ref)"]:::stack
+        S2["str2 (ref)"]:::stack
+        S3["str3 = str1 + str2 (ref)"]:::stack
+    end
+
+    subgraph HeapSpace["🧱 Managed Heap: Immutable Memory"]
+        H1["'Hello' (Unchanged)"]:::heap
+        H2["' World' (Unchanged)"]:::heap
+        H3["'Hello World' (New Allocation)"]:::newHeap
+    end
+
+    S1 --> H1
+    S2 --> H2
+    S3 --> H3
 ```
 
 
@@ -466,9 +483,16 @@ Value = (-1)^Sign × 1.Mantissa × 2^(Exponent-127)
 **Example: 0.5**
 
 ```mermaid
-flowchart TD
-    R["0.5 = 1.0 × 2^(-1)"]
-    R --> N1["State"]
+flowchart LR
+    classDef sign fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
+    classDef exp fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+    classDef mantissa fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+
+    Sign["Sign (1 bit): 0<br/>Positive (+)"]:::sign
+    Exp["Exponent (8 bits): 01111110<br/>Biased 126 (-1)"]:::exp
+    Mantissa["Mantissa (23 bits): 000...000<br/>Implicit leading 1.0"]:::mantissa
+
+    Sign --- Exp --- Mantissa
 ```
 
 

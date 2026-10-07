@@ -68,24 +68,23 @@ Everything later in the course—shortest paths, MSTs, advanced DP—assumes you
 ### 1.1 Concept Family Tree 🌳
 
 
-```mermaid
-flowchart TD
-    R["GRAPH FUNDAMENTALS (Day 1)"]
-    R --> N1["Graph Types"]
-    N1 --> N2["Directed"]
-    N1 --> N3["Undirected"]
-    R --> N4["Edge Weights"]
-    N4 --> N5["Unweighted"]
-    N4 --> N6["Weighted"]
-    R --> N7["Representations"]
-    N7 --> N8["Adjacency List"]
-    N7 --> N9["Adjacency Matrix"]
-    N7 --> N10["Edge List"]
-    R --> N11["Implicit Graphs"]
-    N11 --> N12["Grids"]
-    N11 --> N13["Puzzles"]
-    N11 --> N14["State Spaces"]
-```
+### 📌 GRAPH FUNDAMENTALS (Day 1)
+
+- **Graph Types**
+  - Directed
+  - Undirected
+- **Edge Weights**
+  - Unweighted
+  - Weighted
+- **Representations**
+  - Adjacency List
+  - Adjacency Matrix
+  - Edge List
+- **Implicit Graphs**
+  - Grids
+  - Puzzles
+  - State Spaces
+
 
 
 ### 1.2 Real-World Engineering Problem 🎛️
@@ -246,21 +245,20 @@ Examples of implicit graphs:
 ### 2.1 Concept Family Tree 🌳
 
 
-```mermaid
-flowchart TD
-    R["BREADTH-FIRST SEARCH (Day 2)"]
-    R --> N1["Mechanics"]
-    N1 --> N2["Queue-based frontier"]
-    N1 --> N3["Level-by-level exploration"]
-    N1 --> N4["Visited marking"]
-    R --> N5["Shortest Paths (Unweighted)"]
-    N5 --> N6["Distance layers"]
-    N5 --> N7["Parent pointers for paths"]
-    R --> N8["Applications"]
-    N8 --> N9["Shortest route in unweighted networks"]
-    N8 --> N10["Level order traversal in trees"]
-    N8 --> N11["Conceptual: components, bipartite checks"]
-```
+### 📌 BREADTH-FIRST SEARCH (Day 2)
+
+- **Mechanics**
+  - Queue-based frontier
+  - Level-by-level exploration
+  - Visited marking
+- **Shortest Paths (Unweighted)**
+  - Distance layers
+  - Parent pointers for paths
+- **Applications**
+  - Shortest route in unweighted networks
+  - Level order traversal in trees
+  - Conceptual: components, bipartite checks
+
 
 
 ### 2.2 Real-World Engineering Problem 🚍
@@ -277,12 +275,23 @@ BFS answers exactly this: it expands the graph **layer by layer**, discovering a
 
 Example graph (unweighted, undirected):
 
-```text
-      1
-     / \
-    0   2
-    |   |
-    3 - 4 - 5
+```mermaid
+graph TD
+    classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+
+    N0["0"]:::nodeStyle
+    N1["1"]:::nodeStyle
+    N2["2"]:::nodeStyle
+    N3["3"]:::nodeStyle
+    N4["4"]:::nodeStyle
+    N5["5"]:::nodeStyle
+
+    N0 --- N1
+    N1 --- N2
+    N0 --- N3
+    N3 --- N4
+    N2 --- N4
+    N4 --- N5
 ```
 
 Run BFS from source 0.
@@ -342,19 +351,40 @@ BFS guarantees these are the **shortest path lengths** in an unweighted graph.
 
 ### 2.4 Visual: BFS vs DFS Intuition 🔍
 
-```text
-BFS (Queue):                   DFS (Stack/Recursion):
+```mermaid
+flowchart TD
+    classDef bfsStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef dfsStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
 
-Explore neighbors by levels.   Dive deep along one path first.
+    subgraph B["🌊 BFS (Queue - Level by Level)"]
+        direction TB
+        B0["0 (Level 0)"]:::bfsStyle
+        B1["1 (Level 1)"]:::bfsStyle
+        B2["2 (Level 1)"]:::bfsStyle
+        B3["3 (Level 2)"]:::bfsStyle
+        B4["4 (Level 2)"]:::bfsStyle
 
-      0                             0
-     / \                           / \
-    1   2                         1   2
-   / \                             \
-  3   4                             4
+        B0 --> B1
+        B0 --> B2
+        B1 --> B3
+        B1 --> B4
+    end
 
-BFS order from 0: 0,1,2,3,4      DFS order from 0: 0,1,4,2,3 (one possible)
+    subgraph D["⚡ DFS (Stack - Deep First)"]
+        direction TB
+        D0["0 (Start)"]:::dfsStyle
+        D1["1 (Deep dive)"]:::dfsStyle
+        D2["2 (Backtrack)"]:::dfsStyle
+        D4["4 (Deep dive)"]:::dfsStyle
+
+        D0 --> D1
+        D0 --> D2
+        D1 --> D4
+    end
 ```
+
+- **BFS order from 0:** `0, 1, 2, 3, 4` (explores neighbors by levels)  
+- **DFS order from 0:** `0, 1, 4, 2` (dives deep along one path first)
 
 Takeaway:
 
@@ -467,24 +497,23 @@ public class BfsShortestPath
 ### 3.1 Concept Family Tree 🌳
 
 
-```mermaid
-flowchart TD
-    R["DEPTH-FIRST SEARCH & TOPO SORT (Day 3)"]
-    R --> N1["DFS Mechanics"]
-    N1 --> N2["Recursive exploration"]
-    N1 --> N3["Explicit stack variant"]
-    N1 --> N4["Discovery/Finish times"]
-    R --> N5["Edge Types (Directed Graphs)"]
-    N5 --> N6["Tree edges"]
-    N5 --> N7["Back edges"]
-    N5 --> N8["Forward edges"]
-    N5 --> N9["Cross edges"]
-    R --> N10["Cycle Detection"]
-    N10 --> N11["Back edges in directed graphs"]
-    R --> N12["Topological Sort"]
-    N12 --> N13["DFS post-order method"]
-    N12 --> N14["Kahn's algorithm (in-degree + BFS)"]
-```
+### 📌 DEPTH-FIRST SEARCH & TOPO SORT (Day 3)
+
+- **DFS Mechanics**
+  - Recursive exploration
+  - Explicit stack variant
+  - Discovery/Finish times
+- **Edge Types (Directed Graphs)**
+  - Tree edges
+  - Back edges
+  - Forward edges
+  - Cross edges
+- **Cycle Detection**
+  - Back edges in directed graphs
+- **Topological Sort**
+  - DFS post-order method
+  - Kahn's algorithm (in-degree + BFS)
+
 
 
 ### 3.2 Real-World Engineering Problem 📦
@@ -507,12 +536,20 @@ DFS is your tool for:
 
 Reusing the earlier graph:
 
-```text
-      0
-     / \
-    1   2
-   / \
-  3   4
+```mermaid
+graph TD
+    classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+
+    N0["0"]:::nodeStyle
+    N1["1"]:::nodeStyle
+    N2["2"]:::nodeStyle
+    N3["3"]:::nodeStyle
+    N4["4"]:::nodeStyle
+
+    N0 --- N1
+    N0 --- N2
+    N1 --- N3
+    N1 --- N4
 ```
 
 One possible DFS order from 0 (pre-order): 0, 1, 3, 4, 2.  
@@ -706,38 +743,50 @@ public class DfsTopoSort
 ### 4.1 Concept Family Tree 🌳
 
 
-```mermaid
-flowchart TD
-    R["CONNECTIVITY & BIPARTITE GRAPHS (Day 4)"]
-    R --> N1["Connected Components (Undirected)"]
-    N1 --> N2["BFS/DFS for components"]
-    N1 --> N3["Component labeling & sizes"]
-    R --> N4["Bipartite Testing"]
-    N4 --> N5["Two-coloring via BFS/DFS"]
-    N4 --> N6["Odd cycle detection"]
-    R --> N7["Union–Find / DSU"]
-    N7 --> N8["Offline connectivity queries"]
-    R --> N9["Network Reliability Examples"]
-    N9 --> N10["Grid connectivity"]
-    N9 --> N11["Single points of failure (articulation points, bridges – high-level)"]
-```
+### 📌 CONNECTIVITY & BIPARTITE GRAPHS (Day 4)
+
+- **Connected Components (Undirected)**
+  - BFS/DFS for components
+  - Component labeling & sizes
+- **Bipartite Testing**
+  - Two-coloring via BFS/DFS
+  - Odd cycle detection
+- **Union–Find / DSU**
+  - Offline connectivity queries
+- **Network Reliability Examples**
+  - Grid connectivity
+  - Single points of failure (articulation points, bridges – high-level)
+
 
 
 ### 4.2 Visual: Connected Components as Islands 🏝️
 
-```text
-Graph:
+```mermaid
+flowchart TB
+    classDef c1 fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+    classDef c2 fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef c3 fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
 
- Component 1          Component 2      Component 3
+    subgraph Comp1["🏝️ Component 1"]
+        A["A"]:::c1 --- B["B"]:::c1
+        A --- C["C"]:::c1
+        B --- D["D"]:::c1
+        C --- D
+    end
 
-  A -- B               E -- F           G
-  |   |                                 H
-  C -- D                               (isolated)
+    subgraph Comp2["🏝️ Component 2"]
+        E["E"]:::c2 --- F["F"]:::c2
+    end
 
-- {A,B,C,D} form one component.
-- {E,F} form another.
-- {G}, {H} are single-vertex components.
+    subgraph Comp3["🏝️ Component 3 (Isolated)"]
+        G["G"]:::c3
+        H["H"]:::c3
+    end
 ```
+
+- `{A, B, C, D}` form one connected component.  
+- `{E, F}` form a second component.  
+- `{G}` and `{H}` are isolated single-vertex components.
 
 Connectivity question: *how many islands are there, and which vertices belong to each island?*
 
@@ -747,26 +796,36 @@ BFS/DFS from each unvisited node naturally reveals one component at a time.
 
 **Bipartite example:**
 
-```text
-Left (L)           Right (R)
+```mermaid
+flowchart LR
+    classDef redNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
+    classDef blueNode fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
 
-  u1   u2           v1   v2
-   \  /             \   /
-    v1               v2
+    subgraph Bipartite["✅ Bipartite Graph (2-Colorable)"]
+        direction TB
+        subgraph SetL["Left Set (🔴 Red)"]
+            U1["u1"]:::redNode
+            U2["u2"]:::redNode
+        end
+        subgraph SetR["Right Set (🔵 Blue)"]
+            V1["v1"]:::blueNode
+            V2["v2"]:::blueNode
+        end
+        U1 --- V1
+        U2 --- V1
+        U2 --- V2
+    end
 
-All edges go from L to R; no L-L or R-R edges.
-```
+    subgraph OddCycle["❌ Non-Bipartite (Odd Cycle)"]
+        direction TB
+        N1["1 (🔴 Red)"]:::redNode
+        N2["2 (🔵 Blue)"]:::blueNode
+        N3["3 (⚠️ Conflict!)"]:::redNode
 
-You can color L as Red, R as Blue: every edge crosses colors → graph is bipartite.
-
-**Non-bipartite (odd cycle):**
-
-```text
-  1
- / \
-2---3
-
-Any 2-coloring forces at least one edge with same-colored endpoints.
+        N1 --- N2
+        N2 --- N3
+        N3 -.-|"Conflict Edge!"| N1
+    end
 ```
 
 Key theorem: **A graph is bipartite iff it has no odd-length cycle.**
@@ -847,19 +906,18 @@ With **path compression** and **union by rank/size**, trees stay shallow and ope
 ### 5.1 Concept Family Tree 🌳
 
 
-```mermaid
-flowchart TD
-    R["STRONGLY CONNECTED COMPONENTS (Day 5 – Optional Advanced)"]
-    R --> N1["Strong Connectivity"]
-    N1 --> N2["Mutual reachability (u→v and v→u)"]
-    N1 --> N3["SCCs as equivalence classes"]
-    R --> N4["Algorithms (Conceptual)"]
-    N4 --> N5["Kosaraju (two-pass DFS + transpose)"]
-    N4 --> N6["Tarjan (single-pass DFS with low-link)"]
-    R --> N7["Component DAG"]
-    N7 --> N8["Collapse SCCs into nodes"]
-    N7 --> N9["Result is always a DAG"]
-```
+### 📌 STRONGLY CONNECTED COMPONENTS (Day 5 – Optional Advanced)
+
+- **Strong Connectivity**
+  - Mutual reachability (u→v and v→u)
+  - SCCs as equivalence classes
+- **Algorithms (Conceptual)**
+  - Kosaraju (two-pass DFS + transpose)
+  - Tarjan (single-pass DFS with low-link)
+- **Component DAG**
+  - Collapse SCCs into nodes
+  - Result is always a DAG
+
 
 
 ### 5.2 Visual: SCC Decomposition ♻️
@@ -868,9 +926,27 @@ Directed graph:
 
 
 ```mermaid
-flowchart TD
-    R["1 → 2 → 3 → 4"]
-    R --> N1["State"]
+flowchart LR
+    classDef scc1 fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+    classDef scc2 fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:2px;
+
+    subgraph SCC1["🔄 Strongly Connected Component 1: {1, 2, 3, 5}"]
+        N1["Node 1"]:::scc1
+        N2["Node 2"]:::scc1
+        N3["Node 3"]:::scc1
+        N5["Node 5"]:::scc1
+        N1 --> N2 --> N3 --> N1
+        N2 --> N5 --> N3
+    end
+
+    subgraph SCC2["🎯 Singleton SCCs"]
+        N4["Node 4"]:::scc2
+        N6["Node 6"]:::scc2
+        N7["Node 7"]:::scc2
+        N8["Node 8"]:::scc2
+    end
+
+    N3 -->|Cross edge| N4
 ```
 
 

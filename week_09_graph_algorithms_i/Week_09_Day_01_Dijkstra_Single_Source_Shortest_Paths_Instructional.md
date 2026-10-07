@@ -132,16 +132,14 @@ Relaxing all edges incident to a just-processed vertex u ensures that distances 
 
 **Dijkstra State:**
 
-```mermaid
-flowchart TD
-    R["State Variables"]
-    R --> N1["distance[0..V-1]     : Shortest distance from source to each vertex"]
-    R --> N2["predecessor[0..V-1]  : Previous vertex on shortest path (for reconstruction)"]
-    R --> N3["processed[0..V-1]    : Boolean array; is vertex finalized?"]
-    R --> N4["pq                   : Priority queue of (distance, vertex) pairs"]
-    R --> N5["source               : Starting vertex"]
-    R --> N6["State"]
-```
+### 📌 ⚡ Dijkstra State Machine Variables
+
+- 📊 distance[0..V-1]: Shortest tentative distance from source to each vertex
+- 🔗 predecessor[0..V-1]: Previous vertex on shortest path for path reconstruction
+- ✅ processed[0..V-1]: Boolean array marking finalized vertices
+- 👑 pq: Priority Queue of (distance, vertex) pairs for greedy expansion
+- 📍 source: Designated starting vertex (dist[source] = 0)
+
 
 
 ### 🔧 Operation 1: Dijkstra Algorithm — Detailed Walkthrough
@@ -193,46 +191,33 @@ DijkstraSSSP(Graph G with V vertices, E edges, source vertex s):
 **Detailed Trace (Using Our Example Graph):**
 
 
-```mermaid
-flowchart TD
-    R["Graph (adjacency list)"]
-    R --> N1["processed[A]? false → Continue"]
-    R --> N2["Mark processed[A] = true"]
-    R --> N3["Distance to A = 0 (no update)"]
-    R --> N4["Relax edges from A:"]
-    N4 --> N5["Edge A→B (weight 4):"]
-    N5 --> N6["distance[B] = 4, predecessor[B] = A"]
-    N4 --> N7["Edge A→C (weight 2):"]
-    N7 --> N8["distance[C] = 2, predecessor[C] = A"]
-    R --> N9["processed[C]? false → Continue"]
-    R --> N10["Mark processed[C] = true"]
-    R --> N11["Relax edges from C:"]
-    N11 --> N12["Edge C→B (weight 1):"]
-    N12 --> N13["distance[B] = 3, predecessor[B] = C"]
-    N11 --> N14["Edge C→D (weight 8):"]
-    N14 --> N15["distance[D] = 10, predecessor[D] = C"]
-    R --> N16["processed[B]? false → Continue"]
-    R --> N17["Mark processed[B] = true"]
-    R --> N18["Relax edges from B:"]
-    N18 --> N19["Edge B→D (weight 5):"]
-    N19 --> N20["distance[D] = 8, predecessor[D] = B"]
-    N18 --> N21["Edge B→E (weight 10):"]
-    N21 --> N22["distance[E] = 13, predecessor[E] = B"]
-    R --> N23["processed[B]? true → SKIP (stale entry)"]
-    R --> N24["Continue to next extraction"]
-    R --> N25["processed[D]? false → Continue"]
-    R --> N26["Mark processed[D] = true"]
-    R --> N27["Relax edges from D:"]
-    N27 --> N28["Edge D→E (weight 2):"]
-    N28 --> N29["distance[E] = 10, predecessor[E] = D"]
-    R --> N30["processed[D]? true → SKIP (stale entry)"]
-    R --> N31["Continue"]
-    R --> N32["processed[E]? false → Continue"]
-    R --> N33["Mark processed[E] = true"]
-    R --> N34["Relax edges from E:"]
-    R --> N35["processed[E]? true → SKIP (stale entry)"]
-    R --> N36["Continue"]
+**Graph (adjacency list)**
+
+```text
+• processed[A]? false → Continue
+• Mark processed[A] = true
+• Distance to A = 0 (no update)
+• Relax edges from A:
+• processed[C]? false → Continue
+• Mark processed[C] = true
+• Relax edges from C:
+• processed[B]? false → Continue
+• Mark processed[B] = true
+• Relax edges from B:
+• processed[B]? true → SKIP (stale entry)
+• Continue to next extraction
+• processed[D]? false → Continue
+• Mark processed[D] = true
+• Relax edges from D:
+• processed[D]? true → SKIP (stale entry)
+• Continue
+• processed[E]? false → Continue
+• Mark processed[E] = true
+• Relax edges from E:
+• processed[E]? true → SKIP (stale entry)
+• Continue
 ```
+
 
 
 **Critical Implementation Details:**
@@ -795,6 +780,4 @@ Dijkstra is the starting point; each subsequent day adds generality or addresses
 **Overall Result:** ✅ ALL CHECKS PASSED — Content verified for accuracy and ready for delivery.
 
 ---
----
-
 > 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_09_Day_02_Bellman_Ford_Negative_Weights_Instructional.md)

@@ -1890,7 +1890,7 @@ dp[i, j] = dp[i, j - 2]  (0 match)
 #### 3.5 State Transition Triggers & Decision Gates
 1. **Initialize Base:** dp[0, 0] = true. For j = 2 ... N step 2: if p[j - 1] == '*', dp[0, j] = dp[0, j - 2].
 2. **Exploration Grid:** Loop i = 1 ... M, j = 1 ... N:
-   - If $p[j - 1] == '*' $:
+   - If p[j - 1] == '*':
      - `dp[i, j] = dp[i, j - 2]`.
      - If p[j - 2] == '.' OR p[j - 2] == s[i - 1], `dp[i, j] |= dp[i - 1, j]`.
    - Else:
@@ -1929,7 +1929,7 @@ Final result: dp[3, 5] = true.
   - Signature: `Dfs(i, j)`.
   - If j == p.Length, return i == s.Length.
   - First match: `i < s.Length && (s[i] == p[j] || p[j] == '.')`.
-  - If $j + 1 < p.Length && p[j + 1] == '*' $: return `Dfs(i, j + 2) || (firstMatch && Dfs(i + 1, j))`.
+  - If j + 1 < p.Length && p[j + 1] == '*': return `Dfs(i, j + 2) || (firstMatch && Dfs(i + 1, j))`.
   - Else: return `firstMatch && Dfs(i + 1, j + 1)`.
 
 #### 4.4 Multi-Dimensional Complexity & Trade-Off Matrix

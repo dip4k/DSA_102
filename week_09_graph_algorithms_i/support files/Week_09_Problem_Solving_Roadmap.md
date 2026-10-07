@@ -1198,7 +1198,4 @@ Proof by induction on edges added:
 - [ ] Score 60%+ on first attempts
 
 ---
-
----
-
 > 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS.md)

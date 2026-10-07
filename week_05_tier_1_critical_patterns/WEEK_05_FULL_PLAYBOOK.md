@@ -426,9 +426,6 @@ C) Brute force comparison
 D) Linked list tracking  
 
 ---
-
----
-
 # 📈 DAY 2: MONOTONIC STACKS AND NEXT GREATER ELEMENT
 
 ## 🎓 Context: Tracking Trends in Data
@@ -824,9 +821,6 @@ C) Nested loops
 D) All elements in order  
 
 ---
-
----
-
 # 📅 DAY 3: INTERVAL PATTERNS AND SCHEDULING
 
 ## 🎓 Context: Managing Overlapping Events
@@ -1237,9 +1231,6 @@ C) 2 rooms (overlap at t=0)  ✅
 D) Undefined  
 
 ---
-
----
-
 # 🔀 DAY 4: PARTITION SCHEMES AND IN-PLACE REARRANGEMENT
 
 ## 🎓 Context: Organizing Data Without Extra Space
@@ -1633,9 +1624,6 @@ C) Recursive sorting
 D) Binary search  
 
 ---
-
----
-
 # ⚡ DAY 5: KADANE'S ALGORITHM AND FAST-SLOW POINTERS
 
 ## 🎓 Context: Maximum Subarray and Optimization
@@ -2042,9 +2030,6 @@ C) Pointers stay in order
 D) Can't really detect cycles  
 
 ---
-
----
-
 # 🎓 WEEK 05: INTEGRATION & SYNTHESIS
 
 ## 📊 Week 5 Complexity Reference Table
@@ -2108,22 +2093,21 @@ D) Can't really detect cycles
 ## 🎯 Pattern Selection Decision Tree
 
 
-```mermaid
-flowchart TD
-    R["Array/data problem?"]
-    R --> N1["Need frequency analysis?"]
-    N1 --> N2["Hash map patterns"]
-    R --> N3["Need next greater/smaller?"]
-    N3 --> N4["Monotonic stack"]
-    R --> N5["Have intervals to process?"]
-    N5 --> N6["Interval patterns"]
-    R --> N7["Need in-place rearrangement?"]
-    N7 --> N8["Partition schemes"]
-    R --> N9["Need optimal subarray?"]
-    N9 --> N10["Kadane's algorithm"]
-    R --> N11["Need cycle detection?"]
-    N11 --> N12["Fast-slow pointers"]
-```
+### 📌 Array/data problem?
+
+- **Need frequency analysis?**
+  - Hash map patterns
+- **Need next greater/smaller?**
+  - Monotonic stack
+- **Have intervals to process?**
+  - Interval patterns
+- **Need in-place rearrangement?**
+  - Partition schemes
+- **Need optimal subarray?**
+  - Kadane's algorithm
+- **Need cycle detection?**
+  - Fast-slow pointers
+
 
 
 ---

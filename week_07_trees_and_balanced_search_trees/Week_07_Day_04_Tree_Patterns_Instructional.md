@@ -93,12 +93,24 @@ Each problem is a different question about the same tree, but the recursive deco
 
 Let's use a concrete tree:
 
-```
-        10
-       /  \
-      5    15
-     / \   / \
-    3   7 12  20
+```mermaid
+graph TD
+    classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+
+    N10["10"]:::nodeStyle
+    N5["5"]:::nodeStyle
+    N15["15"]:::nodeStyle
+    N3["3"]:::nodeStyle
+    N7["7"]:::nodeStyle
+    N12["12"]:::nodeStyle
+    N20["20"]:::nodeStyle
+
+    N10 --> N5
+    N10 --> N15
+    N5 --> N3
+    N5 --> N7
+    N15 --> N12
+    N15 --> N20
 ```
 
 **Path Sum (root to leaf, all paths):**
@@ -258,10 +270,16 @@ function pathSum(node, currentSum):
 **Inline trace 🧪—watch it execute:**
 
 Given tree:
-```
-    1
-   / \
-  2   3
+```mermaid
+graph TD
+    classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+
+    N1["1"]:::nodeStyle
+    N2["2"]:::nodeStyle
+    N3["3"]:::nodeStyle
+
+    N1 --> N2
+    N1 --> N3
 ```
 
 Path sums: 1→2 = 12, 1→3 = 13, total = 25.
@@ -335,12 +353,18 @@ function findDiameter(node):
 **Inline trace 🧪—watch it execute:**
 
 Given tree:
-```
-      1
-     / \
-    2   3
-   /
-  4
+```mermaid
+graph TD
+    classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+
+    N1["1"]:::nodeStyle
+    N2["2"]:::nodeStyle
+    N3["3"]:::nodeStyle
+    N4["4"]:::nodeStyle
+
+    N1 --> N2
+    N1 --> N3
+    N2 --> N4
 ```
 
 Diameter = longest path. Candidates: 4-2-1-3 (distance 3), or 4-2 (distance 1), or 1-3 (distance 1). Diameter = 3.
@@ -392,12 +416,22 @@ Why does this work? Because the first node that has both p and q in its subtree 
 **Inline trace 🧪—watch it execute:**
 
 Find LCA(3, 4) in:
-```
-      1
-     / \
-    2   5
-   / \
-  3   4
+```mermaid
+graph TD
+    classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef targetStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
+    classDef lcaStyle fill:#e8f5e9,stroke:#2e7d32,stroke-width:3px,color:#1b5e20
+
+    N1["1"]:::nodeStyle
+    N2["👑 2 (LCA)"]:::lcaStyle
+    N5["5"]:::nodeStyle
+    N3["🎯 3"]:::targetStyle
+    N4["🎯 4"]:::targetStyle
+
+    N1 --> N2
+    N1 --> N5
+    N2 --> N3
+    N2 --> N4
 ```
 
 Execution (simplified):
@@ -468,10 +502,16 @@ function deserialize(data):
 **Inline trace 🧪—watch it execute:**
 
 Serialize and deserialize:
-```
-    1
-   / \
-  2   3
+```mermaid
+graph TD
+    classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+
+    N1["1"]:::nodeStyle
+    N2["2"]:::nodeStyle
+    N3["3"]:::nodeStyle
+
+    N1 --> N2
+    N1 --> N3
 ```
 
 Serialization (preorder):
@@ -508,10 +548,16 @@ Deserialization:
 ```
 
 Result: Tree reconstructed as:
-```
-    1
-   / \
-  2   3
+```mermaid
+graph TD
+    classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+
+    N1["1"]:::nodeStyle
+    N2["2"]:::nodeStyle
+    N3["3"]:::nodeStyle
+
+    N1 --> N2
+    N1 --> N3
 ```
 
 > **⚠️ Watch Out:** Serialization must encode structure, not just values. Using only inorder traversal loses structure (you saw this in Week 7 Day 1). Always use preorder or level-order with null markers, or combine multiple traversals.

@@ -65,14 +65,13 @@ String transformation is exactly this: **data enters in one format, exits in ano
 Different representations of the same data:
 
 
-```mermaid
-flowchart TD
-    R["Data Entity The number 123"]
-    R --> N1["State"]
-    R --> N2["State"]
-    R --> N3["State"]
-    R --> N4["State"]
-```
+### 📌 🎯 Abstract Data Entity: The Number 123
+
+- 🔤 Decimal String: '123'
+- 💻 Binary Representation: 0b01111011
+- 🏛️ Roman Numeral: 'CXXIII'
+- 🗣️ Verbal English: 'One Hundred Twenty-Three'
+
 
 
 The mental model: **data has intrinsic meaning (a number, a sequence), but multiple external representations (string, binary, roman, compressed, etc.).**
@@ -607,23 +606,22 @@ CORRECT:
 **Decision Tree:**
 
 
-```mermaid
-flowchart TD
-    R["Is the problem about TRANSFORMATION between formats?"]
-    R --> N1["Yes, NUMBER ↔ STRING?"]
-    N1 --> N2["String to integer? (watch overflow)"]
-    N1 --> N3["Integer to roman? (use mapping table)"]
-    N1 --> N4["Integer to words? (special mapping)"]
-    R --> N5["Yes, DATA COMPRESSION?"]
-    N5 --> N6["Run-length encoding? (count consecutive)"]
-    N5 --> N7["Other encoding? (understand the scheme)"]
-    R --> N8["Yes, FORMATTING/BUILDING?"]
-    N8 --> N9["Zigzag or pattern layout? (derive index formula)"]
-    N8 --> N10["String building? (use builder, not concatenation)"]
-    R --> N11["Yes, ESCAPING/SPECIAL HANDLING?"]
-    N11 --> N12["JSON/XML escaping? (replace special chars)"]
-    N11 --> N13["URL encoding? (percent-encode)"]
-```
+### 📌 Is the problem about TRANSFORMATION between formats?
+
+- **Yes, NUMBER ↔ STRING?**
+  - String to integer? (watch overflow)
+  - Integer to roman? (use mapping table)
+  - Integer to words? (special mapping)
+- **Yes, DATA COMPRESSION?**
+  - Run-length encoding? (count consecutive)
+  - Other encoding? (understand the scheme)
+- **Yes, FORMATTING/BUILDING?**
+  - Zigzag or pattern layout? (derive index formula)
+  - String building? (use builder, not concatenation)
+- **Yes, ESCAPING/SPECIAL HANDLING?**
+  - JSON/XML escaping? (replace special chars)
+  - URL encoding? (percent-encode)
+
 
 
 - **✅ Use when:** Converting between representations, building strings, encoding/decoding
@@ -814,6 +812,4 @@ When you encounter a transformation problem, pause. Ask:
 These questions will lead you to elegant, efficient solutions.
 
 ---
----
-
 > 🧭 **Navigation:** [← Previous Day](Week_06_Day_03_Parentheses_Bracket_Matching_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_06_Day_05_Advanced_String_Matching_Rabin_Karp_Rolling_Hash_Instructional.md)

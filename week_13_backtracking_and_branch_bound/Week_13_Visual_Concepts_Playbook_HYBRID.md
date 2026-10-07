@@ -64,34 +64,33 @@
 ### Topics Hierarchy
 
 
-```mermaid
-flowchart TD
-    R["WEEK 13 BACKTRACKING & BRANCH & BOUND"]
-    R --> N1["DAY 1: Backtracking Fundamentals"]
-    N1 --> N2["Backtracking concept & template"]
-    N1 --> N3["State space tree structure"]
-    N1 --> N4["DFS exploration with pruning"]
-    R --> N5["DAY 2: Backtracking Problems"]
-    N5 --> N6["N-Queens (placement with constraints)"]
-    N5 --> N7["Sudoku solver (grid constraints)"]
-    N5 --> N8["Permutations & combinations generation"]
-    N5 --> N9["Word search (path finding)"]
-    N5 --> N10["Maze solving (navigation)"]
-    R --> N11["DAY 3: Branch & Bound"]
-    N11 --> N12["Branch & bound concept"]
-    N11 --> N13["Best-first search strategy"]
-    N11 --> N14["TSP with branch & bound"]
-    N11 --> N15["Knapsack with branch & bound"]
-    R --> N16["DAY 4: Amortized Analysis"]
-    N16 --> N17["Amortized complexity concept"]
-    N16 --> N18["Aggregate analysis method"]
-    N16 --> N19["Accounting method"]
-    N16 --> N20["Potential method"]
-    N16 --> N21["Dynamic array analysis"]
-    N16 --> N22["Self-adjusting structures"]
-    R --> N23["DAY 5 (OPTIONAL): Mixed Paradigm Problems"]
-    N23 --> N24["Combined techniques for complex problems"]
-```
+### 📌 WEEK 13 BACKTRACKING & BRANCH & BOUND
+
+- **DAY 1: Backtracking Fundamentals**
+  - Backtracking concept & template
+  - State space tree structure
+  - DFS exploration with pruning
+- **DAY 2: Backtracking Problems**
+  - N-Queens (placement with constraints)
+  - Sudoku solver (grid constraints)
+  - Permutations & combinations generation
+  - Word search (path finding)
+  - Maze solving (navigation)
+- **DAY 3: Branch & Bound**
+  - Branch & bound concept
+  - Best-first search strategy
+  - TSP with branch & bound
+  - Knapsack with branch & bound
+- **DAY 4: Amortized Analysis**
+  - Amortized complexity concept
+  - Aggregate analysis method
+  - Accounting method
+  - Potential method
+  - Dynamic array analysis
+  - Self-adjusting structures
+- **DAY 5 (OPTIONAL): Mixed Paradigm Problems**
+  - Combined techniques for complex problems
+
 
 
 ---
@@ -101,36 +100,35 @@ flowchart TD
 ### Pattern Map: Backtracking Concept Family
 
 
-```mermaid
-flowchart TD
-    R["BACKTRACKING METHODOLOGY"]
-    R --> N1["Core Concept"]
-    N1 --> N2["Build solution incrementally"]
-    N1 --> N3["Try all valid choices at each step"]
-    N1 --> N4["Backtrack when no progress possible"]
-    N1 --> N5["Equivalent to DFS on solution tree"]
-    R --> N6["Backtracking Template"]
-    N6 --> N7["State: current partial solution"]
-    N6 --> N8["Choices: next decisions to try"]
-    N6 --> N9["Constraints: which choices valid"]
-    N6 --> N10["DFS: recursively explore"]
-    N6 --> N11["Prune: skip invalid branches"]
-    R --> N12["State Space Tree"]
-    N12 --> N13["Root: empty solution"]
-    N12 --> N14["Internal nodes: partial solutions"]
-    N12 --> N15["Leaves: complete solutions or pruned"]
-    N12 --> N16["Edges: choices/decisions"]
-    R --> N17["Pruning Strategies"]
-    N17 --> N18["Constraint checking (validity)"]
-    N17 --> N19["Optimality bounds (branch & bound)"]
-    N17 --> N20["Duplicate detection (memoization)"]
-    N17 --> N21["Early termination (first solution)"]
-    R --> N22["Implementation Patterns"]
-    N22 --> N23["Recursive DFS"]
-    N22 --> N24["State modification + restore"]
-    N22 --> N25["Choice iteration"]
-    N22 --> N26["Base case detection"]
-```
+### 📌 BACKTRACKING METHODOLOGY
+
+- **Core Concept**
+  - Build solution incrementally
+  - Try all valid choices at each step
+  - Backtrack when no progress possible
+  - Equivalent to DFS on solution tree
+- **Backtracking Template**
+  - State: current partial solution
+  - Choices: next decisions to try
+  - Constraints: which choices valid
+  - DFS: recursively explore
+  - Prune: skip invalid branches
+- **State Space Tree**
+  - Root: empty solution
+  - Internal nodes: partial solutions
+  - Leaves: complete solutions or pruned
+  - Edges: choices/decisions
+- **Pruning Strategies**
+  - Constraint checking (validity)
+  - Optimality bounds (branch & bound)
+  - Duplicate detection (memoization)
+  - Early termination (first solution)
+- **Implementation Patterns**
+  - Recursive DFS
+  - State modification + restore
+  - Choice iteration
+  - Base case detection
+
 
 
 ---
@@ -386,28 +384,27 @@ Time: O(1) per check vs O(n) scanning
 ### Pattern Map: Classic Backtracking Problems
 
 
-```mermaid
-flowchart TD
-    R["BACKTRACKING PROBLEM FAMILIES"]
-    R --> N1["Constraint Satisfaction"]
-    N1 --> N2["N-Queens (placement constraints)"]
-    N1 --> N3["Sudoku (grid constraints)"]
-    N1 --> N4["Graph coloring (adjacency constraints)"]
-    R --> N5["Combinatorial Generation"]
-    N5 --> N6["Permutations (all orderings)"]
-    N5 --> N7["Combinations (all subsets)"]
-    N5 --> N8["Subsets (all subsets including empty)"]
-    N5 --> N9["Partitions (split into groups)"]
-    R --> N10["Path Finding"]
-    N10 --> N11["Word search (find word in grid)"]
-    N10 --> N12["Maze solving (find exit path)"]
-    N10 --> N13["Hamiltonian path (visit all nodes once)"]
-    N10 --> N14["Knight's tour (visit all board squares)"]
-    R --> N15["Optimization Problems"]
-    N15 --> N16["Subset sum (find subset with target sum)"]
-    N15 --> N17["Knapsack (maximize value under weight)"]
-    N15 --> N18["Traveling salesman (shortest tour)"]
-```
+### 📌 BACKTRACKING PROBLEM FAMILIES
+
+- **Constraint Satisfaction**
+  - N-Queens (placement constraints)
+  - Sudoku (grid constraints)
+  - Graph coloring (adjacency constraints)
+- **Combinatorial Generation**
+  - Permutations (all orderings)
+  - Combinations (all subsets)
+  - Subsets (all subsets including empty)
+  - Partitions (split into groups)
+- **Path Finding**
+  - Word search (find word in grid)
+  - Maze solving (find exit path)
+  - Hamiltonian path (visit all nodes once)
+  - Knight's tour (visit all board squares)
+- **Optimization Problems**
+  - Subset sum (find subset with target sum)
+  - Knapsack (maximize value under weight)
+  - Traveling salesman (shortest tour)
+
 
 
 ---
@@ -425,33 +422,18 @@ N-QUEENS PROBLEM (n=4)
 GOAL: Place 4 queens on 4×4 board, no two queens attack
       (No two queens share row, column, or diagonal)
 
-STATE SPACE TREE (Column-by-Column Placement):
-===============================================
+### 📌 👑 Start: Empty Board
 
-Level 0 (Col 0):
-                        []
-                         |
-        +----------------+----------------+
-     Q@(0,0)          Q@(1,0)          Q@(2,0)          Q@(3,0)
+- **Col 0: Q@(0,0)**
+  - Col 1: Q@(1,1)<br/>❌ Diagonal Conflict
+  - **Col 1: Q@(2,1)<br/>✅ Safe Choice**
+    - Col 2: Q@(1,2)<br/>❌ Row Conflict
+    - Col 2: Q@(3,2)<br/>✅ Safe Choice
+  - Col 1: Q@(3,1)<br/>❌ Diagonal Conflict
+- Col 0: Q@(1,0)
+- Col 0: Q@(2,0)
+- Col 0: Q@(3,0)
 
-Level 1 (Col 1):
-     Q@(0,0)
-        |
-    +---|-----------+
-Q@(1,1) Q@(2,1)  Q@(3,1)
-   ✗      |         ✗
-       Valid    (Attacks diagonally)
-       
-     Q@(0,0), Q@(2,1)
-            |
-    +-------+-------+
-Q@(1,2) Q@(3,2)   (0,2),(1,2) pruned
-   ✗       |
-        Valid
-
-     Q@(0,0), Q@(2,1), Q@(3,2) ← Dead end (no valid placement in col 3)
-            |
-         Backtrack ↩
 
 [After exhaustive search...]
 
@@ -554,28 +536,59 @@ function solve_nqueens(col, board, solutions):
 
 #### Visual 1: Permutations Generation
 
+```mermaid
+graph TD
+    classDef rootNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef l1Node fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
+    classDef l2Node fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
+    classDef leafNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+
+    Root["👑 Root: []"]:::rootNode
+
+    P1["[1]"]:::l1Node
+    P2["[2]"]:::l1Node
+    P3["[3]"]:::l1Node
+
+    P1_2["[1, 2]"]:::l2Node
+    P1_3["[1, 3]"]:::l2Node
+
+    P2_1["[2, 1]"]:::l2Node
+    P2_3["[2, 3]"]:::l2Node
+
+    P3_1["[3, 1]"]:::l2Node
+    P3_2["[3, 2]"]:::l2Node
+
+    L1["[1, 2, 3] ✅"]:::leafNode
+    L2["[1, 3, 2] ✅"]:::leafNode
+    L3["[2, 1, 3] ✅"]:::leafNode
+    L4["[2, 3, 1] ✅"]:::leafNode
+    L5["[3, 1, 2] ✅"]:::leafNode
+    L6["[3, 2, 1] ✅"]:::leafNode
+
+    Root -->|"Pick 1"| P1
+    Root -->|"Pick 2"| P2
+    Root -->|"Pick 3"| P3
+
+    P1 -->|"+2"| P1_2
+    P1 -->|"+3"| P1_3
+
+    P2 -->|"+1"| P2_1
+    P2 -->|"+3"| P2_3
+
+    P3 -->|"+1"| P3_1
+    P3 -->|"+2"| P3_2
+
+    P1_2 -->|"+3"| L1
+    P1_3 -->|"+2"| L2
+    P2_1 -->|"+3"| L3
+    P2_3 -->|"+1"| L4
+    P3_1 -->|"+2"| L5
+    P3_2 -->|"+1"| L6
 ```
-PERMUTATIONS OF [1,2,3]
-========================
 
-GOAL: Generate all 3! = 6 orderings
+**Goal:** Generate all `3! = 6` unique orderings.
 
-STATE SPACE TREE:
------------------
-                          []
-                          |
-        +-----------------+-----------------+
-      Choose 1          Choose 2          Choose 3
-      partial=[1]       partial=[2]       partial=[3]
-        |                 |                 |
-    +---|---+         +---|---+         +---|---+
-  +2      +3         +1      +3         +1      +2
-[1,2]   [1,3]       [2,1]   [2,3]       [3,1]   [3,2]
-  |       |           |       |           |       |
- +3      +2          +3      +1          +2      +1
-[1,2,3] [1,3,2]     [2,1,3] [2,3,1]     [3,1,2] [3,2,1]
-  ✓       ✓           ✓       ✓           ✓       ✓
-
+```text
 ALGORITHM:
 ----------
 function permute(nums):
@@ -644,35 +657,45 @@ SPACE COMPLEXITY:
 
 #### Visual 2: Combinations Generation
 
+**Goal:** Choose `k = 2` elements from `[1, 2, 3, 4]` (order does not matter).  
+**Result:** `[1,2], [1,3], [1,4], [2,3], [2,4], [3,4]`
+
+```mermaid
+graph TD
+    classDef rootNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef l1Node fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
+    classDef leafNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+
+    Root["👑 Root: []"]:::rootNode
+
+    C1["[1]"]:::l1Node
+    C2["[2]"]:::l1Node
+    C3["[3]"]:::l1Node
+
+    L1_2["[1, 2] ✅"]:::leafNode
+    L1_3["[1, 3] ✅"]:::leafNode
+    L1_4["[1, 4] ✅"]:::leafNode
+
+    L2_3["[2, 3] ✅"]:::leafNode
+    L2_4["[2, 4] ✅"]:::leafNode
+
+    L3_4["[3, 4] ✅"]:::leafNode
+
+    Root -->|"Start=1: Pick 1"| C1
+    Root -->|"Start=2: Pick 2"| C2
+    Root -->|"Start=3: Pick 3"| C3
+
+    C1 -->|"+2"| L1_2
+    C1 -->|"+3"| L1_3
+    C1 -->|"+4"| L1_4
+
+    C2 -->|"+3"| L2_3
+    C2 -->|"+4"| L2_4
+
+    C3 -->|"+4"| L3_4
 ```
-COMBINATIONS (k=2) OF [1,2,3,4]
-================================
 
-GOAL: Choose 2 elements (order doesn't matter)
-      Result: [1,2], [1,3], [1,4], [2,3], [2,4], [3,4]
-
-KEY DIFFERENCE FROM PERMUTATIONS:
-----------------------------------
-Permutations: [1,2] and [2,1] are different
-Combinations: [1,2] and [2,1] are same (only keep [1,2])
-
-STRATEGY: Only choose elements AFTER current element
-          (Ensures [1,2] generated, but [2,1] never attempted)
-
-STATE SPACE TREE:
------------------
-                        []
-                        |
-        +---------------+---------------+
-      Start=0         Start=1         Start=2
-      Choose 1        Choose 2        Choose 3
-      [1]             [2]             [3]
-        |               |               |
-    +---+---+       +---|---+         |
-   +2  +3  +4      +3     +4         +4
-  [1,2][1,3][1,4] [2,3]  [2,4]      [3,4]
-    ✓    ✓    ✓     ✓      ✓          ✓
-
+```text
 ALGORITHM:
 ----------
 function combine(n, k):
@@ -1163,35 +1186,34 @@ All unique permutations preserved
 ### Pattern Map: Branch & Bound Methodology
 
 
-```mermaid
-flowchart TD
-    R["BRANCH & BOUND PARADIGM"]
-    R --> N1["Core Concepts"]
-    N1 --> N2["Systematic search for optimization"]
-    N1 --> N3["Branch: explore sub-problem spaces"]
-    N1 --> N4["Bound: compute upper/lower bounds"]
-    N1 --> N5["Prune: skip branches that can't improve best"]
-    R --> N6["Best-First Search Strategy"]
-    N6 --> N7["Priority queue ordered by bound"]
-    N6 --> N8["Process most promising nodes first"]
-    N6 --> N9["Often finds good solution early"]
-    N6 --> N10["Convergence to optimal"]
-    R --> N11["Bounding Functions"]
-    N11 --> N12["Minimization: lower bound (can't do better than this)"]
-    N11 --> N13["Maximization: upper bound (can't exceed this)"]
-    N11 --> N14["Relaxation: simplified problem solution"]
-    N11 --> N15["Greedy estimate: optimistic heuristic"]
-    R --> N16["Pruning Strategies"]
-    N16 --> N17["Fathoming: bound worse than current best"]
-    N16 --> N18["Dominance: one branch clearly superior"]
-    N16 --> N19["Infeasibility: violates constraints"]
-    N16 --> N20["Early termination: optimal proven"]
-    R --> N21["Classic Applications"]
-    N21 --> N22["Traveling Salesman Problem (TSP)"]
-    N21 --> N23["Knapsack (0/1)"]
-    N21 --> N24["Job scheduling"]
-    N21 --> N25["Integer programming"]
-```
+### 📌 BRANCH & BOUND PARADIGM
+
+- **Core Concepts**
+  - Systematic search for optimization
+  - Branch: explore sub-problem spaces
+  - Bound: compute upper/lower bounds
+  - Prune: skip branches that can't improve best
+- **Best-First Search Strategy**
+  - Priority queue ordered by bound
+  - Process most promising nodes first
+  - Often finds good solution early
+  - Convergence to optimal
+- **Bounding Functions**
+  - Minimization: lower bound (can't do better than this)
+  - Maximization: upper bound (can't exceed this)
+  - Relaxation: simplified problem solution
+  - Greedy estimate: optimistic heuristic
+- **Pruning Strategies**
+  - Fathoming: bound worse than current best
+  - Dominance: one branch clearly superior
+  - Infeasibility: violates constraints
+  - Early termination: optimal proven
+- **Classic Applications**
+  - Traveling Salesman Problem (TSP)
+  - Knapsack (0/1)
+  - Job scheduling
+  - Integer programming
+
 
 
 ---
@@ -1243,102 +1265,76 @@ flowchart TD
 
 #### Visual 1: TSP Lower Bound Calculation
 
+**Problem:** Visit all cities exactly once, return to starting city `A`, and minimize total path distance.
+
+#### Distance Cost Matrix
+
+| City | A | B | C | D |
+| :--- | :--- | :--- | :--- | :--- |
+| **A** | `0` | `10` | `15` | `20` |
+| **B** | `10` | `0` | `35` | `25` |
+| **C** | `15` | `35` | `0` | `30` |
+| **D** | `20` | `25` | `30` | `0` |
+
+#### Minimum Spanning Tree (MST) Lower Bound Calculation
+
+For any valid Hamiltonian tour, the sum of remaining edges is bounded below by `MST Weight + Min Return Edge`.
+
+```mermaid
+graph TD
+    classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+
+    A["City A"]:::nodeStyle
+    B["City B"]:::nodeStyle
+    C["City C"]:::nodeStyle
+    D["City D"]:::nodeStyle
+
+    A ---|"10 (MST)"| B
+    A ---|"15 (MST)"| C
+    B ---|"25 (MST)"| D
+    C -.-|"30 (Bypassed)"| D
 ```
-TRAVELING SALESMAN PROBLEM (TSP)
-=================================
 
-PROBLEM: Visit all cities exactly once, return to start, minimize distance
+- **MST Edges Selected:** `(A, B) = 10`, `(A, C) = 15`, `(B, D) = 25` -> **Total MST Weight = 50**
+- **Lower Bound = 50** (no tour can possibly beat 50).
 
-CITIES (4 cities: A, B, C, D):
--------------------------------
+#### Branch & Bound State Space Search Tree
 
-Distance Matrix:
-     A   B   C   D
-A [  0  10  15  20 ]
-B [ 10   0  35  25 ]
-C [ 15  35   0  30 ]
-D [ 20  25  30   0 ]
+```mermaid
+graph TD
+    classDef rootNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef activeNode fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
+    classDef prunedNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
+    classDef bestNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:3px,color:#1b5e20
 
-LOWER BOUND (using Minimum Spanning Tree):
-===========================================
+    Root["Start at City A<br/>Lower Bound = 50"]:::rootNode
 
-For any tour, sum of edges ≥ MST weight + min edge back to start
+    AB["Path: [A, B]<br/>Bound = 60"]:::activeNode
+    AC["Path: [A, C]<br/>Bound = 65"]:::activeNode
+    AD["Path: [A, D]<br/>Bound = 70"]:::activeNode
 
-MST of 4 cities:
-----------------
-A --10-- B
-|        |
-15      25
-|        |
-C --30-- D
+    Root --> AB
+    Root --> AC
+    Root --> AD
 
-MST weight = 10 + 15 + 25 = 50
+    ABC["Path: [A, B, C]<br/>Bound = 95<br/>❌ Pruned (Bound > Best)"]:::prunedNode
+    ABD["Path: [A, B, D]<br/>Bound = 85"]:::activeNode
 
-Minimum edge from any leaf back to start:
-  From C to A: 15 (already in MST)
-  From D to A: 20
+    AB --> ABC
+    AB --> ABD
 
-Lower bound = 50 + 0 = 50
-(Any tour ≥ 50)
+    ABDC["Path: [A, B, D, C, A]<br/>👑 Complete Tour: Cost = 80<br/>✅ Sets Global Best = 80"]:::bestNode
 
-BRANCH & BOUND SEARCH:
-======================
-
-                    [Start A]
-                    bound=50
-                    path=[A]
-                       |
-        +--------------+--------------+
-     [A→B]          [A→C]          [A→D]
-    bound=60       bound=65       bound=70
-    path=[A,B]     path=[A,C]     path=[A,D]
-        |
-    Process A→B first (best bound)
-        |
-    +---|--------+
- [A→B→C]      [A→B→D]
-bound=95      bound=85
-    |            |
-  Prune        Continue
-  (>best)         |
-              [A→B→D→C]
-              cost=10+25+30+15=80
-              ✓ Complete tour
-              Update best=80
-                  |
-    Backtrack and check other branches:
-    
-    [A→C]: bound=65 < 80 → Explore
-      [A→C→B]: bound=90 > 80 → Prune ✂️
-      [A→C→D]: bound=75 < 80 → Explore
-        [A→C→D→B]: cost=15+30+25+10=80
-        Equal to best (might be optimal)
-    
-    [A→D]: bound=70 < 80 → Explore
-      [A→D→B]: bound=75 < 80 → Explore
-        [A→D→B→C]: cost=20+25+35+15=95 > 80 → Prune
-      [A→D→C]: bound=80 = best → Explore
-        [A→D→C→B]: cost=20+30+35+10=95 > 80 → Prune
-
-OPTIMAL SOLUTION:
------------------
-Tour: A→B→D→C→A or A→C→D→B→A
-Cost: 80
-Nodes explored: ~8-10 (depends on order)
-Nodes pruned: ~6 (bound worse than 80)
-
-WITHOUT BRANCH & BOUND:
------------------------
-Total permutations: (n-1)!/2 = 3!/2 = 3
-Must check: A→B→C→D, A→B→D→C, A→C→B→D, etc.
-All 12 tours checked
-
-WITH BRANCH & BOUND:
---------------------
-Explored: ~8 nodes
-Pruned: ~6 nodes
-Speedup: Moderate for small n, exponential for large n
+    ABD --> ABDC
 ```
+
+**Optimal Tour Found:** `A -> B -> D -> C -> A` (or reverse) with **Cost = 80**.  
+Branches with lower bounds exceeding 80 (such as `[A, B, C]` with bound 95) are pruned immediately without visiting their child subtrees.
+
+| Approach | Nodes Explored | Nodes Pruned | Efficiency Gain |
+| :--- | :--- | :--- | :--- |
+| **Brute-Force DFS** | 12 complete tours evaluated | 0 | Exhaustive baseline |
+| **Branch & Bound** | ~8 nodes evaluated | ~6 subtrees pruned | Cuts search space significantly early |
 
 **Explanation:**
 - **Lower Bound**: MST provides optimistic estimate (tour can't be shorter)
@@ -1354,105 +1350,66 @@ Speedup: Moderate for small n, exponential for large n
 
 #### Visual 1: Knapsack Upper Bound (Fractional Relaxation)
 
+**Problem:** Knapsack Capacity `W = 15`. Maximize total value without exceeding capacity.
+
+#### Available Items (Sorted by Value Density)
+
+| Item | Value | Weight | Density (`Value / Weight`) | Greedy Priority |
+| :--- | :--- | :--- | :--- | :--- |
+| **Item 1** | `10` | `2` | **5.0** | 1st priority |
+| **Item 2** | `10` | `4` | **2.5** | 2nd priority |
+| **Item 3** | `12` | `6` | **2.0** | 3rd priority |
+| **Item 4** | `18` | `9` | **2.0** | 4th priority |
+
+#### Optimistic Upper Bound (Fractional Knapsack Relaxation)
+
+- Take 100% of Item 1: `v = 10, w = 2` (Remaining capacity = 13)
+- Take 100% of Item 2: `v = 10, w = 4` (Remaining capacity = 9)
+- Take 100% of Item 3: `v = 12, w = 6` (Remaining capacity = 3)
+- Take `3/9` fraction of Item 4: `v = 6, w = 3` (Remaining capacity = 0)
+- **Upper Bound = 10 + 10 + 12 + 6 = 38** (No integer 0/1 assignment can exceed 38).
+
+#### Branch & Bound State Space Tree
+
+```mermaid
+graph TD
+    classDef rootNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef branch fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
+    classDef bestNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:3px,color:#1b5e20
+    classDef prunedNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
+
+    Root["👑 Root: []<br/>Bound = 38, v=0, w=0"]:::rootNode
+
+    Inc1["Include Item 1<br/>v=10, w=2, Bound=38"]:::branch
+    Exc1["Exclude Item 1<br/>v=0, w=0, Bound=28<br/>✂️ Pruned later"]:::prunedNode
+
+    Root --> Inc1
+    Root --> Exc1
+
+    Inc2["Include Item 2<br/>v=20, w=6, Bound=38"]:::branch
+    Exc2["Exclude Item 2<br/>v=10, w=2, Bound=34"]:::branch
+
+    Inc1 --> Inc2
+    Inc1 --> Exc2
+
+    Inc3["Include Item 3<br/>v=32, w=12, Bound=38"]:::branch
+    Exc3["Exclude Item 3<br/>v=20, w=6, Bound=38"]:::branch
+
+    Inc2 --> Inc3
+    Inc2 --> Exc3
+
+    Opt["Include Item 4<br/>v=38, w=15<br/>👑 Optimal Solution Found!"]:::bestNode
+    Exc3 --> Opt
 ```
-0/1 KNAPSACK WITH BRANCH & BOUND
-=================================
 
-PROBLEM:
---------
-Capacity W = 15
-Items: [(value, weight), ...]
-  Item 1: (10, 2)  value/weight = 5.0
-  Item 2: (10, 4)  value/weight = 2.5
-  Item 3: (12, 6)  value/weight = 2.0
-  Item 4: (18, 9)  value/weight = 2.0
+#### Final Solution Summary
 
-Goal: Maximize value, capacity ≤ 15
+| Selected Items | Total Value | Total Weight | Capacity Limit | Result Status |
+| :--- | :--- | :--- | :--- | :--- |
+| **Items 1, 2, and 4** | **38** | **15** | 15 | **Guaranteed Optimal Solution** |
 
-UPPER BOUND (Fractional Knapsack):
-===================================
-
-Sort by value/weight ratio (descending):
-  Item 1: 5.0
-  Item 2: 2.5
-  Item 3: 2.0
-  Item 4: 2.0
-
-Greedy fractional solution:
-  Take Item 1: value=10, weight=2,  remaining=13
-  Take Item 2: value=10, weight=4,  remaining=9
-  Take Item 3: value=12, weight=6,  remaining=3
-  Take 3/9 of Item 4: value=6, weight=3, remaining=0
-
-Total fractional value: 10+10+12+6=38
-
-Upper bound for any 0/1 solution: 38
-
-BRANCH & BOUND TREE:
-====================
-
-                    []
-                    bound=38
-                    value=0, weight=0
-                       |
-        +--------------+--------------+
-     [Include 1]                 [Exclude 1]
-     value=10,w=2                value=0,w=0
-     bound=38                    bound=28
-        |                            |
-    Process left first (better bound)
-        |
-    +---|--------+
-[Include 2]   [Exclude 2]
-v=20,w=6      v=10,w=2
-bound=38      bound=34
-    |            |
- Continue    Continue
-    |
-[Include 3]
-v=32,w=12
-bound=38
-    |
-[Include 4]? → w=21 > 15 → Can't include
-[Exclude 4]
-v=32,w=12 ✓ Complete solution
-Update best=32
-
-Backtrack and check other branches:
-------------------------------------
-
-[Exclude 3 from (Include 1, Include 2)]:
-  v=20,w=6, bound=35
-  [Include 4]: v=38,w=15 ✓ Complete
-  Update best=38 ← NEW BEST
-
-Continue checking:
-  [Exclude 1] branch: bound=28 < 38 → Still explore
-    [Include 2]: v=10,w=4, bound=30 < 38
-      [Include 3]: v=22,w=10, bound=30 < 38
-        [Include 4]? w=19 > 15 → No
-        [Exclude 4]: v=22,w=10 < 38 → Not better
-
-All nodes with bound < 38 explored or pruned
-
-OPTIMAL SOLUTION:
------------------
-Items: 1, 2, 4
-Value: 10+10+18=38
-Weight: 2+4+9=15 (exactly capacity)
-
-PRUNING ANALYSIS:
------------------
-Total possible subsets: 2^4 = 16
-Nodes explored: ~10-12
-Nodes pruned: ~4-6 (bound ≤ current best)
-
-KEY INSIGHT:
-------------
-Fractional knapsack upper bound is optimistic
-If 0/1 solution achieves it → Optimal
-Otherwise, provides tight bound for pruning
-```
+- **Nodes Explored:** ~10 nodes  
+- **Subtrees Pruned:** ~6 branches (any partial assignment with upper bound `< 38` was safely discarded).
 
 **Explanation:**
 - **Upper Bound**: Fractional knapsack (allow partial items) gives optimistic estimate
@@ -1606,40 +1563,39 @@ Guarantees optimal when search completes
 ### Pattern Map: Amortized Analysis Techniques
 
 
-```mermaid
-flowchart TD
-    R["AMORTIZED ANALYSIS METHODOLOGY"]
-    R --> N1["Amortized Complexity Concept"]
-    N1 --> N2["Average cost over sequence of operations"]
-    N1 --> N3["Some operations expensive, many cheap"]
-    N1 --> N4["Amortized = total cost / number of operations"]
-    N1 --> N5["Smooths out occasional expensive ops"]
-    R --> N6["Analysis Methods"]
-    N6 --> N7["Aggregate Analysis"]
-    N7 --> N8["Calculate total cost for n operations"]
-    N7 --> N9["Divide by n for amortized cost"]
-    N7 --> N10["Simplest method, often sufficient"]
-    N6 --> N11["Accounting Method"]
-    N11 --> N12["Assign 'charged' cost to each operation"]
-    N11 --> N13["Build 'credit' for future expensive ops"]
-    N11 --> N14["Show credit never goes negative"]
-    N11 --> N15["Intuitive budgeting metaphor"]
-    N6 --> N16["Potential Method"]
-    N16 --> N17["Define potential function Φ on data structure"]
-    N16 --> N18["Amortized cost = actual + ΔΦ"]
-    N16 --> N19["Sum amortized costs bounds total actual"]
-    N16 --> N20["Most powerful, handles complex cases"]
-    R --> N21["Classic Examples"]
-    N21 --> N22["Dynamic Arrays (doubling strategy)"]
-    N21 --> N23["Stack operations (multipop)"]
-    N21 --> N24["Binary counter increment"]
-    N21 --> N25["Splay trees (self-adjusting)"]
-    R --> N26["Applications"]
-    N26 --> N27["Data structure design"]
-    N26 --> N28["Algorithm efficiency analysis"]
-    N26 --> N29["Competitive programming"]
-    N26 --> N30["Performance prediction"]
-```
+### 📌 AMORTIZED ANALYSIS METHODOLOGY
+
+- **Amortized Complexity Concept**
+  - Average cost over sequence of operations
+  - Some operations expensive, many cheap
+  - Amortized = total cost / number of operations
+  - Smooths out occasional expensive ops
+- **Analysis Methods**
+  - **Aggregate Analysis**
+    - Calculate total cost for n operations
+    - Divide by n for amortized cost
+    - Simplest method, often sufficient
+  - **Accounting Method**
+    - Assign 'charged' cost to each operation
+    - Build 'credit' for future expensive ops
+    - Show credit never goes negative
+    - Intuitive budgeting metaphor
+  - **Potential Method**
+    - Define potential function Φ on data structure
+    - Amortized cost = actual + ΔΦ
+    - Sum amortized costs bounds total actual
+    - Most powerful, handles complex cases
+- **Classic Examples**
+  - Dynamic Arrays (doubling strategy)
+  - Stack operations (multipop)
+  - Binary counter increment
+  - Splay trees (self-adjusting)
+- **Applications**
+  - Data structure design
+  - Algorithm efficiency analysis
+  - Competitive programming
+  - Performance prediction
+
 
 
 ---

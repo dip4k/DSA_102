@@ -86,7 +86,7 @@
 | **S4** | 18 | [Longest Common Subsequence](https://leetcode.com/problems/longest-common-subsequence/) | 1143 | 🟡 Medium | Ph8 | 2D prefix match grid |
 | **S4** | 19 | [Coin Change](https://leetcode.com/problems/coin-change/) | 322 | 🟡 Medium | Ph8 | Unbounded knapsack; iterate forwards |
 | **S4** | 20 | [Partition Equal Subset Sum](https://leetcode.com/problems/partition-equal-subset-sum/) | 416 | 🟡 Medium | Ph8 | 0-1 knapsack; iterate backwards |
-| **S4** | 21 | [Longest Increasing Subsequence](https://leetcode.com/problems/longest-increasing-subsequence/) | 300 | 🟡 Medium | Ph8 | $O(N^2)$ DP → $O(N \log N)$ patience sort |
+| **S4** | 21 | [Longest Increasing Subsequence](https://leetcode.com/problems/longest-increasing-subsequence/) | 300 | 🟡 Medium | Ph8 | `O(N^2)` DP → `O(N log N)` patience sort |
 | **S4** | 22 | [Word Break](https://leetcode.com/problems/word-break/) | 139 | 🟡 Medium | Ph8 | `dp[i] = any dp[j] && dict.Contains(s[j..i])` |
 | **S4** | 23 | [Burst Balloons](https://leetcode.com/problems/burst-balloons/) | 312 | 🔴 Hard | Ph8 | Interval DP: choose *last* balloon popped in range |
 | **S5** | 24 | [Median of Two Sorted Arrays](https://leetcode.com/problems/median-of-two-sorted-arrays/) | 4 | 🔴 Hard | Ph0 | Partition cut: `leftA + leftB = rightA + rightB` — Hard Anchor |
@@ -150,7 +150,7 @@
 |:---|:---|
 | **Hard Anchor** | [Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/) 🔴 (LC 84) |
 | **Core Invariant** | Maintain a strictly increasing stack of bar indices. When `heights[i] < heights[stack.Peek()]`, pop and compute area: `width = i - stack.Peek() - 1` (or `i` if stack empty). |
-| **Trigger Cue** | *Nearest greater/smaller element · Window min/max in $O(N)$ · "How far can I extend?"* |
+| **Trigger Cue** | *Nearest greater/smaller element · Window min/max in `O(N)` · "How far can I extend?"* |
 | **Medium Derivatives** | [Sliding Window Maximum](https://leetcode.com/problems/sliding-window-maximum/) · [Daily Temperatures](https://leetcode.com/problems/daily-temperatures/) · [Remove K Digits](https://leetcode.com/problems/remove-k-digits/) · [Sum of Subarray Minimums](https://leetcode.com/problems/sum-of-subarray-minimums/) |
 | **Easy Warmup** | [Next Greater Element I](https://leetcode.com/problems/next-greater-element-i/) |
 | **What Clicking This Unlocks** | You understand why the stack must be monotonic — breaking monotonicity means the popped element found its boundary. Deque variant for window min/max follows directly. |
@@ -179,7 +179,7 @@
 | **Trigger Cue** | *"Minimize the maximum" or "maximize the minimum" over a continuous range with a monotonic feasibility check* |
 | **Medium Derivatives** | [Koko Eating Bananas](https://leetcode.com/problems/koko-eating-bananas/) · [Capacity to Ship Packages](https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/) · [Magnetic Force Between Two Balls](https://leetcode.com/problems/magnetic-force-between-two-balls/) |
 | **Hard Derivatives** | [Split Array Largest Sum](https://leetcode.com/problems/split-array-largest-sum/) · [Minimum Number of Days to Make Bouquets](https://leetcode.com/problems/minimum-number-of-days-to-make-m-bouquets/) |
-| **What Clicking This Unlocks** | The mental model: "if I can check feasibility for a given answer in $O(N)$, I can find the optimal answer in $O(N \log N)$." Applies to dozens of optimization problems. |
+| **What Clicking This Unlocks** | The mental model: "if I can check feasibility for a given answer in `O(N)`, I can find the optimal answer in `O(N log N)`." Applies to dozens of optimization problems. |
 
 ---
 
@@ -201,7 +201,7 @@
 | | |
 |:---|:---|
 | **Hard Anchor** | [Word Ladder](https://leetcode.com/problems/word-ladder/) 🔴 (LC 127) |
-| **Core Invariant** | Build implicit graph via wildcard patterns (`h*t` buckets). BFS guarantees shortest transformation path. Bidirectional BFS reduces branch factor from $O(B^D)$ to $O(B^{D/2})$. |
+| **Core Invariant** | Build implicit graph via wildcard patterns (`h*t` buckets). BFS guarantees shortest transformation path. Bidirectional BFS reduces branch factor from `O(B^D)` to `O(B^{D/2})`. |
 | **Trigger Cue** | *Shortest path on unweighted graph · Connected components · Dependency ordering* |
 | **Medium Derivatives** | [Rotting Oranges](https://leetcode.com/problems/rotting-oranges/) · [Number of Islands](https://leetcode.com/problems/number-of-islands/) · [Course Schedule](https://leetcode.com/problems/course-schedule/) · [Pacific Atlantic Water Flow](https://leetcode.com/problems/pacific-atlantic-water-flow/) |
 | **Hard Derivatives** | [Alien Dictionary](https://leetcode.com/problems/alien-dictionary/) · [Critical Connections](https://leetcode.com/problems/critical-connections-in-a-network/) |
@@ -257,7 +257,7 @@
 | **Trigger Cue** | *Dynamic connectivity · Cycle detection in undirected graph · Minimum spanning tree* |
 | **Medium Derivatives** | [Redundant Connection](https://leetcode.com/problems/redundant-connection/) · [Number of Provinces](https://leetcode.com/problems/number-of-provinces/) · [Accounts Merge](https://leetcode.com/problems/accounts-merge/) · [Satisfiability of Equality Equations](https://leetcode.com/problems/satisfiability-of-equality-equations/) |
 | **Hard Derivatives** | [Remove Max Edges to Keep Graph Traversable](https://leetcode.com/problems/remove-max-number-of-edges-to-keep-graph-fully-traversable/) · [Making A Large Island](https://leetcode.com/problems/making-a-large-island/) |
-| **What Clicking This Unlocks** | Union-Find with path compression + union by rank achieves $O(\alpha(N))$ ≈ $O(1)$ amortized. Recognize: "dynamic connectivity" = Union-Find, not BFS/DFS. |
+| **What Clicking This Unlocks** | Union-Find with path compression + union by rank achieves `O(\alpha(N))` ≈ `O(1)` amortized. Recognize: "dynamic connectivity" = Union-Find, not BFS/DFS. |
 
 ---
 
@@ -270,7 +270,7 @@
 | **Trigger Cue** | *Range sum queries · Count subarrays with sum/product equal to K · Balance between left and right halves* |
 | **Medium Derivatives** | [Contiguous Array](https://leetcode.com/problems/contiguous-array/) · [Continuous Subarray Sum](https://leetcode.com/problems/continuous-subarray-sum/) · [Subarray Sums Divisible by K](https://leetcode.com/problems/subarray-sums-divisible-by-k/) · [Path Sum III](https://leetcode.com/problems/path-sum-iii/) |
 | **Easy Warmup** | [Running Sum of 1d Array](https://leetcode.com/problems/running-sum-of-1d-array/) · [Find Pivot Index](https://leetcode.com/problems/find-pivot-index/) |
-| **What Clicking This Unlocks** | The `prefix[j] - k` complement lookup turns $O(N^2)$ subarray search into $O(N)$ hash map scan. Applies to all "count subarrays satisfying sum condition" problems. |
+| **What Clicking This Unlocks** | The `prefix[j] - k` complement lookup turns `O(N^2)` subarray search into `O(N)` hash map scan. Applies to all "count subarrays satisfying sum condition" problems. |
 
 ---
 
@@ -291,9 +291,9 @@
 
 > [!TIP]
 > ### 💡 Phase 0 Milestone — Foundations & Algorithmic Invariants
-> - **Bit Manipulation Invariant:** `n & (n - 1)` clears the lowest set bit. Duplicates cancel via $x \oplus x = 0$.
+> - **Bit Manipulation Invariant:** `n & (n - 1)` clears the lowest set bit. Duplicates cancel via `x \oplus x = 0`.
 > - **Kadane's Principle:** Local optimum decision: extend previous contiguous subarray or discard negative history and start fresh.
-> - **Binary Search Template:** Invariant search space $[L, R]$ where condition partitions space into monotonically valid / invalid halves.
+> - **Binary Search Template:** Invariant search space `[L, R]` where condition partitions space into monotonically valid / invalid halves.
 
 ---
 
@@ -340,9 +340,9 @@
 
 > [!TIP]
 > ### 💡 Phase 1 Milestone — Frequency Maps & Index Marking
-> - **Complement Lookup:** Store history in `Dictionary<TKey, TValue>` to convert $O(N^2)$ pair searches into $O(1)$ amortized probes.
+> - **Complement Lookup:** Store history in `Dictionary<TKey, TValue>` to convert `O(N^2)` pair searches into `O(1)` amortized probes.
 > - **Canonical Representation:** When grouping equivalence classes (e.g. anagrams), derive a unique immutable key (sorted string or 26-element tuple).
-> - **In-Place Sign Marking:** When array values are bounded in $[1, N]$, use index `abs(val) - 1` signs to achieve $O(1)$ auxiliary space.
+> - **In-Place Sign Marking:** When array values are bounded in `[1, N]`, use index `abs(val) - 1` signs to achieve `O(1)` auxiliary space.
 
 ---
 
@@ -390,7 +390,7 @@
 > ### 💡 Phase 2 Milestone — Boundary Pruning & Window Invariants
 > - **Opposing Pointers Elimination:** On sorted arrays, greedily shift boundaries to discard entire rows/columns of candidate spaces.
 > - **Sliding Window Rule:** Expand `right` to include elements; while window invariant is violated, contract `left` to restore validity.
-> - **Exact $K$ Decomposition:** Problems requiring 'exactly $K$' are often solved via `AtMost(K) - AtMost(K - 1)`.
+> - **Exact `K` Decomposition:** Problems requiring 'exactly `K`' are often solved via `AtMost(K) - AtMost(K - 1)`.
 
 ---
 
@@ -441,7 +441,7 @@
 > ### 💡 Phase 3 Milestone — Pointer Manipulation & Monotonic Structures
 > - **Sentinel / Dummy Nodes:** Prepend a dummy head to eliminate edge cases around empty lists or head deletions/swaps.
 > - **Floyd's Tortoise and Hare:** Relative speed delta of 1 node/step guarantees cycle meeting without extra memory allocations.
-> - **Monotonic Stack Invariant:** Store indices with strictly increasing/decreasing values to resolve nearest greater/smaller elements in $O(N)$ amortized time.
+> - **Monotonic Stack Invariant:** Store indices with strictly increasing/decreasing values to resolve nearest greater/smaller elements in `O(N)` amortized time.
 
 ---
 
@@ -489,7 +489,7 @@
 > [!TIP]
 > ### 💡 Phase 4 Milestone — Subtree Information Flow & BST Ordering
 > - **Bottom-Up Tree DP:** Determine what metric each child returns to its parent (e.g., height, subtree sum, node presence).
-> - **BST Invariant:** Every node must satisfy global bounds $(\text{low} < \text{val} < \text{high})$. In-order traversal yields strictly ascending order.
+> - **BST Invariant:** Every node must satisfy global bounds `(\text{low} < \text{val} < \text{high})`. In-order traversal yields strictly ascending order.
 > - **Level-by-Level BFS:** Snapshot queue count `int count = q.Count` to separate the current depth layer from newly discovered children.
 
 ---
@@ -534,7 +534,7 @@
 > [!TIP]
 > ### 💡 Phase 5 Milestone — Graph Traversal & Cycle Detection
 > - **Grid Exploration:** Model 2D matrices as implicit graphs where each cell connects to 4 neighbors; sink visited land cells to prevent cycles.
-> - **Topological Sort (Kahn's Algorithm):** Queue nodes with indegree 0; if total processed nodes $< V$, the graph contains a directed cycle.
+> - **Topological Sort (Kahn's Algorithm):** Queue nodes with indegree 0; if total processed nodes `< V`, the graph contains a directed cycle.
 > - **Multi-Source BFS:** Enqueue all starting sources simultaneously to compute shortest distances in lockstep parallel waves.
 
 ---
@@ -612,7 +612,7 @@
 > ### 💡 Phase 7 Milestone — Local Choice Optimality & Invariants
 > - **Greedy Exchange Proof:** Verify that making the locally optimal choice never eliminates an optimal global solution.
 > - **Reachability Horizon:** In jump/boundary games, track maximum reachable index incrementally rather than testing individual paths.
-> - **Running Deficit Invariant:** In circular problems (e.g. Gas Station), if total sum $\ge 0$, reset starting candidate after the point of greatest deficit.
+> - **Running Deficit Invariant:** In circular problems (e.g. Gas Station), if total sum `>= 0`, reset starting candidate after the point of greatest deficit.
 
 ---
 
@@ -656,7 +656,7 @@
 > ### 💡 Phase 8 Milestone — State Definitions & Space Compression
 > - **State Representation:** Define precisely what `dp[i]` or `dp[i][j]` computes (e.g., longest, minimum cost, reachability).
 > - **0/1 vs Unbounded Knapsack:** 0/1 knapsack iterates capacities backward (each item used once); unbounded knapsack iterates forward.
-> - **Space Optimization:** If `dp[i]` depends only on `dp[i-1]` and `dp[i-2]`, reduce memory from $O(N)$ to $O(1)$ using rolling variables.
+> - **Space Optimization:** If `dp[i]` depends only on `dp[i-1]` and `dp[i-2]`, reduce memory from `O(N)` to `O(1)` using rolling variables.
 
 ---
 
@@ -730,9 +730,9 @@
 
 > [!TIP]
 > ### 💡 Phase 10 Milestone — Specialized Data Structures
-> - **Disjoint Set Union (DSU):** Union by rank + path compression achieves near-linear $O(\alpha(N))$ dynamic connectivity and cycle detection.
-> - **Trie Prefix Matching:** Tree of character edges enables $O(L)$ prefix validation and search, ideal for word boggles and dictionary autocomplete.
-> - **Two Heaps Pattern:** Maintain dynamic running median by balancing a Max-Heap (lower half) and Min-Heap (upper half) within $\le 1$ count.
+> - **Disjoint Set Union (DSU):** Union by rank + path compression achieves near-linear `O(\alpha(N))` dynamic connectivity and cycle detection.
+> - **Trie Prefix Matching:** Tree of character edges enables `O(L)` prefix validation and search, ideal for word boggles and dictionary autocomplete.
+> - **Two Heaps Pattern:** Maintain dynamic running median by balancing a Max-Heap (lower half) and Min-Heap (upper half) within `<= 1` count.
 
 ---
 
@@ -740,7 +740,7 @@
 
 | # | Problem | LC# | Difficulty | Priority | Pattern Tags | Hybrid Approach & Core Invariant |
 | :---: | :--- | :---: | :---: | :---: | :--- | :--- |
-| 1 | [LRU Cache](https://leetcode.com/problems/lru-cache/) | 146 | 🟡 Medium | 🔑 ANCHOR | `#system-design` | DLL + hashmap $O(1)$ |
+| 1 | [LRU Cache](https://leetcode.com/problems/lru-cache/) | 146 | 🟡 Medium | 🔑 ANCHOR | `#system-design` | DLL + hashmap `O(1)` |
 | 2 | [Network Delay Time](https://leetcode.com/problems/network-delay-time/) | 743 | 🟡 Medium | 🔑 ANCHOR | `#dijkstras-algorithm` | Min-heap relax edges |
 | 3 | [Minimum Cost to Connect All Points](https://leetcode.com/problems/min-cost-to-connect-all-points/) | 1584 | 🟡 Medium | 🔑 ANCHOR | `#minimum-spanning-tree` | Prim/Kruskal |
 | 4 | [Basic Calculator II](https://leetcode.com/problems/basic-calculator-ii/) | 227 | 🟡 Medium | ⭐ HIGH VALUE | `#stack` | Process * /; defer + - |
@@ -755,15 +755,15 @@
 | 13 | [Critical Connections in a Network](https://leetcode.com/problems/critical-connections-in-a-network/) | 1192 | 🔴 Hard | 💡 ADVANCED | `#graph` `#tarjans-bridge-finding` `#dfs-low-link` | Low-link for bridges |
 | 14 | [Shortest Path in a Grid with Obstacles Elimination](https://leetcode.com/problems/shortest-path-in-a-grid-with-obstacles-elimination/) | 1293 | 🔴 Hard | 💡 ADVANCED | `#bfs` | (r,c,k) visited |
 | 15 | [Minimum Cost to Make at Least One Valid Path in a Grid](https://leetcode.com/problems/minimum-cost-to-make-at-least-one-valid-path-in-a-grid/) | 1368 | 🔴 Hard | 💡 ADVANCED | `#bfs` | Edges cost 0/1 |
-| 16 | [LFU Cache](https://leetcode.com/problems/lfu-cache/) | 460 | 🔴 Hard | 🧪 CHALLENGE | `#system-design` | Freq lists + hashmap; $O(1)$ ops |
+| 16 | [LFU Cache](https://leetcode.com/problems/lfu-cache/) | 460 | 🔴 Hard | 🧪 CHALLENGE | `#system-design` | Freq lists + hashmap; `O(1)` ops |
 | 17 | [Parse Lisp Expression](https://leetcode.com/problems/parse-lisp-expression/) | 736 | 🔴 Hard | 🧪 CHALLENGE | `#stack` | Recursive descent / stack |
 | 18 | [Shortest Path Visiting All Nodes](https://leetcode.com/problems/shortest-path-visiting-all-nodes/) | 847 | 🔴 Hard | 🧪 CHALLENGE | `#bfs` `#bit-manipulation` | State (node,mask) |
 | 19 | [Minimum Cost to Reach Destination in Time](https://leetcode.com/problems/minimum-cost-to-reach-destination-in-time/) | 1928 | 🔴 Hard | 🧪 CHALLENGE | `#dijkstras-algorithm` `#dynamic-programming` | State (node,time) min cost |
 
 > [!TIP]
 > ### 💡 Phase 11 Milestone — System-Level Algorithmic Design
-> - **O(1) Eviction Design (LRU/LFU):** Combine `Dictionary` for $O(1)$ key lookup with Doubly Linked List for $O(1)$ node promotion and eviction.
+> - **O(1) Eviction Design (LRU/LFU):** Combine `Dictionary` for `O(1)` key lookup with Doubly Linked List for `O(1)` node promotion and eviction.
 > - **Dijkstra's Relaxation:** Greedily expand cheapest unvisited node via PriorityQueue on non-negative weighted graphs.
-> - **Minimum Spanning Tree:** Kruskal's with DSU ($O(E \log E)$) for sparse graphs; Prim's with PriorityQueue ($O(E \log V)$) for dense graphs.
+> - **Minimum Spanning Tree:** Kruskal's with DSU (`O(E log E)`) for sparse graphs; Prim's with PriorityQueue (`O(E log V)`) for dense graphs.
 
 ---

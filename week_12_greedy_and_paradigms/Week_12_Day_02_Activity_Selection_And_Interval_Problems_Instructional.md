@@ -9,9 +9,6 @@
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
-
----
-
 ## 🎯 LEARNING OBJECTIVES
 
 *By the end of this chapter, you will be able to:*
@@ -458,21 +455,19 @@ Sorted events:
 
 **State Evolution:**
 
-```text
-Step | Event   | Δ | currentActive | maxActive
------+---------+---+---------------+---------
- 0   | Start   | - | 0             | 0
- 1   | (1,+1)  |+1 | 1             | 1
- 2   | (2,+1)  |+1 | 2             | 2
- 3   | (3,+1)  |+1 | 3             | 3
- 4   | (4,-1)  |-1 | 2             | 3
- 5   | (5,-1)  |-1 | 1             | 3
- 6   | (5,+1)  |+1 | 2             | 3
- 7   | (6,-1)  |-1 | 1             | 3
- 8   | (7,+1)  |+1 | 2             | 3
- 9   | (8,-1)  |-1 | 1             | 3
-10   | (9,-1)  |-1 | 0             | 3
-```
+| Step | Event Point | Delta (`Δ`) | `currentActive` Rooms | `maxActive` Rooms Recorded |
+| :--- | :--- | :--- | :--- | :--- |
+| **0** | Start | - | 0 | 0 |
+| **1** | `(1, +1)` (Start) | `+1` | 1 | 1 |
+| **2** | `(2, +1)` (Start) | `+1` | 2 | 2 |
+| **3** | `(3, +1)` (Start) | `+1` | 3 | **3 (Peak)** |
+| **4** | `(4, -1)` (End) | `-1` | 2 | 3 |
+| **5** | `(5, -1)` (End) | `-1` | 1 | 3 |
+| **6** | `(5, +1)` (Start) | `+1` | 2 | 3 |
+| **7** | `(6, -1)` (End) | `-1` | 1 | 3 |
+| **8** | `(7, +1)` (Start) | `+1` | 2 | 3 |
+| **9** | `(8, -1)` (End) | `-1` | 1 | 3 |
+| **10** | `(9, -1)` (End) | `-1` | 0 | 3 |
 
 Final answer: `maxActive = 3` → **3 rooms needed**.
 
@@ -794,6 +789,4 @@ The meeting room / interval partitioning variant emerges naturally from operatio
 **End of Week 12 Day 02 Instructional File**
 
 ---
----
-
 > 🧭 **Navigation:** [← Previous Day](Week_12_Day_01_Greedy_Fundamentals_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_12_Day_03_Huffman_Coding_And_Optimal_Trees_Instructional.md)

@@ -430,33 +430,32 @@ For heaps: What sequence causes maximum bubble-up distance?
 ## 📊 Concept Map: Sorting Algorithms Decision Tree
 
 
-```mermaid
-flowchart TD
-    R["Week 03 Data Structures"]
-    R --> N1["SORTING ALGORITHMS (When ordering matters)"]
-    N1 --> N2["Elementary (O(n²))"]
-    N2 --> N3["Bubble Sort (stable, few writes)"]
-    N2 --> N4["Selection Sort (minimize writes, unstable)"]
-    N2 --> N5["Insertion Sort (small n, nearly sorted, stable)"]
-    N1 --> N6["Advanced (O(n log n))"]
-    N6 --> N7["Merge Sort (guaranteed O(n log n), stable, extra space)"]
-    N6 --> N8["Quick Sort (fast in practice, in-place, unstable)"]
-    N6 --> N9["Heap Sort (guaranteed O(n log n), in-place, unstable)"]
-    R --> N10["HEAPS (When you need efficient min/max with insertions)"]
-    N10 --> N11["Structure: Complete binary tree in array"]
-    N10 --> N12["Operations: Insert O(log n), Extract-min O(log n)"]
-    N10 --> N13["Build: O(n) with bottom-up bubble-down"]
-    N10 --> N14["Use: Dijkstra, priority queue, heap sort"]
-    R --> N15["HASH TABLES (When you need fast lookup)"]
-    N15 --> N16["Collision Resolution"]
-    N16 --> N17["Separate Chaining (simple, linked lists)"]
-    N16 --> N18["Open Addressing (space-efficient, probing)"]
-    N15 --> N19["Advanced"]
-    N19 --> N20["Rolling Hash (string matching)"]
-    N19 --> N21["Rabin-Karp (O(n+m) pattern matching)"]
-    N19 --> N22["Universal Hashing (security)"]
-    N15 --> N23["Implementation: Hash function, load factor, resize"]
-```
+### 📌 Week 03 Data Structures
+
+- **SORTING ALGORITHMS (When ordering matters)**
+  - **Elementary (O(n²))**
+    - Bubble Sort (stable, few writes)
+    - Selection Sort (minimize writes, unstable)
+    - Insertion Sort (small n, nearly sorted, stable)
+  - **Advanced (O(n log n))**
+    - Merge Sort (guaranteed O(n log n), stable, extra space)
+    - Quick Sort (fast in practice, in-place, unstable)
+    - Heap Sort (guaranteed O(n log n), in-place, unstable)
+- **HEAPS (When you need efficient min/max with insertions)**
+  - Structure: Complete binary tree in array
+  - Operations: Insert O(log n), Extract-min O(log n)
+  - Build: O(n) with bottom-up bubble-down
+  - Use: Dijkstra, priority queue, heap sort
+- **HASH TABLES (When you need fast lookup)**
+  - **Collision Resolution**
+    - Separate Chaining (simple, linked lists)
+    - Open Addressing (space-efficient, probing)
+  - **Advanced**
+    - Rolling Hash (string matching)
+    - Rabin-Karp (O(n+m) pattern matching)
+    - Universal Hashing (security)
+  - Implementation: Hash function, load factor, resize
+
 
 
 ---

@@ -410,7 +410,4 @@ Use: LIS, coin change, knapsack
 - Practice explaining solutions aloud
 
 ---
-
----
-
 > 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS.md)

@@ -187,14 +187,14 @@ Level k: Path completes (word found or goal reached)
 ## Visual: The Five Archetypes
 
 
-```mermaid
-flowchart TD
-    R["State"]
-    R --> N1["State"]
-    N1 --> N2["State"]
-    N2 --> N3["State"]
-    N3 --> N4["State"]
-```
+### 📌 👑 The Five Backtracking Archetypes
+
+- 1️⃣ Board Constraint CSP: N-Queens<br/>Place N queens with row/col/diagonal non-attacking checks
+- 2️⃣ Grid Puzzle Solver: Sudoku Solver<br/>Fill 9x9 grid validating row, column, and 3x3 box rules
+- 3️⃣ 2D Matrix Path Finding: Word Search<br/>DFS walk on grid with visited rollback in-place
+- 4️⃣ Combinatorial Generation: Subsets & Permutations<br/>Pick vs Skip branching or Swap-based element ordering
+- 5️⃣ String Partitioning: Palindrome Partitioning<br/>Split string into palindromic substring segments
+
 
 
 ---
@@ -1682,19 +1682,20 @@ public void TestDiagonalConstraint()
 ### Decision Tree: Which Pattern to Apply?
 
 
-```mermaid
-flowchart TD
-    R["Problem asks for "all solutions"?"]
-    R --> N1["Yes → Enumeration (Permutations/Subsets pattern)"]
-    R --> N2["No → Continue"]
-    R --> N3["Yes → Do items have geometric constraints (attacks, adjacency)?"]
-    N3 --> N4["Yes → N-Queens pattern"]
-    N3 --> N5["No → Sudoku pattern (fill constraints)"]
-    R --> N6["No → Continue"]
-    R --> N7["Yes → Word Search / Maze pattern"]
-    R --> N8["No → Continue"]
-    R --> N9["Yes → Branch & Bound (Day 3 content)"]
+**Problem asks for "all solutions"?**
+
+```text
+• Yes → Enumeration (Permutations/Subsets pattern)
+• No → Continue
+• Yes → Do items have geometric constraints (attacks, adjacency)?
+  - Yes → N-Queens pattern
+  - No → Sudoku pattern (fill constraints)
+• No → Continue
+• Yes → Word Search / Maze pattern
+• No → Continue
+• Yes → Branch & Bound (Day 3 content)
 ```
+
 
 
 ### Mapping Variants to Core Problems
@@ -1967,6 +1968,4 @@ Before moving to Day 3 (Branch & Bound), ensure you can:
 If you can complete 3/4 challenges, you're ready for **Day 3: Branch & Bound** (optimization with backtracking).
 
 ---
----
-
 > 🧭 **Navigation:** [← Previous Day](Week_13_Day_01_Backtracking_Fundamentals_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_13_Day_03_Branch_And_Bound_Instructional.md)

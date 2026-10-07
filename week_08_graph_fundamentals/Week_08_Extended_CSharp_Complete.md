@@ -40,22 +40,21 @@ Main implementation patterns for Week 08:
 **Decision Tree – How to Identify & Choose Week 08 Graph Patterns**
 
 
-```mermaid
-flowchart TD
-    R["Start"]
-    R --> N1["Is the data naturally a network / relationships between entities?"]
-    N1 --> N2["YES → Model as a graph."]
-    R --> N3["Are edges all “equal cost” (1 hop each)?"]
-    N3 --> N4["YES → Unweighted graph → BFS patterns."]
-    R --> N5["Is there a notion of dependency or direction (A must come before B)?"]
-    N5 --> N6["YES → Directed graph → DFS + Topological Sort patterns."]
-    R --> N7["Do you need to know groups / islands / components?"]
-    N7 --> N8["YES → Connectivity patterns (BFS/DFS per component, or Union–Find)."]
-    R --> N9["Do you need to check 2-colorability / odd cycle existence?"]
-    N9 --> N10["YES → Bipartite pattern (BFS/DFS 2-coloring)."]
-    R --> N11["Do you care about mutual reachability (u⇄v strongly connected)?"]
-    N11 --> N12["YES → SCC patterns (Kosaraju/Tarjan)."]
-```
+### 📌 Start
+
+- **Is the data naturally a network / relationships between entities?**
+  - YES → Model as a graph.
+- **Are edges all “equal cost” (1 hop each)?**
+  - YES → Unweighted graph → BFS patterns.
+- **Is there a notion of dependency or direction (A must come before B)?**
+  - YES → Directed graph → DFS + Topological Sort patterns.
+- **Do you need to know groups / islands / components?**
+  - YES → Connectivity patterns (BFS/DFS per component, or Union–Find).
+- **Do you need to check 2-colorability / odd cycle existence?**
+  - YES → Bipartite pattern (BFS/DFS 2-coloring).
+- **Do you care about mutual reachability (u⇄v strongly connected)?**
+  - YES → SCC patterns (Kosaraju/Tarjan).
+
 
 
 ### 1.1 Problem Signals → Pattern Mapping

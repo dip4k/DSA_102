@@ -9,9 +9,6 @@
 > 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
-
----
-
 ## 🎯 LEARNING OBJECTIVES
 
 *By the end of this chapter, you will be able to:*
@@ -663,6 +660,4 @@ The term "greedy" was popularized in the 1970s as algorithm analysis formalized.
 **End of Week 12 Day 1 Instructional File**
 
 ---
----
-
 > 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_12_Day_02_Activity_Selection_And_Interval_Problems_Instructional.md)

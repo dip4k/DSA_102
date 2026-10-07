@@ -210,14 +210,12 @@ Common hidden space costs:
 ### Recursion Tree Visualization
 
 
-```mermaid
-flowchart TD
-    R["fact(4) = 4 * fact(3)"]
-    R --> N1["fact(3) = 3 * fact(2)"]
-    N1 --> N2["fact(2) = 2 * fact(1)"]
-    N2 --> N3["fact(1) = 1 * fact(0)"]
-    N3 --> N4["fact(0) = 1"]
-```
+### 📌 fact(4) = 4 * fact(3)
+
+- **fact(3) = 3 * fact(2)**
+  - **fact(2) = 2 * fact(1)**
+    - fact(1) = 1 * fact(0)
+
 
 
 Each box is a stack frame. Computation happens **on the way back up** (unwind).

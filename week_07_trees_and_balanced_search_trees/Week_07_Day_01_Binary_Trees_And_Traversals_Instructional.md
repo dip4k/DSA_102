@@ -154,16 +154,15 @@ class TreeNode {
 When you traverse a tree recursively, the call stack automatically maintains state:
 
 
-```mermaid
-flowchart TD
-    R["Stack Frame 1 function traverse(nodeA)"]
-    R --> N1["Stack Frame 2: function traverse(nodeB) [called from nodeA]"]
-    N1 --> N2["Stack Frame 3: function traverse(nodeD) [called from nodeB]"]
-    N2 --> N3["Stack Frame 4: function traverse(null) [returns immediately]"]
-    N2 --> N4["'Visit D here' (depends on traversal order)"]
-    N1 --> N5["'Visit B here' (depends on traversal order)"]
-    R --> N6["'Visit A here' (depends on traversal order)"]
-```
+### 📌 Stack Frame 1 function traverse(nodeA)
+
+- **Stack Frame 2: function traverse(nodeB) [called from nodeA]**
+  - **Stack Frame 3: function traverse(nodeD) [called from nodeB]**
+    - Stack Frame 4: function traverse(null) [returns immediately]
+    - 'Visit D here' (depends on traversal order)
+  - 'Visit B here' (depends on traversal order)
+- 'Visit A here' (depends on traversal order)
+
 
 
 For iterative traversal, **you explicitly maintain a stack** (or queue for level-order), managing the same state manually. This trades elegance for control—you can pause, resume, or inspect the stack at any point.
@@ -757,6 +756,4 @@ Why does this matter? These names have stood for 60 years because they capture s
 - **Auxiliary Space:** `O(H)` where `H` is the tree height (`O(log N)` balanced, `O(N)` skewed) due to recursion stack frames or explicit iteration stacks. For level-order traversal, `O(W)` auxiliary space where `W` is maximum tree width (`O(N)` in the worst case). Morris traversal achieves `O(1)` auxiliary space via temporary threading.
 
 ---
----
-
 > 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_07_Day_02_Binary_Search_Trees_Instructional.md)

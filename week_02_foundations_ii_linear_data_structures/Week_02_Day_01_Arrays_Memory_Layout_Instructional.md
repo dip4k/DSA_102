@@ -69,9 +69,20 @@ Let's visualize how an array lives in memory:
 
 
 ```mermaid
-flowchart TD
-    R["Memory Address  0x1000  0x1004  0x1008  0x100C  0x1010  0x1014  0x1018  0x101C ..."]
-    R --> N1["Step"]
+flowchart LR
+    classDef mem fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef calc fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+
+    subgraph Memory["💾 Contiguous RAM Array Layout"]
+        M0["arr[0]<br/>0x1000"]:::mem
+        M1["arr[1]<br/>0x1004"]:::mem
+        M2["arr[2]<br/>0x1008"]:::mem
+        M3["arr[3]<br/>0x100C"]:::mem
+        M0 --- M1 --- M2 --- M3
+    end
+
+    Calc["⚡ O(1) Address Calculation Formula:<br/>Address(arr[i]) = Base_Address + i * sizeof(T)<br/>Example: Address(arr[2]) = 0x1000 + 2 * 4 = 0x1008"]:::calc
+    Memory --> Calc
 ```
 
 
@@ -84,8 +95,12 @@ Modern CPUs have caches. When you access `array[0]`, the CPU doesn't just load 4
 
 ```mermaid
 flowchart TD
-    R["Single cache line (64 bytes)"]
-    R --> N1["Step"]
+    classDef cpu fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
+    classDef cache fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+
+    CPU["💻 CPU requests arr[0] (4 bytes)"]:::cpu
+    CPU --> L1["⚡ Hardware Prefetcher fetches entire 64-byte Cache Line into L1 Cache"]:::cache
+    L1 --> Elements["📦 Cached Array Slice: arr[0..15] (16 consecutive 4-byte integers)<br/>Accessing arr[1..15] results in instantaneous L1 Cache HITS!"]:::cache
 ```
 
 

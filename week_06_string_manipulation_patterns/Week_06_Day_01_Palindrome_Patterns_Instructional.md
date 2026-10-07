@@ -417,21 +417,20 @@ Mitigations:
 **Decision Tree:**
 
 
-```mermaid
-flowchart TD
-    R["Does the problem involve palindromes?"]
-    R --> N1["'Is entire string a palindrome?'"]
-    N1 --> N2["Use two-pointer check: O(n) time, O(1) space ✓"]
-    R --> N3["'Find longest palindromic substring'"]
-    N3 --> N4["If n < 1000: Use expand-around-center: O(n²), simple ✓"]
-    N3 --> N5["If n > 10000: Use Manacher or DP: O(n), complex"]
-    R --> N6["'Partition string into palindromes'"]
-    N6 --> N7["Use backtracking or DP: explore all partitions"]
-    R --> N8["'Make string a palindrome' (add chars)"]
-    N8 --> N9["Reverse matching or KMP variants"]
-    R --> N10["'Palindromic subsequence' (not substring)"]
-    N10 --> N11["Use DP: edit distance variant"]
-```
+### 📌 Does the problem involve palindromes?
+
+- **'Is entire string a palindrome?'**
+  - Use two-pointer check: O(n) time, O(1) space ✓
+- **'Find longest palindromic substring'**
+  - If n < 1000: Use expand-around-center: O(n²), simple ✓
+  - If n > 10000: Use Manacher or DP: O(n), complex
+- **'Partition string into palindromes'**
+  - Use backtracking or DP: explore all partitions
+- **'Make string a palindrome' (add chars)**
+  - Reverse matching or KMP variants
+- **'Palindromic subsequence' (not substring)**
+  - Use DP: edit distance variant
+
 
 
 - **✅ Use when:** String analysis, DNA matching, text validation, constraint satisfaction
@@ -597,6 +596,4 @@ This principle isn't limited to strings. Palindromes are one manifestation of a 
 When you encounter a new problem asking you to find or validate patterns, pause. Ask yourself: **"Is there symmetry here? Can I exploit it?"** This question, asked regularly, separates competent engineers from great ones.
 
 ---
----
-
 > 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_06_Day_02_Substring_Sliding_Window_Patterns_Instructional.md)

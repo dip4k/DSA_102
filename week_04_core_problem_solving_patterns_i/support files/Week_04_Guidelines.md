@@ -222,23 +222,22 @@ Ask BEFORE coding:
 ## 📊 Concept Map: How Week 04 Patterns Connect
 
 
-```mermaid
-flowchart TD
-    R["Week 04 Pattern Foundations"]
-    R --> N1["TWO-POINTER (Dual Movement)"]
-    N1 --> N2["Same-direction (merge, duplicates)"]
-    N1 --> N3["Opposite-direction (water, sum in sorted)"]
-    R --> N4["SLIDING WINDOW (Incremental Computation)"]
-    N4 --> N5["Fixed-size (running sum, max in window)"]
-    N4 --> N6["Variable-size (at-most K, longest substring)"]
-    R --> N7["DIVIDE-CONQUER (Recursive Decomposition)"]
-    N7 --> N8["Divide: split problem"]
-    N7 --> N9["Conquer: solve subproblems"]
-    N7 --> N10["Combine: merge results"]
-    R --> N11["BINARY SEARCH (Geometric Narrowing)"]
-    N11 --> N12["On sorted arrays (classic)"]
-    N11 --> N13["On answer space (feasibility check)"]
-```
+### 📌 Week 04 Pattern Foundations
+
+- **TWO-POINTER (Dual Movement)**
+  - Same-direction (merge, duplicates)
+  - Opposite-direction (water, sum in sorted)
+- **SLIDING WINDOW (Incremental Computation)**
+  - Fixed-size (running sum, max in window)
+  - Variable-size (at-most K, longest substring)
+- **DIVIDE-CONQUER (Recursive Decomposition)**
+  - Divide: split problem
+  - Conquer: solve subproblems
+  - Combine: merge results
+- **BINARY SEARCH (Geometric Narrowing)**
+  - On sorted arrays (classic)
+  - On answer space (feasibility check)
+
 
 
 ---

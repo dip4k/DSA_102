@@ -523,7 +523,4 @@ This checklist helps you track:
 | 5 | [ ] | [ ] | [ ] | [ ] | Not started / In progress / Complete |
 
 ---
-
----
-
 > 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS.md)

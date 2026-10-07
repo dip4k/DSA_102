@@ -444,7 +444,4 @@ Use this table to track your daily performance:
 | 5 | LIS O(n²) written | 3 mixed problems solved | Reflection complete | _ | |
 
 ---
-
----
-
 > 🧭 **Navigation:** [← Back to Week Overview](../README.md) • [📘 Complete Syllabus](../../COMPLETE_SYLLABUS.md)

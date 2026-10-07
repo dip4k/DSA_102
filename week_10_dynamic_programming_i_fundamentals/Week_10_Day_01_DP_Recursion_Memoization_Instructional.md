@@ -76,42 +76,54 @@ Here's why this is powerful: the number of *unique* subproblems is often much sm
 
 Here's what the recursion tree looks like for Fibonacci(5) without any caching:
 
-```
-                        fib(5)
-                       /      \
-                   fib(4)      fib(3)
-                   /    \      /    \
-               fib(3)  fib(2) fib(2) fib(1)
-               /   \   / \    / \
-           fib(2) fib(1) ...fib(2)...
-           / \
-       fib(1) fib(0)
+```mermaid
+graph TD
+    classDef rootNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef dupNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
+    classDef leafNode fill:#f5f5f5,stroke:#757575,stroke-width:1px,color:#212121
 
-Notice: fib(3) appears twice, fib(2) appears three times, fib(1) appears five times.
-For fib(50), the redundancy is catastrophic.
+    F5["fib(5)"]:::rootNode
+    F4["fib(4)"]:::rootNode
+    F3_R["fib(3) 🔁 Recomputed!"]:::dupNode
+    F3_L["fib(3)"]:::rootNode
+    F2_L1["fib(2) 🔁 Recomputed!"]:::dupNode
+    F2_R1["fib(2) 🔁 Recomputed!"]:::dupNode
+    F1_R["fib(1) 🛑 Base"]:::leafNode
+
+    F2_L2["fib(2)"]:::rootNode
+    F1_L1["fib(1) 🛑 Base"]:::leafNode
+
+    F1_L2["fib(1) 🛑 Base"]:::leafNode
+    F0_L["fib(0) 🛑 Base"]:::leafNode
+
+    F5 --> F4
+    F5 --> F3_R
+    F4 --> F3_L
+    F4 --> F2_L1
+    F3_R --> F2_R1
+    F3_R --> F1_R
+    F3_L --> F2_L2
+    F3_L --> F1_L1
+    F2_L2 --> F1_L2
+    F2_L2 --> F0_L
 ```
+
+> [!WARNING]
+> **Exploding Redundancy:** Notice that `fib(3)` appears 2 times, `fib(2)` appears 3 times, and `fib(1)` appears 5 times.  
+> For `fib(50)`, unmemoized recursion branches into over `2^50` operations (~`10^15` function calls), resulting in a complete freeze. With dynamic programming, we collapse this into just 51 cached steps!
 
 ### 🖼 The Same Problem With Memoization
 
 With memoization, we build a cache of results:
 
 
-```mermaid
-flowchart TD
-    R["Call fib(5)"]
-    R --> N1["fib(5) not in cache, compute:"]
-    N1 --> N2["Call fib(4):"]
-    N2 --> N3["fib(4) not in cache, compute:"]
-    N3 --> N4["Call fib(3):"]
-    N4 --> N5["fib(3) not in cache, compute:"]
-    N5 --> N6["Call fib(2): fib(2) = 1 (cached or computed)"]
-    N5 --> N7["Call fib(1): fib(1) = 1 (base case)"]
-    N5 --> N8["fib(3) = fib(2) + fib(1) = 2 → Cache[3] = 2"]
-    N3 --> N9["Call fib(2): fib(2) in cache → return 1 ✓ (no recomputation!)"]
-    N3 --> N10["fib(4) = fib(3) + fib(2) = 3 → Cache[4] = 3"]
-    N1 --> N11["Call fib(3): fib(3) in cache → return 2 ✓ (no recomputation!)"]
-    R --> N12["fib(5) = fib(4) + fib(3) = 5 → Cache[5] = 5"]
+**Call fib(5)**
+
+```text
+• fib(5) not in cache, compute:
+• fib(5) = fib(4) + fib(3) = 5 → Cache[5] = 5
 ```
+
 
 
 ### The Mental Model: State and Transitions

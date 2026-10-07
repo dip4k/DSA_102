@@ -69,24 +69,23 @@ flowchart TD
 ## 🎯 Learning Objectives Map
 
 
-```mermaid
-flowchart TD
-    R["State"]
-    R --> N1["State"]
-    N1 --> N2["Problem definition              "]
-    N1 --> N3["Why non-negative matters        "]
-    N1 --> N4["Greedy guarantee principle      "]
-    N1 --> N5["Applications (GPS, OSPF)        "]
-    N1 --> N6["Implement with priority queue   "]
-    N1 --> N7["Trace on paper                  "]
-    N1 --> N8["Reconstruct paths               "]
-    N1 --> N9["Handle edge cases               "]
-    N1 --> N10["Relaxation principle            "]
-    N1 --> N11["O((V+E) log V) derivation       "]
-    N1 --> N12["When to use (vs BFS, vs B-F)   "]
-    N1 --> N13["Real-world constraints          "]
-    R --> N14["State"]
-```
+### 📌 🎯 Day 1: Dijkstra Learning Objectives Map
+
+- **🧠 Core Principles**
+  - Single-Source Shortest Path Formulation
+  - Non-negative Weight Invariant Requirement
+  - Greedy Choice Property: Tentative dist is optimal once popped
+  - Real-world Applications: GPS Navigation, OSPF Routing
+- **⚙️ Algorithmic Mechanics**
+  - Min-Heap Priority Queue: O(log V) extract-min
+  - Relaxation: dist[v] = min(dist[v], dist[u] + w)
+  - Path Reconstruction: parent[v] backtrack pointer
+  - Stale Entry Handling in Indexed/Unindexed PQ
+- **📊 Complexity & Trade-offs**
+  - Time: O((V + E) log V) with Binary Heap
+  - Auxiliary Space: O(V) for distances and visited set
+  - Dijkstra vs BFS (unweighted) vs Bellman-Ford (negatives)
+
 
 
 ## Dijkstra Algorithm: Execution Flow Diagram
@@ -103,35 +102,39 @@ flowchart TD
 ## Dijkstra: Wave Expansion Visualization
 
 
-```mermaid
-flowchart TD
-    R["Initial (source = 0)"]
-    R --> N1["State"]
-    R --> N2["State"]
-    R --> N3["State"]
-    R --> N4["State"]
-```
+### 📌 📍 Initial State: Source Node 0 (dist[0]=0, others=∞)
+
+- **🌊 Wave 1: Relax Direct Neighbors of 0<br/>Node 1 (cost 4), Node 2 (cost 1)<br/>Min-heap pops Node 2 (dist=1 settled!)**
+  - **🌊 Wave 2: Relax from Node 2<br/>Discovers Node 3 (1+2=3), updates Node 1 (1+2=3 < 4)<br/>Min-heap pops Node 1 (dist=3 settled!)**
+    - 🌊 Wave 3: Relax from Node 1 & 3<br/>Settles Node 4 (dist=5)<br/>🎯 All Reachable Shortest Paths Finalized!
+
 
 
 ## Priority Queue Internal State
 
 
-```mermaid
-flowchart TD
-    R["PQ Evolution During Dijkstra"]
-    R --> N1["priority "]
-    R --> N2["extract min each time"]
-```
+### 📌 PQ Evolution During Dijkstra
+
+- priority 
+- extract min each time
+
 
 
 ## Relaxation Principle Visual
 
 
 ```mermaid
-flowchart TD
-    R["Without Relaxation"]
-    R --> N1["2►21►1"]
-    R --> N2["State"]
+flowchart LR
+    classDef known fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef target fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
+    classDef action fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+
+    U["Node u<br/>dist[u] = 5"]:::known
+    V["Node v<br/>Old dist[v] = 12"]:::target
+    U -->|Edge weight w = 3| V
+    Rel{"⚖️ Is dist[u] + w < dist[v]?<br/>5 + 3 = 8 < 12"}
+    U & V --> Rel
+    Rel -->|Yes: Relax Edge| NewV["✅ Update dist[v] = 8<br/>parent[v] = u"]:::action
 ```
 
 
@@ -190,9 +193,19 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    R["Graph with negative edge"]
-    R --> N1["State"]
-    R --> N2["State"]
+    classDef src fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef fail fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:2px;
+    classDef alt fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+
+    A["Source Node A<br/>dist[A] = 0"]:::src
+    B["Target Node B<br/>Greedy settles at 10"]:::fail
+    C["Intermediate Node C<br/>dist[C] = 5"]:::alt
+
+    A -->|weight = 10| B
+    A -->|weight = 5| C
+    C -->|weight = -10 (negative!)| B
+    Fail["❌ Dijkstra Finalization Failure:<br/>Node B finalized at cost 10.<br/>Actual shorter path A→C→B has cost 5 - 10 = -5!"]:::fail
+    B -.-> Fail
 ```
 
 
@@ -201,9 +214,14 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    R["DP State Definition"]
-    R --> N1["State"]
-    N1 --> N2["State"]
+    classDef dp fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef step fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:1.5px;
+    classDef opt fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+
+    R["📐 Bellman–Ford as Dynamic Programming"]:::dp
+    R --> S["State: dp[k][v] = Shortest distance to v using at most k edges"]:::step
+    S --> Rec["🔄 Transition: dp[k][v] = min( dp[k-1][v], min_{(u,v)} (dp[k-1][u] + w(u,v)) )"]:::step
+    Rec --> Opt["💾 Space Optimization: Flatten 2D table dp[V][V] into 1D array dist[V]<br/>Updated in-place across V-1 passes"]:::opt
 ```
 
 
@@ -212,48 +230,59 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    R["Pass 1 (k=1)  Try using 1 edge"]
-    R --> N1["State"]
-    R --> N2["State"]
-    R --> N3["State"]
-    R --> N4["State"]
-    R --> N5["State"]
+    classDef pass fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef check fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:1.5px;
+    classDef alert fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:2px;
+
+    P1["1️⃣ Pass 1: Guaranteed optimal for paths with <= 1 edge"]:::pass
+    P1 --> P2["2️⃣ Pass 2: Guaranteed optimal for paths with <= 2 edges"]:::pass
+    P2 --> PV["... Pass V-1: Guaranteed optimal for all simple paths (<= V-1 edges)"]:::pass
+    PV --> CHK["🔍 Pass V: Negative Cycle Detection Check<br/>Iterate all edges one more time"]:::check
+    CHK -->|Any dist improves?| Alert["🚨 Negative Weight Cycle Reachable from Source!"]:::alert
+    CHK -->|No improvements| Done["✅ Shortest Paths Fully Converged and Valid"]:::pass
 ```
 
 
 ## Negative Cycle Detection Visual
 
+```mermaid
+flowchart LR
+    classDef normal fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef negCycle fill:#ffebee,stroke:#c62828,stroke-width:3px,color:#b71c1c
+
+    N0["0 (Source)"]:::normal
+    N1["1"]:::negCycle
+    N2["2"]:::negCycle
+
+    N0 -->|"1"| N1
+    N1 -->|"-10"| N2
+    N2 -->|"-5 (Cycle sum = -15)"| N1
 ```
-With negative cycle:
 
-  0 → 1 → 2
-      ↑   |
-      |   | -10
-      |   ▼
-      ← -5 → 1 (cycle!)
+**Relaxation Trace:**
 
-After PASS 1: dist = [0, 1, ∞]
-After PASS 2: dist = [0, 1, -9]
-After PASS 3: dist = [0, -4, -9]
-After PASS 4: dist = [0, -4, -9]  (no change)
+| Pass | `dist[0]` | `dist[1]` | `dist[2]` | Event / Observation |
+| :--- | :--- | :--- | :--- | :--- |
+| **Pass 1** | `0` | `1` | `inf` | Initial edge relaxation |
+| **Pass 2** | `0` | `1` | `-9` | Relaxed edge `1 -> 2` (`1 + (-10) = -9`) |
+| **Pass 3** | `0` | `-14` | `-9` | Relaxed cycle edge `2 -> 1` (`-9 + (-5) = -14`) |
+| **Pass 4 (V-th Pass)** | `0` | `-29` | `-24` | **Still improving!** `dist[1] = min(-14, -24 + (-5)) = -29` |
 
-EXTRA PASS (check for cycle):
-  Try to improve again:
-  dist[1] = min(-4, dist[2] + (-5)) 
-          = min(-4, -9 + (-5))
-          = min(-4, -14) 
-          = -14  ← STILL IMPROVING!
-  
-  Result: NEGATIVE CYCLE DETECTED ✓
-```
+> [!CAUTION]
+> **Negative Cycle Detected!** In the V-th pass, distances continue to decrease unboundedly. Any shortest path algorithm must terminate and signal an infinite negative cycle.
 
 ## Bellman–Ford Complexity
 
 
 ```mermaid
-flowchart TD
-    R["Time Breakdown"]
-    R --> N1["State"]
+flowchart LR
+    classDef box fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef time fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:1.5px;
+    classDef space fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:1.5px;
+
+    BF["⚡ Bellman–Ford Resource Deconstruction"]:::box
+    BF --> T["⏱️ Time Complexity: O(V * E)<br/>(V - 1 iterations) × (E edge relaxations per pass)"]:::time
+    BF --> S["💾 Auxiliary Space: O(V)<br/>1D array dist[0..V-1] and predecessor[0..V-1]"]:::space
 ```
 
 
@@ -272,43 +301,39 @@ flowchart TD
 
 ## The K-Dimension: Critical Insight
 
-```
-+============================================================+
-|           FLOYD-WARSHALL DP FORMULATION                   |
-+============================================================+
-|                                                            |
-|  dist[i][j][k] = shortest path from i to j                |
-|                  using ONLY vertices {0..k-1}             |
-|                  as intermediate nodes                    |
-|                                                            |
-|  Base Case:                                               |
-|    dist[i][j][0] = direct edge weight (no intermediates) |
-|                                                            |
-|  Recurrence:                                              |
-|    dist[i][j][k] = min(                                   |
-|      dist[i][j][k-1],              ← don't use k-1       |
-|      dist[i][k-1][k-1] +           ← use k-1             |
-|      dist[k-1][j][k-1]             as intermediate       |
-|    )                                                      |
-|                                                            |
-|  KEY INSIGHT: k-loop MUST BE OUTERMOST!                   |
-|                                                            |
-|    Why? When updating dist[i][j] for using vertex k:    |
-|    • dist[i][k] must already be computed with vertices   |
-|      {0..k-1} as intermediates                           |
-|    • If we process i,j before k, this fails!             |
-|                                                            |
-+============================================================+
-```
+> [!IMPORTANT]
+> ### 🧠 Floyd–Warshall DP Formulation
+> 
+> - **State Definition:** `dist[i][j][k]` = shortest path from `i` to `j` using ONLY vertices from `{0 ... k-1}` as allowable intermediate nodes.
+> - **Base Case (k = 0):** `dist[i][j][0]` = direct edge weight from `i` to `j` (or `inf` if no direct edge, `0` if `i == j`).
+> - **State Transition:**
+>   ```
+>   dist[i][j][k] = min(
+>       dist[i][j][k-1],               // Case 1: Bypass intermediate vertex k-1
+>       dist[i][k-1][k-1] + dist[k-1][j][k-1]  // Case 2: Route through intermediate vertex k-1
+>   )
+>   ```
+> - **Critical Outer-Loop Invariant:** The `k` loop **MUST** be outermost! To consider vertex `k-1` as an intermediate hop between any pair `(i, j)`, all subpaths using intermediate vertices `{0 ... k-2}` must already be fully resolved.
 
 ## K-Loop Order: Why It Matters (Visual Proof)
 
 
 ```mermaid
 flowchart TD
-    R["WRONG i-loop outermost"]
-    R --> N1["State"]
-    R --> N2["State"]
+    classDef bad fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:2px;
+    classDef good fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+
+    subgraph Wrong["❌ WRONG: i or j loop outermost"]
+        W1["for i = 0..V-1<br/>  for j = 0..V-1<br/>    for k = 0..V-1"]:::bad
+        W2["Prematurely evaluates i→k→j before subpath i→k<br/>has incorporated subsequent intermediate nodes!<br/>Result: Suboptimal / Incomplete paths"]:::bad
+        W1 --> W2
+    end
+
+    subgraph Correct["✅ CORRECT: k loop MUST be outermost"]
+        C1["for k = 0..V-1 (Intermediate Pivot)<br/>  for i = 0..V-1 (Source)<br/>    for j = 0..V-1 (Destination)"]:::good
+        C2["Invariant: At step k, dist[i][j] reflects shortest path<br/>using ONLY intermediate vertices in set {0..k}.<br/>Guarantees DP subproblem optimality!"]:::good
+        C1 --> C2
+    end
 ```
 
 
@@ -326,36 +351,17 @@ flowchart TD
 
 ## Floyd–Warshall Complexity & Trade-offs
 
-```
-+============================================================+
-|           FLOYD-WARSHALL VS. DIJKSTRA × V                 |
-+=============+=====================+=========================+
-| Scenario    | Floyd-Warshall      | Dijkstra × V            |
-+=============+=====================+=========================+
-| V=10, E=20  | 1,000 ops           | 200 ops ← faster        |
-| (sparse)    | O(V³)               | O((V+E)logV)            |
-+=============+=====================+=========================+
-| V=100,      | 1,000,000 ops       | 200,000 ops ← faster    |
-| E=2,000     | O(V³)               | O((V+E)logV)            |
-| (sparse)    |                     |                         |
-+=============+=====================+=========================+
-| V=100,      | 1,000,000 ops       | 100,000,000 ops ✗       |
-| E=5,000     | O(V³) ← faster!     | O((V+E)logV)            |
-| (denser)    |                     |                         |
-+=============+=====================+=========================+
-| V=500,      | 125,000,000 ops ✗   | 5,000,000 ops ← faster! |
-| E=10,000    | O(V³)               | O((V+E)logV)            |
-| (sparse)    |                     |                         |
-+=============+=====================+=========================+
+| Scenario | Floyd–Warshall `O(V^3)` | Dijkstra x V `O(V * (V + E) log V)` | Winner |
+| :--- | :--- | :--- | :--- |
+| **V = 10, E = 20** (Sparse) | ~1,000 ops | ~200 ops | **Dijkstra x V (Faster)** |
+| **V = 100, E = 2,000** (Sparse) | ~1,000,000 ops | ~200,000 ops | **Dijkstra x V (Faster)** |
+| **V = 100, E = 5,000** (Dense) | ~1,000,000 ops | ~10,000,000 ops | **Floyd–Warshall (Faster)** |
+| **V = 500, E = 10,000** (Sparse) | ~125,000,000 ops | ~5,000,000 ops | **Dijkstra x V (Faster)** |
 
-Decision Rule:
-  If V² << E log V:  Use Floyd-Warshall
-  If E log V << V²:  Use Dijkstra × V
-  
-  Typically:
-    Small V (≤100):   Floyd-Warshall
-    Large V (>500):   Dijkstra × V
-```
+> [!TIP]
+> **Engineering Decision Rule:**
+> - If graph is dense (`E ~ V^2`) or `V <= 100`: Use **Floyd–Warshall** (simpler, zero overhead).
+> - If graph is sparse (`E << V^2`) and `V > 200`: Use **Dijkstra x V** (scales much better).
 
 ---
 
@@ -381,9 +387,15 @@ Decision Rule:
 
 ```mermaid
 flowchart TD
-    R["Kruskal = Sort Edges + DSU"]
-    R --> N1["State"]
-    R --> N2["State"]
+    classDef step fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef dsu fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:1.5px;
+    classDef prune fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:1.5px;
+
+    K["🌲 Kruskal's Edge-Centric Greedy Strategy"]:::step
+    K --> S1["1️⃣ Sort all E edges by ascending weight: O(E log E)"]:::step
+    S1 --> S2["2️⃣ For each edge (u, v, w):<br/>Query DSU: find(u) vs find(v)"]:::step
+    S2 -->|find(u) != find(v)| Add["✅ Different sets: Add to MST & union(u, v)"]:::dsu
+    S2 -->|find(u) == find(v)| Skip["❌ Same set: Adding creates a cycle! Skip edge"]:::prune
 ```
 
 
@@ -392,9 +404,15 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    R["Prim = Start Vertex + Priority Queue"]
-    R --> N1["State"]
-    R --> N2["State"]
+    classDef step fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef grow fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+
+    P["🌲 Prim's Vertex-Centric Growing Strategy"]:::step
+    P --> S1["1️⃣ Start from arbitrary source node (e.g. Node 0)"]:::step
+    S1 --> S2["2️⃣ Push all boundary edges of current tree into Min-Heap"]:::step
+    S2 --> S3["3️⃣ Pop minimum edge (u, v):<br/>If v already in MST, discard stale edge"]:::step
+    S3 --> Grow["✅ If v not in MST: Add v to MST, add edge weight,<br/>and push v's incident edges into heap"]:::grow
+    Grow -->|Until V vertices in MST| S3
 ```
 
 
@@ -402,9 +420,23 @@ flowchart TD
 
 
 ```mermaid
-flowchart TD
-    R["State"]
-    R --> N1["Step"]
+flowchart LR
+    classDef k fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef p fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
+
+    subgraph Kruskal["⚡ Kruskal's Algorithm"]
+        K1["• Edge-centric (global sort)"]:::k
+        K2["• Data Structure: DSU"]:::k
+        K3["• Time: O(E log E)"]:::k
+        K4["• Ideal for: Sparse Graphs (E << V²)"]:::k
+    end
+
+    subgraph Prim["⚡ Prim's Algorithm"]
+        P1["• Vertex-centric (local growing cut)"]:::p
+        P2["• Data Structure: Min-Heap PQ"]:::p
+        P3["• Time: O((V + E) log V)"]:::p
+        P4["• Ideal for: Dense Graphs (E ≈ V²)"]:::p
+    end
 ```
 
 
@@ -413,10 +445,13 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    R["THE CUT PROPERTY"]
-    R --> N1["State"]
-    R --> N2["State"]
-    R --> N3["State"]
+    classDef cut fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef min fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+
+    C["✂️ The Cut Property (MST Optimality Guarantee)"]:::cut
+    C --> P1["Partition graph vertices into two disjoint subsets: S and V - S"]:::cut
+    P1 --> P2["Examine all crossing edges with one endpoint in S and one in V - S"]:::cut
+    P2 --> Min["🌟 Invariant: The minimum-weight crossing edge across the cut<br/>is GUARANTEED to belong to some Minimum Spanning Tree!"]:::min
 ```
 
 
@@ -429,29 +464,32 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    R["Disjoint Set Union = Forest of Trees"]
-    R --> N1["Step"]
-    N1 --> N2["State"]
-    R --> N3["State"]
-    N3 --> N4["State"]
-    R --> N5["State"]
+    classDef root fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+    classDef child fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:1.5px;
+
+    subgraph Tree1["🌲 Set 1 (Root = 0)"]
+        R0["Node 0 (parent[0] = 0)"]:::root
+        N1["Node 1 (parent[1] = 0)"]:::child
+        N2["Node 2 (parent[2] = 0)"]:::child
+        N1 --> R0
+        N2 --> R0
+    end
+
+    subgraph Tree2["🌲 Set 2 (Root = 3)"]
+        R3["Node 3 (parent[3] = 3)"]:::root
+        N4["Node 4 (parent[4] = 3)"]:::child
+        N4 --> R3
+    end
 ```
 
 
 ## Find Operation: Path Compression
 
 
-|  |  |
-| :--- | :--- |
-|  |  |
-|  |  |
-|  |  |
-|  |  |
-|  |  |
-|  |  |
-|  |  |
-|  |  |
-|  |  |
+| Step | Action | Resulting Pointer |
+| :--- | :--- | :--- |
+| 1 | Trace path upward from node x to root | Identifies canonical root |
+| 2 | Flatten tree: point all visited nodes directly to root | Depth collapses to 1 |
 
 
 ## Union Operation: Union-by-Rank
@@ -459,27 +497,32 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    R["Without Union-by-Rank"]
-    R --> N1["State"]
-    N1 --> N2["State"]
-    R --> N3["State"]
-    R --> N4["    2   "]
-    N4 --> N5["State"]
-    R --> N6["State"]
-    R --> N7["State"]
+    classDef deep fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:2px;
+    classDef bal fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+
+    subgraph Bad["❌ Naive Union (No Rank): Chain Degeneration"]
+        B1["Arbitrary attachment makes tall linear trees:<br/>0 ← 1 ← 2 ← 3<br/>Find operation degrades to O(N) linear scan!"]:::deep
+    end
+
+    subgraph Good["✅ Union-by-Rank: Bounded Tree Height"]
+        G1["Attach shorter tree under taller tree root:<br/>rank[root_a] > rank[root_b] → parent[root_b] = root_a<br/>Height strictly bounded to O(log N) without compression!"]:::bal
+    end
 ```
 
 
 ## Inverse Ackermann: "Essentially O(1)"
 
 
-```mermaid
-flowchart TD
-    R["Why α(n) matters"]
-    R --> N1["State"]
-    R --> N2["State"]
-    R --> N3["State"]
+**📈 Growth of Inverse Ackermann Function α(n)**
+
+```text
+• n = 1 → α(n) = 1
+• n = 4 → α(n) = 2
+• n = 16 → α(n) = 3
+• n = 2^65536 → α(n) = 4
+• n = 10^80 (Atoms in Universe) → α(n) <= 4
 ```
+
 
 
 ## DSU Applications: Visual Summary
@@ -487,11 +530,14 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    R["APPLICATION 1 Cycle Detection"]
-    R --> N1["State"]
-    R --> N2["State"]
-    R --> N3["State"]
-    R --> N4["State"]
+    classDef app fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef use fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:1.5px;
+
+    D["⚡ Top DSU Real-World & Interview Applications"]:::app
+    D --> A1["1️⃣ Cycle Detection & Kruskal's MST<br/>Detect cycles by testing if endpoints already share root"]:::use
+    D --> A2["2️⃣ Dynamic Connectivity & Component Counting<br/>Maintain connected components as edges are added dynamically"]:::use
+    D --> A3["3️⃣ 2D Grid Union-Find<br/>Number of Islands II, Surrounded Regions, Percolation"]:::use
+    D --> A4["4️⃣ Equivalence Classes & Clustering<br/>Accounts Merge, Friend Circles, Satisfiability of Equality Equations"]:::use
 ```
 
 
@@ -561,24 +607,17 @@ Notes:
 
 ## Complete Algorithm Comparison Matrix
 
-```
-+================+===========+===========+===========+===========+===========+
-| Algorithm      | Time      | Space     | Weights   | Negatives | Best For  |
-+================+===========+===========+===========+===========+===========+
-| BFS            | O(V+E)    | O(V)      | Unit/none | N/A       | Unweight. |
-| Dijkstra       | O(ElogV)  | O(V+E)    | Positive  | ✗ NO      | Most use  |
-| Bellman–Ford   | O(VE)     | O(V)      | Any       | ✓ YES     | Neg.edges |
-| SPFA           | O(E) avg  | O(V)      | Any       | ✓ YES     | Sparse    |
-| Floyd–Warshall| O(V³)     | O(V²)     | Any       | ✓ YES     | All-pairs |
-| A*             | Varies    | O(V)      | Positive  | ✗ NO      | Navigate  |
-+================+===========+===========+===========+===========+===========+
-| Kruskal        | O(ElogE)  | O(E)      | Positive  | N/A (MST) | Sparse    |
-| Prim           | O(ElogV)  | O(V)      | Positive  | N/A (MST) | Dense     |
-+================+===========+===========+===========+===========+===========+
-| DSU/Union-Find| O(α(n))   | O(n)      | N/A       | N/A       | Connectv. |
-|               | amortized |           |           |           |           |
-+================+===========+===========+===========+===========+===========+
-```
+| Algorithm | Time Complexity | Auxiliary Space | Weights Allowed | Negative Edges? | Primary FAANG Use Case |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **BFS** | `O(V + E)` | `O(V)` | Unit / None | N/A | Shortest path in unweighted graphs |
+| **Dijkstra** | `O((V + E) log V)` | `O(V + E)` | Non-negative (`w >= 0`) | ❌ No | Single-source shortest path (standard) |
+| **Bellman–Ford** | `O(V * E)` | `O(V)` | Arbitrary real weights | ✅ Yes (Detects cycles) | Negative weights, FX currency arbitrage |
+| **SPFA** | `O(E)` avg / `O(V * E)` worst | `O(V)` | Arbitrary real weights | ✅ Yes | Queue-optimized Bellman–Ford |
+| **Floyd–Warshall** | `O(V^3)` | `O(V^2)` | Arbitrary (no neg cycles) | ✅ Yes | All-Pairs Shortest Path (`V <= 400`) |
+| **A\*** | Heuristic-dependent | `O(V)` | Non-negative (`w >= 0`) | ❌ No | Directed spatial search / Game grid AI |
+| **Kruskal's MST** | `O(E log E)` | `O(V + E)` | Any | N/A (Undirected) | Sparse MST (`E << V^2`), uses DSU |
+| **Prim's MST** | `O((V + E) log V)` | `O(V)` | Any | N/A (Undirected) | Dense MST (`E ~ V^2`), uses min-heap |
+| **DSU (Union-Find)** | `O(alpha(N))` amortized | `O(N)` | N/A | N/A | Dynamic connectivity, cycle checks |
 
 ---
 
@@ -587,25 +626,20 @@ Notes:
 ## Algorithm Selection Quick Guide
 
 
-```mermaid
-flowchart TD
-    R["State"]
-    R --> N1["State"]
-    N1 --> N2["Shortest path → 2️⃣                       "]
-    N1 --> N3["MST → 4️⃣                                "]
-    N1 --> N4["Connectivity → 5️⃣                        "]
-    N1 --> N5["Unweighted → BFS (O(V+E))                "]
-    N1 --> N6["Weighted non-negative → Dijkstra        "]
-    N1 --> N7["Weighted with negatives → 3️⃣            "]
-    N1 --> N8["Single source → Bellman–Ford (O(VE))    "]
-    N1 --> N9["All pairs → Floyd–Warshall (O(V³))      "]
-    N1 --> N10["Sparse (E < V log V) → Kruskal (O(ElogE))"]
-    N1 --> N11["Dense (E ≈ V²) → Prim (O(ElogV))        "]
-    N1 --> N12["Cycle detection → DSU (O(α(n)))         "]
-    N1 --> N13["Components → DSU + counting              "]
-    N1 --> N14["Dynamic updates → DSU                    "]
-    R --> N15["State"]
-```
+### 📌 🗺️ Graph Algorithm Selection Master Guide
+
+- **🛣️ Shortest Path Problems**
+  - Unweighted Graph → BFS: O(V + E)
+  - Non-Negative Weights → Dijkstra: O((V + E) log V)
+  - Negative Weights / Cycle Detection → Bellman–Ford: O(V * E)
+  - All-Pairs Shortest Path (Dense / Small V) → Floyd–Warshall: O(V³)
+- **🌲 Minimum Spanning Tree (MST)**
+  - Sparse Graphs (E << V²) → Kruskal's Algorithm: O(E log E) with DSU
+  - Dense Graphs (E ≈ V²) → Prim's Algorithm: O((V + E) log V) with PQ
+- **🔗 Connectivity & Equivalence**
+  - Dynamic Edge Additions & Cycle Detection → Disjoint Set Union (DSU): O(α(N))
+  - Connected Components & Islands → DSU or DFS/BFS
+
 
 
 ## Key Formulas & Facts
@@ -675,10 +709,15 @@ DSU:
 
 
 ```mermaid
-flowchart TD
-    R["State"]
-    R --> N1["State"]
-    R --> N2["State"]
+flowchart LR
+    classDef prob fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef algo fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+
+    P1["GPS / Routing (Non-negative)"]:::prob --> A1["⚡ Dijkstra (Min-Heap)"]:::algo
+    P2["Currency Arbitrage / Forex"]:::prob --> A2["⚡ Bellman–Ford (Negative Cycles)"]:::algo
+    P3["All-Pairs Transit Matrix (V <= 400)"]:::prob --> A3["⚡ Floyd–Warshall (3-Loop DP)"]:::algo
+    P4["Network Cabling / Clustering"]:::prob --> A4["⚡ Kruskal's / Prim's MST"]:::algo
+    P5["Dynamic Social Circles / Merging"]:::prob --> A5["⚡ Disjoint Set Union (DSU)"]:::algo
 ```
 
 

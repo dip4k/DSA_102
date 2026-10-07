@@ -133,18 +133,15 @@ Result:
 **Definition:** Same subproblem solved multiple times in recursive tree
 
 
-```mermaid
-flowchart TD
-    R["❌ PROBLEM (without memoization)"]
-    R --> N1["fib(4)"]
-    N1 --> N2["fib(3) ◄ RECOMPUTED LATER"]
-    N1 --> N3["fib(2)"]
-    R --> N4["fib(3) ◄ SAME WORK AGAIN!"]
-    R --> N5["fib(4)  → compute, cache fib(4)"]
-    N5 --> N6["fib(3) → compute, cache fib(3)"]
-    N5 --> N7["fib(2) → compute, cache fib(2)"]
-    R --> N8["fib(3) → RETURN FROM CACHE! (O(1))"]
+**❌ PROBLEM (without memoization)**
+
+```text
+• fib(4)
+• fib(3) ◄ SAME WORK AGAIN!
+• fib(4)  → compute, cache fib(4)
+• fib(3) → RETURN FROM CACHE! (O(1))
 ```
+
 
 
 ### Core Concept 2: Optimal Substructure
@@ -196,18 +193,13 @@ function solve(n, memo):
 **Fibonacci Example:**
 
 
-```mermaid
-flowchart TD
-    R["Top-Down DP (Recursive with caching)"]
-    R --> N1["fib(4) [not in memo]"]
-    N1 --> N2["fib(3) [not in memo]"]
-    N2 --> N3["fib(2) [not in memo]"]
-    N3 --> N4["fib(1) → return 1, cache fib(1)=1"]
-    N3 --> N5["fib(0) → return 0, cache fib(0)=0"]
-    N2 --> N6["fib(1) [IN CACHE] → return 1"]
-    N1 --> N7["fib(2) [IN CACHE] → return 1"]
-    R --> N8["fib(3) [IN CACHE] → return 2"]
+**Top-Down DP (Recursive with caching)**
+
+```text
+• fib(4) [not in memo]
+• fib(3) [IN CACHE] → return 2
 ```
+
 
 
 ### Core Concept 4: Tabulation (Bottom-Up DP)
@@ -269,11 +261,27 @@ Space: O(n) for dp array
 
 ```mermaid
 flowchart TD
-    R["State"]
-    R --> N1["State"]
-    R --> N2["State"]
-    R --> N3["State"]
-    R --> N4["State"]
+    classDef top fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef bot fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+    classDef comp fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:2px;
+
+    R["⚖️ Dynamic Programming: Top-Down vs. Bottom-Up"]:::comp
+
+    subgraph TopDown["🧠 Top-Down (Memoization)"]
+        T1["• Natural Recursive Formulation (Problem -> Base cases)"]:::top
+        T2["• Computes ONLY required subproblems lazily"]:::top
+        T3["• Memory: Table O(N) + Call Stack O(N) frames"]:::top
+        T4["• Risk: Recursion depth limit / StackOverflow on large N"]:::top
+    end
+
+    subgraph BottomUp["📊 Bottom-Up (Tabulation)"]
+        B1["• Iterative Table Fill (Base cases -> Problem)"]:::bot
+        B2["• Computes subproblems in strict topological dependency order"]:::bot
+        B3["• Memory: Allows 1D/O(1) rolling space optimization!"]:::bot
+        B4["• Cache friendly: Contiguous memory access, zero call-stack overhead"]:::bot
+    end
+
+    R --> TopDown & BottomUp
 ```
 
 
@@ -1926,9 +1934,18 @@ Space complexity: O(_______)
 
 ```mermaid
 flowchart TD
-    R["Problem Given"]
-    R --> N1["State"]
-    R --> N2["State"]
+    classDef start fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
+    classDef decision fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
+    classDef algo fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+
+    R["🎯 Algorithmic Paradigm Recognition"]:::start
+    R --> D1{"Optimal Substructure?<br/>(Solution contains sub-solutions)"}:::decision
+    D1 -->|No| Other["Backtracking / Brute Force Search"]
+    D1 -->|Yes| D2{"Overlapping Subproblems?<br/>(Same states recomputed repeatedly)"}:::decision
+    D2 -->|No| DC["⚡ Divide & Conquer (e.g. Merge Sort, Binary Search)"]:::algo
+    D2 -->|Yes| D3{"Greedy Choice Property?<br/>(Local greedy pick always globally optimal)"}:::decision
+    D3 -->|Yes| GR["⚡ Greedy Approach (e.g. Dijkstra, Huffman, Interval Scheduling)"]:::algo
+    D3 -->|No| DP["⚡ Dynamic Programming (Memoization / Tabulation)"]:::algo
 ```
 
 

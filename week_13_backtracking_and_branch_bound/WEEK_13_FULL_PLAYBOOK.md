@@ -54,42 +54,40 @@ Master backtracking algorithm structure, state space trees, and systematic explo
 ### Core Definition
 
 
-```mermaid
-flowchart TD
-    R["BACKTRACKING ALGORITHM"]
-    R --> N1["Current partial solution"]
-    R --> N2["What's been decided"]
-    R --> N3["What's still to decide"]
-    R --> N4["At each step: what are next options?"]
-    R --> N5["What decisions can we make?"]
-    R --> N6["Different choices = different branches"]
-    R --> N7["Is this choice valid?"]
-    R --> N8["Doesn't violate constraints?"]
-    R --> N9["Could lead to solution?"]
-    R --> N10["If valid: recurse with new state"]
-    R --> N11["If recursion finds solution: return"]
-    R --> N12["If not: try next choice"]
-    R --> N13["If no choice works: undo last decision"]
-    R --> N14["Return to previous state"]
-    R --> N15["Try alternative"]
-```
+### 📌 BACKTRACKING ALGORITHM
+
+- Current partial solution
+- What's been decided
+- What's still to decide
+- At each step: what are next options?
+- What decisions can we make?
+- Different choices = different branches
+- Is this choice valid?
+- Doesn't violate constraints?
+- Could lead to solution?
+- If valid: recurse with new state
+- If recursion finds solution: return
+- If not: try next choice
+- If no choice works: undo last decision
+- Return to previous state
+- Try alternative
+
 
 
 ### Comparison: Backtracking vs Brute Force
 
 
-```mermaid
-flowchart TD
-    R["BRUTE FORCE"]
-    R --> N1["Generate ALL possible solutions"]
-    R --> N2["Check each one to see if valid"]
-    R --> N3["Return valid ones"]
-    R --> N4["Time: Worst case (exponential all)"]
-    R --> N5["Build solution incrementally"]
-    R --> N6["PRUNE when can't possibly be valid"]
-    R --> N7["Skip entire subtrees of invalid solutions"]
-    R --> N8["Time: Better than brute force (pruning helps)"]
-```
+### 📌 BRUTE FORCE
+
+- Generate ALL possible solutions
+- Check each one to see if valid
+- Return valid ones
+- Time: Worst case (exponential all)
+- Build solution incrementally
+- PRUNE when can't possibly be valid
+- Skip entire subtrees of invalid solutions
+- Time: Better than brute force (pruning helps)
+
 
 
 ### When to Use Backtracking
@@ -149,19 +147,18 @@ NOT IDEAL:
 ### Depth vs Breadth in State Space
 
 
-```mermaid
-flowchart TD
-    R["DEPTH-FIRST (Backtracking) vs BREADTH-FIRST"]
-    R --> N1["Go deep into solution quickly"]
-    R --> N2["Find first solution fast"]
-    R --> N3["Space: O(depth) in recursion stack"]
-    R --> N4["Can use backtracking/pruning"]
-    R --> N5["Find one solution, then continue for others"]
-    R --> N6["Explore all at current level"]
-    R --> N7["Find shortest solution first"]
-    R --> N8["Space: O(width) in queue"]
-    R --> N9["Can use bounding (if have limits)"]
-```
+### 📌 DEPTH-FIRST (Backtracking) vs BREADTH-FIRST
+
+- Go deep into solution quickly
+- Find first solution fast
+- Space: O(depth) in recursion stack
+- Can use backtracking/pruning
+- Find one solution, then continue for others
+- Explore all at current level
+- Find shortest solution first
+- Space: O(width) in queue
+- Can use bounding (if have limits)
+
 
 
 ---
@@ -1472,18 +1469,17 @@ So DON'T prune this branch
 ### Priority Queue Strategy
 
 
-```mermaid
-flowchart TD
-    R["BEST-FIRST SEARCH in BRANCH & BOUND"]
-    R --> N1["Goes deep quickly"]
-    R --> N2["Uses stack (implicit recursion)"]
-    R --> N3["Space: O(depth)"]
-    R --> N4["Time: varies, may explore many dead ends"]
-    R --> N5["Explores promising branches first"]
-    R --> N6["Uses priority queue"]
-    R --> N7["Space: O(width)"]
-    R --> N8["Time: Often faster for optimization"]
-```
+### 📌 BEST-FIRST SEARCH in BRANCH & BOUND
+
+- Goes deep quickly
+- Uses stack (implicit recursion)
+- Space: O(depth)
+- Time: varies, may explore many dead ends
+- Explores promising branches first
+- Uses priority queue
+- Space: O(width)
+- Time: Often faster for optimization
+
 
 
 ### Implementation Strategy
@@ -1755,18 +1751,17 @@ KEY INSIGHT:
 ### When Expensive Meets Frequent
 
 
-```mermaid
-flowchart TD
-    R["AMORTIZED vs WORST CASE"]
-    R --> N1["Amortized analysis applies"]
-    R --> N2["Example: Dynamic array doubling"]
-    R --> N3["Explains why arrays are practical despite occasional realloc"]
-    R --> N4["Amortized analysis doesn't help"]
-    R --> N5["Example: Linked list iteration"]
-    R --> N6["No averaging possible, linear is fundamental"]
-    R --> N7["Amortized analysis useful"]
-    R --> N8["Example: Splay trees"]
-```
+### 📌 AMORTIZED vs WORST CASE
+
+- Amortized analysis applies
+- Example: Dynamic array doubling
+- Explains why arrays are practical despite occasional realloc
+- Amortized analysis doesn't help
+- Example: Linked list iteration
+- No averaging possible, linear is fundamental
+- Amortized analysis useful
+- Example: Splay trees
+
 
 
 ---
@@ -2302,48 +2297,47 @@ Understand how to combine backtracking, branch & bound, and other paradigms for 
 ### Decision Framework
 
 
-```mermaid
-flowchart TD
-    R["ALGORITHM PARADIGM SELECTION"]
-    R --> N1["Feasibility (find ANY solution)"]
-    N1 --> N2["BACKTRACKING likely good"]
-    R --> N3["Optimization (find BEST solution)"]
-    N3 --> N4["BRANCH & BOUND or DP"]
-    R --> N5["Enumeration (find ALL solutions)"]
-    N5 --> N6["BACKTRACKING with tracking"]
-    R --> N7["Counting (HOW MANY solutions)"]
-    N7 --> N8["DP with counting or backtracking"]
-    R --> N9["Hard constraints (must satisfy)"]
-    N9 --> N10["Use constraint checking (backtracking)"]
-    R --> N11["Soft constraints (optimization criterion)"]
-    N11 --> N12["Use bounding (branch & bound)"]
-    R --> N13["Mixed constraints"]
-    N13 --> N14["Hybrid approach"]
-    R --> N15["Small (< 2^20)"]
-    N15 --> N16["Backtracking might work"]
-    R --> N17["Medium (2^20 to 2^40)"]
-    N17 --> N18["Need good pruning"]
-    R --> N19["Large (> 2^40)"]
-    N19 --> N20["Must use heuristics or approximation"]
-    R --> N21["Polynomial (< n^4)"]
-    N21 --> N22["DP or greedy"]
-    R --> N23["Incremental (build piece by piece)"]
-    N23 --> N24["BACKTRACKING natural"]
-    R --> N25["Stateless (solution independent of path)"]
-    N25 --> N26["DP or greedy"]
-    R --> N27["Recursive with overlap"]
-    N27 --> N28["DP or memoization"]
-    R --> N29["No clear structure"]
-    N29 --> N30["May need heuristics"]
-    R --> N31["Strong (many branches prunable)"]
-    N31 --> N32["Backtracking or B&B good"]
-    R --> N33["Medium (some pruning possible)"]
-    N33 --> N34["May work, or try DP"]
-    R --> N35["Weak (little pruning possible)"]
-    N35 --> N36["Probably need DP or approximation"]
-    R --> N37["Unknown"]
-    N37 --> N38["Experiment with multiple approaches"]
-```
+### 📌 ALGORITHM PARADIGM SELECTION
+
+- **Feasibility (find ANY solution)**
+  - BACKTRACKING likely good
+- **Optimization (find BEST solution)**
+  - BRANCH & BOUND or DP
+- **Enumeration (find ALL solutions)**
+  - BACKTRACKING with tracking
+- **Counting (HOW MANY solutions)**
+  - DP with counting or backtracking
+- **Hard constraints (must satisfy)**
+  - Use constraint checking (backtracking)
+- **Soft constraints (optimization criterion)**
+  - Use bounding (branch & bound)
+- **Mixed constraints**
+  - Hybrid approach
+- **Small (< 2^20)**
+  - Backtracking might work
+- **Medium (2^20 to 2^40)**
+  - Need good pruning
+- **Large (> 2^40)**
+  - Must use heuristics or approximation
+- **Polynomial (< n^4)**
+  - DP or greedy
+- **Incremental (build piece by piece)**
+  - BACKTRACKING natural
+- **Stateless (solution independent of path)**
+  - DP or greedy
+- **Recursive with overlap**
+  - DP or memoization
+- **No clear structure**
+  - May need heuristics
+- **Strong (many branches prunable)**
+  - Backtracking or B&B good
+- **Medium (some pruning possible)**
+  - May work, or try DP
+- **Weak (little pruning possible)**
+  - Probably need DP or approximation
+- **Unknown**
+  - Experiment with multiple approaches
+
 
 
 ### Paradigm Characteristics
@@ -2666,30 +2660,29 @@ STEP 7: VALIDATE
 ### Common Problem Patterns
 
 
-```mermaid
-flowchart TD
-    R["RECOGNITION PATTERNS FOR COMMON PROBLEMS"]
-    R --> N1["BACKTRACKING: Build incrementally, check constraints"]
-    R --> N2["Example: Subset sum, N-Queens, Sudoku"]
-    R --> N3["BRANCH & BOUND: Systematic search with bounding"]
-    R --> N4["DP: If optimal substructure"]
-    R --> N5["GREEDY: If greedy choice property"]
-    R --> N6["Example: TSP, Knapsack, Scheduling"]
-    R --> N7["BACKTRACKING: Count valid solutions"]
-    R --> N8["DP: If counting overlaps possible"]
-    R --> N9["COMBINATORICS: If closed-form formula"]
-    R --> N10["Example: Permutations with constraints"]
-    R --> N11["BRANCH & BOUND: Guaranteed optimal"]
-    R --> N12["DP: If overlapping subproblems"]
-    R --> N13["GREEDY: If choice property"]
-    R --> N14["HEURISTIC: If too hard or large"]
-    R --> N15["Example: General optimization"]
-    R --> N16["BFS/DFS: If unweighted or simple"]
-    R --> N17["Dijkstra: If non-negative weights"]
-    R --> N18["A*: If goal known, heuristic available"]
-    R --> N19["B&B: If optimization on path property"]
-    R --> N20["Example: Routing, navigation, maze"]
-```
+### 📌 RECOGNITION PATTERNS FOR COMMON PROBLEMS
+
+- BACKTRACKING: Build incrementally, check constraints
+- Example: Subset sum, N-Queens, Sudoku
+- BRANCH & BOUND: Systematic search with bounding
+- DP: If optimal substructure
+- GREEDY: If greedy choice property
+- Example: TSP, Knapsack, Scheduling
+- BACKTRACKING: Count valid solutions
+- DP: If counting overlaps possible
+- COMBINATORICS: If closed-form formula
+- Example: Permutations with constraints
+- BRANCH & BOUND: Guaranteed optimal
+- DP: If overlapping subproblems
+- GREEDY: If choice property
+- HEURISTIC: If too hard or large
+- Example: General optimization
+- BFS/DFS: If unweighted or simple
+- Dijkstra: If non-negative weights
+- A*: If goal known, heuristic available
+- B&B: If optimization on path property
+- Example: Routing, navigation, maze
+
 
 
 ---

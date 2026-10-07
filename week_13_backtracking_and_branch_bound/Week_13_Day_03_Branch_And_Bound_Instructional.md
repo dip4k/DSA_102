@@ -215,14 +215,13 @@ State:
 **Visual: Bound Tightness Spectrum**
 
 
-```mermaid
-flowchart TD
-    R["Problem TSP with actual optimal tour = 100"]
-    R --> N1["Bound = 0 (always admissible, never prunes)"]
-    R --> N2["Bound = 50 (admissible, prunes half of bad branches)"]
-    R --> N3["Bound = 95 (admissible, prunes 95% of bad branches)"]
-    R --> N4["Bound = 100 (perfect, but too expensive to compute)"]
-```
+### 📌 Problem TSP with actual optimal tour = 100
+
+- Bound = 0 (always admissible, never prunes)
+- Bound = 50 (admissible, prunes half of bad branches)
+- Bound = 95 (admissible, prunes 95% of bad branches)
+- Bound = 100 (perfect, but too expensive to compute)
+
 
 
 ### Common Bounding Techniques
@@ -606,11 +605,14 @@ class Program
 ### Detailed Execution Trace (4 Cities)
 
 
-```mermaid
-flowchart TD
-    R["State"]
-    R --> N1["State"]
-```
+### 📌 📍 Root: City A (Lower Bound = 35)
+
+- **Visit B: Partial [A, B]<br/>Bound = 38**
+  - Partial [A, B, C, D, A]<br/>Complete Tour Cost = 40
+- **Visit C: Partial [A, C]<br/>Bound = 42**
+  - Partial [A, C, ...]<br/>Bound 42 >= Best(40) → ✂️ PRUNED!
+- Visit D: Partial [A, D]<br/>Bound = 48
+
 
 
 ### Complexity Analysis
@@ -950,11 +952,14 @@ class Program
 ### Visualization: Search Tree
 
 
-```mermaid
-flowchart TD
-    R["State"]
-    R --> N1["State"]
-```
+### 📌 📦 Root: Empty Knapsack<br/>Fractional Upper Bound = 56.8
+
+- **👉 Take Item 0 (val=20, wt=10)<br/>Current Val=20, Bound=56.8**
+  - 👉 Take Item 1 (val=30, wt=20)<br/>Current Val=50, Feasible Solution! Best=50
+  - 👈 Skip Item 1<br/>Bound = 38.5 < Best(50) → ✂️ PRUNED!
+- **👈 Skip Item 0<br/>Current Val=0, Bound=44.2**
+  - Bound = 44.2 < Best(50) → ✂️ PRUNED!
+
 
 
 **Key Observations**:
@@ -1335,23 +1340,24 @@ class Program
 ## When to Use Branch & Bound: Decision Framework
 
 
-```mermaid
-flowchart TD
-    R["Problem Characteristics Checklist"]
-    R --> N1["No → Use backtracking or greedy"]
-    R --> N2["Yes → Continue"]
-    R --> N3["Yes → Use DP (usually faster)"]
-    R --> N4["No → Continue"]
-    R --> N5["N ≤ 20 → B&B feasible, try it"]
-    R --> N6["20 < N ≤ 50 → B&B possible with tight bounds"]
-    R --> N7["50 < N ≤ 100 → B&B + heuristics (hybrid)"]
-    R --> N8["N > 100 → Use approximation algorithms (greedy, local search)"]
-    R --> N9["Yes (tight, fast) → B&B likely effective"]
-    R --> N10["No (loose, slow) → B&B may degrade to exhaustive"]
-    R --> N11["Can wait minutes/hours → Pure B&B"]
-    R --> N12["Need answer in seconds → B&B with timeout → greedy"]
-    R --> N13["Real-time (milliseconds) → Skip B&B, use heuristics"]
+**Problem Characteristics Checklist**
+
+```text
+• No → Use backtracking or greedy
+• Yes → Continue
+• Yes → Use DP (usually faster)
+• No → Continue
+• N ≤ 20 → B&B feasible, try it
+• 20 < N ≤ 50 → B&B possible with tight bounds
+• 50 < N ≤ 100 → B&B + heuristics (hybrid)
+• N > 100 → Use approximation algorithms (greedy, local search)
+• Yes (tight, fast) → B&B likely effective
+• No (loose, slow) → B&B may degrade to exhaustive
+• Can wait minutes/hours → Pure B&B
+• Need answer in seconds → B&B with timeout → greedy
+• Real-time (milliseconds) → Skip B&B, use heuristics
 ```
+
 
 
 ## Designing Custom Bounding Functions

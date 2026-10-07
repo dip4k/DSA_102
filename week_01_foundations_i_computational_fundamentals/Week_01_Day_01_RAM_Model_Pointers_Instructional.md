@@ -66,12 +66,20 @@ Here's what this looks like in memory:
 
 ```mermaid
 flowchart TD
-    R["Address Space (Logical View)"]
-    R --> N1["State"]
-    R --> N2["State"]
-    R --> N3["State"]
-    R --> N4["State"]
-    R --> N5["State"]
+    classDef seg fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+    classDef dynamic fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
+    classDef gap fill:#f5f5f5,stroke:#9e9e9e,stroke-dasharray: 5 5,color:#616161
+
+    Stack["📦 Stack: Call frames & local variables<br/>⬇️ Grows downward toward heap"]:::dynamic
+    Gap["⚡ Free Memory Gap: Dynamic expansion space"]:::gap
+    Heap["🧱 Heap: Dynamically allocated memory<br/>⬆️ Grows upward toward stack"]:::dynamic
+    Data["📊 Data & BSS: Global and static variables"]:::seg
+    Text["⚙️ Text / Code: Compiled machine instructions"]:::seg
+
+    Stack --> Gap
+    Gap --> Heap
+    Heap --> Data
+    Data --> Text
 ```
 
 
@@ -209,11 +217,16 @@ void PrintNumber(int n) {
 
 ```mermaid
 flowchart TD
-    R["Function Call Stack (top = most recent frame)"]
-    R --> N1["State"]
-    R --> N2["State"]
-    R --> N3["State"]
-    R --> N4["State"]
+    classDef topFrame fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+    classDef parentFrame fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+    classDef baseFrame fill:#f5f5f5,stroke:#757575,stroke-width:2px,color:#424242
+
+    Top["🟢 Active Frame: ProcessData()<br/>- ptr = 0x7FFE20<br/>- local int temp = 10"]:::topFrame
+    Middle["📦 Caller Frame: CalculateMetrics()<br/>- int[] buffer = [1, 2, 3]"]:::parentFrame
+    Bottom["🏠 Base Frame: Main(string[] args)"]:::baseFrame
+
+    Top -->|"Pushed above caller"| Middle
+    Middle -->|"Pushed above main"| Bottom
 ```
 
 
