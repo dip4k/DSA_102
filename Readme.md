@@ -179,6 +179,8 @@ When you see a problem in an interview, use this quick reference matrix to insta
 
 ### Phase D: Algorithm Paradigms (Weeks 12–13)
 
+> 💡 **Quick Reference:** Explore the standalone, jargon-free **[Algorithmic Paradigms Learning Guide](Paradigms/README.md)** for beginner mental models, decision flowcharts, and 45-minute interview talk tracks.
+
 *   **[Week 12: Greedy Algorithms & Exchange Arguments](week_12_greedy_and_paradigms/README.md)**
     *   Day 1: The Greedy choice property and why local optimality succeeds (or fails).
     *   Day 2: Interval scheduling, activity selection, and meeting rooms.
@@ -198,10 +200,10 @@ When you see a problem in an interview, use this quick reference matrix to insta
 
 *   **[Week 14: Matrix, Bitmasks & Number Theory](week_14_matrix_backtracking_bits/README.md)**
     *   Day 1: 2D Matrix traversals, spiral orders, rotations, and binary search on grids.
-    *   Day 2: Backtracking on grids (Word Search, Sudoku Solver).
-    *   Day 3: Bitwise operations: XOR tricks, bitmask subsets, and state compression.
-    *   Day 4: Number theory basics: GCD/LCM, Sieve of Eratosthenes, and modular arithmetic.
-    *   Day 5: Advanced number theory and modular inverse via Fermat's Little Theorem.
+    *   Day 2: Bitwise operations: XOR tricks, bitmask subsets, and state compression.
+    *   Day 3: Number theory basics: GCD/LCM, Sieve of Eratosthenes, and modular arithmetic.
+    *   Day 4: Advanced string problems: rolling hash, frequency patterns, and transformations.
+    *   Day 5 *(optional)*: Advanced number theory, modular inverse via Fermat's Little Theorem, and Euler's Totient.
 *   **[Week 15: Advanced Strings, Range Queries & Network Flow](week_15_advanced_strings_flow/README.md)**
     *   Day 1: Z-Algorithm and KMP pattern matching without complex DFA tables.
     *   Day 2: Segment Trees for range sum and range minimum queries with point updates.
@@ -230,6 +232,7 @@ When you see a problem in an interview, use this quick reference matrix to insta
     *   Day 3: Mock Round 3: Dynamic Programming (Edit Distance & Patience Sorting LIS).
     *   Day 4: Mock Round 4: Mixed Complex Systems (Monotonic Deque & O(1) LRU Cache).
     *   Day 5: Final Assessment: Weakness diagnosis, communication rubrics, and interview recovery strategies.
+    *   Day 6 *(optional)*: Interview Specific Tips, Verbal Communication Protocols & Final Drills.
 
 ---
 
