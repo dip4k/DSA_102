@@ -264,30 +264,30 @@ Need a deep dive into one specific pattern across multiple weeks? Use these stan
 
 | Pattern | Comprehensive Guide |
 | :--- | :--- |
-| **Arrays** | [FlowWise Array Mastery Guide](traversal%20guides/arrays/FlowWise_Array_Mastery_v5_Final.md) |
-| **Linked Lists** | [LinkedList Mastery Enhanced Guide](traversal%20guides/linked%20lists/FlowWise_LinkedList_Mastery_Enhanced_v3.md) |
-| **Stacks** | [Stack Mastery Guide](traversal%20guides/stacks/stack_mastery_guide_L1-L6_lenient.md) |
-| **Queues** | [Queue Traversal Mastery Guide](traversal%20guides/queues/FlowWise_Queue_Traversal_Mastery_Enhanced_v2.md) |
-| **Trees** | [Tree Traversal Unified Guide](traversal%20guides/Trees/Tree_Traversal_Mastery_Unified_with_Appendix.md) |
-| **Graphs** | [Graphs Traversal Unified Guide](traversal%20guides/graphs/Graphs_Traversal_Mastery_Unified_Guide_v4.md) |
-| **Binary Search** | [Binary Search Mastery Curriculum](traversal%20guides/binary_search/Binary_Search_Mastery_Curriculum_v1.md) |
-| **Two Pointers** | [Two Pointers Mastery Curriculum](traversal%20guides/two_pointers/Two_Pointers_Mastery_Curriculum_v1.md) |
-| **Sliding Window** | [Sliding Window Mastery Curriculum](traversal%20guides/sliding_window/Sliding_Window_Mastery_Curriculum_v1.md) |
-| **Hashing** | [Hashing Mastery Curriculum](traversal%20guides/hashing/Hashing_Mastery_Curriculum_v1.md) |
-| **Heaps** | [Heaps Mastery Curriculum](traversal%20guides/heaps/Heaps_Mastery_Curriculum_v1.md) |
-| **Sorting** | [Quicksort & Mergesort Mastery](traversal%20guides/sorting/quicksort_mergesort_traversal_mastery.md) |
-| **Strings** | [String Traversal Mastery](traversal%20guides/strings/string_traversal_mastery_all_levels.md) |
-| **Monotonic Stack** | [Monotonic Stack Mastery Curriculum](traversal%20guides/monotonic_stack/Monotonic_Stack_Mastery_Curriculum_v1.md) |
-| **Prefix Sums** | [Prefix Sums Mastery Curriculum](traversal%20guides/prefix_sums/Prefix_Sums_Mastery_Curriculum_v1.md) |
-| **Intervals** | [Intervals Mastery Curriculum](traversal%20guides/intervals/Intervals_Mastery_Curriculum_v1.md) |
-| **Dynamic Programming** | [DP Traversal Mastery Curriculum](traversal%20guides/dynamic_programming/DP_Traversal_Mastery_Curriculum_v1.md) |
-| **Backtracking** | [Backtracking Mastery Curriculum](traversal%20guides/backtracking/Backtracking_Mastery_Curriculum_v1.md) |
-| **Greedy** | [Greedy Traversal Mastery Curriculum](traversal%20guides/greedy/Greedy_Traversal_Mastery_Curriculum_v1.md) |
-| **Matrix Traversal** | [Matrix Traversal Mastery Curriculum](traversal%20guides/matrix_traversal/Matrix_Traversal_Mastery_Curriculum_v1.md) |
-| **Tries** | [Tries Mastery Curriculum](traversal%20guides/tries/Tries_Mastery_Curriculum_v1.md) |
-| **Union Find** | [Union Find Mastery Curriculum](traversal%20guides/union_find/Union_Find_Mastery_Curriculum_v1.md) |
-| **Bit Manipulation** | [Bit Manipulation Mastery Curriculum](traversal%20guides/bit_manipulation/Bit_Manipulation_Mastery_Curriculum_v1.md) |
-| **Quick Reference** | [String & Array Traversal Cheatsheet](traversal%20guides/String%20Array%20Traversal%20Cheatsheet.md) |
+| **01. Arrays** | [Arrays Mastery Guide](traversal%20guides/01_arrays/arrays_mastery_guide.md) |
+| **02. Strings** | [Strings Mastery Guide](traversal%20guides/02_strings/strings_mastery_guide.md) |
+| **03. Hashing** | [Hashing Mastery Guide](traversal%20guides/03_hashing/hashing_mastery_guide.md) |
+| **04. Linked Lists** | [Linked Lists Mastery Guide](traversal%20guides/04_linked_lists/linked_lists_mastery_guide.md) |
+| **05. Two Pointers** | [Two Pointers Mastery Guide](traversal%20guides/05_two_pointers/two_pointers_mastery_guide.md) |
+| **06. Sliding Window** | [Sliding Window Mastery Guide](traversal%20guides/06_sliding_window/sliding_window_mastery_guide.md) |
+| **07. Binary Search** | [Binary Search Mastery Guide](traversal%20guides/07_binary_search/binary_search_mastery_guide.md) |
+| **08. Prefix Sums** | [Prefix Sums Mastery Guide](traversal%20guides/08_prefix_sums/prefix_sums_mastery_guide.md) |
+| **09. Stacks** | [Stacks Mastery Guide](traversal%20guides/09_stacks/stacks_mastery_guide.md) |
+| **10. Monotonic Stack** | [Monotonic Stack Mastery Guide](traversal%20guides/10_monotonic_stack/monotonic_stack_mastery_guide.md) |
+| **11. Queues** | [Queues Mastery Guide](traversal%20guides/11_queues/queues_mastery_guide.md) |
+| **12. Trees** | [Trees Mastery Guide](traversal%20guides/12_trees/trees_mastery_guide.md) |
+| **13. Graphs** | [Graphs Mastery Guide](traversal%20guides/13_graphs/graphs_mastery_guide.md) |
+| **14. Heaps** | [Heaps & Priority Queues Guide](traversal%20guides/14_heaps/heaps_mastery_guide.md) |
+| **15. Tries** | [Tries Mastery Guide](traversal%20guides/15_tries/tries_mastery_guide.md) |
+| **16. Union-Find** | [Union-Find Mastery Guide](traversal%20guides/16_union_find/union_find_mastery_guide.md) |
+| **17. Sorting** | [Sorting & Quickselect Guide](traversal%20guides/17_sorting/sorting_mastery_guide.md) |
+| **18. Intervals** | [Intervals & Sweep Line Guide](traversal%20guides/18_intervals/intervals_mastery_guide.md) |
+| **19. Greedy** | [Greedy Traversal Mastery Guide](traversal%20guides/19_greedy/greedy_mastery_guide.md) |
+| **20. Dynamic Programming** | [Dynamic Programming Mastery Guide](traversal%20guides/20_dynamic_programming/dynamic_programming_mastery_guide.md) |
+| **21. Backtracking** | [Backtracking Mastery Guide](traversal%20guides/21_backtracking/backtracking_mastery_guide.md) |
+| **22. Matrix** | [Matrix Traversal Mastery Guide](traversal%20guides/22_matrix/matrix_mastery_guide.md) |
+| **23. Bit Manipulation** | [Bit Manipulation Mastery Guide](traversal%20guides/23_bit_manipulation/bit_manipulation_mastery_guide.md) |
+| **Quick Reference** | [String & Array Traversal Cheatsheet](traversal%20guides/string_array_traversal_cheatsheet.md) |
 
 *Full Traversal Index:* [traversal_guides_INDEX.md](traversal%20guides/traversal_guides_INDEX.md)
 
