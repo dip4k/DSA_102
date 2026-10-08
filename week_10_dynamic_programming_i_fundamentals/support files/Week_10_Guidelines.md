@@ -356,8 +356,6 @@ dp[amount] += dp[amount - coin]  // Correct: accumulate all ways
 - **GeeksforGeeks**: DP foundational articles.
 
 ### **Video Resources**
-- StriverG: "DP Problems Explained" series.
-- Abdul Bari: "Dynamic Programming" complete playlist.
 - MIT 6.006 (OpenCourseWare): Official DP lectures.
 
 ---

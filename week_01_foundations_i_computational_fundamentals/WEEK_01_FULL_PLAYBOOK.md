@@ -1,4 +1,4 @@
-﻿# 📚 WEEK 01: FOUNDATIONS I - COMPUTATIONAL THINKING
+# 📚 WEEK 01: FOUNDATIONS I - COMPUTATIONAL THINKING
 > 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)
 > 
 > 💡 **Instructor Note:** *This Comprehensive Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
@@ -8,8 +8,6 @@
 ## RAM, Big-O Complexity Analysis, Space Complexity, Recursion, Peak Finding
 
 **Phase:** A (Foundations)  
-**Last Updated:** January 15, 2026, 1:50 AM IST  
-**Format:** Visual Concepts Playbook Hybrid Instructional  
 
 ---
 
@@ -1978,8 +1976,7 @@ D) No peak exists
 ## 📚 Supplementary Resources
 
 **Visualizations:**
-- VisuAlgo (https://visualgo.net) — Visualize recursion, binary search
-- YouTube divide-and-conquer algorithm visualizations
+- Interactive divide-and-conquer algorithm visualizations
 
 **Reading:**
 - "Introduction to Algorithms" (CLRS) Chapters 1-4 (complexity, recursion)

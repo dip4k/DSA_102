@@ -777,7 +777,6 @@ public class Solution {
 **External Practice:**
 - LeetCode: Problems #94, #102, #104, #98, #700, #450, #543, #112, #297, #124, #236
 - GeeksforGeeks: Tree tutorials and implementations
-- VisuAlgo.net: Tree visualizations (understand rotations visually)
 
 ---
 
@@ -798,21 +797,6 @@ public class Solution {
 1. Night before: Review SECTION 7 (mental models 5 min)
 2. Day of: Skim SECTION 1 (decision tree 2 min)
 3. During interview: Use mental models to explain your choice
-
----
-
-*End of Week 7 Extended C# Support — v13 Hybrid Format*
-
-**Total Content:**
-- ✅ 4 major patterns (traversals, BST ops, diameter/path, serialization)
-- ✅ Decision tree with 10+ problem signals
-- ✅ Anti-patterns with 10 common mistakes
-- ✅ 30+ lines of production C# code
-- ✅ Progressive problem ladder (Stage 1-3)
-- ✅ Collection decision guide
-- ✅ 6+ gotchas specific to trees and C#
-- ✅ Interview quick reference with 10 patterns
-- ✅ Completion checklist for mastery
 
 ---
 

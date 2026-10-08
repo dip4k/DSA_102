@@ -9,8 +9,6 @@
 **Phase:** D – Algorithm Paradigms  
 **Theme:** Backtracking & Branch & Bound  
 **Core Topics:** Backtracking Fundamentals, Backtracking Problems, Branch & Bound, Amortized Analysis  
-**Format:** Hybrid (Enhanced ASCII + State Space Diagrams)  
-**Syllabus Source:** COMPLETE_SYLLABUS.md  
 
 ---
 

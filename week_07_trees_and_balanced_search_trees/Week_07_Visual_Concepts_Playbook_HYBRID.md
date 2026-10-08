@@ -1,4 +1,4 @@
-﻿# 📊 WEEK 7: Trees & Balanced Search Trees — Visual Hybrid Support Guide
+# 📊 WEEK 7: Trees & Balanced Search Trees — Visual Hybrid Support Guide
 
 > 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)
 > 
@@ -6,9 +6,7 @@
 
 ---
 
-**File Classification:** Visual Playbook Support Document (v12)  
-**Purpose:** Unified visual reference spanning all five instructional files  
-**Last Updated:** January 22, 2026
+**Purpose:** Unified visual reference spanning all five instructional files
 
 ---
 

@@ -198,17 +198,7 @@ Target: 165-200 problems with deep understanding
 
 ## 🎓 Learning Resources
 
-### Visualization Tools
-- [VisuAlgo](https://visualgo.net/) - Interactive algorithm visualizations
-- [Algorithm Visualizer](https://algorithm-visualizer.org/) - Code execution visualization
-- [LeetCode Playground](https://leetcode.com/) - Test solutions online
-
-### Video Courses
-- **Abdul Bari** (YouTube) - Algorithm theory
-- **NeetCode** (YouTube) - LeetCode problem walkthroughs
-- **MIT OpenCourseWare** - 6.006 Introduction to Algorithms
-
-### Books
+### Reference Books
 - *Cracking the Coding Interview* by Gayle Laakmann McDowell
 - *Elements of Programming Interviews* by Aziz, Lee, Prakash
 - *Introduction to Algorithms* by CLRS (Reference)
@@ -416,8 +406,4 @@ This curriculum is open-source and free to use for personal learning. Feel free 
 **You've got this!** 🚀
 
 Start with [QUICK-START.md](./QUICK-START.md) and take the first step today!
-
----
-
-*Last Updated: February 2026 | Version 1.0*
-*Designed for FAANG interviews | Battle-tested by successful candidates*
+

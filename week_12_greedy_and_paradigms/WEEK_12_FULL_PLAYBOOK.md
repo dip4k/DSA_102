@@ -530,16 +530,12 @@ Why is greedy better?
 
 ### The Greedy Choice: Finish Time
 
-```mermaid
-gantt
-    title Earliest Finish Time Preserves Future Capacity
-    dateFormat X
-    axisFormat %s
-    section Candidates
-    Activity A [1 to 4] (Earliest Finish): active, a1, 1, 4
-    Activity B [3 to 7] (Finishes Late) : crit, b1, 3, 7
-    section Future Window
-    Remaining Opportunity Window [4 to 16]: done, rem, 4, 16
+```text
+Time Scale:   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16
+              +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+Activity A:   [ 1 ====> 4 ] (Earliest Finish: Leaves [4..16] open ✅)
+Activity B:       [ 3 ========> 7 ] (Finishes Late: Blocks [3..7] ❌)
+Future Room:              [ 4 ======================================> 16 ]
 ```
 
 > [!NOTE]
@@ -777,20 +773,14 @@ SOLUTION: Use Dynamic Programming
 
 **Example Intervals:** `(1,3), (2,4), (3,5), (1,2), (4,6)`
 
-```mermaid
-gantt
-    title Overlapping Meeting Intervals
-    dateFormat X
-    axisFormat %s
-    section Room 1
-    (1 to 3) : active, m1, 1, 3
-    (4 to 6) : active, m2, 4, 6
-    section Room 2
-    (2 to 4) : crit, m3, 2, 4
-    section Room 3
-    (3 to 5) : done, m4, 3, 5
-    section Room 1 Again
-    (1 to 2) : active, m5, 1, 2
+```text
+Time Scale:  1     2     3     4     5     6
+             +-----+-----+-----+-----+-----+
+Room 1:      [ 1 ======> 3 ]   [ 4 ======> 6 ]
+Room 2:            [ 2 ======> 4 ]
+Room 3:                  [ 3 ======> 5 ]
+             (1 to 2 overlaps in Room 1, scheduled in Room 2 earlier):
+Room 2:      [ 1 => 2 ]
 ```
 
 #### Event Timeline & Sweep Line Trace

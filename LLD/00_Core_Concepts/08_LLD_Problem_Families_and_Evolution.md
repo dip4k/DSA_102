@@ -1,4 +1,4 @@
-﻿# 08. LLD Problem Families & Design Evolution (V1 → V2)
+# 08. LLD Problem Families & Design Evolution (V1 → V2)
 
 One of the most powerful methodologies in Low-Level Design (popularized by advanced curricula like CrackingWalnuts) is recognizing that **there are no unique problems—only problem families**.
 
@@ -10,45 +10,14 @@ When an interviewer presents a seemingly novel problem (e.g., *"Design an electr
 
 Every machine coding or LLD interview question asked in tech falls into one of these 6 families:
 
-```mermaid
-mindmap
-  root((LLD Problem Families))
-    Family 1: Allocation & Concurrency
-      Parking Lot
-      Meeting Room Booking
-      Movie Ticket Booking
-      Hotel Reservation
-      EV Charging Station
-    Family 2: Financial & Ledgers
-      Digital Wallet
-      Splitwise
-      Transactional KV Store
-      Bank Account Transfer
-      Coupon / Ledger
-    Family 3: Stateful Workflows
-      Elevator System
-      Vending Machine
-      Ride-Hailing / Uber
-      Food Delivery / Swiggy
-      Order Lifecycle
-    Family 4: Event-Driven & Streaming
-      Pub/Sub Queue
-      Generic Message Processor
-      Azure Service Bus Outbox
-      Async Logger
-      Notification Fanout
-    Family 5: In-Memory Data Structures
-      LRU / LFU Cache
-      File System / Trie
-      Stock Matching Engine
-      Rate Limiter
-      Leaderboard
-    Family 6: Gateway & Resilience
-      API Aggregator
-      Multi-Channel Notification
-      Resilient HTTP Client
-      Reverse Proxy / Gateway
-```
+| Family | Core Engineering Archetype | Canonical FAANG / Tier-1 Interview Problems |
+| :--- | :--- | :--- |
+| **Family 1: Allocation & Concurrency** | Resource pools, slot contention, time-to-live (TTL) | Parking Lot, Meeting Room Booking, Movie Ticket, Hotel, EV Charging Station |
+| **Family 2: Financial & Ledgers** | Double-entry bookkeeping, auditability, decimal safety | Digital Wallet, Splitwise, Transactional KV Store, Bank Transfer, Auction |
+| **Family 3: Stateful Workflows** | Finite state machines (FSM), lifecycle transitions | Elevator System, Vending Machine, Ride-Hailing, Food Delivery, Board Games |
+| **Family 4: Event-Driven & Streaming** | Decoupled pub/sub, backpressure, idempotency | Pub/Sub Message Queue, Generic Message Processor, Azure Service Bus Outbox, Logger |
+| **Family 5: In-Memory Data Structures** | Sub-millisecond latency, algorithmic `O(1)`/`O(log N)` | LRU/LFU Cache, In-Memory File System, Stock Matching Engine, Rate Limiter |
+| **Family 6: Gateway & Resilience** | Circuit breakers, retries, rate limiting, dispatch | API Aggregator, Multi-Channel Notification, Resilient HTTP Client |
 
 ---
 

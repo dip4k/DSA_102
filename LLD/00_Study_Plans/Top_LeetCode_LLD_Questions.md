@@ -156,7 +156,6 @@ Use these trusted community repositories and courses to practice implementations
 * 🌟 **[workattech/machinecoding](https://github.com/workattech/machinecoding)** — Guidelines, problem statements, and best practices specifically for 90-minute machine coding rounds.
 
 ### 🎥 Top Video Playlists & Learning Platforms
-* **[NeetCode Design Playlist](https://neetcode.io/)**: Step-by-step walkthroughs of LeetCode design problems (LRU, Twitter, File System).
 * **[Gaurav Sen (System Design / LLD)](https://www.youtube.com/@gkcs)**: Exceptional breakdown of foundational LLD concepts, rate limiters, and game engines.
 * **[Shreyansh Jain (LLD Playlist)](https://www.youtube.com/@shrayansh_jain)**: In-depth implementations of Parking Lot, Cricbuzz, Elevator, and design patterns in Java/C++.
 * **[Refactoring.guru Design Patterns](https://refactoring.guru/design-patterns)**: The most intuitive visual guide for Creational, Structural, and Behavioral patterns with multi-language code snippets.

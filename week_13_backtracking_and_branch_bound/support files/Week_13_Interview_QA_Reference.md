@@ -8,8 +8,6 @@
 
 **Phase:** D – Algorithm Paradigms  
 **Week Theme:** Backtracking & Branch & Bound  
-**Syllabus Source:** COMPLETE_SYLLABUS.md  
-**Tone:** Interview Coach  
 **Format:** Questions Only (NO ANSWERS)
 
 ---

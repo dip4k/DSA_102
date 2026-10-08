@@ -475,16 +475,6 @@ After completing 70-80% of a phase:
 
 ---
 
-## Additional Resources
-
-- **LeetCode Patterns**: https://seanprashad.com/leetcode-patterns/
-- **NeetCode**: https://neetcode.io (video explanations)
-- **Tech Interview Handbook**: https://techinterviewhandbook.org
-- **Grind 75**: Customizable study plans
-- **AlgoMonster**: Pattern-based learning
-
----
-
 ## Notes
 
 - **LeetCode Premium**: Some problems (marked with 🔒 in LeetCode) require premium subscription

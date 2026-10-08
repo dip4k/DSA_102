@@ -1040,7 +1040,6 @@ When should you reach for these algorithms?
 
 ### 📚 External Resources
 - CLRS (Introduction to Algorithms): Sorting basics and stability discussion.
-- Visualgo: Sorting visualizations for intuition.
 - Official language/runtime docs: Check stability guarantees of built-in sorting APIs.
 ---
 

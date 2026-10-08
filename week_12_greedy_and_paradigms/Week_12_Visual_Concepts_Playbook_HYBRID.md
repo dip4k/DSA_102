@@ -1,4 +1,4 @@
-﻿# 🧭 WEEK 12 VISUAL CONCEPTS PLAYBOOK (HYBRID)
+# 🧭 WEEK 12 VISUAL CONCEPTS PLAYBOOK (HYBRID)
 
 > 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)
 > 
@@ -6,7 +6,6 @@
 
 ---
 
-**Filename:** `Week_12_Visual_Concepts_Playbook_HYBRID.md`  
 **Theme:** Greedy Algorithms & Proofs  
 **Mode:** HYBRID → Whiteboard Sketches + Slide Blueprints + Step Traces + External Visual References
 
@@ -464,7 +463,6 @@ This shows prefix-free property visually: every code corresponds to a unique lea
 
 ### 3.4 External Visual Resources (Recommended)
 
-- **Huffman on VisuAlgo:** Interactive Huffman tree builder (search: "VisuAlgo Huffman Coding").
 - **Wikipedia Huffman Coding Page:** Has clear tree diagrams and step-by-step tables.
 - **CLRS Figures (Huffman chapter):** High-quality textbook figures showing merging and final tree.
 
@@ -746,7 +744,6 @@ Use these as **supplements** to your own sketches.
 ### 6.1 Greedy Fundamentals
 
 - **MIT OCW 6.006 Greedy Lecture Slides:** diagrams of activity selection and greedy proofs.
-- **VisuAlgo (Activity Selection / Interval Scheduling):** interactive timelines.
 
 ### 6.2 Interval Problems
 
@@ -755,7 +752,6 @@ Use these as **supplements** to your own sketches.
 
 ### 6.3 Huffman Coding
 
-- **VisuAlgo – Huffman Coding:** step-by-step tree building animations.
 - **Codec visualizations on YouTube:** search "Huffman coding visualization" for animated trees.
 
 ### 6.4 Knapsack & Scheduling

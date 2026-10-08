@@ -50,8 +50,8 @@ flowchart TD
     classDef core fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
     classDef bridge fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
     classDef dp fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:2px;
-    classDef graph fill:#ede7f6,stroke:#5e35b1,color:#311b92,stroke-width:2px;
-    classDef opt fill:#f5f5f5,stroke:#9e9e9e,color:#616161,stroke-width:1.5px,stroke-dasharray: 5 5;
+    classDef graphTopic fill:#ede7f6,stroke:#5e35b1,color:#311b92,stroke-width:2px;
+    classDef elective fill:#f5f5f5,stroke:#9e9e9e,color:#616161,stroke-width:1.5px,stroke-dasharray: 5 5;
 
     subgraph Tier1["⭐ FAANG Core Curriculum (Weeks 1–14 & 19)"]
         F["1️⃣ Foundations & Memory (W1–3)<br/>RAM Model, Pointers, Arrays, Stacks, Queues"]:::foundation
@@ -59,7 +59,7 @@ flowchart TD
         T["3️⃣ Trees & Traversals (W7)<br/>Binary Trees, BSTs, Invariants, DFS/BFS"]:::core
         BT["4️⃣ Backtracking & Decision Trees (W13)<br/>Combinatorial Choices, Pruning, State Tree Exploration"]:::bridge
         DP["5️⃣ Dynamic Programming I & II (W10–11)<br/>Memoized Decision Trees, Tabulation, Rolling Variables"]:::dp
-        G["6️⃣ Graphs & Greedy (W8–9, W12)<br/>DFS/BFS, DSU, Dijkstra, MST, Greedy Intervals"]:::graph
+        G["6️⃣ Graphs & Greedy (W8–9, W12)<br/>DFS/BFS, DSU, Dijkstra, MST, Greedy Intervals"]:::graphTopic
         M["7️⃣ Bitmasks & Matrix Patterns (W14)<br/>State Compression, Grid Traversals"]:::core
         Mock["8️⃣ Full Mock Interviews & Review (W19)<br/>Timed Live Simulations, Architecture Defense"]:::foundation
 
@@ -72,10 +72,10 @@ flowchart TD
     end
 
     subgraph Tier2["🧪 Competitive Programming & Specialist Electives (Weeks 15–18)"]
-        E["Weeks 15–18: Optional Advanced Extensions<br/>• Network Flow (Ford-Fulkerson, Dinic's)<br/>• Heavy Range Structures (Segment Trees, Treaps, Link-Cut Trees)<br/>• Suffix Automata & String Kernels<br/>• Fast Fourier Transform (FFT) & Math Geometry"]:::opt
+        E["Weeks 15–18: Optional Advanced Extensions<br/>• Network Flow (Ford-Fulkerson, Dinic's)<br/>• Heavy Range Structures (Segment Trees, Treaps, Link-Cut Trees)<br/>• Suffix Automata & String Kernels<br/>• Fast Fourier Transform (FFT) & Math Geometry"]:::elective
     end
 
-    Tier1 -.->|Optional Post-Mastery Elective| Tier2
+    Mock -.->|Optional Post-Mastery Elective| E
 ```
 
 ---

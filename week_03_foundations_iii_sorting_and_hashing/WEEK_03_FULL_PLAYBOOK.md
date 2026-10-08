@@ -8,8 +8,6 @@
 ## Elementary Sorts, Merge Sort, Quick Sort, Heaps, Hash Tables, Rolling Hash & Rabin-Karp
 
 **Phase:** A (Foundations)  
-**Last Updated:** January 15, 2026, 2:56 AM IST  
-**Format:** Complete Visual Concepts Playbook - Correct Edition  
 
 ---
 

@@ -330,13 +330,11 @@ Trees generalize linear structures into hierarchies. BSTs and balanced BSTs are 
 - "The Algorithm Design Manual" - Trees section
 
 ### Online
-- **Visualizations:** VisuAlgo.net (tree visualizations, rotations)
 - **Competitive Programming:** Codeforces tutorials on tree traversals
 - **Practice:** LeetCode tree tag (problems #94-297, organized by difficulty)
 
 ### Videos
 - MIT 6.006 Lecture 8-10 (Trees, BST, Balance)
-- Abdul Bari - Tree traversals and BST operations (YouTube)
 
 ---
 

@@ -1,4 +1,4 @@
-﻿# 📚 WEEK 02: FOUNDATIONS II - LINEAR DATA STRUCTURES
+# 📚 WEEK 02: FOUNDATIONS II - LINEAR DATA STRUCTURES
 > 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)
 > 
 > 💡 **Instructor Note:** *This Comprehensive Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
@@ -8,8 +8,6 @@
 ## Arrays, Dynamic Arrays, Linked Lists, Stacks, Queues, Binary Search
 
 **Phase:** A (Foundations)  
-**Last Updated:** January 15, 2026, 1:39 AM IST  
-**Format:** Visual Concepts Playbook Hybrid Instructional  
 
 ---
 
@@ -1906,8 +1904,7 @@ D) 8 bytes
 ## 📚 Supplementary Resources
 
 **Visualizations:**
-- VisuAlgo (https://visualgo.net) — Animate array, linked list, binary search
-- YouTube linked list traversal/reversal visualizations
+- Interactive linked list traversal and reversal visualizations
 
 **Reading:**
 - "Introduction to Algorithms" (CLRS) Chapters 5-11 (arrays, linked lists, queues, stacks)

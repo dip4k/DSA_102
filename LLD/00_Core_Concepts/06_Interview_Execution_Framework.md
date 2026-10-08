@@ -49,19 +49,11 @@ flowchart TD
 Used by Google, Meta, Microsoft, Amazon for System/Object-Oriented Design screening.
 
 ```mermaid
-gantt
-    title 45-Minute OOD Interview Timeline
-    dateFormat  m
-    axisFormat %M min
-    section Discovery
-    Clarify Requirements & Scoping :0, 8
-    section Design
-    Class Diagram & Domain Entities :8, 18
-    Interface Contracts & Design Patterns :18, 25
-    section Implementation
-    Core Logic & Concurrency Strategy :25, 38
-    section Verification
-    Edge Cases, Tradeoffs & Wrap-up :38, 45
+flowchart LR
+    P1["1️⃣ Scoping & Constraints<br/>(0–8 min)"] --> P2["2️⃣ Domain Modeling<br/>(8–18 min)"]
+    P2 --> P3["3️⃣ Contracts & Patterns<br/>(18–25 min)"]
+    P3 --> P4["4️⃣ Core Implementation<br/>(25–38 min)"]
+    P4 --> P5["5️⃣ Edge Cases & Wrap-up<br/>(38–45 min)"]
 ```
 
 | Phase | Time | Candidate Deliverables |
@@ -78,20 +70,11 @@ gantt
 Used by Uber, Swiggy, Flipkart, Razorpay, PhonePe, Cred, Zepto.
 
 ```mermaid
-gantt
-    title 90-Minute Machine Coding Timeline
-    dateFormat  m
-    axisFormat %M min
-    section Discovery
-    Requirements & Edge Cases :0, 15
-    section Modeling
-    Domain Entities & Invariants :15, 30
-    section Core Coding
-    Services, Repositories & Patterns :30, 65
-    section Driver & Tests
-    Driver Program & Unit Tests :65, 80
-    section Review
-    Refactoring, Concurrency & Review :80, 90
+flowchart LR
+    M1["1️⃣ Requirements & Mining<br/>(0–15 min)"] --> M2["2️⃣ Domain Modeling<br/>(15–30 min)"]
+    M2 --> M3["3️⃣ Services & Patterns<br/>(30–65 min)"]
+    M3 --> M4["4️⃣ Driver & Unit Tests<br/>(65–80 min)"]
+    M4 --> M5["5️⃣ Concurrency & Review<br/>(80–90 min)"]
 ```
 
 | Phase | Time | Candidate Deliverables |

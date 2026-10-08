@@ -7,9 +7,7 @@
 ---
 
 **Phase:** D – Algorithm Paradigms  
-**Week Theme:** Backtracking & Branch & Bound  
-**Syllabus Source:** COMPLETE_SYLLABUS.md  
-**Tone:** Graduate Student Lecture Notes
+**Week Theme:** Backtracking & Branch & Bound
 
 ---
 

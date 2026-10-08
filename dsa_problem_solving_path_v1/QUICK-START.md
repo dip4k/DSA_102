@@ -463,26 +463,6 @@ Week 4: ░░░░░░░░░░ 0/8 problems
 
 ---
 
-## 📚 Recommended Study Resources
-
-### Video Courses (YouTube)
-- **NeetCode** - Excellent LeetCode explanations
-- **Abdul Bari** - Algorithm theory foundations
-- **Back To Back SWE** - In-depth problem walkthroughs
-- **Tech Dose** - DP and graph problems
-
-### Interactive Practice
-- **LeetCode Explore Cards** - Topic-based learning paths
-- **Pramp** - Free peer mock interviews
-- **interviewing.io** - Mock interviews with engineers
-
-### Books (Optional)
-- *Cracking the Coding Interview* - Interview prep bible
-- *Elements of Programming Interviews* - Language-specific prep
-- *Grokking Algorithms* - Visual algorithm introduction
-
----
-
 ## ✅ Week-by-Week Success Criteria
 
 ### Week 1 Checkpoint

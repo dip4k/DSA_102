@@ -8,7 +8,6 @@
 
 **Phase:** D – Algorithm Paradigms  
 **Week Theme:** Backtracking & Branch & Bound  
-**Syllabus Source:** COMPLETE_SYLLABUS.md  
 
 ---
 
@@ -278,7 +277,6 @@ By the end of Week 13, you will:
 1. **Draw Before Coding:** For every problem, draw state space tree first
 2. **Trace Execution:** Manually step through DFS with state changes
 3. **Visualize Pruning:** Mark pruned branches with ✂️ symbol
-4. **Use Online Tools:** VisuAlgo, Algorithm Visualizer for animations
 
 **Example Application:**
 - N-Queens: Draw tree with queens placed column-by-column
@@ -666,11 +664,6 @@ If time-constrained, focus on high-impact topics:
 - Week_13_Daily_Progress_Checklist.md (daily tracking)
 
 ### External Resources
-
-**Visualization Tools:**
-- VisuAlgo: https://visualgo.net/en/recursion (backtracking animations)
-- Algorithm Visualizer: https://algorithm-visualizer.org/ (N-Queens, TSP)
-- Python Tutor: https://pythontutor.com/ (step-through execution)
 
 **Textbook Chapters:**
 - CLRS Chapter 15.4 (Longest Common Subsequence uses backtracking concepts)

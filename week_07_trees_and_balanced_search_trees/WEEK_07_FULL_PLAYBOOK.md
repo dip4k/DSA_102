@@ -1,4 +1,4 @@
-﻿# 📚 WEEK 07 FULL PLAYBOOK
+# 📚 WEEK 07 FULL PLAYBOOK
 > 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)
 > 
 > 💡 **Instructor Note:** *This Comprehensive Playbook provides a high-density, integrated synthesis. Not all sections are mandatory; use it as a modular reference to solidify invariants and review pattern transitions.*
@@ -9,8 +9,6 @@
 
 **Curriculum Alignment:** COMPLETE_SYLLABUS.md  
 **Phase:** C – Trees, Graphs, Dynamic Programming (Week 7)  
-**Format:** Markdown – Self-contained, offline-first, GitHub-friendly  
-**Deployment:** Immediate use – no external dependencies
 
 ---
 
@@ -1458,36 +1456,21 @@ Spend extra time on:
 
 ## 🎓 RECOMMENDED LEARNING RESOURCES
 
-### Visualization & Interaction
+### Practice & Problem Sets
 
-1. **VisuAlgo (Trees)** – https://visualgo.net/en/bst  
-   - Visual insertion, deletion, rotations  
-   - Step through operations  
-   - See height changes in real-time  
-
-2. **Tree Visualization by David Galles** – https://www.cs.usfca.edu/~galles/visualization/Algorithms.html  
-   - Interactive AVL, Red-Black trees  
-   - Watch rotations as you insert/delete  
-
-3. **LeetCode (Tree Problems)** – https://leetcode.com/tag/tree/  
+1. **LeetCode (Tree Problems)** – https://leetcode.com/tag/tree/  
    - 300+ problems, difficulty ratings  
    - Discussions with explanations  
 
 ### Reading & Deep Dives
 
-4. **MIT 6.006 Lecture Notes on Trees** – https://ocw.mit.edu/courses/introduction-to-algorithms/  
+2. **MIT 6.006 Lecture Notes on Trees** – https://ocw.mit.edu/courses/introduction-to-algorithms/  
    - Official MIT course material  
    - Detailed proofs, balance analysis  
 
-5. **CLRS (Intro to Algorithms)** – Chapters 12-13  
+3. **CLRS (Intro to Algorithms)** – Chapters 12-13  
    - Formal definitions, proofs  
    - Augmented trees deep dive  
-
-### Practice & Interview Prep
-
-6. **NeetCode (Tree Roadmap)** – https://neetcode.io/  
-   - Categorized tree problems  
-   - Video solutions for hard problems  
 
 ---
 
@@ -1609,11 +1592,7 @@ After this week, you're ready to:
 
 ---
 
-**Ready to Deploy:** Yes  
-**Last Updated:** January 23, 2026  
-**Next Step:** Begin Day 1 – Binary Trees & Traversals
 
----
 
 ### 📞 QUICK REFERENCE COMMANDS
 

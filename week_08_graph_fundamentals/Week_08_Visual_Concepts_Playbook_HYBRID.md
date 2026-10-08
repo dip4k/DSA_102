@@ -1,4 +1,4 @@
-﻿# WEEK 08 VISUAL CONCEPTS PLAYBOOK HYBRID
+# WEEK 08 VISUAL CONCEPTS PLAYBOOK HYBRID
 
 > 🧭 **Navigation:** [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md)
 > 
@@ -6,8 +6,6 @@
 
 ---
 
-**Filename:** `Week_08_Visual_Concepts_Playbook_HYBRID.md`  
-**Syllabus Source:** `COMPLETE_SYLLABUS.md`  
 **Primary Goal:** Build **visual, structural intuition** for graph models, BFS, DFS, topological sort, connectivity, bipartite graphs, and SCCs.
 
 ---

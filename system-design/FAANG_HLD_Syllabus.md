@@ -1110,10 +1110,8 @@ Differentiate yourself at senior levels. Focus on operational concerns, observab
 - *The Art of Scalability* (Barker & Frey)
 
 ### Online Platforms
-- System Design Handbook
-- Educative HLD course
-- ByteByteGo YouTube channel
-- Real system design papers (AWS, Google, Netflix blogs)
+- System Design Primer & Documentation
+- Real system design papers & engineering blogs (AWS, Google, Netflix)
 
 ---
 

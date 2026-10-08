@@ -7,9 +7,7 @@
 ---
 
 **Phase:** D – Algorithm Paradigms  
-**Week Theme:** Backtracking & Branch & Bound  
-**Syllabus Source:** COMPLETE_SYLLABUS.md  
-**Tone:** Training Coach
+**Week Theme:** Backtracking & Branch & Bound
 
 ---
 

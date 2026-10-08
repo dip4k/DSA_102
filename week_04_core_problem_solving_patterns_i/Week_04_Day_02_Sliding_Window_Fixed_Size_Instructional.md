@@ -583,10 +583,4 @@ Whether calculating moving averages in trading algorithms, enforcing bandwidth c
 
 ---
 
-**Inline Visuals:** 6 (ASCII diagrams, trace tables, window schemas)  
-**Real-World Context:** High-throughput telemetry, CDN rate limiters, adaptive bitrate buffering  
-**Interview-Ready:** Yes — complete talk tracks, zero-allocation C# (.NET 8/9), idiomatic Python (3.11+), explicit complexity deconstruction  
-
----
-
 > 🧭 **Navigation:** [← Previous Day](Week_04_Day_01_Two_Pointer_Patterns_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_04_Day_03_Sliding_Window_Variable_Size_Instructional.md)

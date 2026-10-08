@@ -6,10 +6,6 @@
 
 ---
 
-**Last Updated:** January 23, 2026  
-**Target Audience:** DSA Mastery Course Students (Intermediate-Advanced)
-
----
 
 ## 🎯 WEEK OVERVIEW
 
@@ -374,7 +370,6 @@ Week 10+: Advanced Applications (DP on graphs, advanced flows, etc.)
 ### Supplementary (Deep Dives)
 - **Competitive Programming (Halim & Halim):** Practical implementations and tricks
 - **Research Papers:** Tarjan's inverse Ackermann analysis (DSU); Dijkstra's original paper (1959)
-- **Visualization Tools:** Visualgo (graph algorithm animations), CLRS textbook examples
 
 ### Problem Repositories
 - **LeetCode:** 800+ graph problems; filter by algorithm and difficulty

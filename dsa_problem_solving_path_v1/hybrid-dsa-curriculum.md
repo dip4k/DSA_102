@@ -750,8 +750,7 @@ Take this at your own pace. The goal is deep understanding, not rushing.
 ## 📚 Learning Resources
 
 ### Theory Supplements
-- **Visualization**: VisuAlgo, Algorithm Visualizer
-- **Video**: Abdul Bari (Algorithms), MIT OpenCourseWare
+- **Lectures**: MIT OpenCourseWare (6.006)
 - **Books**: "Cracking the Coding Interview", "Elements of Programming Interviews"
 - **Practice**: LeetCode, HackerRank, CodeSignal
 
@@ -838,7 +837,4 @@ Create concise notes for:
 - **Practice > Theory**: Theory guides, practice solidifies
 
 **You've got this!** 💪 Stay consistent, trust the process, and track your progress. Every problem solved is a step closer to mastery.
-
----
-
-*Last Updated: 2026 | Based on 235+ LeetCode problems | Optimized for FAANG interviews*
+

@@ -569,10 +569,4 @@ Internalizing the distinction between **expanding until invalid** (maximization)
 
 ---
 
-**Inline Visuals:** 6 (ASCII diagrams, trace tables, window schemas)  
-**Real-World Context:** TCP congestion windows, in-memory cache eviction, dynamic streaming buffers  
-**Interview-Ready:** Yes — complete talk tracks, zero-allocation C# (.NET 8/9), idiomatic Python (3.11+), explicit complexity deconstruction  
-
----
-
 > 🧭 **Navigation:** [← Previous Day](Week_04_Day_02_Sliding_Window_Fixed_Size_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_04_Day_04_Divide_and_Conquer_Pattern_Instructional.md)

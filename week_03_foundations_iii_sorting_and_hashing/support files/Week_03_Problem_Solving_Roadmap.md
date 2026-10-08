@@ -6,11 +6,7 @@
 
 ---
 
-**Purpose:** Transform Week 3 sorting, heaps, and hashing knowledge into problem-solving fluency  
-**Target Audience:** Learners progressing from Week 2 linear structures to Week 3 advanced data structures  
-**File Type:** Support File (Problem-Solving Playbook)  
-**Tone:** Training coach—strategic, practical, actionable  
-**Word Count Target:** 3,500-4,500 words
+**Purpose:** Transform Week 3 sorting, heaps, and hashing knowledge into problem-solving fluency
 
 ---
 
@@ -406,7 +402,6 @@ Reflect on these after finishing the week:
 |----------|------|------|------|
 | **"Algorithm Design Manual" — Skiena (Ch. 4-5)** | Book | Practical perspective on sorting; discusses real-world performance | 2-3 hours |
 | **"Introduction to Algorithms" — CLRS (Ch. 6-11)** | Book | Rigorous treatment; heaps, sorting, hashing with proofs | 4-6 hours |
-| **VisuAlgo.net (Sorting & Hash Tables)** | Interactive | Animated trace of all sorting algorithms; see comparisons | 1-2 hours |
 | **MIT OpenCourseWare 6.006 Lecture Videos** | Video | Prof. Erik Demaine's lectures on sorting, hashing, heaps | 3-4 hours |
 | **LeetCode Problems (Sorting, Heap, Hash)** | Practice | Real interview problems using these concepts | 3-5 hours |
 

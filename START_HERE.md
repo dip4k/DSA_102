@@ -408,10 +408,5 @@ Pick your path. Read the next file. Start learning.
 **PATH 2 → Week 03 Summary, then Week 04 Guidelines**  
 **PATH 3 → Bookmark and come back when you need it**
 
----
-
-**Last Updated:** January 7, 2026  
-**Curriculum:** DSA Master v13 (MIT-Level, Narrative-First)  
-**Next:** Read your chosen path's first file and start learning.
 
 

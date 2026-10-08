@@ -21,20 +21,11 @@ Used for Senior/Staff object-oriented architecture screenings.
 Used by Flipkart, Uber, Swiggy, Razorpay, PhonePe, and Atlassian.
 
 ```mermaid
-gantt
-    title 90-Minute Machine Coding Timeline
-    dateFormat  m
-    axisFormat %M min
-    section Discovery
-    Requirement Mining & Invariant Extraction :0, 10
-    section Architecture
-    Domain Entities, Interfaces & Contracts :10, 25
-    section Implementation
-    In-Memory Repositories & Business Logic :25, 60
-    section Concurrency
-    Thread Safety, Locking & Edge Cases :60, 75
-    section Verification
-    Driver Program / Unit Tests & Demo :75, 90
+flowchart LR
+    S1["1️⃣ Requirements & Mining<br/>(0–10 min)"] --> S2["2️⃣ Architecture & Contracts<br/>(10–25 min)"]
+    S2 --> S3["3️⃣ In-Memory Logic<br/>(25–60 min)"]
+    S3 --> S4["4️⃣ Concurrency & Locks<br/>(60–75 min)"]
+    S4 --> S5["5️⃣ Demo & Unit Tests<br/>(75–90 min)"]
 ```
 
 ---

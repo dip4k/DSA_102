@@ -6,8 +6,7 @@
 
 ---
 
-**Purpose:** Structured guidance for mastering Week 11 content  
-**Last Updated:** January 26, 2026
+**Purpose:** Structured guidance for mastering Week 11 content
 
 ---
 

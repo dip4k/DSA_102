@@ -629,10 +629,4 @@ Whenever a problem asks you to construct an optimal number under difficult const
 
 ---
 
-**Inline Visuals:** 6 (ASCII answer-space maps, pointer convergence models, trace tables)  
-**Real-World Context:** Cloud scheduling, transcoder bin-packing, logistics throughput optimization  
-**Interview-Ready:** Yes — complete talk tracks, zero-allocation C# (.NET 8/9), idiomatic Python (3.11+), explicit complexity deconstruction  
-
----
-
 > 🧭 **Navigation:** [← Previous Day](Week_04_Day_04_Divide_and_Conquer_Pattern_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_04_FULL_PLAYBOOK.md)
