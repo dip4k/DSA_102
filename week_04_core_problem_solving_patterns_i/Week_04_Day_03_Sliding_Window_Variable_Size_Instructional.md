@@ -500,6 +500,209 @@ def length_of_longest_substring_k_distinct(s: str, k: int) -> int:
 3. **Array with Negative Elements:** If asked for minimum subarray sum with negative numbers, standard sliding window fails; explicitly clarify non-negativity with the interviewer.
 4. **All Elements Identical:** Ensure frequency cleanup properly removes keys when their count hits 0 (`freqMap.Remove(char)`), otherwise `dict.Count` retains stale keys with 0 count.
 
+
+---
+
+## 🏛️ CHAPTER 6: THE "EXACTLY K VIA AT-MOST" SLIDING WINDOW TRANSFORMATION
+
+> [!IMPORTANT]
+> **The Senior Problem Pivot:**
+> While standard sliding window trivially counts subarrays satisfying **"at most K"** or finds min/max lengths satisfying **"at least K"**, it fails directly on **"exactly K"**.
+> In problems like **Subarrays with K Different Integers (LeetCode 992)** or **Binary Subarrays with Sum (LeetCode 930)**, attempting to shrink `left` when we reach *exactly* K unique elements discards valid longer subarrays that also contain *exactly* K unique elements.
+
+### 🧠 The Mathematical Duality & Intuitive Hook
+
+Consider the set of all contiguous subarrays. Every subarray with *at most K* distinct elements falls into one of two mutually exclusive sets:
+1. Subarrays with *strictly fewer than K* distinct elements (i.e., *at most K - 1*).
+2. Subarrays with *exactly K* distinct elements.
+
+```text
+Universal Subarray Space:
++-----------------------------------------------------------+
+|                   Subarrays with At Most K                |
+| +-------------------------------+-----------------------+ |
+| | Subarrays with At Most K - 1  |  Subarrays with       | |
+| | (fewer than K distinct)       |  EXACTLY K DISTINCT   | |
+| +-------------------------------+-----------------------+ |
++-----------------------------------------------------------+
+
+Core Invariant Formula:
+Count(Exactly K) = Count(At Most K) - Count(At Most K - 1)
+```
+
+By decomposing one non-monotonic problem into two monotonic sliding window scans, we solve a LeetCode Hard problem using two runs of a standard LeetCode Medium template!
+
+### 📊 Napkin Trace: `nums = [1, 2, 1, 2, 3]`, `k = 2`
+
+```text
+Array: [ 1, 2, 1, 2, 3 ]
+
+Step 1: Calculate AtMost(2):
+- Right = 0 (1): Window [1]          -> Count += 1 (Subarray: [1])
+- Right = 1 (2): Window [1, 2]       -> Count += 2 (Subarrays: [2], [1, 2])
+- Right = 2 (1): Window [1, 2, 1]    -> Count += 3 (Subarrays: [1], [2, 1], [1, 2, 1])
+- Right = 3 (2): Window [1, 2, 1, 2] -> Count += 4 (Subarrays: [2], [1, 2], [2, 1, 2], [1, 2, 1, 2])
+- Right = 4 (3): Window shrinks to [2, 3] -> Count += 2 ([3], [2, 3])
+Total AtMost(2) = 1 + 2 + 3 + 4 + 2 = 12
+
+Step 2: Calculate AtMost(1):
+- Right = 0 (1): [1] -> Count += 1
+- Right = 1 (2): [2] -> Count += 1
+- Right = 2 (1): [1] -> Count += 1
+- Right = 3 (2): [2] -> Count += 1
+- Right = 4 (3): [3] -> Count += 1
+Total AtMost(1) = 1 + 1 + 1 + 1 + 1 = 5
+
+Step 3: Exact(2) = AtMost(2) - AtMost(1) = 12 - 5 = 7 valid subarrays!
+```
+
+---
+
+### 💻 Production-Grade Implementations (LeetCode 992)
+
+#### C# (.NET 8/9 Modern Zero-Allocation Implementation)
+
+```csharp
+using System;
+using System.Collections.Generic;
+
+public static class SubarraysWithKDistinctSolver
+{
+    /// <summary>
+    /// Counts subarrays with exactly k distinct integers.
+    /// Time Complexity: O(N) using two linear passes.
+    /// Auxiliary Space: O(N) or O(K) for direct frequency array.
+    /// </summary>
+    public static int SubarraysWithKDistinct(int[] nums, int k)
+    {
+        if (nums == null || nums.Length == 0 || k <= 0)
+        {
+            return 0;
+        }
+
+        return AtMostKDistinct(nums, k) - AtMostKDistinct(nums, k - 1);
+    }
+
+    private static int AtMostKDistinct(int[] nums, int k)
+    {
+        if (k <= 0)
+        {
+            return 0;
+        }
+
+        int n = nums.Length;
+        // Direct-address table for O(1) cache-resident lookups (1 <= nums[i] <= n)
+        int[] freq = new int[n + 1];
+        int distinctCount = 0;
+        int totalSubarrays = 0;
+        int left = 0;
+
+        for (int right = 0; right < n; right++)
+        {
+            int rightVal = nums[right];
+            if (freq[rightVal] == 0)
+            {
+                distinctCount++;
+            }
+            freq[rightVal]++;
+
+            // Shrink window while distinct element invariant is violated
+            while (distinctCount > k)
+            {
+                int leftVal = nums[left];
+                freq[leftVal]--;
+                if (freq[leftVal] == 0)
+                {
+                    distinctCount--;
+                }
+                left++;
+            }
+
+            // Invariant: all subarrays ending at 'right' starting from index [left..right] are valid
+            totalSubarrays += (right - left + 1);
+        }
+
+        return totalSubarrays;
+    }
+}
+```
+
+#### Python 3.11+ Idiomatic Implementation
+
+```python
+from collections import defaultdict
+from typing import List
+
+class Solution:
+    def subarraysWithKDistinct(self, nums: List[int], k: int) -> int:
+        """
+        Calculates the number of subarrays with exactly k distinct integers
+        using the Exact(K) = AtMost(K) - AtMost(K - 1) transformation.
+        Time Complexity: O(N)
+        Auxiliary Space: O(K)
+        """
+        if not nums or k <= 0:
+            return 0
+            
+        def at_most_k(max_distinct: int) -> int:
+            if max_distinct <= 0:
+                return 0
+                
+            freq = defaultdict(int)
+            total_subarrays = 0
+            left = 0
+            
+            for right, num in enumerate(nums):
+                if freq[num] == 0:
+                    max_distinct -= 1
+                freq[num] += 1
+                
+                # Shrink left boundary whenever distinct elements exceed allowance
+                while max_distinct < 0:
+                    freq[nums[left]] -= 1
+                    if freq[nums[left]] == 0:
+                        max_distinct += 1
+                    left += 1
+                    
+                # All contiguous subarrays ending at 'right' from [left..right] are valid
+                total_subarrays += (right - left + 1)
+                
+            return total_subarrays
+
+        return at_most_k(k) - at_most_k(k - 1)
+```
+
+---
+
+### 🔬 Explicit Complexity Deconstruction
+
+* **Time Complexity:** `O(N)`. We run the `AtMostK` sliding window twice. Each run executes `N` iterations of `right` and at most `N` increments of `left`. Total operations = `2 * (2N) = 4N = O(N)`.
+* **Auxiliary Space:** `O(N)` for the direct array frequency table in C# (or `O(K)` for the hash map in Python).
+* **Output Space:** `O(1)` scalar integer result.
+
+---
+
+### 🎙️ 45-Minute Senior Interview Verbal Script
+
+```text
++-----------------------+------------------------------------------------------------------------------------------+
+| INTERVIEW STEP        | SPOKEN SCRIPT (WHAT YOU SAY ALOUD TO THE INTERVIEWER)                                    |
++-----------------------+------------------------------------------------------------------------------------------+
+| 1. Spot Bottleneck    | "Direct sliding window cannot maintain 'exactly K' distinct elements monotonically.     |
+|                       | If we shrink left as soon as we reach K, we prematurely discard longer valid subarrays." |
++-----------------------+------------------------------------------------------------------------------------------+
+| 2. Propose Duality    | "Instead of fighting the non-monotonicity, notice that subarrays with 'exactly K' equals  |
+|                       | Subarrays with 'at most K' minus Subarrays with 'at most K - 1'.                         |
+|                       | Finding 'at most K' is strictly monotonic and solvable in O(N) time with standard window."|
++-----------------------+------------------------------------------------------------------------------------------+
+| 3. State Invariant    | "In AtMost(K), as right expands, every window [left..right] adds exactly (right - left + 1)|
+|                       | new valid subarrays ending at index right."                                              |
++-----------------------+------------------------------------------------------------------------------------------+
+| 4. Edge-Case Defense  | "When K = 1, AtMost(K - 1) evaluates to AtMost(0), which correctly returns 0.            |
+|                       | All single-pass pointer movements are bounded by 2N."                                    |
++-----------------------+------------------------------------------------------------------------------------------+
+```
+
 ---
 
 ## ⚔️ SUPPLEMENTARY OUTCOMES

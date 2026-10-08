@@ -353,6 +353,129 @@ class TokenBucketRateLimiter:
 
 ---
 
+### 3. High-Concurrency Distributed Rate Limiting & Mechanical Sympathy
+
+In Tier-1 distributed environments (e.g. Stripe, Cloudflare, AWS API Gateway), a basic mutex lock introduces unacceptable cross-thread contention, and local in-memory state cannot enforce limits across a multi-node API cluster. We deploy three architectural patterns:
+
+#### Architecture A: Distributed Redis Lua Script (Atomic Zero-Race Rate Limiter)
+
+In a distributed cluster of microservices, rate-limiting state must reside in a centralized cache (Redis). However, executing naive multi-step logic (`GET tokens -> Calculate -> SET tokens`) is fatal due to race conditions under concurrent requests. 
+
+Instead of heavy distributed locks (Redlock), Redis executes Lua scripts **atomically in a single single-threaded event loop step**:
+
+```lua
+-- KEYS[1]: Rate limiter key (e.g., "ratelimit:user_123")
+-- ARGV[1]: Max Capacity (tokens)
+-- ARGV[2]: Refill Rate (tokens per second)
+-- ARGV[3]: Current Timestamp (Unix epoch in seconds with decimals)
+-- ARGV[4]: Requested Tokens (cost, typically 1)
+
+local key = KEYS[1]
+local capacity = tonumber(ARGV[1])
+local refill_rate = tonumber(ARGV[2])
+local now = tonumber(ARGV[3])
+local requested = tonumber(ARGV[4])
+
+-- Retrieve current state (tokens and last refill timestamp)
+local data = redis.call("HMGET", key, "tokens", "last_updated")
+local tokens = tonumber(data[1])
+local last_updated = tonumber(data[2])
+
+if tokens == nil then
+    -- First request: initialize bucket to full capacity
+    tokens = capacity
+    last_updated = now
+else
+    -- Compute elapsed time and refill
+    local elapsed = math.max(0, now - last_updated)
+    tokens = math.min(capacity, tokens + elapsed * refill_rate)
+    last_updated = now
+end
+
+-- Evaluate acquisition
+if tokens >= requested then
+    tokens = tokens - requested
+    redis.call("HMSET", key, "tokens", tokens, "last_updated", last_updated)
+    -- Expire bucket if inactive for the time it takes to fill from 0 to capacity
+    local ttl = math.ceil(capacity / refill_rate) * 2
+    redis.call("EXPIRE", key, ttl)
+    return 1 -- Allowed
+else
+    -- Persist refilled token level and last updated time even on rejection
+    redis.call("HMSET", key, "tokens", tokens, "last_updated", last_updated)
+    return 0 -- Rejected (HTTP 429)
+end
+```
+
+#### Architecture B: Atomic CAS Lock-Free Token Bucket (.NET 8/9 C#)
+
+When building in-process reverse proxies or L7 gateways (e.g. Envoy, YARP) handling hundreds of thousands of requests per second per core, `Monitor` or `lock` creates thread serialization bottlenecks. We implement a **lock-free Token Bucket** using `Interlocked.CompareExchange` over an immutable state record:
+
+```csharp
+using System.Diagnostics;
+using System.Threading;
+
+public sealed class LockFreeTokenBucket
+{
+    private readonly double _capacity;
+    private readonly double _refillRate;
+
+    private sealed record BucketState(double Tokens, long TimestampTicks);
+    private BucketState _state;
+
+    public LockFreeTokenBucket(double capacity, double refillRatePerSecond)
+    {
+        _capacity = capacity;
+        _refillRate = refillRatePerSecond;
+        _state = new BucketState(capacity, Stopwatch.GetTimestamp());
+    }
+
+    public bool TryAcquire(double cost = 1.0)
+    {
+        var spinWait = new SpinWait();
+        while (true)
+        {
+            var current = Volatile.Read(ref _state);
+            long now = Stopwatch.GetTimestamp();
+            double elapsedSeconds = (double)(now - current.TimestampTicks) / Stopwatch.Frequency;
+            double refilledTokens = Math.Min(_capacity, current.Tokens + (elapsedSeconds * _refillRate));
+
+            if (refilledTokens < cost)
+            {
+                return false; // Insufficient tokens; rejected without state mutation
+            }
+
+            var next = new BucketState(refilledTokens - cost, now);
+            if (Interlocked.CompareExchange(ref _state, next, current) == current)
+            {
+                return true; // Atomically acquired without locks!
+            }
+
+            spinWait.SpinOnce(); // Contention detected; backoff and retry
+        }
+    }
+}
+```
+
+#### Architecture C: Mechanical Sympathy & False Sharing Prevention
+
+When running millions of requests per second on multi-core NUMA CPUs, adjacent rate-limiting buckets sharing the same 64-byte CPU cache line trigger **false sharing** (cache line bouncing across L1/L2 caches):
+
+```text
+CPU Core 0 (Thread 1)                CPU Core 1 (Thread 2)
+Modifying Client A Bucket            Modifying Client B Bucket
+         │                                    │
+         ▼                                    ▼
+┌─────────────────── 64-Byte CPU Cache Line ───────────────────┐
+│ Client A State (32 bytes)   │ Client B State (32 bytes)      │
+└──────────────────────────────────────────────────────────────┘
+Result: Cores invalidate each other's L1 cache constantly, collapsing throughput!
+```
+
+**Production Fix:** Pad per-partition bucket structs to 64 bytes using `[StructLayout(LayoutKind.Explicit, Size = 64)]` or cache-line alignment attributes, guaranteeing each worker core's rate limiter lives on an isolated cache line.
+
+---
+
 ## 🔬 Chapter 4: Explicit Complexity Deconstruction
 
 | Metric | Modulo Hashing (`H % N`) | Consistent Hash Ring (`N*V`) | Token Bucket |

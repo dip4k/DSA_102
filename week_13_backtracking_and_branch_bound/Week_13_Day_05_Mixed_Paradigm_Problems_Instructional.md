@@ -282,6 +282,74 @@ In Branch & Bound and Backtracking, the order in which child branches are explor
 ### Step 4: Dry Run & Complexity Justification (30–45 min)
 > *"Let's trace `nums = [1, 3, 9, 2]`, target = 5. Left half is `[1, 3]` yielding sums `{0, 1, 3, 4}`. Right half is `[9, 2]` yielding `{0, 2, 9, 11}`. For left sum 3, target complement is `5 - 3 = 2`. Binary search finds 2 in `O(log 4)` time. Total time is `O(2^(N/2) * N)` and space is `O(2^(N/2))` to store the subsets."*
 
+
+---
+
+## 🏛️ Chapter 7: The Master Algorithm Selection Framework & Decision Tree
+
+> [!IMPORTANT]
+> **The Senior Problem Formulation Secret:**
+> Under 45-minute live interview pressure, you do not have time to guess. You can determine the intended algorithm within **60 seconds** simply by cross-referencing two signals:
+> 1. **The Problem Goal Keyword** ("all combinations", "minimum steps", "longest contiguous", "range sum").
+> 2. **The Maximum Input Constraint `N`** (asymptotic bound sizing).
+
+### 🌳 The 60-Second Paradigm Decision Tree
+
+```mermaid
+flowchart TD
+    Start{"🎯 Problem Goal?"}
+
+    Start -->|"Generate ALL solutions / paths"| PathAll["🔍 Backtracking<br/>(Subsets, Permutations, N-Queens)"]
+    Start -->|"Optimization: Min / Max / Count"| PathOpt{"Constraint N Size?"}
+    Start -->|"Query on dynamic range"| PathRange["⚡ Segment Tree / Fenwick / DSU"]
+    Start -->|"Contiguous subarray / sequence"| PathSeq{"Sorted or Monotonic?"}
+
+    PathOpt -->|"N <= 20"| OptBitmask["🎭 Bitmask DP / Branch & Bound"]
+    PathOpt -->|"N <= 2,000"| OptDP2D["📊 2D Dynamic Programming<br/>(LCS, Edit Distance, Grids)"]
+    PathOpt -->|"N >= 10^5 & Greedy Choice Holds"| OptGreedy["⚡ Greedy / PriorityQueue<br/>(Activity Selection, Intervals)"]
+    PathOpt -->|"N >= 10^5 & Monotonic Predicate"| OptBS["🎯 Binary Search on Answer Space<br/>(Ship Capacity, Split Array)"]
+
+    PathSeq -->|"Yes: Monotonic Window"| SeqWindow["🔍 Two Pointers / Sliding Window"]
+    PathSeq -->|"No: Next Greater / Boundary"| SeqStack["📦 Monotonic Stack / Kadane"]
+```
+
+---
+
+### 📊 The Constraint-to-Complexity Rosetta Stone
+
+When the interviewer gives you constraints, use this table to lock in the target Big-O before designing your algorithm:
+
+```text
++-------------------+----------------------------+-------------------------------------------------------------+
+| CONSTRAINT BOUND  | TARGET TIME COMPLEXITY     | INTENDED ALGORITHMIC PARADIGM                               |
++-------------------+----------------------------+-------------------------------------------------------------+
+| N <= 10 - 12      | O(N!)                      | Permutations, Traveling Salesperson Brute Force             |
+| N <= 20           | O(2^N) or O(N * 2^N)       | Subsets, Backtracking with Pruning, Bitmask DP               |
+| N <= 35 - 45      | O(2^(N/2) * N)             | Meet-in-the-Middle (Bisect arrays, sort & binary search)   |
+| N <= 100 - 400    | O(N^3)                     | Floyd-Warshall, 3D Dynamic Programming, Matrix Chain Mult   |
+| N <= 2,000 - 3,000| O(N^2)                     | 2D Grid DP, Edit Distance, Nested Two Pointers, Bellman-Ford|
+| N <= 10^5 - 10^6  | O(N log N) or O(N)         | Sorting, Binary Search, Heaps, Sliding Window, Monotonic Stk|
+| N <= 10^9 - 10^18 | O(log N) or O(1)           | Binary Search on Answer, Matrix Exponentiation, Math (GCD)  |
++-------------------+----------------------------+-------------------------------------------------------------+
+```
+
+---
+
+### ⚖️ Cross-Paradigm Comparison Matrix
+
+```text
++---------------------+-----------------------+-------------------------+-------------------------+-------------------------+
+| DIMENSION           | 1. BACKTRACKING       | 2. GREEDY               | 3. DYNAMIC PROGRAMMING  | 4. BRANCH & BOUND       |
++---------------------+-----------------------+-------------------------+-------------------------+-------------------------+
+| Primary Objective   | Find ALL valid config | Find ONE global optimum | Find OPTIMAL value/count| Find ONE global optimum |
+| Search Space        | Explores full tree    | Commits to 1 path       | Solves overlapping subs | Prunes using bounds     |
+| Subproblem Overlap  | Zero / Minimal        | None (Local choices)    | High (Recomputations)   | Low to Moderate         |
+| Memoization Used?   | No (State undone)     | No                      | Yes (Table / Cache)     | No (Priority Queue)     |
+| Optimality Proof?   | Exhaustive search     | Exchange argument req   | Induction over states   | Relaxed bounding func   |
+| Standard Big-O      | Exponential O(2^N, N!)| Linear/Log O(N log N)   | Polynomial O(N^2, N^3)  | Sub-exponential pruned  |
++---------------------+-----------------------+-------------------------+-------------------------+-------------------------+
+```
+
 ---
 
 ## ⚡ Quick Self-Check & Drill

@@ -437,7 +437,137 @@ class Codec:
 #### 📊 Explicit Complexity Deconstruction
 - **Time Complexity:** `O(N)` — Every node and null leaf is processed once during serialization and once during deserialization.
 - **Auxiliary Space:** `O(N)` — Holds token arrays, the FIFO token queue, and recursive stack frames.
-- **Output Space:** `O(N)` — String representation of `N` nodes and `N + 1` null sentinels.
+
+---
+
+### 🧠 Pattern 5: Morris Inorder Traversal — Zero-Stack `O(1)` Space Walking
+
+> [!IMPORTANT]
+> **The Senior Bar-Raiser Curveball:**
+> *"Can you traverse a binary tree in-order in `O(N)` time and strictly `O(1)` auxiliary space without recursion and without allocating a `Stack`?"*
+> Standard DFS requires `O(H)` call-stack space. Morris Traversal eliminates the call stack entirely by temporarily threading the **right pointer of the inorder predecessor** back to the current node.
+
+#### The Mental Model & Threading Mechanics
+For any node `curr` with a left child:
+1. Find its **inorder predecessor**: the rightmost node in `curr.left`.
+2. If `predecessor.right == null`:
+   - Create a temporary thread: `predecessor.right = curr`.
+   - Move `curr = curr.left`.
+3. If `predecessor.right == curr`:
+   - The left subtree has already been visited! Break the thread: `predecessor.right = null`.
+   - Visit `curr` (e.g. record `curr.val`).
+   - Move `curr = curr.right`.
+4. If `curr` has no left child:
+   - Visit `curr`.
+   - Move `curr = curr.right`.
+
+```text
+Tree Threading Visual:
+        4 (curr)                         4 (curr)
+       /                                /
+      2                                2
+     / \                              / \
+    1   3 (predecessor)              1   3 ----+ (Thread pointing back to 4!)
+                                               |
+                                               v
+                                               4
+```
+
+#### Dual-Language Implementation (Morris Inorder Traversal)
+
+##### C# (.NET 8/9 Strictly `O(1)` Auxiliary Memory)
+
+```csharp
+using System.Collections.Generic;
+
+public static class MorrisTraversalSolver
+{
+    /// <summary>
+    /// Traverses binary tree in-order in O(N) time and O(1) auxiliary space using Morris Threading.
+    /// Restores original tree structure before returning.
+    /// </summary>
+    public static IList<int> MorrisInorder(TreeNode? root)
+    {
+        var result = new List<int>();
+        var curr = root;
+
+        while (curr != null)
+        {
+            if (curr.left == null)
+            {
+                result.Add(curr.val);
+                curr = curr.right;
+            }
+            else
+            {
+                // Find inorder predecessor: rightmost node in left subtree
+                var predecessor = curr.left;
+                while (predecessor.right != null && predecessor.right != curr)
+                {
+                    predecessor = predecessor.right;
+                }
+
+                if (predecessor.right == null)
+                {
+                    // Create thread back to current node
+                    predecessor.right = curr;
+                    curr = curr.left;
+                }
+                else
+                {
+                    // Thread already exists: left subtree finished! Remove thread and visit curr
+                    predecessor.right = null;
+                    result.Add(curr.val);
+                    curr = curr.right;
+                }
+            }
+        }
+
+        return result;
+    }
+}
+```
+
+##### Python 3.11+ Idiomatic Implementation
+
+```python
+from typing import Optional, List
+
+class Solution:
+    def morrisInorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        """
+        Inorder traversal in O(N) time and O(1) auxiliary memory using Morris threading.
+        """
+        result = []
+        curr = root
+
+        while curr:
+            if not curr.left:
+                result.append(curr.val)
+                curr = curr.right
+            else:
+                # Find inorder predecessor
+                pre = curr.left
+                while pre.right and pre.right is not curr:
+                    pre = pre.right
+
+                if not pre.right:
+                    # Construct temporary thread
+                    pre.right = curr
+                    curr = curr.left
+                else:
+                    # Dissolve thread and visit current node
+                    pre.right = None
+                    result.append(curr.val)
+                    curr = curr.right
+
+        return result
+```
+
+#### 📊 Explicit Complexity Deconstruction
+- **Time Complexity:** `O(N)` amortized. Every edge is traversed at most 3 times (once to find predecessor, once to traverse, once to dissolve thread).
+- **Auxiliary Space:** `O(1)` strictly! No call stack frames, no explicit `Stack` object. The tree is temporarily modified and completely restored to its original state.
+- **Output Space:** `O(N)` for the returned sequence.
 
 ---
 

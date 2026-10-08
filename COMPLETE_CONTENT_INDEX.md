@@ -23,7 +23,7 @@
 ### ✅ Curriculum Folder Sources
 - `week_*` folders hold learner-facing weekly content
 - Use top-level week files and `support files/` first
-- Ignore `v10/`, `v12/`, and `_v12_` files unless doing version comparison
+- Clean canonical repository: All legacy draft folders (`v10`, `v12`, `v13`) have been cleaned; only the canonical 19 weeks are actively maintained.
 
 ---
 

@@ -272,6 +272,121 @@ public sealed class Treap
         }
     }
 }
+
+/// <summary>
+/// Represents a node in a multi-level Skip List.
+/// </summary>
+public sealed class SkipListNode
+{
+    public int Value { get; }
+    public SkipListNode?[] Forward { get; }
+
+    public SkipListNode(int value, int level)
+    {
+        Value = value;
+        Forward = new SkipListNode?[level];
+    }
+}
+
+/// <summary>
+/// Probabilistic Skip List maintaining expected O(log N) Search, Insert, and Erase.
+/// Mirrors Redis ZSET and RocksDB MemTable index mechanics.
+/// </summary>
+public sealed class SkipList
+{
+    private const int MaxLevel = 16;
+    private const double P = 0.5;
+    private readonly SkipListNode _head = new(-1, MaxLevel);
+    private int _level = 1;
+    private readonly Random _rand = new();
+
+    private int RandomLevel()
+    {
+        int lvl = 1;
+        while (_rand.NextDouble() < P && lvl < MaxLevel)
+        {
+            lvl++;
+        }
+        return lvl;
+    }
+
+    public bool Search(int target)
+    {
+        var curr = _head;
+        for (int i = _level - 1; i >= 0; i--)
+        {
+            while (curr.Forward[i] is not null && curr.Forward[i]!.Value < target)
+            {
+                curr = curr.Forward[i]!;
+            }
+        }
+        curr = curr.Forward[0];
+        return curr is not null && curr.Value == target;
+    }
+
+    public void Add(int num)
+    {
+        var update = new SkipListNode[MaxLevel];
+        var curr = _head;
+
+        for (int i = _level - 1; i >= 0; i--)
+        {
+            while (curr.Forward[i] is not null && curr.Forward[i]!.Value < num)
+            {
+                curr = curr.Forward[i]!;
+            }
+            update[i] = curr;
+        }
+
+        int lvl = RandomLevel();
+        if (lvl > _level)
+        {
+            for (int i = _level; i < lvl; i++)
+            {
+                update[i] = _head;
+            }
+            _level = lvl;
+        }
+
+        var newNode = new SkipListNode(num, lvl);
+        for (int i = 0; i < lvl; i++)
+        {
+            newNode.Forward[i] = update[i].Forward[i];
+            update[i].Forward[i] = newNode;
+        }
+    }
+
+    public bool Erase(int num)
+    {
+        var update = new SkipListNode[MaxLevel];
+        var curr = _head;
+
+        for (int i = _level - 1; i >= 0; i--)
+        {
+            while (curr.Forward[i] is not null && curr.Forward[i]!.Value < num)
+            {
+                curr = curr.Forward[i]!;
+            }
+            update[i] = curr;
+        }
+
+        curr = curr.Forward[0];
+        if (curr is null || curr.Value != num) return false;
+
+        for (int i = 0; i < _level; i++)
+        {
+            if (update[i].Forward[i] != curr) break;
+            update[i].Forward[i] = curr.Forward[i];
+        }
+
+        while (_level > 1 && _head.Forward[_level - 1] is null)
+        {
+            _level--;
+        }
+
+        return true;
+    }
+}
 ```
 
 ### Python Secondary Implementation (Python 3.11+)
@@ -369,6 +484,81 @@ class Treap:
             curr = stack.pop()
             yield curr.key
             curr = curr.right
+
+class SkipListNode:
+    __slots__ = ('val', 'forward')
+    def __init__(self, val: int, level: int):
+        self.val: int = val
+        self.forward: list[Optional['SkipListNode']] = [None] * level
+
+class SkipList:
+    """
+    Probabilistic multi-level Skip List.
+    Expected O(log N) search, insert, and delete.
+    """
+    MAX_LEVEL = 16
+    P = 0.5
+
+    def __init__(self):
+        self.head = SkipListNode(-1, self.MAX_LEVEL)
+        self.level = 1
+
+    def _random_level(self) -> int:
+        lvl = 1
+        while random.random() < self.P and lvl < self.MAX_LEVEL:
+            lvl += 1
+        return lvl
+
+    def search(self, target: int) -> bool:
+        curr = self.head
+        for i in range(self.level - 1, -1, -1):
+            while curr.forward[i] and curr.forward[i].val < target:
+                curr = curr.forward[i]
+        curr = curr.forward[0]
+        return curr is not None and curr.val == target
+
+    def add(self, num: int) -> None:
+        update = [None] * self.MAX_LEVEL
+        curr = self.head
+
+        for i in range(self.level - 1, -1, -1):
+            while curr.forward[i] and curr.forward[i].val < num:
+                curr = curr.forward[i]
+            update[i] = curr
+
+        lvl = self._random_level()
+        if lvl > self.level:
+            for i in range(self.level, lvl):
+                update[i] = self.head
+            self.level = lvl
+
+        new_node = SkipListNode(num, lvl)
+        for i in range(lvl):
+            new_node.forward[i] = update[i].forward[i]
+            update[i].forward[i] = new_node
+
+    def erase(self, num: int) -> bool:
+        update = [None] * self.MAX_LEVEL
+        curr = self.head
+
+        for i in range(self.level - 1, -1, -1):
+            while curr.forward[i] and curr.forward[i].val < num:
+                curr = curr.forward[i]
+            update[i] = curr
+
+        curr = curr.forward[0]
+        if not curr or curr.val != num:
+            return False
+
+        for i in range(self.level):
+            if update[i].forward[i] is not curr:
+                break
+            update[i].forward[i] = curr.forward[i]
+
+        while self.level > 1 and self.head.forward[self.level - 1] is None:
+            self.level -= 1
+
+        return True
 ```
 
 ---

@@ -162,6 +162,15 @@ public static class CrtEngine {
         return (x % m + m) % m;
     }
 
+    /// <summary>
+    /// Computes modular inverse using Fermat's Little Theorem: a^(p - 2) % p.
+    /// Precondition: p must be prime and gcd(a, p) == 1.
+    /// Time Complexity: O(log p) | Space Complexity: O(1)
+    /// </summary>
+    public static long ModInverseFermat(long a, long p) {
+        return ModPow(a, p - 2, p);
+    }
+
     public static long SolveCrt(long[] a, long[] m) {
         long totalM = 1;
         for (int i = 0; i < m.Length; i++) {
@@ -217,6 +226,15 @@ def mod_inverse(a: int, m: int) -> int:
     if g != 1:
         return -1
     return (x % m + m) % m
+
+
+def mod_inverse_fermat(a: int, p: int) -> int:
+    """Computes modular inverse using Fermat's Little Theorem: pow(a, p - 2, p).
+    
+    Precondition: p must be prime and gcd(a, p) == 1.
+    Time Complexity: O(log P) | Space Complexity: O(1)
+    """
+    return pow(a, p - 2, p)
 
 
 def solve_crt(a: list[int], m: list[int]) -> int:

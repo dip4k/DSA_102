@@ -219,6 +219,47 @@ public class DinicMaxFlow
 
         return 0; // No augmenting path through u in this level graph
     }
+
+    /// <summary>
+    /// Recovers the Min-Cut edge set via BFS reachability on the residual network.
+    /// Invariant: Nodes reachable from source form partition S; unreachable form partition T.
+    /// Saturated forward edges (u in S, v in T) constitute the minimum cut.
+    /// </summary>
+    public List<(int From, int To, int OriginalCapacity)> FindMinCutEdges(int source)
+    {
+        bool[] reachable = new bool[_n];
+        Queue<int> queue = new();
+        reachable[source] = true;
+        queue.Enqueue(source);
+
+        while (queue.Count > 0)
+        {
+            int u = queue.Dequeue();
+            foreach (var edge in _adj[u])
+            {
+                if (edge.Capacity - edge.Flow > 0 && !reachable[edge.To])
+                {
+                    reachable[edge.To] = true;
+                    queue.Enqueue(edge.To);
+                }
+            }
+        }
+
+        var minCutEdges = new List<(int From, int To, int OriginalCapacity)>();
+        for (int u = 0; u < _n; u++)
+        {
+            if (!reachable[u]) continue;
+            foreach (var edge in _adj[u])
+            {
+                if (!reachable[edge.To] && edge.Capacity > 0)
+                {
+                    minCutEdges.Add((u, edge.To, edge.Capacity));
+                }
+            }
+        }
+
+        return minCutEdges;
+    }
 }
 ```
 
@@ -306,6 +347,33 @@ class DinicMaxFlow:
                     return pushed
 
         return 0
+
+    def find_min_cut_edges(self, source: int) -> list[tuple[int, int, int]]:
+        """
+        Identifies the minimum cut bottleneck edges after computing max flow.
+        Returns a list of (u, v, original_capacity) edges spanning from the
+        source-reachable set S to the sink-reachable set T.
+        """
+        reachable = [False] * self.n
+        q = deque([source])
+        reachable[source] = True
+
+        while q:
+            u = q.popleft()
+            for edge in self.adj[u]:
+                if edge.capacity - edge.flow > 0 and not reachable[edge.to]:
+                    reachable[edge.to] = True
+                    q.append(edge.to)
+
+        min_cut_edges = []
+        for u in range(self.n):
+            if not reachable[u]:
+                continue
+            for edge in self.adj[u]:
+                if not reachable[edge.to] and edge.capacity > 0:
+                    min_cut_edges.append((u, edge.to, edge.capacity))
+
+        return min_cut_edges
 ```
 
 ---

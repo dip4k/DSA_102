@@ -1,4 +1,4 @@
-﻿# 📘 WEEK 11: DAY 05 — MIXED DP PROBLEMS & SYNTHESIS MASTERY
+# 📘 WEEK 11: DAY 05 — MIXED DP PROBLEMS & SYNTHESIS MASTERY
 
 > 🧭 **Navigation:** [← Previous Day](Week_11_Day_04_State_Compression_And_Optimizations_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_11_FULL_PLAYBOOK.md)
 > 
@@ -447,6 +447,121 @@ def max_profit_cooldown(prices: List[int]) -> int:
         rest = max(prev_rest, prev_sold)
 
     return max(sold, rest)
+```
+
+---
+
+### Hybrid Pattern 3: Reverse-Thinking Interval DP — Burst Balloons (LeetCode 312)
+
+> [!IMPORTANT]
+> **The Senior Intuition Leap:**
+> If you decide which balloon to burst **first**, the remaining balloons suddenly touch each other across the gap. Their boundary dependencies tangle, destroying the optimal substructure required for Dynamic Programming.
+> **The Invariant Inversion:** Decide which balloon is burst **LAST** in the range `(i, j)`.
+> If balloon `k` is burst *last*, all other balloons in `[i..k-1]` and `[k+1..j]` have already vanished! Thus, balloon `k`'s immediate left and right neighbors are guaranteed to be the static boundary balloons `i - 1` and `j + 1`!
+
+```text
+Pad array with virtual 1s: [ 1, nums[0], nums[1], ..., nums[n-1], 1 ]
+
+Interval (i, j): Choose balloon k to burst LAST among {i, i+1, ..., j}:
++-------------------------------------------------------------+
+|    Subproblem [i .. k-1]    |  k  |    Subproblem [k+1 .. j]  |
+|    (all balloons popped)    |     |    (all balloons popped)  |
++-------------------------------------------------------------+
+ Coins earned by popping k last = padded[i - 1] * padded[k] * padded[j + 1]
+
+Recurrence Relation:
+dp[i][j] = max_{k=i..j} ( dp[i][k - 1] + (padded[i-1] * padded[k] * padded[j+1]) + dp[k + 1][j] )
+```
+
+#### Production C# (.NET 8/9 Implementation)
+
+```csharp
+namespace Week11.MixedDP;
+
+using System;
+
+public static class BurstBalloonsSolver
+{
+    /// <summary>
+    /// Computes maximum coins from bursting balloons using reverse-thinking Interval DP.
+    /// Time Complexity: O(N^3)
+    /// Auxiliary Space: O(N^2)
+    /// </summary>
+    public static int MaxCoins(int[] nums)
+    {
+        if (nums == null || nums.Length == 0)
+        {
+            return 0;
+        }
+
+        int n = nums.Length;
+        // Pad boundaries with sentinel 1s
+        int[] val = new int[n + 2];
+        val[0] = 1;
+        val[n + 1] = 1;
+        for (int m = 0; m < n; m++)
+        {
+            val[m + 1] = nums[m];
+        }
+
+        // dp[i, j] = max coins from bursting balloons in interval [i..j]
+        int[,] dp = new int[n + 2, n + 2];
+
+        // Solve by increasing interval length
+        for (int length = 1; length <= n; length++)
+        {
+            for (int i = 1; i <= n - length + 1; i++)
+            {
+                int j = i + length - 1;
+
+                // Pick balloon k in [i..j] to burst LAST in this range
+                for (int k = i; k <= j; k++)
+                {
+                    int coins = dp[i, k - 1] 
+                              + (val[i - 1] * val[k] * val[j + 1]) 
+                              + dp[k + 1, j];
+
+                    dp[i, j] = Math.Max(dp[i, j], coins);
+                }
+            }
+        }
+
+        return dp[1, n];
+    }
+}
+```
+
+#### Idiomatic Python (3.11+) Implementation
+
+```python
+class Solution:
+    def maxCoins(self, nums: list[int]) -> int:
+        """
+        Calculates max coins via reverse interval DP (choosing the last balloon popped).
+        Time Complexity: O(N^3)
+        Auxiliary Space: O(N^2)
+        """
+        if not nums:
+            return 0
+
+        # Pad with 1s on left and right
+        vals = [1] + nums + [1]
+        n = len(nums)
+
+        # dp[i][j] stores max coins from bursting all balloons in range [i..j]
+        dp = [[0] * (n + 2) for _ in range(n + 2)]
+
+        # Iterate over interval lengths from 1 to n
+        for length in range(1, n + 1):
+            for i in range(1, n - length + 2):
+                j = i + length - 1
+                # Try bursting balloon k LAST in the window [i..j]
+                dp[i][j] = max(
+                    dp[i][k - 1] + (vals[i - 1] * vals[k] * vals[j + 1]) + dp[k + 1][j]
+                    for k in range(i, j + 1)
+                )
+
+        return dp[1][n]
 ```
 
 ---

@@ -109,6 +109,30 @@ Negating `int.MinValue` (`-int.MinValue`) in 32-bit signed integer space cannot 
 
 ---
 
+### 🖼 Unicode Architecture: UTF-8 vs. UTF-16, Code Points, and Surrogate Pairs (`char` vs. `Rune`)
+
+A critical senior engineering distinction is understanding the difference between **Code Points**, **Code Units**, and **Grapheme Clusters**:
+
+1. **Unicode Code Point:** An integer in the range `0x0000` to `0x10FFFF` representing an abstract character (over 1.1 million possible code points).
+2. **UTF-16 Code Unit (C# / Java `char`):** A fixed 16-bit integer (2 bytes). Characters within the Basic Multilingual Plane (BMP, `U+0000` to `U+FFFF`) map to a single `char`. Characters outside the BMP (supplementary characters like emojis `😀` `U+1F600` or historical scripts) require a **surrogate pair**: two consecutive 16-bit code units (High Surrogate: `0xD800`–`0xDBFF`, Low Surrogate: `0xDC00`–`0xDFFF`).
+3. **UTF-8 (Web, Wire & Storage standard):** Variable-length encoding (1 to 4 bytes per code point). ASCII characters (`0`–`127`) occupy exactly 1 byte, making UTF-8 backwards-compatible with ASCII and bandwidth-efficient.
+
+```text
+Character: 'A' (U+0041)
+  UTF-8:  [ 0x41 ] (1 byte)
+  UTF-16: [ 0x41 ][ 0x00 ] (2 bytes / 1 char)
+
+Character: '😀' (U+1F600, Grinning Face)
+  UTF-8:  [ 0xF0 ][ 0x9F ][ 0x98 ][ 0x80 ] (4 bytes)
+  UTF-16: [ 0x3D ][ 0xD8 ] [ 0x00 ][ 0xDE ] (4 bytes / 2 chars: High + Low Surrogate)
+```
+
+> [!WARNING]
+> **The `string.Length` Illusion:** In C# and Java, `"😀".Length` returns **2**, not 1! Iterating by index `s[i]` splits the surrogate pair, yielding an invalid orphan surrogate character. Modern .NET provides `System.Text.Rune` to safely iterate over full Unicode scalar values. In Python 3, string indexing `s[0]` returns code points directly, but encoded network transmissions (`s.encode('utf-8')`) reflect physical byte counts.
+
+
+---
+
 ## ⚙️ CHAPTER 3: DUAL-LANGUAGE PRODUCTION IMPLEMENTATIONS
 
 ### 1. C# (.NET 8/9): Production `MyAtoi` and `MyItoa` with Defensive Clamping
@@ -208,6 +232,79 @@ public static class StringNumberConversions
         }
         return freq;
     }
+
+    // 4. Arbitrary Base-K Conversion (Base 10 <-> Base K, where 2 <= K <= 36)
+    public static string ConvertToBaseK(long number, int baseK)
+    {
+        if (baseK is < 2 or > 36)
+            throw new ArgumentOutOfRangeException(nameof(baseK), "Base must be between 2 and 36.");
+        if (number == 0) return "0";
+
+        const string digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        var sb = new StringBuilder();
+        bool isNegative = number < 0;
+        ulong n = isNegative ? (ulong)(-number) : (ulong)number;
+
+        while (n > 0)
+        {
+            sb.Append(digits[(int)(n % (ulong)baseK)]);
+            n /= (ulong)baseK;
+        }
+
+        if (isNegative) sb.Append('-');
+
+        for (int i = 0, j = sb.Length - 1; i < j; i++, j--)
+        {
+            (sb[i], sb[j]) = (sb[j], sb[i]);
+        }
+        return sb.ToString();
+    }
+
+    public static long ConvertFromBaseK(string s, int baseK)
+    {
+        if (baseK is < 2 or > 36)
+            throw new ArgumentOutOfRangeException(nameof(baseK), "Base must be between 2 and 36.");
+        if (string.IsNullOrWhiteSpace(s))
+            throw new ArgumentException("Input string cannot be empty.", nameof(s));
+
+        ReadOnlySpan<char> span = s.AsSpan().Trim();
+        bool isNegative = span[0] == '-';
+        if (isNegative || span[0] == '+') span = span[1..];
+
+        long result = 0;
+        foreach (char c in span)
+        {
+            int val = c switch
+            {
+                >= '0' and <= '9' => c - '0',
+                >= 'a' and <= 'z' => c - 'a' + 10,
+                >= 'A' and <= 'Z' => c - 'A' + 10,
+                _ => throw new FormatException($"Invalid character '{c}' for Base-{baseK}.")
+            };
+
+            if (val >= baseK)
+                throw new FormatException($"Digit '{c}' exceeds Base-{baseK} radix.");
+
+            checked
+            {
+                result = (result * baseK) + val;
+            }
+        }
+
+        return isNegative ? -result : result;
+    }
+
+    // 5. Surrogate-Safe Unicode Rune Counting
+    public static int CountTrueCodePoints(string s)
+    {
+        if (string.IsNullOrEmpty(s)) return 0;
+        int count = 0;
+        foreach (var _ in s.EnumerateRunes())
+        {
+            count++;
+        }
+        return count;
+    }
 }
 ```
 
@@ -284,11 +381,71 @@ class StringNumberConversions:
                 freq[ord(ch) - ord('a')] += 1
         return freq
 
+    @staticmethod
+    def convert_to_base_k(number: int, base_k: int) -> str:
+        """Converts an integer to arbitrary Base-K string (2 <= K <= 36)."""
+        if not (2 <= base_k <= 36):
+            raise ValueError("Base must be between 2 and 36.")
+        if number == 0:
+            return "0"
+
+        digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        is_negative = number < 0
+        n = abs(number)
+        chars = []
+
+        while n > 0:
+            chars.append(digits[n % base_k])
+            n //= base_k
+
+        if is_negative:
+            chars.append('-')
+
+        chars.reverse()
+        return "".join(chars)
+
+    @staticmethod
+    def convert_from_base_k(s: str, base_k: int) -> int:
+        """Converts arbitrary Base-K string (2 <= K <= 36) to Base-10 integer."""
+        if not (2 <= base_k <= 36):
+            raise ValueError("Base must be between 2 and 36.")
+        s = s.strip()
+        if not s:
+            raise ValueError("Input string cannot be empty.")
+
+        is_negative = s[0] == '-'
+        if is_negative or s[0] == '+':
+            s = s[1:]
+
+        digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        char_map = {ch: idx for idx, ch in enumerate(digits[:base_k])}
+
+        result = 0
+        for ch in s.upper():
+            if ch not in char_map:
+                raise ValueError(f"Invalid character '{ch}' for Base-{base_k}.")
+            result = (result * base_k) + char_map[ch]
+
+        return -result if is_negative else result
+
+    @staticmethod
+    def count_true_code_points(s: str) -> tuple[int, int]:
+        """
+        Returns (unicode_code_point_count, utf8_byte_count).
+        Highlights the difference between character length and wire byte size.
+        """
+        return len(s), len(s.encode('utf-8'))
+
 if __name__ == "__main__":
     print(f"Atoi '  -42': {StringNumberConversions.my_atoi('  -42')}")
     print(f"Atoi Overflow '2147483648': {StringNumberConversions.my_atoi('2147483648')}")
     print(f"Itoa -12345: {StringNumberConversions.my_itoa(-12345)}")
     print(f"Freq 'leetcode': {StringNumberConversions.compute_frequency('leetcode')}")
+    print(f"Base 10 -> Base 16 (255): {StringNumberConversions.convert_to_base_k(255, 16)}")
+    print(f"Base 16 -> Base 10 ('FF'): {StringNumberConversions.convert_from_base_k('FF', 16)}")
+    emoji = "Hello 😀"
+    code_pts, utf8_bytes = StringNumberConversions.count_true_code_points(emoji)
+    print(f"'{emoji}' -> Code points: {code_pts}, UTF-8 bytes: {utf8_bytes}")
 ```
 
 ---
@@ -299,6 +456,9 @@ if __name__ == "__main__":
 | :--- | :--- | :--- | :--- | :--- |
 | **`MyAtoi`** | `O(N)` | `O(1)` | `O(1)` | Scans string of length `N` once; accumulator lives in CPU registers. |
 | **`MyItoa`** | `O(D)` | `O(D)` | `O(D)` | `D` is number of digits (`<= 10` for 32-bit integers). Fixed small buffer reversed in place. |
+| **`ConvertToBaseK`** | `O(log_K N)` | `O(log_K N)` | `O(log_K N)` | Digit count in Base `K` is bounded by `log_K(N)`. |
+| **`ConvertFromBaseK`** | `O(L)` | `O(1)` | `O(1)` | `L` is string length; single linear pass Horner's polynomial accumulator. |
+| **`CountTrueCodePoints` (Rune)** | `O(N)` | `O(1)` | `O(1)` | Decodes variable-length surrogate pairs (UTF-16) or multi-byte sequences (UTF-8). |
 | **`+=` String Concat in Loop** | `O(N^2)` | `O(N^2)` | `O(N)` | Each step allocates a new heap buffer of size `K`, copying all previous characters (`1 + 2 + ... + N`). |
 | **`StringBuilder` in Loop** | `O(N)` | `O(N)` | `O(N)` | Uses geometric doubling amortized `O(1)` append; single final allocation on `.ToString()`. |
 | **`ComputeFrequency`** | `O(N)` | `O(1)` | `O(1)` | Fixed 26-element array regardless of input string length `N`. |
@@ -315,6 +475,9 @@ if __name__ == "__main__":
 
 ### Script 3: Handling the Two's Complement Negation Asymmetry in `itoa`
 > *"In Two's complement representation, the range of a 32-bit signed integer is `[-2^31, 2^31 - 1]`, or `[-2,147,483,648, 2,147,483,647]`. Notice that the magnitude of `int.MinValue` is 1 greater than `int.MaxValue`. If you attempt to make the number positive using `Math.Abs(int.MinValue)` or `-value`, it overflows back to negative. In my `itoa` implementation, I handle `int.MinValue` as an explicit guard condition or cast to 64-bit integer before computing digits."*
+
+### Script 4: Addressing Unicode Surrogates vs. Code Points
+> *"When designing text-processing engines or calculating string lengths, I treat the string not as a simple array of 16-bit characters, but as encoded Unicode scalar values. In UTF-16, characters outside the Basic Multilingual Plane (such as emojis or complex symbols) consume two 16-bit code units known as surrogate pairs. Calling `string.Length` returns the number of UTF-16 code units (2 for a single emoji), rather than the visual character count. In modern .NET, I use `System.Text.Rune` to iterate through actual code points and avoid splitting surrogate pairs in string slicing or truncation operations."*
 
 ---
 

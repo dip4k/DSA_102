@@ -407,6 +407,282 @@ If the stack becomes empty, it means this closing bracket had no matching open b
       (O(1) space)  (O(N) space)              with -1 base     with pruning
 ```
 
+
+---
+
+## 🏛️ CHAPTER 7: MULTI-STACK NESTED PARSING & OPERATOR PRECEDENCE
+
+> [!IMPORTANT]
+> **Senior Interview Reality:**
+> Simple bracket validation (`LC 20`) tests mid-level syntax mechanics. Senior and Staff interviews at Meta, Google, and Amazon evaluate **Nested State Persistence and Evaluation Stacks** via **Decode String (LC 394)** and **Basic Calculator II (LC 227)**.
+> These problems require managing multi-level context: remembering unfinished outer strings while resolving nested inner expressions, and respecting operator precedence without full context-free grammar parsers.
+
+### 🧠 Pattern 1: Nested Scope Stacking — Decode String (LeetCode 394)
+
+#### The Mental Model
+When parsing nested expressions like `3[a2[c]]`, each `[` opens a new execution scope, and each `]` closes it. Because inner scopes must resolve *before* the outer scope can be multiplied, this follows strict **LIFO (Last-In, First-Out)** order.
+
+```text
+Parsing String: "3[a2[c]]"
+Pointer trace:
+1. Read '3', '[': Push count 3, push outer string "" onto stacks. Reset current = "".
+2. Read 'a': current = "a".
+3. Read '2', '[': Push count 2, push outer string "a" onto stacks. Reset current = "".
+4. Read 'c': current = "c".
+5. Read ']': Pop count 2, pop previous "a".
+   New current = "a" + "c" * 2 = "acc".
+6. Read ']': Pop count 3, pop previous "".
+   New current = "" + "acc" * 3 = "accaccacc".
+```
+
+#### Dual-Language Implementation (LC 394)
+
+##### C# (.NET 8/9 Modern Implementation)
+
+```csharp
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+public static class StringDecoder
+{
+    /// <summary>
+    /// Decodes nested bracket strings using dual stacks for multipliers and string prefixes.
+    /// Time Complexity: O(MaxK * N) where MaxK is repeat factor and N is length.
+    /// Auxiliary Space: O(N) for recursion/stack memory.
+    /// </summary>
+    public static string DecodeString(string s)
+    {
+        if (string.IsNullOrEmpty(s))
+        {
+            return string.Empty;
+        }
+
+        Stack<int> countStack = new();
+        Stack<StringBuilder> stringStack = new();
+        StringBuilder currentStr = new();
+        int currentCount = 0;
+
+        foreach (char c in s)
+        {
+            if (char.IsDigit(c))
+            {
+                // Multi-digit multiplier accumulator
+                currentCount = currentCount * 10 + (c - '0');
+            }
+            else if (c == '[')
+            {
+                // Push outer context into stacks and reset local scope
+                countStack.Push(currentCount);
+                stringStack.Push(currentStr);
+                currentStr = new StringBuilder();
+                currentCount = 0;
+            }
+            else if (c == ']')
+            {
+                // Pop scope and repeat current string
+                int repeatTimes = countStack.Pop();
+                StringBuilder decodedPrefix = stringStack.Pop();
+
+                for (int i = 0; i < repeatTimes; i++)
+                {
+                    decodedPrefix.Append(currentStr);
+                }
+
+                currentStr = decodedPrefix;
+            }
+            else
+            {
+                // Regular character: append to current working buffer
+                currentStr.Append(c);
+            }
+        }
+
+        return currentStr.ToString();
+    }
+}
+```
+
+##### Python 3.11+ Idiomatic Implementation
+
+```python
+class Solution:
+    def decodeString(self, s: str) -> str:
+        """
+        Decodes nested encoded strings using a single tuple stack: (previous_string, repeat_count).
+        Time Complexity: O(Output Length)
+        Auxiliary Space: O(N)
+        """
+        stack: list[tuple[str, int]] = []
+        current_str = []
+        current_num = 0
+
+        for char in s:
+            if char.isdigit():
+                current_num = current_num * 10 + int(char)
+            elif char == '[':
+                # Freeze current state and push into stack
+                stack.append(("".join(current_str), current_num))
+                current_str = []
+                current_num = 0
+            elif char == ']':
+                prev_str, repeat_times = stack.pop()
+                current_str = [prev_str + ("".join(current_str) * repeat_times)]
+            else:
+                current_str.append(char)
+
+        return "".join(current_str)
+```
+
+---
+
+### 🧠 Pattern 2: Operator Precedence Stack — Basic Calculator II (LeetCode 227)
+
+#### The Mental Model
+Evaluating arithmetic strings containing `+`, `-`, `*`, `/` with proper operator precedence without recursion:
+* `*` and `/` have **high precedence**: resolve them immediately by popping the top number from the stack, evaluating, and pushing the result back.
+* `+` and `-` have **low precedence**: defer them by pushing signed numbers onto the stack (`+X` pushes `X`, `-X` pushes `-X`).
+* At the end, sum all elements in the stack.
+
+```text
+Expression: "3 + 2 * 2"
+Pointer trace:
+- Initial sign = '+'
+- Read '3': sign was '+', push +3. Stack: [3]. Next sign = '+'.
+- Read '2': sign was '+', push +2. Stack: [3, 2]. Next sign = '*'.
+- Read '2': sign was '*', pop 2, compute 2 * 2 = 4, push +4. Stack: [3, 4].
+- End of string: sum stack elements = 3 + 4 = 7.
+```
+
+#### Dual-Language Implementation (LC 227)
+
+##### C# (.NET 8/9 Zero-Recursion Implementation)
+
+```csharp
+using System;
+using System.Collections.Generic;
+
+public static class BasicCalculator
+{
+    /// <summary>
+    /// Evaluates arithmetic string with +, -, *, / respecting precedence.
+    /// Time Complexity: O(N)
+    /// Auxiliary Space: O(N) for expression stack
+    /// </summary>
+    public static int Calculate(string s)
+    {
+        if (string.IsNullOrWhiteSpace(s))
+        {
+            return 0;
+        }
+
+        Stack<int> stack = new();
+        int currentNumber = 0;
+        char operation = '+';
+        int length = s.Length;
+
+        for (int i = 0; i < length; i++)
+        {
+            char c = s[i];
+
+            if (char.IsDigit(c))
+            {
+                currentNumber = currentNumber * 10 + (c - '0');
+            }
+
+            // If character is an operator, or we reached the last character
+            if ((!char.IsDigit(c) && c != ' ') || i == length - 1)
+            {
+                if (operation == '+')
+                {
+                    stack.Push(currentNumber);
+                }
+                else if (operation == '-')
+                {
+                    stack.Push(-currentNumber);
+                }
+                else if (operation == '*')
+                {
+                    stack.Push(stack.Pop() * currentNumber);
+                }
+                else if (operation == '/')
+                {
+                    stack.Push(stack.Pop() / currentNumber); // Truncates toward zero in C#
+                }
+
+                operation = c;
+                currentNumber = 0;
+            }
+        }
+
+        int result = 0;
+        while (stack.Count > 0)
+        {
+            result += stack.Pop();
+        }
+
+        return result;
+    }
+}
+```
+
+##### Python 3.11+ Idiomatic Implementation
+
+```python
+class Solution:
+    def calculate(self, s: str) -> int:
+        """
+        Evaluates +, -, *, / expressions using an operator precedence stack.
+        Time Complexity: O(N)
+        Auxiliary Space: O(N)
+        """
+        stack: list[int] = []
+        current_num = 0
+        operator = '+'
+        s = s.strip()
+
+        for i, char in enumerate(s):
+            if char.isdigit():
+                current_num = current_num * 10 + int(char)
+
+            if (not char.isdigit() and char != ' ') or i == len(s) - 1:
+                if operator == '+':
+                    stack.append(current_num)
+                elif operator == '-':
+                    stack.append(-current_num)
+                elif operator == '*':
+                    stack.append(stack.pop() * current_num)
+                elif operator == '/':
+                    # In Python, int division with negative numbers truncates away from 0:
+                    # -3 // 2 = -2. Use int(prev / current_num) to truncate towards zero.
+                    stack.append(int(stack.pop() / current_num))
+
+                operator = char
+                current_num = 0
+
+        return sum(stack)
+```
+
+---
+
+### 🎙️ 45-Minute Senior Interview Verbal Script
+
+```text
++-----------------------+------------------------------------------------------------------------------------------+
+| INTERVIEW STEP        | SPOKEN SCRIPT (WHAT YOU SAY ALOUD TO THE INTERVIEWER)                                    |
++-----------------------+------------------------------------------------------------------------------------------+
+| 1. Spot Bottleneck    | "In Basic Calculator, we cannot evaluate operators left-to-right naively because '*'     |
+|                       | and '/' have higher precedence than '+' and '-'.                                         |
++-----------------------+------------------------------------------------------------------------------------------+
+| 2. State Invariant    | "We maintain an evaluation stack where all high-precedence operations (*, /) are         |
+|                       | collapsed immediately, and low-precedence operations (+, -) are deferred as signed      |
+|                       | numbers. At the end of the scan, the total sum of the stack is the final expression value."|
++-----------------------+------------------------------------------------------------------------------------------+
+| 3. Language Trap Alert| "In Python, integer division -3 // 2 rounds to -2 instead of -1. We must use             |
+|                       | int(a / b) to ensure truncation toward zero matches language-neutral arithmetic specs."  |
++-----------------------+------------------------------------------------------------------------------------------+
+```
+
 ---
 
 ## 🏋️ PRACTICE LADDER

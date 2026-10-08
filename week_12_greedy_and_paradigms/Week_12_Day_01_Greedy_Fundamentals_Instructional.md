@@ -517,6 +517,228 @@ This verbatim script demonstrates how to communicate a greedy strategy to a Staf
  - Distinct tasks exceed cooldown: Idles become negative, clamp to 0 via Math.Max, returns total tasks."
 ```
 
+
+---
+
+## 🏛️ CHAPTER 4: CANONICAL FAANG GREEDY PATTERNS — RUNNING DEFICIT & RANGE EXPANSION
+
+> [!IMPORTANT]
+> **Why FAANG Loves These Problems:**
+> **Gas Station (LC 134)** and **Jump Game II (LC 45)** separate candidates who memorize disjointed loops from senior engineers who can derive **monotonic skip proofs**: proving why an entire range of suboptimal starting points or intermediate states can be skipped in `O(1)` without missing the global optimum.
+
+---
+
+### 🧠 Pattern 1: The Running Deficit Invariant — Gas Station (LeetCode 134)
+
+#### The Problem & Intuitive Hook
+You have `n` gas stations along a circular route. You have `gas[i]` at station `i` and it costs `cost[i]` to travel to station `i + 1`. Find the starting gas station index from which you can travel around the circuit once clockwise.
+
+#### The Mathematical Skip Invariant
+1. **Total Solvability Invariant:** If `sum(gas) < sum(cost)`, the circuit is impossible to complete from *any* station. Return `-1`.
+2. **Local Discard-Safety Proof:** Suppose you start at station `A` and run out of gas at station `B` (where `B >= A`).
+   - For any intermediate station `k` (where `A <= k <= B`), the gas accumulated from `A` to `k` was non-negative.
+   - Starting at `k` with an empty tank means you have *less* gas than reaching `k` starting from `A`!
+   - Therefore, no station in the entire range `[A..B]` can possibly reach past `B`. We safely skip all of them and reset our candidate start station directly to `B + 1`!
+
+```text
+Gas:   [ 1,  2,  3,  4,  5 ]
+Cost:  [ 3,  4,  5,  1,  2 ]
+Diff:  [-2, -2, -2, +3, +3 ]
+
+Trace:
+i=0: tank = -2 < 0 -> Fails! Reset start = 1, tank = 0
+i=1: tank = -2 < 0 -> Fails! Reset start = 2, tank = 0
+i=2: tank = -2 < 0 -> Fails! Reset start = 3, tank = 0
+i=3: tank = +3 >= 0 -> Valid. Keep start = 3.
+i=4: tank = 3 + 3 = 6 >= 0 -> Valid.
+Total gas (15) >= Total cost (15) -> Start index 3 is guaranteed optimal!
+```
+
+#### Dual-Language Implementation (LC 134)
+
+##### C# (.NET 8/9 Zero-Allocation Implementation)
+
+```csharp
+namespace DsaMastery.Greedy;
+
+public static class GasStationSolver
+{
+    /// <summary>
+    /// Finds the starting gas station index in a circular circuit.
+    /// Time Complexity: O(N) single linear scan.
+    /// Auxiliary Space: O(1).
+    /// </summary>
+    public static int CanCompleteCircuit(int[] gas, int[] cost)
+    {
+        int totalSurplus = 0;
+        int currentTank = 0;
+        int startStation = 0;
+
+        for (int i = 0; i < gas.Length; i++)
+        {
+            int gain = gas[i] - cost[i];
+            totalSurplus += gain;
+            currentTank += gain;
+
+            // If current tank drops below 0, stations [startStation..i] are all invalid
+            if (currentTank < 0)
+            {
+                startStation = i + 1;
+                currentTank = 0;
+            }
+        }
+
+        // If total gas across the entire circuit is deficient, no solution exists
+        return totalSurplus >= 0 ? startStation : -1;
+    }
+}
+```
+
+##### Python 3.11+ Idiomatic Implementation
+
+```python
+class Solution:
+    def canCompleteCircuit(self, gas: list[int], cost: list[int]) -> int:
+        """
+        Determines the starting station index for a full circular traversal.
+        Time Complexity: O(N)
+        Auxiliary Space: O(1)
+        """
+        total_surplus = 0
+        current_tank = 0
+        start_station = 0
+
+        for i in range(len(gas)):
+            diff = gas[i] - cost[i]
+            total_surplus += diff
+            current_tank += diff
+
+            # Monotonic discard: reset start boundary past failed segment
+            if current_tank < 0:
+                start_station = i + 1
+                current_tank = 0
+
+        return start_station if total_surplus >= 0 else -1
+```
+
+---
+
+### 🧠 Pattern 2: Greedy Range Expansion — Jump Game II (LeetCode 45)
+
+#### The Problem & Intuitive Hook
+Given an array `nums` where `nums[i]` represents your maximum jump length from index `i`, return the minimum number of jumps to reach index `n - 1`.
+
+#### The BFS-Style Window Invariant
+Instead of testing combinations or running `O(N^2)` dynamic programming, view each jump as defining a **range window `[currentEnd, maxReach]`**:
+* Within the current jump window, we greedily determine the maximum forward reach `maxReach = max(maxReach, i + nums[i])`.
+* When our index pointer reaches `currentEnd`, we must spend 1 jump. We update `currentEnd = maxReach`.
+* This implicitly explores BFS levels in `O(N)` time and `O(1)` space!
+
+```text
+nums = [ 2, 3, 1, 1, 4 ]
+
+Window 0: [Index 0]          -> Reach = 0 + 2 = 2. Jump 1! Next window boundary = 2.
+Window 1: [Index 1, 2]       -> At 1, reach = 1 + 3 = 4. Reached end index 4!
+Total Jumps = 2.
+```
+
+#### Dual-Language Implementation (LC 45)
+
+##### C# (.NET 8/9 Modern Implementation)
+
+```csharp
+namespace DsaMastery.Greedy;
+
+public static class JumpGameIISolver
+{
+    /// <summary>
+    /// Computes minimum jumps to reach the last index using greedy window expansion.
+    /// Time Complexity: O(N) single pass.
+    /// Auxiliary Space: O(1).
+    /// </summary>
+    public static int Jump(int[] nums)
+    {
+        if (nums == null || nums.Length <= 1)
+        {
+            return 0;
+        }
+
+        int jumps = 0;
+        int currentWindowEnd = 0;
+        int maxReachable = 0;
+        int target = nums.Length - 1;
+
+        for (int i = 0; i < target; i++)
+        {
+            maxReachable = Math.Max(maxReachable, i + nums[i]);
+
+            // Reached boundary of current jump: must commit to the next jump
+            if (i == currentWindowEnd)
+            {
+                jumps++;
+                currentWindowEnd = maxReachable;
+
+                if (currentWindowEnd >= target)
+                {
+                    break;
+                }
+            }
+        }
+
+        return jumps;
+    }
+}
+```
+
+##### Python 3.11+ Idiomatic Implementation
+
+```python
+class Solution:
+    def jump(self, nums: list[int]) -> int:
+        """
+        Calculates the minimum number of jumps using greedy window horizons.
+        Time Complexity: O(N)
+        Auxiliary Space: O(1)
+        """
+        if len(nums) <= 1:
+            return 0
+
+        jumps = 0
+        current_window_end = 0
+        max_reachable = 0
+        target = len(nums) - 1
+
+        for i in range(target):
+            max_reachable = max(max_reachable, i + nums[i])
+
+            # Exhausted current jump tier: advance horizon
+            if i == current_window_end:
+                jumps += 1
+                current_window_end = max_reachable
+                if current_window_end >= target:
+                    break
+
+        return jumps
+```
+
+---
+
+### 🎙️ 45-Minute Senior Interview Verbal Script
+
+```text
++-----------------------+------------------------------------------------------------------------------------------+
+| INTERVIEW STEP        | SPOKEN SCRIPT (WHAT YOU SAY ALOUD TO THE INTERVIEWER)                                    |
++-----------------------+------------------------------------------------------------------------------------------+
+| 1. Discard-Proof Pitch| "In Gas Station, if a start candidate A runs out of fuel at station B, no station k      |
+|                       | between A and B can succeed either, because starting at k with zero gas is strictly     |
+|                       | worse than arriving at k with non-negative residual gas from A.                         |
+|                       | Thus, we discard [A..B] in O(1) and reset our candidate start index to B + 1."           |
++-----------------------+------------------------------------------------------------------------------------------+
+| 2. Total Net Invariant| "Because the circuit is closed, if the overall net gas across all stations is non-negative|
+|                       | (sum(gas) >= sum(cost)), a valid starting index is mathematically guaranteed to exist."  |
++-----------------------+------------------------------------------------------------------------------------------+
+```
+
 ---
 
 ## ⚔️ SUPPLEMENTARY OUTCOMES

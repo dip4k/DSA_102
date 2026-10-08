@@ -234,11 +234,54 @@ public static class GridSolvers {
             for (int i = 0; i < r; i++) matrix[i][0] = 0;
         }
     }
+
+    /// <summary>
+    /// Rotates an N x N matrix 90 degrees clockwise in-place.
+    /// Invariant: Transpose matrix[i][j] <-> matrix[j][i], then reverse each row horizontally.
+    /// Time Complexity: O(N^2) | Space Complexity: O(1)
+    /// </summary>
+    public static void Rotate(int[][] matrix) {
+        if (matrix == null || matrix.Length <= 1) return;
+        int n = matrix.Length;
+
+        // Step 1: Transpose matrix across main diagonal
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                (matrix[i][j], matrix[j][i]) = (matrix[j][i], matrix[i][j]);
+            }
+        }
+
+        // Step 2: Reverse each row horizontally
+        for (int i = 0; i < n; i++) {
+            int left = 0, right = n - 1;
+            while (left < right) {
+                (matrix[i][left], matrix[i][right]) = (matrix[i][right], matrix[i][left]);
+                left++;
+                right--;
+            }
+        }
+    }
 }
 ```
 
 #### B. Python Clarity-First Implementations
 ```python
+def rotate(matrix: list[list[int]]) -> None:
+    """Rotates an N x N matrix 90 degrees clockwise in-place via Transpose + Reflection.
+    
+    Time Complexity: O(N^2) | Space Complexity: O(1)
+    """
+    if not matrix or len(matrix) <= 1:
+        return
+    n = len(matrix)
+    # Step 1: Transpose across main diagonal
+    for i in range(n):
+        for j in range(i + 1, n):
+            matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]
+    # Step 2: Reverse each row horizontally
+    for row in matrix:
+        row.reverse()
+
 def staircase_search(matrix: list[list[int]], target: int) -> bool:
     """Searches a sorted row/col matrix for target in linear time.
     
