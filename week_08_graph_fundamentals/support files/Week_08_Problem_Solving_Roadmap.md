@@ -14,15 +14,15 @@ Week: 08 – Graph Fundamentals: Representations, BFS, DFS & Topological Sort
 ## 🧭 Pattern Decision Tree: Which Graph Traversal to Pick?
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    Start["Graph Problem"] --> Q1{"What is the graph type?"}
+    Start["Graph Problem"] --> Q1{"What is the graph<br/>type?"}
     Q1 -->|Unweighted Graph / Grid| Q2{"Shortest path or<br/>reachability?"}
-    Q2 -->|Shortest path or nearest neighbor| P1["Breadth-First Search<br/>(BFS)"]
-    Q2 -->|Connected components, islands, maze search| P2["Depth-First Search (DFS)"]
+    Q2 -->|Shortest path or nearest neighbor| P1["Breadth-First<br/>Search<br/>(BFS)"]
+    Q2 -->|Connected components, islands, maze search| P2["Depth-First Search<br/>(DFS)"]
     Q1 -->|"Directed Acyclic Graph (DAG)"| Q3{"Prerequisites,<br/>scheduling, or<br/>dependencies?"}
-    Q3 -->|Order tasks or detect cycle| P3["Topological Sort<br/>(Kahn's BFS or DFS)"]
-    Q1 -->|Bipartite or 2-Coloring| P4["BFS / DFS with<br/>alternating color parity"]
+    Q3 -->|Order tasks or detect cycle| P3["Topological Sort<br/>(Kahn's BFS or<br/>DFS)"]
+    Q1 -->|Bipartite or 2-Coloring| P4["BFS / DFS with<br/>alternating color<br/>parity"]
 ```
 
 ---

@@ -37,13 +37,13 @@ You're deciding when greedy is appropriate vs DP/backtracking, combining multipl
 ## 🧭 Pattern Decision Tree: Greedy vs. Dynamic Programming
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    Start["Optimization Problem<br/>(Min / Max / Best)"] --> Q1{"Does a locally optimal<br/>choice guarantee global<br/>optimum?"}
-    Q1 -->|Yes: Greedy Choice Property holds| P1["Greedy Algorithm<br/>(Interval scheduling,<br/>Huffman, MST)"]
-    Q1 -->|No: Early sacrifice gives future advantage| Q2{"Are there overlapping<br/>subproblems?"}
-    Q2 -->|Yes: Overlapping states| P2["Dynamic Programming<br/>(0/1 Knapsack, Coin<br/>Change)"]
-    Q2 -->|No: Exhaustive choices required| P3["Backtracking / Branch &<br/>Bound"]
+    Start["Optimization<br/>Problem<br/>(Min / Max / Best)"] --> Q1{"Does a locally<br/>optimal<br/>choice guarantee<br/>global<br/>optimum?"}
+    Q1 -->|Yes: Greedy Choice Property holds| P1["Greedy Algorithm<br/>(Interval<br/>scheduling,<br/>Huffman, MST)"]
+    Q1 -->|No: Early sacrifice gives future advantage| Q2{"Are there<br/>overlapping<br/>subproblems?"}
+    Q2 -->|Yes: Overlapping states| P2["Dynamic<br/>Programming<br/>(0/1 Knapsack,<br/>Coin<br/>Change)"]
+    Q2 -->|No: Exhaustive choices required| P3["Backtracking /<br/>Branch &<br/>Bound"]
 ```
 
 ---

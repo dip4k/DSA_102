@@ -19,18 +19,18 @@ This directory contains the specifications and system prompts for the specialize
 ## 🔄 Interaction Flow
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    User["👨‍💻 Candidate"] --> Orchestrator["🎯 Agentic Practice<br/>Orchestrator"]
+    User["👨‍💻 Candidate"] --> Orchestrator["🎯 Agentic<br/>Practice<br/>Orchestrator"]
     Orchestrator --> Mode{"Practice Track"}
 
-    Mode -->|"DSA"| DSA_Coach["👨‍🏫<br/>dsa_mock_interviewer<br/>(8-Step Delivery Arc)"]
+    Mode -->|"DSA"| DSA_Coach["👨‍🏫<br/>dsa_mock_interviewer<br/>(8-Step Delivery<br/>Arc)"]
     Mode -->|"LLD"| LLD_Coach["🏛️<br/>lld_architect_interviewer<br/>(6-Phase LLD Arc)"]
 
-    DSA_Coach --> DSA_Eval["⚡ dsa_code_evaluator &<br/>runner<br/>(dotnet test / py<br/>unittest)"]
-    LLD_Coach --> LLD_Eval["🔒 lld_code_evaluator &<br/>runner<br/>(concurrency stress<br/>tests)"]
+    DSA_Coach --> DSA_Eval["⚡<br/>dsa_code_evaluator & runner<br/>(dotnet test / py<br/>unittest)"]
+    LLD_Coach --> LLD_Eval["🔒<br/>lld_code_evaluator & runner<br/>(concurrency<br/>stress<br/>tests)"]
 
-    DSA_Eval --> Log["📊 Update Practice_Log.md"]
+    DSA_Eval --> Log["📊 Update<br/>Practice_Log.md"]
     LLD_Eval --> Log
 ```
 

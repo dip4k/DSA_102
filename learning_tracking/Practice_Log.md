@@ -7,12 +7,12 @@
 ## 🧭 Practice Workflow Pipeline
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     P1["1. Select Problem<br/>(3-Tier Ladder)"]:::step
-    P2["2. Timed Whiteboard<br/>(25–40 min)"]:::step
-    P3["3. Invariant Derivation<br/>& Edge Cases"]:::step
-    P4["4. Dual Implementation<br/>(C# Primary + Python)"]:::step
+    P2["2. Timed<br/>Whiteboard<br/>(25–40 min)"]:::step
+    P3["3. Invariant<br/>Derivation<br/>& Edge Cases"]:::step
+    P4["4. Dual<br/>Implementation<br/>(C# Primary +<br/>Python)"]:::step
     P5["5. Log Metrics<br/>& Reattempt Queue"]:::complete
 
     P1 --> P2 --> P3 --> P4 --> P5

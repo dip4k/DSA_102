@@ -76,15 +76,15 @@ Never write code in silence. Announce your paradigm choice to the interviewer us
 If your first idea hits a dead end during an interview:
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    TryGreedy["Step 1: Start with Greedy<br/>(Fastest O(N log N))"] --> CheckFail{"Can you find a 3-element<br/>counterexample?"}
-    CheckFail -->|"No counterexample found"| LockGreedy["✅ Code Greedy Solution"]
-    CheckFail -->|"Yes, counterexample breaks greedy"| TryDP["Step 2: Pivot to Dynamic<br/>Programming<br/>(Overlapping states)"]
+    TryGreedy["Step 1: Start with<br/>Greedy<br/>(Fastest O(N log<br/>N))"] --> CheckFail{"Can you find a<br/>3-element<br/>counterexample?"}
+    CheckFail -->|"No counterexample found"| LockGreedy["✅ Code<br/>Greedy Solution"]
+    CheckFail -->|"Yes, counterexample breaks greedy"| TryDP["Step 2: Pivot to<br/>Dynamic<br/>Programming<br/>(Overlapping<br/>states)"]
     
-    TryDP --> CheckOverlap{"Can states be defined as<br/>integers or matrix<br/>coordinates?"}
-    CheckOverlap -->|"Yes"| LockDP["✅ Code DP Table / Memo"]
-    CheckOverlap -->|"No (Need full configurations)"| TryBT["Step 3: Pivot to<br/>Backtracking<br/>(Systematic search with<br/>pruning)"]
+    TryDP --> CheckOverlap{"Can states be<br/>defined as<br/>integers or matrix<br/>coordinates?"}
+    CheckOverlap -->|"Yes"| LockDP["✅ Code DP<br/>Table / Memo"]
+    CheckOverlap -->|"No (Need full configurations)"| TryBT["Step 3: Pivot to<br/>Backtracking<br/>(Systematic search<br/>with<br/>pruning)"]
     
     TryBT --> LockBT["✅ Code<br/>Choose-Explore-Unchoose"]
 ```

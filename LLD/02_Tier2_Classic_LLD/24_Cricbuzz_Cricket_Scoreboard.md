@@ -21,13 +21,13 @@ Live sports engines like **Cricbuzz, ESPNcricinfo, and Disney+ Hotstar** are sta
 ## 🎯 CrackingWalnuts 6-Step Methodology Applied
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    A["1. Domain Rule Mining<br/>• 6 Legal Balls/Over<br/>• Odd/Even Strike Shift<br/>• Extras (WD, NB, LB, B)<br/>• Target Chased / All Out"] --> B["2. Entity Modeling<br/>• Match, Innings, Over,<br/>Ball<br/>• Player, BatsmanStats,<br/>BowlerStats<br/>• Team"]
-    B --> C["3. Domain Services<br/>• StrikeRotator<br/>• InningsScorecard<br/>• BowlingRotationRule"]
-    C --> D["4. Pattern Injection<br/>• Observer (Commentary,<br/>Push Alerts, UI)<br/>• Event Sourcing<br/>(BallBowledEvent)"]
-    D --> E["5. Edge Cases &<br/>Concurrency<br/>• Run-out on non-striker<br/>end<br/>• Consecutive bowler<br/>validation<br/>• Incomplete overs &<br/>Super Over"]
-    E --> F["6. Production Defense<br/>• Read/Write Fanout<br/>Architecture<br/>• DRS Decision Reversals"]
+    A["1. Domain Rule<br/>Mining<br/>• 6 Legal<br/>Balls/Over<br/>• Odd/Even Strike<br/>Shift<br/>• Extras (WD, NB,<br/>LB, B)<br/>• Target Chased /<br/>All Out"] --> B["2. Entity Modeling<br/>• Match, Innings,<br/>Over,<br/>Ball<br/>• Player,<br/>BatsmanStats,<br/>BowlerStats<br/>• Team"]
+    B --> C["3. Domain Services<br/>• StrikeRotator<br/>• InningsScorecard<br/>•<br/>BowlingRotationRule"]
+    C --> D["4. Pattern<br/>Injection<br/>• Observer<br/>(Commentary,<br/>Push Alerts, UI)<br/>• Event Sourcing<br/>(BallBowledEvent)"]
+    D --> E["5. Edge Cases &<br/>Concurrency<br/>• Run-out on<br/>non-striker<br/>end<br/>• Consecutive<br/>bowler<br/>validation<br/>• Incomplete overs & Super Over"]
+    E --> F["6. Production<br/>Defense<br/>• Read/Write<br/>Fanout<br/>Architecture<br/>• DRS Decision<br/>Reversals"]
 ```
 
 ---

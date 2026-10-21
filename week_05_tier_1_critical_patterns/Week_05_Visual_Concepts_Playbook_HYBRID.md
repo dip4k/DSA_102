@@ -388,12 +388,12 @@ Find the contiguous subarray with the largest sum. At each index, decide:
 ### Visual 1: Kadane Decision Flowchart
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    Current["Current Element: nums[i]"]
-    Check{"Is current_sum + nums[i]<br/>> nums[i]?"}
-    Extend["➕ Extend Subarray<br/>current_sum += nums[i]"]
-    Restart["🔄 Restart Subarray<br/>current_sum = nums[i]"]
+    Current["Current Element:<br/>nums[i]"]
+    Check{"Is current_sum +<br/>nums[i]<br/>> nums[i]?"}
+    Extend["➕ Extend<br/>Subarray<br/>current_sum +=<br/>nums[i]"]
+    Restart["🔄 Restart<br/>Subarray<br/>current_sum =<br/>nums[i]"]
     Update["🏆 global_max =<br/>max(global_max,<br/>current_sum)"]
 
     Current --> Check
@@ -492,7 +492,7 @@ Move two pointers at different speeds through a linked list. If a cycle exists, 
 ### Visual 1: Cycle Intersection & Reset to Start
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     classDef init fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef cycle fill:#fce4ec,stroke:#c2185b,color:#880e4f,stroke-width:2px;

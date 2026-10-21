@@ -14,16 +14,16 @@
 ## 🧭 Pattern Decision Tree: Which Tree Traversal to Pick?
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    Start["Tree Problem"] --> Q1{"Is it a Binary Search<br/>Tree (BST)?"}
-    Q1 -->|Yes| Q2{"Need sorted output or<br/>range search?"}
-    Q2 -->|Sorted order| P1["In-Order Traversal<br/>(Left, Root, Right)"]
-    Q2 -->|Find / Insert / Validate| P2["Binary Search Property:<br/>Left &lt; Root &lt; Right"]
-    Q1 -->|No: General Binary Tree| Q3{"How does data flow?"}
-    Q3 -->|Level by level or shortest tree depth| P3["BFS Level-Order (Queue)"]
-    Q3 -->|Need children results to compute parent property| P4["Bottom-Up Post-Order DFS<br/>(Diameter, LCA)"]
-    Q3 -->|Need root context passed down to leaves| P5["Top-Down Pre-Order DFS<br/>(Path Sum)"]
+    Start["Tree Problem"] --> Q1{"Is it a Binary<br/>Search<br/>Tree (BST)?"}
+    Q1 -->|Yes| Q2{"Need sorted output or range search?"}
+    Q2 -->|Sorted order| P1["In-Order Traversal<br/>(Left, Root,<br/>Right)"]
+    Q2 -->|Find / Insert / Validate| P2["Binary Search<br/>Property:<br/>Left &lt; Root<br/>&lt; Right"]
+    Q1 -->|No: General Binary Tree| Q3{"How does data<br/>flow?"}
+    Q3 -->|Level by level or shortest tree depth| P3["BFS Level-Order<br/>(Queue)"]
+    Q3 -->|Need children results to compute parent property| P4["Bottom-Up<br/>Post-Order DFS<br/>(Diameter, LCA)"]
+    Q3 -->|Need root context passed down to leaves| P5["Top-Down Pre-Order<br/>DFS<br/>(Path Sum)"]
 ```
 
 ---

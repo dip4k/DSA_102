@@ -14,11 +14,11 @@
 Convex Hull Trick (CHT) slope optimizations, Slope Trick with dual heaps, impartial game theory (Grundy numbers/Nimbers), and Catalan combinatorics.
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    Start["Week 17 Start"] --> Daily["Daily Invariant Deep<br/>Dives"]
-    Daily --> Playbook["Consolidated Playbook &<br/>Visuals"]
-    Playbook --> DualLang["Dual-Language Practice<br/>(C# & Python)"]
+    Start["Week 17 Start"] --> Daily["Daily Invariant<br/>Deep<br/>Dives"]
+    Daily --> Playbook["Consolidated<br/>Playbook &<br/>Visuals"]
+    Playbook --> DualLang["Dual-Language<br/>Practice<br/>(C# & Python)"]
     DualLang --> Mastery["Pattern Mastery &<br/>Verification"]
 ```
 

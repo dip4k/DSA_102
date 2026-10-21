@@ -48,7 +48,7 @@ In standard caches, reading a value is a non-mutating operation. In an LRU cache
 ### 1.3 State Transition Flow
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     classDef readOp fill:#e1f5fe,stroke:#0288d1,color:#01579b
     classDef writeOp fill:#fff3e0,stroke:#f57c00,color:#e65100
@@ -56,18 +56,18 @@ flowchart TD
     classDef alertOp fill:#ffebee,stroke:#c62828,color:#b71c1c
 
     Start["Incoming Operation"] --> OpType{"Operation Type"}
-    OpType -->|TryGet| GetLock["Acquire Write Lock<br/>(Due to DLL Splicing)"]:::writeOp
+    OpType -->|TryGet| GetLock["Acquire Write Lock<br/>(Due to DLL<br/>Splicing)"]:::writeOp
     OpType -->|Put| PutLock["Acquire Write Lock"]:::writeOp
 
     GetLock --> FindKey{"Key in Dictionary?"}:::checkOp
-    FindKey -->|Yes| SpliceMRU["Detach Node &<br/>Splice to Dummy Head"]:::writeOp
+    FindKey -->|Yes| SpliceMRU["Detach Node &<br/>Splice to Dummy<br/>Head"]:::writeOp
     FindKey -->|No| ReturnFalse["Release Lock &<br/>Return False"]:::readOp
     SpliceMRU --> ReturnVal["Release Lock &<br/>Return Value"]:::readOp
 
     PutLock --> ExistsKey{"Key Exists?"}:::checkOp
     ExistsKey -->|Yes| UpdateVal["Update Value &<br/>Promote to Head"]:::writeOp
     ExistsKey -->|No| CapCheck{"Count >= Capacity?"}:::checkOp
-    CapCheck -->|Yes| EvictTail["Detach Tail.Prev &<br/>Remove from Dictionary"]:::alertOp
+    CapCheck -->|Yes| EvictTail["Detach Tail.Prev &<br/>Remove from<br/>Dictionary"]:::alertOp
     CapCheck -->|No| InsertNode["Allocate New Node"]:::writeOp
     EvictTail --> InsertNode
     InsertNode --> SpliceHead["Attach to Head &<br/>Add to Dictionary"]:::writeOp

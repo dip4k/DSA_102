@@ -14,15 +14,15 @@
 ## 🧭 Pattern Decision Tree: Which Pattern to Pick?
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    Start["Unsorted Array / List<br/>Problem"] --> Q1{"What is the primary<br/>objective?"}
-    Q1 -->|Find pair complement or check membership| P1["Hash Map / Hash Set O(1)"]
-    Q1 -->|"Find 'next greater' or 'next smaller' element"| P2["Monotonic Stack O(N)"]
-    Q1 -->|Merge meeting times or overlapping ranges| P3["Interval Sorting & Greedy<br/>Merge"]
-    Q1 -->|Numbers are in range 1 to N| P4["Cyclic Sort (Place x at<br/>index x-1)"]
-    Q1 -->|Contiguous subarray with maximum sum| P5["Kadane's Algorithm O(N)"]
-    Q1 -->|Detect cycle or find midpoint in sequence| P6["Fast & Slow Pointers<br/>(Floyd's)"]
+    Start["Unsorted Array /<br/>List<br/>Problem"] --> Q1{"What is the<br/>primary<br/>objective?"}
+    Q1 -->|Find pair complement or check membership| P1["Hash Map / Hash<br/>Set O(1)"]
+    Q1 -->|"Find 'next greater' or 'next smaller' element"| P2["Monotonic Stack<br/>O(N)"]
+    Q1 -->|Merge meeting times or overlapping ranges| P3["Interval Sorting &<br/>Greedy<br/>Merge"]
+    Q1 -->|Numbers are in range 1 to N| P4["Cyclic Sort<br/>(Place x at<br/>index x-1)"]
+    Q1 -->|Contiguous subarray with maximum sum| P5["Kadane's Algorithm<br/>O(N)"]
+    Q1 -->|Detect cycle or find midpoint in sequence| P6["Fast & Slow<br/>Pointers<br/>(Floyd's)"]
 ```
 
 ---

@@ -125,16 +125,16 @@ Where **`mex` (Minimum Excluded Value)** is the smallest non-negative integer NO
 ### Visual 1: Game Graph with Grundy Values
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     classDef loss fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
     classDef win fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
 
     S0["State 0: 0 stones<br/>G = 0 (Terminal)"]:::loss
     S1["State 1: 1 stone<br/>G = mex({0}) = 1"]:::win
-    S2["State 2: 2 stones<br/>G = mex({0, 1}) = 2"]:::win
-    S3["State 3: 3 stones<br/>G = mex({1, 2}) = 0"]:::loss
-    S4["State 4: 4 stones<br/>G = mex({0, 2}) = 1"]:::win
+    S2["State 2: 2 stones<br/>G = mex({0, 1}) =<br/>2"]:::win
+    S3["State 3: 3 stones<br/>G = mex({1, 2}) =<br/>0"]:::loss
+    S4["State 4: 4 stones<br/>G = mex({0, 2}) =<br/>1"]:::win
 
     S1 --> S0
     S2 --> S0

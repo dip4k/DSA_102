@@ -7,13 +7,13 @@
 ## 🔁 Spaced-Repetition Reattempt Protocol
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    F["❌ Attempt Failure<br/>(Hint needed or bug)"]:::fail
-    A["1. Root Cause Analysis<br/>& Invariant Breakdown"]:::step
-    R1["2. Retest +3 Days<br/>(Dry-run verification)"]:::step
-    R2["3. Retest +7 Days<br/>(Clean code from scratch)"]:::step
-    M["✅ Mastered<br/>(Pattern internalized)"]:::pass
+    F["❌ Attempt<br/>Failure<br/>(Hint needed or<br/>bug)"]:::fail
+    A["1. Root Cause<br/>Analysis<br/>& Invariant<br/>Breakdown"]:::step
+    R1["2. Retest +3 Days<br/>(Dry-run<br/>verification)"]:::step
+    R2["3. Retest +7 Days<br/>(Clean code from<br/>scratch)"]:::step
+    M["✅ Mastered<br/>(Pattern<br/>internalized)"]:::pass
 
     F --> A --> R1 --> R2 --> M
 

@@ -74,17 +74,17 @@ Day 5 (Timed Mock & Review)          -> Rehearse 45-minute verbal narration and 
 ### 🏁 Sprint 1 — Two Pointers (ROI Rank #1)
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
 
-    A["🟢 Day 1: Two Sum II<br/>(LC 167)<br/>👉 Calipers squeeze<br/>inward"]:::startNode
-    B["🟡 Day 2: Container Most<br/>Water (LC 11)<br/>👈 Greedy shorter wall<br/>move"]:::midNode
-    C["🟡 Day 3: 3Sum (LC 15)<br/>📦 Fix one + Two-pointer<br/>scan"]:::midNode
-    D["🔴 Day 4: Trapping Rain<br/>Water (LC 42)<br/>🧱 LeftMax & RightMax<br/>walls"]:::hardNode
-    E["🟡 Day 5: 4Sum (LC 18)<br/>🎯 Generalize to K-Sum"]:::midNode
+    A["🟢 Day 1:<br/>Two Sum II<br/>(LC 167)<br/>👉 Calipers<br/>squeeze inward"]:::startNode
+    B["🟡 Day 2:<br/>Container Most<br/>Water (LC 11)<br/>👈 Greedy<br/>shorter<br/>wall move"]:::midNode
+    C["🟡 Day 3:<br/>3Sum (LC 15)<br/>📦 Fix one +<br/>Two-pointer scan"]:::midNode
+    D["🔴 Day 4:<br/>Trapping Rain<br/>Water (LC 42)<br/>🧱 LeftMax &<br/>RightMax walls"]:::hardNode
+    E["🟡 Day 5:<br/>4Sum (LC 18)<br/>🎯 Generalize<br/>to K-Sum"]:::midNode
 
     A --> B --> C --> D --> E
 ```
@@ -104,17 +104,17 @@ flowchart TD
 ### 🏁 Sprint 2 — Sliding Window (ROI Rank #1)
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
 
-    A["🟢 Day 1: Max Average<br/>Subarray (LC 643)<br/>🔍 Fixed-size rolling<br/>window"]:::startNode
-    B["🟡 Day 2: Longest Unique<br/>Substr (LC 3)<br/>⚡ Variable window +<br/>last-seen map"]:::midNode
-    C["🟡 Day 3: Char<br/>Replacement (LC 424)<br/>📦 Window invariant: len<br/>- maxFreq"]:::midNode
-    D["🔴 Day 4: Min Window<br/>Substring (LC 76)<br/>🎯 Dual maps + formed<br/>match count"]:::hardNode
-    E["🟡 Day 5: Permutation in<br/>String (LC 567)<br/>✅ Frequency map match<br/>check"]:::midNode
+    A["🟢 Day 1:<br/>Max Average<br/>Subarray<br/>(LC 643)<br/>🔍 Fixed<br/>rolling<br/>window"]:::startNode
+    B["🟡 Day 2:<br/>Longest Unique<br/>Substr (LC 3)<br/>⚡ Variable<br/>window<br/>+ last-seen map"]:::midNode
+    C["🟡 Day 3:<br/>Char Replacement<br/>(LC 424)<br/>📦 Window<br/>invariant:<br/>len - maxFreq"]:::midNode
+    D["🔴 Day 4:<br/>Min Window<br/>Substr (LC 76)<br/>🎯 Dual maps +<br/>match counter"]:::hardNode
+    E["🟡 Day 5:<br/>Permutation in<br/>String (LC 567)<br/>✅ Frequency map<br/>match check"]:::midNode
 
     A --> B --> C --> D --> E
 ```
@@ -134,17 +134,17 @@ flowchart TD
 ### 🏁 Sprint 3 — Monotonic Stack & Queue (ROI Rank #2)
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
 
-    A["🟡 Day 1: Daily<br/>Temperatures<br/>(LC 739)<br/>📉 Monotonic decreasing<br/>stack"]:::midNode
-    B["🟡 Day 2: Online Stock<br/>Span (LC 901)<br/>📦 Consecutive smaller<br/>days collapse"]:::midNode
-    C["🟡 Day 3: Remove K Digits<br/>(LC 402)<br/>⚡ Greedy lexicographical<br/>pop"]:::midNode
-    D["🔴 Day 4: Largest<br/>Rectangle (LC 84)<br/>🧱 Next & previous<br/>smaller boundaries"]:::hardNode
-    E["🔴 Day 5: Sliding Window<br/>Max (LC 239)<br/>🔍 Monotonic decreasing<br/>deque"]:::hardNode
+    A["🟡 Day 1:<br/>Daily Temps<br/>(LC 739)<br/>📉 Monotonic<br/>decreasing stack"]:::midNode
+    B["🟡 Day 2:<br/>Online Stock<br/>Span (LC 901)<br/>📦 Consecutive<br/>smaller collapse"]:::midNode
+    C["🟡 Day 3:<br/>Remove K Digits<br/>(LC 402)<br/>⚡ Greedy<br/>lexicographic pop"]:::midNode
+    D["🔴 Day 4:<br/>Largest Rectangle<br/>(LC 84)<br/>🧱 Next & prev<br/>smaller bounds"]:::hardNode
+    E["🔴 Day 5:<br/>Sliding Window<br/>Max (LC 239)<br/>🔍 Monotonic<br/>decreasing deque"]:::hardNode
 
     A --> B --> C --> D --> E
 ```
@@ -164,17 +164,17 @@ flowchart TD
 ### 🏁 Sprint 4 — Dynamic Programming: 1D -> 2D -> State Machine (ROI Rank #2)
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
 
-    A["🟡 Day 1: House Robber<br/>(LC 198)<br/>📦 1D choice: rob vs skip"]:::midNode
-    B["🟡 Day 2: Coin Change<br/>(LC 322)<br/>💰 Unbounded knapsack<br/>forwards"]:::midNode
-    C["🟡 Day 3: Longest Common<br/>Subseq (LC 1143)<br/>📐 2D grid character<br/>alignment"]:::midNode
-    D["🔴 Day 4: Edit Distance<br/>(LC 72)<br/>⚡ 3-way branch: insert,<br/>delete, replace"]:::hardNode
-    E["🟡 Day 5: Longest Incr<br/>Subseq (LC 300)<br/>🎯 O(N^2) DP to O(N log<br/>N) patience"]:::midNode
+    A["🟡 Day 1:<br/>House Robber<br/>(LC 198)<br/>📦 1D choice:<br/>rob vs skip"]:::midNode
+    B["🟡 Day 2:<br/>Coin Change<br/>(LC 322)<br/>💰 Unbounded<br/>knapsack forward"]:::midNode
+    C["🟡 Day 3:<br/>Longest Common<br/>Subseq (LC 1143)<br/>📐 2D grid char<br/>alignment"]:::midNode
+    D["🔴 Day 4:<br/>Edit Distance<br/>(LC 72)<br/>⚡ 3-way branch:<br/>ins, del, rep"]:::hardNode
+    E["🟡 Day 5:<br/>Longest Incr<br/>Subseq (LC 300)<br/>🎯 O(N log N)<br/>patience sort"]:::midNode
 
     A --> B --> C --> D --> E
 ```
@@ -194,17 +194,17 @@ flowchart TD
 ### 🏁 Sprint 5 — Binary Search on Monotonic Answer Space (ROI Rank #3)
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
 
-    A["🟢 Day 1: Binary Search<br/>Insert (LC 35)<br/>🔍 Core boundary template"]:::startNode
-    B["🟡 Day 2: Koko Bananas<br/>(LC 875)<br/>🍌 Feasibility:<br/>CanFinish(speed)"]:::midNode
-    C["🟡 Day 3: Ship Packages<br/>(LC 1011)<br/>🚢 Feasibility:<br/>CanShip(capacity)"]:::midNode
-    D["🔴 Day 4: Median Two<br/>Arrays (LC 4)<br/>⚖️ Balanced partition cut"]:::hardNode
-    E["🔴 Day 5: Split Array<br/>Largest Sum (LC 410)<br/>🎯 Min-max partition<br/>search"]:::hardNode
+    A["🟢 Day 1:<br/>Binary Search<br/>Insert (LC 35)<br/>🔍 Core<br/>template"]:::startNode
+    B["🟡 Day 2:<br/>Koko Bananas<br/>(LC 875)<br/>🍌 Feasibility:<br/>CanFinish(spd)"]:::midNode
+    C["🟡 Day 3:<br/>Ship Packages<br/>(LC 1011)<br/>🚢 Feasibility:<br/>CanShip(cap)"]:::midNode
+    D["🔴 Day 4:<br/>Median of Two<br/>Arrays (LC 4)<br/>⚖️ Balanced<br/>partition cut"]:::hardNode
+    E["🔴 Day 5:<br/>Split Array Max<br/>Sum (LC 410)<br/>🎯 Min-max<br/>partition search"]:::hardNode
 
     A --> B --> C --> D --> E
 ```
@@ -224,17 +224,17 @@ flowchart TD
 ### 🏁 Sprint 6 — Heap & Two Heaps: Streaming Data (ROI Rank #5)
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
 
-    A["🟡 Day 1: Kth Largest<br/>Element (LC 215)<br/>📦 Min-Heap of size K"]:::midNode
-    B["🟡 Day 2: Top K Frequent<br/>(LC 347)<br/>⚡ Freq map + Min-Heap or<br/>bucket"]:::midNode
-    C["🟡 Day 3: Meeting Rooms<br/>II (LC 253)<br/>⏰ Min-Heap of room end<br/>times"]:::midNode
-    D["🔴 Day 4: Find Median<br/>Stream (LC 295)<br/>⚖️ Two balanced heaps"]:::hardNode
-    E["🔴 Day 5: Merge K Sorted<br/>Lists (LC 23)<br/>🎯 K-way merge with<br/>Min-Heap"]:::hardNode
+    A["🟡 Day 1:<br/>Kth Largest<br/>(LC 215)<br/>📦 Min-Heap of<br/>size K"]:::midNode
+    B["🟡 Day 2:<br/>Top K Frequent<br/>(LC 347)<br/>⚡ Freq map +<br/>Min-Heap bucket"]:::midNode
+    C["🟡 Day 3:<br/>Meeting Rooms<br/>II (LC 253)<br/>⏰ Min-Heap of<br/>room end times"]:::midNode
+    D["🔴 Day 4:<br/>Find Median<br/>Stream (LC 295)<br/>⚖️ Two balanced<br/>heaps"]:::hardNode
+    E["🔴 Day 5:<br/>Merge K Sorted<br/>Lists (LC 23)<br/>🎯 K-way merge<br/>with Min-Heap"]:::hardNode
 
     A --> B --> C --> D --> E
 ```
@@ -254,17 +254,17 @@ flowchart TD
 ### 🏁 Sprint 7 — Graph BFS, DFS & Topological Sort (ROI Rank #4)
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
 
-    A["🟡 Day 1: Number of<br/>Islands (LC 200)<br/>🌊 Grid DFS/BFS sink land"]:::midNode
-    B["🟡 Day 2: Rotting Oranges<br/>(LC 994)<br/>⚡ Multi-source BFS time<br/>layers"]:::midNode
-    C["🟡 Day 3: Course Schedule<br/>(LC 207)<br/>🎓 Kahn's topo sort +<br/>cycle detect"]:::midNode
-    D["🔴 Day 4: Word Ladder<br/>(LC 127)<br/>🎯 Shortest word<br/>transformation BFS"]:::hardNode
-    E["🟡 Day 5: Redundant<br/>Connection (LC 684)<br/>🔗 Union-Find cycle<br/>detection"]:::midNode
+    A["🟡 Day 1:<br/>Number of<br/>Islands (LC 200)<br/>🌊 Grid DFS/BFS<br/>sink land"]:::midNode
+    B["🟡 Day 2:<br/>Rotting Oranges<br/>(LC 994)<br/>⚡ Multi-source<br/>BFS time layers"]:::midNode
+    C["🟡 Day 3:<br/>Course Schedule<br/>(LC 207)<br/>🎓 Kahn topo<br/>sort<br/>+ cycle detect"]:::midNode
+    D["🔴 Day 4:<br/>Word Ladder<br/>(LC 127)<br/>🎯 Shortest<br/>word<br/>transformation"]:::hardNode
+    E["🟡 Day 5:<br/>Redundant Conn<br/>(LC 684)<br/>🔗 Union-Find<br/>cycle detection"]:::midNode
 
     A --> B --> C --> D --> E
 ```
@@ -284,17 +284,17 @@ flowchart TD
 ### 🏁 Sprint 8 — Backtracking & Decision Trees (ROI Rank #6)
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
 
-    A["🟡 Day 1: Subsets (LC 78)<br/>🌿 Include / exclude<br/>decision tree"]:::midNode
-    B["🟡 Day 2: Combination Sum<br/>(LC 39)<br/>💰 Unbounded reuse + sum<br/>pruning"]:::midNode
-    C["🟡 Day 3: Word Search<br/>(LC 79)<br/>🔍 2D grid DFS in-place<br/>marking"]:::midNode
-    D["🔴 Day 4: N-Queens<br/>(LC 51)<br/>👑 Diagonal constraint<br/>bitsets"]:::hardNode
-    E["🔴 Day 5: Word Search II<br/>(LC 212)<br/>🎯 Trie prefix tree +<br/>Grid DFS"]:::hardNode
+    A["🟡 Day 1:<br/>Subsets (LC 78)<br/>🌿 Include or<br/>exclude choices"]:::midNode
+    B["🟡 Day 2:<br/>Combination Sum<br/>(LC 39)<br/>💰 Unbounded<br/>reuse<br/>+ sum pruning"]:::midNode
+    C["🟡 Day 3:<br/>Word Search<br/>(LC 79)<br/>🔍 2D grid DFS<br/>in-place mark"]:::midNode
+    D["🔴 Day 4:<br/>N-Queens (LC 51)<br/>👑 Diagonal<br/>constraint bitsets"]:::hardNode
+    E["🔴 Day 5:<br/>Word Search II<br/>(LC 212)<br/>🎯 Trie prefix<br/>+ Grid DFS"]:::hardNode
 
     A --> B --> C --> D --> E
 ```
@@ -314,17 +314,17 @@ flowchart TD
 ### 🏁 Sprint 9 — Tree DFS: Bottom-Up Subtree DP (ROI Rank #10)
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
 
-    A["🟢 Day 1: Max Depth<br/>(LC 104)<br/>🌲 Bottom-up height<br/>recurrence"]:::startNode
-    B["🟢 Day 2: Diameter of<br/>Tree (LC 543)<br/>📏 Subtree height +<br/>global max"]:::startNode
-    C["🟡 Day 3: Lowest Common<br/>Ancestor (LC 236)<br/>👥 Post-order node<br/>bubbling"]:::midNode
-    D["🔴 Day 4: Max Path Sum<br/>(LC 124)<br/>⚡ Best gain return + path<br/>update"]:::hardNode
-    E["🔴 Day 5: Serialize<br/>Binary Tree (LC 297)<br/>📦 Pre-order DFS encoding"]:::hardNode
+    A["🟢 Day 1:<br/>Max Depth<br/>(LC 104)<br/>🌲 Bottom-up<br/>height recurrence"]:::startNode
+    B["🟢 Day 2:<br/>Diameter of<br/>Tree (LC 543)<br/>📏 Subtree<br/>height<br/>+ global max"]:::startNode
+    C["🟡 Day 3:<br/>Lowest Common<br/>Ancestor (LC 236)<br/>👥 Post-order<br/>node bubbling"]:::midNode
+    D["🔴 Day 4:<br/>Max Path Sum<br/>(LC 124)<br/>⚡ Best gain<br/>return + update"]:::hardNode
+    E["🔴 Day 5:<br/>Serialize Tree<br/>(LC 297)<br/>📦 Pre-order<br/>DFS<br/>encoding"]:::hardNode
 
     A --> B --> C --> D --> E
 ```
@@ -344,17 +344,17 @@ flowchart TD
 ### 🏁 Sprint 10 — Linked List: Multi-Step Pointer Transformations (ROI Rank #7)
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
 
-    A["🟢 Day 1: Reverse Linked<br/>List (LC 206)<br/>🔄 Three-pointer reversal"]:::startNode
-    B["🟡 Day 2: Remove Nth from<br/>End (LC 19)<br/>⚡ Gap-of-N pointers +<br/>dummy head"]:::midNode
-    C["🟡 Day 3: Reorder List<br/>(LC 143)<br/>📦 Split mid + reverse +<br/>interleave"]:::midNode
-    D["🔴 Day 4: Reverse Nodes<br/>in K-Group (LC 25)<br/>🧱 Segment reversal +<br/>reconnect"]:::hardNode
-    E["🔴 Day 5: Merge K Sorted<br/>Lists (LC 23)<br/>🎯 Min-Heap list heads<br/>merge"]:::hardNode
+    A["🟢 Day 1:<br/>Reverse List<br/>(LC 206)<br/>🔄<br/>Three-pointer<br/>reversal"]:::startNode
+    B["🟡 Day 2:<br/>Remove Nth from<br/>End (LC 19)<br/>⚡ Gap-of-N<br/>+ dummy head"]:::midNode
+    C["🟡 Day 3:<br/>Reorder List<br/>(LC 143)<br/>📦 Split mid +<br/>rev + interleave"]:::midNode
+    D["🔴 Day 4:<br/>Reverse Nodes<br/>in K-Group (LC 25)<br/>🧱 Segment rev<br/>+ reconnect"]:::hardNode
+    E["🔴 Day 5:<br/>Merge K Sorted<br/>Lists (LC 23)<br/>🎯 Min-Heap<br/>list<br/>heads merge"]:::hardNode
 
     A --> B --> C --> D --> E
 ```
@@ -374,17 +374,17 @@ flowchart TD
 ### 🏁 Sprint 11 — Data Structure Design Specialist (ROI Rank #6)
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
 
-    A["🟡 Day 1: RandomizedSet<br/>(LC 380)<br/>📦 Array + Map swap<br/>deletion"]:::midNode
-    B["🟡 Day 2: Time-Based KV<br/>Store (LC 981)<br/>🔍 Map + Timestamp Binary<br/>Search"]:::midNode
-    C["🟡 Day 3: LRU Cache<br/>(LC 146)<br/>⚡ HashMap + Doubly Linked<br/>List"]:::midNode
-    D["🔴 Day 4: LFU Cache<br/>(LC 460)<br/>🧱 Frequency buckets +<br/>minFreq"]:::hardNode
-    E["🔴 Day 5: Autocomplete<br/>System (LC 642)<br/>🎯 Trie + Top-K hot query<br/>cache"]:::hardNode
+    A["🟡 Day 1:<br/>RandomizedSet<br/>(LC 380)<br/>📦 Array + Map<br/>swap deletion"]:::midNode
+    B["🟡 Day 2:<br/>Time-Based KV<br/>(LC 981)<br/>🔍 Map +<br/>Timestamp<br/>Binary Search"]:::midNode
+    C["🟡 Day 3:<br/>LRU Cache<br/>(LC 146)<br/>⚡ HashMap +<br/>Doubly Linked"]:::midNode
+    D["🔴 Day 4:<br/>LFU Cache<br/>(LC 460)<br/>🧱 Freq buckets<br/>+ minFreq"]:::hardNode
+    E["🔴 Day 5:<br/>Autocomplete<br/>(LC 642)<br/>🎯 Trie + Top-K<br/>query cache"]:::hardNode
 
     A --> B --> C --> D --> E
 ```
@@ -407,15 +407,15 @@ flowchart TD
 > **The Paradigm Shift:** Pure syntax memorization is no longer a differentiator. Interviewers assess **Architectural Steering, Invariant Verification, and Defect Detection**.
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     classDef phase fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#ffffff
     classDef highlight fill:#2e7d32,stroke:#81c784,stroke-width:2px,color:#ffffff
 
-    A1["1. High-Precision<br/>Prompting<br/>(Define Invariant & Big-O<br/>Guard)"]:::phase
-    A2["2. Adversarial Code<br/>Review<br/>(Detect Subtleties,<br/>Hallucinations & Leaks)"]:::phase
-    A3["3. Verification Test<br/>Authoring<br/>(Edge Cases & Stress<br/>Tests)"]:::highlight
-    A4["4. Architectural Defense<br/>(Explain Concurrency, L1<br/>Locality & Scale)"]:::phase
+    A1["1. High-Precision<br/>Prompting<br/>(Define Invariant<br/>& Big-O<br/>Guard)"]:::phase
+    A2["2. Adversarial<br/>Code<br/>Review<br/>(Detect<br/>Subtleties,<br/>Hallucinations &<br/>Leaks)"]:::phase
+    A3["3. Verification<br/>Test<br/>Authoring<br/>(Edge Cases &<br/>Stress<br/>Tests)"]:::highlight
+    A4["4. Architectural<br/>Defense<br/>(Explain<br/>Concurrency, L1<br/>Locality & Scale)"]:::phase
 
     A1 --> A2 --> A3 --> A4
 ```
@@ -931,11 +931,11 @@ The objective is not to memorize 164 individual solutions. The objective is to m
 Do not simply solve sequentially #1 → #164. Follow this dependency-driven progression:
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 graph TD
     DSA["Data Structures &<br/>Algorithms Mastery"]
     
-    DSA --> Arrays["1. Arrays & Hashing"]
+    DSA --> Arrays["1. Arrays &<br/>Hashing"]
     DSA --> Lists["2. Linked Lists"]
     DSA --> Trees["3. Trees & BST"]
     
@@ -943,36 +943,36 @@ graph TD
     TwoPointers --> SlidingWindow["Sliding Window"]
     SlidingWindow --> PrefixSum["Prefix Sum"]
     
-    Lists --> FastSlow["Fast & Slow Pointers"]
-    FastSlow --> Stacks["Stacks & Monotonic Stack"]
+    Lists --> FastSlow["Fast & Slow<br/>Pointers"]
+    FastSlow --> Stacks["Stacks & Monotonic<br/>Stack"]
     
-    Trees --> TreeDFS["Tree DFS & Recursion"]
+    Trees --> TreeDFS["Tree DFS &<br/>Recursion"]
     TreeDFS --> TreeBFS["Tree BFS & Queues"]
-    TreeBFS --> Heaps["Heaps & Priority Queues"]
-    Heaps --> Intervals["Intervals & Scheduling"]
+    TreeBFS --> Heaps["Heaps & Priority<br/>Queues"]
+    Heaps --> Intervals["Intervals &<br/>Scheduling"]
     
     PrefixSum --> Graphs["4. Graphs"]
     Stacks --> Graphs
     Intervals --> Graphs
     
-    Graphs --> GraphBFS["Graph BFS / Islands"]
+    Graphs --> GraphBFS["Graph BFS /<br/>Islands"]
     Graphs --> GraphDFS["Graph DFS / Cycles"]
-    Graphs --> UnionFind["Union-Find / Disjoint<br/>Sets"]
+    Graphs --> UnionFind["Union-Find /<br/>Disjoint<br/>Sets"]
     
-    GraphBFS --> Topo["Topological Sort (DAG)"]
-    GraphDFS --> ShortestPath["Dijkstra / Shortest Path"]
-    UnionFind --> MST["Minimum Spanning Tree"]
+    GraphBFS --> Topo["Topological Sort<br/>(DAG)"]
+    GraphDFS --> ShortestPath["Dijkstra /<br/>Shortest Path"]
+    UnionFind --> MST["Minimum Spanning<br/>Tree"]
     
-    Topo --> DP["5. Dynamic Programming"]
+    Topo --> DP["5. Dynamic<br/>Programming"]
     ShortestPath --> DP
     MST --> DP
     
-    DP --> DP1D["1D DP (House Robber, Coin<br/>Change)"]
-    DP --> DP2D["2D DP & String Alignment<br/>(LCS, Edit Distance)"]
-    DP1D --> Knapsack["Knapsack & State Machines"]
+    DP --> DP1D["1D DP (House<br/>Robber, Coin<br/>Change)"]
+    DP --> DP2D["2D DP & String<br/>Alignment<br/>(LCS, Edit<br/>Distance)"]
+    DP1D --> Knapsack["Knapsack & State<br/>Machines"]
     DP2D --> IntervalDP["Interval DP"]
     
-    Knapsack --> Backtracking["6. Backtracking &<br/>Constraint Satisfaction"]
+    Knapsack --> Backtracking["6. Backtracking &<br/>Constraint<br/>Satisfaction"]
     IntervalDP --> Backtracking
     
     Backtracking --> Trie["7. Trie & Advanced<br/>Synthesis"]
@@ -1028,12 +1028,12 @@ For each major algorithmic pattern, master one difficult representative problem 
 ### 1. Two Pointers Pipeline
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    A["Trapping Rain Water 🔴<br/>(LC 42)"] -->|Master Two-Pointer Boundary Invariant| B["Container With Most Water<br/>🟡 (LC 11)"]
+    A["Trapping Rain<br/>Water 🔴<br/>(LC 42)"] -->|Master Two-Pointer Boundary Invariant| B["Container With<br/>Most Water<br/>🟡 (LC 11)"]
     B -->|Eliminate Entire Hyperplanes| C["3Sum 🟡 (LC 15)"]
     C -->|Generalize to K-Sum| D["4Sum 🟡 (LC 18)"]
-    D -->|Simplify to Sorted Pairs| E["Two Sum II 🟡 (LC 167)"]
+    D -->|Simplify to Sorted Pairs| E["Two Sum II<br/>🟡 (LC 167)"]
 ```
 
 - **Step 1:** [Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/) 🔴 ➔ Understand how `left_max` and `right_max` boundaries decide trapped water without knowing internal heights.
@@ -1047,11 +1047,11 @@ flowchart TD
 ### 2. Sliding Window Pipeline
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    A["Minimum Window Substring<br/>🔴 (LC 76)"] -->|Variable Window and Match Counter| B["Longest Repeating<br/>Character Replacement 🟡<br/>(LC 424)"]
-    B -->|Window Invariant: len - maxFreq &le; k| C["Longest Substring Without<br/>Repeating 🟡<br/>(LC 3)"]
-    C -->|Last-seen Index Map Optimization| D["Fixed-size Window:<br/>Permutation in String 🟡<br/>(LC 567)"]
+    A["Minimum Window<br/>Substring<br/>🔴 (LC 76)"] -->|Variable Window and Match Counter| B["Longest Repeating<br/>Character<br/>Replacement<br/>🟡<br/>(LC 424)"]
+    B -->|Window Invariant: len - maxFreq &le; k| C["Longest Substring<br/>Without<br/>Repeating 🟡<br/>(LC 3)"]
+    C -->|Last-seen Index Map Optimization| D["Fixed-size Window:<br/>Permutation in<br/>String 🟡<br/>(LC 567)"]
 ```
 
 - **Step 1:** [Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/) 🔴 ➔ Master tracking remaining target characters with `matchCount` and sliding boundaries.
@@ -1064,10 +1064,10 @@ flowchart TD
 ### 3. Monotonic Stack Pipeline
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    A["Largest Rectangle in<br/>Histogram 🔴<br/>(LC 84)"] -->|Left and Right Limits via Monotonic Stack| B["Daily Temperatures 🟡<br/>(LC 739)"]
-    B -->|Single-side Next Greater Element| C["Nearest Smaller / Greater<br/>Core Problems 🟢"]
+    A["Largest Rectangle<br/>in<br/>Histogram 🔴<br/>(LC 84)"] -->|Left and Right Limits via Monotonic Stack| B["Daily<br/>Temperatures<br/>🟡<br/>(LC 739)"]
+    B -->|Single-side Next Greater Element| C["Nearest Smaller /<br/>Greater<br/>Core Problems<br/>🟢"]
 ```
 
 - **Step 1:** [Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/) 🔴 ➔ For every bar, find how far it extends left and right using a strictly increasing stack.
@@ -1081,14 +1081,14 @@ flowchart TD
 Do not begin with dozens of trivial DP problems. Build state-space discipline incrementally:
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    HR["House Robber<br/>(1D Include/Exclude)"] --> CC["Coin Change<br/>(Unbounded Knapsack)"]
-    CC --> PSS["Partition Subset Sum<br/>(0-1 Knapsack)"]
-    PSS --> LIS["LIS<br/>(Patience Sort / DP)"]
+    HR["House Robber<br/>(1D<br/>Include/Exclude)"] --> CC["Coin Change<br/>(Unbounded<br/>Knapsack)"]
+    CC --> PSS["Partition Subset<br/>Sum<br/>(0-1 Knapsack)"]
+    PSS --> LIS["LIS<br/>(Patience Sort /<br/>DP)"]
     LIS --> LCS["LCS<br/>(2D String Match)"]
-    LCS --> ED["Edit Distance<br/>(3-Way State Transition)"]
-    ED --> SM["Stock with Cooldown<br/>(Finite State Machine)"]
+    LCS --> ED["Edit Distance<br/>(3-Way State<br/>Transition)"]
+    ED --> SM["Stock with<br/>Cooldown<br/>(Finite State<br/>Machine)"]
 ```
 
 1. [House Robber](https://leetcode.com/problems/house-robber/) ➔ 1D Include/Exclude decision.
@@ -1529,16 +1529,16 @@ Use this quick lookup table during live interviews to map problem cues directly 
 For every problem in this curriculum, follow this disciplined review loop:
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    A["1. Study Pattern<br/>Invariant"] --> B["2. Formulate Brute Force<br/>Baseline"]
-    B --> C["3. Identify Wasted<br/>Computation & Bottleneck"]
-    C --> D["4. Derive Optimized<br/>Invariant"]
-    D --> E["5. Write<br/>Production-Quality C#<br/>Implementation"]
-    E --> F["6. Test Concrete Edge<br/>Cases (Dry Run)"]
-    F --> G["7. Submit & Verify on<br/>LeetCode"]
-    G --> H["8. Solve 1 Reinforcement<br/>Problem"]
-    H --> I["9. Re-solve from Memory<br/>in 7 Days"]
+    A["1. Study Pattern<br/>Invariant"] --> B["2. Formulate Brute<br/>Force<br/>Baseline"]
+    B --> C["3. Identify Wasted<br/>Computation &<br/>Bottleneck"]
+    C --> D["4. Derive<br/>Optimized<br/>Invariant"]
+    D --> E["5. Write<br/>Production-Quality<br/>C#<br/>Implementation"]
+    E --> F["6. Test Concrete<br/>Edge<br/>Cases (Dry Run)"]
+    F --> G["7. Submit & Verify<br/>on<br/>LeetCode"]
+    G --> H["8. Solve 1<br/>Reinforcement<br/>Problem"]
+    H --> I["9. Re-solve from<br/>Memory<br/>in 7 Days"]
 ```
 
 ---
@@ -1548,9 +1548,9 @@ flowchart TD
 After solving any **⭐ Core** problem, immediately solve one corresponding **⚪ Reinforcement** or **🔥 High** problem that applies the identical invariant in a slightly different disguise.
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    A["Trapping Rain Water 🔴<br/>(Master Boundary<br/>Invariant)"] -->|Reinforce Two-Pointer Boundary Logic| B["Container With Most Water<br/>🟡<br/>(Greedy Boundary Shrink)"]
+    A["Trapping Rain<br/>Water 🔴<br/>(Master Boundary<br/>Invariant)"] -->|Reinforce Two-Pointer Boundary Logic| B["Container With<br/>Most Water<br/>🟡<br/>(Greedy Boundary<br/>Shrink)"]
 ```
 
 > [!NOTE]

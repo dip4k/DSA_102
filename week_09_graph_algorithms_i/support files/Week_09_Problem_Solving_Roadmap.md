@@ -29,16 +29,16 @@ This guide provides a **structured pathway** for solving Week 09 problems, organ
 ## 🧭 Pattern Decision Tree: Which Shortest Path / Tree Algorithm?
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    Start["Weighted Graph Problem"] --> Q1{"Single Source or All<br/>Pairs?"}
+    Start["Weighted Graph<br/>Problem"] --> Q1{"Single Source or<br/>All<br/>Pairs?"}
     Q1 -->|Single Source| Q2{"Are edge weights<br/>non-negative?"}
-    Q2 -->|Yes: Non-negative weights| P1["Dijkstra's Algorithm with<br/>Min-Heap O((V+E)log V)"]
-    Q2 -->|No: Has negative edge weights| P2["Bellman-Ford Algorithm<br/>O(V*E) (Detects negative<br/>cycles)"]
-    Q1 -->|All Pairs Shortest Paths| P3["Floyd-Warshall Algorithm<br/>O(V^3)"]
-    Start --> Q3{"Minimum Spanning Tree or<br/>Dynamic Connectivity?"}
-    Q3 -->|Connect all nodes with min total weight| P4["Kruskal's MST<br/>(with Union-Find) or<br/>Prim's"]
-    Q3 -->|Track dynamic connected components or cycles| P5["Union-Find (DSU) with<br/>Path Compression"]
+    Q2 -->|Yes: Non-negative weights| P1["Dijkstra's<br/>Algorithm with<br/>Min-Heap<br/>O((V+E)log V)"]
+    Q2 -->|No: Has negative edge weights| P2["Bellman-Ford<br/>Algorithm<br/>O(V*E) (Detects<br/>negative<br/>cycles)"]
+    Q1 -->|All Pairs Shortest Paths| P3["Floyd-Warshall<br/>Algorithm<br/>O(V^3)"]
+    Start --> Q3{"Minimum Spanning<br/>Tree or<br/>Dynamic<br/>Connectivity?"}
+    Q3 -->|Connect all nodes with min total weight| P4["Kruskal's MST<br/>(with Union-Find) or Prim's"]
+    Q3 -->|Track dynamic connected components or cycles| P5["Union-Find<br/>(DSU) with<br/>Path Compression"]
 ```
 
 ---

@@ -16,16 +16,16 @@ description: Act as an interactive senior FAANG mock interviewer for both DSA (8
 ## 🧭 Interview Tracks
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    Start["User Practice Request"] --> Track{"Track Selection"}
-    Track -->|"DSA Track"| DSA["Intuitive 8-Step Arc<br/>(dsa_mock_interviewer)"]
-    Track -->|"LLD Track"| LLD["6-Phase Architecture Arc<br/>(lld_architect_interviewer)"]
+    Start["User Practice<br/>Request"] --> Track{"Track Selection"}
+    Track -->|"DSA Track"| DSA["Intuitive 8-Step<br/>Arc<br/>(dsa_mock_interviewer)"]
+    Track -->|"LLD Track"| LLD["6-Phase<br/>Architecture Arc<br/>(lld_architect_interviewer)"]
 
-    DSA --> DSA_Eval["DSA Scorecard & Test Run<br/>(dsa-interactive-runner)"]
-    LLD --> LLD_Eval["LLD Scorecard & Test Run<br/>(lld-interactive-runner)"]
+    DSA --> DSA_Eval["DSA Scorecard &<br/>Test Run<br/>(dsa-interactive-runner)"]
+    LLD --> LLD_Eval["LLD Scorecard &<br/>Test Run<br/>(lld-interactive-runner)"]
 
-    DSA_Eval --> Log["Update Practice_Log.md &<br/>Spaced Repetition"]
+    DSA_Eval --> Log["Update<br/>Practice_Log.md &<br/>Spaced Repetition"]
     LLD_Eval --> Log
 
     classDef default fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#ffffff

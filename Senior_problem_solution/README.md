@@ -64,15 +64,15 @@ The 164 problems are categorized across **11 Algorithmic Paradigms** and organiz
 Every problem solution in this repository strictly adheres to the **Senior / Lead 8-Step Delivery Framework**:
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    S1["1. Clarify & Bounds"] --> S2["2. Naive Baseline"]
+    S1["1. Clarify &<br/>Bounds"] --> S2["2. Naive Baseline"]
     S2 --> S3["3. Spot Bottleneck"]
-    S3 --> S4["4. Invariant Selection"]
-    S4 --> S5["5. Proof of Correctness"]
-    S5 --> S6["6. Explicit Complexity"]
+    S3 --> S4["4. Invariant<br/>Selection"]
+    S4 --> S5["5. Proof of<br/>Correctness"]
+    S5 --> S6["6. Explicit<br/>Complexity"]
     S6 --> S7["7. Idiomatic C#"]
-    S7 --> S8["8. Edge-Case Dry Run"]
+    S7 --> S8["8. Edge-Case Dry<br/>Run"]
 ```
 
 1. **Clarify Inputs & Boundaries:** Establish N, values, constraints, nullability, and memory budgets.

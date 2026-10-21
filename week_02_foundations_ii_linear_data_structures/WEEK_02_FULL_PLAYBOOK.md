@@ -631,13 +631,13 @@ Music player maintains playlist. User inserts song at arbitrary position:
 
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart LR
     classDef headNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef node fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
     classDef nullNode fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,color:#616161
 
-    N1["🟢 Head: [10 | •]"]:::headNode --> N2["📦 Node: [20 | •]"]:::node --> N3["📦 Node: [30 | •]"]:::node --> N4["📦 Node: [40 | •]"]:::node --> N5["🛑 null"]:::nullNode
+    N1["🟢 Head: [10<br/>| •]"]:::headNode --> N2["📦 Node: [20<br/>| •]"]:::node --> N3["📦 Node: [30<br/>| •]"]:::node --> N4["📦 Node: [40<br/>| •]"]:::node --> N5["🛑 null"]:::nullNode
 ```
 
 

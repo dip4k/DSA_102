@@ -11,14 +11,14 @@ This guide provides company-specific interview blueprints, evaluation rubrics, h
 Product companies evaluate LLD in one of two formats:
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    Prompt["Interview Problem Prompt"] --> Format{"Round Type?"}
+    Prompt["Interview Problem<br/>Prompt"] --> Format{"Round Type?"}
     
-    Format -->|"Machine Coding (90 Mins)"| MC["1. Requirement Mining<br/>(10m)<br/>2. Domain Entities &<br/>Interfaces (15m)<br/>3. Clean In-Memory<br/>Implementation<br/>(45m)<br/>4. Driver Loop &<br/>Concurrency Tests<br/>(20m)"]
-    Format -->|"OOD / Architecture (45 Mins)"| OOD["1. Clarify Scope &<br/>Constraints (5m)<br/>2. Core UML / Mermaid<br/>Diagram (10m)<br/>3. Key Class & Pattern<br/>Code (20m)<br/>4. Scaling & Senior<br/>Follow-ups (10m)"]
+    Format -->|"Machine Coding (90 Mins)"| MC["1. Requirement<br/>Mining<br/>(10m)<br/>2. Domain Entities & Interfaces (15m)<br/>3. Clean In-Memory<br/>Implementation<br/>(45m)<br/>4. Driver Loop &<br/>Concurrency Tests<br/>(20m)"]
+    Format -->|"OOD / Architecture (45 Mins)"| OOD["1. Clarify Scope &<br/>Constraints (5m)<br/>2. Core UML /<br/>Mermaid<br/>Diagram (10m)<br/>3. Key Class &<br/>Pattern<br/>Code (20m)<br/>4. Scaling &<br/>Senior<br/>Follow-ups (10m)"]
     
-    MC --> CompaniesMC["Favored by:<br/>Flipkart, Swiggy, Uber,<br/>PhonePe,<br/>Razorpay, Cred, Zepto,<br/>Atlassian"]
+    MC --> CompaniesMC["Favored by:<br/>Flipkart, Swiggy,<br/>Uber,<br/>PhonePe,<br/>Razorpay, Cred,<br/>Zepto,<br/>Atlassian"]
     OOD --> CompaniesOOD["Favored by:<br/>Google, Microsoft,<br/>Amazon, Meta,<br/>Apple, Netflix,<br/>Bloomberg, Stripe"]
 ```
 

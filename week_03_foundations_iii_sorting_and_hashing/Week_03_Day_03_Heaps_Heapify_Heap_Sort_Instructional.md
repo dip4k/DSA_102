@@ -76,14 +76,14 @@ If you want to find the highest-paid person, look at the CEO—O(1). If someone 
 ### 🖼 Visualizing Heap as Complete Binary Tree
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     N50["Index 0: 50 (CEO)"]:::rootNode
     N30["Index 1: 30 (VP)"]:::internalNode
     N20["Index 2: 20 (VP)"]:::internalNode
-    N10["Index 3: 10 (Director)"]:::leafNode
-    N5["Index 4: 5 (Director)"]:::leafNode
-    N15["Index 5: 15 (Director)"]:::leafNode
+    N10["Index 3: 10<br/>(Director)"]:::leafNode
+    N5["Index 4: 5<br/>(Director)"]:::leafNode
+    N15["Index 5: 15<br/>(Director)"]:::leafNode
 
     N50 --> N30
     N50 --> N20
@@ -176,7 +176,7 @@ These invariants ensure:
 ### 🖼 Complete vs Incomplete Trees
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     subgraph CompleteHeap["✅ Complete Tree (Valid Heap Array Representation)"]
         C50["50 (idx: 0)"] --> C30["30 (idx: 1)"]
@@ -189,7 +189,7 @@ flowchart TD
         I50["50 (idx: 0)"] --> I30["30 (idx: 1)"]
         I50 --> I20["20 (idx: 2)"]
         I30 -.-> IG["Gap at idx: 3!"]:::errorNode
-        I30 --> I15["15 (Right child only)"]:::errorNode
+        I30 --> I15["15 (Right child<br/>only)"]:::errorNode
     end
 
     classDef default fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#ffffff

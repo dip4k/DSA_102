@@ -32,13 +32,13 @@ In global e-commerce and quick-commerce platforms (**Amazon, Flipkart, Swiggy, Z
 ## 🎯 CrackingWalnuts 6-Step Methodology Applied
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    A["1. Requirement Mining<br/>• % with Cap<br/>• Flat & BxGy<br/>• Min Cart Value<br/>• Stackability &<br/>Exclusivity"] --> B["2. Class Discovery<br/>• Cart, CartItem, Product<br/>• DiscountRule, Coupon<br/>• IRuleSpecification<br/>• IDiscountStrategy"]
-    B --> C["3. Relationship Modeling<br/>• Composite Specs<br/>(AND/OR)<br/>• DiscountPipeline<br/>(Chain)<br/>• Coupon (1:1) Rule"]
-    C --> D["4. Pattern Injection<br/>• Strategy (Calculation)<br/>• Composite (Eligibility)<br/>• Pipeline (Staged<br/>Evaluation)"]
-    D --> E["5. Edge Cases & Safety<br/>• Negative subtotal clamp<br/>• Non-commutative<br/>stacking<br/>• High-concurrency quota<br/>locking"]
-    E --> F["6. Production Defense<br/>• Distributed Atomic<br/>Decrement<br/>• AST / Expression Engine"]
+    A["1. Requirement<br/>Mining<br/>• % with Cap<br/>• Flat & BxGy<br/>• Min Cart Value<br/>• Stackability &<br/>Exclusivity"] --> B["2. Class Discovery<br/>• Cart, CartItem,<br/>Product<br/>• DiscountRule,<br/>Coupon<br/>•<br/>IRuleSpecification<br/>•<br/>IDiscountStrategy"]
+    B --> C["3. Relationship<br/>Modeling<br/>• Composite Specs<br/>(AND/OR)<br/>• DiscountPipeline<br/>(Chain)<br/>• Coupon (1:1)<br/>Rule"]
+    C --> D["4. Pattern<br/>Injection<br/>• Strategy<br/>(Calculation)<br/>• Composite<br/>(Eligibility)<br/>• Pipeline (Staged<br/>Evaluation)"]
+    D --> E["5. Edge Cases &<br/>Safety<br/>• Negative<br/>subtotal clamp<br/>• Non-commutative<br/>stacking<br/>• High-concurrency<br/>quota<br/>locking"]
+    E --> F["6. Production<br/>Defense<br/>• Distributed<br/>Atomic<br/>Decrement<br/>• AST / Expression<br/>Engine"]
 ```
 
 ---

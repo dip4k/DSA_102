@@ -84,17 +84,17 @@ dp:    [ . . . . . . . . ]  <-- Overwritten in-place
 ```
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     subgraph DependencyPattern["State Dependency Direction"]
-        TL["dp[i-1][j-1] (Top-Left)"] --> Target["dp[i][j] (Current)"]
+        TL["dp[i-1][j-1]<br/>(Top-Left)"] --> Target["dp[i][j] (Current)"]
         T["dp[i-1][j] (Top)"] --> Target
         L["dp[i][j-1] (Left)"] --> Target
     end
 
     subgraph IterationDirection["Iterative Scan Rules"]
-        Back["Reverse Scan: w = W down<br/>to item_weight"] --> Keep["Preserves dp[i-1][w -<br/>weight] from being<br/>overwritten!"]
-        Forw["Forward Scan: w =<br/>item_weight up to W"] --> Reuse["Allows chaining same item<br/>repeatedly (Unbounded)!"]
+        Back["Reverse Scan: w =<br/>W down<br/>to item_weight"] --> Keep["Preserves<br/>dp[i-1][w -<br/>weight] from being<br/>overwritten!"]
+        Forw["Forward Scan: w =<br/>item_weight up to<br/>W"] --> Reuse["Allows chaining<br/>same item<br/>repeatedly<br/>(Unbounded)!"]
     end
 
     classDef default fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#ffffff

@@ -13,21 +13,21 @@ Use this guide to determine which specialized technique applies to a given probl
 ## 🧭 Decision Matrix
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 graph TD
-    A[Analyze Problem Statement] --> B{"Is the search space a 2D<br/>grid?"}
+    A[Analyze Problem Statement] --> B{"Is the search<br/>space a 2D<br/>grid?"}
     B -->|Yes| C{"Is it sorting or<br/>traversing?"}
-    C -->|Traversing| D["Use Spiral/Boundary scans<br/>or Row-Major iterations"]
-    C -->|Transforming| E["Use in-place Transpose &<br/>flips"]
-    C -->|Searching| F["Use Staircase Search or<br/>Matrix DP"]
-    B -->|No| G{"Does it track<br/>combinations, subsets, or<br/>states?"}
-    G -->|Yes| H{"Is the size of the set<br/>&le; 64?"}
-    H -->|Yes| I["Use Bitwise Masks, Bit<br/>Tricks, or Submask Loops"]
-    H -->|No| J["Use standard sets/maps,<br/>Backtracking, or DFS"]
-    G -->|No| K{"Does it use prime<br/>numbers, modular results,<br/>or divisibility?"}
-    K -->|Yes| L["Use GCD, Sieve, fast<br/>exponents, or CRT modular<br/>inverses"]
-    K -->|No| M{"Is it substring searching<br/>or prefix matching?"}
-    M -->|Yes| N["Use KMP fallback<br/>matching, Tries, or Radix<br/>sorting"]
+    C -->|Traversing| D["Use<br/>Spiral/Boundary<br/>scans<br/>or Row-Major<br/>iterations"]
+    C -->|Transforming| E["Use in-place<br/>Transpose &<br/>flips"]
+    C -->|Searching| F["Use Staircase<br/>Search or<br/>Matrix DP"]
+    B -->|No| G{"Does it track<br/>combinations,<br/>subsets, or<br/>states?"}
+    G -->|Yes| H{"Is the size of the<br/>set<br/>&le; 64?"}
+    H -->|Yes| I["Use Bitwise Masks,<br/>Bit<br/>Tricks, or Submask<br/>Loops"]
+    H -->|No| J["Use standard<br/>sets/maps,<br/>Backtracking, or<br/>DFS"]
+    G -->|No| K{"Does it use prime<br/>numbers, modular<br/>results,<br/>or divisibility?"}
+    K -->|Yes| L["Use GCD, Sieve,<br/>fast<br/>exponents, or CRT<br/>modular<br/>inverses"]
+    K -->|No| M{"Is it substring<br/>searching<br/>or prefix<br/>matching?"}
+    M -->|Yes| N["Use KMP fallback<br/>matching, Tries,<br/>or Radix<br/>sorting"]
 ```
 
 ---

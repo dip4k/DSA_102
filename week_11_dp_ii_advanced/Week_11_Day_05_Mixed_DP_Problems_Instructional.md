@@ -80,15 +80,15 @@ The secret to senior mastery is recognizing that **underlying state transitions 
 ```
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    Start["Unfamiliar Optimization /<br/>Counting Problem"] --> Q1{"Can a local greedy choice<br/>guarantee global<br/>optimality?"}
-    Q1 -->|"Yes"| Greedy["Greedy / Monotonic Stack<br/>/ Two Pointers"]
-    Q1 -->|"No"| Q2{"Are there overlapping<br/>subproblems with optimal<br/>substructure?"}
-    Q2 -->|"No"| Backtrack["Exhaustive Backtracking /<br/>Branch-and-Bound"]
+    Start["Unfamiliar<br/>Optimization /<br/>Counting Problem"] --> Q1{"Can a local greedy<br/>choice<br/>guarantee global<br/>optimality?"}
+    Q1 -->|"Yes"| Greedy["Greedy / Monotonic<br/>Stack<br/>/ Two Pointers"]
+    Q1 -->|"No"| Q2{"Are there<br/>overlapping<br/>subproblems with<br/>optimal<br/>substructure?"}
+    Q2 -->|"No"| Backtrack["Exhaustive<br/>Backtracking /<br/>Branch-and-Bound"]
     Q2 -->|"Yes"| Q3{"What is the state<br/>dimension?"}
-    Q3 -->|"N &le; 20"| Bitmask["Bitmask DP O(2^N * N)"]
-    Q3 -->|"Linear Sequence"| Seq["1D / 2D Sequence DP or<br/>State Machine"]
+    Q3 -->|"N &le; 20"| Bitmask["Bitmask DP O(2^N *<br/>N)"]
+    Q3 -->|"Linear Sequence"| Seq["1D / 2D Sequence<br/>DP or<br/>State Machine"]
     Q3 -->|"Hierarchy / No Cycles"| TreeDAG["Tree DP / DAG DP"]
     Q3 -->|"Substring / Subarray Intervals"| Interval["Interval DP O(N^3)"]
 

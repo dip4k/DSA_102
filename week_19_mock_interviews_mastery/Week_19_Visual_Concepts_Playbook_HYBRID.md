@@ -21,7 +21,7 @@
 ## Visual 1: Time-Boxed Interview Execution Pipeline
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     classDef clarify fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
     classDef design fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
@@ -30,11 +30,11 @@ flowchart TD
     classDef scale fill:#eceff1,stroke:#455a64,stroke-width:2px,color:#263238
 
     P1["Phase 1: Clarify &<br/>Constraints<br/>[00:00 - 05:00]<br/>Inputs, Bounds,<br/>Duplicates, Scale"]:::clarify
-    P2["Phase 2: Naive -><br/>Bottleneck -> Pitch<br/>[05:00 - 10:00]<br/>Brute force baseline &<br/>core invariant"]:::design
-    P3["Phase 3: Visual Trace &<br/>Buy-in<br/>[10:00 - 15:00]<br/>Dry run on small input<br/>with interviewer"]:::design
-    P4["Phase 4: Production<br/>Implementation<br/>[15:00 - 30:00]<br/>Clean C# / Python, guard<br/>clauses"]:::code
-    P5["Phase 5: Manual Dry Run &<br/>Edge Verification<br/>[30:00 - 38:00]<br/>Trace empty, single,<br/>duplicates, bounds"]:::test
-    P6["Phase 6: Scaled<br/>Extensions & Follow-ups<br/>[38:00 - 45:00]<br/>Thread safety, streaming,<br/>memory bounds"]:::scale
+    P2["Phase 2: Naive -><br/>Bottleneck -><br/>Pitch<br/>[05:00 - 10:00]<br/>Brute force<br/>baseline &<br/>core invariant"]:::design
+    P3["Phase 3: Visual<br/>Trace &<br/>Buy-in<br/>[10:00 - 15:00]<br/>Dry run on small<br/>input<br/>with interviewer"]:::design
+    P4["Phase 4:<br/>Production<br/>Implementation<br/>[15:00 - 30:00]<br/>Clean C# / Python,<br/>guard<br/>clauses"]:::code
+    P5["Phase 5: Manual<br/>Dry Run &<br/>Edge Verification<br/>[30:00 - 38:00]<br/>Trace empty,<br/>single,<br/>duplicates, bounds"]:::test
+    P6["Phase 6: Scaled<br/>Extensions &<br/>Follow-ups<br/>[38:00 - 45:00]<br/>Thread safety,<br/>streaming,<br/>memory bounds"]:::scale
 
     P1 --> P2 --> P3 --> P4 --> P5 --> P6
 ```
@@ -99,14 +99,14 @@ Anticipate follow-up extensions proactively:
 When an interviewer interrupts with a question or hint, it is an **alignment opportunity**, not a failure.
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    Hint["Interviewer Intervenes:<br/>'What happens if the<br/>array has duplicates?'"]
+    Hint["Interviewer<br/>Intervenes:<br/>'What happens if<br/>the<br/>array has<br/>duplicates?'"]
 
-    P1["1. Pause & Paraphrase<br/>'That is a great<br/>observation. If<br/>duplicates exist...'"]
-    P2["2. Check Current<br/>Invariant<br/>Evaluate how duplicates<br/>affect monotonic property<br/>or pointer advance"]
-    P3["3. Propose Solution First<br/>'We can add a while loop<br/>to advance past adjacent<br/>identical values'"]
-    P4["4. Modify Code<br/>Confidently<br/>Update guard clause or<br/>inner loop"]
+    P1["1. Pause &<br/>Paraphrase<br/>'That is a great<br/>observation. If<br/>duplicates<br/>exist...'"]
+    P2["2. Check Current<br/>Invariant<br/>Evaluate how<br/>duplicates<br/>affect monotonic<br/>property<br/>or pointer advance"]
+    P3["3. Propose<br/>Solution First<br/>'We can add a<br/>while loop<br/>to advance past<br/>adjacent<br/>identical values'"]
+    P4["4. Modify Code<br/>Confidently<br/>Update guard<br/>clause or<br/>inner loop"]
 
     Hint --> P1 --> P2 --> P3 --> P4
 ```

@@ -19,13 +19,13 @@ When a user types characters into a search bar (e.g., Google Search, Amazon Prod
 ## 🎯 CrackingWalnuts 6-Step Methodology Applied
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    A["1. Requirement Mining<br/>• Top-K prefix<br/>completions<br/>• Dynamic '#' sentence<br/>commit<br/>• Sub-20ms lookup latency<br/>• Concurrent<br/>reader/writer safety"] --> B["2. Class Discovery<br/>• AutocompleteSystem<br/>• TrieNode (Composite)<br/>• SearchPrefixResult<br/>(Value Object)<br/>• IAutocompleteEngine"]
-    B --> C["3. Relationships<br/>• AutocompleteSystem has<br/>1 Root TrieNode<br/>• TrieNode has N Children<br/>TrieNodes<br/>• TrieNode caches Top-K<br/>completions"]
-    C --> D["4. Design Patterns<br/>• Trie / Prefix Tree<br/>Pattern<br/>• Strategy (Priority<br/>Ranking)<br/>• ReaderWriterLockSlim<br/>Concurrency"]
-    D --> E["5. V1 → V4 Evolution<br/>• V1: Naive Trie + DFS on<br/>every key<br/>• V2: Frequency Map per<br/>node + MinHeap<br/>• V3: Cached Top-K list<br/>per node (O(1) read)<br/>• V4: Production<br/>Concurrent Trie with<br/>RW-Lock"]
-    E --> F["6. Problem Archetype<br/>Family 5: In-Memory Data<br/>Structures + DSA Hybrid"]
+    A["1. Requirement<br/>Mining<br/>• Top-K prefix<br/>completions<br/>• Dynamic '#'<br/>sentence<br/>commit<br/>• Sub-20ms lookup<br/>latency<br/>• Concurrent<br/>reader/writer<br/>safety"] --> B["2. Class Discovery<br/>•<br/>AutocompleteSystem<br/>• TrieNode<br/>(Composite)<br/>•<br/>SearchPrefixResult<br/>(Value Object)<br/>•<br/>IAutocompleteEngine"]
+    B --> C["3. Relationships<br/>•<br/>AutocompleteSystem<br/>has<br/>1 Root TrieNode<br/>• TrieNode has N<br/>Children<br/>TrieNodes<br/>• TrieNode caches<br/>Top-K<br/>completions"]
+    C --> D["4. Design Patterns<br/>• Trie / Prefix<br/>Tree<br/>Pattern<br/>• Strategy<br/>(Priority<br/>Ranking)<br/>•<br/>ReaderWriterLockSlim<br/>Concurrency"]
+    D --> E["5. V1 → V4<br/>Evolution<br/>• V1: Naive Trie +<br/>DFS on<br/>every key<br/>• V2: Frequency<br/>Map per<br/>node + MinHeap<br/>• V3: Cached Top-K<br/>list<br/>per node (O(1)<br/>read)<br/>• V4: Production<br/>Concurrent Trie<br/>with<br/>RW-Lock"]
+    E --> F["6. Problem<br/>Archetype<br/>Family 5:<br/>In-Memory Data<br/>Structures + DSA<br/>Hybrid"]
 ```
 
 ---
@@ -36,13 +36,13 @@ flowchart TD
 Instead of executing an expensive Depth-First Search (DFS) traversal down the subtree on every keystroke, each `TrieNode` maintains a bounded, pre-sorted cache of the **Top-K** queries for that prefix.
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 graph TD
-    Root["Root Node<br/>['i': 12, 'iron': 5,<br/>'island': 4]"]
-    Root -->|"char 'i'"| NodeI["Node 'i'<br/>Top-3: ['i love you': 5,<br/>'island': 4, 'ironman':<br/>3]"]
-    NodeI -->|"char ' '"| NodeISpace["Node 'i '<br/>Top-3: ['i love you': 5,<br/>'i love leetcode': 2]"]
-    NodeI -->|"char 's'"| NodeIS["Node 'is'<br/>Top-3: ['island': 4]"]
-    NodeI -->|"char 'r'"| NodeIR["Node 'ir'<br/>Top-3: ['ironman': 3]"]
+    Root["Root Node<br/>['i': 12, 'iron':<br/>5,<br/>'island': 4]"]
+    Root -->|"char 'i'"| NodeI["Node 'i'<br/>Top-3: ['i love<br/>you': 5,<br/>'island': 4,<br/>'ironman':<br/>3]"]
+    NodeI -->|"char ' '"| NodeISpace["Node 'i '<br/>Top-3: ['i love<br/>you': 5,<br/>'i love leetcode':<br/>2]"]
+    NodeI -->|"char 's'"| NodeIS["Node 'is'<br/>Top-3: ['island':<br/>4]"]
+    NodeI -->|"char 'r'"| NodeIR["Node 'ir'<br/>Top-3: ['ironman':<br/>3]"]
 ```
 
 ### Keystroke Lifecycle & Concurrency Flow

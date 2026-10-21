@@ -38,20 +38,20 @@ In software engineering:
 When you read a problem in a 45-minute interview, use this mental flowchart to zero in on the right strategy:
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    Start["🎯 Read Problem &<br/>Constraints"] --> Feasible{"Looking for ANY/ALL<br/>valid arrangements?"}
+    Start["🎯 Read<br/>Problem &<br/>Constraints"] --> Feasible{"Looking for<br/>ANY/ALL<br/>valid<br/>arrangements?"}
     Feasible -->|"Yes (e.g. Sudoku, Subsets)"| BT["🧶 Backtracking"]
-    Feasible -->|"No (Optimization: Min/Max)"| SubInd{"Can we split into<br/>independent halves?"}
+    Feasible -->|"No (Optimization: Min/Max)"| SubInd{"Can we split into<br/>independent<br/>halves?"}
     
-    SubInd -->|"Yes (e.g. Merge Sort)"| DC["✂️ Divide & Conquer"]
-    SubInd -->|"No"| SafeChoice{"Can we safely pick the<br/>best<br/>local move without<br/>regrets?"}
+    SubInd -->|"Yes (e.g. Merge Sort)"| DC["✂️ Divide &<br/>Conquer"]
+    SubInd -->|"No"| SafeChoice{"Can we safely pick<br/>the<br/>best<br/>local move without<br/>regrets?"}
     
     SafeChoice -->|"Yes (e.g. Intervals, MST)"| GR["⚡ Greedy"]
     SafeChoice -->|"No (Early choice impacts future)"| Overlap{"Do subproblems<br/>repeat?"}
     
-    Overlap -->|"Yes (e.g. Coin Change, Knapsack)"| DP["📝 Dynamic Programming"]
-    Overlap -->|"No (Exhaustive search needed)"| BB["🏷️ Branch & Bound"]
+    Overlap -->|"Yes (e.g. Coin Change, Knapsack)"| DP["📝 Dynamic<br/>Programming"]
+    Overlap -->|"No (Exhaustive search needed)"| BB["🏷️ Branch &<br/>Bound"]
 ```
 
 ---

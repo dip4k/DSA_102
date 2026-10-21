@@ -38,14 +38,14 @@
 ### Pattern Map: Memory Organization
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     subgraph MemoryLayers["Memory Abstraction Hierarchy"]
         direction TB
-        RAM["RAM Model (Abstract: O(1)<br/>random cell access)"]
-        PAS["Process Address Space<br/>(Code, Data, Heap, Stack)"]
-        VM["Virtual Memory & Paging<br/>(TLB, Page Fault<br/>Protection)"]
-        Cache["Hardware Caches<br/>(L1/L2/L3, 64-byte Cache<br/>Lines)"]
+        RAM["RAM Model<br/>(Abstract: O(1)<br/>random cell<br/>access)"]
+        PAS["Process Address<br/>Space<br/>(Code, Data, Heap,<br/>Stack)"]
+        VM["Virtual Memory &<br/>Paging<br/>(TLB, Page Fault<br/>Protection)"]
+        Cache["Hardware Caches<br/>(L1/L2/L3, 64-byte<br/>Cache<br/>Lines)"]
     end
     RAM --> PAS --> VM --> Cache
 ```
@@ -81,16 +81,16 @@ flowchart TD
 #### Visual 1: Memory Layout During Execution
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     subgraph AddressSpace["64-Bit Process Address Space (High to Low Addresses)"]
         direction TB
-        K["Kernel Space<br/>(Protected OS Space)<br/>[0xFFFF...]"]
-        S["Stack (Function call<br/>frames, local variables —<br/>grows downward)"]
+        K["Kernel Space<br/>(Protected OS<br/>Space)<br/>[0xFFFF...]"]
+        S["Stack (Function<br/>call<br/>frames, local<br/>variables —<br/>grows downward)"]
         Gap["Unallocated Gap"]
-        H["Heap (malloc / new<br/>dynamic objects — grows<br/>upward)"]
-        D["Data Segment<br/>(Static & initialized<br/>global variables)"]
-        C["Code Segment<br/>(Compiled machine<br/>instructions, read-only)<br/>[0x0000...]"]
+        H["Heap (malloc / new<br/>dynamic objects —<br/>grows<br/>upward)"]
+        D["Data Segment<br/>(Static &<br/>initialized<br/>global variables)"]
+        C["Code Segment<br/>(Compiled machine<br/>instructions,<br/>read-only)<br/>[0x0000...]"]
     end
     K --> S --> Gap --> H --> D --> C
 ```
@@ -130,18 +130,18 @@ flowchart TD
 ### Pattern Map: Complexity Landscape
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     subgraph Hierarchy["Asymptotic Complexity Hierarchy (Slowest to Fastest)"]
         direction TB
         F["O(N!) — Factorial<br/>(Permutations)"]
-        E["O(2^N) — Exponential<br/>(Subsets, Exhaustive<br/>Search)"]
-        C["O(N^3) — Cubic<br/>(Matrix Multiplication)"]
-        Q["O(N^2) — Quadratic<br/>(Bubble Sort, Nested<br/>Loops)"]
-        L["O(N log N) — Linearithmic<br/>(Merge Sort, Quick Sort<br/>Avg)"]
+        E["O(2^N) —<br/>Exponential<br/>(Subsets,<br/>Exhaustive<br/>Search)"]
+        C["O(N^3) — Cubic<br/>(Matrix<br/>Multiplication)"]
+        Q["O(N^2) — Quadratic<br/>(Bubble Sort,<br/>Nested<br/>Loops)"]
+        L["O(N log N) —<br/>Linearithmic<br/>(Merge Sort, Quick<br/>Sort<br/>Avg)"]
         N["O(N) — Linear<br/>(Single Pass Scan)"]
-        LOG["O(log N) — Logarithmic<br/>(Binary Search)"]
-        O1["O(1) — Constant Time<br/>(Array Index, Hash<br/>Lookup)"]
+        LOG["O(log N) —<br/>Logarithmic<br/>(Binary Search)"]
+        O1["O(1) — Constant<br/>Time<br/>(Array Index, Hash<br/>Lookup)"]
     end
     F --> E --> C --> Q --> L --> N --> LOG --> O1
 ```

@@ -11,13 +11,13 @@ This framework provides a repeatable, battle-tested playbook combining the **Cra
 Never start by blindly coding or sketching random classes. Use this funnel to systematically transform any ambiguous prompt into an airtight architecture:
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    S1["1. Requirement Mining<br/>(Extract functional<br/>rules, scale, invariants,<br/>& out-of-scope<br/>boundaries)"] --> S2["2. Class Discovery<br/>(Categorize into<br/>Entities, Value Objects,<br/>& Domain Services)"]
-    S2 --> S3["3. Relationship Discovery<br/>(Establish 1:1, 1:N, M:N;<br/>Composition vs<br/>Aggregation; Ownership)"]
-    S3 --> S4["4. Pattern Selection<br/>(Apply GoF patterns ONLY<br/>when forced by explicit<br/>variance drivers)"]
-    S4 --> S5["5. Design Evolution<br/>(V1 → V4)<br/>(Naive Baseline →<br/>Decoupled Patterns → O(1)<br/>Indexing → Concurrency &<br/>Fault Tolerance)"]
-    S5 --> S6["6. 'You've Seen This<br/>Before'<br/>(Anchor to known Problem<br/>Archetypes & reuse mental<br/>models)"]
+    S1["1. Requirement<br/>Mining<br/>(Extract<br/>functional<br/>rules, scale,<br/>invariants,<br/>& out-of-scope<br/>boundaries)"] --> S2["2. Class Discovery<br/>(Categorize into<br/>Entities, Value<br/>Objects,<br/>& Domain Services)"]
+    S2 --> S3["3. Relationship<br/>Discovery<br/>(Establish 1:1,<br/>1:N, M:N;<br/>Composition vs<br/>Aggregation;<br/>Ownership)"]
+    S3 --> S4["4. Pattern<br/>Selection<br/>(Apply GoF<br/>patterns ONLY<br/>when forced by<br/>explicit<br/>variance drivers)"]
+    S4 --> S5["5. Design<br/>Evolution<br/>(V1 → V4)<br/>(Naive Baseline →<br/>Decoupled Patterns<br/>→ O(1)<br/>Indexing →<br/>Concurrency &<br/>Fault Tolerance)"]
+    S5 --> S6["6. 'You've Seen<br/>This<br/>Before'<br/>(Anchor to known<br/>Problem<br/>Archetypes & reuse<br/>mental<br/>models)"]
 ```
 
 1. **Step 1: Requirement Mining**: Extract hard business constraints and explicit exclusions. Identify the primary happy path, failure states, and concurrency expectations (e.g., can two users book the same locker simultaneously?).
@@ -50,12 +50,12 @@ flowchart TD
 Used by Google, Meta, Microsoft, Amazon for System/Object-Oriented Design screening.
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart LR
-    P1["1️⃣ Scoping & Constraints<br/>(0–8 min)"] --> P2["2️⃣ Domain Modeling<br/>(8–18 min)"]
-    P2 --> P3["3️⃣ Contracts & Patterns<br/>(18–25 min)"]
-    P3 --> P4["4️⃣ Core Implementation<br/>(25–38 min)"]
-    P4 --> P5["5️⃣ Edge Cases & Wrap-up<br/>(38–45 min)"]
+    P1["1️⃣ Scoping &<br/>Constraints<br/>(0–8 min)"] --> P2["2️⃣ Domain<br/>Modeling<br/>(8–18 min)"]
+    P2 --> P3["3️⃣ Contracts &<br/>Patterns<br/>(18–25 min)"]
+    P3 --> P4["4️⃣ Core<br/>Implementation<br/>(25–38 min)"]
+    P4 --> P5["5️⃣ Edge Cases &<br/>Wrap-up<br/>(38–45 min)"]
 ```
 
 | Phase | Time | Candidate Deliverables |
@@ -72,12 +72,12 @@ flowchart LR
 Used by Uber, Swiggy, Flipkart, Razorpay, PhonePe, Cred, Zepto.
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart LR
-    M1["1️⃣ Requirements & Mining<br/>(0–15 min)"] --> M2["2️⃣ Domain Modeling<br/>(15–30 min)"]
-    M2 --> M3["3️⃣ Services & Patterns<br/>(30–65 min)"]
-    M3 --> M4["4️⃣ Driver & Unit Tests<br/>(65–80 min)"]
-    M4 --> M5["5️⃣ Concurrency & Review<br/>(80–90 min)"]
+    M1["1️⃣ Requirements &<br/>Mining<br/>(0–15 min)"] --> M2["2️⃣ Domain<br/>Modeling<br/>(15–30 min)"]
+    M2 --> M3["3️⃣ Services &<br/>Patterns<br/>(30–65 min)"]
+    M3 --> M4["4️⃣ Driver & Unit<br/>Tests<br/>(65–80 min)"]
+    M4 --> M5["5️⃣ Concurrency &<br/>Review<br/>(80–90 min)"]
 ```
 
 | Phase | Time | Candidate Deliverables |
@@ -123,14 +123,14 @@ Never start coding immediately. Spend the first 10 minutes asking targeted quest
 When given an ambiguous prompt, use this systematic linguistic parsing technique:
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    Text["Problem Statement"] --> Nouns["Nouns / Substantives"]
+    Text["Problem Statement"] --> Nouns["Nouns /<br/>Substantives"]
     Text --> Verbs["Verbs / Actions"]
     Nouns --> Entities["Entities and Value<br/>Objects"]
-    Verbs --> Services["Domain Services and<br/>Commands"]
+    Verbs --> Services["Domain Services and Commands"]
     Entities --> Invariants["Encapsulation and<br/>Validation"]
-    Services --> Patterns["Design Patterns<br/>(Strategy, State, etc.)"]
+    Services --> Patterns["Design Patterns<br/>(Strategy, State,<br/>etc.)"]
 ```
 
 ### Example: "Design an Online Cab Booking Service (Uber Lite)"

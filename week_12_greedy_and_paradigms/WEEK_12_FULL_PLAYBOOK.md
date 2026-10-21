@@ -136,10 +136,10 @@ For a greedy algorithm to guarantee the optimal solution, the problem MUST have 
 
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     R["Activities (start,<br/>finish)"]
-    R --> N1["Leaves earliest finish<br/>time"]
+    R --> N1["Leaves earliest<br/>finish<br/>time"]
 ```
 
 
@@ -550,10 +550,10 @@ Future Room:              [ 4 ======================================> 16 ]
 
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    R["ALGORITHM GREEDY ACTIVITY<br/>SELECTION"]
-    R --> N1["If tied, sort by start<br/>time"]
+    R["ALGORITHM GREEDY<br/>ACTIVITY<br/>SELECTION"]
+    R --> N1["If tied, sort by<br/>start<br/>time"]
 ```
 
 
@@ -836,17 +836,17 @@ WHY NOT GREEDY:
 
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     classDef sort fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef slot fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
     classDef prune fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:1.5px;
 
-    R["💼 Job Sequencing with<br/>Deadlines & Profits"]:::sort
-    R --> S1["1️⃣ Sort all jobs in<br/>descending order of<br/>profit (Greedy Choice)"]:::sort
-    S1 --> S2["2️⃣ For each job j: Find<br/>latest available time<br/>slot t &le; deadline[j]"]:::slot
-    S2 -->|Slot available| Sched["✅ Schedule job j in slot<br/>t<br/>Add profit[j], mark slot<br/>t occupied"]:::slot
-    S2 -->|"No slot &le; deadline[j]"| Drop["❌ All prior slots taken:<br/>Drop job j"]:::prune
+    R["💼 Job<br/>Sequencing with<br/>Deadlines &<br/>Profits"]:::sort
+    R --> S1["1️⃣ Sort all jobs<br/>in<br/>descending order<br/>of<br/>profit (Greedy<br/>Choice)"]:::sort
+    S1 --> S2["2️⃣ For each job<br/>j: Find<br/>latest available<br/>time<br/>slot t &le;<br/>deadline[j]"]:::slot
+    S2 -->|Slot available| Sched["✅ Schedule<br/>job j in slot<br/>t<br/>Add profit[j],<br/>mark slot<br/>t occupied"]:::slot
+    S2 -->|"No slot &le; deadline[j]"| Drop["❌ All prior<br/>slots taken:<br/>Drop job j"]:::prune
 ```
 
 
@@ -939,16 +939,16 @@ UNAMBIGUOUS! Decode left to right
 ### The Prefix Code Tree
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 graph TD
     classDef internalNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
     classDef charLeaf fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
 
     Root["👑 Root"]:::internalNode
-    LeafA["🅰️ 'A' (Code: 0)"]:::charLeaf
+    LeafA["🅰️ 'A'<br/>(Code: 0)"]:::charLeaf
     InternalB["Internal Node"]:::internalNode
-    LeafC["🅲 'C' (Code: 10)"]:::charLeaf
-    LeafD["🅳 'D' (Code: 11)"]:::charLeaf
+    LeafC["🅲 'C'<br/>(Code: 10)"]:::charLeaf
+    LeafD["🅳 'D'<br/>(Code: 11)"]:::charLeaf
 
     Root -->|"0 (Left)"| LeafA
     Root -->|"1 (Right)"| InternalB

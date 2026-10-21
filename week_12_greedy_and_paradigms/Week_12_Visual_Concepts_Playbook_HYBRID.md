@@ -59,16 +59,16 @@ Draw a left-to-right pipeline with 4 main stages:
 
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     classDef stage fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef loop fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
     classDef out fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
 
-    S1["1️⃣ Input Stage<br/>Raw items and constraints"]:::stage
-    S2["2️⃣ Preprocessing<br/>Sort by key / Build<br/>Priority Queue"]:::stage
-    S3["3️⃣ Greedy Choice Loop<br/>Locally optimal pick<br/>(no backtracks)"]:::loop
-    S4["4️⃣ Output / Solution<br/>Verified by exchange<br/>argument"]:::out
+    S1["1️⃣ Input Stage<br/>Raw items and<br/>constraints"]:::stage
+    S2["2️⃣ Preprocessing<br/>Sort by key /<br/>Build<br/>Priority Queue"]:::stage
+    S3["3️⃣ Greedy Choice<br/>Loop<br/>Locally optimal<br/>pick<br/>(no backtracks)"]:::loop
+    S4["4️⃣ Output /<br/>Solution<br/>Verified by<br/>exchange<br/>argument"]:::out
 
     S1 --> S2 --> S3 --> S4
 ```
@@ -91,19 +91,19 @@ Add arrows above the pipeline to show which *proof technique* is typically used:
 
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     classDef start fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef choice fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
     classDef gr fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
     classDef dp fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:2px;
 
-    R["🎯 Problem Decision:<br/>Greedy vs. Dynamic<br/>Programming"]:::start
-    R --> Q1{"Does local optimal choice<br/>guarantee<br/>global optimal solution?<br/>(Greedy Choice Property)"}:::choice
-    Q1 -->|Yes: Provable by Exchange Argument| G["⚡ Use Greedy Paradigm<br/>O(N log N) sort + O(N)<br/>single scan"]:::gr
-    Q1 -->|No: Earlier choices constrain future options| Q2{"Do overlapping<br/>subproblems exist?<br/>(Optimal substructure<br/>present)"}:::choice
-    Q2 -->|Yes| D["⚡ Use Dynamic Programming<br/>Evaluate state<br/>transitions (0/1<br/>Knapsack, Coin Change)"]:::dp
-    Q2 -->|No| B["⚡ Use Backtracking /<br/>Branch & Bound"]:::choice
+    R["🎯 Problem<br/>Decision:<br/>Greedy vs. Dynamic<br/>Programming"]:::start
+    R --> Q1{"Does local optimal<br/>choice<br/>guarantee<br/>global optimal<br/>solution?<br/>(Greedy Choice<br/>Property)"}:::choice
+    Q1 -->|Yes: Provable by Exchange Argument| G["⚡ Use Greedy<br/>Paradigm<br/>O(N log N) sort +<br/>O(N)<br/>single scan"]:::gr
+    Q1 -->|No: Earlier choices constrain future options| Q2{"Do overlapping<br/>subproblems exist?<br/>(Optimal<br/>substructure<br/>present)"}:::choice
+    Q2 -->|Yes| D["⚡ Use<br/>Dynamic<br/>Programming<br/>Evaluate state<br/>transitions (0/1<br/>Knapsack, Coin<br/>Change)"]:::dp
+    Q2 -->|No| B["⚡ Use<br/>Backtracking /<br/>Branch & Bound"]:::choice
 ```
 
 
@@ -223,7 +223,7 @@ For each position `i`, draw a vertical line down comparing end times:
 
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     R["time"]
     R --> N1["→ index i"]
@@ -383,7 +383,7 @@ At each step, draw:
 - **Step 5:** Merge `a(45)` and `N4(55)` → root `N5(100)`
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     N5["N5 (100)"]:::internalNode
     A["a (45)"]:::leafNode

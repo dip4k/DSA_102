@@ -9,19 +9,19 @@
 ## 🎯 Executive Summary & Pattern Map
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    W["Week 19: Mock Interviews<br/>& Senior Execution<br/>Mastery"] --> D1["Day 1: Arrays, Strings &<br/>Two-Pointers<br/>(Trapping Rain Water, LC<br/>3)"]
-    W --> D2["Day 2: Trees & Directed<br/>Graphs (Binary Lifting<br/>LCA, Kahn's Topo Sort)"]
-    W --> D3["Day 3: Dynamic<br/>Programming & Greedy<br/>(Space-Optimized<br/>Levenshtein, LC 45)"]
-    W --> D4["Day 4: Mixed Paradigms &<br/>Systems Scaling<br/>(Sliding Window Max, LRU<br/>Cache)"]
-    W --> D5["Day 5: Weakness Diagnosis<br/>& Offer Strategy<br/>(Median Sorted Arrays, LC<br/>4)"]
+    W["Week 19: Mock<br/>Interviews<br/>& Senior Execution<br/>Mastery"] --> D1["Day 1: Arrays,<br/>Strings &<br/>Two-Pointers<br/>(Trapping Rain<br/>Water, LC<br/>3)"]
+    W --> D2["Day 2: Trees &<br/>Directed<br/>Graphs (Binary<br/>Lifting<br/>LCA, Kahn's Topo<br/>Sort)"]
+    W --> D3["Day 3: Dynamic<br/>Programming &<br/>Greedy<br/>(Space-Optimized<br/>Levenshtein, LC<br/>45)"]
+    W --> D4["Day 4: Mixed<br/>Paradigms &<br/>Systems Scaling<br/>(Sliding Window<br/>Max, LRU<br/>Cache)"]
+    W --> D5["Day 5: Weakness<br/>Diagnosis<br/>& Offer Strategy<br/>(Median Sorted<br/>Arrays, LC<br/>4)"]
 
-    D1 --> P1["Physical Wall Dominance &<br/>Cache-Resident Windows:<br/>O(N) Time, O(1) Space"]
-    D2 --> P2["Powers-of-Two Ancestor<br/>Lifting: O(log N) Query,<br/>Explicit Cycle Invariants"]
-    D3 --> P3["Dimension Compression:<br/>100 MB -> 20 KB L1 Cache,<br/>Greedy Exchange Arguments"]
-    D4 --> P4["Monotonic Deque<br/>Domination & Sentinel<br/>Doubly-Linked List<br/>Hygiene"]
-    D5 --> P5["Bisection Partitioning:<br/>O(log(min(M, N))), 6<br/>Failure Archetype<br/>Antidotes"]
+    D1 --> P1["Physical Wall<br/>Dominance &<br/>Cache-Resident<br/>Windows:<br/>O(N) Time, O(1)<br/>Space"]
+    D2 --> P2["Powers-of-Two<br/>Ancestor<br/>Lifting: O(log N)<br/>Query,<br/>Explicit Cycle<br/>Invariants"]
+    D3 --> P3["Dimension<br/>Compression:<br/>100 MB -> 20 KB L1<br/>Cache,<br/>Greedy Exchange<br/>Arguments"]
+    D4 --> P4["Monotonic Deque<br/>Domination &<br/>Sentinel<br/>Doubly-Linked List<br/>Hygiene"]
+    D5 --> P5["Bisection<br/>Partitioning:<br/>O(log(min(M, N))),<br/>6<br/>Failure Archetype<br/>Antidotes"]
 ```
 
 ---

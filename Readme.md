@@ -24,32 +24,32 @@ This curriculum is built on three simple principles:
 Here is how concepts naturally build on one another throughout the curriculum:
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     subgraph PhaseA["Phase A: Foundations (Weeks 1-3)"]
-        F1["Memory & Big-O Intuition"] --> F2["Linear Structures<br/>(Arrays, Lists, Stacks,<br/>Queues)"]
-        F2 --> F3["Sorting, Heaps & Hash<br/>Tables"]
+        F1["Memory & Big-O<br/>Intuition"] --> F2["Linear Structures<br/>(Arrays, Lists,<br/>Stacks,<br/>Queues)"]
+        F2 --> F3["Sorting, Heaps &<br/>Hash<br/>Tables"]
     end
 
     subgraph PhaseB["Phase B: Core Patterns (Weeks 4-6)"]
-        P1["Two Pointers & Sliding<br/>Window"] --> P2["Monotonic Stack &<br/>Intervals"]
+        P1["Two Pointers &<br/>Sliding<br/>Window"] --> P2["Monotonic Stack &<br/>Intervals"]
         P2 --> P3["String Patterns &<br/>Fast-Slow Pointers"]
     end
 
     subgraph PhaseC["Phase C: Hierarchies, Networks & DP (Weeks 7-11)"]
-        T1["Binary Trees & BSTs"] --> G1["Graph Traversals<br/>(BFS & DFS)"]
-        G1 --> G2["Shortest Paths & Disjoint<br/>Set Union (DSU)"]
-        G2 --> DP1["Dynamic Programming I<br/>(1D, 2D Grids, Sequences)"]
-        DP1 --> DP2["Dynamic Programming II<br/>(Trees, Bitmasks,<br/>Optimization)"]
+        T1["Binary Trees &<br/>BSTs"] --> G1["Graph Traversals<br/>(BFS & DFS)"]
+        G1 --> G2["Shortest Paths &<br/>Disjoint<br/>Set Union (DSU)"]
+        G2 --> DP1["Dynamic<br/>Programming I<br/>(1D, 2D Grids,<br/>Sequences)"]
+        DP1 --> DP2["Dynamic<br/>Programming II<br/>(Trees, Bitmasks,<br/>Optimization)"]
     end
 
     subgraph PhaseD["Phase D & E: Paradigms & Systems (Weeks 12-15)"]
-        D1["Greedy Decisions &<br/>Exchange Proofs"] --> D2["Backtracking &<br/>State-Space Pruning"]
-        D2 --> E1["Bit Manipulation, Range<br/>Queries & Network Flow"]
+        D1["Greedy Decisions &<br/>Exchange Proofs"] --> D2["Backtracking &<br/>State-Space<br/>Pruning"]
+        D2 --> E1["Bit Manipulation,<br/>Range<br/>Queries & Network<br/>Flow"]
     end
 
     subgraph PhaseFG["Phase F & G: Mastery & Mocks (Weeks 16-19)"]
-        ADV["Advanced Data Structures<br/>(Optional Deep Dives)"] --> MOCK["Full Timed Mock<br/>Interviews & Strategy"]
+        ADV["Advanced Data<br/>Structures<br/>(Optional Deep<br/>Dives)"] --> MOCK["Full Timed Mock<br/>Interviews &<br/>Strategy"]
     end
 
     PhaseA --> PhaseB

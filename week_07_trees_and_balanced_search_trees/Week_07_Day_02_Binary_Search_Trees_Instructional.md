@@ -244,7 +244,7 @@ Given node `p`, find the node with the largest key strictly smaller than `p.val`
 ### 📉 Progressive Example: Balanced vs Degenerate BST
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     subgraph Balanced["Balanced Insertion: [4, 2, 6, 1, 3, 5, 7] — Height O(log N)"]
         b4["4"] --> b2["2"] & b6["6"]

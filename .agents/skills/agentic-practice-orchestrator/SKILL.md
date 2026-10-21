@@ -9,14 +9,14 @@ description: Coordinate end-to-end agentic practice workflows for DSA and LLD. M
 This skill coordinates the complete multi-agent practice workflow for Senior, Lead, and Staff FAANG interview preparation across both Data Structures & Algorithms (DSA) and Low-Level Design (LLD).
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    Select["1. Problem Selection<br/>(DSA or LLD from Catalog)"]:::step
-    Scaffold["2. Workspace Scaffolding<br/>(C# & Python code +<br/>tests)"]:::step
-    Interview["3. Agentic Mock Interview<br/>(DSA 8-Step or LLD<br/>6-Phase)"]:::step
-    Verify["4. Automated Test Run<br/>(dotnet test / py<br/>unittest)"]:::step
-    Evaluate["5. Evaluation & Scoring<br/>(Rubric score + Edge<br/>cases)"]:::step
-    Log["6. Spaced Repetition Log<br/>(Practice_Log.md)"]:::complete
+    Select["1. Problem<br/>Selection<br/>(DSA or LLD from<br/>Catalog)"]:::step
+    Scaffold["2. Workspace<br/>Scaffolding<br/>(C# & Python code + tests)"]:::step
+    Interview["3. Agentic Mock<br/>Interview<br/>(DSA 8-Step or LLD<br/>6-Phase)"]:::step
+    Verify["4. Automated Test<br/>Run<br/>(dotnet test / py<br/>unittest)"]:::step
+    Evaluate["5. Evaluation &<br/>Scoring<br/>(Rubric score +<br/>Edge<br/>cases)"]:::step
+    Log["6. Spaced<br/>Repetition Log<br/>(Practice_Log.md)"]:::complete
 
     Select --> Scaffold --> Interview --> Verify --> Evaluate --> Log
 

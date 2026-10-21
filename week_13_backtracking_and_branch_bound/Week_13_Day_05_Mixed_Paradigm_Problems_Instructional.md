@@ -296,22 +296,22 @@ In Branch & Bound and Backtracking, the order in which child branches are explor
 ### 🌳 The 60-Second Paradigm Decision Tree
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    Start{"🎯 Problem Goal?"}
+    Start{"🎯 Problem<br/>Goal?"}
 
-    Start -->|"Generate ALL solutions / paths"| PathAll["🔍 Backtracking<br/>(Subsets, Permutations,<br/>N-Queens)"]
+    Start -->|"Generate ALL solutions / paths"| PathAll["🔍 Backtracking<br/>(Subsets,<br/>Permutations,<br/>N-Queens)"]
     Start -->|"Optimization: Min / Max / Count"| PathOpt{"Constraint N Size?"}
-    Start -->|"Query on dynamic range"| PathRange["⚡ Segment Tree / Fenwick<br/>/ DSU"]
-    Start -->|"Contiguous subarray / sequence"| PathSeq{"Sorted or Monotonic?"}
+    Start -->|"Query on dynamic range"| PathRange["⚡ Segment<br/>Tree / Fenwick<br/>/ DSU"]
+    Start -->|"Contiguous subarray / sequence"| PathSeq{"Sorted or<br/>Monotonic?"}
 
-    PathOpt -->|"N <= 20"| OptBitmask["🎭 Bitmask DP / Branch &<br/>Bound"]
-    PathOpt -->|"N <= 2,000"| OptDP2D["📊 2D Dynamic Programming<br/>(LCS, Edit Distance,<br/>Grids)"]
-    PathOpt -->|"N >= 10^5 & Greedy Choice Holds"| OptGreedy["⚡ Greedy / PriorityQueue<br/>(Activity Selection,<br/>Intervals)"]
-    PathOpt -->|"N >= 10^5 & Monotonic Predicate"| OptBS["🎯 Binary Search on<br/>Answer Space<br/>(Ship Capacity, Split<br/>Array)"]
+    PathOpt -->|"N <= 20"| OptBitmask["🎭 Bitmask<br/>DP / Branch &<br/>Bound"]
+    PathOpt -->|"N <= 2,000"| OptDP2D["📊 2D<br/>Dynamic<br/>Programming<br/>(LCS, Edit<br/>Distance,<br/>Grids)"]
+    PathOpt -->|"N >= 10^5 & Greedy Choice Holds"| OptGreedy["⚡ Greedy /<br/>PriorityQueue<br/>(Activity<br/>Selection,<br/>Intervals)"]
+    PathOpt -->|"N >= 10^5 & Monotonic Predicate"| OptBS["🎯 Binary<br/>Search on<br/>Answer Space<br/>(Ship Capacity,<br/>Split<br/>Array)"]
 
-    PathSeq -->|"Yes: Monotonic Window"| SeqWindow["🔍 Two Pointers / Sliding<br/>Window"]
-    PathSeq -->|"No: Next Greater / Boundary"| SeqStack["📦 Monotonic Stack /<br/>Kadane"]
+    PathSeq -->|"Yes: Monotonic Window"| SeqWindow["🔍 Two<br/>Pointers /<br/>Sliding<br/>Window"]
+    PathSeq -->|"No: Next Greater / Boundary"| SeqStack["📦 Monotonic<br/>Stack /<br/>Kadane"]
 ```
 
 ---

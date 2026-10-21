@@ -516,7 +516,7 @@ function solve_nqueens(col, board, solutions):
 #### Visual 1: Permutations Generation
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 graph TD
     classDef rootNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
     classDef l1Node fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
@@ -641,7 +641,7 @@ SPACE COMPLEXITY:
 **Result:** `[1,2], [1,3], [1,4], [2,3], [2,4], [3,4]`
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 graph TD
     classDef rootNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
     classDef l1Node fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
@@ -1253,7 +1253,7 @@ BACKTRACKING (DFS Exhaustion)        BRANCH & BOUND (Best-First + Pruning)
 For any valid Hamiltonian tour, the sum of remaining edges is bounded below by `MST Weight + Min Return Edge`.
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 graph TD
     classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
 
@@ -1274,7 +1274,7 @@ graph TD
 #### Branch & Bound State Space Search Tree
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 graph TD
     classDef rootNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
     classDef activeNode fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
@@ -1291,13 +1291,13 @@ graph TD
     Root --> AC
     Root --> AD
 
-    ABC["Path: [A, B, C]<br/>Bound = 95<br/>❌ Pruned (Bound > Best)"]:::prunedNode
+    ABC["Path: [A, B, C]<br/>Bound = 95<br/>❌ Pruned<br/>(Bound > Best)"]:::prunedNode
     ABD["Path: [A, B, D]<br/>Bound = 85"]:::activeNode
 
     AB --> ABC
     AB --> ABD
 
-    ABDC["Path: [A, B, D, C, A]<br/>👑 Complete Tour: Cost =<br/>80<br/>✅ Sets Global Best = 80"]:::bestNode
+    ABDC["Path: [A, B, D, C,<br/>A]<br/>👑 Complete<br/>Tour: Cost =<br/>80<br/>✅ Sets<br/>Global Best =<br/>80"]:::bestNode
 
     ABD --> ABDC
 ```
@@ -1344,34 +1344,34 @@ Branches with lower bounds exceeding 80 (such as `[A, B, C]` with bound 95) are 
 #### Branch & Bound State Space Tree
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 graph TD
     classDef rootNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
     classDef branch fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
     classDef bestNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:3px,color:#1b5e20
     classDef prunedNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
 
-    Root["👑 Root: []<br/>Bound = 38, v=0, w=0"]:::rootNode
+    Root["👑 Root: []<br/>Bound = 38, v=0,<br/>w=0"]:::rootNode
 
-    Inc1["Include Item 1<br/>v=10, w=2, Bound=38"]:::branch
+    Inc1["Include Item 1<br/>v=10, w=2,<br/>Bound=38"]:::branch
     Exc1["Exclude Item 1<br/>v=0, w=0, Bound=28<br/>✂️ Pruned later"]:::prunedNode
 
     Root --> Inc1
     Root --> Exc1
 
-    Inc2["Include Item 2<br/>v=20, w=6, Bound=38"]:::branch
-    Exc2["Exclude Item 2<br/>v=10, w=2, Bound=34"]:::branch
+    Inc2["Include Item 2<br/>v=20, w=6,<br/>Bound=38"]:::branch
+    Exc2["Exclude Item 2<br/>v=10, w=2,<br/>Bound=34"]:::branch
 
     Inc1 --> Inc2
     Inc1 --> Exc2
 
-    Inc3["Include Item 3<br/>v=32, w=12, Bound=38"]:::branch
-    Exc3["Exclude Item 3<br/>v=20, w=6, Bound=38"]:::branch
+    Inc3["Include Item 3<br/>v=32, w=12,<br/>Bound=38"]:::branch
+    Exc3["Exclude Item 3<br/>v=20, w=6,<br/>Bound=38"]:::branch
 
     Inc2 --> Inc3
     Inc2 --> Exc3
 
-    Opt["Include Item 4<br/>v=38, w=15<br/>👑 Optimal Solution<br/>Found!"]:::bestNode
+    Opt["Include Item 4<br/>v=38, w=15<br/>👑 Optimal<br/>Solution<br/>Found!"]:::bestNode
     Exc3 --> Opt
 ```
 

@@ -284,29 +284,29 @@ public class OrderBook
 ## 🔄 4. Order Book Matching Flowchart
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    Start["Incoming Order Arrives"] --> CheckSide{"Is Buy or Sell?"}
+    Start["Incoming Order<br/>Arrives"] --> CheckSide{"Is Buy or Sell?"}
 
-    CheckSide -->|Buy Order| MatchAsk{"Is Lowest Ask &le; Buy<br/>Price?"}
+    CheckSide -->|Buy Order| MatchAsk{"Is Lowest Ask &le;<br/>Buy<br/>Price?"}
     MatchAsk -->|Yes| ExecBuy["Match Quantity =<br/>Min(Buy.Remaining,<br/>Ask.Remaining)<br/>Price = Ask.Price<br/>Emit Trade"]
-    ExecBuy --> RemoveAsk{"Is Ask Fully Filled?"}
-    RemoveAsk -->|Yes| PopAsk["Remove Ask from OrderBook"]
+    ExecBuy --> RemoveAsk{"Is Ask Fully<br/>Filled?"}
+    RemoveAsk -->|Yes| PopAsk["Remove Ask from<br/>OrderBook"]
     RemoveAsk -->|No| CheckRemainingBuy{"Buy Remaining > 0?"}
     PopAsk --> CheckRemainingBuy
     CheckRemainingBuy -->|Yes| MatchAsk
     CheckRemainingBuy -->|No| Done["Execution Complete"]
-    MatchAsk -->|No / Book Empty| AddBuyToBook["Add Buy Order to Bids<br/>SortedSet"]
+    MatchAsk -->|No / Book Empty| AddBuyToBook["Add Buy Order to<br/>Bids<br/>SortedSet"]
 
-    CheckSide -->|Sell Order| MatchBid{"Is Highest Bid >= Sell<br/>Price?"}
+    CheckSide -->|Sell Order| MatchBid{"Is Highest Bid >=<br/>Sell<br/>Price?"}
     MatchBid -->|Yes| ExecSell["Match Quantity =<br/>Min(Sell.Remaining,<br/>Bid.Remaining)<br/>Price = Bid.Price<br/>Emit Trade"]
-    ExecSell --> RemoveBid{"Is Bid Fully Filled?"}
-    RemoveBid -->|Yes| PopBid["Remove Bid from OrderBook"]
-    RemoveBid -->|No| CheckRemainingSell{"Sell Remaining > 0?"}
+    ExecSell --> RemoveBid{"Is Bid Fully<br/>Filled?"}
+    RemoveBid -->|Yes| PopBid["Remove Bid from<br/>OrderBook"]
+    RemoveBid -->|No| CheckRemainingSell{"Sell Remaining ><br/>0?"}
     PopBid --> CheckRemainingSell
     CheckRemainingSell -->|Yes| MatchBid
     CheckRemainingSell -->|No| Done
-    MatchBid -->|No / Book Empty| AddSellToBook["Add Sell Order to Asks<br/>SortedSet"]
+    MatchBid -->|No / Book Empty| AddSellToBook["Add Sell Order to<br/>Asks<br/>SortedSet"]
 ```
 
 ---

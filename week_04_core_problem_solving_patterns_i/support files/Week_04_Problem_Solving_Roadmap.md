@@ -14,16 +14,16 @@
 ## 🧭 Pattern Decision Tree: Which Pattern to Pick?
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    Start["Array / Sequence Problem"] --> Q1{"Is the array sorted?"}
-    Q1 -->|Yes| Q2{"Target sum, pair, or<br/>boundary?"}
-    Q2 -->|Yes: Two elements| P1["Two Pointers (Opposing)"]
+    Start["Array / Sequence<br/>Problem"] --> Q1{"Is the array<br/>sorted?"}
+    Q1 -->|Yes| Q2{"Target sum, pair, or boundary?"}
+    Q2 -->|Yes: Two elements| P1["Two Pointers<br/>(Opposing)"]
     Q2 -->|No: Searching value or threshold| P2["Binary Search"]
-    Q1 -->|No| Q3{"Contiguous Subarray or<br/>Substring?"}
-    Q3 -->|Yes: Fixed window size K| P3["Fixed Sliding Window<br/>(Add right, Drop left)"]
-    Q3 -->|Yes: Dynamic constraint| P4["Variable Sliding Window<br/>(Expand right, Shrink<br/>left)"]
-    Q3 -->|No: Independent subproblems| P5["Divide & Conquer<br/>(Split, Solve, Combine)"]
+    Q1 -->|No| Q3{"Contiguous<br/>Subarray or<br/>Substring?"}
+    Q3 -->|Yes: Fixed window size K| P3["Fixed Sliding<br/>Window<br/>(Add right, Drop<br/>left)"]
+    Q3 -->|Yes: Dynamic constraint| P4["Variable Sliding<br/>Window<br/>(Expand right,<br/>Shrink<br/>left)"]
+    Q3 -->|No: Independent subproblems| P5["Divide & Conquer<br/>(Split, Solve,<br/>Combine)"]
 ```
 
 ---

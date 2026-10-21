@@ -118,24 +118,24 @@ Total Time Complexity: O((N + Q) * sqrt(N))
 ## Pattern Map: Heavy vs Light Edge Decomposition
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     classDef heavy fill:#e8f5e9,stroke:#2e7d32,stroke-width:3px,color:#1b5e20
     classDef light fill:#ffffff,stroke:#78909c,stroke-width:1px,stroke-dasharray: 5 5,color:#37474f
 
     R["Root (sz=10)"]:::heavy
-    A["Node A (sz=7) [Heavy<br/>Child]"]:::heavy
-    B["Node B (sz=2) [Light<br/>Child]"]:::light
+    A["Node A (sz=7)<br/>[Heavy<br/>Child]"]:::heavy
+    B["Node B (sz=2)<br/>[Light<br/>Child]"]:::light
     R -->|Heavy| A
     R -.->|Light| B
 
-    C["Node C (sz=5) [Heavy<br/>Child]"]:::heavy
-    D["Node D (sz=1) [Light<br/>Child]"]:::light
+    C["Node C (sz=5)<br/>[Heavy<br/>Child]"]:::heavy
+    D["Node D (sz=1)<br/>[Light<br/>Child]"]:::light
     A -->|Heavy| C
     A -.->|Light| D
 
-    E["Node E (sz=3) [Heavy<br/>Child]"]:::heavy
-    F["Node F (sz=1) [Light<br/>Child]"]:::light
+    E["Node E (sz=3)<br/>[Heavy<br/>Child]"]:::heavy
+    F["Node F (sz=1)<br/>[Light<br/>Child]"]:::light
     C -->|Heavy| E
     C -.->|Light| F
 ```

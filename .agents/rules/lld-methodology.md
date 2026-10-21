@@ -9,13 +9,13 @@ This protocol defines the standardized, 6-phase approach for Low-Level Design (L
 Senior, Lead, and Staff engineering candidates at FAANG / Tier-1 companies must structure their 45-minute LLD rounds across 6 sequential phases:
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart LR
-    P1["1. Scope & Constraints"] --> P2["2. Core Domain &<br/>Contracts"]
-    P2 --> P3["3. Class & State Modeling"]
-    P3 --> P4["4. Patterns & Concurrency"]
+    P1["1. Scope &<br/>Constraints"] --> P2["2. Core Domain &<br/>Contracts"]
+    P2 --> P3["3. Class & State<br/>Modeling"]
+    P3 --> P4["4. Patterns &<br/>Concurrency"]
     P4 --> P5["5. Idiomatic Code"]
-    P5 --> P6["6. Extensibility Drill"]
+    P5 --> P6["6. Extensibility<br/>Drill"]
 ```
 
 ---

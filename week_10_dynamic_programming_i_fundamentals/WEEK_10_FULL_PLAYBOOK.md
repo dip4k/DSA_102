@@ -257,26 +257,26 @@ Space: O(n) for dp array
 
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     classDef top fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef bot fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
     classDef comp fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:2px;
 
-    R["⚖️ Dynamic Programming:<br/>Top-Down vs. Bottom-Up"]:::comp
+    R["⚖️ Dynamic<br/>Programming:<br/>Top-Down vs.<br/>Bottom-Up"]:::comp
 
     subgraph TopDown["🧠 Top-Down (Memoization)"]
-        T1["• Natural Recursive<br/>Formulation (Problem -><br/>Base cases)"]:::top
-        T2["• Computes ONLY required<br/>subproblems lazily"]:::top
-        T3["• Memory: Table O(N) +<br/>Call Stack O(N) frames"]:::top
-        T4["• Risk: Recursion depth<br/>limit / StackOverflow on<br/>large N"]:::top
+        T1["• Natural<br/>Recursive<br/>Formulation<br/>(Problem -><br/>Base cases)"]:::top
+        T2["• Computes ONLY<br/>required<br/>subproblems lazily"]:::top
+        T3["• Memory: Table<br/>O(N) +<br/>Call Stack O(N)<br/>frames"]:::top
+        T4["• Risk: Recursion<br/>depth<br/>limit /<br/>StackOverflow on<br/>large N"]:::top
     end
 
     subgraph BottomUp["📊 Bottom-Up (Tabulation)"]
-        B1["• Iterative Table Fill<br/>(Base cases -> Problem)"]:::bot
-        B2["• Computes subproblems in<br/>strict topological<br/>dependency order"]:::bot
-        B3["• Memory: Allows 1D/O(1)<br/>rolling space<br/>optimization!"]:::bot
-        B4["• Cache friendly:<br/>Contiguous memory access,<br/>zero call-stack overhead"]:::bot
+        B1["• Iterative Table<br/>Fill<br/>(Base cases -><br/>Problem)"]:::bot
+        B2["• Computes<br/>subproblems in<br/>strict topological<br/>dependency order"]:::bot
+        B3["• Memory: Allows<br/>1D/O(1)<br/>rolling space<br/>optimization!"]:::bot
+        B4["• Cache friendly:<br/>Contiguous memory<br/>access,<br/>zero call-stack<br/>overhead"]:::bot
     end
 
     R --> TopDown & BottomUp
@@ -1931,20 +1931,20 @@ Space complexity: O(_______)
 
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     classDef start fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef decision fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
     classDef algo fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
 
-    R["🎯 Algorithmic Paradigm<br/>Recognition"]:::start
-    R --> D1{"Optimal Substructure?<br/>(Solution contains<br/>sub-solutions)"}:::decision
-    D1 -->|No| Other["Backtracking / Brute<br/>Force Search"]
-    D1 -->|Yes| D2{"Overlapping Subproblems?<br/>(Same states recomputed<br/>repeatedly)"}:::decision
-    D2 -->|No| DC["⚡ Divide & Conquer<br/>(e.g. Merge Sort, Binary<br/>Search)"]:::algo
-    D2 -->|Yes| D3{"Greedy Choice Property?<br/>(Local greedy pick always<br/>globally optimal)"}:::decision
-    D3 -->|Yes| GR["⚡ Greedy Approach<br/>(e.g. Dijkstra, Huffman,<br/>Interval Scheduling)"]:::algo
-    D3 -->|No| DP["⚡ Dynamic Programming<br/>(Memoization /<br/>Tabulation)"]:::algo
+    R["🎯<br/>Algorithmic<br/>Paradigm<br/>Recognition"]:::start
+    R --> D1{"Optimal<br/>Substructure?<br/>(Solution contains<br/>sub-solutions)"}:::decision
+    D1 -->|No| Other["Backtracking /<br/>Brute<br/>Force Search"]
+    D1 -->|Yes| D2{"Overlapping<br/>Subproblems?<br/>(Same states<br/>recomputed<br/>repeatedly)"}:::decision
+    D2 -->|No| DC["⚡ Divide &<br/>Conquer<br/>(e.g. Merge Sort,<br/>Binary<br/>Search)"]:::algo
+    D2 -->|Yes| D3{"Greedy Choice<br/>Property?<br/>(Local greedy pick<br/>always<br/>globally optimal)"}:::decision
+    D3 -->|Yes| GR["⚡ Greedy<br/>Approach<br/>(e.g. Dijkstra,<br/>Huffman,<br/>Interval<br/>Scheduling)"]:::algo
+    D3 -->|No| DP["⚡ Dynamic<br/>Programming<br/>(Memoization /<br/>Tabulation)"]:::algo
 ```
 
 

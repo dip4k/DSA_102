@@ -89,14 +89,14 @@ Think of a **family genealogy tree**:
 In algorithms:
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    N5["5 (Root, Depth 0, Height<br/>2)"]:::rootNode
-    N3["3 (Internal, Depth 1,<br/>Height 1)"]:::internalNode
-    N7["7 (Internal, Depth 1,<br/>Height 1)"]:::internalNode
-    N1["1 (Leaf, Depth 2, Height<br/>0)"]:::leafNode
-    N4["4 (Leaf, Depth 2, Height<br/>0)"]:::leafNode
-    N8["8 (Leaf, Depth 2, Height<br/>0)"]:::leafNode
+    N5["5 (Root, Depth 0,<br/>Height<br/>2)"]:::rootNode
+    N3["3 (Internal, Depth<br/>1,<br/>Height 1)"]:::internalNode
+    N7["7 (Internal, Depth<br/>1,<br/>Height 1)"]:::internalNode
+    N1["1 (Leaf, Depth 2,<br/>Height<br/>0)"]:::leafNode
+    N4["4 (Leaf, Depth 2,<br/>Height<br/>0)"]:::leafNode
+    N8["8 (Leaf, Depth 2,<br/>Height<br/>0)"]:::leafNode
 
     N5 --> N3
     N5 --> N7
@@ -135,7 +135,7 @@ flowchart TD
 - **Degenerate Tree:** Every parent has only one child, forming an effective linked list (`height = n`).
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     subgraph FullTree["Full Tree (0 or 2 Children)"]
         F1["1"] --> F2["2"]
@@ -181,7 +181,7 @@ Visit the parent **before** going to children. Used for **copying trees** and **
 **Mental model:** "Process parent first, then explore its left branch completely, then right branch."
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     P5["1️⃣ Visit 5 (Root)"]:::stepNode
     P3["2️⃣ Visit 3 (Left<br/>Sub-Root)"]:::stepNode
@@ -222,7 +222,7 @@ Visit children **around** the parent. For BSTs, produces **sorted order**. Used 
 **Mental model:** "Visit left family, then the parent, then right family."
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     I5["4️⃣ Visit 5 (Root)"]:::stepNode
     I3["2️⃣ Visit 3"]:::stepNode
@@ -263,9 +263,9 @@ Visit children **before** the parent. Used for **deleting trees**, **computing s
 **Mental model:** "Resolve both children first, then synthesize result at parent."
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    O5["6️⃣ Visit 5 (Root Last)"]:::stepNode
+    O5["6️⃣ Visit 5<br/>(Root Last)"]:::stepNode
     O3["3️⃣ Visit 3"]:::stepNode
     O7["5️⃣ Visit 7"]:::stepNode
     O1["1️⃣ Visit 1"]:::stepNode
@@ -304,7 +304,7 @@ Visit nodes **layer-by-layer** left-to-right using a **FIFO Queue**. Used for **
 **Mental model:** "Process everyone at depth 0, then depth 1, then depth 2."
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     subgraph BFSQueue["BFS Layer by Layer"]
         L5["Depth 0: [5]"]:::lvl0
@@ -474,7 +474,7 @@ This **global constraint** (not just checking immediate children) is what enable
 **Visualize:**
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     subgraph ValidBST["✅ Valid BST"]
         V5["5"]
@@ -588,7 +588,7 @@ Call Insert(5, 2)
 **Resulting Structure:**
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     N5["5"]
     N3["3"]
@@ -619,7 +619,7 @@ Deleting is trickier because you must maintain the tree structure and invariant.
 Simply remove it. No restructuring needed.
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     subgraph C1Before["Before"]
         direction TB
@@ -644,7 +644,7 @@ flowchart TD
 Bypass the node (child directly replaces parent).
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     subgraph C2Before["Before"]
         direction TB
@@ -672,12 +672,12 @@ flowchart TD
 - **Why successor works:** It is strictly greater than all nodes in the left subtree, and strictly less than all other nodes in the right subtree. Furthermore, the successor has at most one child (a right child), reducing its removal to Case 1 or 2!
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     subgraph C3Before["Before: Delete Root 5"]
         direction TB
         B5_3["5 (Target)"]:::deletedNode --> B3_3["3"]
-        B5_3 --> B7_3["7 (Inorder Successor)"]:::promotedNode
+        B5_3 --> B7_3["7 (Inorder<br/>Successor)"]:::promotedNode
         B3_3 --> B1_3["1"]
         B3_3 --> B4_3["4"]
         B7_3 --> B8_3["8"]
@@ -741,7 +741,7 @@ For a valid BST, **inorder traversal gives you sorted values**. This is because:
 - Then right subtree (all larger)  
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     N5["5"] --> N3["3"]
     N5 --> N7["7"]
@@ -761,7 +761,7 @@ flowchart TD
 Insert sorted input `[1, 2, 3, 4, 5]` into an unbalanced BST:
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     D1["1 (Root)"] --> D2["2"]
     D2 --> D3["3"]
@@ -806,7 +806,7 @@ A **rotation** is a local tree restructuring that preserves the global BST invar
 ##### Right Rotation (Fixes Left-Heavy Trees)
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     subgraph RRBefore["Before: Left-Heavy (BF = -2)"]
         direction TB
@@ -842,7 +842,7 @@ Node RotateRight(Node root) {
 ##### Left Rotation (Fixes Right-Heavy Trees)
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     subgraph LRBefore["Before: Right-Heavy (BF = +2)"]
         direction TB
@@ -874,7 +874,7 @@ For AVL, `|BF| <= 1` at every node.
 4. **RL (Right-Left):** Right child is left-heavy (zig-zag knee) -> Right rotate on child, then Left rotate on parent.
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     subgraph LL["LL Imbalance -> Single Right Rotate"]
         LL_B5["5"] --> LL_B3["3"]
@@ -993,7 +993,7 @@ void PathSum(Node root, int targetSum, List<int> path,
 **Example:**
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     N1["1 (Target = 5)"]:::rootNode
     N2["2 (Leaf)"]:::leafNode
@@ -1048,12 +1048,12 @@ flowchart TD
 **Example:**
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    D1["1 (Height: 3, Diam: 3)"]:::rootNode
-    D2["2 (Height: 2, Diam: 1)"]:::internalNode
-    D3["3 (Height: 1, Diam: 0)"]:::leafNode
-    D4["4 (Height: 1, Diam: 0)"]:::leafNode
+    D1["1 (Height: 3,<br/>Diam: 3)"]:::rootNode
+    D2["2 (Height: 2,<br/>Diam: 1)"]:::internalNode
+    D3["3 (Height: 1,<br/>Diam: 0)"]:::leafNode
+    D4["4 (Height: 1,<br/>Diam: 0)"]:::leafNode
 
     D1 --> D2
     D1 --> D3
@@ -1147,7 +1147,7 @@ Node DeserializeDFS(Queue<string> queue) {
 **Example:**
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     S1["1"]:::rootNode
     S2["2"]:::leafNode
@@ -1253,7 +1253,7 @@ Chosen over balanced BSTs because B-Trees minimize disk I/O (multiple keys per n
 Store `subtree_size` = number of nodes in subtree rooted here.
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     A4["4 (size = 6)"]:::rootNode
     A2["2 (size = 3)"]:::internalNode

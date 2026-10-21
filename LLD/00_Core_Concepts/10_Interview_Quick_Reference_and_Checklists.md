@@ -21,12 +21,12 @@ Used for Senior/Staff object-oriented architecture screenings.
 Used by Flipkart, Uber, Swiggy, Razorpay, PhonePe, and Atlassian.
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart LR
-    S1["1️⃣ Requirements & Mining<br/>(0–10 min)"] --> S2["2️⃣ Architecture &<br/>Contracts<br/>(10–25 min)"]
-    S2 --> S3["3️⃣ In-Memory Logic<br/>(25–60 min)"]
-    S3 --> S4["4️⃣ Concurrency & Locks<br/>(60–75 min)"]
-    S4 --> S5["5️⃣ Demo & Unit Tests<br/>(75–90 min)"]
+    S1["1️⃣ Requirements &<br/>Mining<br/>(0–10 min)"] --> S2["2️⃣ Architecture &<br/>Contracts<br/>(10–25 min)"]
+    S2 --> S3["3️⃣ In-Memory<br/>Logic<br/>(25–60 min)"]
+    S3 --> S4["4️⃣ Concurrency &<br/>Locks<br/>(60–75 min)"]
+    S4 --> S5["5️⃣ Demo & Unit<br/>Tests<br/>(75–90 min)"]
 ```
 
 ---
@@ -85,25 +85,25 @@ $$\text{Cache RAM Required} = (\text{Daily Unique Reads} \times \text{Object Siz
 ## 🌳 4. Database & Storage Selection Decision Trees
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    Start["What is your data model<br/>and primary access<br/>pattern?"] --> Rel{"Complex relationships,<br/>ACID transactions,<br/>strict schema?"}
-    Rel -->|"Yes"| SQL["RDBMS (PostgreSQL, MySQL,<br/>SQL Server)<br/>• Best for: Orders,<br/>Ledgers, User Accounts<br/>• Scaling: Read replicas,<br/>Citus/Sharding"]
-    Rel -->|"No"| Access{"What is the read/write<br/>pattern & payload shape?"}
+    Start["What is your data<br/>model<br/>and primary access<br/>pattern?"] --> Rel{"Complex<br/>relationships,<br/>ACID transactions,<br/>strict schema?"}
+    Rel -->|"Yes"| SQL["RDBMS (PostgreSQL,<br/>MySQL,<br/>SQL Server)<br/>• Best for:<br/>Orders,<br/>Ledgers, User<br/>Accounts<br/>• Scaling: Read<br/>replicas,<br/>Citus/Sharding"]
+    Rel -->|"No"| Access{"What is the<br/>read/write<br/>pattern & payload<br/>shape?"}
 
     Access -->|"Key-Value Lookup (O(1)) "| KV{"Ephemeral or<br/>Persistent?"}
-    KV -->|"Ephemeral/Cache"| Redis["Redis / Memcached<br/>• Best for: Hot cache,<br/>sessions, rate limiting"]
-    KV -->|"Persistent and High Scale"| Dynamo["DynamoDB / Aerospike<br/>• Best for: Shopping<br/>carts, device tokens"]
+    KV -->|"Ephemeral/Cache"| Redis["Redis / Memcached<br/>• Best for: Hot<br/>cache,<br/>sessions, rate<br/>limiting"]
+    KV -->|"Persistent and High Scale"| Dynamo["DynamoDB /<br/>Aerospike<br/>• Best for:<br/>Shopping<br/>carts, device<br/>tokens"]
 
-    Access -- Massive Write-Heavy Events --> LSM["Wide-Column / LSM<br/>(Cassandra, ScyllaDB)<br/>• Best for: Telemetry,<br/>chat history, audit logs<br/>• Write optimized,<br/>eventual consistency"]
+    Access -- Massive Write-Heavy Events --> LSM["Wide-Column / LSM<br/>(Cassandra,<br/>ScyllaDB)<br/>• Best for:<br/>Telemetry,<br/>chat history,<br/>audit logs<br/>• Write optimized,<br/>eventual<br/>consistency"]
 
-    Access -->|"Hierarchical / Variable Schema"| Doc["Document DB (MongoDB,<br/>Cosmos DB)<br/>• Best for: Product<br/>catalogs, user profiles"]
+    Access -->|"Hierarchical / Variable Schema"| Doc["Document DB<br/>(MongoDB,<br/>Cosmos DB)<br/>• Best for:<br/>Product<br/>catalogs, user<br/>profiles"]
 
-    Access -- Time-stamped Metrics --> TS["Time-Series DB<br/>(TimescaleDB, InfluxDB)<br/>• Best for: IoT sensors,<br/>financial tick data"]
+    Access -- Time-stamped Metrics --> TS["Time-Series DB<br/>(TimescaleDB,<br/>InfluxDB)<br/>• Best for: IoT<br/>sensors,<br/>financial tick<br/>data"]
 
     Access -- Free-text / Fuzzy Search --> Search["Search Engine<br/>(Elasticsearch,<br/>OpenSearch)<br/>• Inverted index,<br/>tokenization, BM25<br/>ranking"]
 
-    Access -->|"Highly interconnected graph"| Graph["Graph DB (Neo4j, Amazon<br/>Neptune)<br/>• Best for: Social<br/>graphs, fraud rings,<br/>knowledge trees"]
+    Access -->|"Highly interconnected graph"| Graph["Graph DB (Neo4j,<br/>Amazon<br/>Neptune)<br/>• Best for: Social<br/>graphs, fraud<br/>rings,<br/>knowledge trees"]
 ```
 
 ### Database Comparison Matrix
@@ -281,11 +281,11 @@ public sealed class AsyncEventDispatcher<TEvent>
 When an interviewer throws a curveball follow-up question, use this universal 4-step framework:
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart LR
-    A["1. Pause & Clarify<br/>(Restate question,<br/>isolate constraint)"] --> B["2. State Bottleneck<br/>(Pinpoint exact component<br/>that breaks)"]
-    B --> C["3. Propose Solution<br/>(Scale component &<br/>address side effects)"]
-    C --> D["4. Discuss Tradeoffs<br/>(Cost, consistency, &<br/>latency impacts)"]
+    A["1. Pause & Clarify<br/>(Restate question,<br/>isolate<br/>constraint)"] --> B["2. State<br/>Bottleneck<br/>(Pinpoint exact<br/>component<br/>that breaks)"]
+    B --> C["3. Propose<br/>Solution<br/>(Scale component &<br/>address side<br/>effects)"]
+    C --> D["4. Discuss<br/>Tradeoffs<br/>(Cost,<br/>consistency, &<br/>latency impacts)"]
 ```
 
 ### Scenario 1: "What happens when traffic increases 10x / 100x?"

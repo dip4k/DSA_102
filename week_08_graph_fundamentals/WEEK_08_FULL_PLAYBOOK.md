@@ -276,7 +276,7 @@ BFS answers exactly this: it expands the graph **layer by layer**, discovering a
 Example graph (unweighted, undirected):
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 graph TD
     classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
 
@@ -353,7 +353,7 @@ BFS guarantees these are the **shortest path lengths** in an unweighted graph.
 ### 2.4 Visual: BFS vs DFS Intuition 🔍
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     classDef bfsStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
     classDef dfsStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
@@ -539,7 +539,7 @@ DFS is your tool for:
 Reusing the earlier graph:
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 graph TD
     classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
 
@@ -765,7 +765,7 @@ public class DfsTopoSort
 ### 4.2 Visual: Connected Components as Islands 🏝️
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TB
     classDef c1 fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef c2 fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
@@ -801,7 +801,7 @@ BFS/DFS from each unvisited node naturally reveals one component at a time.
 **Bipartite example:**
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart LR
     classDef redNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
     classDef blueNode fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
@@ -825,7 +825,7 @@ flowchart LR
         direction TB
         N1["1 (🔴 Red)"]:::redNode
         N2["2 (🔵 Blue)"]:::blueNode
-        N3["3 (⚠️ Conflict!)"]:::redNode
+        N3["3 (⚠️<br/>Conflict!)"]:::redNode
 
         N1 --- N2
         N2 --- N3
@@ -931,7 +931,7 @@ Directed graph:
 
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     classDef scc1 fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
     classDef scc2 fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:2px;

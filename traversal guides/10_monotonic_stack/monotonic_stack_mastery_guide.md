@@ -510,16 +510,16 @@ public int[] MinSlidingWindow(int[] nums, int k)
 ## Decision Flowchart
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    A["Need next greater/smaller<br/>element?"] -->|Yes| B["L1: Monotonic Stack"]
-    A -->|No| C["Need area/volume between<br/>boundaries?"]
-    C -->|Yes| D["L2: Stack as Boundary<br/>Tracker"]
-    C -->|No| E["Need max/min in sliding<br/>window?"]
-    E -->|Yes| F["L3: Monotonic Deque"]
-    E -->|No| G["Consider other patterns"]
-    B --> B1["Decreasing stack → next<br/>greater"]
-    B --> B2["Increasing stack → next<br/>smaller"]
+    A["Need next<br/>greater/smaller<br/>element?"] -->|Yes| B["L1: Monotonic<br/>Stack"]
+    A -->|No| C["Need area/volume<br/>between<br/>boundaries?"]
+    C -->|Yes| D["L2: Stack as<br/>Boundary<br/>Tracker"]
+    C -->|No| E["Need max/min in<br/>sliding<br/>window?"]
+    E -->|Yes| F["L3: Monotonic<br/>Deque"]
+    E -->|No| G["Consider other<br/>patterns"]
+    B --> B1["Decreasing stack →<br/>next<br/>greater"]
+    B --> B2["Increasing stack →<br/>next<br/>smaller"]
     D --> D1["Increasing stack →<br/>rectangle area"]
     D --> D2["Decreasing stack →<br/>trapped water"]
 ```

@@ -49,13 +49,13 @@ In senior interviews, the interviewer is evaluating not just whether your code c
 When an interviewer interrupts or asks a probing question, novice candidates panic or assume they are failing. Senior candidates treat questions as collaborative alignment cues.
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    InterviewerCue["🎙️ Interviewer gives a<br/>hint or asks: 'Could we<br/>do better in space?'"]
-    Acknowledge["1. Active Validation:<br/>'That is a great<br/>observation. Let us<br/>analyze our auxiliary<br/>space.'"]
-    Deconstruct["2. Trace the Work:<br/>'Currently we use O(K)<br/>space for the heap. Can<br/>we eliminate the heap?'"]
-    Synthesize["3. Propose Invariant:<br/>'Yes! Pairwise Divide &<br/>Conquer reuses existing<br/>node pointers in O(1)<br/>space.'"]
-    Confirm["4. Seek Agreement: 'Would<br/>you like me to pivot to<br/>the Divide & Conquer<br/>approach?'"]
+    InterviewerCue["🎙️<br/>Interviewer<br/>gives a<br/>hint or asks:<br/>'Could we<br/>do better in<br/>space?'"]
+    Acknowledge["1. Active<br/>Validation:<br/>'That is a great<br/>observation. Let<br/>us<br/>analyze our<br/>auxiliary<br/>space.'"]
+    Deconstruct["2. Trace the Work:<br/>'Currently we use<br/>O(K)<br/>space for the<br/>heap. Can<br/>we eliminate the<br/>heap?'"]
+    Synthesize["3. Propose<br/>Invariant:<br/>'Yes! Pairwise<br/>Divide &<br/>Conquer reuses<br/>existing<br/>node pointers in<br/>O(1)<br/>space.'"]
+    Confirm["4. Seek Agreement:<br/>'Would<br/>you like me to<br/>pivot to<br/>the Divide &<br/>Conquer<br/>approach?'"]
 
     InterviewerCue --> Acknowledge --> Deconstruct --> Synthesize --> Confirm
 ```

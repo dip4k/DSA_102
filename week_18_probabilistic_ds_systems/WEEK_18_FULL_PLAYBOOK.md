@@ -9,19 +9,19 @@
 ## 🎯 Executive Summary & Pattern Map
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    W["Week 18: Probabilistic<br/>Data Structures & Systems<br/>Primitives"] --> D1["Day 1: Meet-in-the-Middle<br/>(Exponent Bisection)"]
-    W --> D2["Day 2: SQRT Decomposition<br/>& Mo's Algorithm<br/>(Offline Sweeping)"]
-    W --> D3["Day 3: Heavy-Light<br/>Decomposition<br/>(Tree Path & Subtree<br/>Linearization)"]
-    W --> D4["Day 4: Probabilistic DS<br/>(Bloom Filter, Count-Min,<br/>HyperLogLog)"]
-    W --> D5["Day 5: Algorithmic<br/>Systems Design<br/>(Consistent Hash Ring,<br/>Token Bucket)"]
+    W["Week 18:<br/>Probabilistic<br/>Data Structures &<br/>Systems<br/>Primitives"] --> D1["Day 1:<br/>Meet-in-the-Middle<br/>(Exponent<br/>Bisection)"]
+    W --> D2["Day 2: SQRT<br/>Decomposition<br/>& Mo's Algorithm<br/>(Offline Sweeping)"]
+    W --> D3["Day 3: Heavy-Light<br/>Decomposition<br/>(Tree Path &<br/>Subtree<br/>Linearization)"]
+    W --> D4["Day 4:<br/>Probabilistic DS<br/>(Bloom Filter,<br/>Count-Min,<br/>HyperLogLog)"]
+    W --> D5["Day 5: Algorithmic<br/>Systems Design<br/>(Consistent Hash<br/>Ring,<br/>Token Bucket)"]
 
-    D1 --> P1["Search Space Bisection:<br/>O(2^N) -> O(N * 2^(N/2))"]
-    D2 --> P2["Optimal Block Sizing: B =<br/>N / sqrt(Q) -> O((N + Q)<br/>* sqrt(N))"]
-    D3 --> P3["Logarithmic Light Edges:<br/>Path O(log^2 N), Subtree<br/>O(log N)"]
-    D4 --> P4["Constant-Memory<br/>Approximations with<br/>Rigorous Error Bounds"]
-    D5 --> P5["Scalable Sharding &<br/>Zero-Polling Traffic<br/>Shaping Primitives"]
+    D1 --> P1["Search Space<br/>Bisection:<br/>O(2^N) -> O(N *<br/>2^(N/2))"]
+    D2 --> P2["Optimal Block<br/>Sizing: B =<br/>N / sqrt(Q) -><br/>O((N + Q)<br/>* sqrt(N))"]
+    D3 --> P3["Logarithmic Light<br/>Edges:<br/>Path O(log^2 N),<br/>Subtree<br/>O(log N)"]
+    D4 --> P4["Constant-Memory<br/>Approximations<br/>with<br/>Rigorous Error<br/>Bounds"]
+    D5 --> P5["Scalable Sharding & Zero-Polling<br/>Traffic<br/>Shaping Primitives"]
 ```
 
 ---

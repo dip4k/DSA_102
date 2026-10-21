@@ -111,7 +111,7 @@ The key: *each node's solution depends only on its children's solutions*, not on
 **Example tree:**
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     A["A (Root)"]:::rootNode --> B["B"]:::internalNode
     A --> C["C (Leaf)"]:::leafNode
@@ -272,7 +272,7 @@ Answer: max(diameter_at_node for all nodes)
 **Inline Trace:**
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     D_A["A (dp: 2)"]:::rootNode --> D_B["B (dp: 1, diam: 2)"]:::internalNode
     D_A --> D_C["C (dp: 0)"]:::leafNode
@@ -334,7 +334,7 @@ For each node with color c:
 **Inline Trace:**
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     CA["A"]:::rootNode --> CB["B (Leaf)"]:::leafNode
     CA --> CC["C (Leaf)"]:::leafNode

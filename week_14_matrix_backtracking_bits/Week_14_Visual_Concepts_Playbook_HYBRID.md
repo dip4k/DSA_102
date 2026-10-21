@@ -79,7 +79,7 @@ When you intersect a positive value with its negative counterpart, you isolate t
 This loop systematically clearing trailing bits and re-activates sub-bits that match your original filter mask, enumerating all valid submasks in decreasing order.
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 graph TD
     M[Base Mask: 1101] --> |sub - 1 = 1100 <br/> AND mask| S1[Submask: 1100]
     S1 --> |sub - 1 = 1011 <br/> AND mask| S2[Submask: 1001]

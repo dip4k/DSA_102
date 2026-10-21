@@ -95,7 +95,7 @@ Step 4: Pop D -> emit D
 ```
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart LR
     A["A (Task: 2h)"] --> B["B (Task: 3h)"]
     A --> C["C (Task: 1h)"]

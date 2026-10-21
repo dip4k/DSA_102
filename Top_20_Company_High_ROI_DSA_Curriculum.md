@@ -775,11 +775,11 @@ Across all 20 elite tech companies, over **85% of interview questions derive fro
 When an interview is days or hours away, exhaustive re-solving of 100+ problems leads to cognitive fatigue and panic. Elite interview performance relies on **targeted invariant priming** and **rapid mental model retrieval**. Use the tiered countdown triage below:
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    T48["⏳ T-48 Hours: Universal<br/>Anchor Locking"] --> T24["⏳ T-24 Hours: Target<br/>Company Signature<br/>Invariants"]
-    T24 --> T12["⏳ T-12 Hours: Whiteboard<br/>Boundary Dry-Runs &<br/>Complexity Defense"]
-    T12 --> T0["🎯 Live Interview: 5-Step<br/>Senior Execution Rhythm"]
+    T48["⏳ T-48 Hours:<br/>Universal<br/>Anchor Locking"] --> T24["⏳ T-24 Hours:<br/>Target<br/>Company Signature<br/>Invariants"]
+    T24 --> T12["⏳ T-12 Hours:<br/>Whiteboard<br/>Boundary Dry-Runs & Complexity Defense"]
+    T12 --> T0["🎯 Live<br/>Interview:<br/>5-Step<br/>Senior Execution<br/>Rhythm"]
 ```
 
 | Countdown Window | Strategic Focus | Curated High-ROI Target Problems | Operational Objective & Defense Checklist |
@@ -797,12 +797,12 @@ Senior and Staff candidates fail interviews not because they cannot solve the pr
 Follow this disciplined **5-Step Rhythm** in every 45-minute live round:
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    S1["Step 1: Scoping and<br/>Contracts<br/>(0–5 min)"] --> S2["Step 2: Dual Baselines<br/>and Diagnosis<br/>(5–10 min)"]
+    S1["Step 1: Scoping and Contracts<br/>(0–5 min)"] --> S2["Step 2: Dual<br/>Baselines<br/>and Diagnosis<br/>(5–10 min)"]
     S2 --> S3["Step 3: Invariant<br/>Formalization<br/>(10–15 min)"]
     S3 --> S4["Step 4: Idiomatic<br/>Production Code<br/>(15–32 min)"]
-    S4 --> S5["Step 5: Systematic<br/>Multi-Vector Dry Run<br/>(32–45 min)"]
+    S4 --> S5["Step 5: Systematic<br/>Multi-Vector Dry<br/>Run<br/>(32–45 min)"]
 ```
 
 #### Step 1: Scoping, Boundary Defense & Contract Negotiation (0–5 min)

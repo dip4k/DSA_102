@@ -218,7 +218,7 @@ No adjacency matrix stored; neighbors computed on-the-fly.
 Graph:
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 graph TD
     classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
 
@@ -285,7 +285,7 @@ Distance from 0:
 ### 2.3 Visual 2 – BFS vs DFS Order 🔍
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 graph TD
     classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
 
@@ -580,7 +580,7 @@ If at the end some vertices remain with non-zero in-degree, the graph has a **cy
 ### 4.2 Visual 1 – Components as Islands 🏝️
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TB
     classDef c1 fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef c2 fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
@@ -622,7 +622,7 @@ Each set is a **connected component**.
 ### 4.3 Visual 2 – Bipartite Graph 2-Coloring ⚖️
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart LR
     classDef redNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
     classDef blueNode fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
@@ -652,14 +652,14 @@ flowchart LR
 ### 4.4 Visual 3 – Odd Cycle = Not Bipartite 🚫
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TB
     classDef redNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
     classDef blueNode fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
 
     N1["1 (🔴 Red)"]:::redNode
     N2["2 (🔵 Blue)"]:::blueNode
-    N3["3 (⚠️ Conflict!)"]:::redNode
+    N3["3 (⚠️<br/>Conflict!)"]:::redNode
 
     N1 --- N2
     N2 --- N3
@@ -773,7 +773,7 @@ Directed graph:
 
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     classDef scc1 fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
     classDef scc2 fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:2px;

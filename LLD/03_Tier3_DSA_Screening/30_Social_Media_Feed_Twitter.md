@@ -21,13 +21,13 @@ It evaluates a candidate's ability to seamlessly bridge **algorithmic efficiency
 ## 🎯 CrackingWalnuts 6-Step Methodology Applied
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    A["1. Requirement Mining<br/>• 10 most recent tweets<br/>• Self + Followees feed<br/>• Follow / Unfollow<br/>• Thread-safe state"] --> B["2. Class Discovery<br/>• Tweet (Singly-Linked<br/>Node)<br/>• User (Aggregate Root)<br/>• TwitterEngine<br/>(Domain Service)<br/>• FeedResult<br/>(Value Object)"]
-    B --> C["3. Relationships<br/>• User (1:N) Followees<br/>[HashSet]<br/>• User (1:1) HeadTweet<br/>[Linked List]<br/>• TwitterEngine manages<br/>User Pool"]
-    C --> D["4. Design Patterns<br/>• Iterator / K-Way Merge<br/>• Observer / Fanout<br/>Strategy<br/>• Monotonic Atomic Clock"]
-    D --> E["5. V1 → V4 Evolution<br/>• V1: Naive list sort on<br/>read<br/>• V2: Singly-linked list<br/>per user + MaxHeap<br/>• V3: Thread-safe<br/>ConcurrentEngine<br/>• V4: Hybrid Fanout<br/>(Push/Pull Architecture)"]
-    E --> F["6. Problem Archetype<br/>Family 5: In-Memory DSA +<br/>Family 4: Event-Driven<br/>Feed"]
+    A["1. Requirement<br/>Mining<br/>• 10 most recent<br/>tweets<br/>• Self + Followees<br/>feed<br/>• Follow /<br/>Unfollow<br/>• Thread-safe<br/>state"] --> B["2. Class Discovery<br/>• Tweet<br/>(Singly-Linked<br/>Node)<br/>• User (Aggregate<br/>Root)<br/>• TwitterEngine<br/>(Domain Service)<br/>• FeedResult<br/>(Value Object)"]
+    B --> C["3. Relationships<br/>• User (1:N)<br/>Followees<br/>[HashSet]<br/>• User (1:1)<br/>HeadTweet<br/>[Linked List]<br/>• TwitterEngine<br/>manages<br/>User Pool"]
+    C --> D["4. Design Patterns<br/>• Iterator / K-Way<br/>Merge<br/>• Observer /<br/>Fanout<br/>Strategy<br/>• Monotonic Atomic<br/>Clock"]
+    D --> E["5. V1 → V4<br/>Evolution<br/>• V1: Naive list<br/>sort on<br/>read<br/>• V2:<br/>Singly-linked list<br/>per user + MaxHeap<br/>• V3: Thread-safe<br/>ConcurrentEngine<br/>• V4: Hybrid<br/>Fanout<br/>(Push/Pull<br/>Architecture)"]
+    E --> F["6. Problem<br/>Archetype<br/>Family 5:<br/>In-Memory DSA +<br/>Family 4:<br/>Event-Driven<br/>Feed"]
 ```
 
 ---
@@ -46,39 +46,39 @@ To fetch the 10 most recent tweets for user $U$:
 - **Time Complexity**: $O(K \log F)$ where $K = 10$ and $F$ is the number of followees. This is independent of total tweets in the system!
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 graph TD
     subgraph Followees Linked Lists
-        A1["Alice Tweet 3 (T=150)"] --> A2["Alice Tweet 2 (T=120)"] --> A3["Alice Tweet 1 (T=90)"]
-        B1["Bob Tweet 2 (T=140)"] --> B2["Bob Tweet 1 (T=100)"]
-        C1["Charlie Tweet 1 (T=130)"]
+        A1["Alice Tweet 3<br/>(T=150)"] --> A2["Alice Tweet 2<br/>(T=120)"] --> A3["Alice Tweet 1<br/>(T=90)"]
+        B1["Bob Tweet 2<br/>(T=140)"] --> B2["Bob Tweet 1<br/>(T=100)"]
+        C1["Charlie Tweet 1<br/>(T=130)"]
     end
 
     subgraph PriorityQueue Step
-        Heap["Max-Heap (Size = 3<br/>Followees)<br/>Root: Alice T=150<br/>Bob T=140 | Charlie T=130"]
+        Heap["Max-Heap (Size = 3<br/>Followees)<br/>Root: Alice T=150<br/>Bob T=140 |<br/>Charlie T=130"]
     end
 
     A1 -.->|"1. Pop T=150, push A2 (T=120)"| Heap
-    Heap --> Out["Result Feed: [150, 140,<br/>130, 120, 100, 90]"]
+    Heap --> Out["Result Feed: [150,<br/>140,<br/>130, 120, 100, 90]"]
 ```
 
 ### High-Scale Architecture: Fanout-on-Write vs. Fanout-on-Read
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     subgraph Fanout-on-Write [Push Model - Standard Users]
-        UserA["Standard User Tweets"] --> MsgQ["Kafka / Event Stream"]
+        UserA["Standard User<br/>Tweets"] --> MsgQ["Kafka / Event<br/>Stream"]
         MsgQ --> Workers["Fanout Workers"]
-        Workers -->|"Push to 500 followers"| RedisA["Follower 1 Timeline Cache<br/>(Redis)"]
-        Workers -->|"Push"| RedisB["Follower 2 Timeline Cache<br/>(Redis)"]
+        Workers -->|"Push to 500 followers"| RedisA["Follower 1<br/>Timeline Cache<br/>(Redis)"]
+        Workers -->|"Push"| RedisB["Follower 2<br/>Timeline Cache<br/>(Redis)"]
     end
 
     subgraph Fanout-on-Read [Pull Model - Celebrities / Justin Bieber]
-        Celeb["Celebrity Tweets<br/>(>100K followers)"] --> CelebStore["Celebrity Tweet Store"]
-        Reader["Follower Opens App"] --> ReadTimeline["Read Redis Timeline Cache<br/>(Push)"]
-        Reader --> ReadCeleb["Fetch Followed<br/>Celebrities' Tweets<br/>(Pull)"]
-        ReadTimeline & ReadCeleb --> InMemMerge["In-Memory K-Way Merge<br/>Final Top 10 Feed"]
+        Celeb["Celebrity Tweets<br/>(>100K followers)"] --> CelebStore["Celebrity Tweet<br/>Store"]
+        Reader["Follower Opens App"] --> ReadTimeline["Read Redis<br/>Timeline Cache<br/>(Push)"]
+        Reader --> ReadCeleb["Fetch Followed<br/>Celebrities'<br/>Tweets<br/>(Pull)"]
+        ReadTimeline & ReadCeleb --> InMemMerge["In-Memory K-Way<br/>Merge<br/>Final Top 10 Feed"]
     end
 ```
 

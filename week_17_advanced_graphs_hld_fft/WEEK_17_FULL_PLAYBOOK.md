@@ -11,11 +11,11 @@
 **Theme:** Convex Hull Trick, Slope Trick, Game Theory (Nimbers), and Combinatorics
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    W["Week 17: Week 17:<br/>Advanced Algorithms &<br/>Dynamic Programming"] --> Core["Core Invariants"]
-    Core --> P1["Mental Model &<br/>Mathematical Invariant"]
-    Core --> P2["Space vs Time Trade-offs"]
+    W["Week 17: Week 17:<br/>Advanced<br/>Algorithms &<br/>Dynamic<br/>Programming"] --> Core["Core Invariants"]
+    Core --> P1["Mental Model &<br/>Mathematical<br/>Invariant"]
+    Core --> P2["Space vs Time<br/>Trade-offs"]
     Core --> P3["Senior Interview<br/>Articulation"]
 ```
 
