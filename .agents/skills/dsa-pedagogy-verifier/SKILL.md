@@ -51,11 +51,12 @@ Whenever you encounter or write these concepts, replace academic jargon with int
 Every topic or day module must follow this progressive sequence:
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    Step1["Step 1: The Everyday Hook<br/>(Real-world analogy & why naive fails)"]
-    Step2["Step 2: The Napkin Trace<br/>(Visual step-by-step walk with numbers)"]
-    Step3["Step 3: The Warm-Up to FAANG Classic<br/>(From simple pattern to interview staple)"]
-    Step4["Step 4: Interview Ready Delivery<br/>(45-min talk track, C#, Python, & edge cases)"]
+    Step1["Step 1: The Everyday Hook<br/>(Real-world analogy & why<br/>naive fails)"]
+    Step2["Step 2: The Napkin Trace<br/>(Visual step-by-step walk<br/>with numbers)"]
+    Step3["Step 3: The Warm-Up to<br/>FAANG Classic<br/>(From simple pattern to<br/>interview staple)"]
+    Step4["Step 4: Interview Ready<br/>Delivery<br/>(45-min talk track, C#,<br/>Python, & edge cases)"]
     Step1 --> Step2 --> Step3 --> Step4
 ```
 
@@ -127,17 +128,18 @@ Run this mode when teaching a learner directly:
 Use this template when building or fixing diagrams:
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart LR
     classDef startNode fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
     classDef actionNode fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
     classDef successNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef warnNode fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
 
-    Start["🟢 Start: Left=0, Right=N-1"]:::startNode
+    Start["🟢 Start: Left=0,<br/>Right=N-1"]:::startNode
     Check{"🔍 Sum == Target?"}:::actionNode
-    ShrinkLeft["👉 Sum &lt; Target: Move Left"]:::warnNode
-    ShrinkRight["👈 Sum > Target: Move Right"]:::warnNode
-    Success["✅ Found Pair: Return Indices"]:::successNode
+    ShrinkLeft["👉 Sum &lt; Target: Move<br/>Left"]:::warnNode
+    ShrinkRight["👈 Sum > Target: Move<br/>Right"]:::warnNode
+    Success["✅ Found Pair: Return<br/>Indices"]:::successNode
 
     Start --> Check
     Check -->|"Sum &lt; Target"| ShrinkLeft

@@ -112,13 +112,14 @@ public class AccountTransferService
 ## ⚖️ 4. Optimistic vs Pessimistic Concurrency
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    Q{"Is Contention High or Low?"}
-    Q -->|Low Contention (Standard E-Commerce)| OCC["Optimistic Concurrency Control (OCC)"]
-    Q -->|High Contention (Flash Sales, Ticket Drops)| PCC["Pessimistic Concurrency Control (PCC)"]
+    Q{"Is Contention High or<br/>Low?"}
+    Q -->|"Low Contention (Standard E-Commerce)"| OCC["Optimistic Concurrency<br/>Control (OCC)"]
+    Q -->|"High Contention (Flash Sales, Ticket Drops)"| PCC["Pessimistic Concurrency<br/>Control (PCC)"]
 
-    OCC --> OCC_Details["Use RowVersion / ConcurrencyToken.<br/>No blocking locks.<br/>Catch DbUpdateConcurrencyException and retry."]
-    PCC --> PCC_Details["Use SELECT ... FOR UPDATE or Distributed Lock.<br/>Block other threads up-front.<br/>Guarantees first-come-first-served."]
+    OCC --> OCC_Details["Use RowVersion /<br/>ConcurrencyToken.<br/>No blocking locks.<br/>Catch<br/>DbUpdateConcurrencyException<br/>and retry."]
+    PCC --> PCC_Details["Use SELECT ... FOR UPDATE<br/>or Distributed Lock.<br/>Block other threads<br/>up-front.<br/>Guarantees<br/>first-come-first-served."]
 ```
 
 ### In-Memory Optimistic Concurrency Pattern

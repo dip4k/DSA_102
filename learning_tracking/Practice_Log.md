@@ -7,6 +7,7 @@
 ## 🧭 Practice Workflow Pipeline
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     P1["1. Select Problem<br/>(3-Tier Ladder)"]:::step
     P2["2. Timed Whiteboard<br/>(25–40 min)"]:::step

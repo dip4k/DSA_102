@@ -14,11 +14,12 @@
 Prove greedy choice properties: interval activity selection, Huffman coding optimal prefix trees, fractional knapsack, and identifying when greedy fails.
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    Start["Week 12 Start"] --> Daily["Daily Invariant Deep Dives"]
-    Daily --> Playbook["Consolidated Playbook & Visuals"]
-    Playbook --> DualLang["Dual-Language Practice (C# & Python)"]
-    DualLang --> Mastery["Pattern Mastery & Verification"]
+    Start["Week 12 Start"] --> Daily["Daily Invariant Deep<br/>Dives"]
+    Daily --> Playbook["Consolidated Playbook &<br/>Visuals"]
+    Playbook --> DualLang["Dual-Language Practice<br/>(C# & Python)"]
+    DualLang --> Mastery["Pattern Mastery &<br/>Verification"]
 ```
 
 ---

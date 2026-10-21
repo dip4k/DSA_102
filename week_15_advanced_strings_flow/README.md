@@ -14,11 +14,12 @@
 Linear Z-algorithm matching, Segment Trees with Lazy Propagation, Ford-Fulkerson max-flow, bipartite matching reductions, and min-cut bottlenecks.
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    Start["Week 15 Start"] --> Daily["Daily Invariant Deep Dives"]
-    Daily --> Playbook["Consolidated Playbook & Visuals"]
-    Playbook --> DualLang["Dual-Language Practice (C# & Python)"]
-    DualLang --> Mastery["Pattern Mastery & Verification"]
+    Start["Week 15 Start"] --> Daily["Daily Invariant Deep<br/>Dives"]
+    Daily --> Playbook["Consolidated Playbook &<br/>Visuals"]
+    Playbook --> DualLang["Dual-Language Practice<br/>(C# & Python)"]
+    DualLang --> Mastery["Pattern Mastery &<br/>Verification"]
 ```
 
 ---

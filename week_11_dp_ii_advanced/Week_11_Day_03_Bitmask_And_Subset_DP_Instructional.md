@@ -93,6 +93,7 @@ Bit Value:     0   1   1   0   1   =  (1 << 3) | (1 << 2) | (1 << 0)
 ### Subset Transition Lattice
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     S0["000: {}"] --> S1["001: {0}"]
     S0 --> S2["010: {1}"]

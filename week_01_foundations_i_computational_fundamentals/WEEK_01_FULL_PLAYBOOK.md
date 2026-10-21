@@ -1138,16 +1138,17 @@ Algorithm needs factorial of N. Two approaches:
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef dollLarge fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
     classDef dollMed fill:#b3e5fc,stroke:#0288d1,stroke-width:2px,color:#01579b
     classDef dollSmall fill:#81d4fa,stroke:#0288d1,stroke-width:2px,color:#01579b
     classDef baseDoll fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
 
-    D4["🪆 Large Doll: Original Problem (N=4)<br/>Break into smaller subproblem"]:::dollLarge
-    D3["🪆 Medium Doll: Subproblem (N=3)<br/>Break into smaller subproblem"]:::dollMed
-    D2["🪆 Small Doll: Subproblem (N=2)<br/>Break into smaller subproblem"]:::dollSmall
-    D1["🪆 Tiny Doll: Base Case (N=1 or 0)<br/>🛑 Solid doll: returns known base answer"]:::baseDoll
+    D4["🪆 Large Doll: Original<br/>Problem (N=4)<br/>Break into smaller<br/>subproblem"]:::dollLarge
+    D3["🪆 Medium Doll:<br/>Subproblem (N=3)<br/>Break into smaller<br/>subproblem"]:::dollMed
+    D2["🪆 Small Doll: Subproblem<br/>(N=2)<br/>Break into smaller<br/>subproblem"]:::dollSmall
+    D1["🪆 Tiny Doll: Base Case<br/>(N=1 or 0)<br/>🛑 Solid doll: returns<br/>known base answer"]:::baseDoll
 
     D4 -->|"Unpack"| D3
     D3 -->|"Unpack"| D2

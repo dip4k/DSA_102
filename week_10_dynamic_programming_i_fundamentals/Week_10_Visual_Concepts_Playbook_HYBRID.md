@@ -56,6 +56,7 @@
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef start fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef test fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:1.5px;
@@ -64,12 +65,12 @@ flowchart TD
 
     R["Problem Given"]:::start
     R --> T1{"Overlapping Subproblems?"}:::test
-    T1 -->|No| N1["❌ Not DP material → Try Greedy / Divide & Conquer"]:::no
+    T1 -->|No| N1["❌ Not DP material → Try<br/>Greedy / Divide & Conquer"]:::no
     T1 -->|Yes| T2{"Optimal Substructure?"}:::test
-    T2 -->|No| N2["❌ Try Backtracking / Brute Force"]:::no
+    T2 -->|No| N2["❌ Try Backtracking /<br/>Brute Force"]:::no
     T2 -->|Yes| T3{"Does Greedy Choice Hold?"}:::test
-    T3 -->|Yes| N3["⚡ Use Greedy (O(N) / O(N log N))"]:::result
-    T3 -->|No| DP["⚡ Dynamic Programming (Memoization or Tabulation)"]:::result
+    T3 -->|Yes| N3["⚡ Use Greedy<br/>(O(N) / O(N log N))"]:::result
+    T3 -->|No| DP["⚡ Dynamic Programming<br/>(Memoization or<br/>Tabulation)"]:::result
 ```
 
 
@@ -81,6 +82,7 @@ flowchart TD
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef naive fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:1.5px;
     classDef memo fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
@@ -96,11 +98,11 @@ flowchart TD
     end
 
     subgraph DP["✅ With Memoization / Tabulation: O(N) Linear Time"]
-        D0["Compute fib(0..1) = Base cases"]:::memo
+        D0["Compute fib(0..1) = Base<br/>cases"]:::memo
         D0 --> D2["Compute fib(2) = 1"]:::memo
         D2 --> D3["Compute fib(3) = 2"]:::memo
         D3 --> D4["Compute fib(4) = 3"]:::memo
-        D4 --> D5["Compute fib(5) = 5 (Each state solved ONCE!)"]:::memo
+        D4 --> D5["Compute fib(5) = 5<br/>(Each state solved ONCE!)"]:::memo
     end
 ```
 
@@ -332,20 +334,21 @@ Answer: Length = tails.length = 3  |  LIS tail ends with 20
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef top fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef bot fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
 
     subgraph TopDown["🧠 Top-Down (Memoization)"]
-        T1["Direction: Target State → Base Cases (Recursion)"]:::top
-        T2["Evaluation: Solves only states visited along call graph"]:::top
-        T3["Overhead: Function call stack overhead & potential stack overflow"]:::top
+        T1["Direction: Target State →<br/>Base Cases (Recursion)"]:::top
+        T2["Evaluation: Solves only<br/>states visited along call<br/>graph"]:::top
+        T3["Overhead: Function call<br/>stack overhead &<br/>potential stack overflow"]:::top
     end
 
     subgraph BottomUp["📊 Bottom-Up (Tabulation)"]
-        B1["Direction: Base Cases → Target State (Iteration)"]:::bot
-        B2["Evaluation: Fills tabular states systematically in topological order"]:::bot
-        B3["Optimization: Rolling variables allow O(1) space optimization!"]:::bot
+        B1["Direction: Base Cases →<br/>Target State<br/>(Iteration)"]:::bot
+        B2["Evaluation: Fills tabular<br/>states systematically in<br/>topological order"]:::bot
+        B3["Optimization: Rolling<br/>variables allow O(1)<br/>space optimization!"]:::bot
     end
 ```
 
@@ -378,16 +381,17 @@ flowchart TD
 ### 5.1 "Which DP Pattern Applies?" Decision Tree
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    Start["Problem Input"] --> Q1{"Is order of elements fixed?"}
-    Q1 -->|No / Subsets| Q2{"Choice per item (Include / Exclude)?"}
-    Q2 -->|Weight / Capacity limit| Knapsack["Knapsack DP (0/1 or Unbounded)"]
-    Q2 -->|Partition target| SubsetSum["Subset Sum / Target Sum DP"]
+    Start["Problem Input"] --> Q1{"Is order of elements<br/>fixed?"}
+    Q1 -->|No / Subsets| Q2{"Choice per item<br/>(Include / Exclude)?"}
+    Q2 -->|Weight / Capacity limit| Knapsack["Knapsack DP (0/1 or<br/>Unbounded)"]
+    Q2 -->|Partition target| SubsetSum["Subset Sum / Target Sum<br/>DP"]
     Q1 -->|Yes / Sequential| Q3{"Input dimension?"}
-    Q3 -->|2D Grid| Grid["Grid DP (Paths, Min Path Sum)"]
-    Q3 -->|Two Strings| LCS["Two-Sequence DP (LCS, Edit Dist)"]
-    Q3 -->|Single Array| Q4{"State depends on previous choices?"}
-    Q4 -->|Cooldown / Action states| StateMachine["State Machine DP (Stock Trading)"]
+    Q3 -->|2D Grid| Grid["Grid DP (Paths, Min Path<br/>Sum)"]
+    Q3 -->|Two Strings| LCS["Two-Sequence DP<br/>(LCS, Edit Dist)"]
+    Q3 -->|Single Array| Q4{"State depends on previous<br/>choices?"}
+    Q4 -->|Cooldown / Action states| StateMachine["State Machine DP<br/>(Stock Trading)"]
     Q4 -->|Contiguous subarray| Kadane["Kadane / Prefix DP"]
     Q4 -->|Subsequence length| LIS["LIS / Monotonic State DP"]
 ```
@@ -480,16 +484,17 @@ Trade-off Summary:
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef key fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef pat fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:1.5px;
 
-    K["🔍 Interview Problem Clues & Keywords"]:::key
-    K --> P1["🎯 'Min/Max Cost/Value/Weight' → 1D/2D Optimization DP (Coin Change, Knapsack)"]:::pat
-    K --> P2["🔢 'Count the number of ways' → Additive Counting DP (Climbing Stairs, Unique Paths)"]:::pat
-    K --> P3["❓ 'Can partition / Is reachable' → Boolean Feasibility DP (Partition Equal Subset Sum)"]:::pat
-    K --> P4["🔤 'Longest subsequence / substring' → String/Array Matching DP (LCS, LIS, Edit Distance)"]:::pat
-    K --> P5["🔄 'Cooldown, Hold/Sell/Rest states' → Finite State Machine DP (Stock Trading)"]:::pat
+    K["🔍 Interview Problem<br/>Clues & Keywords"]:::key
+    K --> P1["🎯 'Min/Max<br/>Cost/Value/Weight' →<br/>1D/2D Optimization DP<br/>(Coin Change, Knapsack)"]:::pat
+    K --> P2["🔢 'Count the number of<br/>ways' → Additive Counting<br/>DP (Climbing Stairs,<br/>Unique Paths)"]:::pat
+    K --> P3["❓ 'Can partition / Is<br/>reachable' → Boolean<br/>Feasibility DP<br/>(Partition Equal Subset<br/>Sum)"]:::pat
+    K --> P4["🔤 'Longest subsequence /<br/>substring' → String/Array<br/>Matching DP (LCS, LIS,<br/>Edit Distance)"]:::pat
+    K --> P5["🔄 'Cooldown,<br/>Hold/Sell/Rest states' →<br/>Finite State Machine DP<br/>(Stock Trading)"]:::pat
 ```
 
 
@@ -528,13 +533,14 @@ flowchart TD
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef real fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
     classDef arrow fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:1.5px;
     classDef dppat fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
 
-    R1["Business Problem:<br/>Minimum server costs to serve R requests"]:::real --> M1["Map to State:<br/>dp[r] = min cost for r capacity"]:::arrow --> P1["Formal Pattern:<br/>Coin Change / Unbounded Knapsack"]:::dppat
-    R2["Business Problem:<br/>Minimal file changes in Git merge"]:::real --> M2["Map to State:<br/>dp[i][j] = common line count"]:::arrow --> P2["Formal Pattern:<br/>Longest Common Subsequence (LCS)"]:::dppat
+    R1["Business Problem:<br/>Minimum server costs to<br/>serve R requests"]:::real --> M1["Map to State:<br/>dp[r] = min cost for r<br/>capacity"]:::arrow --> P1["Formal Pattern:<br/>Coin Change / Unbounded<br/>Knapsack"]:::dppat
+    R2["Business Problem:<br/>Minimal file changes in<br/>Git merge"]:::real --> M2["Map to State:<br/>dp[i][j] = common line<br/>count"]:::arrow --> P2["Formal Pattern:<br/>Longest Common<br/>Subsequence (LCS)"]:::dppat
 ```
 
 

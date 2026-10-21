@@ -214,11 +214,12 @@ D) All equally bad
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef orig fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
     classDef half fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
 
-    All["📦 [38, 27, 43, 3, 9, 82, 10]"]:::orig
+    All["📦 [38, 27, 43, 3, 9, 82,<br/>10]"]:::orig
     L1["[38, 27, 43, 3]"]:::half
     R1["[9, 82, 10]"]:::half
     All -->|"Divide in half"| L1 & R1
@@ -341,12 +342,13 @@ Probability of bad pivot decreases exponentially
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef arr fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
     classDef tree fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
 
     Tree["🌲 Heap Index Arithmetic:<br/>LeftChild = 2*i + 1<br/>RightChild = 2*i + 2<br/>Parent = (i - 1) / 2"]:::tree
-    Arr["📊 Array: [1, 3, 2, 7, 4, 5]<br/>Indices: 0, 1, 2, 3, 4, 5"]:::arr
+    Arr["📊 Array: [1, 3, 2, 7, 4,<br/>5]<br/>Indices: 0, 1, 2, 3, 4, 5"]:::arr
     Tree --> Arr
 ```
 
@@ -394,6 +396,7 @@ Returned: 1
 ```
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     N2["2 (New Root)"]:::rootNode --> N3["3"]:::internalNode
     N2 --> N5["5 (Sifted Down)"]:::internalNode
@@ -416,12 +419,13 @@ flowchart TD
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart LR
     classDef heap fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
     classDef sorted fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
 
-    H["📦 Max-Heap: [82, 43, 38, 27, 9, 10, 3]"]:::heap
-    Ext["⚡ Swap Max with End & Sift Down"]
+    H["📦 Max-Heap: [82, 43, 38,<br/>27, 9, 10, 3]"]:::heap
+    Ext["⚡ Swap Max with End &<br/>Sift Down"]
     S["✅ Sorted Suffix: [... 82]"]:::sorted
 
     H --> Ext --> S
@@ -460,13 +464,14 @@ flowchart LR
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart LR
     classDef key fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
     classDef hash fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
     classDef bucket fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
 
     Key["🔑 Key: 42"]:::key
-    Hash["⚙️ Hash Function: 42 % 10 = 2"]:::hash
+    Hash["⚙️ Hash Function: 42 % 10<br/>= 2"]:::hash
     Bucket["📦 Bucket Array: Slot [2]"]:::bucket
 
     Key --> Hash --> Bucket
@@ -481,12 +486,13 @@ flowchart LR
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef alert fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
     classDef grow fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
 
-    Trigger["⚠️ Load Factor > 0.75 (Item Count / Capacity)"]:::alert
-    Action["📈 Rehash & Resize: Allocate Capacity * 2<br/>Recompute hash for all existing elements into new table"]:::grow
+    Trigger["⚠️ Load Factor > 0.75<br/>(Item Count / Capacity)"]:::alert
+    Action["📈 Rehash & Resize:<br/>Allocate Capacity * 2<br/>Recompute hash for all<br/>existing elements into<br/>new table"]:::grow
 
     Trigger --> Action
 ```
@@ -522,13 +528,14 @@ flowchart TD
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart LR
     classDef win fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
     classDef roll fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
     classDef nextWin fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
 
-    W1["🔍 Window 1: 'ABC'<br/>Hash = (A*B^2 + B*B^1 + C) % M"]:::win
-    Roll["⚡ O(1) Roll: Subtract 'A'*B^2, Multiply by B, Add 'D'"]:::roll
+    W1["🔍 Window 1: 'ABC'<br/>Hash = (A*B^2 + B*B^1 +<br/>C) % M"]:::win
+    Roll["⚡ O(1) Roll: Subtract<br/>'A'*B^2, Multiply by B,<br/>Add 'D'"]:::roll
     W2["🔍 Window 2: 'BCD'<br/>New Rolling Hash"]:::nextWin
 
     W1 --> Roll --> W2

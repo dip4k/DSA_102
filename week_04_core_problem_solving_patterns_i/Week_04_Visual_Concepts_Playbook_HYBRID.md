@@ -66,15 +66,16 @@
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef safe fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
     classDef boundary fill:#fff9c4,stroke:#fbc02d,color:#f57f17,stroke-width:2px;
     classDef explore fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:1.5px;
 
     subgraph Memory["📦 In-Place Partition Boundary"]
-        Z1["✅ Processed Safe Zone<br/>Indices 0 to W-1: All Non-Zero Elements"]:::safe
-        B["📍 Write Pointer (W)<br/>Tracks Next Destination Slot"]:::boundary
-        Z2["🔍 Unprocessed Scan Zone<br/>Read Pointer advances to end of array"]:::explore
+        Z1["✅ Processed Safe Zone<br/>Indices 0 to W-1: All<br/>Non-Zero Elements"]:::safe
+        B["📍 Write Pointer (W)<br/>Tracks Next Destination<br/>Slot"]:::boundary
+        Z2["🔍 Unprocessed Scan Zone<br/>Read Pointer advances to<br/>end of array"]:::explore
         Z1 --> B --> Z2
     end
 ```
@@ -88,16 +89,17 @@ flowchart TD
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef state fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef move fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
     classDef dead fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:1.5px;
 
-    R["🎯 Container State: L at height[L], R at height[R]<br/>Area = min(height[L], height[R]) * (R - L)"]:::state
+    R["🎯 Container State: L at<br/>height[L], R at height[R]<br/>Area = min(height[L],<br/>height[R]) *<br/>(R - L)"]:::state
     R --> Cond{"⚖️ Compare Heights:<br/>height[L] vs height[R]"}
-    Cond -->|"height[L] &lt; height[R]"| ML["👉 Move Shorter Pointer: L++<br/>Only way to find taller bottleneck"]:::move
-    Cond -->|height[L] >= height[R]| MR["👈 Move Shorter Pointer: R--<br/>Only way to find taller bottleneck"]:::move
-    R -.->|Hypothetical: Move Taller Pointer| Dead["❌ Width shrinks AND bottleneck capped by shorter<br/>Area STRICTLY decreases; safely prune!"]:::dead
+    Cond -->|"height[L] &lt; height[R]"| ML["👉 Move Shorter Pointer:<br/>L++<br/>Only way to find taller<br/>bottleneck"]:::move
+    Cond -->|"height[L] >= height[R]"| MR["👈 Move Shorter Pointer:<br/>R--<br/>Only way to find taller<br/>bottleneck"]:::move
+    R -.->|Hypothetical: Move Taller Pointer| Dead["❌ Width shrinks AND<br/>bottleneck capped by<br/>shorter<br/>Area STRICTLY decreases;<br/>safely prune!"]:::dead
 ```
 
 
@@ -378,18 +380,19 @@ Result: Maintains strict decreasing order properly
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef phase fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef expand fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
     classDef contract fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
     classDef update fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:2px;
 
-    S["🎯 Two-Phase Sliding Window Loop"]:::phase
-    S --> E["1️⃣ Expand Window (Right Pointer ++)<br/>Add char s[R] to frequency map until valid"]:::expand
-    E --> C{"⚖️ Is Window Valid?<br/>All required target characters matched"}
+    S["🎯 Two-Phase Sliding<br/>Window Loop"]:::phase
+    S --> E["1️⃣ Expand Window<br/>(Right Pointer ++)<br/>Add char s[R] to<br/>frequency map until valid"]:::expand
+    E --> C{"⚖️ Is Window Valid?<br/>All required target<br/>characters matched"}
     C -->|No| E
-    C -->|Yes| U["2️⃣ Record Candidate Minimum<br/>Update best window: minLen = min(minLen, R - L + 1)"]:::update
-    U --> K["3️⃣ Contract Window (Left Pointer ++)<br/>Remove s[L] from map to find tighter window"]:::contract
+    C -->|Yes| U["2️⃣ Record Candidate<br/>Minimum<br/>Update best window:<br/>minLen = min(minLen, R -<br/>L + 1)"]:::update
+    U --> K["3️⃣ Contract Window<br/>(Left Pointer ++)<br/>Remove s[L] from map to<br/>find tighter window"]:::contract
     K --> C
 ```
 
@@ -402,15 +405,16 @@ flowchart TD
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef valid fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
     classDef breach fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:2px;
     classDef shrink fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:1.5px;
 
-    W["🔍 Current Window: s[L..R]"]
-    W --> V["✅ Valid State: Distinct Chars &le; k<br/>Update maxLength = max(maxLength, R - L + 1)<br/>Expand Right Pointer: R++"]:::valid
-    W --> B["❌ Breach State: Distinct Chars > k<br/>Window violated invariant"]:::breach
-    B --> S["👈 Shrink Window: Decrement s[L] count and L++<br/>Repeat until distinct count returns to &le; k"]:::shrink
+    W["🔍 Current Window:<br/>s[L..R]"]
+    W --> V["✅ Valid State: Distinct<br/>Chars &le; k<br/>Update maxLength =<br/>max(maxLength, R - L + 1)<br/>Expand Right Pointer: R++"]:::valid
+    W --> B["❌ Breach State: Distinct<br/>Chars > k<br/>Window violated invariant"]:::breach
+    B --> S["👈 Shrink Window:<br/>Decrement s[L] count and<br/>L++<br/>Repeat until distinct<br/>count returns to &le; k"]:::shrink
     S --> V
 ```
 
@@ -521,16 +525,17 @@ Result: charCount always accurate
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef left fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef right fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
     classDef count fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
 
-    L["👈 Sorted Left Half: [3, 5, 8]<br/>Pointer i at idx 1 (val=5)"]:::left
-    R["👉 Sorted Right Half: [2, 4, 7]<br/>Pointer j at idx 1 (val=4)"]:::right
-    Comp{"⚖️ Compare: left[i] vs right[j]<br/>5 > 4"}
+    L["👈 Sorted Left Half: [3,<br/>5, 8]<br/>Pointer i at idx 1<br/>(val=5)"]:::left
+    R["👉 Sorted Right Half: [2,<br/>4, 7]<br/>Pointer j at idx 1<br/>(val=4)"]:::right
+    Comp{"⚖️ Compare: left[i] vs<br/>right[j]<br/>5 > 4"}
     L & R --> Comp
-    Comp -->|left[i] > right[j]| Inv["🎯 Inversion Detected!<br/>Since left half is sorted, ALL elements from i..mid are > right[j]<br/>Inversions += (mid - i + 1)"]:::count
+    Comp -->|"left[i] > right[j]"| Inv["🎯 Inversion Detected!<br/>Since left half is<br/>sorted, ALL elements from<br/>i..mid are > right[j]<br/>Inversions +=<br/>(mid - i + 1)"]:::count
 ```
 
 
@@ -566,14 +571,15 @@ flowchart TD
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef init fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef step fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:1.5px;
     classDef found fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
 
-    R["🎯 Search Target: 6 in [-3, -1, 0, 2, 4, 6, 8, 10] (Indices 0..7)"]:::init
-    R --> S1["🔍 Step 1: L=0, R=7, Mid=3 (val=2)<br/>val=2 &lt; target=6 → Search Right: L = Mid + 1 = 4"]:::step
-    S1 --> S2["🔍 Step 2: L=4, R=7, Mid=5 (val=6)<br/>val=6 == target=6 → Target Found at Index 5!"]:::found
+    R["🎯 Search Target: 6 in<br/>[-3, -1, 0, 2, 4, 6, 8,<br/>10] (Indices 0..7)"]:::init
+    R --> S1["🔍 Step 1: L=0, R=7,<br/>Mid=3 (val=2)<br/>val=2 &lt; target=6 →<br/>Search Right: L = Mid + 1<br/>= 4"]:::step
+    S1 --> S2["🔍 Step 2: L=4, R=7,<br/>Mid=5 (val=6)<br/>val=6 == target=6 →<br/>Target Found at Index 5!"]:::found
 ```
 
 

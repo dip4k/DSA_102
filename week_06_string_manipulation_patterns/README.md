@@ -14,11 +14,12 @@
 Master palindrome expansions, substring sliding windows, balanced parenthesis parsing, StringBuilder zero-allocation design, and Rabin-Karp rolling hashes.
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    Start["Week 06 Start"] --> Daily["Daily Invariant Deep Dives"]
-    Daily --> Playbook["Consolidated Playbook & Visuals"]
-    Playbook --> DualLang["Dual-Language Practice (C# & Python)"]
-    DualLang --> Mastery["Pattern Mastery & Verification"]
+    Start["Week 06 Start"] --> Daily["Daily Invariant Deep<br/>Dives"]
+    Daily --> Playbook["Consolidated Playbook &<br/>Visuals"]
+    Playbook --> DualLang["Dual-Language Practice<br/>(C# & Python)"]
+    DualLang --> Mastery["Pattern Mastery &<br/>Verification"]
 ```
 
 ---

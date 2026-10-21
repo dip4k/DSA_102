@@ -290,7 +290,7 @@ public class TicTacToeGame
 
 ```mermaid
 stateDiagram-v2
-    [*] --> InProgress: Game Initialized (Turn: Player X)
+    [*] --> InProgress: Game Initialized (Turn - Player X)
     InProgress --> InProgress: Valid Move Made (Turn Switched)
     InProgress --> InProgress: Undo Move (Turn Reverted)
     InProgress --> PlayerXWon: Player X completes row/col/diag

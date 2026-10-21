@@ -53,11 +53,12 @@ Design a modular, extensible, and thread-safe **Snake and Ladder Game** supporti
 ## 🎯 CrackingWalnuts 6-Step Methodology Applied
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    A["1. Requirement Mining<br/>• Dynamic N x N<br/>• Pluggable Dice<br/>• Special Cells (Snake/Ladder/Mine)<br/>• Cycle Detection"] --> B["2. Class Discovery<br/>• Board, Cell, Player<br/>• ISpecialCell, IDiceStrategy<br/>• GameController"]
-    B --> C["3. Relationship Modeling<br/>• Board (1:N) Cells<br/>• Cell (0:1) ISpecialCell<br/>• GameController (1:1) Board"]
-    C --> D["4. Pattern Injection<br/>• Strategy (Dice Roll)<br/>• Polymorphism (Special Cell)<br/>• Observer (Event Broadcast)"]
-    D --> E["5. Edge Cases & Concurrency<br/>• 3 Sixes in a row<br/>• Overshoot roll<br/>• Thread-safe turn locking"]
+    A["1. Requirement Mining<br/>• Dynamic N x N<br/>• Pluggable Dice<br/>• Special Cells<br/>(Snake/Ladder/Mine)<br/>• Cycle Detection"] --> B["2. Class Discovery<br/>• Board, Cell, Player<br/>• ISpecialCell,<br/>IDiceStrategy<br/>• GameController"]
+    B --> C["3. Relationship Modeling<br/>• Board (1:N) Cells<br/>• Cell (0:1) ISpecialCell<br/>• GameController<br/>(1:1) Board"]
+    C --> D["4. Pattern Injection<br/>• Strategy (Dice Roll)<br/>• Polymorphism<br/>(Special Cell)<br/>• Observer (Event<br/>Broadcast)"]
+    D --> E["5. Edge Cases &<br/>Concurrency<br/>• 3 Sixes in a row<br/>• Overshoot roll<br/>• Thread-safe turn<br/>locking"]
     E --> F["6. Production Defense<br/>• Staff-Level Tradeoffs<br/>• Replay Event Logs"]
 ```
 

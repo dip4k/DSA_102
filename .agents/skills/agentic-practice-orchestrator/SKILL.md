@@ -9,12 +9,13 @@ description: Coordinate end-to-end agentic practice workflows for DSA and LLD. M
 This skill coordinates the complete multi-agent practice workflow for Senior, Lead, and Staff FAANG interview preparation across both Data Structures & Algorithms (DSA) and Low-Level Design (LLD).
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     Select["1. Problem Selection<br/>(DSA or LLD from Catalog)"]:::step
-    Scaffold["2. Workspace Scaffolding<br/>(C# & Python code + tests)"]:::step
-    Interview["3. Agentic Mock Interview<br/>(DSA 8-Step or LLD 6-Phase)"]:::step
-    Verify["4. Automated Test Run<br/>(dotnet test / py unittest)"]:::step
-    Evaluate["5. Evaluation & Scoring<br/>(Rubric score + Edge cases)"]:::step
+    Scaffold["2. Workspace Scaffolding<br/>(C# & Python code +<br/>tests)"]:::step
+    Interview["3. Agentic Mock Interview<br/>(DSA 8-Step or LLD<br/>6-Phase)"]:::step
+    Verify["4. Automated Test Run<br/>(dotnet test / py<br/>unittest)"]:::step
+    Evaluate["5. Evaluation & Scoring<br/>(Rubric score + Edge<br/>cases)"]:::step
     Log["6. Spaced Repetition Log<br/>(Practice_Log.md)"]:::complete
 
     Select --> Scaffold --> Interview --> Verify --> Evaluate --> Log

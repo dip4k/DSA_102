@@ -595,11 +595,12 @@ Token ']'    : k = countStack.Pop(); prev = stringStack.Pop();
 #### 3.5 State Transition Triggers & Decision Gates
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    CharInput{"Character c"} -->|isDigit| G1["currK = currK * 10 + (c - '0')"]
-    CharInput -->|is '['| G2["Push currK to countStack<br/>Push currStr to strStack<br/>currK = 0; currStr = empty"]
+    CharInput{"Character c"} -->|isDigit| G1["currK = currK * 10 +<br/>(c - '0')"]
+    CharInput -->|"is '['"| G2["Push currK to countStack<br/>Push currStr to strStack<br/>currK = 0; currStr =<br/>empty"]
     CharInput -->|isLetter| G3["currStr.Append(c)"]
-    CharInput -->|is ']'| G4["k = countStack.Pop()<br/>prevStr = strStack.Pop()<br/>prevStr.Append(currStr * k)<br/>currStr = prevStr"]
+    CharInput -->|"is ']'"| G4["k = countStack.Pop()<br/>prevStr = strStack.Pop()<br/>prevStr.Append(currStr *<br/>k)<br/>currStr = prevStr"]
 ```
 
 #### 3.6 Concrete Step-by-Step State Trace

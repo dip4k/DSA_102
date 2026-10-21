@@ -284,28 +284,29 @@ public class OrderBook
 ## 🔄 4. Order Book Matching Flowchart
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     Start["Incoming Order Arrives"] --> CheckSide{"Is Buy or Sell?"}
 
-    CheckSide -->|Buy Order| MatchAsk{"Is Lowest Ask &le; Buy Price?"}
-    MatchAsk -->|Yes| ExecBuy["Match Quantity = Min(Buy.Remaining, Ask.Remaining)<br/>Price = Ask.Price<br/>Emit Trade"]
+    CheckSide -->|Buy Order| MatchAsk{"Is Lowest Ask &le; Buy<br/>Price?"}
+    MatchAsk -->|Yes| ExecBuy["Match Quantity =<br/>Min(Buy.Remaining,<br/>Ask.Remaining)<br/>Price = Ask.Price<br/>Emit Trade"]
     ExecBuy --> RemoveAsk{"Is Ask Fully Filled?"}
     RemoveAsk -->|Yes| PopAsk["Remove Ask from OrderBook"]
     RemoveAsk -->|No| CheckRemainingBuy{"Buy Remaining > 0?"}
     PopAsk --> CheckRemainingBuy
     CheckRemainingBuy -->|Yes| MatchAsk
     CheckRemainingBuy -->|No| Done["Execution Complete"]
-    MatchAsk -->|No / Book Empty| AddBuyToBook["Add Buy Order to Bids SortedSet"]
+    MatchAsk -->|No / Book Empty| AddBuyToBook["Add Buy Order to Bids<br/>SortedSet"]
 
-    CheckSide -->|Sell Order| MatchBid{"Is Highest Bid >= Sell Price?"}
-    MatchBid -->|Yes| ExecSell["Match Quantity = Min(Sell.Remaining, Bid.Remaining)<br/>Price = Bid.Price<br/>Emit Trade"]
+    CheckSide -->|Sell Order| MatchBid{"Is Highest Bid >= Sell<br/>Price?"}
+    MatchBid -->|Yes| ExecSell["Match Quantity =<br/>Min(Sell.Remaining,<br/>Bid.Remaining)<br/>Price = Bid.Price<br/>Emit Trade"]
     ExecSell --> RemoveBid{"Is Bid Fully Filled?"}
     RemoveBid -->|Yes| PopBid["Remove Bid from OrderBook"]
     RemoveBid -->|No| CheckRemainingSell{"Sell Remaining > 0?"}
     PopBid --> CheckRemainingSell
     CheckRemainingSell -->|Yes| MatchBid
     CheckRemainingSell -->|No| Done
-    MatchBid -->|No / Book Empty| AddSellToBook["Add Sell Order to Asks SortedSet"]
+    MatchBid -->|No / Book Empty| AddSellToBook["Add Sell Order to Asks<br/>SortedSet"]
 ```
 
 ---

@@ -77,6 +77,7 @@ Post-Order Execution Timeline:
 ```
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     N1["1 (Root: Step 5️⃣)"]:::rootNode --> N2["2 (Step 3️⃣)"]:::internalNode
     N1 --> N3["3 (Step 4️⃣)"]:::internalNode

@@ -516,6 +516,7 @@ function solve_nqueens(col, board, solutions):
 #### Visual 1: Permutations Generation
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 graph TD
     classDef rootNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
     classDef l1Node fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
@@ -640,6 +641,7 @@ SPACE COMPLEXITY:
 **Result:** `[1,2], [1,3], [1,4], [2,3], [2,4], [3,4]`
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 graph TD
     classDef rootNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
     classDef l1Node fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
@@ -1251,6 +1253,7 @@ BACKTRACKING (DFS Exhaustion)        BRANCH & BOUND (Best-First + Pruning)
 For any valid Hamiltonian tour, the sum of remaining edges is bounded below by `MST Weight + Min Return Edge`.
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 graph TD
     classDef nodeStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
 
@@ -1271,6 +1274,7 @@ graph TD
 #### Branch & Bound State Space Search Tree
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 graph TD
     classDef rootNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
     classDef activeNode fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
@@ -1293,7 +1297,7 @@ graph TD
     AB --> ABC
     AB --> ABD
 
-    ABDC["Path: [A, B, D, C, A]<br/>👑 Complete Tour: Cost = 80<br/>✅ Sets Global Best = 80"]:::bestNode
+    ABDC["Path: [A, B, D, C, A]<br/>👑 Complete Tour: Cost =<br/>80<br/>✅ Sets Global Best = 80"]:::bestNode
 
     ABD --> ABDC
 ```
@@ -1340,6 +1344,7 @@ Branches with lower bounds exceeding 80 (such as `[A, B, C]` with bound 95) are 
 #### Branch & Bound State Space Tree
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 graph TD
     classDef rootNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
     classDef branch fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
@@ -1366,7 +1371,7 @@ graph TD
     Inc2 --> Inc3
     Inc2 --> Exc3
 
-    Opt["Include Item 4<br/>v=38, w=15<br/>👑 Optimal Solution Found!"]:::bestNode
+    Opt["Include Item 4<br/>v=38, w=15<br/>👑 Optimal Solution<br/>Found!"]:::bestNode
     Exc3 --> Opt
 ```
 

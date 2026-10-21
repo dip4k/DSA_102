@@ -74,15 +74,16 @@ Day 5 (Timed Mock & Review)          -> Rehearse 45-minute verbal narration and 
 ### 🏁 Sprint 1 — Two Pointers (ROI Rank #1)
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
 
-    A["🟢 Day 1: Two Sum II (LC 167)<br/>👉 Calipers squeeze inward"]:::startNode
-    B["🟡 Day 2: Container Most Water (LC 11)<br/>👈 Greedy shorter wall move"]:::midNode
-    C["🟡 Day 3: 3Sum (LC 15)<br/>📦 Fix one + Two-pointer scan"]:::midNode
-    D["🔴 Day 4: Trapping Rain Water (LC 42)<br/>🧱 LeftMax & RightMax walls"]:::hardNode
+    A["🟢 Day 1: Two Sum II<br/>(LC 167)<br/>👉 Calipers squeeze<br/>inward"]:::startNode
+    B["🟡 Day 2: Container Most<br/>Water (LC 11)<br/>👈 Greedy shorter wall<br/>move"]:::midNode
+    C["🟡 Day 3: 3Sum (LC 15)<br/>📦 Fix one + Two-pointer<br/>scan"]:::midNode
+    D["🔴 Day 4: Trapping Rain<br/>Water (LC 42)<br/>🧱 LeftMax & RightMax<br/>walls"]:::hardNode
     E["🟡 Day 5: 4Sum (LC 18)<br/>🎯 Generalize to K-Sum"]:::midNode
 
     A --> B --> C --> D --> E
@@ -103,16 +104,17 @@ flowchart TD
 ### 🏁 Sprint 2 — Sliding Window (ROI Rank #1)
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
 
-    A["🟢 Day 1: Max Average Subarray (LC 643)<br/>🔍 Fixed-size rolling window"]:::startNode
-    B["🟡 Day 2: Longest Unique Substr (LC 3)<br/>⚡ Variable window + last-seen map"]:::midNode
-    C["🟡 Day 3: Char Replacement (LC 424)<br/>📦 Window invariant: len - maxFreq"]:::midNode
-    D["🔴 Day 4: Min Window Substring (LC 76)<br/>🎯 Dual maps + formed match count"]:::hardNode
-    E["🟡 Day 5: Permutation in String (LC 567)<br/>✅ Frequency map match check"]:::midNode
+    A["🟢 Day 1: Max Average<br/>Subarray (LC 643)<br/>🔍 Fixed-size rolling<br/>window"]:::startNode
+    B["🟡 Day 2: Longest Unique<br/>Substr (LC 3)<br/>⚡ Variable window +<br/>last-seen map"]:::midNode
+    C["🟡 Day 3: Char<br/>Replacement (LC 424)<br/>📦 Window invariant: len<br/>- maxFreq"]:::midNode
+    D["🔴 Day 4: Min Window<br/>Substring (LC 76)<br/>🎯 Dual maps + formed<br/>match count"]:::hardNode
+    E["🟡 Day 5: Permutation in<br/>String (LC 567)<br/>✅ Frequency map match<br/>check"]:::midNode
 
     A --> B --> C --> D --> E
 ```
@@ -132,16 +134,17 @@ flowchart TD
 ### 🏁 Sprint 3 — Monotonic Stack & Queue (ROI Rank #2)
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
 
-    A["🟡 Day 1: Daily Temperatures (LC 739)<br/>📉 Monotonic decreasing stack"]:::midNode
-    B["🟡 Day 2: Online Stock Span (LC 901)<br/>📦 Consecutive smaller days collapse"]:::midNode
-    C["🟡 Day 3: Remove K Digits (LC 402)<br/>⚡ Greedy lexicographical pop"]:::midNode
-    D["🔴 Day 4: Largest Rectangle (LC 84)<br/>🧱 Next & previous smaller boundaries"]:::hardNode
-    E["🔴 Day 5: Sliding Window Max (LC 239)<br/>🔍 Monotonic decreasing deque"]:::hardNode
+    A["🟡 Day 1: Daily<br/>Temperatures<br/>(LC 739)<br/>📉 Monotonic decreasing<br/>stack"]:::midNode
+    B["🟡 Day 2: Online Stock<br/>Span (LC 901)<br/>📦 Consecutive smaller<br/>days collapse"]:::midNode
+    C["🟡 Day 3: Remove K Digits<br/>(LC 402)<br/>⚡ Greedy lexicographical<br/>pop"]:::midNode
+    D["🔴 Day 4: Largest<br/>Rectangle (LC 84)<br/>🧱 Next & previous<br/>smaller boundaries"]:::hardNode
+    E["🔴 Day 5: Sliding Window<br/>Max (LC 239)<br/>🔍 Monotonic decreasing<br/>deque"]:::hardNode
 
     A --> B --> C --> D --> E
 ```
@@ -161,16 +164,17 @@ flowchart TD
 ### 🏁 Sprint 4 — Dynamic Programming: 1D -> 2D -> State Machine (ROI Rank #2)
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
 
-    A["🟡 Day 1: House Robber (LC 198)<br/>📦 1D choice: rob vs skip"]:::midNode
-    B["🟡 Day 2: Coin Change (LC 322)<br/>💰 Unbounded knapsack forwards"]:::midNode
-    C["🟡 Day 3: Longest Common Subseq (LC 1143)<br/>📐 2D grid character alignment"]:::midNode
-    D["🔴 Day 4: Edit Distance (LC 72)<br/>⚡ 3-way branch: insert, delete, replace"]:::hardNode
-    E["🟡 Day 5: Longest Incr Subseq (LC 300)<br/>🎯 O(N^2) DP to O(N log N) patience"]:::midNode
+    A["🟡 Day 1: House Robber<br/>(LC 198)<br/>📦 1D choice: rob vs skip"]:::midNode
+    B["🟡 Day 2: Coin Change<br/>(LC 322)<br/>💰 Unbounded knapsack<br/>forwards"]:::midNode
+    C["🟡 Day 3: Longest Common<br/>Subseq (LC 1143)<br/>📐 2D grid character<br/>alignment"]:::midNode
+    D["🔴 Day 4: Edit Distance<br/>(LC 72)<br/>⚡ 3-way branch: insert,<br/>delete, replace"]:::hardNode
+    E["🟡 Day 5: Longest Incr<br/>Subseq (LC 300)<br/>🎯 O(N^2) DP to O(N log<br/>N) patience"]:::midNode
 
     A --> B --> C --> D --> E
 ```
@@ -190,16 +194,17 @@ flowchart TD
 ### 🏁 Sprint 5 — Binary Search on Monotonic Answer Space (ROI Rank #3)
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
 
-    A["🟢 Day 1: Binary Search Insert (LC 35)<br/>🔍 Core boundary template"]:::startNode
-    B["🟡 Day 2: Koko Bananas (LC 875)<br/>🍌 Feasibility: CanFinish(speed)"]:::midNode
-    C["🟡 Day 3: Ship Packages (LC 1011)<br/>🚢 Feasibility: CanShip(capacity)"]:::midNode
-    D["🔴 Day 4: Median Two Arrays (LC 4)<br/>⚖️ Balanced partition cut"]:::hardNode
-    E["🔴 Day 5: Split Array Largest Sum (LC 410)<br/>🎯 Min-max partition search"]:::hardNode
+    A["🟢 Day 1: Binary Search<br/>Insert (LC 35)<br/>🔍 Core boundary template"]:::startNode
+    B["🟡 Day 2: Koko Bananas<br/>(LC 875)<br/>🍌 Feasibility:<br/>CanFinish(speed)"]:::midNode
+    C["🟡 Day 3: Ship Packages<br/>(LC 1011)<br/>🚢 Feasibility:<br/>CanShip(capacity)"]:::midNode
+    D["🔴 Day 4: Median Two<br/>Arrays (LC 4)<br/>⚖️ Balanced partition cut"]:::hardNode
+    E["🔴 Day 5: Split Array<br/>Largest Sum (LC 410)<br/>🎯 Min-max partition<br/>search"]:::hardNode
 
     A --> B --> C --> D --> E
 ```
@@ -219,16 +224,17 @@ flowchart TD
 ### 🏁 Sprint 6 — Heap & Two Heaps: Streaming Data (ROI Rank #5)
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
 
-    A["🟡 Day 1: Kth Largest Element (LC 215)<br/>📦 Min-Heap of size K"]:::midNode
-    B["🟡 Day 2: Top K Frequent (LC 347)<br/>⚡ Freq map + Min-Heap or bucket"]:::midNode
-    C["🟡 Day 3: Meeting Rooms II (LC 253)<br/>⏰ Min-Heap of room end times"]:::midNode
-    D["🔴 Day 4: Find Median Stream (LC 295)<br/>⚖️ Two balanced heaps"]:::hardNode
-    E["🔴 Day 5: Merge K Sorted Lists (LC 23)<br/>🎯 K-way merge with Min-Heap"]:::hardNode
+    A["🟡 Day 1: Kth Largest<br/>Element (LC 215)<br/>📦 Min-Heap of size K"]:::midNode
+    B["🟡 Day 2: Top K Frequent<br/>(LC 347)<br/>⚡ Freq map + Min-Heap or<br/>bucket"]:::midNode
+    C["🟡 Day 3: Meeting Rooms<br/>II (LC 253)<br/>⏰ Min-Heap of room end<br/>times"]:::midNode
+    D["🔴 Day 4: Find Median<br/>Stream (LC 295)<br/>⚖️ Two balanced heaps"]:::hardNode
+    E["🔴 Day 5: Merge K Sorted<br/>Lists (LC 23)<br/>🎯 K-way merge with<br/>Min-Heap"]:::hardNode
 
     A --> B --> C --> D --> E
 ```
@@ -248,16 +254,17 @@ flowchart TD
 ### 🏁 Sprint 7 — Graph BFS, DFS & Topological Sort (ROI Rank #4)
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
 
-    A["🟡 Day 1: Number of Islands (LC 200)<br/>🌊 Grid DFS/BFS sink land"]:::midNode
-    B["🟡 Day 2: Rotting Oranges (LC 994)<br/>⚡ Multi-source BFS time layers"]:::midNode
-    C["🟡 Day 3: Course Schedule (LC 207)<br/>🎓 Kahn's topo sort + cycle detect"]:::midNode
-    D["🔴 Day 4: Word Ladder (LC 127)<br/>🎯 Shortest word transformation BFS"]:::hardNode
-    E["🟡 Day 5: Redundant Connection (LC 684)<br/>🔗 Union-Find cycle detection"]:::midNode
+    A["🟡 Day 1: Number of<br/>Islands (LC 200)<br/>🌊 Grid DFS/BFS sink land"]:::midNode
+    B["🟡 Day 2: Rotting Oranges<br/>(LC 994)<br/>⚡ Multi-source BFS time<br/>layers"]:::midNode
+    C["🟡 Day 3: Course Schedule<br/>(LC 207)<br/>🎓 Kahn's topo sort +<br/>cycle detect"]:::midNode
+    D["🔴 Day 4: Word Ladder<br/>(LC 127)<br/>🎯 Shortest word<br/>transformation BFS"]:::hardNode
+    E["🟡 Day 5: Redundant<br/>Connection (LC 684)<br/>🔗 Union-Find cycle<br/>detection"]:::midNode
 
     A --> B --> C --> D --> E
 ```
@@ -277,16 +284,17 @@ flowchart TD
 ### 🏁 Sprint 8 — Backtracking & Decision Trees (ROI Rank #6)
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
 
-    A["🟡 Day 1: Subsets (LC 78)<br/>🌿 Include / exclude decision tree"]:::midNode
-    B["🟡 Day 2: Combination Sum (LC 39)<br/>💰 Unbounded reuse + sum pruning"]:::midNode
-    C["🟡 Day 3: Word Search (LC 79)<br/>🔍 2D grid DFS in-place marking"]:::midNode
-    D["🔴 Day 4: N-Queens (LC 51)<br/>👑 Diagonal constraint bitsets"]:::hardNode
-    E["🔴 Day 5: Word Search II (LC 212)<br/>🎯 Trie prefix tree + Grid DFS"]:::hardNode
+    A["🟡 Day 1: Subsets (LC 78)<br/>🌿 Include / exclude<br/>decision tree"]:::midNode
+    B["🟡 Day 2: Combination Sum<br/>(LC 39)<br/>💰 Unbounded reuse + sum<br/>pruning"]:::midNode
+    C["🟡 Day 3: Word Search<br/>(LC 79)<br/>🔍 2D grid DFS in-place<br/>marking"]:::midNode
+    D["🔴 Day 4: N-Queens<br/>(LC 51)<br/>👑 Diagonal constraint<br/>bitsets"]:::hardNode
+    E["🔴 Day 5: Word Search II<br/>(LC 212)<br/>🎯 Trie prefix tree +<br/>Grid DFS"]:::hardNode
 
     A --> B --> C --> D --> E
 ```
@@ -306,16 +314,17 @@ flowchart TD
 ### 🏁 Sprint 9 — Tree DFS: Bottom-Up Subtree DP (ROI Rank #10)
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
 
-    A["🟢 Day 1: Max Depth (LC 104)<br/>🌲 Bottom-up height recurrence"]:::startNode
-    B["🟢 Day 2: Diameter of Tree (LC 543)<br/>📏 Subtree height + global max"]:::startNode
-    C["🟡 Day 3: Lowest Common Ancestor (LC 236)<br/>👥 Post-order node bubbling"]:::midNode
-    D["🔴 Day 4: Max Path Sum (LC 124)<br/>⚡ Best gain return + path update"]:::hardNode
-    E["🔴 Day 5: Serialize Binary Tree (LC 297)<br/>📦 Pre-order DFS encoding"]:::hardNode
+    A["🟢 Day 1: Max Depth<br/>(LC 104)<br/>🌲 Bottom-up height<br/>recurrence"]:::startNode
+    B["🟢 Day 2: Diameter of<br/>Tree (LC 543)<br/>📏 Subtree height +<br/>global max"]:::startNode
+    C["🟡 Day 3: Lowest Common<br/>Ancestor (LC 236)<br/>👥 Post-order node<br/>bubbling"]:::midNode
+    D["🔴 Day 4: Max Path Sum<br/>(LC 124)<br/>⚡ Best gain return + path<br/>update"]:::hardNode
+    E["🔴 Day 5: Serialize<br/>Binary Tree (LC 297)<br/>📦 Pre-order DFS encoding"]:::hardNode
 
     A --> B --> C --> D --> E
 ```
@@ -335,16 +344,17 @@ flowchart TD
 ### 🏁 Sprint 10 — Linked List: Multi-Step Pointer Transformations (ROI Rank #7)
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
 
-    A["🟢 Day 1: Reverse Linked List (LC 206)<br/>🔄 Three-pointer reversal"]:::startNode
-    B["🟡 Day 2: Remove Nth from End (LC 19)<br/>⚡ Gap-of-N pointers + dummy head"]:::midNode
-    C["🟡 Day 3: Reorder List (LC 143)<br/>📦 Split mid + reverse + interleave"]:::midNode
-    D["🔴 Day 4: Reverse Nodes in K-Group (LC 25)<br/>🧱 Segment reversal + reconnect"]:::hardNode
-    E["🔴 Day 5: Merge K Sorted Lists (LC 23)<br/>🎯 Min-Heap list heads merge"]:::hardNode
+    A["🟢 Day 1: Reverse Linked<br/>List (LC 206)<br/>🔄 Three-pointer reversal"]:::startNode
+    B["🟡 Day 2: Remove Nth from<br/>End (LC 19)<br/>⚡ Gap-of-N pointers +<br/>dummy head"]:::midNode
+    C["🟡 Day 3: Reorder List<br/>(LC 143)<br/>📦 Split mid + reverse +<br/>interleave"]:::midNode
+    D["🔴 Day 4: Reverse Nodes<br/>in K-Group (LC 25)<br/>🧱 Segment reversal +<br/>reconnect"]:::hardNode
+    E["🔴 Day 5: Merge K Sorted<br/>Lists (LC 23)<br/>🎯 Min-Heap list heads<br/>merge"]:::hardNode
 
     A --> B --> C --> D --> E
 ```
@@ -364,16 +374,17 @@ flowchart TD
 ### 🏁 Sprint 11 — Data Structure Design Specialist (ROI Rank #6)
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef startNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef midNode fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
     classDef hardNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
 
-    A["🟡 Day 1: RandomizedSet (LC 380)<br/>📦 Array + Map swap deletion"]:::midNode
-    B["🟡 Day 2: Time-Based KV Store (LC 981)<br/>🔍 Map + Timestamp Binary Search"]:::midNode
-    C["🟡 Day 3: LRU Cache (LC 146)<br/>⚡ HashMap + Doubly Linked List"]:::midNode
-    D["🔴 Day 4: LFU Cache (LC 460)<br/>🧱 Frequency buckets + minFreq"]:::hardNode
-    E["🔴 Day 5: Autocomplete System (LC 642)<br/>🎯 Trie + Top-K hot query cache"]:::hardNode
+    A["🟡 Day 1: RandomizedSet<br/>(LC 380)<br/>📦 Array + Map swap<br/>deletion"]:::midNode
+    B["🟡 Day 2: Time-Based KV<br/>Store (LC 981)<br/>🔍 Map + Timestamp Binary<br/>Search"]:::midNode
+    C["🟡 Day 3: LRU Cache<br/>(LC 146)<br/>⚡ HashMap + Doubly Linked<br/>List"]:::midNode
+    D["🔴 Day 4: LFU Cache<br/>(LC 460)<br/>🧱 Frequency buckets +<br/>minFreq"]:::hardNode
+    E["🔴 Day 5: Autocomplete<br/>System (LC 642)<br/>🎯 Trie + Top-K hot query<br/>cache"]:::hardNode
 
     A --> B --> C --> D --> E
 ```
@@ -396,14 +407,15 @@ flowchart TD
 > **The Paradigm Shift:** Pure syntax memorization is no longer a differentiator. Interviewers assess **Architectural Steering, Invariant Verification, and Defect Detection**.
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef phase fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#ffffff
     classDef highlight fill:#2e7d32,stroke:#81c784,stroke-width:2px,color:#ffffff
 
-    A1["1. High-Precision Prompting<br/>(Define Invariant & Big-O Guard)"]:::phase
-    A2["2. Adversarial Code Review<br/>(Detect Subtleties, Hallucinations & Leaks)"]:::phase
-    A3["3. Verification Test Authoring<br/>(Edge Cases & Stress Tests)"]:::highlight
-    A4["4. Architectural Defense<br/>(Explain Concurrency, L1 Locality & Scale)"]:::phase
+    A1["1. High-Precision<br/>Prompting<br/>(Define Invariant & Big-O<br/>Guard)"]:::phase
+    A2["2. Adversarial Code<br/>Review<br/>(Detect Subtleties,<br/>Hallucinations & Leaks)"]:::phase
+    A3["3. Verification Test<br/>Authoring<br/>(Edge Cases & Stress<br/>Tests)"]:::highlight
+    A4["4. Architectural Defense<br/>(Explain Concurrency, L1<br/>Locality & Scale)"]:::phase
 
     A1 --> A2 --> A3 --> A4
 ```
@@ -919,8 +931,9 @@ The objective is not to memorize 164 individual solutions. The objective is to m
 Do not simply solve sequentially #1 → #164. Follow this dependency-driven progression:
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 graph TD
-    DSA["Data Structures & Algorithms Mastery"]
+    DSA["Data Structures &<br/>Algorithms Mastery"]
     
     DSA --> Arrays["1. Arrays & Hashing"]
     DSA --> Lists["2. Linked Lists"]
@@ -944,7 +957,7 @@ graph TD
     
     Graphs --> GraphBFS["Graph BFS / Islands"]
     Graphs --> GraphDFS["Graph DFS / Cycles"]
-    Graphs --> UnionFind["Union-Find / Disjoint Sets"]
+    Graphs --> UnionFind["Union-Find / Disjoint<br/>Sets"]
     
     GraphBFS --> Topo["Topological Sort (DAG)"]
     GraphDFS --> ShortestPath["Dijkstra / Shortest Path"]
@@ -954,15 +967,15 @@ graph TD
     ShortestPath --> DP
     MST --> DP
     
-    DP --> DP1D["1D DP (House Robber, Coin Change)"]
-    DP --> DP2D["2D DP & String Alignment (LCS, Edit Distance)"]
+    DP --> DP1D["1D DP (House Robber, Coin<br/>Change)"]
+    DP --> DP2D["2D DP & String Alignment<br/>(LCS, Edit Distance)"]
     DP1D --> Knapsack["Knapsack & State Machines"]
     DP2D --> IntervalDP["Interval DP"]
     
-    Knapsack --> Backtracking["6. Backtracking & Constraint Satisfaction"]
+    Knapsack --> Backtracking["6. Backtracking &<br/>Constraint Satisfaction"]
     IntervalDP --> Backtracking
     
-    Backtracking --> Trie["7. Trie & Advanced Synthesis"]
+    Backtracking --> Trie["7. Trie & Advanced<br/>Synthesis"]
 ```
 
 ### Text Representation of Dependency Flow
@@ -1015,8 +1028,9 @@ For each major algorithmic pattern, master one difficult representative problem 
 ### 1. Two Pointers Pipeline
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    A["Trapping Rain Water 🔴 (LC 42)"] -->|Master Two-Pointer Boundary Invariant| B["Container With Most Water 🟡 (LC 11)"]
+    A["Trapping Rain Water 🔴<br/>(LC 42)"] -->|Master Two-Pointer Boundary Invariant| B["Container With Most Water<br/>🟡 (LC 11)"]
     B -->|Eliminate Entire Hyperplanes| C["3Sum 🟡 (LC 15)"]
     C -->|Generalize to K-Sum| D["4Sum 🟡 (LC 18)"]
     D -->|Simplify to Sorted Pairs| E["Two Sum II 🟡 (LC 167)"]
@@ -1033,10 +1047,11 @@ flowchart TD
 ### 2. Sliding Window Pipeline
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    A["Minimum Window Substring 🔴 (LC 76)"] -->|Variable Window and Match Counter| B["Longest Repeating Character Replacement 🟡 (LC 424)"]
-    B -->|Window Invariant: len - maxFreq &le; k| C["Longest Substring Without Repeating 🟡 (LC 3)"]
-    C -->|Last-seen Index Map Optimization| D["Fixed-size Window: Permutation in String 🟡 (LC 567)"]
+    A["Minimum Window Substring<br/>🔴 (LC 76)"] -->|Variable Window and Match Counter| B["Longest Repeating<br/>Character Replacement 🟡<br/>(LC 424)"]
+    B -->|Window Invariant: len - maxFreq &le; k| C["Longest Substring Without<br/>Repeating 🟡<br/>(LC 3)"]
+    C -->|Last-seen Index Map Optimization| D["Fixed-size Window:<br/>Permutation in String 🟡<br/>(LC 567)"]
 ```
 
 - **Step 1:** [Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/) 🔴 ➔ Master tracking remaining target characters with `matchCount` and sliding boundaries.
@@ -1049,9 +1064,10 @@ flowchart TD
 ### 3. Monotonic Stack Pipeline
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    A["Largest Rectangle in Histogram 🔴 (LC 84)"] -->|Left and Right Limits via Monotonic Stack| B["Daily Temperatures 🟡 (LC 739)"]
-    B -->|Single-side Next Greater Element| C["Nearest Smaller / Greater Core Problems 🟢"]
+    A["Largest Rectangle in<br/>Histogram 🔴<br/>(LC 84)"] -->|Left and Right Limits via Monotonic Stack| B["Daily Temperatures 🟡<br/>(LC 739)"]
+    B -->|Single-side Next Greater Element| C["Nearest Smaller / Greater<br/>Core Problems 🟢"]
 ```
 
 - **Step 1:** [Largest Rectangle in Histogram](https://leetcode.com/problems/largest-rectangle-in-histogram/) 🔴 ➔ For every bar, find how far it extends left and right using a strictly increasing stack.
@@ -1065,6 +1081,7 @@ flowchart TD
 Do not begin with dozens of trivial DP problems. Build state-space discipline incrementally:
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     HR["House Robber<br/>(1D Include/Exclude)"] --> CC["Coin Change<br/>(Unbounded Knapsack)"]
     CC --> PSS["Partition Subset Sum<br/>(0-1 Knapsack)"]
@@ -1512,15 +1529,16 @@ Use this quick lookup table during live interviews to map problem cues directly 
 For every problem in this curriculum, follow this disciplined review loop:
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    A["1. Study Pattern Invariant"] --> B["2. Formulate Brute Force Baseline"]
-    B --> C["3. Identify Wasted Computation & Bottleneck"]
-    C --> D["4. Derive Optimized Invariant"]
-    D --> E["5. Write Production-Quality C# Implementation"]
-    E --> F["6. Test Concrete Edge Cases (Dry Run)"]
-    F --> G["7. Submit & Verify on LeetCode"]
-    G --> H["8. Solve 1 Reinforcement Problem"]
-    H --> I["9. Re-solve from Memory in 7 Days"]
+    A["1. Study Pattern<br/>Invariant"] --> B["2. Formulate Brute Force<br/>Baseline"]
+    B --> C["3. Identify Wasted<br/>Computation & Bottleneck"]
+    C --> D["4. Derive Optimized<br/>Invariant"]
+    D --> E["5. Write<br/>Production-Quality C#<br/>Implementation"]
+    E --> F["6. Test Concrete Edge<br/>Cases (Dry Run)"]
+    F --> G["7. Submit & Verify on<br/>LeetCode"]
+    G --> H["8. Solve 1 Reinforcement<br/>Problem"]
+    H --> I["9. Re-solve from Memory<br/>in 7 Days"]
 ```
 
 ---
@@ -1530,8 +1548,9 @@ flowchart TD
 After solving any **⭐ Core** problem, immediately solve one corresponding **⚪ Reinforcement** or **🔥 High** problem that applies the identical invariant in a slightly different disguise.
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    A["Trapping Rain Water 🔴<br/>(Master Boundary Invariant)"] -->|Reinforce Two-Pointer Boundary Logic| B["Container With Most Water 🟡<br/>(Greedy Boundary Shrink)"]
+    A["Trapping Rain Water 🔴<br/>(Master Boundary<br/>Invariant)"] -->|Reinforce Two-Pointer Boundary Logic| B["Container With Most Water<br/>🟡<br/>(Greedy Boundary Shrink)"]
 ```
 
 > [!NOTE]

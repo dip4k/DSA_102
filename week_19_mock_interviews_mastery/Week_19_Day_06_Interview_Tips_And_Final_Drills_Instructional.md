@@ -49,12 +49,13 @@ In senior interviews, the interviewer is evaluating not just whether your code c
 When an interviewer interrupts or asks a probing question, novice candidates panic or assume they are failing. Senior candidates treat questions as collaborative alignment cues.
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    InterviewerCue["🎙️ Interviewer gives a hint or asks: 'Could we do better in space?'"]
-    Acknowledge["1. Active Validation: 'That is a great observation. Let us analyze our auxiliary space.'"]
-    Deconstruct["2. Trace the Work: 'Currently we use O(K) space for the heap. Can we eliminate the heap?'"]
-    Synthesize["3. Propose Invariant: 'Yes! Pairwise Divide & Conquer reuses existing node pointers in O(1) space.'"]
-    Confirm["4. Seek Agreement: 'Would you like me to pivot to the Divide & Conquer approach?'"]
+    InterviewerCue["🎙️ Interviewer gives a<br/>hint or asks: 'Could we<br/>do better in space?'"]
+    Acknowledge["1. Active Validation:<br/>'That is a great<br/>observation. Let us<br/>analyze our auxiliary<br/>space.'"]
+    Deconstruct["2. Trace the Work:<br/>'Currently we use O(K)<br/>space for the heap. Can<br/>we eliminate the heap?'"]
+    Synthesize["3. Propose Invariant:<br/>'Yes! Pairwise Divide &<br/>Conquer reuses existing<br/>node pointers in O(1)<br/>space.'"]
+    Confirm["4. Seek Agreement: 'Would<br/>you like me to pivot to<br/>the Divide & Conquer<br/>approach?'"]
 
     InterviewerCue --> Acknowledge --> Deconstruct --> Synthesize --> Confirm
 ```

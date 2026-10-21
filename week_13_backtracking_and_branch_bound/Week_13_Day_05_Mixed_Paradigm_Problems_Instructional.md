@@ -296,21 +296,22 @@ In Branch & Bound and Backtracking, the order in which child branches are explor
 ### 🌳 The 60-Second Paradigm Decision Tree
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     Start{"🎯 Problem Goal?"}
 
-    Start -->|"Generate ALL solutions / paths"| PathAll["🔍 Backtracking<br/>(Subsets, Permutations, N-Queens)"]
+    Start -->|"Generate ALL solutions / paths"| PathAll["🔍 Backtracking<br/>(Subsets, Permutations,<br/>N-Queens)"]
     Start -->|"Optimization: Min / Max / Count"| PathOpt{"Constraint N Size?"}
-    Start -->|"Query on dynamic range"| PathRange["⚡ Segment Tree / Fenwick / DSU"]
+    Start -->|"Query on dynamic range"| PathRange["⚡ Segment Tree / Fenwick<br/>/ DSU"]
     Start -->|"Contiguous subarray / sequence"| PathSeq{"Sorted or Monotonic?"}
 
-    PathOpt -->|"N <= 20"| OptBitmask["🎭 Bitmask DP / Branch & Bound"]
-    PathOpt -->|"N <= 2,000"| OptDP2D["📊 2D Dynamic Programming<br/>(LCS, Edit Distance, Grids)"]
-    PathOpt -->|"N >= 10^5 & Greedy Choice Holds"| OptGreedy["⚡ Greedy / PriorityQueue<br/>(Activity Selection, Intervals)"]
-    PathOpt -->|"N >= 10^5 & Monotonic Predicate"| OptBS["🎯 Binary Search on Answer Space<br/>(Ship Capacity, Split Array)"]
+    PathOpt -->|"N <= 20"| OptBitmask["🎭 Bitmask DP / Branch &<br/>Bound"]
+    PathOpt -->|"N <= 2,000"| OptDP2D["📊 2D Dynamic Programming<br/>(LCS, Edit Distance,<br/>Grids)"]
+    PathOpt -->|"N >= 10^5 & Greedy Choice Holds"| OptGreedy["⚡ Greedy / PriorityQueue<br/>(Activity Selection,<br/>Intervals)"]
+    PathOpt -->|"N >= 10^5 & Monotonic Predicate"| OptBS["🎯 Binary Search on<br/>Answer Space<br/>(Ship Capacity, Split<br/>Array)"]
 
-    PathSeq -->|"Yes: Monotonic Window"| SeqWindow["🔍 Two Pointers / Sliding Window"]
-    PathSeq -->|"No: Next Greater / Boundary"| SeqStack["📦 Monotonic Stack / Kadane"]
+    PathSeq -->|"Yes: Monotonic Window"| SeqWindow["🔍 Two Pointers / Sliding<br/>Window"]
+    PathSeq -->|"No: Next Greater / Boundary"| SeqStack["📦 Monotonic Stack /<br/>Kadane"]
 ```
 
 ---

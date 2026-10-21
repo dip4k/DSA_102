@@ -14,11 +14,12 @@
 Demystify DP: transition from brute-force recursion to memoization and iterative tabulation. 1D Knapsack, 2D Grid paths, Edit Distance, LCS, and LIS.
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    Start["Week 10 Start"] --> Daily["Daily Invariant Deep Dives"]
-    Daily --> Playbook["Consolidated Playbook & Visuals"]
-    Playbook --> DualLang["Dual-Language Practice (C# & Python)"]
-    DualLang --> Mastery["Pattern Mastery & Verification"]
+    Start["Week 10 Start"] --> Daily["Daily Invariant Deep<br/>Dives"]
+    Daily --> Playbook["Consolidated Playbook &<br/>Visuals"]
+    Playbook --> DualLang["Dual-Language Practice<br/>(C# & Python)"]
+    DualLang --> Mastery["Pattern Mastery &<br/>Verification"]
 ```
 
 ---

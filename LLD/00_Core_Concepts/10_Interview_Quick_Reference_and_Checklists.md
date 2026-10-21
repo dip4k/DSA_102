@@ -21,8 +21,9 @@ Used for Senior/Staff object-oriented architecture screenings.
 Used by Flipkart, Uber, Swiggy, Razorpay, PhonePe, and Atlassian.
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart LR
-    S1["1️⃣ Requirements & Mining<br/>(0–10 min)"] --> S2["2️⃣ Architecture & Contracts<br/>(10–25 min)"]
+    S1["1️⃣ Requirements & Mining<br/>(0–10 min)"] --> S2["2️⃣ Architecture &<br/>Contracts<br/>(10–25 min)"]
     S2 --> S3["3️⃣ In-Memory Logic<br/>(25–60 min)"]
     S3 --> S4["4️⃣ Concurrency & Locks<br/>(60–75 min)"]
     S4 --> S5["5️⃣ Demo & Unit Tests<br/>(75–90 min)"]
@@ -84,24 +85,25 @@ $$\text{Cache RAM Required} = (\text{Daily Unique Reads} \times \text{Object Siz
 ## 🌳 4. Database & Storage Selection Decision Trees
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    Start["What is your data model and primary access pattern?"] --> Rel{"Complex relationships,<br/>ACID transactions,<br/>strict schema?"}
-    Rel -->|"Yes"| SQL["RDBMS (PostgreSQL, MySQL, SQL Server)<br/>• Best for: Orders, Ledgers, User Accounts<br/>• Scaling: Read replicas, Citus/Sharding"]
+    Start["What is your data model<br/>and primary access<br/>pattern?"] --> Rel{"Complex relationships,<br/>ACID transactions,<br/>strict schema?"}
+    Rel -->|"Yes"| SQL["RDBMS (PostgreSQL, MySQL,<br/>SQL Server)<br/>• Best for: Orders,<br/>Ledgers, User Accounts<br/>• Scaling: Read replicas,<br/>Citus/Sharding"]
     Rel -->|"No"| Access{"What is the read/write<br/>pattern & payload shape?"}
 
     Access -->|"Key-Value Lookup (O(1)) "| KV{"Ephemeral or<br/>Persistent?"}
-    KV -->|"Ephemeral/Cache"| Redis["Redis / Memcached<br/>• Best for: Hot cache, sessions, rate limiting"]
-    KV -->|"Persistent and High Scale"| Dynamo["DynamoDB / Aerospike<br/>• Best for: Shopping carts, device tokens"]
+    KV -->|"Ephemeral/Cache"| Redis["Redis / Memcached<br/>• Best for: Hot cache,<br/>sessions, rate limiting"]
+    KV -->|"Persistent and High Scale"| Dynamo["DynamoDB / Aerospike<br/>• Best for: Shopping<br/>carts, device tokens"]
 
-    Access -- Massive Write-Heavy Events --> LSM["Wide-Column / LSM (Cassandra, ScyllaDB)<br/>• Best for: Telemetry, chat history, audit logs<br/>• Write optimized, eventual consistency"]
+    Access -- Massive Write-Heavy Events --> LSM["Wide-Column / LSM<br/>(Cassandra, ScyllaDB)<br/>• Best for: Telemetry,<br/>chat history, audit logs<br/>• Write optimized,<br/>eventual consistency"]
 
-    Access -->|"Hierarchical / Variable Schema"| Doc["Document DB (MongoDB, Cosmos DB)<br/>• Best for: Product catalogs, user profiles"]
+    Access -->|"Hierarchical / Variable Schema"| Doc["Document DB (MongoDB,<br/>Cosmos DB)<br/>• Best for: Product<br/>catalogs, user profiles"]
 
-    Access -- Time-stamped Metrics --> TS["Time-Series DB (TimescaleDB, InfluxDB)<br/>• Best for: IoT sensors, financial tick data"]
+    Access -- Time-stamped Metrics --> TS["Time-Series DB<br/>(TimescaleDB, InfluxDB)<br/>• Best for: IoT sensors,<br/>financial tick data"]
 
-    Access -- Free-text / Fuzzy Search --> Search["Search Engine (Elasticsearch, OpenSearch)<br/>• Inverted index, tokenization, BM25 ranking"]
+    Access -- Free-text / Fuzzy Search --> Search["Search Engine<br/>(Elasticsearch,<br/>OpenSearch)<br/>• Inverted index,<br/>tokenization, BM25<br/>ranking"]
 
-    Access -->|"Highly interconnected graph"| Graph["Graph DB (Neo4j, Amazon Neptune)<br/>• Best for: Social graphs, fraud rings, knowledge trees"]
+    Access -->|"Highly interconnected graph"| Graph["Graph DB (Neo4j, Amazon<br/>Neptune)<br/>• Best for: Social<br/>graphs, fraud rings,<br/>knowledge trees"]
 ```
 
 ### Database Comparison Matrix
@@ -279,10 +281,11 @@ public sealed class AsyncEventDispatcher<TEvent>
 When an interviewer throws a curveball follow-up question, use this universal 4-step framework:
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart LR
-    A["1. Pause & Clarify<br/>(Restate question, isolate constraint)"] --> B["2. State Bottleneck<br/>(Pinpoint exact component that breaks)"]
-    B --> C["3. Propose Solution<br/>(Scale component & address side effects)"]
-    C --> D["4. Discuss Tradeoffs<br/>(Cost, consistency, & latency impacts)"]
+    A["1. Pause & Clarify<br/>(Restate question,<br/>isolate constraint)"] --> B["2. State Bottleneck<br/>(Pinpoint exact component<br/>that breaks)"]
+    B --> C["3. Propose Solution<br/>(Scale component &<br/>address side effects)"]
+    C --> D["4. Discuss Tradeoffs<br/>(Cost, consistency, &<br/>latency impacts)"]
 ```
 
 ### Scenario 1: "What happens when traffic increases 10x / 100x?"

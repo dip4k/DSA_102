@@ -40,6 +40,7 @@ Design a data structure that follows the constraints of a **Least Recently Used 
 ### 1.2 Data Structure Architecture
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     subgraph HashMap ["_cache: Dictionary[int, LruNode]"]
         K1["Key: 1"] --> N1
@@ -203,6 +204,7 @@ To achieve true O(1) operations, we combine:
    - When an existing key's frequency is promoted from $F$ to $F+1$, if $F == \text{\_minFrequency}$ and the frequency list for $F$ becomes empty, `_minFrequency` simply increments by 1 (`_minFrequency++`).
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     subgraph Lookups ["_nodeMap: Key -> Node"]
         K1["Key 10"] --> N1["Node(K:10, V:A, Freq:1)"]
@@ -211,8 +213,8 @@ flowchart TD
     end
 
     subgraph FreqBuckets ["_freqMap: Frequency -> DoublyLinkedList (LRU ordered)"]
-        F1["Freq 1"] --> L1["DLL (Head ↔ Node 10 ↔ Tail)"]
-        F2["Freq 2"] --> L2["DLL (Head ↔ Node 30 [MRU] ↔ Node 20 [LRU] ↔ Tail)"]
+        F1["Freq 1"] --> L1["DLL (Head ↔ Node 10 ↔<br/>Tail)"]
+        F2["Freq 2"] --> L2["DLL (Head ↔ Node 30 [MRU]<br/>↔ Node 20 [LRU] ↔ Tail)"]
     end
 
     MF["_minFrequency = 1"] -.-> F1

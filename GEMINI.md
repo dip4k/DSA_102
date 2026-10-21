@@ -24,13 +24,14 @@ This repository is engineered to train Senior, Lead, and Staff Software Engineer
 Whenever analyzing, writing, or tutoring a DSA problem, **follow the Intuitive 8-Step Delivery Arc**:
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart LR
     S1["1. Clarify & Bounds"] --> S2["2. Naive Baseline"]
     S2 --> S3["3. Spot Bottleneck"]
-    S3 --> S4["4. Intuitive Hook & Pattern"]
-    S4 --> S5["5. Visual Proof & Why It Works"]
+    S3 --> S4["4. Intuitive Hook &<br/>Pattern"]
+    S4 --> S5["5. Visual Proof & Why It<br/>Works"]
     S5 --> S6["6. Explicit Complexity"]
-    S6 --> S7["7. Idiomatic Code (C# & Python)"]
+    S6 --> S7["7. Idiomatic Code<br/>(C# & Python)"]
     S7 --> S8["8. Edge-Case Dry Run"]
 ```
 
@@ -55,6 +56,7 @@ flowchart LR
 Whenever practicing, analyzing, or conducting a Low-Level Design (LLD / OOD) interview, **follow the 6-Phase Architectural Arc**:
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart LR
     P1["1. Scope & NFRs"] --> P2["2. Core Domain Contracts"]
     P2 --> P3["3. Class & State Modeling"]

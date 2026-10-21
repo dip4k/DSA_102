@@ -42,20 +42,21 @@
 ## Algorithm Family Tree
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     subgraph GraphOpt["Graph Optimization Algorithms"]
         direction TB
         subgraph ShortestPath["Shortest Path Algorithms"]
             direction LR
-            Dijkstra["Dijkstra (Non-negative weights)<br/>O((V+E) log V)"]
-            Bellman["Bellman-Ford (Negative weights OK)<br/>O(V * E)"]
-            Floyd["Floyd-Warshall (All-Pairs DP)<br/>O(V^3)"]
+            Dijkstra["Dijkstra (Non-negative<br/>weights)<br/>O((V+E) log V)"]
+            Bellman["Bellman-Ford<br/>(Negative weights OK)<br/>O(V * E)"]
+            Floyd["Floyd-Warshall<br/>(All-Pairs DP)<br/>O(V^3)"]
         end
         subgraph MST["MST & Connectivity Algorithms"]
             direction LR
-            Kruskal["Kruskal's Algorithm (Edge-based + DSU)<br/>O(E log E)"]
-            Prim["Prim's Algorithm (Vertex-based + PQ)<br/>O((V+E) log V)"]
-            DSU["Disjoint Set Union (Forest Structure)<br/>O(alpha(V))"]
+            Kruskal["Kruskal's Algorithm<br/>(Edge-based + DSU)<br/>O(E log E)"]
+            Prim["Prim's Algorithm<br/>(Vertex-based + PQ)<br/>O((V+E) log V)"]
+            DSU["Disjoint Set Union<br/>(Forest Structure)<br/>O(alpha(V))"]
         end
     end
     ShortestPath --- MST
@@ -124,6 +125,7 @@ flowchart TD
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart LR
     classDef known fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef target fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
@@ -131,8 +133,8 @@ flowchart LR
 
     U["Node u<br/>dist[u] = 5"]:::known
     V["Node v<br/>Old dist[v] = 12"]:::target
-    U -->|Edge weight w = 3| V
-    Rel{"⚖️ Is dist[u] + w &lt; dist[v]?<br/>5 + 3 = 8 &lt; 12"}
+    U -->|"Edge weight w = 3"| V
+    Rel{"⚖️ Is dist[u] + w &lt;<br/>dist[v]?<br/>5 + 3 = 8 &lt; 12"}
     U --> Rel
     V --> Rel
     Rel -->|Yes: Relax Edge| NewV["✅ Update dist[v] = 8<br/>parent[v] = u"]:::action
@@ -143,6 +145,7 @@ flowchart LR
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     S0["Aspect"]
     S1["Dijkstra"]
@@ -193,6 +196,7 @@ flowchart TD
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef src fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef fail fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:2px;
@@ -202,10 +206,10 @@ flowchart TD
     B["Target Node B<br/>Greedy settles at 10"]:::fail
     C["Intermediate Node C<br/>dist[C] = 5"]:::alt
 
-    A -->|weight = 10| B
-    A -->|weight = 5| C
-    C -->|weight = -10 (negative!)| B
-    Fail["❌ Dijkstra Finalization Failure:<br/>Node B finalized at cost 10.<br/>Actual shorter path A→C→B has cost 5 - 10 = -5!"]:::fail
+    A -->|"weight = 10"| B
+    A -->|"weight = 5"| C
+    C -->|"weight = -10 (negative!)"| B
+    Fail["❌ Dijkstra Finalization<br/>Failure:<br/>Node B finalized at cost<br/>10.<br/>Actual shorter path A→C→B<br/>has cost 5 - 10 = -5!"]:::fail
     B -.-> Fail
 ```
 
@@ -214,15 +218,16 @@ flowchart TD
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef dp fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef step fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:1.5px;
     classDef opt fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
 
-    R["📐 Bellman–Ford as Dynamic Programming"]:::dp
-    R --> S["State: dp[k][v] = Shortest distance to v using at most k edges"]:::step
-    S --> Rec["🔄 Transition: dp[k][v] = min( dp[k-1][v], min_{(u,v)} (dp[k-1][u] + w(u,v)) )"]:::step
-    Rec --> Opt["💾 Space Optimization: Flatten 2D table dp[V][V] into 1D array dist[V]<br/>Updated in-place across V-1 passes"]:::opt
+    R["📐 Bellman–Ford as<br/>Dynamic Programming"]:::dp
+    R --> S["State: dp[k][v] =<br/>Shortest distance to v<br/>using at most k edges"]:::step
+    S --> Rec["🔄 Transition: dp[k][v] =<br/>min( dp[k-1][v],<br/>min_{(u,v)} (dp[k-1][u] +<br/>w(u,v)) )"]:::step
+    Rec --> Opt["💾 Space Optimization:<br/>Flatten 2D table dp[V][V]<br/>into 1D array dist[V]<br/>Updated in-place across<br/>V-1 passes"]:::opt
 ```
 
 
@@ -230,23 +235,25 @@ flowchart TD
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef pass fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef check fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:1.5px;
     classDef alert fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:2px;
 
-    P1["1️⃣ Pass 1: Guaranteed optimal for paths with &le; 1 edge"]:::pass
-    P1 --> P2["2️⃣ Pass 2: Guaranteed optimal for paths with &le; 2 edges"]:::pass
-    P2 --> PV["... Pass V-1: Guaranteed optimal for all simple paths (&le; V-1 edges)"]:::pass
-    PV --> CHK["🔍 Pass V: Negative Cycle Detection Check<br/>Iterate all edges one more time"]:::check
-    CHK -->|Any dist improves?| Alert["🚨 Negative Weight Cycle Reachable from Source!"]:::alert
-    CHK -->|No improvements| Done["✅ Shortest Paths Fully Converged and Valid"]:::pass
+    P1["1️⃣ Pass 1: Guaranteed<br/>optimal for paths with<br/>&le; 1 edge"]:::pass
+    P1 --> P2["2️⃣ Pass 2: Guaranteed<br/>optimal for paths with<br/>&le; 2 edges"]:::pass
+    P2 --> PV["... Pass V-1: Guaranteed<br/>optimal for all simple<br/>paths (&le; V-1 edges)"]:::pass
+    PV --> CHK["🔍 Pass V: Negative Cycle<br/>Detection Check<br/>Iterate all edges one<br/>more time"]:::check
+    CHK -->|Any dist improves?| Alert["🚨 Negative Weight Cycle<br/>Reachable from Source!"]:::alert
+    CHK -->|No improvements| Done["✅ Shortest Paths Fully<br/>Converged and Valid"]:::pass
 ```
 
 
 ## Negative Cycle Detection Visual
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart LR
     classDef normal fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
     classDef negCycle fill:#ffebee,stroke:#c62828,stroke-width:3px,color:#b71c1c
@@ -276,14 +283,15 @@ flowchart LR
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart LR
     classDef box fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef time fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:1.5px;
     classDef space fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:1.5px;
 
-    BF["⚡ Bellman–Ford Resource Deconstruction"]:::box
-    BF --> T["⏱️ Time Complexity: O(V * E)<br/>(V - 1 iterations) × (E edge relaxations per pass)"]:::time
-    BF --> S["💾 Auxiliary Space: O(V)<br/>1D array dist[0..V-1] and predecessor[0..V-1]"]:::space
+    BF["⚡ Bellman–Ford Resource<br/>Deconstruction"]:::box
+    BF --> T["⏱️ Time Complexity: O(V *<br/>E)<br/>(V - 1 iterations) ×<br/>(E edge relaxations per<br/>pass)"]:::time
+    BF --> S["💾 Auxiliary Space: O(V)<br/>1D array dist[0..V-1] and<br/>predecessor[0..V-1]"]:::space
 ```
 
 
@@ -320,19 +328,20 @@ flowchart LR
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef bad fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:2px;
     classDef good fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
 
     subgraph Wrong["❌ WRONG: i or j loop outermost"]
-        W1["for i = 0..V-1<br/>  for j = 0..V-1<br/>    for k = 0..V-1"]:::bad
-        W2["Prematurely evaluates i→k→j before subpath i→k<br/>has incorporated subsequent intermediate nodes!<br/>Result: Suboptimal / Incomplete paths"]:::bad
+        W1["for i = 0..V-1<br/>for j = 0..V-1<br/>for k = 0..V-1"]:::bad
+        W2["Prematurely evaluates<br/>i→k→j before subpath i→k<br/>has incorporated<br/>subsequent intermediate<br/>nodes!<br/>Result: Suboptimal /<br/>Incomplete paths"]:::bad
         W1 --> W2
     end
 
     subgraph Correct["✅ CORRECT: k loop MUST be outermost"]
-        C1["for k = 0..V-1 (Intermediate Pivot)<br/>  for i = 0..V-1 (Source)<br/>    for j = 0..V-1 (Destination)"]:::good
-        C2["Invariant: At step k, dist[i][j] reflects shortest path<br/>using ONLY intermediate vertices in set {0..k}.<br/>Guarantees DP subproblem optimality!"]:::good
+        C1["for k = 0..V-1<br/>(Intermediate Pivot)<br/>for i = 0..V-1 (Source)<br/>for j = 0..V-1<br/>(Destination)"]:::good
+        C2["Invariant: At step k,<br/>dist[i][j] reflects<br/>shortest path<br/>using ONLY intermediate<br/>vertices in set {0..k}.<br/>Guarantees DP subproblem<br/>optimality!"]:::good
         C1 --> C2
     end
 ```
@@ -387,16 +396,17 @@ flowchart TD
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef step fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef dsu fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:1.5px;
     classDef prune fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:1.5px;
 
-    K["🌲 Kruskal's Edge-Centric Greedy Strategy"]:::step
-    K --> S1["1️⃣ Sort all E edges by ascending weight: O(E log E)"]:::step
-    S1 --> S2["2️⃣ For each edge (u, v, w):<br/>Query DSU: find(u) vs find(v)"]:::step
-    S2 -->|find(u) != find(v)| Add["✅ Different sets: Add to MST & union(u, v)"]:::dsu
-    S2 -->|find(u) == find(v)| Skip["❌ Same set: Adding creates a cycle! Skip edge"]:::prune
+    K["🌲 Kruskal's Edge-Centric<br/>Greedy Strategy"]:::step
+    K --> S1["1️⃣ Sort all E edges by<br/>ascending weight: O(E log<br/>E)"]:::step
+    S1 --> S2["2️⃣ For each edge<br/>(u, v, w):<br/>Query DSU: find(u) vs<br/>find(v)"]:::step
+    S2 -->|"find(u) != find(v)"| Add["✅ Different sets: Add to<br/>MST & union(u, v)"]:::dsu
+    S2 -->|"find(u) == find(v)"| Skip["❌ Same set: Adding<br/>creates a cycle! Skip<br/>edge"]:::prune
 ```
 
 
@@ -404,15 +414,16 @@ flowchart TD
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef step fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef grow fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
 
-    P["🌲 Prim's Vertex-Centric Growing Strategy"]:::step
-    P --> S1["1️⃣ Start from arbitrary source node (e.g. Node 0)"]:::step
-    S1 --> S2["2️⃣ Push all boundary edges of current tree into Min-Heap"]:::step
-    S2 --> S3["3️⃣ Pop minimum edge (u, v):<br/>If v already in MST, discard stale edge"]:::step
-    S3 --> Grow["✅ If v not in MST: Add v to MST, add edge weight,<br/>and push v's incident edges into heap"]:::grow
+    P["🌲 Prim's Vertex-Centric<br/>Growing Strategy"]:::step
+    P --> S1["1️⃣ Start from arbitrary<br/>source node (e.g. Node 0)"]:::step
+    S1 --> S2["2️⃣ Push all boundary<br/>edges of current tree<br/>into Min-Heap"]:::step
+    S2 --> S3["3️⃣ Pop minimum edge<br/>(u, v):<br/>If v already in MST,<br/>discard stale edge"]:::step
+    S3 --> Grow["✅ If v not in MST: Add v<br/>to MST, add edge weight,<br/>and push v's incident<br/>edges into heap"]:::grow
     Grow -->|Until V vertices in MST| S3
 ```
 
@@ -433,14 +444,15 @@ flowchart TD
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef cut fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef min fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
 
-    C["✂️ The Cut Property (MST Optimality Guarantee)"]:::cut
-    C --> P1["Partition graph vertices into two disjoint subsets: S and V - S"]:::cut
-    P1 --> P2["Examine all crossing edges with one endpoint in S and one in V - S"]:::cut
-    P2 --> Min["🌟 Invariant: The minimum-weight crossing edge across the cut<br/>is GUARANTEED to belong to some Minimum Spanning Tree!"]:::min
+    C["✂️ The Cut Property<br/>(MST Optimality<br/>Guarantee)"]:::cut
+    C --> P1["Partition graph vertices<br/>into two disjoint<br/>subsets: S and V - S"]:::cut
+    P1 --> P2["Examine all crossing<br/>edges with one endpoint<br/>in S and one in V - S"]:::cut
+    P2 --> Min["🌟 Invariant: The<br/>minimum-weight crossing<br/>edge across the cut<br/>is GUARANTEED to belong<br/>to some Minimum Spanning<br/>Tree!"]:::min
 ```
 
 
@@ -452,6 +464,7 @@ flowchart TD
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef root fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
     classDef child fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:1.5px;
@@ -485,16 +498,17 @@ flowchart TD
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef deep fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:2px;
     classDef bal fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
 
     subgraph Bad["❌ Naive Union (No Rank): Chain Degeneration"]
-        B1["Arbitrary attachment makes tall linear trees:<br/>0 ← 1 ← 2 ← 3<br/>Find operation degrades to O(N) linear scan!"]:::deep
+        B1["Arbitrary attachment<br/>makes tall linear trees:<br/>0 ← 1 ← 2 ← 3<br/>Find operation degrades<br/>to O(N) linear scan!"]:::deep
     end
 
     subgraph Good["✅ Union-by-Rank: Bounded Tree Height"]
-        G1["Attach shorter tree under taller tree root:<br/>rank[root_a] > rank[root_b] → parent[root_b] = root_a<br/>Height strictly bounded to O(log N) without compression!"]:::bal
+        G1["Attach shorter tree under<br/>taller tree root:<br/>rank[root_a] ><br/>rank[root_b] →<br/>parent[root_b] = root_a<br/>Height strictly bounded<br/>to O(log N) without<br/>compression!"]:::bal
     end
 ```
 
@@ -518,15 +532,16 @@ flowchart TD
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef app fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef use fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:1.5px;
 
-    D["⚡ Top DSU Real-World & Interview Applications"]:::app
-    D --> A1["1️⃣ Cycle Detection & Kruskal's MST<br/>Detect cycles by testing if endpoints already share root"]:::use
-    D --> A2["2️⃣ Dynamic Connectivity & Component Counting<br/>Maintain connected components as edges are added dynamically"]:::use
-    D --> A3["3️⃣ 2D Grid Union-Find<br/>Number of Islands II, Surrounded Regions, Percolation"]:::use
-    D --> A4["4️⃣ Equivalence Classes & Clustering<br/>Accounts Merge, Friend Circles, Satisfiability of Equality Equations"]:::use
+    D["⚡ Top DSU Real-World &<br/>Interview Applications"]:::app
+    D --> A1["1️⃣ Cycle Detection &<br/>Kruskal's MST<br/>Detect cycles by testing<br/>if endpoints already<br/>share root"]:::use
+    D --> A2["2️⃣ Dynamic Connectivity<br/>& Component Counting<br/>Maintain connected<br/>components as edges are<br/>added dynamically"]:::use
+    D --> A3["3️⃣ 2D Grid Union-Find<br/>Number of Islands II,<br/>Surrounded Regions,<br/>Percolation"]:::use
+    D --> A4["4️⃣ Equivalence Classes &<br/>Clustering<br/>Accounts Merge, Friend<br/>Circles, Satisfiability<br/>of Equality Equations"]:::use
 ```
 
 

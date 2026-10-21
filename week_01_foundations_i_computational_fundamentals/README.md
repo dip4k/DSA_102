@@ -14,11 +14,12 @@
 Build rock-solid mental models of program execution, RAM memory hierarchy, complexity bounds (Big-O/Ω/Θ), and recursion call stack mechanics.
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    Start["Week 01 Start"] --> Daily["Daily Invariant Deep Dives"]
-    Daily --> Playbook["Consolidated Playbook & Visuals"]
-    Playbook --> DualLang["Dual-Language Practice (C# & Python)"]
-    DualLang --> Mastery["Pattern Mastery & Verification"]
+    Start["Week 01 Start"] --> Daily["Daily Invariant Deep<br/>Dives"]
+    Daily --> Playbook["Consolidated Playbook &<br/>Visuals"]
+    Playbook --> DualLang["Dual-Language Practice<br/>(C# & Python)"]
+    DualLang --> Mastery["Pattern Mastery &<br/>Verification"]
 ```
 
 ---

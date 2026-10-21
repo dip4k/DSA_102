@@ -13,20 +13,21 @@ Use this guide to determine which specialized technique applies to a given probl
 ## 🧭 Decision Matrix
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 graph TD
-    A[Analyze Problem Statement] --> B{Is the search space a 2D grid?}
-    B -->|Yes| C{Is it sorting or traversing?}
-    C -->|Traversing| D[Use Spiral/Boundary scans or Row-Major iterations]
-    C -->|Transforming| E[Use in-place Transpose & flips]
-    C -->|Searching| F[Use Staircase Search or Matrix DP]
-    B -->|No| G{Does it track combinations, subsets, or states?}
-    G -->|Yes| H{Is the size of the set &le; 64?}
-    H -->|Yes| I[Use Bitwise Masks, Bit Tricks, or Submask Loops]
-    H -->|No| J[Use standard sets/maps, Backtracking, or DFS]
-    G -->|No| K{Does it use prime numbers, modular results, or divisibility?}
-    K -->|Yes| L[Use GCD, Sieve, fast exponents, or CRT modular inverses]
-    K -->|No| M{Is it substring searching or prefix matching?}
-    M -->|Yes| N[Use KMP fallback matching, Tries, or Radix sorting]
+    A[Analyze Problem Statement] --> B{"Is the search space a 2D<br/>grid?"}
+    B -->|Yes| C{"Is it sorting or<br/>traversing?"}
+    C -->|Traversing| D["Use Spiral/Boundary scans<br/>or Row-Major iterations"]
+    C -->|Transforming| E["Use in-place Transpose &<br/>flips"]
+    C -->|Searching| F["Use Staircase Search or<br/>Matrix DP"]
+    B -->|No| G{"Does it track<br/>combinations, subsets, or<br/>states?"}
+    G -->|Yes| H{"Is the size of the set<br/>&le; 64?"}
+    H -->|Yes| I["Use Bitwise Masks, Bit<br/>Tricks, or Submask Loops"]
+    H -->|No| J["Use standard sets/maps,<br/>Backtracking, or DFS"]
+    G -->|No| K{"Does it use prime<br/>numbers, modular results,<br/>or divisibility?"}
+    K -->|Yes| L["Use GCD, Sieve, fast<br/>exponents, or CRT modular<br/>inverses"]
+    K -->|No| M{"Is it substring searching<br/>or prefix matching?"}
+    M -->|Yes| N["Use KMP fallback<br/>matching, Tries, or Radix<br/>sorting"]
 ```
 
 ---

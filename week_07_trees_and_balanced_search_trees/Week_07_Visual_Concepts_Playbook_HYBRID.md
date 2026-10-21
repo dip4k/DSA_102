@@ -44,16 +44,17 @@
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef week fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef day fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:1.5px;
 
-    W["🌳 Week 7: Trees & Balanced Search Trees"]:::week
-    W --> D1["📅 Day 1: Anatomy & Traversals (Pre/In/Post & Level-Order BFS)"]:::day
-    W --> D2["📅 Day 2: BST Properties, Search, Insert, and Validation"]:::day
-    W --> D3["📅 Day 3: Balanced BSTs & AVL Rotations (LL, RR, LR, RL)"]:::day
-    W --> D4["📅 Day 4: Red-Black Tree Invariants & Color Flips"]:::day
-    W --> D5["📅 Day 5: LCA, Diameter, & Path Sum Applications"]:::day
+    W["🌳 Week 7: Trees &<br/>Balanced Search Trees"]:::week
+    W --> D1["📅 Day 1: Anatomy &<br/>Traversals (Pre/In/Post &<br/>Level-Order BFS)"]:::day
+    W --> D2["📅 Day 2: BST Properties,<br/>Search, Insert, and<br/>Validation"]:::day
+    W --> D3["📅 Day 3: Balanced BSTs &<br/>AVL Rotations<br/>(LL, RR, LR, RL)"]:::day
+    W --> D4["📅 Day 4: Red-Black Tree<br/>Invariants & Color Flips"]:::day
+    W --> D5["📅 Day 5: LCA, Diameter,<br/>& Path Sum Applications"]:::day
 ```
 
 
@@ -64,6 +65,7 @@ flowchart TD
 ### Tree Structure Types at a Glance
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     subgraph ValidTypes["✅ Valid Structural Classifications"]
         direction LR
@@ -116,12 +118,13 @@ flowchart TD
 ### All 4 Traversal Orders — Visual Mapping
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     T["Binary Tree Traversals"]:::rootNode
-    T --> Pre["Preorder (Root -> Left -> Right)<br/>Parent First: Copy & Serialize"]:::preNode
-    T --> In["Inorder (Left -> Root -> Right)<br/>Sorted Order on BST"]:::inNode
-    T --> Post["Postorder (Left -> Right -> Root)<br/>Bottom-Up: Deletions & Subtree DP"]:::postNode
-    T --> Lvl["Level-Order (BFS by Level)<br/>Layer-by-Layer via Queue"]:::lvlNode
+    T --> Pre["Preorder (Root -> Left -><br/>Right)<br/>Parent First: Copy &<br/>Serialize"]:::preNode
+    T --> In["Inorder (Left -> Root -><br/>Right)<br/>Sorted Order on BST"]:::inNode
+    T --> Post["Postorder (Left -> Right<br/>-> Root)<br/>Bottom-Up: Deletions &<br/>Subtree DP"]:::postNode
+    T --> Lvl["Level-Order (BFS by<br/>Level)<br/>Layer-by-Layer via Queue"]:::lvlNode
 
     classDef rootNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
     classDef preNode fill:#1565c0,stroke:#90caf9,stroke-width:2px,color:#ffffff
@@ -163,6 +166,7 @@ Output: A, B, D, E, C  (matches recursive order)
 ### Tree Anatomy Measurements
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     A["A (Depth: 0, Height: 2)"]:::rootNode
     B["B (Depth: 1, Height: 1)"]:::internalNode
@@ -196,6 +200,7 @@ flowchart TD
 ### BST Invariant — The Core Property
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     subgraph ValidBST["✅ Valid BST (Left &lt; Root &lt; Right)"]
         V5["5"] --> V3["3"]
@@ -221,10 +226,11 @@ flowchart TD
 Searching for target key `6`:
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    S5["1️⃣ Root 5 (6 > 5 -> Go Right)"]:::searchStep --> S7["2️⃣ Node 7 (6 &lt; 7 -> Go Left)"]:::searchStep
+    S5["1️⃣ Root 5 (6 > 5 -> Go<br/>Right)"]:::searchStep --> S7["2️⃣ Node 7 (6 &lt; 7 -><br/>Go Left)"]:::searchStep
     S5 -.-> S3["Node 3"]
-    S7 --> SNull["3️⃣ Left is null -> NOT FOUND ❌"]:::nullStep
+    S7 --> SNull["3️⃣ Left is null -> NOT<br/>FOUND ❌"]:::nullStep
     S7 -.-> S9["Node 9"]
 
     classDef searchStep fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
@@ -240,6 +246,7 @@ flowchart TD
 Inserting key `6` into tree:
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     I5["5"] --> I3["3"]
     I5 --> I7["7"]
@@ -260,6 +267,7 @@ flowchart TD
 ### BST Deletion Cases
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     subgraph Case1["Case 1: Leaf Deletion (Delete 4)"]
         direction TB
@@ -284,6 +292,7 @@ flowchart TD
 ```
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     subgraph Case2["Case 2: Single Child Deletion (Delete 7)"]
         direction TB
@@ -309,6 +318,7 @@ flowchart TD
 ### Inorder Traversal = Sorted Order (Proof)
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     N5["5"] --> N3["3"]
     N5 --> N7["7"]
@@ -326,6 +336,7 @@ flowchart TD
 ### Degenerate Tree (Sorted Input)
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     subgraph Degenerate["❌ Adversarial Sorted Input: [1, 2, 3, 4, 5]"]
         direction TB
@@ -356,6 +367,7 @@ flowchart TD
 ### AVL Balance Factor Calculation
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     subgraph BalancedAVL["✅ Balanced AVL (|BF| &le; 1)"]
         B5["5 (BF: 0)"] --> B3["3 (BF: 0)"]
@@ -378,6 +390,7 @@ flowchart TD
 ### AVL Rotations — 4 Cases Visualized
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     subgraph LL["Case 1: LL Imbalance -> Single Right Rotate"]
         LL_B1["1 (BF: +2)"] --> LL_B2["2 (BF: +1)"]
@@ -417,6 +430,7 @@ flowchart TD
 ### Red-Black Tree Coloring Rules
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     subgraph ValidRB["✅ Valid Red-Black Tree"]
         V10["10 (Black)"]:::blackNode --> V5["5 (Red)"]:::redNode
@@ -449,6 +463,7 @@ flowchart TD
 ### Black-Height Property
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     R10["10 (Black)"]:::blackNode --> R5["5 (Black)"]:::blackNode
     R10 --> R15["15 (Black)"]:::blackNode
@@ -491,12 +506,13 @@ flowchart TD
 Finding all root-to-leaf paths that sum to target `7`:
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     N1["1 (Root)"]:::rootNode --> N2["2 (Remaining: 6)"]:::pathNode
     N1 --> N3["3 (Remaining: 6)"]
-    N2 --> N4["4 (Leaf: Sum = 1+2+4 = 7 ✅)"]:::validPath
-    N2 --> N5["5 (Leaf: Sum = 1+2+5 = 8 ❌)"]:::invalidPath
-    N3 --> N6["6 (Leaf: Sum = 1+3+6 = 10 ❌)"]:::invalidPath
+    N2 --> N4["4 (Leaf: Sum = 1+2+4 = 7<br/>✅)"]:::validPath
+    N2 --> N5["5 (Leaf: Sum = 1+2+5 = 8<br/>❌)"]:::invalidPath
+    N3 --> N6["6 (Leaf: Sum = 1+3+6 = 10<br/>❌)"]:::invalidPath
 
     classDef rootNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
     classDef pathNode fill:#1565c0,stroke:#90caf9,stroke-width:2px,color:#ffffff
@@ -513,8 +529,9 @@ flowchart TD
 Longest distance between any two leaf nodes:
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    D5["5 (h: 3, Diam through 5 = 2+2 = 4)"]:::rootNode
+    D5["5 (h: 3, Diam through 5 =<br/>2+2 = 4)"]:::rootNode
     D3["3 (h: 2)"]:::pathNode
     D7["7 (h: 2)"]:::pathNode
     D1["1 (h: 1)"]:::pathNode
@@ -545,6 +562,7 @@ flowchart TD
 Find `LCA(1, 10)`:
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     L5["5 (LCA Meeting Point ✅)"]:::lcaNode
     L3["3 (Ancestor of 1)"]:::leftPath
@@ -569,6 +587,7 @@ flowchart TD
 ### Serialization — Preorder with Null Markers
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     subgraph TreeStructure["Original Tree"]
         direction TB
@@ -581,7 +600,7 @@ flowchart TD
     end
 
     subgraph Serialized["Preorder String"]
-        S["'1, 2, null, null, 3, null, null'"]:::strNode
+        S["'1, 2, null, null, 3,<br/>null, null'"]:::strNode
     end
 
     TreeStructure ==>|"Serialize"| Serialized
@@ -599,6 +618,7 @@ flowchart TD
 ### Augmentation with Subtree Size
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     subgraph StandardBST["Standard BST"]
         S5["5"] --> S3["3"]
@@ -632,9 +652,10 @@ flowchart TD
 Find `3`-rd smallest element (`k = 3`) in augmented tree:
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    Q5["1️⃣ Root 5 (size: 7)<br/>leftSize(3) = 3 >= k(3) -> Go Left"]:::stepNode --> Q3["2️⃣ Node 3 (size: 3)<br/>leftSize(1) = 1 &lt; k(3) -> Go Right with k'=3-1-1=1"]:::stepNode
-    Q3 --> Q4["3️⃣ Node 4 (size: 1)<br/>leftSize(0) + 1 == k'(1) -> Found! ✅"]:::foundNode
+    Q5["1️⃣ Root 5 (size: 7)<br/>leftSize(3) = 3 >= k(3)<br/>-> Go Left"]:::stepNode --> Q3["2️⃣ Node 3 (size: 3)<br/>leftSize(1) = 1 &lt; k(3)<br/>-> Go Right with<br/>k'=3-1-1=1"]:::stepNode
+    Q3 --> Q4["3️⃣ Node 4 (size: 1)<br/>leftSize(0) + 1 == k'(1)<br/>-> Found! ✅"]:::foundNode
     Q3 -.-> Q1["Node 1 (size: 1)"]
 
     classDef stepNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
@@ -649,9 +670,10 @@ flowchart TD
 Find the rank of `6` (count of keys `<= 6`):
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    R5["1️⃣ Node 5: 6 > 5 -> Go Right<br/>Accumulate leftSize + 1 = 3 + 1 = 4"]:::accNode --> R8["2️⃣ Node 8: 6 &lt; 8 -> Go Left<br/>No accumulation"]:::stepNode
-    R8 --> R7["3️⃣ Node 7: 6 &lt; 7 -> Go Left<br/>Left is null -> Terminate"]:::stepNode
+    R5["1️⃣ Node 5: 6 > 5 -> Go<br/>Right<br/>Accumulate leftSize + 1 =<br/>3 + 1 = 4"]:::accNode --> R8["2️⃣ Node 8: 6 &lt; 8 -><br/>Go Left<br/>No accumulation"]:::stepNode
+    R8 --> R7["3️⃣ Node 7: 6 &lt; 7 -><br/>Go Left<br/>Left is null -> Terminate"]:::stepNode
 
     classDef accNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
     classDef stepNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
@@ -674,6 +696,7 @@ Actually in range: 4, 5, 7, 8 ✓
 ### Augmentation Maintenance During Insertion
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     subgraph BeforeInsert["Before: Root size = 7"]
         direction TB
@@ -718,6 +741,7 @@ flowchart TD
 ### Comparison: Insertion Scenarios
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     subgraph RandomOrder["Random Input: [1, 5, 3, 8, 2] (Naturally Balanced)"]
         R5["5"] --> R3["3"]
@@ -789,6 +813,7 @@ flowchart TD
 ### Core Algorithmic Mechanics
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     subgraph LeftRotate["Left Rotate around x"]
         direction TB

@@ -104,6 +104,7 @@ In elite tech interviews (Google, Meta, Uber, Amazon), the interviewer does not 
 Instead, the highest-scoring candidates follow the **CrackingWalnuts 4-Stage Evolution**, intentionally starting with a working baseline and systematically evolving it as requirements and scale constraints are introduced:
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     subgraph V1["V1: Naive (Happy-Path)"]
         direction TB
@@ -116,21 +117,21 @@ flowchart TD
         direction TB
         V2_1["Extract Interfaces<br/>(Strategy / Factory)"]
         V2_2["Open/Closed Principle<br/>Polymorphic Dispatch"]
-        V2_3["Domain Encapsulation<br/>(Private setters, Invariants)"]
+        V2_3["Domain Encapsulation<br/>(Private setters,<br/>Invariants)"]
     end
 
     subgraph V3["V3: Algorithmic Scalability"]
         direction TB
         V3_1["O(1) Indexed Maps<br/>(Composite Keys)"]
-        V3_2["Balanced Trees / Heaps<br/>(SortedSet, PriorityQueue)"]
-        V3_3["Interval Trees / Bloom / Bitmaps<br/>for Sub-ms Lookups"]
+        V3_2["Balanced Trees / Heaps<br/>(SortedSet,<br/>PriorityQueue)"]
+        V3_3["Interval Trees / Bloom /<br/>Bitmaps<br/>for Sub-ms Lookups"]
     end
 
     subgraph V4["V4: Production Concurrency"]
         direction TB
-        V4_1["Thread Safety<br/>(ConcurrentDictionary, CAS)"]
-        V4_2["Fine-Grained Locks / Striping<br/>(Deadlock-Free Ordering)"]
-        V4_3["Fault Tolerance<br/>(Result[T], Idempotency, Outbox)"]
+        V4_1["Thread Safety<br/>(ConcurrentDictionary,<br/>CAS)"]
+        V4_2["Fine-Grained Locks /<br/>Striping<br/>(Deadlock-Free Ordering)"]
+        V4_3["Fault Tolerance<br/>(Result[T], Idempotency,<br/>Outbox)"]
     end
 
     V1 -->|"Refactor for Extensibility"| V2

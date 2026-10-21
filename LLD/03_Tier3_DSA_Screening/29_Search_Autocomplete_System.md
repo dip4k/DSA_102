@@ -19,12 +19,13 @@ When a user types characters into a search bar (e.g., Google Search, Amazon Prod
 ## 🎯 CrackingWalnuts 6-Step Methodology Applied
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    A["1. Requirement Mining<br/>• Top-K prefix completions<br/>• Dynamic '#' sentence commit<br/>• Sub-20ms lookup latency<br/>• Concurrent reader/writer safety"] --> B["2. Class Discovery<br/>• AutocompleteSystem<br/>• TrieNode (Composite)<br/>• SearchPrefixResult (Value Object)<br/>• IAutocompleteEngine"]
-    B --> C["3. Relationships<br/>• AutocompleteSystem has 1 Root TrieNode<br/>• TrieNode has N Children TrieNodes<br/>• TrieNode caches Top-K completions"]
-    C --> D["4. Design Patterns<br/>• Trie / Prefix Tree Pattern<br/>• Strategy (Priority Ranking)<br/>• ReaderWriterLockSlim Concurrency"]
-    D --> E["5. V1 → V4 Evolution<br/>• V1: Naive Trie + DFS on every key<br/>• V2: Frequency Map per node + MinHeap<br/>• V3: Cached Top-K list per node (O(1) read)<br/>• V4: Production Concurrent Trie with RW-Lock"]
-    E --> F["6. Problem Archetype<br/>Family 5: In-Memory Data Structures + DSA Hybrid"]
+    A["1. Requirement Mining<br/>• Top-K prefix<br/>completions<br/>• Dynamic '#' sentence<br/>commit<br/>• Sub-20ms lookup latency<br/>• Concurrent<br/>reader/writer safety"] --> B["2. Class Discovery<br/>• AutocompleteSystem<br/>• TrieNode (Composite)<br/>• SearchPrefixResult<br/>(Value Object)<br/>• IAutocompleteEngine"]
+    B --> C["3. Relationships<br/>• AutocompleteSystem has<br/>1 Root TrieNode<br/>• TrieNode has N Children<br/>TrieNodes<br/>• TrieNode caches Top-K<br/>completions"]
+    C --> D["4. Design Patterns<br/>• Trie / Prefix Tree<br/>Pattern<br/>• Strategy (Priority<br/>Ranking)<br/>• ReaderWriterLockSlim<br/>Concurrency"]
+    D --> E["5. V1 → V4 Evolution<br/>• V1: Naive Trie + DFS on<br/>every key<br/>• V2: Frequency Map per<br/>node + MinHeap<br/>• V3: Cached Top-K list<br/>per node (O(1) read)<br/>• V4: Production<br/>Concurrent Trie with<br/>RW-Lock"]
+    E --> F["6. Problem Archetype<br/>Family 5: In-Memory Data<br/>Structures + DSA Hybrid"]
 ```
 
 ---
@@ -35,10 +36,11 @@ flowchart TD
 Instead of executing an expensive Depth-First Search (DFS) traversal down the subtree on every keystroke, each `TrieNode` maintains a bounded, pre-sorted cache of the **Top-K** queries for that prefix.
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 graph TD
-    Root["Root Node<br/>['i': 12, 'iron': 5, 'island': 4]"]
-    Root -->|"char 'i'"| NodeI["Node 'i'<br/>Top-3: ['i love you': 5, 'island': 4, 'ironman': 3]"]
-    NodeI -->|"char ' '"| NodeISpace["Node 'i '<br/>Top-3: ['i love you': 5, 'i love leetcode': 2]"]
+    Root["Root Node<br/>['i': 12, 'iron': 5,<br/>'island': 4]"]
+    Root -->|"char 'i'"| NodeI["Node 'i'<br/>Top-3: ['i love you': 5,<br/>'island': 4, 'ironman':<br/>3]"]
+    NodeI -->|"char ' '"| NodeISpace["Node 'i '<br/>Top-3: ['i love you': 5,<br/>'i love leetcode': 2]"]
     NodeI -->|"char 's'"| NodeIS["Node 'is'<br/>Top-3: ['island': 4]"]
     NodeI -->|"char 'r'"| NodeIR["Node 'ir'<br/>Top-3: ['ironman': 3]"]
 ```

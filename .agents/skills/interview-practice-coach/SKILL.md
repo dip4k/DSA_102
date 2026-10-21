@@ -16,6 +16,7 @@ description: Act as an interactive senior FAANG mock interviewer for both DSA (8
 ## 🧭 Interview Tracks
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     Start["User Practice Request"] --> Track{"Track Selection"}
     Track -->|"DSA Track"| DSA["Intuitive 8-Step Arc<br/>(dsa_mock_interviewer)"]
@@ -24,7 +25,7 @@ flowchart TD
     DSA --> DSA_Eval["DSA Scorecard & Test Run<br/>(dsa-interactive-runner)"]
     LLD --> LLD_Eval["LLD Scorecard & Test Run<br/>(lld-interactive-runner)"]
 
-    DSA_Eval --> Log["Update Practice_Log.md & Spaced Repetition"]
+    DSA_Eval --> Log["Update Practice_Log.md &<br/>Spaced Repetition"]
     LLD_Eval --> Log
 
     classDef default fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#ffffff

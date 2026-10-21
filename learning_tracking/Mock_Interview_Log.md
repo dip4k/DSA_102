@@ -11,6 +11,7 @@
 In top-tier technical rounds, candidates are assessed on four distinct competency dimensions. A "Hire" decision typically requires an average score of **3.5+** with no pillar below **3.0**.
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef p1 fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
     classDef p2 fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
@@ -39,16 +40,17 @@ flowchart TD
 Every mock interview must strictly adhere to this chronological budget:
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef phase fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#ffffff
     classDef milestone fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
 
-    M0["Min 00–05: Clarify Bounds, Contracts & Edge Cases"]:::phase
-    M1["Min 05–12: Naive Baseline -> Invariant & Approach Alignment"]:::phase
-    M2["Min 12–28: Live Implementation (Zero-Defect Coding)"]:::phase
-    M3["Min 28–38: Concrete Dry-Run with Structured Trace Table"]:::phase
-    M4["Min 38–43: Explicit Complexity & Scaled Architecture Discussion"]:::phase
-    M5["Min 43–45: Candidate Q&A & Interviewer Wrap-up"]:::milestone
+    M0["Min 00–05: Clarify<br/>Bounds, Contracts & Edge<br/>Cases"]:::phase
+    M1["Min 05–12: Naive Baseline<br/>-> Invariant & Approach<br/>Alignment"]:::phase
+    M2["Min 12–28: Live<br/>Implementation<br/>(Zero-Defect Coding)"]:::phase
+    M3["Min 28–38: Concrete<br/>Dry-Run with Structured<br/>Trace Table"]:::phase
+    M4["Min 38–43: Explicit<br/>Complexity & Scaled<br/>Architecture Discussion"]:::phase
+    M5["Min 43–45: Candidate Q&A<br/>& Interviewer Wrap-up"]:::milestone
 
     M0 --> M1 --> M2 --> M3 --> M4 --> M5
 ```

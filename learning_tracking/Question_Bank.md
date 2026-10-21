@@ -7,6 +7,7 @@
 ## 🔁 Spaced-Repetition Reattempt Protocol
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     F["❌ Attempt Failure<br/>(Hint needed or bug)"]:::fail
     A["1. Root Cause Analysis<br/>& Invariant Breakdown"]:::step

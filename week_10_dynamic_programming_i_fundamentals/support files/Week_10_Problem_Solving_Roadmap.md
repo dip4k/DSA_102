@@ -36,13 +36,14 @@ This document provides a **three-stage progression** for problem-solving:
 ## 🧭 Pattern Decision Tree: Which DP Formulation to Pick?
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    Start["Dynamic Programming Problem"] --> Q1{"What is the structure of the subproblem?"}
-    Q1 -->|Single array prefix or 1D steps| P1["1D DP: dp[i] depends on dp[i-1], dp[i-2] (O(1) space)"]
-    Q1 -->|Two strings, sequences, or 2D grid| P2["2D DP: dp[i][j] (Grid paths, Edit Distance, LCS)"]
-    Q1 -->|Capacity / weight budget with choices| P3["Knapsack DP: dp[i][w] (0/1 or Unbounded)"]
-    Q1 -->|Increasing sequence or ordering| P4["Patience Sorting / Binary Search LIS O(N log N)"]
-    Q1 -->|Decision state machine| P5["State Machine DP: (e.g. Stock trading with cooldown)"]
+    Start["Dynamic Programming<br/>Problem"] --> Q1{"What is the structure of<br/>the subproblem?"}
+    Q1 -->|Single array prefix or 1D steps| P1["1D DP: dp[i] depends on<br/>dp[i-1], dp[i-2]<br/>(O(1) space)"]
+    Q1 -->|Two strings, sequences, or 2D grid| P2["2D DP: dp[i][j]<br/>(Grid paths, Edit<br/>Distance, LCS)"]
+    Q1 -->|Capacity / weight budget with choices| P3["Knapsack DP: dp[i][w]<br/>(0/1 or Unbounded)"]
+    Q1 -->|Increasing sequence or ordering| P4["Patience Sorting / Binary<br/>Search LIS O(N log N)"]
+    Q1 -->|Decision state machine| P5["State Machine DP:<br/>(e.g. Stock trading with<br/>cooldown)"]
 ```
 
 ---

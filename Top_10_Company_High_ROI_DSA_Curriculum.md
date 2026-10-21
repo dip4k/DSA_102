@@ -381,11 +381,12 @@ Different product tech companies evaluate algorithmic competence through vastly 
 When you are on the clock in a Senior/Lead interview, follow this exact cadence:
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     S1["1. Clarify & Bounds"] --> S2["2. Naive Baseline"]
     S2 --> S3["3. Identify Bottleneck"]
     S3 --> S4["4. Invariant Selection"]
-    S4 --> S5["5. Proof of Discard Safety"]
+    S4 --> S5["5. Proof of Discard<br/>Safety"]
     S5 --> S6["6. Explicit Complexity"]
     S6 --> S7["7. Production C# Code"]
     S7 --> S8["8. Edge-Case Trace"]

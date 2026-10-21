@@ -11,14 +11,15 @@ This guide provides company-specific interview blueprints, evaluation rubrics, h
 Product companies evaluate LLD in one of two formats:
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     Prompt["Interview Problem Prompt"] --> Format{"Round Type?"}
     
-    Format -->|"Machine Coding (90 Mins)"| MC["1. Requirement Mining (10m)<br/>2. Domain Entities & Interfaces (15m)<br/>3. Clean In-Memory Implementation (45m)<br/>4. Driver Loop & Concurrency Tests (20m)"]
-    Format -->|"OOD / Architecture (45 Mins)"| OOD["1. Clarify Scope & Constraints (5m)<br/>2. Core UML / Mermaid Diagram (10m)<br/>3. Key Class & Pattern Code (20m)<br/>4. Scaling & Senior Follow-ups (10m)"]
+    Format -->|"Machine Coding (90 Mins)"| MC["1. Requirement Mining<br/>(10m)<br/>2. Domain Entities &<br/>Interfaces (15m)<br/>3. Clean In-Memory<br/>Implementation<br/>(45m)<br/>4. Driver Loop &<br/>Concurrency Tests<br/>(20m)"]
+    Format -->|"OOD / Architecture (45 Mins)"| OOD["1. Clarify Scope &<br/>Constraints (5m)<br/>2. Core UML / Mermaid<br/>Diagram (10m)<br/>3. Key Class & Pattern<br/>Code (20m)<br/>4. Scaling & Senior<br/>Follow-ups (10m)"]
     
-    MC --> CompaniesMC["Favored by:<br/>Flipkart, Swiggy, Uber, PhonePe,<br/>Razorpay, Cred, Zepto, Atlassian"]
-    OOD --> CompaniesOOD["Favored by:<br/>Google, Microsoft, Amazon, Meta,<br/>Apple, Netflix, Bloomberg, Stripe"]
+    MC --> CompaniesMC["Favored by:<br/>Flipkart, Swiggy, Uber,<br/>PhonePe,<br/>Razorpay, Cred, Zepto,<br/>Atlassian"]
+    OOD --> CompaniesOOD["Favored by:<br/>Google, Microsoft,<br/>Amazon, Meta,<br/>Apple, Netflix,<br/>Bloomberg, Stripe"]
 ```
 
 | Dimension | 90-Minute Machine Coding Round | 45-Minute OOD / Design Round |

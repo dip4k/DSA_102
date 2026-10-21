@@ -76,6 +76,7 @@ If you want to find the highest-paid person, look at the CEO—O(1). If someone 
 ### 🖼 Visualizing Heap as Complete Binary Tree
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     N50["Index 0: 50 (CEO)"]:::rootNode
     N30["Index 1: 30 (VP)"]:::internalNode
@@ -175,6 +176,7 @@ These invariants ensure:
 ### 🖼 Complete vs Incomplete Trees
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     subgraph CompleteHeap["✅ Complete Tree (Valid Heap Array Representation)"]
         C50["50 (idx: 0)"] --> C30["30 (idx: 1)"]

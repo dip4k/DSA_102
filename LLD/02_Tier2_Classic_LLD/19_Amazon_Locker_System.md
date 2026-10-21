@@ -12,12 +12,13 @@ The **Amazon Hub Locker** (or Smart Delivery Kiosk) is a quintessential Tier-1 (
 ## 🎯 CrackingWalnuts 6-Step Methodology Applied
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    A["1. Requirement Mining<br/>• 4 Locker Sizes<br/>• 72h Pickup TTL<br/>• No Double-Booking"] --> B["2. Class Discovery<br/>• Locker (Entity)<br/>• LockerCode (Value Object)<br/>• Package (Value Object)"]
-    B --> C["3. Relationships<br/>• LockerLocation (1:N) Lockers<br/>• Locker (1:1) Package"]
-    C --> D["4. Patterns<br/>• Strategy (Allocation)<br/>• State Machine (Lifecycle)<br/>• Observer (Notification)"]
-    D --> E["5. V1 → V4 Evolution<br/>• Flat List → Size Index → Concurrency Hardened"]
-    E --> F["6. Family Archetype<br/>Family 1: Allocation & Concurrency"]
+    A["1. Requirement Mining<br/>• 4 Locker Sizes<br/>• 72h Pickup TTL<br/>• No Double-Booking"] --> B["2. Class Discovery<br/>• Locker (Entity)<br/>• LockerCode<br/>(Value Object)<br/>• Package (Value Object)"]
+    B --> C["3. Relationships<br/>• LockerLocation<br/>(1:N) Lockers<br/>• Locker (1:1) Package"]
+    C --> D["4. Patterns<br/>• Strategy (Allocation)<br/>• State Machine<br/>(Lifecycle)<br/>• Observer (Notification)"]
+    D --> E["5. V1 → V4 Evolution<br/>• Flat List → Size Index<br/>→ Concurrency Hardened"]
+    E --> F["6. Family Archetype<br/>Family 1: Allocation &<br/>Concurrency"]
 ```
 
 ---

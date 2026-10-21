@@ -12,12 +12,13 @@ An **Online Real-Time Auction System** is one of the most intellectually demandi
 ## 🎯 CrackingWalnuts 6-Step Methodology Applied
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    A["1. Requirement Mining<br/>• Escrow Pre-authorization<br/>• Minimum Increments<br/>• 60s Anti-Sniping Extension"] --> B["2. Class Discovery<br/>• AuctionListing (Aggregate)<br/>• Bid (Value Object)<br/>• EscrowLedger (Entity)"]
-    B --> C["3. Relationships<br/>• Auction (1:N) Bids<br/>• Auction (1:1) HighestBid<br/>• Bidder (1:1) Escrow"]
-    C --> D["4. Patterns<br/>• State Pattern (Auction Stages)<br/>• Observer (Outbid Alerts)<br/>• Command Pattern (PlaceBid)"]
-    D --> E["5. V1 → V4 Evolution<br/>• Naive Max → Anti-Snipe → Concurrency Locks → Escrow Ledgers"]
-    E --> F["6. Family Archetype<br/>Family 2: Financial Ledgers + Family 1: Allocation"]
+    A["1. Requirement Mining<br/>• Escrow<br/>Pre-authorization<br/>• Minimum Increments<br/>• 60s Anti-Sniping<br/>Extension"] --> B["2. Class Discovery<br/>• AuctionListing<br/>(Aggregate)<br/>• Bid (Value Object)<br/>• EscrowLedger (Entity)"]
+    B --> C["3. Relationships<br/>• Auction (1:N) Bids<br/>• Auction (1:1)<br/>HighestBid<br/>• Bidder (1:1) Escrow"]
+    C --> D["4. Patterns<br/>• State Pattern<br/>(Auction Stages)<br/>• Observer (Outbid<br/>Alerts)<br/>• Command Pattern<br/>(PlaceBid)"]
+    D --> E["5. V1 → V4 Evolution<br/>• Naive Max → Anti-Snipe<br/>→ Concurrency Locks →<br/>Escrow Ledgers"]
+    E --> F["6. Family Archetype<br/>Family 2: Financial<br/>Ledgers + Family 1:<br/>Allocation"]
 ```
 
 ---

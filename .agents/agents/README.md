@@ -19,15 +19,16 @@ This directory contains the specifications and system prompts for the specialize
 ## 🔄 Interaction Flow
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    User["👨‍💻 Candidate"] --> Orchestrator["🎯 Agentic Practice Orchestrator"]
+    User["👨‍💻 Candidate"] --> Orchestrator["🎯 Agentic Practice<br/>Orchestrator"]
     Orchestrator --> Mode{"Practice Track"}
 
-    Mode -->|"DSA"| DSA_Coach["👨‍🏫 dsa_mock_interviewer<br/>(8-Step Delivery Arc)"]
-    Mode -->|"LLD"| LLD_Coach["🏛️ lld_architect_interviewer<br/>(6-Phase LLD Arc)"]
+    Mode -->|"DSA"| DSA_Coach["👨‍🏫<br/>dsa_mock_interviewer<br/>(8-Step Delivery Arc)"]
+    Mode -->|"LLD"| LLD_Coach["🏛️<br/>lld_architect_interviewer<br/>(6-Phase LLD Arc)"]
 
-    DSA_Coach --> DSA_Eval["⚡ dsa_code_evaluator & runner<br/>(dotnet test / py unittest)"]
-    LLD_Coach --> LLD_Eval["🔒 lld_code_evaluator & runner<br/>(concurrency stress tests)"]
+    DSA_Coach --> DSA_Eval["⚡ dsa_code_evaluator &<br/>runner<br/>(dotnet test / py<br/>unittest)"]
+    LLD_Coach --> LLD_Eval["🔒 lld_code_evaluator &<br/>runner<br/>(concurrency stress<br/>tests)"]
 
     DSA_Eval --> Log["📊 Update Practice_Log.md"]
     LLD_Eval --> Log

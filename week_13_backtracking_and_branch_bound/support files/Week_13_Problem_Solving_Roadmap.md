@@ -43,11 +43,12 @@ This roadmap provides a **3-stage progressive problem ladder** designed to build
 ## 🧭 Pattern Decision Tree: Which Search Paradigm to Pick?
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    Start["State Space Search Problem"] --> Q1{"What does the problem require?"}
-    Q1 -->|Find ALL possible valid solutions| P1["Backtracking (Subsets, Permutations, N-Queens)"]
-    Q1 -->|Find ONE optimal solution in massive space| P2["Branch & Bound (Prune subtrees using bounds)"]
-    Q1 -->|Optimization with overlapping subproblems| P3["Dynamic Programming (Memoize redundant branches)"]
+    Start["State Space Search<br/>Problem"] --> Q1{"What does the problem<br/>require?"}
+    Q1 -->|Find ALL possible valid solutions| P1["Backtracking<br/>(Subsets, Permutations,<br/>N-Queens)"]
+    Q1 -->|Find ONE optimal solution in massive space| P2["Branch & Bound<br/>(Prune subtrees using<br/>bounds)"]
+    Q1 -->|Optimization with overlapping subproblems| P3["Dynamic Programming<br/>(Memoize redundant<br/>branches)"]
 ```
 
 ---

@@ -468,9 +468,10 @@ if (i != minIdx)
 **Pattern: Partition-Recursively-Solve**
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    R["Array [5, 2, 8, 1, 3, 9, 4, 7]"]
-    R --> N1["Partition: [2, 1, 3, 4] [5] [8, 9, 7]"]
+    R["Array [5, 2, 8, 1, 3, 9,<br/>4, 7]"]
+    R --> N1["Partition: [2, 1, 3, 4]<br/>[5] [8, 9, 7]"]
 ```
 
 

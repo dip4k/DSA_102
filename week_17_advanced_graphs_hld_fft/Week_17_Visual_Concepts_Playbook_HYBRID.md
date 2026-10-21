@@ -125,6 +125,7 @@ Where **`mex` (Minimum Excluded Value)** is the smallest non-negative integer NO
 ### Visual 1: Game Graph with Grundy Values
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef loss fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
     classDef win fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20

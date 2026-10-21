@@ -38,13 +38,14 @@ In software engineering:
 When you read a problem in a 45-minute interview, use this mental flowchart to zero in on the right strategy:
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    Start["🎯 Read Problem & Constraints"] --> Feasible{"Looking for ANY/ALL<br/>valid arrangements?"}
+    Start["🎯 Read Problem &<br/>Constraints"] --> Feasible{"Looking for ANY/ALL<br/>valid arrangements?"}
     Feasible -->|"Yes (e.g. Sudoku, Subsets)"| BT["🧶 Backtracking"]
     Feasible -->|"No (Optimization: Min/Max)"| SubInd{"Can we split into<br/>independent halves?"}
     
     SubInd -->|"Yes (e.g. Merge Sort)"| DC["✂️ Divide & Conquer"]
-    SubInd -->|"No"| SafeChoice{"Can we safely pick the best<br/>local move without regrets?"}
+    SubInd -->|"No"| SafeChoice{"Can we safely pick the<br/>best<br/>local move without<br/>regrets?"}
     
     SafeChoice -->|"Yes (e.g. Intervals, MST)"| GR["⚡ Greedy"]
     SafeChoice -->|"No (Early choice impacts future)"| Overlap{"Do subproblems<br/>repeat?"}

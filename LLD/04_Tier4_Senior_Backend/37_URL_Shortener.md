@@ -15,12 +15,13 @@ While junior candidates treat this as a simple string-hashing script, Senior and
 ## 🎯 CrackingWalnuts 6-Step Methodology Applied
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    A["1. Requirement Mining<br/>• ShortenUrl & ResolveUrl<br/>• Custom Aliases & TTL<br/>• Non-blocking Analytics<br/>• Rate Limiting & Anti-Scraping"] --> B["2. Class Discovery<br/>• UrlMapping (Entity)<br/>• Base62Encoder (Domain Logic)<br/>• ITokenGenerator (Strategy)<br/>• ICacheStore & IAnalyticsService"]
-    B --> C["3. Relationships<br/>• UrlService uses ITokenGenerator<br/>• UrlService decorates ICacheStore<br/>• UrlService publishes to ClickChannel"]
-    C --> D["4. Design Patterns<br/>• Strategy (ID Generation)<br/>• Cache-Aside Pattern<br/>• Producer-Consumer Channel<br/>• Decorator / Interceptor"]
-    D --> E["5. V1 → V4 Evolution<br/>• V1: Naive MD5 hash substring (collisions!)<br/>• V2: Central DB Auto-Increment + Base62<br/>• V3: Distributed Range / Snowflake Token Gen<br/>• V4: Cache-Aside + Async Channel + Bloom Filter"]
-    E --> F["6. Problem Archetype<br/>Family 5: Fast Lookups + Family 7: Senior Distributed Backend"]
+    A["1. Requirement Mining<br/>• ShortenUrl & ResolveUrl<br/>• Custom Aliases & TTL<br/>• Non-blocking Analytics<br/>• Rate Limiting &<br/>Anti-Scraping"] --> B["2. Class Discovery<br/>• UrlMapping (Entity)<br/>• Base62Encoder<br/>(Domain Logic)<br/>• ITokenGenerator<br/>(Strategy)<br/>• ICacheStore &<br/>IAnalyticsService"]
+    B --> C["3. Relationships<br/>• UrlService uses<br/>ITokenGenerator<br/>• UrlService decorates<br/>ICacheStore<br/>• UrlService publishes to<br/>ClickChannel"]
+    C --> D["4. Design Patterns<br/>• Strategy (ID<br/>Generation)<br/>• Cache-Aside Pattern<br/>• Producer-Consumer<br/>Channel<br/>• Decorator / Interceptor"]
+    D --> E["5. V1 → V4 Evolution<br/>• V1: Naive MD5 hash<br/>substring (collisions!)<br/>• V2: Central DB<br/>Auto-Increment + Base62<br/>• V3: Distributed Range /<br/>Snowflake Token Gen<br/>• V4: Cache-Aside + Async<br/>Channel + Bloom Filter"]
+    E --> F["6. Problem Archetype<br/>Family 5: Fast Lookups +<br/>Family 7: Senior<br/>Distributed Backend"]
 ```
 
 ---
@@ -28,12 +29,13 @@ flowchart TD
 ## 🏗️ High-Throughput Distributed Architecture
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    Client["Client / Browser"] -->|"1. GET /xyz789"| Gateway["API Gateway / Rate Limiter"]
+    Client["Client / Browser"] -->|"1. GET /xyz789"| Gateway["API Gateway / Rate<br/>Limiter"]
     Gateway -->|"2. ResolveUrl"| Service["UrlShortenerService"]
     
     subgraph ReadPath ["Read Path (under 5ms SLA)"]
-        Service -->|"3. Check Cache"| Cache["L1 In-Memory / L2 Redis Cache"]
+        Service -->|"3. Check Cache"| Cache["L1 In-Memory / L2 Redis<br/>Cache"]
         Cache -.->|"Cache Hit"| Service
         Cache -.->|"Cache Miss"| DB[("Primary Persistent Store<br/>CockroachDB / DynamoDB")]
         DB -.->|"Backfill Cache"| Cache
@@ -43,7 +45,7 @@ flowchart TD
     
     subgraph AsyncPath ["Async Analytics Path (Non-Blocking Stream)"]
         Service -->|"5. Enqueue ClickEvent"| Channel["System.Threading.Channels<br/>(or Kafka / EventHub)"]
-        Channel --> Worker["Background Analytics Worker"]
+        Channel --> Worker["Background Analytics<br/>Worker"]
         Worker --> AnalyticsDB[("Click Analytics Store<br/>ClickHouse / Snowflake")]
     end
 ```

@@ -83,6 +83,7 @@ Ordering invariant strictly preserved: T1 < x < T2 < y < T3
 A single rotation cannot fix a bent path. When inserting into the inner grandchild, we perform a double rotation:
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     subgraph S1["1. Left-Right Zig-Zag (Imbalance at 1)"]
         direction TB

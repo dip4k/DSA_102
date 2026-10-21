@@ -21,12 +21,13 @@ Live sports engines like **Cricbuzz, ESPNcricinfo, and Disney+ Hotstar** are sta
 ## 🎯 CrackingWalnuts 6-Step Methodology Applied
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    A["1. Domain Rule Mining<br/>• 6 Legal Balls/Over<br/>• Odd/Even Strike Shift<br/>• Extras (WD, NB, LB, B)<br/>• Target Chased / All Out"] --> B["2. Entity Modeling<br/>• Match, Innings, Over, Ball<br/>• Player, BatsmanStats, BowlerStats<br/>• Team"]
+    A["1. Domain Rule Mining<br/>• 6 Legal Balls/Over<br/>• Odd/Even Strike Shift<br/>• Extras (WD, NB, LB, B)<br/>• Target Chased / All Out"] --> B["2. Entity Modeling<br/>• Match, Innings, Over,<br/>Ball<br/>• Player, BatsmanStats,<br/>BowlerStats<br/>• Team"]
     B --> C["3. Domain Services<br/>• StrikeRotator<br/>• InningsScorecard<br/>• BowlingRotationRule"]
-    C --> D["4. Pattern Injection<br/>• Observer (Commentary, Push Alerts, UI)<br/>• Event Sourcing (BallBowledEvent)"]
-    D --> E["5. Edge Cases & Concurrency<br/>• Run-out on non-striker end<br/>• Consecutive bowler validation<br/>• Incomplete overs & Super Over"]
-    E --> F["6. Production Defense<br/>• Read/Write Fanout Architecture<br/>• DRS Decision Reversals"]
+    C --> D["4. Pattern Injection<br/>• Observer (Commentary,<br/>Push Alerts, UI)<br/>• Event Sourcing<br/>(BallBowledEvent)"]
+    D --> E["5. Edge Cases &<br/>Concurrency<br/>• Run-out on non-striker<br/>end<br/>• Consecutive bowler<br/>validation<br/>• Incomplete overs &<br/>Super Over"]
+    E --> F["6. Production Defense<br/>• Read/Write Fanout<br/>Architecture<br/>• DRS Decision Reversals"]
 ```
 
 ---

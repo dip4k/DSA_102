@@ -48,6 +48,7 @@ In standard caches, reading a value is a non-mutating operation. In an LRU cache
 ### 1.3 State Transition Flow
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef readOp fill:#e1f5fe,stroke:#0288d1,color:#01579b
     classDef writeOp fill:#fff3e0,stroke:#f57c00,color:#e65100

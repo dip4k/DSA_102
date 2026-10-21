@@ -76,16 +76,17 @@ Never write code in silence. Announce your paradigm choice to the interviewer us
 If your first idea hits a dead end during an interview:
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     TryGreedy["Step 1: Start with Greedy<br/>(Fastest O(N log N))"] --> CheckFail{"Can you find a 3-element<br/>counterexample?"}
     CheckFail -->|"No counterexample found"| LockGreedy["✅ Code Greedy Solution"]
-    CheckFail -->|"Yes, counterexample breaks greedy"| TryDP["Step 2: Pivot to Dynamic Programming<br/>(Overlapping states)"]
+    CheckFail -->|"Yes, counterexample breaks greedy"| TryDP["Step 2: Pivot to Dynamic<br/>Programming<br/>(Overlapping states)"]
     
-    TryDP --> CheckOverlap{"Can states be defined as<br/>integers or matrix coordinates?"}
+    TryDP --> CheckOverlap{"Can states be defined as<br/>integers or matrix<br/>coordinates?"}
     CheckOverlap -->|"Yes"| LockDP["✅ Code DP Table / Memo"]
-    CheckOverlap -->|"No (Need full configurations)"| TryBT["Step 3: Pivot to Backtracking<br/>(Systematic search with pruning)"]
+    CheckOverlap -->|"No (Need full configurations)"| TryBT["Step 3: Pivot to<br/>Backtracking<br/>(Systematic search with<br/>pruning)"]
     
-    TryBT --> LockBT["✅ Code Choose-Explore-Unchoose"]
+    TryBT --> LockBT["✅ Code<br/>Choose-Explore-Unchoose"]
 ```
 
 1. **Don't Panic:** Announce out loud: *"Let's test this greedy idea against a counterexample."*

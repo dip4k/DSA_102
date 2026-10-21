@@ -631,6 +631,7 @@ Music player maintains playlist. User inserts song at arbitrary position:
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart LR
     classDef headNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef node fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1

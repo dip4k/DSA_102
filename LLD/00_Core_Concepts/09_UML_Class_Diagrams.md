@@ -89,10 +89,10 @@ classDiagram
     IPaymentStrategy <|.. PayPalStrategy
 
     %% Composition (Order owns OrderItems)
-    Order 1 *-- 1..* OrderItem
+    Order "1" *-- "1..*" OrderItem
 
     %% Aggregation (Department has Employees, injected)
-    Department 1 o-- 0..* Employee
+    Department "1" o-- "0..*" Employee
 
     %% Association (Driver uses Car temporarily)
     Driver --> Car : drives

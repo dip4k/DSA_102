@@ -72,6 +72,7 @@ Augmented Node Memory Structure:
 ```
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     N10["10 (size: 7)"] --> N5["5 (size: 3)"]
     N10 --> N15["15 (size: 3)"]

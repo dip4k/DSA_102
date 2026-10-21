@@ -97,6 +97,7 @@ Cache:     Each pointer dereference may trigger a separate L1/L2/L3 cache miss!
 ```
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     A["A (Root)"] --> B["B (Left)"]
     A --> C["C (Right)"]
@@ -319,6 +320,7 @@ A node can be visited only after its right child has already been visited (or if
 Consider the arithmetic expression `(3 + 4) * (2 + 5)`:
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     mul["* (Multiply)"] --> plus1["+ (Left Add)"]
     mul --> plus2["+ (Right Add)"]

@@ -45,6 +45,7 @@ Dynamic Programming is simply **Backtracking with Memoization**:
 3. Mastering decision trees first gives learners an intuitive mental model for what a **state** is and why transitions work.
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef foundation fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef core fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
@@ -54,14 +55,14 @@ flowchart TD
     classDef elective fill:#f5f5f5,stroke:#9e9e9e,color:#616161,stroke-width:1.5px,stroke-dasharray: 5 5;
 
     subgraph Tier1["⭐ FAANG Core Curriculum (Weeks 1–14 & 19)"]
-        F["1️⃣ Foundations & Memory (W1–3)<br/>RAM Model, Pointers, Arrays, Stacks, Queues"]:::foundation
-        P["2️⃣ Core Patterns (W4–6)<br/>Two Pointers, Sliding Window, Monotonic Deque, Strings"]:::core
-        T["3️⃣ Trees & Traversals (W7)<br/>Binary Trees, BSTs, Invariants, DFS/BFS"]:::core
-        BT["4️⃣ Backtracking & Decision Trees (W13)<br/>Combinatorial Choices, Pruning, State Tree Exploration"]:::bridge
-        DP["5️⃣ Dynamic Programming I & II (W10–11)<br/>Memoized Decision Trees, Tabulation, Rolling Variables"]:::dp
-        G["6️⃣ Graphs & Greedy (W8–9, W12)<br/>DFS/BFS, DSU, Dijkstra, MST, Greedy Intervals"]:::graphTopic
-        M["7️⃣ Bitmasks & Matrix Patterns (W14)<br/>State Compression, Grid Traversals"]:::core
-        Mock["8️⃣ Full Mock Interviews & Review (W19)<br/>Timed Live Simulations, Architecture Defense"]:::foundation
+        F["1️⃣ Foundations & Memory<br/>(W1–3)<br/>RAM Model, Pointers,<br/>Arrays, Stacks, Queues"]:::foundation
+        P["2️⃣ Core Patterns (W4–6)<br/>Two Pointers, Sliding<br/>Window, Monotonic Deque,<br/>Strings"]:::core
+        T["3️⃣ Trees & Traversals<br/>(W7)<br/>Binary Trees, BSTs,<br/>Invariants, DFS/BFS"]:::core
+        BT["4️⃣ Backtracking &<br/>Decision Trees<br/>(W13)<br/>Combinatorial Choices,<br/>Pruning, State Tree<br/>Exploration"]:::bridge
+        DP["5️⃣ Dynamic Programming I<br/>& II (W10–11)<br/>Memoized Decision Trees,<br/>Tabulation, Rolling<br/>Variables"]:::dp
+        G["6️⃣ Graphs & Greedy<br/>(W8–9, W12)<br/>DFS/BFS, DSU, Dijkstra,<br/>MST, Greedy Intervals"]:::graphTopic
+        M["7️⃣ Bitmasks & Matrix<br/>Patterns (W14)<br/>State Compression, Grid<br/>Traversals"]:::core
+        Mock["8️⃣ Full Mock Interviews<br/>& Review (W19)<br/>Timed Live Simulations,<br/>Architecture Defense"]:::foundation
 
         F --> P --> T --> BT
         BT -->|Intuitive Bridge: Memoize the Decision Tree| DP
@@ -72,7 +73,7 @@ flowchart TD
     end
 
     subgraph Tier2["🧪 Competitive Programming & Specialist Electives (Weeks 15–18)"]
-        E["Weeks 15–18: Optional Advanced Extensions<br/>• Network Flow (Ford-Fulkerson, Dinic's)<br/>• Heavy Range Structures (Segment Trees, Treaps, Link-Cut Trees)<br/>• Suffix Automata & String Kernels<br/>• Fast Fourier Transform (FFT) & Math Geometry"]:::elective
+        E["Weeks 15–18: Optional<br/>Advanced Extensions<br/>• Network Flow<br/>(Ford-Fulkerson, Dinic's)<br/>• Heavy Range Structures<br/>(Segment Trees, Treaps,<br/>Link-Cut Trees)<br/>• Suffix Automata &<br/>String Kernels<br/>• Fast Fourier Transform<br/>(FFT) & Math Geometry"]:::elective
     end
 
     Mock -.->|Optional Post-Mastery Elective| E

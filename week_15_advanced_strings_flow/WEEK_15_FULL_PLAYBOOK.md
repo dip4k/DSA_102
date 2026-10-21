@@ -11,11 +11,12 @@
 **Theme:** Z-algorithm, Segment Trees, Lazy Propagation, and Max Flow / Min Cut theorems
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    W["Week 15: Week 15: Advanced Strings, Range Queries & Network Flow"] --> Core["Core Invariants"]
-    Core --> P1["Mental Model & Mathematical Invariant"]
+    W["Week 15: Week 15:<br/>Advanced Strings, Range<br/>Queries & Network Flow"] --> Core["Core Invariants"]
+    Core --> P1["Mental Model &<br/>Mathematical Invariant"]
     Core --> P2["Space vs Time Trade-offs"]
-    Core --> P3["Senior Interview Articulation"]
+    Core --> P3["Senior Interview<br/>Articulation"]
 ```
 
 ---

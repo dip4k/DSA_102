@@ -136,9 +136,10 @@ For a greedy algorithm to guarantee the optimal solution, the problem MUST have 
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    R["Activities (start, finish)"]
-    R --> N1["Leaves earliest finish time"]
+    R["Activities (start,<br/>finish)"]
+    R --> N1["Leaves earliest finish<br/>time"]
 ```
 
 
@@ -549,9 +550,10 @@ Future Room:              [ 4 ======================================> 16 ]
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    R["ALGORITHM GREEDY ACTIVITY SELECTION"]
-    R --> N1["If tied, sort by start time"]
+    R["ALGORITHM GREEDY ACTIVITY<br/>SELECTION"]
+    R --> N1["If tied, sort by start<br/>time"]
 ```
 
 
@@ -834,16 +836,17 @@ WHY NOT GREEDY:
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef sort fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef slot fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
     classDef prune fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:1.5px;
 
-    R["💼 Job Sequencing with Deadlines & Profits"]:::sort
-    R --> S1["1️⃣ Sort all jobs in descending order of profit (Greedy Choice)"]:::sort
-    S1 --> S2["2️⃣ For each job j: Find latest available time slot t &le; deadline[j]"]:::slot
-    S2 -->|Slot available| Sched["✅ Schedule job j in slot t<br/>Add profit[j], mark slot t occupied"]:::slot
-    S2 -->|No slot &le; deadline[j]| Drop["❌ All prior slots taken: Drop job j"]:::prune
+    R["💼 Job Sequencing with<br/>Deadlines & Profits"]:::sort
+    R --> S1["1️⃣ Sort all jobs in<br/>descending order of<br/>profit (Greedy Choice)"]:::sort
+    S1 --> S2["2️⃣ For each job j: Find<br/>latest available time<br/>slot t &le; deadline[j]"]:::slot
+    S2 -->|Slot available| Sched["✅ Schedule job j in slot<br/>t<br/>Add profit[j], mark slot<br/>t occupied"]:::slot
+    S2 -->|"No slot &le; deadline[j]"| Drop["❌ All prior slots taken:<br/>Drop job j"]:::prune
 ```
 
 
@@ -936,6 +939,7 @@ UNAMBIGUOUS! Decode left to right
 ### The Prefix Code Tree
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 graph TD
     classDef internalNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
     classDef charLeaf fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20

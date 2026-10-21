@@ -104,18 +104,19 @@
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef node fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
     classDef color fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:1.5px;
     classDef rule fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
 
-    R["🎨 Tree DP: K-Coloring (Adjacent Nodes Different)"]:::node
-    R --> S["State: dp[u][c] = Valid colorings of subtree rooted at u where color(u) = c"]:::node
-    S --> C0["If node u is assigned Color Red (c=0)"]:::color
-    S --> C1["If node u is assigned Color Blue (c=1)"]:::color
-    S --> C2["If node u is assigned Color Green (c=2)"]:::color
+    R["🎨 Tree DP: K-Coloring<br/>(Adjacent Nodes<br/>Different)"]:::node
+    R --> S["State: dp[u][c] = Valid<br/>colorings of subtree<br/>rooted at u where<br/>color(u) = c"]:::node
+    S --> C0["If node u is assigned<br/>Color Red (c=0)"]:::color
+    S --> C1["If node u is assigned<br/>Color Blue (c=1)"]:::color
+    S --> C2["If node u is assigned<br/>Color Green (c=2)"]:::color
 
-    C0 --> Trans["⚖️ Constraint Rule for Children:<br/>Each child v can pick any color except u's color (c' != c)<br/>dp[u][c] = Π_{v in children} ( Σ_{c' != c} dp[v][c'] )"]:::rule
+    C0 --> Trans["⚖️ Constraint Rule for<br/>Children:<br/>Each child v can pick any<br/>color except u's color<br/>(c' != c)<br/>dp[u][c] = Π_{v in<br/>children} ( Σ_{c' != c}<br/>dp[v][c'] )"]:::rule
     C1 & C2 --> Trans
 ```
 
@@ -151,8 +152,9 @@ flowchart TD
 
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
-    R["CONCEPT Total ordering respecting dependencies"]
+    R["CONCEPT Total ordering<br/>respecting dependencies"]
     R --> N1["→"]
 ```
 

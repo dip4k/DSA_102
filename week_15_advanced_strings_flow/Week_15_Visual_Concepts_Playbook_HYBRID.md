@@ -109,6 +109,7 @@ Pattern matches occur wherever `Z[i] == len(pattern)` (indices `4` and `7` in co
 ## Pattern Map: Range Query Tree Architecture
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef root fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
     classDef internal fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
@@ -224,6 +225,7 @@ if (lazy[k] != 0):
 ## Pattern Map: Flow Network Components
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart LR
     classDef source fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
     classDef sink fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
@@ -329,6 +331,7 @@ Given two disjoint sets of entities (e.g. `Applicants` and `Jobs`) with compatib
 ### Visual 1: Reduction to Flow Network
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart LR
     classDef source fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
     classDef sink fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20

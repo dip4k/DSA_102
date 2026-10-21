@@ -97,6 +97,7 @@ Both BST key ordering and Heap priority ordering remain strictly preserved!
 ## Pattern Map: Link-Cut Tree Mechanics
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart TD
     classDef rep fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
     classDef path fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20

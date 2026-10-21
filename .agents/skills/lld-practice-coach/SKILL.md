@@ -17,6 +17,7 @@ description: Conduct interactive Low-Level Design (LLD/OOD) mock interviews for 
 When coaching or interviewing the user, follow this sequential 6-phase flow:
 
 ```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}}}%%
 flowchart LR
     P1["1. Clarify Scope & NFRs"] --> P2["2. Core Domain Contracts"]
     P2 --> P3["3. Class & State Modeling"]
