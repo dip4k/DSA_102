@@ -184,9 +184,9 @@ flowchart LR
     classDef node fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
     classDef nullNode fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,color:#616161
 
-    H["🟢 Head: [10<br/>| •]"]:::headNode
-    N2["📦 Node: [20<br/>| •]"]:::node
-    N3["📦 Node: [30<br/>| •]"]:::node
+    H["🟢 Head: (10<br/>| •)"]:::headNode
+    N2["📦 Node: (20<br/>| •)"]:::node
+    N3["📦 Node: (30<br/>| •)"]:::node
     Null["🛑 null"]:::nullNode
 
     H --> N2 --> N3 --> Null
@@ -206,9 +206,9 @@ flowchart LR
     classDef newHead fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
     classDef existing fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
 
-    New["🟢 New Node:<br/>[15 | Next]"]:::newHead
-    OldH["📦 Old Head:<br/>[10 | Next]"]:::existing
-    N2["📦 Node: [20<br/>| Next]"]:::existing
+    New["🟢 New Node:<br/>(15 | Next)"]:::newHead
+    OldH["📦 Old Head:<br/>(10 | Next)"]:::existing
+    N2["📦 Node: (20<br/>| Next)"]:::existing
 
     New -->|"1. New.Next = OldHead<br/>2. Head = New Node"| OldH
     OldH --> N2
@@ -319,7 +319,7 @@ flowchart LR
     classDef back fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
 
     F["🟢 Front: 10<br/>PushFront /<br/>PopFront O(1)"]:::front
-    M["📦 Middle<br/>Elements: [20,<br/>30, 40]"]:::mid
+    M["📦 Middle<br/>Elements: (20,<br/>30, 40)"]:::mid
     B["👈 Back: 50<br/>PushBack / PopBack<br/>O(1)"]:::back
 
     F <--> M <--> B
@@ -363,7 +363,7 @@ flowchart TD
     classDef check fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
     classDef match fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
 
-    Array["📦 Sorted<br/>Array: [1, 3,<br/>5, 7, 9, 11, 13]<br/>Low=0, High=6"]
+    Array["📦 Sorted<br/>Array: (1, 3,<br/>5, 7, 9, 11, 13)<br/>Low=0, High=6"]
     Probe["🔍 Calculate<br/>Mid = 0 +<br/>(6 - 0) / 2 = 3<br/>Value at Index 3<br/>is 7"]:::check
     Match["✅ Target 7<br/>matches Mid<br/>Value (7)<br/>Return Index 3"]:::match
 

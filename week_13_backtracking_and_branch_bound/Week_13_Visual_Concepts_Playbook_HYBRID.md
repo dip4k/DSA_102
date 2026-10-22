@@ -523,27 +523,27 @@ graph TD
     classDef l2Node fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
     classDef leafNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
 
-    Root["👑 Root: []"]:::rootNode
+    Root["👑 Root: ()"]:::rootNode
 
-    P1["[1]"]:::l1Node
-    P2["[2]"]:::l1Node
-    P3["[3]"]:::l1Node
+    P1["(1)"]:::l1Node
+    P2["(2)"]:::l1Node
+    P3["(3)"]:::l1Node
 
-    P1_2["[1, 2]"]:::l2Node
-    P1_3["[1, 3]"]:::l2Node
+    P1_2["(1, 2)"]:::l2Node
+    P1_3["(1, 3)"]:::l2Node
 
-    P2_1["[2, 1]"]:::l2Node
-    P2_3["[2, 3]"]:::l2Node
+    P2_1["(2, 1)"]:::l2Node
+    P2_3["(2, 3)"]:::l2Node
 
-    P3_1["[3, 1]"]:::l2Node
-    P3_2["[3, 2]"]:::l2Node
+    P3_1["(3, 1)"]:::l2Node
+    P3_2["(3, 2)"]:::l2Node
 
-    L1["[1, 2, 3] ✅"]:::leafNode
-    L2["[1, 3, 2] ✅"]:::leafNode
-    L3["[2, 1, 3] ✅"]:::leafNode
-    L4["[2, 3, 1] ✅"]:::leafNode
-    L5["[3, 1, 2] ✅"]:::leafNode
-    L6["[3, 2, 1] ✅"]:::leafNode
+    L1["(1, 2, 3) ✅"]:::leafNode
+    L2["(1, 3, 2) ✅"]:::leafNode
+    L3["(2, 1, 3) ✅"]:::leafNode
+    L4["(2, 3, 1) ✅"]:::leafNode
+    L5["(3, 1, 2) ✅"]:::leafNode
+    L6["(3, 2, 1) ✅"]:::leafNode
 
     Root -->|"Pick 1"| P1
     Root -->|"Pick 2"| P2
@@ -647,20 +647,20 @@ graph TD
     classDef l1Node fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
     classDef leafNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
 
-    Root["👑 Root: []"]:::rootNode
+    Root["👑 Root: ()"]:::rootNode
 
-    C1["[1]"]:::l1Node
-    C2["[2]"]:::l1Node
-    C3["[3]"]:::l1Node
+    C1["(1)"]:::l1Node
+    C2["(2)"]:::l1Node
+    C3["(3)"]:::l1Node
 
-    L1_2["[1, 2] ✅"]:::leafNode
-    L1_3["[1, 3] ✅"]:::leafNode
-    L1_4["[1, 4] ✅"]:::leafNode
+    L1_2["(1, 2) ✅"]:::leafNode
+    L1_3["(1, 3) ✅"]:::leafNode
+    L1_4["(1, 4) ✅"]:::leafNode
 
-    L2_3["[2, 3] ✅"]:::leafNode
-    L2_4["[2, 4] ✅"]:::leafNode
+    L2_3["(2, 3) ✅"]:::leafNode
+    L2_4["(2, 4) ✅"]:::leafNode
 
-    L3_4["[3, 4] ✅"]:::leafNode
+    L3_4["(3, 4) ✅"]:::leafNode
 
     Root -->|"Start=1: Pick 1"| C1
     Root -->|"Start=2: Pick 2"| C2
@@ -1283,21 +1283,21 @@ graph TD
 
     Root["Start at City A<br/>Lower Bound = 50"]:::rootNode
 
-    AB["Path: [A, B]<br/>Bound = 60"]:::activeNode
-    AC["Path: [A, C]<br/>Bound = 65"]:::activeNode
-    AD["Path: [A, D]<br/>Bound = 70"]:::activeNode
+    AB["Path: (A, B)<br/>Bound = 60"]:::activeNode
+    AC["Path: (A, C)<br/>Bound = 65"]:::activeNode
+    AD["Path: (A, D)<br/>Bound = 70"]:::activeNode
 
     Root --> AB
     Root --> AC
     Root --> AD
 
-    ABC["Path: [A, B, C]<br/>Bound = 95<br/>❌ Pruned<br/>(Bound > Best)"]:::prunedNode
-    ABD["Path: [A, B, D]<br/>Bound = 85"]:::activeNode
+    ABC["Path: (A, B, C)<br/>Bound = 95<br/>❌ Pruned<br/>(Bound &gt; Best)"]:::prunedNode
+    ABD["Path: (A, B, D)<br/>Bound = 85"]:::activeNode
 
     AB --> ABC
     AB --> ABD
 
-    ABDC["Path: [A, B, D, C,<br/>A]<br/>👑 Complete<br/>Tour: Cost =<br/>80<br/>✅ Sets<br/>Global Best =<br/>80"]:::bestNode
+    ABDC["Path: (A, B, D, C,<br/>A)<br/>👑 Complete<br/>Tour: Cost =<br/>80<br/>✅ Sets<br/>Global Best =<br/>80"]:::bestNode
 
     ABD --> ABDC
 ```
@@ -1351,7 +1351,7 @@ graph TD
     classDef bestNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:3px,color:#1b5e20
     classDef prunedNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
 
-    Root["👑 Root: []<br/>Bound = 38, v=0,<br/>w=0"]:::rootNode
+    Root["👑 Root: ()<br/>Bound = 38, v=0,<br/>w=0"]:::rootNode
 
     Inc1["Include Item 1<br/>v=10, w=2,<br/>Bound=38"]:::branch
     Exc1["Exclude Item 1<br/>v=0, w=0, Bound=28<br/>✂️ Pruned later"]:::prunedNode

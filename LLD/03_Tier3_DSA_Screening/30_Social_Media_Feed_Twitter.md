@@ -24,7 +24,7 @@ It evaluates a candidate's ability to seamlessly bridge **algorithmic efficiency
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     A["1. Requirement<br/>Mining<br/>• 10 most recent<br/>tweets<br/>• Self + Followees<br/>feed<br/>• Follow /<br/>Unfollow<br/>• Thread-safe<br/>state"] --> B["2. Class Discovery<br/>• Tweet<br/>(Singly-Linked<br/>Node)<br/>• User (Aggregate<br/>Root)<br/>• TwitterEngine<br/>(Domain Service)<br/>• FeedResult<br/>(Value Object)"]
-    B --> C["3. Relationships<br/>• User (1:N)<br/>Followees<br/>[HashSet]<br/>• User (1:1)<br/>HeadTweet<br/>[Linked List]<br/>• TwitterEngine<br/>manages<br/>User Pool"]
+    B --> C["3. Relationships<br/>• User (1:N)<br/>Followees<br/>(HashSet)<br/>• User (1:1)<br/>HeadTweet<br/>(Linked List)<br/>• TwitterEngine<br/>manages<br/>User Pool"]
     C --> D["4. Design Patterns<br/>• Iterator / K-Way<br/>Merge<br/>• Observer /<br/>Fanout<br/>Strategy<br/>• Monotonic Atomic<br/>Clock"]
     D --> E["5. V1 → V4<br/>Evolution<br/>• V1: Naive list<br/>sort on<br/>read<br/>• V2:<br/>Singly-linked list<br/>per user + MaxHeap<br/>• V3: Thread-safe<br/>ConcurrentEngine<br/>• V4: Hybrid<br/>Fanout<br/>(Push/Pull<br/>Architecture)"]
     E --> F["6. Problem<br/>Archetype<br/>Family 5:<br/>In-Memory DSA +<br/>Family 4:<br/>Event-Driven<br/>Feed"]
@@ -59,7 +59,7 @@ graph TD
     end
 
     A1 -.->|"1. Pop T=150, push A2 (T=120)"| Heap
-    Heap --> Out["Result Feed: [150,<br/>140,<br/>130, 120, 100, 90]"]
+    Heap --> Out["Result Feed: (150,<br/>140,<br/>130, 120, 100, 90)"]
 ```
 
 ### High-Scale Architecture: Fanout-on-Write vs. Fanout-on-Read
@@ -75,7 +75,7 @@ flowchart TD
     end
 
     subgraph Fanout-on-Read [Pull Model - Celebrities / Justin Bieber]
-        Celeb["Celebrity Tweets<br/>(>100K followers)"] --> CelebStore["Celebrity Tweet<br/>Store"]
+        Celeb["Celebrity Tweets<br/>(&gt;100K followers)"] --> CelebStore["Celebrity Tweet<br/>Store"]
         Reader["Follower Opens App"] --> ReadTimeline["Read Redis<br/>Timeline Cache<br/>(Push)"]
         Reader --> ReadCeleb["Fetch Followed<br/>Celebrities'<br/>Tweets<br/>(Pull)"]
         ReadTimeline & ReadCeleb --> InMemMerge["In-Memory K-Way<br/>Merge<br/>Final Top 10 Feed"]

@@ -106,17 +106,17 @@
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    classDef node fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
-    classDef color fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:1.5px;
-    classDef rule fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+    classDef node fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px
+    classDef color fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:1.5px
+    classDef rule fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px
 
     R["🎨 Tree DP:<br/>K-Coloring<br/>(Adjacent Nodes<br/>Different)"]:::node
-    R --> S["State: dp[u][c] =<br/>Valid<br/>colorings of<br/>subtree<br/>rooted at u where<br/>color(u) = c"]:::node
+    R --> S["State: dp(u)(c) =<br/>Valid<br/>colorings of<br/>subtree<br/>rooted at u where<br/>color(u) = c"]:::node
     S --> C0["If node u is<br/>assigned<br/>Color Red (c=0)"]:::color
     S --> C1["If node u is<br/>assigned<br/>Color Blue (c=1)"]:::color
     S --> C2["If node u is<br/>assigned<br/>Color Green (c=2)"]:::color
 
-    C0 --> Trans["⚖️<br/>Constraint Rule<br/>for<br/>Children:<br/>Each child v can<br/>pick any<br/>color except u's<br/>color<br/>(c' != c)<br/>dp[u][c] = Π_{v in<br/>children} ( Σ_{c'<br/>!= c}<br/>dp[v][c'] )"]:::rule
+    C0 --> Trans["⚖️<br/>Constraint Rule<br/>for<br/>Children:<br/>Each child v can<br/>pick any<br/>color except u's<br/>color<br/>(c' != c)<br/>dp(u)(c) = Π_{v in<br/>children} ( Σ_{c'<br/>!= c}<br/>dp(v)(c') )"]:::rule
     C1 & C2 --> Trans
 ```
 

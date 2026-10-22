@@ -109,7 +109,7 @@ flowchart TD
     subgraph V1["V1: Naive (Happy-Path)"]
         direction TB
         V1_1["Anemic Models<br/>(Public<br/>getters/setters)"]
-        V1_2["Linear Scans O(N)<br/>Flat List[T]"]
+        V1_2["Linear Scans O(N)<br/>Flat List(T)"]
         V1_3["Hardcoded<br/>Switch/If-Else<br/>Single Class Logic"]
     end
 
@@ -131,7 +131,7 @@ flowchart TD
         direction TB
         V4_1["Thread Safety<br/>(ConcurrentDictionary,<br/>CAS)"]
         V4_2["Fine-Grained Locks / Striping<br/>(Deadlock-Free<br/>Ordering)"]
-        V4_3["Fault Tolerance<br/>(Result[T],<br/>Idempotency,<br/>Outbox)"]
+        V4_3["Fault Tolerance<br/>(Result(T),<br/>Idempotency,<br/>Outbox)"]
     end
 
     V1 -->|"Refactor for Extensibility"| V2

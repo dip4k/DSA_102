@@ -10,204 +10,391 @@
 
 *By the end of this chapter, you will be able to:*
 
-- 🎯 **Internalize** the mechanical access constraints of LIFO (Stack), FIFO (Queue), and Double-Ended (Deque) structures.
-- 🍽️ **Conceptualize** operations through beginner physical metaphors: cafeteria tray dispensers, checkout lines, and double-ended train sidings.
-- ⚙️ **Master** the complete operations suite across both **Array-backed** and **Linked-List-backed** implementations:
+- 🎬 **Internalize** the mechanical access constraints of LIFO (Stack), FIFO (Queue), and Double-Ended (Deque) structures with zero cognitive friction.
+- 🍽️ **Conceptualize** core mechanics through physical everyday metaphors: cafeteria plate dispensers, coffee shop queues, and circular airport baggage carousels.
+- 🪜 **Trace** circular array wrap-around mechanics step-by-step using modulo pointer arithmetic `(index + 1) % capacity`.
+- ⚙️ **Master** the complete operations suite across both **Array-backed** (Circular Buffer) and **Linked-List-backed** structures:
   - Stack: `Push`, `Pop`, `Peek`, `IsEmpty`, `Size`.
   - Queue: `Enqueue`, `Dequeue`, `Peek`, `IsEmpty`, `Size`.
-  - Circular Queue: `front`, `rear`, `(rear + 1) % cap` wrap-around pointer trace.
+  - Circular Queue: `head`, `tail`, modulo index wrap-around, and disambiguating full vs. empty.
   - Deque: `PushFront`, `PushBack`, `PopFront`, `PopBack`, `PeekFront`, `PeekBack`.
-- 🔀 **Differentiate** variations: Stack vs. Queue vs. Deque vs. Monotonic Stack.
-- ⚖️ **Evaluate** trade-offs between array cache locality and linked-list zero-reallocation guarantees.
-- 🏭 **Articulate** production systems architectures (LMAX Disruptor ring buffer, work-stealing deques, OS call stacks) in a 45-minute technical screen.
+  - MinStack: Maintaining `O(1)` prefix minimum invariant states.
+- 🛑 **Identify and avoid** rookie performance killers: `list.RemoveAt(0)` / `pop(0)` `O(N)` array shifting and queue full/empty ambiguity bugs.
+- 🔀 **Select** the optimal data structure using an architectural decision tree for FAANG interviews.
+- 🎙️ **Deliver** the exact 3-sentence verbal talk track to introduce Stacks, Queues, and Ring Buffers under live interview pressure.
+- ⚡ **Construct** production-grade, zero-allocation C# (.NET 8/9) and Python (3.11+) implementations.
 
 ---
 
-## 📖 CHAPTER 1: CONTEXT & MOTIVATION
+## 🎬 PILLAR 1: THE 60-SECOND HOOK & EVERYDAY ANALOGIES
 
-### The Problem: Enforcing Access Discipline for Algorithmic Guarantees
-
-Both dynamic arrays and linked lists permit unrestricted access: an algorithm can read or modify any arbitrary index or pointer at any moment. While flexible, unconstrained access introduces cognitive bloat and permits catastrophic anti-patterns (such as calling `list.RemoveAt(0)` inside a loop, silently turning an `O(N)` pipeline into an `O(N^2)` bottleneck).
-
-By restricting access to strict, designated endpoints, we unlock mechanical performance:
-1. **Stack (LIFO — Last In, First Out):** Insertions and deletions occur exclusively at the top. Mirrors CPU call frames, expression evaluation, and undo/redo histories.
-2. **Queue (FIFO — First In, First Out):** Insertions occur at the back (tail), deletions occur at the front (head). Mirrors network packet buffers, BFS state waves, and asynchronous task workers.
-3. **Deque (Double-Ended Queue):** Insertions and deletions occur at both ends in strictly `O(1)` time, forming the foundation for monotonic sliding windows and work-stealing schedulers.
-
-> 💡 **Core Invariant:** *By restricting operations to boundary endpoints, Stacks and Queues eliminate data shifting, guaranteeing true mechanical `O(1)` insertions and deletions without memory relocation.*
+> **"Hey engineers, welcome back to Week 2 Day 4!"**  
+> In Days 1, 2, and 3, we explored dynamic arrays and linked lists—structures where you can read, insert, or delete at *any* arbitrary index. But in computer science, **unrestricted freedom is often an invitation to catastrophic performance bugs.**  
+> 
+> What if, by deliberately *restricting* where data can enter and exit, we could eliminate memory shifting entirely and guarantee blistering `O(1)` operations every single time?  
+> 
+> Welcome to the world of **Stacks, Queues, and Deques**. These three restricted-access powerhouses form the backbone of modern computing: from the CPU call stack executing your code right now, to the task queues powering asynchronous web servers, to the high-throughput circular ring buffers driving financial trading exchanges. Let's make their mechanics crystal-clear.
 
 ---
 
-## 🧠 CHAPTER 2: BUILDING THE MENTAL MODEL & ANATOMY
-
-### Beginner Physical Metaphors
-
-#### 1. The Spring-Loaded Cafeteria Tray Dispenser (Stack — LIFO)
-Picture a spring-loaded tray dispenser in a cafeteria:
-- Clean trays are loaded onto the top of the stack (`Push`). The spring compresses downward.
-- Diners pick up the topmost tray (`Pop`).
-- You cannot inspect or grab the tray at the bottom without popping every tray above it.
-- The **last** tray washed and placed on the dispenser is the **first** tray taken by a diner (**Last-In, First-Out: LIFO**).
-
-#### 2. The Grocery Store Checkout Line (Queue — FIFO)
-Picture shoppers waiting at a supermarket register:
-- New shoppers join at the tail of the line (`Enqueue`).
-- The cashier serves the shopper waiting at the front of the line (`Dequeue`).
-- Cutting into the middle is strictly prohibited.
-- The **first** customer to step into line is the **first** customer served (**First-In, First-Out: FIFO**).
-
-#### 3. The Two-Ended Train Siding (Deque — Double-Ended Queue)
-Imagine a railway siding with switches open at both ends:
-- Train cars can be coupled onto the West end or the East end (`PushFront` / `PushBack`).
-- Train cars can be decoupled and rolled out from the West end or the East end (`PopFront` / `PopBack`).
-- Combines the superpowers of a Stack and a Queue into one seamless structure.
-
----
-
-### 🖼 Structural Anatomy: Array-Backed vs. Linked-List-Backed
+### The Physical Mental Models
 
 ```text
-1. Array-Backed Stack (Top at Tail):
+┌─────────────────────────┐    ┌─────────────────────────┐    ┌─────────────────────────┐
+│     STACK (LIFO)        │    │      QUEUE (FIFO)       │    │   CIRCULAR DEQUE/RING   │
+│   Cafeteria Tray Stack  │    │    Coffee Shop Line     │    │ Airport Baggage Carousel│
+│                         │    │                         │    │                         │
+│       [ Plate 3 ]  ▲    │    │ [C1] ──► [C2] ──► [C3]  │    │     [Slot 0] ──► [Slot 1]│
+│       [ Plate 2 ]  │    │      ▲                   ▲   │    │        ▲            │   │
+│       [ Plate 1 ]  ▼    │      │                   │   │    │        │            ▼   │
+│   (Top Only: Push/Pop)  │    │ Dequeue           Enqueue │  │     [Slot 3] ◄── [Slot 2]│
+└─────────────────────────┘    └─────────────────────────┘    └─────────────────────────┘
+```
+
+#### 1. The Stack: The Spring-Loaded Cafeteria Plate Stack (LIFO)
+Picture a spring-loaded plate dispenser in a cafeteria:
+- Clean plates are placed on top (`Push`). The spring presses down.
+- Hungry diners grab the topmost plate (`Pop`).
+- You can never inspect or pull out the bottom plate without first removing every single plate sitting on top of it.
+- **The Core Rule:** **LIFO** — *Last In, First Out*. The plate placed last is the first one taken.
+- **Everyday Analogy:** Your browser's **Back Button** or text editor's **Undo** (`Ctrl+Z`). The last page you visited is the first page popped when you click Back.
+
+#### 2. The Queue: The Coffee Shop Line / Ticket Counter (FIFO)
+Picture customers lining up for their morning espresso:
+- New customers join at the back of the line (`Enqueue`).
+- The barista serves the customer waiting at the front of the line (`Dequeue`).
+- Cutting into the middle or leaving from the center is strictly forbidden.
+- **The Core Rule:** **FIFO** — *First In, First Out*. The first customer in line is the first one served.
+- **Everyday Analogy:** A print spooler or web server incoming request buffer. Jobs are processed in the strict arrival order.
+
+#### 3. The Deque & Ring Buffer: The Circular Airport Baggage Carousel
+Picture the circular luggage carousel at an international airport:
+- Luggage enters the carousel continuously, circles around, and gets picked up.
+- When luggage reaches the final physical slot on the belt, it doesn't fall off into the abyss—it smoothly **wraps right back around to Slot 0**!
+- In software, a **Deque** (Double-Ended Queue) allows items to be added or removed from *both* ends in `O(1)` time.
+- A **Circular Ring Buffer** implements this carousel using a fixed-size contiguous array: `head` and `tail` pointers gracefully wrap around using modulo arithmetic: `(index + 1) % capacity`. No data is ever shifted!
+
+> 💡 **The Core Invariant:** *By restricting operations exclusively to boundary endpoints, Stacks and Queues eliminate element shifting. Every push, pop, enqueue, and dequeue is guaranteed strictly `O(1)` time without memory reallocations.*
+
+---
+
+## 🪜 PILLAR 2: THE SCAFFOLDING LADDER & TOY NAPKIN TRACES
+
+Let's walk up the ladder together: from a 4-slot circular buffer napkin trace to classic FAANG interview patterns.
+
+---
+
+### Step 1: The Toy Napkin Trace — 4-Capacity Circular Queue Wrap-Around
+
+Suppose we build an array-backed queue with a fixed capacity of **4 slots** (`Capacity = 4`).  
+We maintain two pointers:
+- `head`: index where the next element will be read / dequeued.
+- `tail`: index where the next element will be written / enqueued.
+- `count`: total number of elements currently in the buffer.
+
+The pointer advancement formula is:
+```text
+next_index = (current_index + 1) % Capacity
+```
+
+Let's trace: **Enqueue(10) -> Enqueue(20) -> Enqueue(30) -> Dequeue() -> Enqueue(40) -> Enqueue(50)**.
+
+```text
+================================================================================
+INITIAL STATE: Capacity = 4, Head = 0, Tail = 0, Count = 0 (EMPTY)
+================================================================================
+Index:       0      1      2      3
+Buffer:   [  __  |  __  |  __  |  __  ]
+             ▲
+          Head, Tail
+
+--------------------------------------------------------------------------------
+ACTION 1: Enqueue(10) -> buffer[0] = 10; tail = (0 + 1) % 4 = 1; count = 1
+--------------------------------------------------------------------------------
+Index:       0      1      2      3
+Buffer:   [  10  |  __  |  __  |  __  ]
+             ▲      ▲
+            Head   Tail
+
+--------------------------------------------------------------------------------
+ACTION 2: Enqueue(20) -> buffer[1] = 20; tail = (1 + 1) % 4 = 2; count = 2
+--------------------------------------------------------------------------------
+Index:       0      1      2      3
+Buffer:   [  10  |  20  |  __  |  __  ]
+             ▲             ▲
+            Head          Tail
+
+--------------------------------------------------------------------------------
+ACTION 3: Enqueue(30) -> buffer[2] = 30; tail = (2 + 1) % 4 = 3; count = 3
+--------------------------------------------------------------------------------
+Index:       0      1      2      3
+Buffer:   [  10  |  20  |  30  |  __  ]
+             ▲                    ▲
+            Head                 Tail
+
+--------------------------------------------------------------------------------
+ACTION 4: Dequeue() -> Reads buffer[head] (10); clear buffer[0];
+                       head = (0 + 1) % 4 = 1; count = 2
+--------------------------------------------------------------------------------
+Index:       0      1      2      3
+Buffer:   [  __  |  20  |  30  |  __  ]
+                    ▲             ▲
+                   Head          Tail
+
+--------------------------------------------------------------------------------
+ACTION 5: Enqueue(40) -> buffer[3] = 40; tail = (3 + 1) % 4 = 0 (WRAP AROUND!);
+                         count = 3
+--------------------------------------------------------------------------------
+Index:       0      1      2      3
+Buffer:   [  __  |  20  |  30  |  40  ]
+             ▲      ▲
+            Tail   Head
+
+Notice: Tail wrapped around to Index 0 because (3 + 1) % 4 = 0!
+
+--------------------------------------------------------------------------------
+ACTION 6: Enqueue(50) -> buffer[0] = 50; tail = (0 + 1) % 4 = 1; count = 4 (FULL!)
+--------------------------------------------------------------------------------
+Index:       0      1      2      3
+Buffer:   [  50  |  20  |  30  |  40  ]
+                    ▲
+                Head, Tail (Count == Capacity == 4 -> BUFFER IS FULL!)
+```
+
+---
+
+### 🧠 PAUSE & PREDICT #1: The Ambiguous Pointers Puzzle
+
+> **Look closely at Action 6 above:**  
+> Both `head` and `tail` point to index `1`!  
+> Now look back at the **Initial State**: both `head` and `tail` pointed to index `0`!  
+> 
+> **Question:** If both `head == tail` at the start (empty) AND `head == tail` at Action 6 (full), how can your algorithm tell whether the queue is **completely empty** or **completely full**?
+> 
+> *Take 15 seconds to formulate your answer before reading on!*
+
+```text
+💡 THE REVELATION:
+If you only store 'head' and 'tail', 'head == tail' is AMBIGUOUS:
+it means either 0 elements or Capacity elements!
+
+There are two production solutions:
+1. The Senior Pattern: Maintain an explicit 'count' variable (Count == 0 vs Count == Capacity).
+   Clean, intuitive, and zero wasted memory!
+2. The Embedded/Hardware Pattern: Keep one slot permanently unused (capacity N, holds at most N - 1 items).
+   Full when: (tail + 1) % Capacity == head.
+```
+
+---
+
+### 🧠 PAUSE & PREDICT #2: The Negative Modulo Trap in Deques
+
+> **Question:** In a Circular Deque, when calling `PopBack()` or `PushFront()`, you must decrement the pointer (`tail - 1` or `head - 1`).  
+> If `head = 0` and `Capacity = 4`, what happens in C# or Java if you simply compute `(head - 1) % Capacity`?
+> 
+> *Think about arithmetic integer truncation in C#/Java!*
+
+```text
+💡 THE REVELATION:
+In C#, C++, and Java, (-1) % 4 evaluates to -1, NOT 3!
+Accessing buffer[-1] triggers an immediate IndexOutOfRangeException / crash!
+
+✅ The Architect Formula:
+new_index = (index - 1 + Capacity) % Capacity
+
+For index = 0 and Cap = 4:
+(0 - 1 + 4) % 4 = 3 % 4 = 3 (Wraps cleanly to the back of the array!)
+```
+
+---
+
+### Step 2: Warm-Up FAANG Pattern — Balanced Bracket State Machine
+
+In coding interviews, Stacks are the ultimate tool for **matching symmetric or nested structures**. When checking if brackets `()[]{}` are valid:
+1. Every time you see an opening bracket `(`, `{`, `[`, push it onto the stack.
+2. Every time you see a closing bracket `)`, `}`, `]`, the top of the stack **must** contain the matching opening bracket!
+3. If the stack is empty when a closing bracket arrives, or if the brackets don't match, return `false`.
+4. At the end, the stack must be completely empty.
+
+```text
+Input: s = "{ [ ( ) ] }"
+
+Step 0: Stack: [ ]
+Step 1: '{' -> Push('{')        Stack: [ '{' ]
+Step 2: '[' -> Push('[')        Stack: [ '{', '[' ]
+Step 3: '(' -> Push('(')        Stack: [ '{', '[', '(' ]
+Step 4: ')' -> Pop() == '('     Stack: [ '{', '[' ]      (Matches!)
+Step 5: ']' -> Pop() == '['     Stack: [ '{' ]           (Matches!)
+Step 6: '}' -> Pop() == '{'     Stack: [ ]               (Matches!)
+Result: Stack is empty -> VALID!
+```
+
+---
+
+### Step 3: Classic FAANG Medium — MinStack in O(1) Auxiliary Time
+
+A standard interview question asks: *"Design a stack that supports `Push`, `Pop`, `Top`, and retrieving the minimum element `GetMin` in strictly `O(1)` time."*
+
+A rookie mistake is keeping a single `minVal` variable. If the current minimum is popped, you'd have to scan the entire stack in `O(N)` time to find the new minimum!
+
+**The Invariant Solution:**  
+Store each element alongside the minimum observed *up to that point*: `(Value, MinSoFar)`.
+
+```text
+Push(5):   min(5, ∞) = 5   ──► Stack: [ (5, min: 5) ]
+Push(3):   min(3, 5) = 3   ──► Stack: [ (5, min: 5), (3, min: 3) ]
+Push(7):   min(7, 3) = 3   ──► Stack: [ (5, min: 5), (3, min: 3), (7, min: 3) ]
+Push(2):   min(2, 3) = 2   ──► Stack: [ (5, min: 5), (3, min: 3), (7, min: 3), (2, min: 2) ]
+
+GetMin():  Returns top frame's min: 2 in O(1)!
+Pop():     Removes (2, min: 2)
+GetMin():  Returns top frame's min: 3 in O(1)! (Automatically restored!)
+```
+
+---
+
+## 🎨 PILLAR 3: PRAGMATIC VISUAL MODELS
+
+### 1. ASCII Visual: Array-Backed Stack vs. Linked-List Stack
+
+```text
+1. Array-Backed Stack (Contiguous Memory, Top at Tail):
 ┌────┬────┬────┬────┬────┬────┐
-│ 10 │ 20 │ 30 │ 40 │ __ │ __ │   Count = 4
-└────┴────┴────┴────┴────┴────┘   Top = Count - 1 (Index 3: 40)
-                                  Push(50) -> writes to Index 4 in O(1)
-                                  Pop()    -> clears Index 3 in O(1)
+│ 10 │ 20 │ 30 │ 40 │ __ │ __ │   Count = 4, Capacity = 6
+└────┴────┴────┴────┴────┴────┘   Top = Count - 1 (Index 3 -> Val 40)
+                                  Push(50) -> Writes to Index 4 in O(1)
+                                  Pop()    -> Decrements Count to 3 in O(1)
 
-2. Linked-List-Backed Stack (Top at Head):
-Top ──► [ 40 | Next ] ──► [ 30 | Next ] ──► [ 20 | Next ] ──► [ 10 | null ]
-        Push(50) -> Prepend new node in O(1)
-        Pop()    -> Advance Top = Top.Next in O(1)
-
-3. Array-Backed Circular Queue (Head & Tail Wrap):
-Buffer (Cap = 6):  [ 50 | 60 | __ | __ | 30 | 40 ]
-                      ▲        ▲           ▲
-                     Tail-1   Tail        Head
-                   Enqueue(70) writes to Tail (Index 2)
-                   Dequeue() reads from Head (Index 4)
+2. Linked-List-Backed Stack (Scattered Heap Nodes, Top at Head):
+Top ──► ┌───────────────┐      ┌───────────────┐      ┌───────────────┐
+        │ Val: 40 | Next├─────►│ Val: 30 | Next├─────►│ Val: 20 | null │
+        └───────────────┘      └───────────────┘      └───────────────┘
+        Push(50) -> Prepend newNode.Next = Top; Top = newNode in O(1)
+        Pop()    -> Top = Top.Next in O(1)
 ```
 
 ---
 
-## 🛠️ CHAPTER 3: COMPLETE OPERATIONS SUITE & STEP-BY-STEP TRACES
+### 2. Modern Mermaid Flowchart: Stack vs. Queue vs. Deque Selection
 
-### 1. The Stack Operations Suite (LIFO)
+When tackling a FAANG algorithmic challenge, use this mental flowchart to immediately pick the right structure:
 
-| Operation | Array-Backed Mechanics | Linked-List Mechanics | Time Complexity | Space Complexity |
-| :--- | :--- | :--- | :--- | :--- |
-| **`Push(val)`** | Write to `buffer[count++]`; resize if full | Allocate node; `newNode.next = top; top = newNode;` | **Amortized `O(1)`** | `O(1)` |
-| **`Pop()`** | Read `buffer[--count]`; clear slot | Save `top.val`; `top = top.next;` | **`O(1)`** | `O(1)` |
-| **`Peek()`** | Read `buffer[count - 1]` | Read `top.val` | **`O(1)`** | `O(1)` |
-| **`IsEmpty`** | `count == 0` | `top == null` | **`O(1)`** | `O(1)` |
-| **`Size` / `Count`** | Return `count` | Return `count` (cached scalar) | **`O(1)`** | `O(1)` |
+```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
+flowchart TD
+    Start["🎯 Choose Linear Abstract Data Type"] --> Q1{"What access discipline<br/>does the problem require?"}
+    
+    Q1 -->|Most Recent First / Backtracking| S1["📚 Stack (LIFO)"]
+    Q1 -->|First Come First Served / Sequential Waves| Q2["🚶 Queue (FIFO)"]
+    Q1 -->|Both Ends / Sliding Window Extrema| D1["↔️ Deque (Double-Ended)"]
+    
+    S1 --> S_Ex["💡 Use Cases:<br/>• DFS / Recursion Simulation<br/>• Undo / Redo Buffers<br/>• Bracket Matching / Syntax Parsing<br/>• Monotonic Next Greater Element"]
+    Q2 --> Q_Ex["💡 Use Cases:<br/>• BFS Level-Order Traversal<br/>• Producer-Consumer Message Queues<br/>• Async Task Schedulers<br/>• Rate Limiting Leaky Bucket"]
+    D1 --> D_Ex["💡 Use Cases:<br/>• Sliding Window Maximum / Minimum<br/>• Work-Stealing Thread Pools<br/>• Palindrome Verification<br/>• Reversible History Buffers"]
 
-#### Step-by-Step Stack Execution Trace:
-```text
-State 0 (Empty):     Stack: [ ]
-State 1 (Push 10):   Stack: [ 10 ]               <-- Top: 10
-State 2 (Push 20):   Stack: [ 10, 20 ]           <-- Top: 20
-State 3 (Push 30):   Stack: [ 10, 20, 30 ]       <-- Top: 30
-State 4 (Pop()):     Removes 30. Stack: [ 10, 20 ] <-- Top: 20
-State 5 (Peek()):    Returns 20. Stack remains [ 10, 20 ]
+    style Start fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    style Q1 fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#e65100
+    style S1 fill:#ede7f6,stroke:#7e57c2,stroke-width:2px,color:#311b92
+    style Q2 fill:#e8f5e9,stroke:#43a047,stroke-width:2px,color:#1b5e20
+    style D1 fill:#fce4ec,stroke:#d81b60,stroke-width:2px,color:#880e4f
+    style S_Ex fill:#f3e5f5,stroke:#ab47bc,stroke-width:1px,color:#4a148c
+    style Q_Ex fill:#e8f8f5,stroke:#26a69a,stroke-width:1px,color:#004d40
+    style D_Ex fill:#fff8e1,stroke:#ffa000,stroke-width:1px,color:#e65100
 ```
 
 ---
 
-### 2. The Queue Operations Suite (FIFO) & Circular Buffer Mechanics
+## 🛑 PILLAR 4: THE ROOKIE TRAP ZONE
 
-A naive array queue that removes from index 0 requires shifting all remaining elements left in `O(N)` time. A **Circular Buffer** solves this by wrapping head and tail pointers around a fixed-size contiguous array using modular arithmetic:
+### Trap 1: The O(N) Array Shift Dequeue Disaster
 
-```text
-Formula for Circular Pointer Advancement:
-next_tail = (tail + 1) % Capacity
-next_head = (head + 1) % Capacity
+```csharp
+// ❌ ROOKIE BLUNDER: Using List<T>.RemoveAt(0) or Python list.pop(0) as a Queue
+public class NaiveQueue<T>
+{
+    private List<T> _items = new();
+
+    public void Enqueue(T item) => _items.Add(item);       // O(1) amortized
+
+    public T Dequeue()
+    {
+        T item = _items[0];
+        _items.RemoveAt(0); // 💥 DISASTER: Copies all N-1 elements left! O(N) operation!
+        return item;        // In a loop of N dequeues, total runtime explodes to O(N^2)!
+    }
+}
 ```
 
-#### Step-by-Step Circular Queue Trace with Wrap-Around:
-Initial State: `Capacity = 5`, `Head = 3`, `Tail = 3`, `Count = 0` (Empty).
+```csharp
+// ✅ SENIOR ARCHITECT PATTERN: Circular Ring Buffer with O(1) Pointer Increment
+public class ProductionQueue<T>
+{
+    private readonly T[] _buffer;
+    private int _head, _tail, _count;
 
-```text
-Step 1: Enqueue(10) -> buffer[3] = 10; tail = (3 + 1) % 5 = 4; count = 1
-Index:     0      1      2      3      4
-Buffer: [ __  |  __  |  __  |  10  |  __  ]
-                               ▲      ▲
-                              Head   Tail
+    public ProductionQueue(int capacity) => _buffer = new T[capacity];
 
-Step 2: Enqueue(20) -> buffer[4] = 20; tail = (4 + 1) % 5 = 0; count = 2 (WRAPS AROUND TO 0!)
-Index:     0      1      2      3      4
-Buffer: [ __  |  __  |  __  |  10  |  20  ]
-           ▲                   ▲
-          Tail                Head
+    public void Enqueue(T item)
+    {
+        if (_count == _buffer.Length) throw new InvalidOperationException("Full");
+        _buffer[_tail] = item;
+        _tail = (_tail + 1) % _buffer.Length; // ⚡ O(1) Modulo Increment
+        _count++;
+    }
 
-Step 3: Enqueue(30) -> buffer[0] = 30; tail = (0 + 1) % 5 = 1; count = 3
-Index:     0      1      2      3      4
-Buffer: [ 30  |  __  |  __  |  10  |  20  ]
-                  ▲            ▲
-                 Tail         Head
-
-Step 4: Dequeue() -> Reads buffer[head] (10); head = (3 + 1) % 5 = 4; count = 2
-Index:     0      1      2      3      4
-Buffer: [ 30  |  __  |  __  |  __  |  20  ]
-                  ▲                   ▲
-                 Tail                Head
-
-Step 5: Dequeue() -> Reads buffer[head] (20); head = (4 + 1) % 5 = 0; count = 1 (WRAPS AROUND TO 0!)
-Index:     0      1      2      3      4
-Buffer: [ 30  |  __  |  __  |  __  |  __  ]
-           ▲      ▲
-          Head   Tail
+    public T Dequeue()
+    {
+        if (_count == 0) throw new InvalidOperationException("Empty");
+        T item = _buffer[_head];
+        _buffer[_head] = default!;            // 🧹 Prevent GC Memory Leak
+        _head = (_head + 1) % _buffer.Length; // ⚡ O(1) Modulo Increment
+        _count--;
+        return item;
+    }
+}
 ```
-
-- **Empty Condition:** `Count == 0`
-- **Full Condition:** `Count == Capacity`
 
 ---
 
-### 3. The Deque Operations Suite (Double-Ended Queue)
+### Trap 2: Distinguishing Queue Full vs. Empty when `head == tail`
 
-A Deque supports bidirectional insertion and deletion in strictly `O(1)` time at both endpoints:
-
-```text
-             PushFront ──► ┌──────────────────────┐ ◄── PushBack
-                           │       DEQUE          │
-             PopFront  ◄── └──────────────────────┘ ──► PopBack
-```
-
-#### Circular Array-Backed Deque Pointer Calculations:
-- **`PushBack(val)`:** `buffer[tail] = val; tail = (tail + 1) % Cap; count++;`
-- **`PopBack()`:** `tail = (tail - 1 + Cap) % Cap; val = buffer[tail]; count--;`
-- **`PushFront(val)`:** `head = (head - 1 + Cap) % Cap; buffer[head] = val; count++;`
-- **`PopFront()`:** `val = buffer[head]; head = (head + 1) % Cap; count--;`
+| Scenario | ❌ Rookie Blunder | ✅ Senior Architect Pattern |
+| :--- | :--- | :--- |
+| **Full vs. Empty Detection** | Assumes `head == tail` always means the queue is empty. When the queue fills up completely, `tail` catches up to `head`, and the queue falsely reports `IsEmpty = true`! | Maintains an explicit `_count` scalar. `IsEmpty => _count == 0;`, `IsFull => _count == _buffer.Length;`. Zero ambiguity, zero wasted slots. |
+| **Negative Wrap-Around** | Computes `(head - 1) % Cap`, which yields negative indices in C#, Java, and C++, crashing at runtime. | Computes `(head - 1 + Cap) % Cap`, guaranteeing positive wrap-around. |
+| **GC Memory Leaks** | Forgets to clear the slot on `Dequeue()`, leaving stale object references alive in the array buffer. | Sets `_buffer[_head] = default!;` (C#) or `self._buffer[self._head] = None` (Python) so the Garbage Collector can reclaim heap memory. |
 
 ---
 
-### 4. MinStack: O(1) Auxiliary State Invariant
+## 🎙️ PILLAR 5: 45-MINUTE INTERVIEW VERBAL SCRIPTS
 
-To achieve `O(1)` retrieval of the minimum value without scanning the stack, each stack entry is paired with the minimum observed up to that depth:
+When an interviewer asks you to implement a Queue or Deque from scratch, do NOT just start coding. Deliver this polished 3-sentence talk track first:
 
 ```text
-Push(5):   Element: 5, MinSoFar: min(5, ∞) = 5      -> Stack: [ (5, min: 5) ]
-Push(3):   Element: 3, MinSoFar: min(3, 5) = 3      -> Stack: [ (5, min: 5), (3, min: 3) ]
-Push(7):   Element: 7, MinSoFar: min(7, 3) = 3      -> Stack: [ (5, min: 5), (3, min: 3), (7, min: 3) ]
-Pop():     Removes (7, min: 3)                      -> Current Min remains 3 in O(1)!
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                  🎙️ THE 3-SENTENCE SENIOR TALK TRACK                         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ 1. "A naive queue built by removing from index 0 of a dynamic array forces  │
+│    an O(N) memory shift on every dequeue, degrading throughput to O(N^2)."  │
+│                                                                             │
+│ 2. "To achieve strictly O(1) time across all operations with zero memory     │
+│    reallocations, I will back this queue with a fixed-size Circular Buffer   │
+│    using modulo arithmetic: (index + 1) % capacity."                        │
+│                                                                             │
+│ 3. "To cleanly differentiate between completely empty and completely full   │
+│    states without wasting a buffer slot, I will maintain an explicit count  │
+│    tracker alongside our head and tail pointers."                           │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
----
-
-## 🔀 CHAPTER 4: VARIATIONS — STACK vs. QUEUE vs. DEQUE vs. MONOTONIC STACK
-
-| Data Structure | Access Discipline | Primary Operations | Algorithmic Use Case | Production Real-World Use |
-| :--- | :--- | :--- | :--- | :--- |
-| **Stack** | LIFO (Last-In, First-Out) | `Push`, `Pop`, `Peek` | DFS, syntax parsing, backtracking, recursion unwinding | CPU call stack, browser back button, undo/redo |
-| **Queue** | FIFO (First-In, First-Out) | `Enqueue`, `Dequeue`, `Peek` | BFS tree/graph traversal, level-order traversal | Network socket buffers, print spoolers, Kafka topic buffers |
-| **Deque** | Double-Ended (LIFO + FIFO) | `PushFront/Back`, `PopFront/Back` | Sliding window minimum/maximum, palindromes | Work-stealing thread pools (Tokio, .NET TPL), scheduler queues |
-| **Monotonic Stack**| Monotonically sorted order | Monotonic `Push` (evicts violations) | Next Greater Element, Daily Temperatures, Stock Span | Real-time order book matching, streaming sensor peaks |
+### Verbal Script 2: Defending the MinStack O(1) Auxiliary Space Invariant
+> *"To support `GetMin()` in strictly `O(1)` time without scanning the stack, we augment our stack frames. A common pitfall is storing a single global minimum variable, which breaks as soon as that minimum element is popped off. Instead, each stack frame stores an immutable tuple: `(Value, MinSoFar)`, where `MinSoFar = min(Value, previousMin)`. Because stack operations strictly obey LIFO ordering, the minimum of the active prefix is preserved immutably at the top frame, guaranteeing `O(1)` retrieval with modest `O(N)` auxiliary space."*
 
 ---
 
-## ⚙️ CHAPTER 5: DUAL-LANGUAGE PRODUCTION IMPLEMENTATIONS
+## ⚡ PILLAR 6: PRODUCTION DUAL-LANGUAGE IMPLEMENTATIONS
 
-### 1. C# (.NET 8/9): Production Stacks, Queues, and Deques
+### 1. Modern C# (.NET 8/9): Production Stacks, Queues, and Deques
 
 ```csharp
 using System;
@@ -215,8 +402,10 @@ using System.Collections.Generic;
 
 namespace LinearStructures.Day04;
 
-// 1. Array-Backed Circular Queue: O(1) All Ops
-public class CircularQueue<T>
+/// <summary>
+/// 1. Array-Backed Circular Queue: Strictly O(1) All Ops with Zero-Allocation Modulo Wrap.
+/// </summary>
+public sealed class CircularQueue<T>
 {
     private readonly T[] _buffer;
     private int _head;
@@ -240,7 +429,7 @@ public class CircularQueue<T>
     public void Enqueue(T item)
     {
         if (IsFull)
-            throw new InvalidOperationException("Queue is full");
+            throw new InvalidOperationException("Queue is full. Capacity exceeded.");
 
         _buffer[_tail] = item;
         _tail = (_tail + 1) % _buffer.Length;
@@ -250,10 +439,10 @@ public class CircularQueue<T>
     public T Dequeue()
     {
         if (IsEmpty)
-            throw new InvalidOperationException("Queue is empty");
+            throw new InvalidOperationException("Queue is empty.");
 
         T item = _buffer[_head];
-        _buffer[_head] = default!; // Clear GC reference
+        _buffer[_head] = default!; // Clear reference for Garbage Collection
         _head = (_head + 1) % _buffer.Length;
         _count--;
         return item;
@@ -262,14 +451,16 @@ public class CircularQueue<T>
     public T Peek()
     {
         if (IsEmpty)
-            throw new InvalidOperationException("Queue is empty");
+            throw new InvalidOperationException("Queue is empty.");
 
         return _buffer[_head];
     }
 }
 
-// 2. Linked-List-Backed Stack: O(1) Push/Pop, Zero Resizing Overhead
-public class LinkedStack<T>
+/// <summary>
+/// 2. Linked-List-Backed Stack: Strictly O(1) Push/Pop with Zero Array Reallocation Spikes.
+/// </summary>
+public sealed class LinkedStack<T>
 {
     private sealed class Node(T value, Node? next)
     {
@@ -281,7 +472,7 @@ public class LinkedStack<T>
     private int _count;
 
     public int Count => _count;
-    public bool IsEmpty => _top == null;
+    public bool IsEmpty => _top is null;
 
     public void Push(T item)
     {
@@ -292,7 +483,7 @@ public class LinkedStack<T>
     public T Pop()
     {
         if (IsEmpty)
-            throw new InvalidOperationException("Stack is empty");
+            throw new InvalidOperationException("Stack is empty.");
 
         T val = _top!.Value;
         _top = _top.Next;
@@ -303,13 +494,16 @@ public class LinkedStack<T>
     public T Peek()
     {
         if (IsEmpty)
-            throw new InvalidOperationException("Stack is empty");
+            throw new InvalidOperationException("Stack is empty.");
+
         return _top!.Value;
     }
 }
 
-// 3. Array-Backed Circular Deque: O(1) Both Ends
-public class CircularDeque<T>
+/// <summary>
+/// 3. Array-Backed Circular Deque: O(1) Double-Ended Operations.
+/// </summary>
+public sealed class CircularDeque<T>
 {
     private readonly T[] _buffer;
     private int _head;
@@ -332,15 +526,15 @@ public class CircularDeque<T>
 
     public void PushFront(T item)
     {
-        if (IsFull) throw new InvalidOperationException("Deque is full");
-        _head = (_head - 1 + _buffer.Length) % _buffer.Length;
+        if (IsFull) throw new InvalidOperationException("Deque is full.");
+        _head = (_head - 1 + _buffer.Length) % _buffer.Length; // Safe negative wrap
         _buffer[_head] = item;
         _count++;
     }
 
     public void PushBack(T item)
     {
-        if (IsFull) throw new InvalidOperationException("Deque is full");
+        if (IsFull) throw new InvalidOperationException("Deque is full.");
         _buffer[_tail] = item;
         _tail = (_tail + 1) % _buffer.Length;
         _count++;
@@ -348,7 +542,7 @@ public class CircularDeque<T>
 
     public T PopFront()
     {
-        if (IsEmpty) throw new InvalidOperationException("Deque is empty");
+        if (IsEmpty) throw new InvalidOperationException("Deque is empty.");
         T item = _buffer[_head];
         _buffer[_head] = default!;
         _head = (_head + 1) % _buffer.Length;
@@ -358,20 +552,22 @@ public class CircularDeque<T>
 
     public T PopBack()
     {
-        if (IsEmpty) throw new InvalidOperationException("Deque is empty");
-        _tail = (_tail - 1 + _buffer.Length) % _buffer.Length;
+        if (IsEmpty) throw new InvalidOperationException("Deque is empty.");
+        _tail = (_tail - 1 + _buffer.Length) % _buffer.Length; // Safe negative wrap
         T item = _buffer[_tail];
         _buffer[_tail] = default!;
         _count--;
         return item;
     }
 
-    public T PeekFront() => IsEmpty ? throw new InvalidOperationException("Deque is empty") : _buffer[_head];
-    public T PeekBack() => IsEmpty ? throw new InvalidOperationException("Deque is empty") : _buffer[(_tail - 1 + _buffer.Length) % _buffer.Length];
+    public T PeekFront() => IsEmpty ? throw new InvalidOperationException("Deque is empty.") : _buffer[_head];
+    public T PeekBack() => IsEmpty ? throw new InvalidOperationException("Deque is empty.") : _buffer[(_tail - 1 + _buffer.Length) % _buffer.Length];
 }
 
-// 4. MinStack: O(1) Push, Pop, Top, and GetMin
-public class MinStack
+/// <summary>
+/// 4. MinStack: O(1) Push, Pop, Top, and GetMin using Prefix Min Tuples.
+/// </summary>
+public sealed class MinStack
 {
     private readonly Stack<(int Value, int MinSoFar)> _stack = new();
 
@@ -384,26 +580,28 @@ public class MinStack
     public void Pop()
     {
         if (_stack.Count == 0)
-            throw new InvalidOperationException("Stack is empty");
+            throw new InvalidOperationException("Stack is empty.");
         _stack.Pop();
     }
 
     public int Top()
     {
         if (_stack.Count == 0)
-            throw new InvalidOperationException("Stack is empty");
+            throw new InvalidOperationException("Stack is empty.");
         return _stack.Peek().Value;
     }
 
     public int GetMin()
     {
         if (_stack.Count == 0)
-            throw new InvalidOperationException("Stack is empty");
+            throw new InvalidOperationException("Stack is empty.");
         return _stack.Peek().MinSoFar;
     }
 }
 
-// 5. Parentheses Validation State Machine
+/// <summary>
+/// 5. Parentheses Validation State Machine.
+/// </summary>
 public static class BracketValidator
 {
     public static bool IsValid(string s)
@@ -478,7 +676,7 @@ class CircularQueue(Generic[T]):
         if self.is_empty:
             raise IndexError("CircularQueue is empty")
         item = self._buffer[self._head]
-        self._buffer[self._head] = None  # Clear reference
+        self._buffer[self._head] = None  # Clear reference for GC
         self._head = (self._head + 1) % self._capacity
         self._count -= 1
         return item  # type: ignore[return-value]
@@ -625,71 +823,58 @@ def is_valid_parentheses(s: str) -> bool:
 
 
 if __name__ == "__main__":
-    cq = CircularQueue[int](3)
+    cq = CircularQueue[int](4)
     cq.enqueue(10)
     cq.enqueue(20)
-    print(f"Dequeued: {cq.dequeue()}")  # 10
     cq.enqueue(30)
+    print(f"Dequeued: {cq.dequeue()}")  # 10
     cq.enqueue(40)
+    cq.enqueue(50)                      # Wraps to index 0!
     print(f"Full: {cq.is_full}")        # True
-
-    cd = CircularDeque[int](4)
-    cd.push_front(100)
-    cd.push_back(200)
-    cd.push_front(50)
-    print(f"PopFront: {cd.pop_front()}") # 50
-    print(f"PopBack: {cd.pop_back()}")   # 200
+    print(f"Count: {cq.count}")         # 4
 ```
 
 ---
 
-## 🔬 CHAPTER 6: DIFFERENCES & COMPLEXITY DECONSTRUCTION
+## 🔬 STRUCTURAL TRADE-OFF MATRIX: ARRAY VS. LINKED BACKINGS
 
-### Comprehensive Structural Trade-Off Matrix: Array vs. Linked Backings
-
-| Dimension | Array-Backed Stack / Queue | Linked-List-Backed Stack / Queue |
+| Dimension | Array-Backed Circular Queue / Stack | Linked-List-Backed Queue / Stack |
 | :--- | :--- | :--- |
-| **Push / Enqueue Time** | **Amortized `O(1)`** (Dynamic) / **`O(1)`** (Circular) | **Strictly `O(1)`** (Worst-case guaranteed) |
+| **Push / Enqueue Time** | **`O(1)`** (bounded) / **Amortized `O(1)`** (dynamic) | **Strictly `O(1)`** (Hard real-time guarantee) |
 | **Pop / Dequeue Time** | **`O(1)`** | **`O(1)`** |
 | **Peek Time** | **`O(1)`** | **`O(1)`** |
-| **Per-Element Memory Overhead** | **0 bytes** (tightly packed buffer) | **16 to 24 bytes** (Node object headers + pointers) |
-| **Cache Locality** | **Optimal (L1/L2 prefetching)** | **Poor (pointer chasing across heap)** |
-| **Reallocation Latency Spikes** | Yes (when dynamic array doubles) | **Zero (no resizing spikes)** |
-| **Garbage Collector Churn** | Minimal (reuses single buffer) | High (allocates a new Node object per push) |
-| **Best Production Fit** | High-throughput general systems | Real-time hard deadlines where latency spikes are forbidden |
+| **Per-Element Memory Overhead** | **0 bytes** (tight contiguous memory block) | **16 to 24 bytes** (Node object headers + pointers) |
+| **Cache Locality** | **Optimal** (L1/L2 hardware prefetcher friendly) | **Poor** (pointer chasing across heap addresses) |
+| **Reallocation Spikes** | None in circular buffer; doubling spike in dynamic array | **Zero** (no array resizing ever occurs) |
+| **GC Pressure** | Low (single reused array buffer) | High (allocates a new Node object on every single push) |
+| **Best Production Fit** | High-throughput general systems, packet processing | Hard real-time constraints where latency jitter is banned |
 
 ---
 
-## 🎙️ CHAPTER 7: 45-MINUTE INTERVIEW VERBAL SCRIPTS
+## ⚖️ PRODUCTION SYSTEMS CONTEXT & ENTERPRISE TRADE-OFFS
 
-### Script 1: Circular Queue Indexing & Full/Empty Differentiation
-> *"A naive queue implementation using a dynamic array requires shifting all subsequent elements on `Dequeue`, degrading runtime to `O(N)`. To achieve constant `O(1)` time, I back the queue with a fixed circular buffer. We track two pointers—`head` for reading and `tail` for writing—advancing them via modulo arithmetic: `index = (index + 1) % Capacity`. To cleanly differentiate between completely empty and completely full states without ambiguity, I maintain an explicit `count` variable. This avoids wasting a buffer slot and guarantees constant-time operations."*
+> [!NOTE]
+> **Enterprise Architecture: High-Throughput Ring Buffers (LMAX Disruptor)**  
+> High-frequency financial trading engines (such as the LMAX Disruptor) reject standard thread-safe queues because lock contention and heap allocations cause severe microsecond latency jitter. Instead, they use a fixed-size contiguous Ring Buffer sized to a power of two (`2^K`).  
+> By sizing the buffer to `2^K`, the expensive hardware modulo division operator `% Capacity` is replaced with an ultra-fast bitwise AND:
+> ```text
+> fast_index = current_index & (Capacity - 1)
+> ```
+> This allows tens of millions of events per second to be written and read with zero garbage collection overhead.
 
-### Script 2: Defending the MinStack O(1) Auxiliary Invariant
-> *"To support `GetMin()` in `O(1)` time without scanning, we augment the stack. A common pitfall is storing a single global minimum variable, which fails when the minimum element is popped off. Instead, each frame stores a pair: `(Value, MinSoFar)`, where `MinSoFar = min(Value, previousMin)`. Because stack operations strictly obey LIFO ordering, the minimum of the active prefix is preserved immutably at the top frame, guaranteeing `O(1)` retrieval at the cost of a small `O(N)` auxiliary space overhead."*
+> [!NOTE]
+> **Enterprise Architecture: Work-Stealing Deques in Parallel Task Schedulers**  
+> Modern runtime schedulers (such as the .NET Task Parallel Library, Go goroutine work-stealers, and Tokio in Rust) assign each worker CPU thread a dedicated **Deque**:
+> 1. The owner worker thread pushes and pops its own sub-tasks from the **Bottom (LIFO)**. Because the most recently created task is already warm in L1/L2 CPU cache, this yields maximum cache locality.
+> 2. When another thread runs out of work, it becomes a "thief" and steals tasks from the **Top (FIFO)** of the busy thread's deque. Because the thief operates on the opposite end, lock contention is almost completely eliminated!
 
-### Script 3: Choosing Between Array Stack and Linked Stack
-> *"In production, an array-backed stack almost always outperforms a linked list stack. An array-backed stack maintains contiguous memory, maximizing L1 cache locality and incurring zero per-node pointer overhead. A linked stack allocates a new node object on the heap for every single push, incurring 16 to 24 bytes of object header and pointer overhead while fragmenting memory."*
+> [!NOTE]
+> **Enterprise Architecture: The OS Call Stack & Recursion Depth Limits**  
+> Every operating system thread has a fixed-size contiguous memory block for its call stack (typically 1MB on Windows, 8MB on Linux). Every function invocation pushes an activation record (return address, parameters, local variables). When recursion depth exceeds this region without unwinding, the OS raises a fatal `StackOverflowException`. In production code, any recursion that depends on user input size `N` must be converted to an iterative loop using an explicit heap-backed Stack.
 
 ---
 
-## ⚖️ CHAPTER 8: PRODUCTION TRADEOFFS & SYSTEMS CONTEXT
-
-> [!NOTE]
-> **Interview & Systems Context: CPU Call Stack & Recursion Depth Limits**  
-> Operating systems allocate a fixed contiguous virtual memory stack for each thread (typically 1MB on Windows, 8MB on Linux). Each function call pushes an activation record (return address, parameters, local variables). When recursion depth exceeds this region without unwinding, the OS raises a fatal `StackOverflowException` because physical stack space cannot grow dynamically like the heap.
-
-> [!NOTE]
-> **Interview & Systems Context: Ring Buffers in High-Throughput Engines (Disruptor)**  
-> High-performance messaging systems (such as the LMAX Disruptor and Linux socket buffers) use fixed-size circular ring buffers instead of concurrent queues. By sizing the buffer to a power of two (`2^K`), the modulo operator can be replaced with an ultra-fast bitwise AND (`index & (Capacity - 1)`), processing tens of millions of events per second with zero garbage collection.
-
-> [!NOTE]
-> **Interview & Systems Context: Work-Stealing Deques in Parallel Task Schedulers**  
-> Modern runtime schedulers (such as the .NET Task Parallel Library, Go goroutine work-stealers, and Java ForkJoinPool) assign each worker thread a local Deque. A thread pushes and pops its own sub-tasks from the **bottom (LIFO)** for maximum cache locality. When an idle worker thread runs out of work, it **steals tasks from the top (FIFO)** of another thread's deque, minimizing contention between threads.
-
----
-
-## ⚔️ SUPPLEMENTARY OUTCOMES & REVISION
+## ⚔️ PRACTICE PROBLEMS & FAANG TECHNICAL SCREEN Q&A
 
 ### 🏋️ Practice Problems
 
@@ -702,17 +887,23 @@ if __name__ == "__main__":
 | **Design Circular Deque** | 🟡 Medium | Modular Double-Ended Arithmetic | `O(1)` Time All Ops |
 | **Evaluate Reverse Polish Notation** | 🟡 Medium | Postfix Stack Arithmetic | `O(N)` Time, `O(N)` Space |
 | **Daily Temperatures** | 🟡 Medium | Monotonic Decreasing Stack | `O(N)` Time, `O(N)` Space |
+| **Sliding Window Maximum** | 🔴 Hard | Monotonic Deque Extrema | `O(N)` Time, `O(K)` Space |
 
-### 🎙️ Quick Technical Screen Q&A
+---
 
-1. **Q:** *Why does `List<T>.RemoveAt(0)` make a bad queue?*  
-   **A:** Because removing from the front of an array forces an `Array.Copy` shift of all remaining `N - 1` elements, making each dequeue `O(N)` instead of `O(1)`.
-2. **Q:** *How can you optimize circular buffer modulo arithmetic?*  
-   **A:** If buffer capacity is constrained to a power of two (`2^K`), modulo `i % capacity` can be replaced with the bitwise mask `i & (capacity - 1)`.
+### 🎙️ Quick FAANG Technical Screen Q&A
+
+1. **Q:** *Why does `List<T>.RemoveAt(0)` or Python `list.pop(0)` make a terrible queue?*  
+   **A:** Because removing from the front of an array forces an `Array.Copy` memory shift of all remaining `N - 1` elements. Each dequeue takes `O(N)` time, exploding an `N`-element queue pipeline into an `O(N^2)` throughput bottleneck.
+
+2. **Q:** *How can you optimize circular buffer modulo arithmetic for ultra-low latency?*  
+   **A:** If buffer capacity is constrained to an exact power of two (`2^K`), the modulo operation `i % Capacity` can be replaced by the bitwise mask `i & (Capacity - 1)`, saving multiple CPU clock cycles per operation.
+
 3. **Q:** *What is the space complexity of `MinStack`?*  
-   **A:** `O(N)` auxiliary space, because each element pushed stores its value alongside the historical minimum of the stack up to that level.
+   **A:** `O(N)` auxiliary space. Each pushed element is paired with the minimum observed up to that depth, ensuring `GetMin()` is `O(1)` without scanning.
+
 4. **Q:** *Why do work-stealing schedulers use Deques instead of standard Queues?*  
-   **A:** Because the owner thread operates on one end (LIFO) for hot cache affinity, while thief threads steal from the opposite end (FIFO), eliminating lock contention on the hot end.
+   **A:** Because the owner thread pushes and pops from one end (LIFO) for hot cache affinity, while thief threads steal from the opposite end (FIFO), eliminating thread contention on the active head.
 
 ---
 

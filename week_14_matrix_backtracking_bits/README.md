@@ -1,25 +1,26 @@
-﻿# 📘 Coordinate Transformations, Bit Manipulation & Number Theory
+# 📘 WEEK 14: COORDINATE TRANSFORMATIONS, BIT MANIPULATION & NUMBER THEORY
 
 > 🧭 **Navigation:** [← Previous: Week 13](../week_13_backtracking_and_branch_bound/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 15 →](../week_15_advanced_strings_flow/README.md)
-
----
-
-> 💡 **Instructor Guidance Note:**  
-> *Not all sections or topics are mandatory. As a learner, you can adapt your pace freely. If you are preparing on an accelerated interview timeline or already feel confident with specific foundational concepts, feel free to skip or skim optional topics and prioritize high-yield patterns based on your personal interview goals.*
+> 
+> 💡 **Instructor Note:** *Week 14 bridges high-level algorithms with physical hardware reality: how 2D matrices map to 1D cache lines, how ALU registers manipulate 64 bits in a single cycle, and how modular arithmetic prevents numerical register overflow in production.*
 
 ---
 
 ## 🎯 Weekly Mission & Conceptual Focus
 
-In-place matrix rotations, spiral boundary scans, bitwise register manipulation, Euclidean GCD/LCM, Sieve of Eratosthenes, and modular exponentiation.
+Master multi-dimensional coordinate transformations, zero-allocation in-place rotations, boundary-pointer spiral scans, single-cycle bitwise ALU register tricks, Euclidean GCD/LCM, fast binary modular exponentiation, Fermat's modular inverse, KMP string search, Trie prefix trees, Euler's Totient function, and the Chinese Remainder Theorem.
 
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
-flowchart TD
-    Start["Week 14 Start"] --> Daily["Daily Invariant<br/>Deep<br/>Dives"]
-    Daily --> Playbook["Consolidated<br/>Playbook &<br/>Visuals"]
-    Playbook --> DualLang["Dual-Language<br/>Practice<br/>(C# & Python)"]
-    DualLang --> Mastery["Pattern Mastery &<br/>Verification"]
+flowchart LR
+    D1["Day 1: Matrix Operations<br/>(Rotate, Spiral, Saddle)"] --> D2["Day 2: Bitwise Tricks<br/>(Single Number Trilogy)"]
+    D2 --> D3["Day 3: Number Theory<br/>(GCD, Sieve, ModPow)"]
+    D3 --> D4["Day 4: Advanced Strings<br/>(KMP, Trie)"]
+    D4 --> D5["Day 5: Advanced Math<br/>(Euler's Totient, CRT)"]
+
+    classDef default fill:#f8f9fa,stroke:#37474f,stroke-width:2px,color:#263238
+    classDef dayNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    class D1,D2,D3,D4,D5 dayNode
 ```
 
 ---
@@ -28,11 +29,11 @@ flowchart TD
 
 | Day | Instructional Module | Focus & Core Objective |
 | :--- | :--- | :--- |
-| **Day 01** | [Matrix Operations](Week_14_Day_01_Matrix_Operations_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 02** | [Bitwise Operations](Week_14_Day_02_Bitwise_Operations_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 03** | [Number Theory Basics](Week_14_Day_03_Number_Theory_Basics_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 04** | [Advanced Strings](Week_14_Day_04_Advanced_Strings_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 05** | [Advanced Number Theory](Week_14_Day_05_Advanced_Number_Theory_Instructional.md) | Core Daily Concept Deep Dive |
+| **Day 01** | [Matrix Operations & Coordinate Transformations](Week_14_Day_01_Matrix_Operations_Instructional.md) | In-place 90° rotation (Transpose + Reverse - LC 48), Spiral Matrix 4-boundary scan (LC 54), Staircase saddle-point search (LC 240), Set Matrix Zeroes in-place markers (LC 73). |
+| **Day 02** | [Bitwise Operations & Register Tricks](Week_14_Day_02_Bitwise_Operations_Instructional.md) | Single-cycle ALU instructions, Single Number I, II, III (LC 136, 137, 260), Brian Kernighan popcount `n & (n - 1)`, LSB isolation `n & -n`, submask enumeration `(sub - 1) & mask`. |
+| **Day 03** | [Number Theory Basics & Modular Exponentiation](Week_14_Day_03_Number_Theory_Basics_Instructional.md) | Euclidean GCD/LCM overflow prevention, Trial division up to $\sqrt{N}$, Sieve of Eratosthenes ($p^2$ start), Fast ModPow in $O(\log e)$ (LC 50), Fermat's Modular Inverse $A^{P-2} \pmod P$. |
+| **Day 04** | [Advanced Strings & Pattern Matching](Week_14_Day_04_Advanced_Strings_Instructional.md) | Knuth-Morris-Pratt (KMP) linear scan with zero text rewinding (LC 28), LPS table construction, Prefix Trie (LC 208), Suffix Arrays, and Kasai's LCP algorithm. |
+| **Day 05** | [Advanced Number Theory & CRT](Week_14_Day_05_Advanced_Number_Theory_Instructional.md) | Euler's Totient $\phi(N)$, Extended Euclidean Algorithm for composite modular inverses, Chinese Remainder Theorem (CRT) simultaneous solver, Russian Peasant safe multiplication. |
 
 ---
 

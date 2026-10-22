@@ -1,11 +1,11 @@
-﻿# 📘 Computational Fundamentals, RAM Model & Asymptotics
+# 📘 Week 01: Computational Fundamentals, RAM Model & Asymptotics
 
 > 🧭 **Navigation:** [← Root Curriculum](../README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 02 →](../week_02_foundations_ii_linear_data_structures/README.md)
 
 ---
 
 > 💡 **Instructor Guidance Note:**  
-> *Not all sections or topics are mandatory. As a learner, you can adapt your pace freely. If you are preparing on an accelerated interview timeline or already feel confident with specific foundational concepts, feel free to skip or skim optional topics and prioritize high-yield patterns based on your personal interview goals.*
+> *Welcome to Week 01! This week establishes the physical and computational foundation of all software engineering. Instead of memorizing academic formulas, we focus on mechanical realities: how CPUs address RAM, why contiguous memory outperforms pointer-chasing, how input scaling dictates complexity, and how the call stack executes recursion. Take it day by day and embrace the physical mental models.*
 
 ---
 
@@ -15,25 +15,31 @@ Build rock-solid mental models of program execution, RAM memory hierarchy, compl
 
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
-flowchart TD
-    Start["Week 01 Start"] --> Daily["Daily Invariant<br/>Deep<br/>Dives"]
-    Daily --> Playbook["Consolidated<br/>Playbook &<br/>Visuals"]
-    Playbook --> DualLang["Dual-Language<br/>Practice<br/>(C# & Python)"]
-    DualLang --> Mastery["Pattern Mastery &<br/>Verification"]
+flowchart LR
+    classDef stepNode fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+    classDef memoryNode fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
+    classDef recurNode fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
+    classDef successNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+
+    D1["🏢 Day 01: RAM Model<br/>& Pointers"]:::memoryNode --> D2["📈 Day 02: Big-O<br/>& Scaling Curves"]:::stepNode
+    D2 --> D3["🪚 Day 03: Space<br/>& Memory Layout"]:::memoryNode
+    D3 --> D4["🍽️ Day 04: Recursion I<br/>& Call Stack"]:::recurNode
+    D4 --> D5["📝 Day 05: Recursion II<br/>& Memoization"]:::recurNode
+    D5 --> D6["⛰️ Day 06: Peak Finding<br/>& Binary Search"]:::successNode
 ```
 
 ---
 
-## 📅 Day-by-Day Learning Path
+## 📅 The 6-Day YouTube-Style Masterclass Path
 
-| Day | Instructional Module | Focus & Core Objective |
-| :--- | :--- | :--- |
-| **Day 01** | [RAM Model Pointers](Week_01_Day_01_RAM_Model_Pointers_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 02** | [Asymptotic Analysis](Week_01_Day_02_Asymptotic_Analysis_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 03** | [Space Complexity Memory Usage](Week_01_Day_03_Space_Complexity_Memory_Usage_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 04** | [Recursion I Call Stack](Week_01_Day_04_Recursion_I_Call_Stack_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 05** | [Recursion II Memoization](Week_01_Day_05_Recursion_II_Memoization_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 06** | [Peak Finding Algorithmic Thinking](Week_01_Day_06_Peak_Finding_Algorithmic_Thinking_Instructional.md) | Core Daily Concept Deep Dive |
+| Day / Episode | Masterclass Module | The 60-Second Hook & Core Concept | Key Interview Takeaway |
+| :--- | :--- | :--- | :--- |
+| **Day 01** | [📘 RAM Model & Pointers](Week_01_Day_01_RAM_Model_Pointers_Instructional.md) | 🏢 *The Gym Locker Model:* Demystifying memory addresses, Stack vs Heap, and why contiguous arrays crush linked lists in cache locality. | Articulate value vs reference semantics and cache misses in live interviews. |
+| **Day 02** | [📘 Asymptotic Analysis (Big-O, Ω, Θ)](Week_01_Day_02_Asymptotic_Analysis_Instructional.md) | 📈 *The Scaling Ceiling & Floor:* De-jargoning Big-O, Big-Omega, and Big-Theta into plain English growth curves that survive enterprise scale. | Dissect asymptotic bounds without confusing worst-case with Big-O. |
+| **Day 03** | [📘 Space Complexity & Memory Accounting](Week_01_Day_03_Space_Complexity_Memory_Usage_Instructional.md) | 🪚 *The Carpenter's Workbench:* Auxiliary (scratchpad) space vs Output delivery space, avoiding container OOM kills, and call-stack accounting. | Defend O(1) in-place auxiliary space vs O(N) duplicate allocation. |
+| **Day 04** | [📘 Recursion I: The Call Stack Engine](Week_01_Day_04_Recursion_I_Call_Stack_Instructional.md) | 🍽️ *The Cafeteria Plate Stack & Leap of Faith:* Visualizing activation frames, push/unwind phases, base case guards, and iterative conversion. | Walk through recursion trees and calculate stack memory depth with zero anxiety. |
+| **Day 05** | [📘 Recursion II: Memoization & DP Foundations](Week_01_Day_05_Recursion_II_Memoization_Instructional.md) | 📝 *The Cheat Sheet Revolution:* Spotting overlapping subproblems and collapsing exponential O(2^N) trees into lightning O(N) linear lookups. | Implement top-down memoization in C# and Python in under 5 minutes. |
+| **Day 06** | [📘 Peak Finding & Algorithmic Thinking](Week_01_Day_06_Peak_Finding_Algorithmic_Thinking_Instructional.md) | ⛰️ *Hiking in the Fog:* The MIT 6.006 classic proving Binary Search does NOT require a sorted array—only a directional gradient. | Explain search-space elimination on unsorted inputs with total confidence. |
 
 ---
 

@@ -1,38 +1,44 @@
-﻿# 📘 Greedy Algorithms & Exchange Arguments
+# 📘 Week 12: Greedy Algorithms & Exchange Arguments
 
 > 🧭 **Navigation:** [← Previous: Week 11](../week_11_dp_ii_advanced/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 13 →](../week_13_backtracking_and_branch_bound/README.md)
 
 ---
 
-> 💡 **Instructor Guidance Note:**  
-> *Not all sections or topics are mandatory. As a learner, you can adapt your pace freely. If you are preparing on an accelerated interview timeline or already feel confident with specific foundational concepts, feel free to skip or skim optional topics and prioritize high-yield patterns based on your personal interview goals.*
+## 🎬 Welcome to Week 12: The Ruthless Optimizer's Masterclass!
 
----
+In algorithm design, Dynamic Programming is thorough: it explores all plausible choices because an early decision might turn out suboptimal later. Greedy algorithms, by contrast, are **ruthless**: they make the locally optimal choice at every single step, NEVER reconsider, and NEVER backtrack.
 
-## 🎯 Weekly Mission & Conceptual Focus
+When does this work? And when is it a fatal trap?
+This week equips you with the mathematical superpower of the **Exchange Argument**: proving that if an adversary claims a better solution exists, you can swap their choice for your greedy choice without making the outcome worse.
 
-Prove greedy choice properties: interval activity selection, Huffman coding optimal prefix trees, fractional knapsack, and identifying when greedy fails.
+You will master: **Greedy choice properties & when greedy fails**, **Activity selection & interval scheduling**, **Huffman coding & prefix trees**, **Fractional Knapsack vs 0/1 Knapsack**, and **Greedy algorithms in production systems (Gas Station, Jump Game, Task Scheduler)**.
 
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
-flowchart TD
-    Start["Week 12 Start"] --> Daily["Daily Invariant<br/>Deep<br/>Dives"]
-    Daily --> Playbook["Consolidated<br/>Playbook &<br/>Visuals"]
-    Playbook --> DualLang["Dual-Language<br/>Practice<br/>(C# & Python)"]
-    DualLang --> Mastery["Pattern Mastery &<br/>Verification"]
+flowchart LR
+    D1["Day 01: Greedy Foundations<br/>⚖️ Exchange Argument & Invariants"] --> D2["Day 02: Activity Selection<br/>📅 Earliest End Time & Intervals"]
+    D2 --> D3["Day 03: Huffman Coding<br/>🌲 Optimal Prefix Code Trees"]
+    D3 --> D4["Day 04: Fractional Knapsack<br/>📦 Density Sort & Task Scheduling"]
+    D4 --> D5["Day 05: Greedy in Systems<br/>⚡ Gas Station, Jump Game & CPU"]
+
+    style D1 fill:#e1f5fe,stroke:#0288d1,color:#01579b
+    style D2 fill:#ede7f6,stroke:#5e35b1,color:#311b92
+    style D3 fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style D4 fill:#fff3e0,stroke:#e65100,color:#bf360c
+    style D5 fill:#fce4ec,stroke:#c2185b,color:#880e4f
 ```
 
 ---
 
 ## 📅 Day-by-Day Learning Path
 
-| Day | Instructional Module | Focus & Core Objective |
-| :--- | :--- | :--- |
-| **Day 01** | [Greedy Fundamentals](Week_12_Day_01_Greedy_Fundamentals_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 02** | [Activity Selection And Interval Problems](Week_12_Day_02_Activity_Selection_And_Interval_Problems_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 03** | [Huffman Coding And Optimal Trees](Week_12_Day_03_Huffman_Coding_And_Optimal_Trees_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 04** | [Fractional Knapsack And Scheduling](Week_12_Day_04_Fractional_Knapsack_And_Scheduling_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 05** | [Greedy In Systems](Week_12_Day_05_Greedy_In_Systems_Instructional.md) | Core Daily Concept Deep Dive |
+| Day | Instructional Masterclass | Core Mental Model & Intuition | Key Pattern / Invariant |
+| :--- | :--- | :--- | :--- |
+| **Day 01** | [Greedy Fundamentals & Exchange Arguments](Week_12_Day_01_Greedy_Fundamentals_Instructional.md) | **The Dollar Bill Cashier:** Making change with canonical vs non-canonical coins. | Greedy choice property, optimal substructure, the exchange argument proof. |
+| **Day 02** | [Activity Selection & Interval Problems](Week_12_Day_02_Activity_Selection_And_Interval_Problems_Instructional.md) | **The Movie Marathon:** Sorting by earliest finish time. | Sort by end time, non-overlapping intervals (LC 435), meeting rooms (LC 253). |
+| **Day 03** | [Huffman Coding & Optimal Trees](Week_12_Day_03_Huffman_Coding_And_Optimal_Trees_Instructional.md) | **The Morse Code Transmitter:** Shorter codes for frequent symbols. | Priority queue tree construction, prefix property, entropy reduction. |
+| **Day 04** | [Fractional Knapsack & Scheduling](Week_12_Day_04_Fractional_Knapsack_And_Scheduling_Instructional.md) | **The Gold Dust Robber:** Sorting by value density `v / w`. | Continuous selection vs 0/1 DP, deadline scheduling with penalties. |
+| **Day 05** | [Greedy in Systems & LeetCode Hard](Week_12_Day_05_Greedy_In_Systems_Instructional.md) | **The Cross-Country Roadtrip:** Gas Station odometer reset. | Gas Station (LC 134), Jump Game I/II (LC 55, 45), Task Scheduler (LC 621). |
 
 ---
 
@@ -46,8 +52,6 @@ flowchart TD
 ---
 
 ## 🛠️ The 5 Core Support Files (`support files/`)
-
-Every week is accompanied by five dedicated support files located in the `support files/` subdirectory:
 
 1.  📋 [Daily Progress Checklist](support%20files/Week_12_Daily_Progress_Checklist.md) — Step-by-step accountability tracker for theory, coding, and variants.
 2.  🧭 [Weekly Guidelines & Mental Models](support%20files/Week_12_Guidelines.md) — Strategic roadmap, common pitfalls, and conceptual anchors.

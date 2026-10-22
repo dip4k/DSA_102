@@ -17,8 +17,8 @@ flowchart TD
     W --> D4["Day 4:<br/>Probabilistic DS<br/>(Bloom Filter,<br/>Count-Min,<br/>HyperLogLog)"]
     W --> D5["Day 5: Algorithmic<br/>Systems Design<br/>(Consistent Hash<br/>Ring,<br/>Token Bucket)"]
 
-    D1 --> P1["Search Space<br/>Bisection:<br/>O(2^N) -> O(N *<br/>2^(N/2))"]
-    D2 --> P2["Optimal Block<br/>Sizing: B =<br/>N / sqrt(Q) -><br/>O((N + Q)<br/>* sqrt(N))"]
+    D1 --> P1["Search Space<br/>Bisection:<br/>O(2^N) -&gt; O(N *<br/>2^(N/2))"]
+    D2 --> P2["Optimal Block<br/>Sizing: B =<br/>N / sqrt(Q) -&gt;<br/>O((N + Q)<br/>* sqrt(N))"]
     D3 --> P3["Logarithmic Light<br/>Edges:<br/>Path O(log^2 N),<br/>Subtree<br/>O(log N)"]
     D4 --> P4["Constant-Memory<br/>Approximations<br/>with<br/>Rigorous Error<br/>Bounds"]
     D5 --> P5["Scalable Sharding & Zero-Polling<br/>Traffic<br/>Shaping Primitives"]

@@ -138,12 +138,12 @@ flowchart LR
     Start["🟢 Start:<br/>Left=0,<br/>Right=N-1"]:::startNode
     Check{"🔍 Sum ==<br/>Target?"}:::actionNode
     ShrinkLeft["👉 Sum &lt; Target: Move<br/>Left"]:::warnNode
-    ShrinkRight["👈 Sum > Target: Move<br/>Right"]:::warnNode
+    ShrinkRight["👈 Sum &gt; Target: Move<br/>Right"]:::warnNode
     Success["✅ Found<br/>Pair: Return<br/>Indices"]:::successNode
 
     Start --> Check
     Check -->|"Sum &lt; Target"| ShrinkLeft
-    Check -->|"Sum > Target"| ShrinkRight
+    Check -->|"Sum &gt; Target"| ShrinkRight
     Check -->|"Equal"| Success
 ```
 

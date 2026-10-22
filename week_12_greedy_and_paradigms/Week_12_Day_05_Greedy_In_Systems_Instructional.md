@@ -1,613 +1,918 @@
-# 📘 WEEK 12 DAY 5: GREEDY IN SYSTEMS — ENGINEERING GUIDE
+# 📘 WEEK 12 DAY 5: GREEDY IN SYSTEMS & LEETCODE HARD — ENGINEERING GUIDE
 
 > 🧭 **Navigation:** [← Previous Day](Week_12_Day_04_Fractional_Knapsack_And_Scheduling_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_12_FULL_PLAYBOOK.md)
 > 
-> 💡 **Instructor Note:** *Day 5 transitions greedy algorithms from textbook drills to production architectures: Minimum Spanning Trees (Kruskal and Prim), kernel-level LRU caching, and greedy approximation for NP-hard problems like Set Cover.*
+> 💡 **Instructor Note:** *Day 5 is where greedy algorithms graduate from basic sort-and-pick drills to real-world distributed scheduling and circular constraints. We deconstruct the four canonical FAANG heavyweights: Gas Station (LC 134), Jump Game I & II (LC 55, LC 45), and Task Scheduler (LC 621). Master the physical invariants that collapse brute-force O(N^2) simulations into lightning O(N) and O(1) single-pass architectures.*
 
 ---
 
 ## 🎯 LEARNING OBJECTIVES
 
-*By the end of this chapter, you will be able to:*
+*By the end of this masterclass, you will be able to:*
 
-- 🌐 **Explain** why the Cut Property guarantees that greedy edge selection is safe in Minimum Spanning Trees (MST).
-- ⚙️ **Implement** Kruskal's MST (with Disjoint Set Union), Prim's MST (with `PriorityQueue`/`heapq`), and an `O(1)` LRU Cache in C# (.NET 8/9) and Python (3.11+).
-- ⚖️ **Contrast** Kruskal's edge-based greedy against Prim's vertex-growing greedy based on graph density (`E << V^2` vs `E ≈ V^2`).
-- 🧠 **Demystify** cache eviction heuristics: explain why LRU is an online greedy surrogate for Belady's impossible clairvoyant algorithm.
-- 📉 **Evaluate** greedy approximation algorithms for NP-hard problems (e.g., Set Cover's `O(log N)` factor).
-
----
-
-## 📖 CHAPTER 1: CONTEXT & MOTIVATION
-
-### The Engineering Challenge
-
-In distributed systems and networking, you face problems where computing a globally optimal configuration is either computationally prohibitive or distributed across thousands of independent nodes:
-
-1. **Backbone Fiber Routing (MST):** You must interconnect 10,000 data centers with fiber optic cables. What is the cheapest cable topology that ensures every data center can communicate with every other?
-   - **Answer:** A **Minimum Spanning Tree (MST)**. Greedily picking the cheapest valid edges (Kruskal/Prim) guarantees an exact minimum-cost tree.
-2. **High-Speed In-Memory Cache (LRU):** A Redis or kernel page cache must evict entries when capacity is full. You cannot predict future memory accesses.
-   - **Answer:** **Least Recently Used (LRU)**. A greedy temporal heuristic that assumes past access frequency predicts near-future demand.
-3. **Microservice Monitoring (Set Cover):** You have 1,000 metrics and 200 monitoring probes. Each probe tracks a subset of metrics. What is the smallest set of probes to deploy to cover all metrics?
-   - **Answer:** NP-hard in the exact case! Greedily picking the probe that covers the most uncovered metrics guarantees an **`O(log N)` approximation**.
-
-```
-THE THREE TIERS OF GREEDY IN PRODUCTION:
-+-------------------+-----------------------------------+-----------------------------------+
-| Tier              | System Example                    | Guarantees                        |
-+-------------------+-----------------------------------+-----------------------------------+
-| 1. Exact Optimum  | Kruskal / Prim MST, Huffman       | Mathematically 100% Optimal       |
-| 2. Online Heuristic| LRU Cache, Geographic Routing     | Fast O(1), No Future Guarantee    |
-| 3. Approximation  | Greedy Set Cover                  | Provable O(log N) Bound for NP-hard|
-+-------------------+-----------------------------------+-----------------------------------+
-```
+- 🚗 **Derive the Valley Reset Invariant** for circular resource routing (Gas Station) to prove why running out of fuel at station `B` eliminates every candidate between `A` and `B` in `O(N)` time.
+- 🦘 **Model Greedy Wavefront Expansion** (Jump Game I & II) as an implicit Breadth-First Search (BFS) in contiguous memory without allocating queues.
+- ⏱️ **Formulate the Bento-Box Frame Theorem** for CPU Task Scheduling (LC 621) to calculate optimal cooling cycles in `O(1)` auxiliary space without event simulation.
+- 🛑 **Identify and Eliminate** the three classic interview traps: the `O(N^2)` circular gas brute-force, the off-by-one destination jump, and priority queue simulation thrashing.
+- 🎙️ **Deliver the 3-Sentence Talk Track** in live FAANG interviews that proves greedy correctness upfront before touching the keyboard.
+- ⚡ **Write Production-Ready Implementations** in C# (.NET 8/9 `ReadOnlySpan<T>`, zero allocations) and Python 3.11+.
 
 ---
 
-## 🧠 CHAPTER 2: GREEDY IN NETWORKS — MINIMUM SPANNING TREES
-
-### The Cut Property (No Academic Jargon)
-
-Why can we make irrevocable local edge choices without regretting them? Because of the **Cut Property**:
+## 🎬 PILLAR 1: THE 60-SECOND HOOK & EVERYDAY ANALOGIES
 
 ```
-Cut Property Visualized:
+========================================================================================
+                          THE GREEDY SYSTEMS INTUITION HOOK
+========================================================================================
+  Analogy 1: The Desert Highway Odometer Reset (Gas Station)
+  --------------------------------------------------------------------------------------
+  Imagine driving a 2,000-mile circular loop across Death Valley. You pull out of
+  Station A with a full tank. You drive through Station K, refueling along the way,
+  but your engine sputters and dies before reaching Station B.
+  
+  Do you need to test whether starting at Station K would have worked?
+  NO! You arrived at Station K with SOME fuel left over from Station A. If having
+  bonus fuel wasn't enough to survive past Station B, starting at Station K with
+  ZERO fuel will fail even harder. You can instantly eliminate every station from
+  A to B! Your next possible candidate is Station B + 1.
 
-          Set S (Red Nodes)           Set V \ S (Blue Nodes)
-           [ Node 1 ]                    [ Node 3 ]
-              |                             |
-              |                             |
-           [ Node 2 ]                    [ Node 4 ]
-              \                             /
-               \                           /
-          ======\=========================/======  <-- THE CUT (Partition)
-                 \                       /
-             Edge A: wt = 7          Edge B: wt = 2 (CHEAPEST CROSSING EDGE!)
-                 /                       \
-          ======/=========================\======
-
-Key Truth:
-To connect Set S to Set V \ S, AT LEAST ONE crossing edge must be included.
-If you pick Edge B (the cheapest crossing edge, wt = 2), you can NEVER regret it!
-Any alternative crossing edge (like Edge A, wt = 7) would make the tree heavier.
-Therefore, the lightest edge crossing ANY cut is guaranteed to be in SOME MST.
+  Analogy 2: The CPU Bento Box (Task Scheduler)
+  --------------------------------------------------------------------------------------
+  Imagine packing a multi-compartment Bento lunchbox where identical dishes must be
+  separated by cooling zones. The tallest dish (the task with maximum frequency)
+  dictates the structure of the box. All other dishes simply fill the empty slots
+  between the tall dividers. You don't need a live clock simulator; you just compute
+  the geometric footprint of the Bento box!
+========================================================================================
 ```
 
-### Kruskal vs Prim: Two Faces of Greed
+### The Engineering Reality
+In high-throughput systems—whether Linux kernel CPU scheduling, distributed stream processing, or autonomous vehicle battery route planning—you cannot afford `O(N^2)` combinatorial backtracks or state-explosion DP tables.
 
-| Dimension | Kruskal's Algorithm | Prim's Algorithm |
-| :--- | :--- | :--- |
-| **Strategy** | Global edge greedy: sorts all edges globally | Local frontier greedy: grows a tree from a start vertex |
-| **Data Structure** | Disjoint Set Union (DSU / Union-Find) | Min-Priority Queue (Binary Heap) |
-| **Time Complexity**| `O(E log E)` = `O(E log V)` | `O(E log V)` with binary heap |
-| **Best Used When** | **Sparse graphs** (`E ≈ V`), edge list given | **Dense graphs** (`E ≈ V^2`), adjacency list given |
+When an invariant guarantees that a local deficit eliminates an entire prefix of possibilities, greedy transforms what appears to be an intractable simulation into a clean, zero-allocation linear scan.
+
+---
+
+## 🪜 PILLAR 2: THE SCAFFOLDING LADDER & TOY NAPKIN TRACES
+
+Let's climb the ladder from warm-up single-pass range tracking to classic FAANG mediums and mathematical scheduling formulas.
 
 ```
-Kruskal Mechanics (Component Merging):
-1. Sort all edges: [ (1-2, 2), (2-4, 3), (1-3, 4), (1-4, 5), (2-3, 6) ]
-2. Edge (1-2, 2): Connects Comp{1} and Comp{2} -> ACCEPT.
-3. Edge (2-4, 3): Connects Comp{1,2} and Comp{4} -> ACCEPT.
-4. Edge (1-3, 4): Connects Comp{1,2,4} and Comp{3} -> ACCEPT.
-Total edges = 3 = V - 1. Finished!
-
-Prim Mechanics (Frontier Expansion):
-Start at Node 1.
-Frontier edges from {1}: (1-2, 2), (1-3, 4), (1-4, 5).
-1. Min edge is (1-2, 2) -> Add Node 2. MST = {1, 2}.
-2. Frontier now includes edges from {1, 2}: (2-4, 3), (1-3, 4), (1-4, 5).
-   Min edge is (2-4, 3) -> Add Node 4. MST = {1, 2, 4}.
-3. Frontier expands to edges from {1, 2, 4}: Min edge is (1-3, 4) -> Add Node 3.
-All vertices visited!
+       [Level 4: Task Scheduler (LC 621)]
+       -> Bento Box Geometric Framing in O(1) space
+               ▲
+               │
+       [Level 3: Gas Station (LC 134)]
+       -> Circular Prefix Deficit & Valley Reset in O(N)
+               ▲
+               │
+       [Level 2: Jump Game II (LC 45)]
+       -> Implicit BFS Range Wavefront in O(N)
+               ▲
+               │
+       [Level 1: Jump Game I (LC 55)]
+       -> Expanding Searchlight Reachability in O(N)
 ```
 
 ---
 
-## 🧠 CHAPTER 3: GREEDY IN CACHING — LRU DESIGN
+### Level 1: Jump Game I (LeetCode 55) — The Expanding Searchlight
 
-### Temporal Locality & Belady's Optimal Dilemma
+#### Problem Statement
+Given an integer array `nums`, you start at index `0`. Each element `nums[i]` represents your maximum jump length at that position. Return `true` if you can reach the last index (`nums.Length - 1`), or `false` otherwise.
 
-A cache has fixed capacity `C`. When full, which element should be evicted?
-- **Belady's Optimal Algorithm (Clairvoyant):** Evict the page that will not be used for the longest time in the future.
-  - Provably optimal: minimizes total page faults.
-  - **Impossible in production** because systems cannot foresee future requests!
-- **LRU (Least Recently Used):** Uses past recency as a greedy proxy for future demand.
-  - Assumes that if key `X` was read 1 millisecond ago, it will likely be read again soon.
-  - To achieve `O(1)` get and put, we combine a **Hash Map** with a **Doubly-Linked List**.
+#### The Core Mental Model: The Searchlight
+Imagine standing at index `0` holding a searchlight. At each step `i`, your searchlight illuminates up to `i + nums[i]`. As you walk forward, you can only step on ground that is already illuminated (`i <= max_reach`). At each tile, you push your beam further: `max_reach = max(max_reach, i + nums[i])`. If your foot ever lands on unlit ground (`i > max_reach`), you are trapped forever in darkness.
+
+#### Toy Napkin Trace: Happy Path vs Dead End
+
+**Case A: `nums = [2, 3, 1, 1, 4]` (Target = index 4)**
 
 ```
-ASCII LRU Cache Pointer Layout:
+Index i:       0       1       2       3       4
+Value:       [ 2 ]   [ 3 ]   [ 1 ]   [ 1 ]   [ 4 ]
+------------------------------------------------------
+Start:       max_reach = 0
 
-   [ Hash Map ]
-     "user_1" ------> [ Node 1 ]
-     "user_2" ------> [ Node 2 ]
-     "user_3" ------> [ Node 3 ]
+i = 0:       Can reach? 0 <= 0 (Yes).
+             Beam reach: 0 + 2 = 2.
+             max_reach = max(0, 2) = 2.
 
-   [ Doubly-Linked List ]
-     (Head / MRU)                                     (Tail / LRU)
-     +----------+     +----------+     +----------+     +----------+
-     |   HEAD   |<--->|  Node 1  |<--->|  Node 2  |<--->|   TAIL   |
-     | (Dummy)  |     |("user_1")|     |("user_2")|     | (Dummy)  |
-     +----------+     +----------+     +----------+     +----------+
-                           ^                                 ^
-                     Most Recently                    Least Recently
-                         Used                              Used
-                                                      (Evict Candidate!)
+i = 1:       Can reach? 1 <= 2 (Yes).
+             Beam reach: 1 + 3 = 4.
+             max_reach = max(2, 4) = 4.
+             Target reached! 4 >= 4 -> RETURN TRUE.
+```
+
+**Case B: `nums = [3, 2, 1, 0, 4]` (Target = index 4)**
+
+```
+Index i:       0       1       2       3       4
+Value:       [ 3 ]   [ 2 ]   [ 1 ]   [ 0 ]   [ 4 ]
+------------------------------------------------------
+Start:       max_reach = 0
+
+i = 0:       max_reach = max(0, 0 + 3) = 3.
+i = 1:       1 <= 3 (Yes). max_reach = max(3, 1 + 2) = 3.
+i = 2:       2 <= 3 (Yes). max_reach = max(3, 2 + 1) = 3.
+i = 3:       3 <= 3 (Yes). max_reach = max(3, 3 + 0) = 3.
+i = 4:       4 <= 3 (NO!). Foot hit unlit darkness! -> RETURN FALSE.
+```
+
+> 🧠 **Pause & Predict 1:**
+> *What if `nums = [0]`? What does the code return?*
+> **Answer:** Target is index `0`. We start at index `0`, so `max_reach >= nums.Length - 1` (`0 >= 0`) is true immediately before taking a single step! It returns `true`.
+
+---
+
+### Level 2: Jump Game II (LeetCode 45) — The Greedy BFS Wavefront
+
+#### Problem Statement
+Given a 0-indexed array `nums` of length `N`, where each element is your maximum jump length, return the **minimum number of jumps** to reach `nums[N - 1]`. You are guaranteed that you can reach the target.
+
+#### The Core Mental Model: BFS Levels Without a Queue
+In standard BFS, you explore all nodes at distance 1, then distance 2, then distance 3. Notice that all positions reachable in `k` jumps form a contiguous range `[left, right]`.
+- Instead of allocating a queue of indices, we only need two pointers:
+  - `current_jump_end`: The boundary of the current jump level.
+  - `max_reach`: The furthest boundary reachable by jumping from *any* position within the current level.
+- When your scan index `i` reaches `current_jump_end`, you are forced to make another jump:
+  - `jumps++`
+  - `current_jump_end = max_reach`
+
+#### Toy Napkin Trace: `nums = [2, 3, 1, 1, 4]`
+
+```
+Index i:           0       1       2       3       4
+Value:           [ 2 ]   [ 3 ]   [ 1 ]   [ 1 ]   [ 4 ]
+Target:          Index 4
+
+Initial state:   jumps = 0, current_jump_end = 0, max_reach = 0
+
+Step i = 0:
+  max_reach = max(0, 0 + 2) = 2
+  i == current_jump_end (0 == 0) -> MUST COMMIT JUMP #1!
+  jumps = 1
+  current_jump_end = 2
+  [Wavefront for Jump 1 covers indices 1 through 2]
+
+Step i = 1:
+  max_reach = max(2, 1 + 3) = 4
+  i != current_jump_end (1 != 2) -> Keep scanning current wave.
+
+Step i = 2:
+  max_reach = max(4, 2 + 1) = 4
+  i == current_jump_end (2 == 2) -> MUST COMMIT JUMP #2!
+  jumps = 2
+  current_jump_end = 4
+  [Wavefront for Jump 2 covers indices 3 through 4]
+  current_jump_end >= 4 -> Reached target! Stop loop.
+
+Total Jumps = 2 (Jump from 0 -> 1, then from 1 -> 4).
+```
+
+> 🧠 **Pause & Predict 2:**
+> *Why does the loop in Jump Game II terminate at `i < nums.Length - 1` rather than `i < nums.Length`?*
+> **Answer:** If we iterated all the way to `nums.Length - 1`, landing on the last index when `i == current_jump_end` would trigger `jumps++`, artificially counting an extra jump *from* the target to somewhere beyond!
+
+---
+
+### Level 3: Gas Station (LeetCode 134) — The Desert Highway Invariant
+
+#### Problem Statement
+There are `n` gas stations along a circular route. You are given two integer arrays `gas` and `cost`, where `gas[i]` is the fuel at station `i`, and `cost[i]` is the fuel needed to travel from station `i` to `(i + 1) % n`.
+Return the starting station's index if you can travel around the circuit once in the clockwise direction, otherwise return `-1`. If a solution exists, it is guaranteed to be unique.
+
+#### The Mathematical Invariant: The Cumulative Valley
+Let `net[i] = gas[i] - cost[i]`.
+Two physical facts govern this problem:
+
+1. **Total Fuel Conservation Law:**
+   If `sum(gas) < sum(cost)`, total fuel in the system is strictly less than total consumption. No matter where you start, you will run out of gas. A solution is impossible.
+   Conversely, if `sum(gas) >= sum(cost)`, **a valid starting station is mathematically guaranteed to exist!**
+
+2. **The Sub-Path Elimination Theorem (The Core Greedy Invariant):**
+   Suppose you start at station `A` with an empty tank. You successfully pass stations `A, A+1, ..., K`, but run out of fuel trying to reach station `B` (where `B >= K >= A`).
+   *Can any intermediate station `K` between `A` and `B` be a valid starting station?*
+   
+   **PROOF BY CONTRADICTION:**
+   To reach station `K` starting from `A`, your fuel tank upon entering station `K` was `tank >= 0` (otherwise you would have stalled before `K`).
+   Starting from `A`, you entered `K` with `tank >= 0` and STILL starved at `B`.
+   If you had started at `K` with an empty tank (`tank = 0`), you would have strictly LESS fuel at every subsequent mile than when starting from `A`. Therefore, starting at `K` will run dry at or before station `B`.
+   **Conclusion:** NO station in the range `[A, B]` can be the start. The next candidate MUST be `B + 1`!
+
+#### Toy Napkin Trace: `gas = [1, 2, 3, 4, 5]`, `cost = [3, 4, 5, 1, 2]`
+
+```
+Index i:             0        1        2        3        4
+gas[i]:              1        2        3        4        5
+cost[i]:             3        4        5        1        2
+------------------------------------------------------------
+net[i]:             -2       -2       -2       +3       +3
+Total sum(net) = -2 + (-2) + (-2) + 3 + 3 = 0 (>= 0, solution GUARANTEED!)
+
+Trace with candidate tracking:
+Start with: start = 0, curr_tank = 0, total_tank = 0
+
+i = 0: net = -2.
+       curr_tank += -2 = -2 (< 0!).
+       Cannot reach station 1 from station 0.
+       Eliminate index 0. Next candidate: start = 1.
+       Reset curr_tank = 0.
+
+i = 1: net = -2.
+       curr_tank += -2 = -2 (< 0!).
+       Cannot reach station 2 from station 1.
+       Eliminate index 1. Next candidate: start = 2.
+       Reset curr_tank = 0.
+
+i = 2: net = -2.
+       curr_tank += -2 = -2 (< 0!).
+       Cannot reach station 3 from station 2.
+       Eliminate index 2. Next candidate: start = 3.
+       Reset curr_tank = 0.
+
+i = 3: net = +3.
+       curr_tank += +3 = +3 (>= 0). Keep going! Candidate 3 holds.
+
+i = 4: net = +3.
+       curr_tank += +3 = +6 (>= 0). Keep going!
+
+End of array reached!
+Total net sum = 0 >= 0.
+Final Answer: start = 3.
+```
+
+> 🧠 **Pause & Predict 3:**
+> *We stopped our loop at the end of the array (index 4) without circularly wrapping around to check if station 3 can reach station 0, 1, and 2. How do we know for 100% certainty that station 3 won't starve on the wrap-around?*
+> **Answer:** Because `total_tank = sum(net) >= 0`! We already proved station 3 reaches the end with `curr_tank = +6`. The deficit of the entire remaining prefix `[0..2]` was `-6`. Since `+6 + (-6) = 0 >= 0`, the accumulated surplus from `[3..4]` is guaranteed to absorb the prefix deficit! No second pass needed.
+
+---
+
+### Level 4: Task Scheduler (LeetCode 621) — The Bento Box Frame
+
+#### Problem Statement
+Given a characters array `tasks`, representing CPU tasks, and an integer `n` representing the cooling interval between two **identical** tasks (the CPU must wait at least `n` intervals before running the same task again). Return the **minimum number of CPU intervals** required to finish all tasks.
+
+#### The Core Mental Model: Geometric Bento Boxes
+Instead of simulating a clock tick-by-tick with priority queues and waiting lists, look at the task that appears the most frequently.
+- Let `max_freq` be the highest frequency of any task.
+- Suppose task `A` has `max_freq = 3`, and cooling `n = 2`.
+- Task `A` forces `max_freq - 1 = 2` empty frame chunks. Each chunk has width `n + 1` (task `A` itself + `n` cooling slots):
+
+```
+Frame 1:  [ A ] [ _ ] [ _ ]   (length n + 1 = 3)
+Frame 2:  [ A ] [ _ ] [ _ ]   (length n + 1 = 3)
+Last Row: [ A ]               (no cooling needed after final instance!)
+```
+
+Now, what if multiple tasks tie for the maximum frequency? (e.g., both `A` and `B` have frequency 3):
+- Each task with `freq == max_freq` occupies a slot in the final row!
+- Let `max_freq_count` be the number of tasks with `freq == max_freq`.
+
+```
+Frame 1:  [ A ] [ B ] [ _ ]
+Frame 2:  [ A ] [ B ] [ _ ]
+Last Row: [ A ] [ B ]
+```
+
+#### The Universal Formula
+```
+Frame Intervals = (max_freq - 1) * (n + 1) + max_freq_count
+```
+
+What if we have lots of other tasks (`C, D, E, F, G...`)?
+- They simply fill in the idle slots `[ _ ]`.
+- What if there are MORE tasks than available idle slots?
+- Then **NO IDLE SLOTS ARE NEEDED AT ALL!** The tasks just naturally stretch the rows wider without violating the `n` cooling distance.
+- Therefore, the answer is simply:
+```
+Total Intervals = max( (max_freq - 1) * (n + 1) + max_freq_count, tasks.Length )
+```
+
+#### Toy Napkin Trace: `tasks = ['A','A','A','B','B','B']`, `n = 2`
+1. Frequency map: `A: 3`, `B: 3`.
+2. `max_freq = 3`.
+3. Tasks with frequency 3: `A` and `B` -> `max_freq_count = 2`.
+4. Formula calculation:
+   `(3 - 1) * (2 + 1) + 2 = (2 * 3) + 2 = 6 + 2 = 8`.
+5. Check against total tasks: `max(8, 6) = 8`.
+   Schedule: `A -> B -> idle -> A -> B -> idle -> A -> B` (Length = 8).
+
+> 🧠 **Pause & Predict 4:**
+> *What if `tasks = ['A','A','A','B','B','B','C','C','C','D','D','E']`, `n = 2`?*
+> *`max_freq = 3` (for A, B, C), `max_freq_count = 3`.*
+> *Formula: `(3 - 1) * (2 + 1) + 3 = (2 * 3) + 3 = 9`. Total tasks = 12.*
+> *What is the answer?*
+> **Answer:** `max(9, 12) = 12`. We have enough tasks to completely saturate all idle slots and stretch the schedule with zero idle downtime!
+
+---
+
+## 🎨 PILLAR 3: PRAGMATIC VISUAL MODELS
+
+### Model A: ASCII Fuel Tank Trace & Candidate Reset (LC 134)
+
+```
+========================================================================================
+                      GAS STATION VALLEY RESET MECHANICAL TRACE
+========================================================================================
+ Station Index:         [ 0 ]         [ 1 ]         [ 2 ]         [ 3 ]         [ 4 ]
+ Gas Provided:            1             2             3             4             5
+ Cost to Next:            3             4             5             1             2
+ Net (Gas - Cost):       -2            -2            -2            +3            +3
+----------------------------------------------------------------------------------------
+ Running Tank:
+ 
+ Start at 0:
+ Tank: 0 ---> [ 0 ] == (-2)
+                       |
+                  TANK EMPTY!
+                  Reset candidate to: Start = 1, Tank = 0
+ 
+ Start at 1:
+ Tank: 0 --------------> [ 1 ] == (-2)
+                                 |
+                            TANK EMPTY!
+                            Reset candidate to: Start = 2, Tank = 0
+ 
+ Start at 2:
+ Tank: 0 ------------------------> [ 2 ] == (-2)
+                                           |
+                                      TANK EMPTY!
+                                      Reset candidate to: Start = 3, Tank = 0
+ 
+ Start at 3:
+ Tank: 0 ----------------------------------> [ 3 ] == (+3)
+                                                   |
+                                                   v
+                                             [ 4 ] == (+3) -> Tank = +6!
+                                                   |
+                                                   v (Wrap around to 0, 1, 2)
+                                             [ 0 ] == (-2) -> Tank = +4
+                                             [ 1 ] == (-2) -> Tank = +2
+                                             [ 2 ] == (-2) -> Tank = 0 (Survives!)
+========================================================================================
 ```
 
 ---
 
-## ⚙️ CHAPTER 4: PRODUCTION IMPLEMENTATIONS
+### Model B: ASCII CPU Idle Slot Frame Layout (LC 621)
 
-### Pattern 1: Kruskal's MST (with Disjoint Set Union)
+```
+========================================================================================
+                         BENTO BOX CPU TASK SCHEDULER FRAMES
+========================================================================================
+ Input: tasks = ["A","A","A","B","B","B","C","D"], n = 2
+ 
+ Counts: A: 3, B: 3, C: 1, D: 1
+ max_freq = 3 ('A' and 'B')
+ max_freq_count = 2 ('A' and 'B')
+ Width of each frame chunk = n + 1 = 3 slots
+ 
+           Slot 1        Slot 2        Slot 3 (Cooling / Filler)
+         +-------------+-------------+-------------------------+
+ Chunk 1 | Task A      | Task B      | Task C (Fills idle!)    |
+         +-------------+-------------+-------------------------+
+ Chunk 2 | Task A      | Task B      | Task D (Fills idle!)    |
+         +-------------+-------------+-------------------------+
+ Final   | Task A      | Task B      | (No cooling needed)     |
+ Row     +-------------+-------------+
+ 
+ Calculation:
+ (max_freq - 1) chunks * (n + 1) width + max_freq_count
+ = (3 - 1) * (2 + 1) + 2
+ = (2 * 3) + 2 = 8 total intervals.
+========================================================================================
+```
+
+---
+
+### Model C: Mermaid Flowchart: Jump Game Greedy Wavefront (LC 45 & 55)
+
+```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 15}}}%%
+flowchart TD
+    Start["🚀 Start Scan at Index i = 0"] --> CheckReach{"Is i &gt; max_reach?"}
+    
+    CheckReach -- "❌ Yes (Trapped in Dark)" --> Fail["🛑 Return False / Unreachable"]
+    CheckReach -- "✅ No (Valid Tile)" --> UpdateReach["⚡ max_reach = max(max_reach, i + nums(i))"]
+    
+    UpdateReach --> GoalCheck{"max_reach &ge; Target?"}
+    GoalCheck -- "🎯 Yes" --> Success["✅ Can Reach Target!"]
+    GoalCheck -- "No" --> WavefrontCheck{"Is i == current_jump_end?"}
+    
+    WavefrontCheck -- "✅ Reached Wave Boundary" --> CommitJump["🦘 jumps++<br/>current_jump_end = max_reach"]
+    WavefrontCheck -- "No" --> NextIndex["👉 i++"]
+    
+    CommitJump --> NextIndex
+    NextIndex --> CheckReach
+
+    style Start fill:#e1f5fe,stroke:#0288d1,color:#01579b
+    style CheckReach fill:#fff3e0,stroke:#e65100,color:#bf360c
+    style UpdateReach fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style GoalCheck fill:#ede7f6,stroke:#5e35b1,color:#311b92
+    style WavefrontCheck fill:#fff8e1,stroke:#f57f17,color:#e65100
+    style CommitJump fill:#fce4ec,stroke:#c2185b,color:#880e4f
+    style Success fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style Fail fill:#ffebee,stroke:#c62828,color:#b71c1c
+    style NextIndex fill:#f5f5f5,stroke:#616161,color:#212121
+```
+
+---
+
+## 🛑 PILLAR 4: THE ROOKIE TRAP ZONE
+
+Let's dissect the three fatal mistakes that derail candidates during FAANG on-sites.
+
+### Trap 1: Gas Station — Circular Simulation vs Single-Pass Valley Reset
+
+```
+❌ ROOKIE BLUNDER: O(N^2) Full Circular Simulation
+----------------------------------------------------------------------------------------
+for (int i = 0; i < n; i++) {
+    int tank = 0;
+    bool success = true;
+    for (int step = 0; step < n; step++) {
+        int curr = (i + step) % n;
+        tank += gas[curr] - cost[curr];
+        if (tank < 0) {
+            success = false;
+            break;
+        }
+    }
+    if (success) return i;
+}
+return -1;
+// Why it's bad: O(N^2) time complexity. For N = 10^5, 10^10 operations trigger TLE!
+
+✅ SENIOR ARCHITECT PATTERN: O(N) Sub-Path Invariant Reset
+----------------------------------------------------------------------------------------
+int totalTank = 0, currTank = 0, start = 0;
+for (int i = 0; i < gas.Length; i++) {
+    int net = gas[i] - cost[i];
+    totalTank += net;
+    currTank += net;
+    if (currTank < 0) {
+        start = i + 1; // Prune all stations [start..i]!
+        currTank = 0;
+    }
+}
+return totalTank >= 0 ? start : -1;
+// Why it wins: Exactly O(N) time and O(1) auxiliary space in a single blazing pass.
+```
+
+---
+
+### Trap 2: Jump Game II — Destination Over-Jump Off-by-One
+
+```
+❌ ROOKIE BLUNDER: Scanning all the way to N - 1
+----------------------------------------------------------------------------------------
+for (int i = 0; i < nums.Length; i++) { // BUG: scans to last index!
+    maxReach = Math.Max(maxReach, i + nums[i]);
+    if (i == currentJumpEnd) {
+        jumps++;
+        currentJumpEnd = maxReach;
+    }
+}
+// Why it fails: When nums = [2, 3, 1, 1, 4], at i = 4 (destination), i == currentJumpEnd!
+// The code executes jumps++ again, returning 3 instead of 2!
+
+✅ SENIOR ARCHITECT PATTERN: Terminate scan at N - 2
+----------------------------------------------------------------------------------------
+for (int i = 0; i < nums.Length - 1; i++) { // Stops before the target!
+    maxReach = Math.Max(maxReach, i + nums[i]);
+    if (i == currentJumpEnd) {
+        jumps++;
+        currentJumpEnd = maxReach;
+        if (currentJumpEnd >= nums.Length - 1) break; // Early exit
+    }
+}
+// Why it wins: You only jump FROM an index to reach the destination; you never jump FROM the destination.
+```
+
+---
+
+### Trap 3: Task Scheduler — Priority Queue Simulation vs Bento Box Frame
+
+```
+❌ ROOKIE BLUNDER: Simulating the CPU clock tick-by-tick with Max-Heap & Queue
+----------------------------------------------------------------------------------------
+// Allocating PriorityQueue<int, int> + Queue<(int task, int readyTime)>
+// Simulating every single empty CPU clock tick!
+// Why it's bad: When tasks.Length = 10^4 and n = 100, the loop runs thousands of empty
+// iterations, churning heap nodes and pointer references. O(Total Intervals * log 26).
+
+✅ SENIOR ARCHITECT PATTERN: O(1) Space Bento Box Formula
+----------------------------------------------------------------------------------------
+Span<int> freq = stackalloc int[26];
+int maxFreq = 0;
+foreach (char c in tasks) maxFreq = Math.Max(maxFreq, ++freq[c - 'A']);
+
+int maxFreqCount = 0;
+foreach (int f in freq) if (f == maxFreq) maxFreqCount++;
+
+int frameSize = (maxFreq - 1) * (n + 1) + maxFreqCount;
+return Math.Max(frameSize, tasks.Length);
+// Why it wins: O(N) single pass to count, O(26) = O(1) calculation, stackalloc 0 heap bytes!
+```
+
+---
+
+## 🎙️ PILLAR 5: 45-MINUTE INTERVIEW TALK TRACK
+
+When you get these questions in a FAANG interview, do NOT jump into code immediately. Deliver this exact 3-sentence script out loud to establish leadership.
+
+### For Gas Station (LC 134):
+> *"First, notice that if the total gas available across all stations is at least the total cost, a valid starting station is mathematically guaranteed to exist.*
+> *Second, if we run out of gas at station `B` after starting at `A`, no station between `A` and `B` can be a valid start because arriving at any intermediate station with an empty tank gives us strictly less fuel than arriving with our accumulated surplus.*
+> *Therefore, we can greedily reset our candidate start to `B + 1` whenever the tank dips below zero, solving the entire problem in a single `O(N)` pass with `O(1)` memory."*
+
+### For Jump Game II (LC 45):
+> *"We can model this as an implicit Breadth-First Search where each jump level corresponds to a contiguous index window `[current_pos, current_jump_end]`.*
+> *As we scan through the current window, we greedily track the furthest reachable index `max_reach` across all candidates.*
+> *When we hit `current_jump_end`, we commit to one jump, shift our window boundary to `max_reach`, and repeat until the window covers the last index in `O(N)` time and `O(1)` auxiliary space."*
+
+### For Task Scheduler (LC 621):
+> *"The bottleneck in this schedule is solely determined by the tasks with the maximum frequency, which define periodic chunks of length `n + 1` separated by cooling intervals.*
+> *The minimum frame size is strictly `(max_freq - 1) * (n + 1) + max_freq_count`, where the remaining tasks simply fill in the idle gaps.*
+> *If the number of tasks exceeds the frame size, no idle slots are required at all, so the final answer is simply `max(frame_size, tasks.Length)`, computable in `O(N)` time and `O(1)` space."*
+
+---
+
+## ⚡ PILLAR 6: PRODUCTION DUAL-LANGUAGE CODE
+
+Here are the complete, production-grade implementations in modern C# (.NET 8/9) and Python 3.11+.
+
+---
+
+### 1. Gas Station (LeetCode 134)
 
 #### Production C# (.NET 8/9)
-
 ```csharp
-namespace DsaMastery.Systems;
+namespace DsaMastery.Greedy;
 
 using System;
-using System.Collections.Generic;
 
-public readonly record struct Edge(int U, int V, int Weight);
-
-public sealed class DisjointSet
+public static class GasStation
 {
-    private readonly int[] _parent;
-    private readonly int[] _rank;
-
-    public DisjointSet(int size)
+    /// <summary>
+    /// Finds the starting gas station index to complete the circular route.
+    /// Time Complexity: O(N) - single pass over the stations.
+    /// Auxiliary Space: O(1) - zero allocations using ReadOnlySpan.
+    /// </summary>
+    public static int CanCompleteCircuit(ReadOnlySpan<int> gas, ReadOnlySpan<int> cost)
     {
-        _parent = new int[size];
-        _rank = new int[size];
-        for (int i = 0; i < size; i++)
+        if (gas.Length != cost.Length || gas.IsEmpty)
         {
-            _parent[i] = i;
+            return -1;
         }
+
+        int totalTank = 0;
+        int currentTank = 0;
+        int startingStation = 0;
+
+        for (int i = 0; i < gas.Length; i++)
+        {
+            int netGain = gas[i] - cost[i];
+            totalTank += netGain;
+            currentTank += netGain;
+
+            // If we run dry, stations [startingStation..i] are impossible starts.
+            if (currentTank < 0)
+            {
+                startingStation = i + 1;
+                currentTank = 0;
+            }
+        }
+
+        // If total gas < total cost, completion is physically impossible.
+        return totalTank >= 0 ? startingStation : -1;
     }
+}
+```
 
-    public int Find(int x)
+#### Production Python (3.11+)
+```python
+def can_complete_circuit(gas: list[int], cost: list[int]) -> int:
+    """
+    Finds the starting gas station index to complete the circular route.
+    Time Complexity: O(N)
+    Auxiliary Space: O(1)
+    """
+    if len(gas) != len(cost) or not gas:
+        return -1
+
+    total_tank = 0
+    current_tank = 0
+    starting_station = 0
+
+    for i in range(len(gas)):
+        net_gain = gas[i] - cost[i]
+        total_tank += net_gain
+        current_tank += net_gain
+
+        # Deficit reached: reset start candidate to i + 1
+        if current_tank < 0:
+            starting_station = i + 1
+            current_tank = 0
+
+    return starting_station if total_tank >= 0 else -1
+```
+
+---
+
+### 2. Jump Game I (LeetCode 55)
+
+#### Production C# (.NET 8/9)
+```csharp
+namespace DsaMastery.Greedy;
+
+using System;
+
+public static class JumpGameOne
+{
+    /// <summary>
+    /// Determines if the last index is reachable.
+    /// Time Complexity: O(N) - single forward pass.
+    /// Auxiliary Space: O(1) - zero heap allocations.
+    /// </summary>
+    public static bool CanJump(ReadOnlySpan<int> nums)
     {
-        if (_parent[x] != x)
-        {
-            _parent[x] = Find(_parent[x]); // Path compression
-        }
-        return _parent[x];
-    }
+        if (nums.IsEmpty) return false;
 
-    public bool Union(int x, int y)
-    {
-        int rootX = Find(x);
-        int rootY = Find(y);
-        if (rootX == rootY) return false;
+        int maxReach = 0;
+        int target = nums.Length - 1;
 
-        // Union by rank
-        if (_rank[rootX] < _rank[rootY])
+        for (int i = 0; i < nums.Length; i++)
         {
-            _parent[rootX] = rootY;
-        }
-        else if (_rank[rootX] > _rank[rootY])
-        {
-            _parent[rootY] = rootX;
-        }
-        else
-        {
-            _parent[rootY] = rootX;
-            _rank[rootX]++;
+            // Stepped beyond our furthest illuminated reach
+            if (i > maxReach)
+            {
+                return false;
+            }
+
+            maxReach = Math.Max(maxReach, i + nums[i]);
+
+            // Early exit if target already within reach
+            if (maxReach >= target)
+            {
+                return true;
+            }
         }
 
         return true;
     }
 }
-
-public static class KruskalAlgorithm
-{
-    /// <summary>
-    /// Computes the Minimum Spanning Tree using Kruskal's greedy edge selection.
-    /// Time Complexity: O(E log E)
-    /// Space Complexity: O(V)
-    /// </summary>
-    public static (List<Edge> MstEdges, int TotalWeight) ComputeMst(int vertexCount, Edge[] edges)
-    {
-        ArgumentNullException.ThrowIfNull(edges);
-        if (vertexCount <= 1) return ([], 0);
-
-        // Sort edges by weight ascending
-        Array.Sort(edges, static (a, b) => a.Weight.CompareTo(b.Weight));
-
-        var dsu = new DisjointSet(vertexCount);
-        var mst = new List<Edge>(vertexCount - 1);
-        int totalWeight = 0;
-
-        foreach (var edge in edges)
-        {
-            if (dsu.Union(edge.U, edge.V))
-            {
-                mst.Add(edge);
-                totalWeight += edge.Weight;
-
-                if (mst.Count == vertexCount - 1)
-                {
-                    break; // Spanning tree complete
-                }
-            }
-        }
-
-        if (mst.Count != vertexCount - 1)
-        {
-            throw new InvalidOperationException("Graph is disconnected; MST does not exist.");
-        }
-
-        return (mst, totalWeight);
-    }
-}
 ```
 
 #### Production Python (3.11+)
-
 ```python
-from typing import List, Tuple
+def can_jump(nums: list[int]) -> bool:
+    """
+    Determines if the last index is reachable.
+    Time Complexity: O(N)
+    Auxiliary Space: O(1)
+    """
+    if not nums:
+        return False
 
-class DisjointSet:
-    def __init__(self, size: int):
-        self.parent = list(range(size))
-        self.rank = [0] * size
+    max_reach = 0
+    target = len(nums) - 1
 
-    def find(self, x: int) -> int:
-        if self.parent[x] != x:
-            self.parent[x] = self.find(self.parent[x])  # Path compression
-        return self.parent[x]
-
-    def union(self, x: int, y: int) -> bool:
-        rx = self.find(x)
-        ry = self.find(y)
-        if rx == ry:
+    for i, jump in enumerate(nums):
+        if i > max_reach:
             return False
 
-        # Union by rank
-        if self.rank[rx] < self.rank[ry]:
-            self.parent[rx] = ry
-        elif self.rank[rx] > self.rank[ry]:
-            self.parent[ry] = rx
-        else:
-            self.parent[ry] = rx
-            self.rank[rx] += 1
-        return True
+        max_reach = max(max_reach, i + jump)
+        if max_reach >= target:
+            return True
 
-
-def kruskal_mst(vertex_count: int, edges: List[Tuple[int, int, int]]) -> Tuple[List[Tuple[int, int, int]], int]:
-    """
-    Computes MST using Kruskal's algorithm.
-    edges: list of (u, v, weight)
-    Time Complexity: O(E log E)
-    Space Complexity: O(V)
-    """
-    if vertex_count <= 1:
-        return [], 0
-
-    # Sort edges by weight ascending
-    sorted_edges = sorted(edges, key=lambda x: x[2])
-    dsu = DisjointSet(vertex_count)
-    mst: List[Tuple[int, int, int]] = []
-    total_weight = 0
-
-    for u, v, weight in sorted_edges:
-        if dsu.union(u, v):
-            mst.append((u, v, weight))
-            total_weight += weight
-            if len(mst) == vertex_count - 1:
-                break
-
-    if len(mst) != vertex_count - 1:
-        raise ValueError("Graph is disconnected; MST cannot be formed.")
-
-    return mst, total_weight
+    return True
 ```
 
 ---
 
-### Pattern 2: Prim's MST (with PriorityQueue / Heap)
+### 3. Jump Game II (LeetCode 45)
 
 #### Production C# (.NET 8/9)
-
 ```csharp
-namespace DsaMastery.Systems;
+namespace DsaMastery.Greedy;
 
 using System;
-using System.Collections.Generic;
 
-public static class PrimAlgorithm
+public static class JumpGameTwo
 {
     /// <summary>
-    /// Computes MST using Prim's algorithm with PriorityQueue.
-    /// Time Complexity: O(E log V)
-    /// Space Complexity: O(V + E)
+    /// Computes the minimum number of jumps to reach the last index.
+    /// Time Complexity: O(N) - single forward pass.
+    /// Auxiliary Space: O(1) - implicit BFS in contiguous memory.
     /// </summary>
-    public static (List<Edge> MstEdges, int TotalWeight) ComputeMst(int vertexCount, List<(int To, int Weight)>[] adj)
+    public static int Jump(ReadOnlySpan<int> nums)
     {
-        ArgumentNullException.ThrowIfNull(adj);
-        if (vertexCount <= 1) return ([], 0);
-
-        var visited = new bool[vertexCount];
-        var mst = new List<Edge>(vertexCount - 1);
-        int totalWeight = 0;
-
-        // Min-heap storing (From, To, Weight) keyed by Weight
-        var pq = new PriorityQueue<(int From, int To, int Weight), int>();
-
-        void PushEdges(int u)
+        if (nums.Length <= 1)
         {
-            visited[u] = true;
-            foreach (var (to, weight) in adj[u])
+            return 0;
+        }
+
+        int jumps = 0;
+        int currentJumpEnd = 0;
+        int maxReach = 0;
+        int target = nums.Length - 1;
+
+        // Loop stops at nums.Length - 1 to prevent phantom jumps from the destination!
+        for (int i = 0; i < target; i++)
+        {
+            maxReach = Math.Max(maxReach, i + nums[i]);
+
+            // Reached the boundary of the current BFS level
+            if (i == currentJumpEnd)
             {
-                if (!visited[to])
+                jumps++;
+                currentJumpEnd = maxReach;
+
+                if (currentJumpEnd >= target)
                 {
-                    pq.Enqueue((u, to, weight), weight);
+                    break;
                 }
             }
         }
 
-        PushEdges(0); // Start spanning from vertex 0
-
-        while (pq.Count > 0 && mst.Count < vertexCount - 1)
-        {
-            var edge = pq.Dequeue();
-            if (visited[edge.To]) continue;
-
-            mst.Add(new Edge(edge.From, edge.To, edge.Weight));
-            totalWeight += edge.Weight;
-            PushEdges(edge.To);
-        }
-
-        if (mst.Count != vertexCount - 1)
-        {
-            throw new InvalidOperationException("Graph is disconnected; MST does not exist.");
-        }
-
-        return (mst, totalWeight);
+        return jumps;
     }
 }
 ```
 
 #### Production Python (3.11+)
-
 ```python
-import heapq
-from typing import List, Tuple
-
-def prim_mst(vertex_count: int, adj: List[List[Tuple[int, int]]], start: int = 0) -> Tuple[List[Tuple[int, int, int]], int]:
+def jump(nums: list[int]) -> int:
     """
-    Computes MST using Prim's algorithm with min-heap.
-    adj: adjacency list where adj[u] contains (v, weight)
-    Time Complexity: O(E log V)
-    Space Complexity: O(V + E)
+    Computes the minimum number of jumps to reach the last index.
+    Time Complexity: O(N)
+    Auxiliary Space: O(1)
     """
-    if vertex_count <= 1:
-        return [], 0
+    if len(nums) <= 1:
+        return 0
 
-    visited = [False] * vertex_count
-    mst: List[Tuple[int, int, int]] = []
-    total_weight = 0
+    jumps = 0
+    current_jump_end = 0
+    max_reach = 0
+    target = len(nums) - 1
 
-    # Min-heap storing (weight, from_node, to_node)
-    min_heap: List[Tuple[int, int, int]] = []
+    # Stop before target to avoid jumping from the destination
+    for i in range(target):
+        max_reach = max(max_reach, i + nums[i])
 
-    def push_edges(u: int):
-        visited[u] = True
-        for v, weight in adj[u]:
-            if not visited[v]:
-                heapq.heappush(min_heap, (weight, u, v))
+        if i == current_jump_end:
+            jumps += 1
+            current_jump_end = max_reach
+            if current_jump_end >= target:
+                break
 
-    push_edges(start)
-
-    while min_heap and len(mst) < vertex_count - 1:
-        weight, u, v = heapq.heappop(min_heap)
-        if visited[v]:
-            continue
-
-        mst.append((u, v, weight))
-        total_weight += weight
-        push_edges(v)
-
-    if len(mst) != vertex_count - 1:
-        raise ValueError("Graph is disconnected; MST cannot be formed.")
-
-    return mst, total_weight
+    return jumps
 ```
 
 ---
 
-### Pattern 3: High-Performance LRU Cache
+### 4. Task Scheduler (LeetCode 621)
 
 #### Production C# (.NET 8/9)
-
 ```csharp
-namespace DsaMastery.Systems;
+namespace DsaMastery.Greedy;
 
 using System;
-using System.Collections.Generic;
 
-public sealed class LruCache<TKey, TValue> where TKey : notnull
+public static class TaskScheduler
 {
-    private readonly int _capacity;
-    private readonly Dictionary<TKey, LinkedListNode<(TKey Key, TValue Value)>> _map;
-    private readonly LinkedList<(TKey Key, TValue Value)> _list;
-
-    public LruCache(int capacity)
+    /// <summary>
+    /// Calculates the minimum CPU intervals to execute all tasks with cooling period n.
+    /// Time Complexity: O(N) where N is tasks.Length.
+    /// Auxiliary Space: O(1) using stackalloc for fixed 26-element alphabet.
+    /// </summary>
+    public static int LeastInterval(char[] tasks, int n)
     {
-        if (capacity <= 0) throw new ArgumentOutOfRangeException(nameof(capacity), "Capacity must be positive.");
-        _capacity = capacity;
-        _map = new Dictionary<TKey, LinkedListNode<(TKey, TValue)>>(capacity);
-        _list = new LinkedList<(TKey, TValue)>();
-    }
+        ArgumentNullException.ThrowIfNull(tasks);
 
-    public bool TryGet(TKey key, out TValue value)
-    {
-        if (_map.TryGetValue(key, out var node))
+        if (tasks.Length == 0) return 0;
+        if (n == 0) return tasks.Length;
+
+        // Zero heap allocations: fixed 26 characters on thread stack
+        Span<int> frequencies = stackalloc int[26];
+        int maxFreq = 0;
+
+        foreach (char task in tasks)
         {
-            // Move accessed node to front (MRU)
-            _list.Remove(node);
-            _list.AddFirst(node);
-            value = node.Value.Value;
-            return true;
+            int count = ++frequencies[task - 'A'];
+            if (count > maxFreq)
+            {
+                maxFreq = count;
+            }
         }
 
-        value = default!;
-        return false;
-    }
-
-    public void Put(TKey key, TValue value)
-    {
-        if (_map.TryGetValue(key, out var existingNode))
+        int maxFreqCount = 0;
+        foreach (int freq in frequencies)
         {
-            _list.Remove(existingNode);
-            var updatedNode = new LinkedListNode<(TKey, TValue)>((key, value));
-            _list.AddFirst(updatedNode);
-            _map[key] = updatedNode;
-            return;
+            if (freq == maxFreq)
+            {
+                maxFreqCount++;
+            }
         }
 
-        if (_map.Count >= _capacity)
-        {
-            // Evict least recently used (Tail)
-            var lru = _list.Last ?? throw new InvalidOperationException("LRU list empty during eviction.");
-            _list.RemoveLast();
-            _map.Remove(lru.Value.Key);
-        }
+        // Geometric Bento Box formula
+        int frameIntervals = (maxFreq - 1) * (n + 1) + maxFreqCount;
 
-        var newNode = new LinkedListNode<(TKey, TValue)>((key, value));
-        _list.AddFirst(newNode);
-        _map[key] = newNode;
+        // If tasks exceed frame capacity, no idle slots are required!
+        return Math.Max(frameIntervals, tasks.Length);
     }
 }
 ```
 
 #### Production Python (3.11+)
-
 ```python
-from collections import OrderedDict
-from typing import Generic, Optional, TypeVar
+from collections import Counter
 
-K = TypeVar('K')
-V = TypeVar('V')
-
-class LRUCache(Generic[K, V]):
+def least_interval(tasks: list[str], n: int) -> int:
     """
-    O(1) LRU Cache using Python OrderedDict.
-    OrderedDict maintains key insertion and access order efficiently.
+    Calculates the minimum CPU intervals to execute all tasks with cooling period n.
+    Time Complexity: O(N)
+    Auxiliary Space: O(1) - at most 26 keys in hash map
     """
-    def __init__(self, capacity: int):
-        if capacity <= 0:
-            raise ValueError("Capacity must be positive.")
-        self.capacity = capacity
-        self.cache: OrderedDict[K, V] = OrderedDict()
+    if not tasks:
+        return 0
+    if n == 0:
+        return len(tasks)
 
-    def get(self, key: K) -> Optional[V]:
-        if key not in self.cache:
-            return None
-        # Move key to end to denote most recently used (MRU)
-        self.cache.move_to_end(key)
-        return self.cache[key]
+    counts = Counter(tasks)
+    max_freq = max(counts.values())
+    max_freq_count = sum(1 for count in counts.values() if count == max_freq)
 
-    def put(self, key: K, value: V) -> None:
-        if key in self.cache:
-            self.cache.move_to_end(key)
-        self.cache[key] = value
+    # Geometric Bento Box formula
+    frame_intervals = (max_freq - 1) * (n + 1) + max_freq_count
 
-        if len(self.cache) > self.capacity:
-            # Evict first item (least recently used, FIFO pop)
-            self.cache.popitem(last=False)
+    return max(frame_intervals, len(tasks))
 ```
 
 ---
 
-## ⚖️ CHAPTER 5: PERFORMANCE & COMPLEXITY DECONSTRUCTION
+## ⚖️ PERFORMANCE & COMPLEXITY DECONSTRUCTION
 
-### Systems Performance Matrix
-
-| Component | Time Complexity | Auxiliary Space | Cache Friendliness | Critical Failure Mode |
+| Problem | Time Complexity | Auxiliary Space | Bottleneck | Why Greedy Is Optimal |
 | :--- | :--- | :--- | :--- | :--- |
-| **Kruskal MST** | `O(E log E)` | `O(V)` | High (flat edge array) | Disconnected graphs (check `Count == V - 1`) |
-| **Prim MST** | `O(E log V)` | `O(V + E)` | Moderate (pointer chasing) | Dense graph memory explosion |
-| **LRU Cache** | `O(1)` per op | `O(Capacity)` | Low (linked node hopping) | Thrashing under looping scan patterns |
-| **Greedy Set Cover**| `O(U * S)` | `O(U)` | High (hash set bitsets) | Suboptimal on adversarial subset overlaps |
-
-#### Architectural Takeaways:
-1. **Cache Thrashing:** If a sequential access loop reads `K + 1` distinct elements repeatedly into a cache of capacity `K`, LRU achieves a **0% hit rate**! Modern databases (e.g., PostgreSQL buffer pool, Linux page cache) use **2Q** or **LRU-K** to guard against sequential scan thrashing.
-2. **Kruskal's DSU Nearly O(1) Operations:** With both Path Compression and Union by Rank, the Inverse Ackermann function `α(V) <= 4` for all practical values of `V < 10^80`. DSU operations are practically instantaneous.
+| **Gas Station** (LC 134) | `O(N)` | `O(1)` | Single array scan | Running dry at `B` invalidates all starts in `[A, B]` (monotonic deficit). |
+| **Jump Game I** (LC 55) | `O(N)` | `O(1)` | Forward iteration | Storing maximum reachability interval is sufficient; no need to explore paths. |
+| **Jump Game II** (LC 45) | `O(N)` | `O(1)` | Wavefront updates | BFS range extension: jumping to max reach boundary covers all possible sub-jumps. |
+| **Task Scheduler** (LC 621)| `O(N)` | `O(1)` | Frequency counting | Idle time is strictly bounded by the highest frequency task; filler tasks expand dynamically. |
 
 ---
 
-## 🎙️ CHAPTER 6: 45-MINUTE INTERVIEW VERBAL SCRIPT
+## ⚔️ PRACTICE LADDER & FAANG EDGE-CASE CHECKLIST
+
+### 🏋️ High-ROI Practice Progression
+1. **LeetCode 55 — Jump Game I (Medium):** Warm-up for range tracking.
+2. **LeetCode 45 — Jump Game II (Medium):** Master implicit BFS level updates without queue allocations.
+3. **LeetCode 134 — Gas Station (Medium):** Master circular deficit resets and valley proofs.
+4. **LeetCode 621 — Task Scheduler (Medium):** Master geometric slot framing over clock simulation.
+5. **LeetCode 1029 — Two City Scheduling (Medium):** Sort by opportunity cost `costA - costB`.
+6. **LeetCode 135 — Candy (Hard):** Two-pass greedy (left-to-right, then right-to-left) to satisfy dual neighbor constraints.
+
+### 🧪 Edge-Case Checklist for Live Interviews
+- **Gas Station:**
+  - `gas.Length == 1`: Can we make a loop if `gas[0] >= cost[0]`? (Yes, returns index 0).
+  - Net zero total: `sum(gas) == sum(cost)`. Guarantees a solution exists.
+  - Alternating spikes: High surplus at end, large deficit at front.
+- **Jump Game I & II:**
+  - Array of length 1: `nums = [0]`. Target is index 0. Jumps = 0, CanJump = true!
+  - Immediate zero blocker: `nums = [0, 2, 3]`. Cannot move past index 0.
+  - Large jump at start: `nums = [10, 0, 0, ...]` reaches target in 1 jump.
+- **Task Scheduler:**
+  - `n = 0`: No cooling required. Returns `tasks.Length`.
+  - All tasks identical: `['A', 'A', 'A']`, `n = 2`. Output = 7 (`A -> idle -> idle -> A -> idle -> idle -> A`).
+  - All tasks distinct: `['A', 'B', 'C', 'D']`, `n = 2`. Output = 4 (`max_freq = 1`, frame = 4).
+
+---
+
+## 🏁 SUMMARY: THE SYSTEMS GREEDY PLAYBOOK
 
 ```
-[00:00 - 05:00] Clarifying Systems Problem Scoping
-"Let's clarify the scenario:
- 1. For MST: Is the graph guaranteed connected? Are edge weights positive, negative, or zero?
-    (MST works identically with negative weights!).
- 2. For LRU Cache: What are our thread-safety requirements?
-    What capacity constraints apply? All get and put operations must execute in strict O(1) time."
-
-[05:00 - 12:00] Proving the Correctness of MST Greediness
-"Why does greedy edge selection work for MST without backtracking?
- It relies directly on the Cut Property: For any partition of vertices into two non-empty sets S
- and V \ S, the minimum-weight edge crossing the cut must belong to some MST.
- Kruskal iteratively connects disconnected components using the globally cheapest edge.
- Prim iteratively extends a single cut boundary using the locally cheapest frontier edge.
- Neither algorithm ever needs to undo a choice."
-
-[12:00 - 25:00] Architecture Selection: Kruskal vs Prim
-"Which algorithm do we choose?
- If the graph is sparse (E ≈ V), Kruskal's edge sorting takes O(E log E) and DSU operations
- run in nearly linear time O(E * α(V)). Kruskal is clean and memory-efficient.
- If the graph is dense (E ≈ V^2), Prim's algorithm runs in O(E log V) or O(V^2) with an
- adjacency matrix, avoiding the need to sort V^2 edges upfront.
- I will implement Kruskal using Disjoint Set Union with Path Compression and Union by Rank."
-
-[25:00 - 35:00] Coding LRU Cache & MST
-"For the LRU Cache, we combine a Hash Map with a Doubly-Linked List.
- The map provides O(1) key lookup to node pointers.
- The doubly-linked list provides O(1) node detachment and head insertion without array shifts.
- Let's write the C# / Python implementation..."
-
-[35:00 - 42:00] Complexity Verification
-"Kruskal: Edge sort takes O(E log E). DSU Find/Union takes O(E * α(V)). Total time: O(E log E).
- Space: O(V) for DSU parent and rank arrays.
- LRU Cache: get(key) is O(1) map lookup + O(1) node reparenting.
- put(key, val) is O(1) map insert + O(1) eviction of tail node. Space is strictly O(Capacity)."
-
-[42:00 - 45:00] Edge Cases & Systems Defenses
-"Edge cases covered:
- - Disconnected Graph: Detected when mst.Count < V - 1; throws descriptive exception.
- - Cache Capacity = 1: Safely evicts previous entry on second insert.
- - Re-inserting existing key: Updates value in place and bumps node to MRU head."
++---------------------------------------------------------------------------------------+
+|                              THE SYSTEMS GREEDY MATRIX                                |
++-----------------------+-------------------------------+-------------------------------+
+| Scenario              | Trap to Avoid                 | Senior Invariant              |
++-----------------------+-------------------------------+-------------------------------+
+| Circular Energy Loop  | Nested O(N^2) restart loop    | Sub-path failure at B prunes  |
+| (Gas Station)         |                               | all starts in [A, B].         |
++-----------------------+-------------------------------+-------------------------------+
+| Reachability Scan     | Recursive backtracking        | Searchlight reach: track      |
+| (Jump Game I)         |                               | max_reach = max(i + nums[i]). |
++-----------------------+-------------------------------+-------------------------------+
+| Minimum Steps BFS     | Heap / Queue allocations      | Implicit BFS wave: update     |
+| (Jump Game II)        |                               | jumps at current_jump_end.    |
++-----------------------+-------------------------------+-------------------------------+
+| Rate Limiter / CPU    | Simulating clock ticks with   | Bento Box frame:              |
+| (Task Scheduler)      | priority queue                | (max_freq - 1)*(n + 1) + cnt. |
++-----------------------+-------------------------------+-------------------------------+
 ```
 
 ---
 
-## ⚔️ SUPPLEMENTARY OUTCOMES
-
-### 🏋️ Practice Problems
-
-| # | Problem | Source | Difficulty | Key Concept |
-| :--- | :--- | :--- | :--- | :--- |
-| 1 | Min Cost to Connect All Points | LeetCode 1584 | Medium | Kruskal / Prim on complete Manhattan graph |
-| 2 | LRU Cache | LeetCode 146 | Medium | Hash Map + Doubly Linked List |
-| 3 | LFU Cache | LeetCode 460 | Hard | Dual Hash Map with frequency buckets |
-| 4 | Connecting Cities With Minimum Cost | LeetCode 1135 | Medium | Kruskal MST with DSU |
-| 5 | Optimize Water Distribution in a Village | LeetCode 1168 | Hard | Virtual source node + MST |
-
-### 🎙️ Interview Questions
-
-1. **Q:** What is the difference between an MST and a Shortest Path Tree (Dijkstra)?
-   - *Answer:* An MST minimizes the total weight of *all* edges combined. A Shortest Path Tree minimizes the distance from a *single source* to each individual destination.
-2. **Q:** Why does Dijkstra fail with negative edges, but Kruskal and Prim succeed?
-   - *Answer:* Dijkstra assumes that extending a path cannot decrease its total distance (greedy stays ahead). MST algorithms only compare individual edge weights across cuts; negative weights simply represent cheaper edges.
-3. **Q:** Why does LRU use a Doubly-Linked List instead of a Singly-Linked List?
-   - *Answer:* Removing a node in `O(1)` requires access to `node.Prev` to stitch `prev.Next = next`. A singly-linked list would require an `O(N)` scan from the head to find the predecessor.
-
----
-
-**End of Week 12 Day 05 Instructional File**
-
----
 > 🧭 **Navigation:** [← Previous Day](Week_12_Day_04_Fractional_Knapsack_And_Scheduling_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_12_FULL_PLAYBOOK.md)

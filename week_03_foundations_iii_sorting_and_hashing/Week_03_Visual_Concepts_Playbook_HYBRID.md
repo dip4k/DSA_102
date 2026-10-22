@@ -219,12 +219,12 @@ flowchart TD
     classDef orig fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
     classDef half fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
 
-    All["📦 [38, 27,<br/>43, 3, 9, 82,<br/>10]"]:::orig
-    L1["[38, 27, 43, 3]"]:::half
-    R1["[9, 82, 10]"]:::half
+    All["📦 (38, 27,<br/>43, 3, 9, 82,<br/>10)"]:::orig
+    L1["(38, 27, 43, 3)"]:::half
+    R1["(9, 82, 10)"]:::half
     All -->|"Divide in half"| L1 & R1
-    L2["[38, 27]"]:::half
-    L3["[43, 3]"]:::half
+    L2["(38, 27)"]:::half
+    L3["(43, 3)"]:::half
     L1 --> L2 & L3
 ```
 
@@ -348,7 +348,7 @@ flowchart TD
     classDef tree fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
 
     Tree["🌲 Heap<br/>Index<br/>Arithmetic:<br/>LeftChild = 2*i +<br/>1<br/>RightChild = 2*i +<br/>2<br/>Parent = (i - 1) /<br/>2"]:::tree
-    Arr["📊 Array:<br/>[1, 3, 2, 7, 4,<br/>5]<br/>Indices: 0, 1, 2,<br/>3, 4, 5"]:::arr
+    Arr["📊 Array:<br/>(1, 3, 2, 7, 4,<br/>5)<br/>Indices: 0, 1, 2,<br/>3, 4, 5"]:::arr
     Tree --> Arr
 ```
 
@@ -424,9 +424,9 @@ flowchart LR
     classDef heap fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
     classDef sorted fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
 
-    H["📦 Max-Heap:<br/>[82, 43, 38,<br/>27, 9, 10, 3]"]:::heap
+    H["📦 Max-Heap:<br/>(82, 43, 38,<br/>27, 9, 10, 3)"]:::heap
     Ext["⚡ Swap Max<br/>with End &<br/>Sift Down"]
-    S["✅ Sorted<br/>Suffix: [...<br/>82]"]:::sorted
+    S["✅ Sorted<br/>Suffix: (...<br/>82)"]:::sorted
 
     H --> Ext --> S
 ```
@@ -471,8 +471,8 @@ flowchart LR
     classDef bucket fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
 
     Key["🔑 Key: 42"]:::key
-    Hash["⚙️ Hash<br/>Function: 42 %<br/>10<br/>= 2"]:::hash
-    Bucket["📦 Bucket<br/>Array: Slot [2]"]:::bucket
+    Hash["⚙️ Hash<br/>Function: 42 %<br/>10<br/&ge; 2"]:::hash
+    Bucket["📦 Bucket<br/>Array: Slot (2)"]:::bucket
 
     Key --> Hash --> Bucket
 ```
@@ -491,7 +491,7 @@ flowchart TD
     classDef alert fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
     classDef grow fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
 
-    Trigger["⚠️ Load<br/>Factor > 0.75<br/>(Item Count /<br/>Capacity)"]:::alert
+    Trigger["⚠️ Load<br/>Factor &gt; 0.75<br/>(Item Count /<br/>Capacity)"]:::alert
     Action["📈 Rehash &<br/>Resize:<br/>Allocate Capacity<br/>* 2<br/>Recompute hash for<br/>all<br/>existing elements<br/>into<br/>new table"]:::grow
 
     Trigger --> Action

@@ -115,7 +115,7 @@ flowchart TD
         C --> D
     end
 
-    subgraph AuxiliaryTree["Auxiliary Splay Tree (Preferred Path R -> A -> C -> D)"]
+    subgraph AuxiliaryTree["Auxiliary Splay Tree (Preferred Path R -&gt; A -&gt; C -&gt; D)"]
         AC["Splay Node (C)"]:::path
         AA["Splay Node (A)"]:::path
         AR["Splay Node (R)"]:::path

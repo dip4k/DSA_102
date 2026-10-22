@@ -1,38 +1,41 @@
-﻿# 📘 Dynamic Programming II: Advanced State Spaces
+# 📘 Week 11: Dynamic Programming II: Advanced State Spaces
 
 > 🧭 **Navigation:** [← Previous: Week 10](../week_10_dynamic_programming_i_fundamentals/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 12 →](../week_12_greedy_and_paradigms/README.md)
 
 ---
 
-> 💡 **Instructor Guidance Note:**  
-> *Not all sections or topics are mandatory. As a learner, you can adapt your pace freely. If you are preparing on an accelerated interview timeline or already feel confident with specific foundational concepts, feel free to skip or skim optional topics and prioritize high-yield patterns based on your personal interview goals.*
+## 🎬 Welcome to Week 11: The Advanced State-Space Architect's Masterclass!
 
----
+In Staff and Principal-level technical interviews, dynamic programming rarely presents itself as a simple 1D array. Problems evolve into non-linear, high-dimensional topologies: hierarchical trees, directed acyclic dependency networks, exponential subset powersets, and compressed memory layouts.
 
-## 🎯 Weekly Mission & Conceptual Focus
-
-Tree DP (diameter and vertex covers), DAG topological path counting, bitmask subset DP (TSP), and state-space space-saving rolling buffer optimizations.
+This week elevates you from introductory DP to advanced state-space modeling: **Tree DP (bottom-up post-order propagation & re-rooting)**, **DP on DAGs (topological ordering & longest/shortest paths)**, **Bitmask DP (representing subsets as integer bit arrays & Traveling Salesperson)**, **State Compression (space-saving rolling bit vectors)**, and **Mixed DP master challenges (Interval DP & Matrix Chain Multiplication)**.
 
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
-flowchart TD
-    Start["Week 11 Start"] --> Daily["Daily Invariant<br/>Deep<br/>Dives"]
-    Daily --> Playbook["Consolidated<br/>Playbook &<br/>Visuals"]
-    Playbook --> DualLang["Dual-Language<br/>Practice<br/>(C# & Python)"]
-    DualLang --> Mastery["Pattern Mastery &<br/>Verification"]
+flowchart LR
+    D1["Day 01: DP on Trees<br/>🌲 Subtree Returns & Re-Rooting"] --> D2["Day 02: DP on DAGs<br/>🕸️ Topological Scheduling & Paths"]
+    D2 --> D3["Day 03: Bitmask DP<br/>🔢 Subsets as Bits & TSP O(2ᴺ · N)"]
+    D3 --> D4["Day 04: State Compression<br/>💾 Dimension Reduction & Scrolling"]
+    D4 --> D5["Day 05: Mixed DP Challenges<br/>🧩 Interval DP & Burst Balloons"]
+
+    style D1 fill:#e1f5fe,stroke:#0288d1,color:#01579b
+    style D2 fill:#ede7f6,stroke:#5e35b1,color:#311b92
+    style D3 fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style D4 fill:#fff3e0,stroke:#e65100,color:#bf360c
+    style D5 fill:#fce4ec,stroke:#c2185b,color:#880e4f
 ```
 
 ---
 
 ## 📅 Day-by-Day Learning Path
 
-| Day | Instructional Module | Focus & Core Objective |
-| :--- | :--- | :--- |
-| **Day 01** | [DP on Trees](Week_11_Day_01_DP_on_Trees_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 02** | [DP On DAGs](Week_11_Day_02_DP_On_DAGs_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 03** | [Bitmask And Subset DP](Week_11_Day_03_Bitmask_And_Subset_DP_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 04** | [State Compression And Optimizations](Week_11_Day_04_State_Compression_And_Optimizations_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 05** | [Mixed DP Problems](Week_11_Day_05_Mixed_DP_Problems_Instructional.md) | Core Daily Concept Deep Dive |
+| Day | Instructional Masterclass | Core Mental Model & Intuition | Key Pattern / Invariant |
+| :--- | :--- | :--- | :--- |
+| **Day 01** | [DP on Trees](Week_11_Day_01_DP_on_Trees_Instructional.md) | **The Subtree Delegation Contract:** Bottom-up aggregation. | `dp[u][0]` vs `dp[u][1]`, House Robber III, Binary Tree Camera, Re-rooting technique. |
+| **Day 02** | [DP on DAGs](Week_11_Day_02_DP_On_DAGs_Instructional.md) | **The Topological Cascade:** Processing nodes in dependency order. | Topological order DP, longest path in DAG, number of paths between source and target. |
+| **Day 03** | [Bitmask & Subset DP](Week_11_Day_03_Bitmask_And_Subset_DP_Instructional.md) | **The LED Switchboard:** Packing 20 boolean flags into a 32-bit int. | Subsets as integers `mask & (1 << i)`, Traveling Salesperson Problem (TSP), matchings. |
+| **Day 04** | [State Compression & Optimizations](Week_11_Day_04_State_Compression_And_Optimizations_Instructional.md) | **The Flat Memory Buffer:** Crushing multi-dimensional tables. | Dimension folding, 2-row ping-pong buffers, bitwise submask iteration `(sub - 1) & mask`. |
+| **Day 05** | [Mixed DP Problems & Interval DP](Week_11_Day_05_Mixed_DP_Problems_Instructional.md) | **The Shrinking Envelope:** Expanding outward from length 1 to N. | Interval DP `dp[i, j]`, Burst Balloons (LC 312), Matrix Chain Multiplication. |
 
 ---
 
@@ -46,8 +49,6 @@ flowchart TD
 ---
 
 ## 🛠️ The 5 Core Support Files (`support files/`)
-
-Every week is accompanied by five dedicated support files located in the `support files/` subdirectory:
 
 1.  📋 [Daily Progress Checklist](support%20files/Week_11_Daily_Progress_Checklist.md) — Step-by-step accountability tracker for theory, coding, and variants.
 2.  🧭 [Weekly Guidelines & Mental Models](support%20files/Week_11_Guidelines.md) — Strategic roadmap, common pitfalls, and conceptual anchors.

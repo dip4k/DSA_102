@@ -85,12 +85,12 @@ flowchart TD
 flowchart TD
     subgraph AddressSpace["64-Bit Process Address Space (High to Low Addresses)"]
         direction TB
-        K["Kernel Space<br/>(Protected OS<br/>Space)<br/>[0xFFFF...]"]
+        K["Kernel Space<br/>(Protected OS<br/>Space)<br/>(0xFFFF...)"]
         S["Stack (Function<br/>call<br/>frames, local<br/>variables —<br/>grows downward)"]
         Gap["Unallocated Gap"]
         H["Heap (malloc / new<br/>dynamic objects —<br/>grows<br/>upward)"]
         D["Data Segment<br/>(Static &<br/>initialized<br/>global variables)"]
-        C["Code Segment<br/>(Compiled machine<br/>instructions,<br/>read-only)<br/>[0x0000...]"]
+        C["Code Segment<br/>(Compiled machine<br/>instructions,<br/>read-only)<br/>(0x0000...)"]
     end
     K --> S --> Gap --> H --> D --> C
 ```

@@ -1,12 +1,8 @@
 # 📘 Week 03 Day 05: Hash Tables II — Open Addressing & Rolling Hash (Rabin-Karp) — ENGINEERING GUIDE
 
-
-
-
-
 > 🧭 **Navigation:** [← Previous Day](Week_03_Day_04_Hash_Tables_Separate_Chaining_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_03_FULL_PLAYBOOK.md)
 > 
-> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
+> 💡 **Instructor Note:** *Welcome to the grand finale of Week 3! Today, we bridge theoretical hashing with production systems engineering—mastering the cache-friendly mechanics of open addressing and the O(1) rolling window mathematics of Rabin-Karp.*
 
 ---
 
@@ -14,937 +10,671 @@
 
 *By the end of this chapter, you will be able to:*
 
-- 🎯 **Internalize** why open addressing trades memory for cache locality and how probing sequences avoid clustering.
-- ⚙️ **Implement** linear probing, quadratic probing, and double hashing with analysis of clustering.
-- ⚖️ **Evaluate** when open addressing outperforms chaining (cache behavior, `alpha` threshold).
-- 🏭 **Defend** against hash flooding attacks via universal hashing and randomization.
-- 🎯 **Master** rolling hash and Rabin-Karp algorithm for O(n+m) substring matching and plagiarism detection.
+- 🎬 **Internalize** why open addressing trades memory headroom for L1/L2 CPU cache locality, eliminating pointer dereferences.
+- 🚗 **Master** collision resolution sequences—linear probing, quadratic probing, double hashing, and Robin Hood hashing.
+- 💀 **Demystify the Tombstone:** Implement safe soft-deletions and tombstone recycling to prevent broken probe chains.
+- 🚂 **Derive the Rolling Hash:** Calculate polynomial sliding window fingerprints in `O(1)` time for `O(N + M)` substring search (Rabin-Karp).
+- 🛑 **Dodge Senior Rookie Traps:** Prevent integer overflow, negative modulo arithmetic bugs, and spurious hash collision false positives.
+- ⚡ **Ship Production Code:** Build robust, zero-allocation-aware implementations in modern C# (.NET 8/9) and Python (3.11+).
 
 ---
 
-## 📖 CHAPTER 1: CONTEXT & MOTIVATION
+## 🎬 PILLAR 1: THE 60-SECOND HOOK & EVERYDAY ANALOGIES
 
-### The Problem: Chaining vs Open Addressing Trade-Off
+Hey engineers, welcome back to Week 3 Day 5 — our Week 3 grand finale!
 
-From Week 3 Day 4, separate chaining resolves collisions via linked lists. But chaining has a serious drawback:
+Over the past four days, you and I conquered quicksort, mergesort, heaps, and separate chaining. Yesterday, we resolved hash collisions by hanging linked lists off each bucket. That works well on a whiteboard, but in production systems, **modern CPU hardware hates linked lists**. 
 
-**Chaining Drawback:**
+Every time your program chases a linked list pointer to another node on the heap, the CPU stalls for up to 200 clock cycles waiting for a cache miss!
 
-```csharp
-HashTableChaining<string, int> table = new();
-// Insert many items; some hash to same bucket
-// Bucket 5: [item1] → [item2] → [item3] → [item4]
-//
-// Search for item4:
-//   Compute hash → Bucket 5
-//   Follow pointer to item1? Cache miss (pointer dereference)
-//   Follow pointer to item2? Cache miss
-//   Follow pointer to item3? Cache miss
-//   Follow pointer to item4? Cache miss
-//   4 cache misses for one search!
-```
-
-Modern CPUs heavily reward cache-friendly access patterns. Pointer chasing causes cache misses → 100-1000x slowdown.
-
-**Open Addressing Alternative:**
-
-Instead of separate chains, probe for next available slot in array itself.
+Today, we unlock two foundational paradigms that power high-performance engines like **Google's SwissTable**, **Python's dictionary**, **Git delta compression**, and **anti-plagiarism engines**: **Open Addressing** and **Rolling Hash**.
 
 ```
-Array: [item1] [empty] [item2] [item3] [empty]
-           0      1       2       3       4
-
-Search for item:
-  Compute hash → index 0
-  Check array[0]? Cache hit
-  Found? No, continue probing
-  Check array[1]? Cache hit (contiguous)
-  Empty? Yes, not found
-  
-All accesses are contiguous array elements → excellent cache locality!
++---------------------------------------------------------------------------------------+
+|                                THE DUAL ANALOGY                                       |
++---------------------------------------------------------------------------------------+
+|  1. OPEN ADDRESSING: THE CROWDED PARKING LOT                                          |
+|     You pull your car into an airport parking garage. Your ticket says spot #12.      |
+|     You drive to spot #12, but someone is already parked there!                       |
+|     In separate chaining, you would hoist your car ON TOP of theirs with a forklift   |
+|     (a linked list node).                                                             |
+|     In open addressing, you don't park on top of anyone—you simply drive forward to   |
+|     spot #13 (linear probing)! If #13 is taken, you check #14, and so on.             |
+|     Why does the CPU love this? Spots #12, #13, #14, and #15 sit side-by-side in      |
+|     contiguous physical memory! Fetching spot #12 preloads spots #13-#15 into your    |
+|     blazing-fast L1 CPU cache for free!                                               |
++---------------------------------------------------------------------------------------+
+|  2. ROLLING HASH: THE MOVING TRAIN WINDOW                                             |
+|     Imagine riding a bullet train past a 10-mile-long billboard painted with letters. |
+|     Your train window frames exactly 3 letters at any millisecond: ["a", "b", "c"].   |
+|     As the train moves forward by one letter, your window frames ["b", "c", "d"].     |
+|     Do you close your eyes, turn around, and re-read all 3 letters from scratch?      |
+|     Of course not! You drop "a" as it slides out the left side of your window, and    |
+|     you register "d" as it enters the right side!                                     |
+|     Rabin-Karp turns this into pure O(1) arithmetic: drop the departing letter, shift |
+|     the base radix, and add the incoming letter. String search drops from O(N * M)   |
+|     to expected O(N + M)!                                                             |
++---------------------------------------------------------------------------------------+
 ```
 
-Trade-off: Less memory efficient (can't exceed ~75% full) but much faster in practice.
+### The Mystery of the Tombstone 💀
 
-> **💡 Insight:** *This is a quintessential systems design decision: time vs space. Chaining uses space (pointers) to optimize time complexity. Open addressing uses more search (probing) to maintain cache locality. Which is better depends on hardware: modern CPUs heavily favor cache-friendly algorithms, making open addressing dominant in practice despite higher theoretical complexity.*
+Here is the puzzle that trips up 90% of interview candidates:
+
+What happens when someone vacates parking spot #12?
+If you simply mark spot #12 as `EMPTY` (`null`), you cause catastrophic data corruption!
+Any driver searching for the car that collided and drove to spot #13 will check spot #12, see an empty space, conclude *"Ah, spot #12 is empty, so the car I'm looking for was never parked here!"*, and stop searching!
+
+You have broken the probe chain! The **Tombstone** is the orange hazard cone you place in spot #12 that says: *"A car used to be here, but has departed. Keep probing forward!"*
 
 ---
 
-## 🧠 CHAPTER 2: BUILDING THE MENTAL MODEL
+## 🪜 PILLAR 2: THE SCAFFOLDING LADDER & TOY NAPKIN TRACES
 
-### The Core Analogy: Parking Lot Probing
+Let's walk through concrete numbers on a napkin so every pointer movement is crystal clear before we touch code.
 
-Imagine a parking lot where you need to find a free spot:
+### 🪜 Trace 1: Linear Probing & The Tombstone Lifecycle (Array Size M = 5)
 
-**Separate Chaining:** Have separate overflow parking lot (linked list). If spot is taken, list overflow lot. Search: go to spot, then follow pointers to overflow lot (expensive!).
-
-**Open Addressing:** Search sequentially through spots. If spot taken, try next spot. If that's taken, try next. Eventually find free spot. Search is local and cache-friendly.
-
-### 🖼 Visualizing Open Addressing Collision Resolution
-
-```
-Initial table (m = 5):
-Index:  0   1   2   3   4
-Array: [A] [B] [C] [ ] [ ]
-
-Insert D with h(D) = 2 (hash collision with C):
-
-Linear Probing: Try next sequential slot
-  h(D) = 2: occupied by C
-  Probe 3: empty!
-  Insert D at 3
-
-Array: [A] [B] [C] [D] [ ]
-       Index: 0   1   2   3   4
-
-Search for D:
-  h(D) = 2: occupied by C (not D)
-  Probe 3: found D!
-  1 collision, 1 probe -> O(1 + alpha) expected
-
-Now insert E with h(E) = 2:
-  h(E) = 2: occupied by C
-  Probe 3: occupied by D
-  Probe 4: empty!
-  Insert E at 4
-
-Array: [A] [B] [C] [D] [E]
-       Index: 0   1   2   3   4
-
-Problem: Linear probing creates "primary clustering"
-  Items hash to 2, 3, 4 → contiguous block
-  This attracts more collisions!
-```
-
-### 🖼 Comparing Probing Strategies & Collision Resolution
-
-Open addressing resolves collisions by finding an alternative slot within the primary array along a deterministic probe sequence `h(k, i) = (h(k) + f(i)) mod M`:
+Let our hash table capacity be `M = 5`. Hash function: `h(k) = k % 5`.
 
 ```text
-PROBING STRATEGIES AT A GLANCE:
+Initial Table (Capacity M = 5, all EMPTY):
+Index:    [ 0 ]      [ 1 ]      [ 2 ]      [ 3 ]      [ 4 ]
+State:    EMPTY      EMPTY      EMPTY      EMPTY      EMPTY
+```
 
+#### Step 1: Insert Key 7 (`Val = "apple"`)
+- Hash: `h(7) = 7 % 5 = 2`.
+- Slot 2 is `EMPTY`.
+- Action: Store `(7, "apple")` at index 2.
+
+```text
+Index:    [ 0 ]      [ 1 ]      [ 2 ]      [ 3 ]      [ 4 ]
+State:    EMPTY      EMPTY      OCCUP      EMPTY      EMPTY
+Entry:     --         --       (7, "apl")   --         --
+```
+
+#### Step 2: Insert Key 12 (`Val = "banana"`) — Collision!
+- Hash: `h(12) = 12 % 5 = 2`.
+- Slot 2 is `OCCUPIED` by Key 7 (`7 != 12`). Collision!
+- Linear Probe: `(2 + 1) % 5 = 3`. Slot 3 is `EMPTY`.
+- Action: Store `(12, "banana")` at index 3.
+
+```text
+Index:    [ 0 ]      [ 1 ]      [ 2 ]      [ 3 ]      [ 4 ]
+State:    EMPTY      EMPTY      OCCUP      OCCUP      EMPTY
+Entry:     --         --       (7, "apl") (12, "ban")  --
+```
+
+#### Step 3: Delete Key 7 (`"apple"`) — The Critical Fork
+If we make the **Rookie Blunder** and set index 2 back to `EMPTY`:
+- A subsequent `Search(Key = 12)` computes `h(12) = 2`.
+- It looks at index 2, sees `EMPTY`, and immediately returns **NOT FOUND**!
+- Key 12 is sitting right there at index 3, but is now completely lost!
+
+**The Senior Solution:** Write a `TOMBSTONE ✝` marker at index 2.
+
+```text
+Index:    [ 0 ]      [ 1 ]      [ 2 ]         [ 3 ]      [ 4 ]
+State:    EMPTY      EMPTY    TOMBSTONE ✝     OCCUP      EMPTY
+Entry:     --         --      (Deleted)     (12, "ban")  --
+```
+
+#### Step 4: Search Key 12 with Tombstone
+- Hash: `h(12) = 12 % 5 = 2`.
+- Inspect index 2: State is `TOMBSTONE ✝`.
+- Rule: **Tombstones do NOT terminate a search!** Continue probing forward.
+- Probe index 3: Key matches `12 == 12`! **Found `"banana"`!**
+
+#### Step 5: Insert Key 17 (`Val = "cherry"`) — Tombstone Recycling
+- Hash: `h(17) = 17 % 5 = 2`.
+- Slot 2 is `TOMBSTONE ✝`. Remember `firstTombstone = 2`.
+- Keep probing to ensure Key 17 doesn't already exist further down the probe chain!
+- Inspect index 3: Occupied by Key 12 (`12 != 17`).
+- Inspect index 4: State is `EMPTY`.
+- Key 17 is confirmed not in the table. Overwrite the remembered `firstTombstone` at index 2!
+
+```text
+Index:    [ 0 ]      [ 1 ]      [ 2 ]         [ 3 ]      [ 4 ]
+State:    EMPTY      EMPTY      OCCUP         OCCUP      EMPTY
+Entry:     --         --       (17, "che")   (12, "ban")  --
+```
+
+> 🧠 **Pause & Predict Micro-Drill 1:**
+> *What would happen if, during `Insert(Key = 12, Val = "new_banana")`, we stopped at the very first `TOMBSTONE` at index 2 and immediately inserted Key 12 there without finishing the probe sequence?*
+> 
+> **Answer:** You would create an illegal duplicate! Index 2 would have Key 12, and index 3 would *also* still hold the old Key 12. You must continue probing until you either find the existing key (to update it) or hit an `EMPTY` slot (confirming uniqueness) before overwriting a tombstone!
+
+---
+
+### 🪜 Trace 2: Rolling Hash (Rabin-Karp) Polynomial Sliding Window
+
+Let's trace string searching on napkin paper:
+- **Text:** `"abcde"` (`N = 5`)
+- **Pattern:** Window length `M = 3` (we want to check windows `"abc"`, `"bcd"`, `"cde"`)
+- **Radix Base:** `B = 31`
+- **Modulo Prime:** `MOD = 101`
+- **Character values:** `'a' = 1, 'b' = 2, 'c' = 3, 'd' = 4, 'e' = 5`
+
+#### Precomputing the High Power Weight
+The leftmost character in a window of size `M = 3` is weighted by `B^(M - 1) = 31^2`:
+```text
+BasePower = (31 * 31) % 101 = 961 % 101 = 52
+(Because 101 * 9 = 909, and 961 - 909 = 52)
+```
+
+#### Window 0: Text[0..2] = `"abc"`
+Calculate polynomial hash directly:
+```text
+Hash("abc") = (ord('a') * 31^2 + ord('b') * 31^1 + ord('c') * 31^0) % 101
+            = (1 * 961 + 2 * 31 + 3 * 1) % 101
+            = (961 + 62 + 3) % 101
+            = 1026 % 101
+Since 101 * 10 = 1010, remainder is: 1026 - 1010 = 16.
+Hash("abc") = 16
+```
+
+#### Slide to Window 1: Text[1..3] = `"bcd"` in O(1) Time!
+Departing character: `'a'` (val 1)  
+Incoming character: `'d'` (val 4)
+
+Instead of recalculating from scratch, execute the 3-step roll:
+1. **Subtract outgoing character's weighted contribution:**
+   ```text
+   hash = (16 - (1 * BasePower)) % 101
+        = (16 - 52) % 101 = -36 % 101
+   ```
+   *CRITICAL ARCHITECT NORMALIZATION:* Add `MOD` to eliminate negative values!
+   ```text
+   hash = (-36 + 101) % 101 = 65
+   ```
+2. **Shift window left (multiply by Base 31):**
+   ```text
+   hash = (65 * 31) % 101 = 2015 % 101
+   Since 101 * 19 = 1919: 2015 - 1919 = 96
+   ```
+3. **Add incoming character `'d'` (val 4):**
+   ```text
+   hash = (96 + 4) % 101 = 100 % 101 = 100
+   Hash("bcd") = 100
+   ```
+
+#### Mathematical Verification Check:
+Let's compute `"bcd"` directly:
+```text
+Hash("bcd") = (2 * 31^2 + 3 * 31 + 4) % 101
+            = (2 * 961 + 93 + 4) % 101
+            = (1922 + 97) % 101 = 2019 % 101
+Since 101 * 19 = 1919: 2019 - 1919 = 100
+```
+**Exact match in `O(1)` operations!** No loops over window length `M`!
+
+> 🧠 **Pause & Predict Micro-Drill 2:**
+> *If `Hash("bcd") == Hash(Pattern)`, can we immediately emit a match without checking characters?*
+> 
+> **Answer:** No! By the Pigeonhole Principle, mapping infinite string combinations to integers modulo 101 will inevitably cause collisions. A hash match indicates a *probable* match. You must verify actual string equality to prevent false positives. With a large prime (like `10^9 + 7`), spurious collisions are so rare that verification costs `O(M)` only on genuine matches.
+
+---
+
+## 🎨 PILLAR 3: PRAGMATIC VISUAL MODELS
+
+### 🖼️ ASCII Visual: The Anatomy of an Open Addressing Slot Array
+
+```text
+OPEN ADDRESSING BACKING STORAGE (Contiguous Array in RAM)
+Index:       [ 0 ]             [ 1 ]             [ 2 ]             [ 3 ]             [ 4 ]
+State:     OCCUPIED          TOMBSTONE ✝       OCCUPIED            EMPTY             EMPTY
+Content:  Key: "cat"         Key: (null)       Key: "dog"        Key: (null)       Key: (null)
+          Val: 42            Val: (null)       Val: 99           Val: (null)       Val: (null)
+              ▲                   ▲                 ▲                 ▲
+              │                   │                 │                 │
+              │                   │                 │                 └─ Search miss terminates here!
+              │                   │                 └─ Match target
+              │                   └─ Search skips PAST; Insert can RECYCLE
+              └─ Direct hash hit
+```
+
+### 🖼️ ASCII Visual: Probing Collision Resolution Strategies Compared
+
+```text
 1. LINEAR PROBING: f(i) = i
-   Probe Sequence: h(k), h(k)+1, h(k)+2, h(k)+3, ...
-   Pros: Maximum CPU L1/L2 cache prefetching (contiguous cache line hits).
-   Cons: Primary Clustering. Contiguous blocks grow like snowballs, attracting
-         more collisions and increasing average probe lengths.
+   Probe: h(k), h(k)+1, h(k)+2, h(k)+3...
+   [ X ][ X ][ X ][ X ][   ]  <-- Primary Clustering! Contiguous blocks snowball
+   Hardware: 100% L1/L2 cache prefetch hits (blazing fast sequential memory access).
 
-2. QUADRATIC PROBING: f(i) = c1 * i + c2 * i^2
-   Probe Sequence: h(k), h(k)+1, h(k)+4, h(k)+9, h(k)+16, ...
-   Pros: Eliminates Primary Clustering; probe distance grows quadratically.
-   Cons: Secondary Clustering. Keys that hash to the same initial home bucket
-         follow the exact same probe sequence. Requires table size to be prime
-         (or power of 2 with c1=c2=0.5) to guarantee full table coverage.
+2. QUADRATIC PROBING: f(i) = c1*i + c2*i^2
+   Probe: h(k), h(k)+1, h(k)+4, h(k)+9...
+   [ X ][ . ][ X ][ . ][ . ][ . ][ X ]  <-- Breaks primary clusters!
+   Trade-off: Secondary clustering (keys with same initial hash follow identical jumps).
 
 3. DOUBLE HASHING: f(i) = i * h2(k)
-   Probe Sequence: h1(k), h1(k) + h2(k), h1(k) + 2*h2(k), h1(k) + 3*h2(k), ...
-   Pros: Eliminates both Primary AND Secondary Clustering! Every key has its
-         own unique jump stride determined by h2(k).
-   Cons: Computation of two independent hash functions; loses sequential CPU
-         cache line prefetching. Requires h2(k) to be coprime to M.
+   Probe: h1(k), h1(k) + h2(k), h1(k) + 2*h2(k)...
+   [ X ][ . ][ . ][ X ][ . ][ X ][ . ]  <-- Key-specific stride jumps!
+   Hardware: Eliminates all clustering; slightly lower cache prefetch efficiency.
 
-4. ROBIN HOOD HASHING: "Take from the rich, give to the poor!"
-   Mechanics:
-   - Every entry tracks its Probe Sequence Length (PSL) = distance from home slot.
-   - On insertion, if the incoming element has traveled farther from home than the
-     occupant (incoming.PSL > occupant.PSL), they SWAP!
-   - The incoming element steals the slot, and the displaced occupant continues
-     probing with its own PSL incremented.
-   Pros: Drastically reduces variance of probe lengths.
-         Enables Early Termination on search misses (if occupant.PSL < search.PSL,
-         the key cannot possibly exist further ahead; stop search immediately!).
+4. ROBIN HOOD HASHING: "Steal from the rich, give to the poor"
+   Tracks Probe Sequence Length (PSL) = distance from home slot.
+   If incoming.PSL > occupant.PSL:
+     SWAP them! Incoming takes slot; displaced item continues probing.
+   Benefit: Shrinks probe variance to near-zero; enables instant early-miss termination.
 ```
 
-### Hash Function Quality and Universality
+### 📊 Mermaid Flowchart: Open Addressing Probing & Tombstone Search Lifecycle
 
-From Day 4, a good hash function spreads keys uniformly. But adversaries can design pathological inputs (hash flooding attack). Universal hashing provides theoretical guarantees.
+```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
+flowchart TD
+    Start(["🔍 Start Search(Key)"]) --> Hash["⚡ Compute Index: h = Hash(Key) % Capacity<br/>Initialize step i = 0"]
+    Hash --> Inspect["📦 Inspect table(idx)<br/>idx = (h + i) % Capacity"]
+    
+    Inspect --> IsEmpty{"Is slot EMPTY?"}
+    IsEmpty -- "Yes" --> NotFound(["❌ Result: NOT FOUND<br/>Key never existed in table"])
+    
+    IsEmpty -- "No" --> IsTombstone{"Is slot TOMBSTONE ✝?"}
+    IsTombstone -- "Yes" --> Advance["👉 Continue Probing<br/>i = i + 1"]
+    
+    IsTombstone -- "No" --> IsMatch{"Does slot.Key == Key?"}
+    IsMatch -- "Yes" --> Found(["✅ Result: FOUND!<br/>Return slot.Value"])
+    IsMatch -- "No" --> Advance
+    
+    Advance --> Bounds{"i &ge; Capacity?"}
+    Bounds -- "Yes" --> TableFull(["🛑 Table Fully Scanned<br/>Return NOT FOUND"])
+    Bounds -- "No" --> Inspect
 
-**Universal Hash Family:**
+    classDef startEnd fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+    classDef check fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
+    classDef process fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef fail fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
 
-A family H of hash functions is universal if for any two distinct keys k1, k2:
+    class Start,Found startEnd
+    class NotFound,TableFull fail
+    class IsEmpty,IsTombstone,IsMatch,Bounds check
+    class Hash,Inspect,Advance process
 ```
-P(h(k1) == h(k2)) <= 1/m  (for h randomly chosen from H)
-```
 
-Even with adversarial inputs, collision probability is at most `1/m`. Expected chain length = `1 + alpha` (independent of input!).
+---
 
-**Example: Multiply-Add-Divide (MAD) Hash Function:**
+## 🛑 PILLAR 4: THE ROOKIE TRAP ZONE
+
+### Trap 1: Setting Deleted Slots to `null` vs Tombstone Sentinels
 
 ```csharp
-using System;
+// ❌ ROOKIE BLUNDER: Naive deletion breaks the search chain!
+public bool Remove(K key) {
+    int idx = Hash(key);
+    while (table[idx].Occupied) {
+        if (table[idx].Key.Equals(key)) {
+            table[idx].Occupied = false;
+            table[idx].Key = default!; // Reset to EMPTY
+            count--;
+            return true; // BUG: Any future search for items that collided PAST this slot will abort here!
+        }
+        idx = (idx + 1) % table.Length;
+    }
+    return false;
+}
 
-public class UniversalHash {
-    private readonly int p;  // Large prime (e.g., 2^31 - 1)
-    private readonly int a;  // Random a in [1, p-1]
-    private readonly int b;  // Random b in [0, p-1]
-    private readonly int m;  // Table size
-    
-    public UniversalHash(int tableSize) {
-        m = tableSize;
-        p = 2147483647;  // Mersenne prime 2^31 - 1
-        
-        // Randomize a, b for each table instance
-        Random rand = new();
-        a = rand.Next(1, p);
-        b = rand.Next(0, p);
+// ✅ SENIOR ARCHITECT PATTERN: Mark with Tombstone sentinel and recycle on insert
+public bool Remove(K key) {
+    int h = Hash(key);
+    for (int i = 0; i < table.Length; i++) {
+        int idx = (h + i) % table.Length;
+        if (table[idx].State == SlotState.Occupied && table[idx].Key.Equals(key)) {
+            table[idx].State = SlotState.Tombstone; // Preserves probe continuity!
+            table[idx].Key = default!;
+            table[idx].Value = default!;
+            count--;
+            return true;
+        }
+        if (table[idx].State == SlotState.Empty) break; // Safe to stop
     }
-    
-    public int Hash(int k) {
-        return (int)(((long)a * k + b) % p % m);
-    }
-    
-    // Property: For any two distinct k1, k2,
-    // P(Hash(k1) == Hash(k2)) = 1/m
-    // This holds for ANY input distribution!
-    // (Not dependent on specific keys or patterns)
+    return false;
 }
 ```
 
----
+### Trap 2: The Negative Modulo Disaster in Rolling Hash
 
-## ⚙️ CHAPTER 3: MECHANICS & IMPLEMENTATION
+In C#, C++, and Java, the `%` operator is the **remainder** operator, not mathematical modulo. If your subtraction produces a negative number, `% MOD` returns a **negative remainder**, indexing outside bounds or breaking hash lookups!
 
-### The State Machine: Open Addressing Complete CRUD Operations
+```csharp
+// ❌ ROOKIE BLUNDER: Negative remainder corrupts hash comparison
+long newHash = (prevHash - outgoingChar * basePower) % PRIME;
+// If prevHash < outgoingChar * basePower, newHash is NEGATIVE!
 
-| Operation | Purpose | Array Mechanism | Time (Average) | Time (Worst) |
-| :--- | :--- | :--- | :---: | :---: |
-| **`Put(K key, V value)`** | Insert or update key-value pair | Probes array until key match, first tombstone, or empty slot | `O(1)` | `O(N)` |
-| **`Get(K key)` / `TryGetValue`**| Retrieve value for given key | Probes along sequence; skips tombstones; stops on key match or empty slot | `O(1)` | `O(N)` |
-| **`Remove(K key)`** | Soft-delete key from table | Probes for key; writes `TOMBSTONE` marker (preserves probe sequence) | `O(1)` | `O(N)` |
-| **`ContainsKey(K key)`** | Test key membership | Probes along sequence; returns true on key match, false on empty slot | `O(1)` | `O(N)` |
-| **`Resize(2M)` & Rehash** | Double capacity and purge tombstones | Allocates `2M` slots; inserts only active `OCCUPIED` entries, discarding dead tombstones | `O(N + M)` | `O(N + M)` |
+// ✅ SENIOR ARCHITECT PATTERN: Add MOD before final modulo
+long newHash = ((prevHash - (outgoingChar * basePower) % PRIME + PRIME) % PRIME);
+newHash = (newHash * BASE + incomingChar) % PRIME;
+```
 
----
+### Trap 3: Spurious Collision Blindness (Skipping Equality Check)
 
-### 💀 Deletion in Open Addressing: Why Tombstones are Strictly Required
+```python
+# ❌ ROOKIE BLUNDER: Assuming hash equality means string equality
+if window_hash == pattern_hash:
+    matches.append(i) # BUG! A 1-in-a-million hash collision creates silent data corruption!
 
-In separate chaining, deleting an item simply unlinks a node from a bucket list. In open addressing, however, **naive deletion by clearing a slot back to `EMPTY` catastrophically breaks subsequent searches!**
+# ✅ SENIOR ARCHITECT PATTERN: Double check actual string slice on match
+if window_hash == pattern_hash:
+    if text[i : i + m] == pattern: # Verification guarantees 100% precision
+        matches.append(i)
+```
+
+### Trap 4: Letting Open Addressing Load Factor Exceed 0.70
 
 ```text
-DELETION IN OPEN ADDRESSING: THE PROBE-CHAIN COLLAPSE PROOF
+Load Factor (alpha) vs Average Probes in Linear Probing:
+alpha = 0.50  -->  Expected Probes: ~1.5    (Instant L1 cache hit)
+alpha = 0.75  -->  Expected Probes: ~2.5    (Acceptable)
+alpha = 0.90  -->  Expected Probes: ~50.5   (Severe clustering collapse!)
 
-Setup: Table Capacity M = 8.
-Assume 3 keys A, B, C all hash to the same initial home bucket 2:
-  h(A) = 2,  h(B) = 2,  h(C) = 2
-
-Insertion Sequence:
-1. Insert(A): h(A) = 2 -> Slot 2 is EMPTY -> Placed at [ 2 ].
-2. Insert(B): h(B) = 2 -> Slot 2 OCCUPIED (A) -> Linear probe to [ 3 ] -> Placed at [ 3 ].
-3. Insert(C): h(C) = 2 -> Slot 2 OCCUPIED (A), Slot 3 OCCUPIED (B) -> Probe to [ 4 ] -> Placed at [ 4 ].
-
-Current Valid Table State:
-Index:   [ 0 ]   [ 1 ]   [ 2 ]   [ 3 ]   [ 4 ]   [ 5 ]   [ 6 ]   [ 7 ]
-State:   EMPTY   EMPTY   OCCUP   OCCUP   OCCUP   EMPTY   EMPTY   EMPTY
-Entry:    --      --     A(h=2)  B(h=2)  C(h=2)   --      --      --
-
---------------------------------------------------------------------------------
-FATAL MISTAKE: NAIVE DELETION (Marking Deleted Slot 3 as EMPTY)
-Suppose Delete(B) simply clears slot 3 back to EMPTY:
-
-Index:   [ 0 ]   [ 1 ]   [ 2 ]   [ 3 ]   [ 4 ]   [ 5 ]   [ 6 ]   [ 7 ]
-State:   EMPTY   EMPTY   OCCUP   EMPTY   OCCUP   EMPTY   EMPTY   EMPTY
-Entry:    --      --     A(h=2)   --     C(h=2)   --      --      --
-                                   ^
-                                   |-- THE SEVERED CHAIN (HOLE)
-
-Now run Search(C):
-  1. Compute h(C) = 2. Inspect table[2].
-     Key is A (A != C). Collision! Continue linear probe to index 3.
-  2. Inspect table[3].
-     Slot state is EMPTY!
-     The Fundamental Open Addressing Invariant says:
-     "If a key were in the table, it would reside along a continuous unbroken
-      sequence of occupied slots starting at its home hash."
-     Because slot 3 is EMPTY, the search terminates immediately and reports NOT FOUND!
-  Result: SILENT DATA LOSS / LOOKUP CORRUPTION!
-          Key C is physically inside the table at index 4, but completely unreachable!
-
---------------------------------------------------------------------------------
-THE REMEDY: THE TOMBSTONE (DELETED) SENTINEL
-Instead of resetting slot 3 to EMPTY, mark it as TOMBSTONE (or DELETED):
-
-Index:   [ 0 ]   [ 1 ]   [ 2 ]   [ 3 ]        [ 4 ]   [ 5 ]   [ 6 ]   [ 7 ]
-State:   EMPTY   EMPTY   OCCUP   TOMBSTONE    OCCUP   EMPTY   EMPTY   EMPTY
-Entry:    --      --     A(h=2)  (Deleted)    C(h=2)   --      --      --
-
-Now rerun Search(C):
-  1. Inspect table[2] -> Key is A != C -> Probe to index 3.
-  2. Inspect table[3] -> Slot is TOMBSTONE!
-     Invariant Rule: Tombstones do NOT stop a search! Skip past index 3 to index 4.
-  3. Inspect table[4] -> Key is C == C -> FOUND! (Returns value successfully).
-
-Tombstone Recycling during Insertion:
-When inserting key D:
-  - Probe along sequence. If a TOMBSTONE is encountered, remember its index (firstTombstone).
-  - Continue probing to verify D doesn't already exist.
-  - If an EMPTY slot is hit and D wasn't found, place D into firstTombstone, recycling dead space!
-
-Tombstone Purging during Dynamic Resizing (Resize to 2M):
-As deletions accumulate, tombstones slow down searches. When resizing to 2M,
-all tombstones are completely thrown away. Only live OCCUPIED entries are
-rehashed, restoring pristine contiguous packing.
+Senior Rule:
+While Separate Chaining gracefully handles alpha > 1.0, Open Addressing
+MUST aggressively resize when alpha reaches 0.50 to maintain O(1) performance.
 ```
 
 ---
 
-### 🔧 Operation 1: Open Addressing with Linear Probing
+## 🎙️ PILLAR 5: 45-MINUTE INTERVIEW TALK TRACK
 
-```text
-Linear Probing Memory State with Tombstones:
-Index:        [ 0 ]          [ 1 ]          [ 2 ]          [ 3 ]          [ 4 ]
-State:     [Occupied]     [Tombstone]    [Occupied]      [Empty]       [Occupied]
-Key/Val:  "apple": 1     (Deleted)      "banana": 5       null        "cherry": 8
-           ^              ^                             ^
-           |              |                             +-- Probe sequence stops here on search miss
-           |              +-- Search skips past; Insert can overwrite
-           +-- Direct hash hit
+When your FAANG interviewer asks: *"How would you design a high-throughput hash table with open addressing, and how does rolling hash differ from naive string matching?"*, here is your exact 3-sentence script:
+
+```
++----------------------------------------------------------------------------------------------------+
+|                             45-MINUTE INTERVIEW TALK TRACK SCRIPT                                  |
++----------------------------------------------------------------------------------------------------+
+|  1. "In high-throughput systems where CPU cache locality dominates, open addressing stores all     |
+|     key-value pairs in a single contiguous array, eliminating heap pointer dereferences at the     |
+|     cost of requiring tombstones during deletion so that active collision probe chains are never   |
+|     broken prematurely.                                                                            |
+|                                                                                                    |
+|  2. To prevent primary clustering cascades from degrading linear probing, we maintain a strict     |
+|     load factor alpha <= 0.50, or adopt Robin Hood hashing with PSL swaps to equalize probe         |
+|     variance and achieve instant early termination on search misses.                               |
+|                                                                                                    |
+|  3. For substring pattern matching, naive comparisons cost O(N * M), but Rabin-Karp rolling hash    |
+|     views windows as Horner polynomials modulo a large prime, updating the fingerprint in O(1)     |
+|     sliding window time to achieve expected O(N + M) search with character verification only       |
+|     upon hash match."                                                                              |
++----------------------------------------------------------------------------------------------------+
 ```
 
-#### C# Implementation (Linear Probing with Tombstone Deletion)
+### Rapid-Fire Interview Follow-ups:
+- **Q: Why does Linear Probing beat Double Hashing in real benchmarks despite having worse theoretical clustering?**  
+  *Answer:* Hardware spatial prefetching. Linear probing checks adjacent memory slots already loaded into CPU L1 cache lines (64 bytes). Double hashing jumps across random memory addresses, creating multiple cache misses.
+- **Q: How does Robin Hood hashing eliminate the need for Tombstones?**  
+  *Answer:* It uses **Backward-Shift Deletion**. When a key is deleted, elements further down the cluster with `PSL > 0` are shifted backward by 1 slot to fill the gap, decrementing their PSL. This physically closes the hole!
+
+---
+
+## ⚡ PILLAR 6: PRODUCTION DUAL-LANGUAGE IMPLEMENTATIONS
+
+### Implementation 1: Linear Probing Hash Table with Tombstone Recycling
+
+#### Modern C# (.NET 8/9 — Zero Allocation Aware)
 
 ```csharp
 using System;
 
-public class HashTableLinearProbing<K, V> where K : notnull {
-    private enum SlotState { Empty, Occupied, Tombstone }
+namespace DsaCurriculum.Hashing;
 
-    private struct Entry {
-        public K Key;
-        public V Value;
+/// <summary>
+/// Production-grade Open Addressing Hash Table using Linear Probing with Tombstone Recycling.
+/// Space: O(M) contiguous array allocation, zero node heap overhead.
+/// Time: Expected O(1) insert/lookup/delete when alpha <= 0.5.
+/// </summary>
+public sealed class LinearProbingHashTable<TKey, TValue> where TKey : notnull
+{
+    public enum SlotState : byte
+    {
+        Empty = 0,
+        Occupied = 1,
+        Tombstone = 2
+    }
+
+    private struct Entry
+    {
+        public TKey Key;
+        public TValue Value;
         public SlotState State;
     }
-    
-    private Entry[] table;
-    private int count = 0;
-    private const float LoadFactorThreshold = 0.5f; // Open addressing strictly caps alpha <= 0.5
-    
-    public HashTableLinearProbing(int capacity = 16) {
-        table = new Entry[capacity];
+
+    private Entry[] _table;
+    private int _count;
+    private const float LoadFactorThreshold = 0.5f;
+
+    public LinearProbingHashTable(int initialCapacity = 16)
+    {
+        int capacity = Math.Max(4, initialCapacity);
+        _table = new Entry[capacity];
+        _count = 0;
     }
-    
-    private int Hash(K key) {
-        return Math.Abs(key.GetHashCode()) % table.Length;
+
+    public int Count => _count;
+    public int Capacity => _table.Length;
+
+    private int GetHomeIndex(TKey key)
+    {
+        // Mask negative bit to prevent Math.Abs overflow on int.MinValue
+        return (int)((uint)key.GetHashCode() % (uint)_table.Length);
     }
-    
-    public void Insert(K key, V value) {
-        if ((float)(count + 1) / table.Length > LoadFactorThreshold) {
-            Resize();
+
+    public void Put(TKey key, TValue value)
+    {
+        ArgumentNullException.ThrowIfNull(key);
+
+        if ((float)(_count + 1) / _table.Length > LoadFactorThreshold)
+        {
+            Resize(_table.Length * 2);
         }
 
-        int h = Hash(key);
-        int firstTombstone = -1;
-        
-        for (int i = 0; i < table.Length; i++) {
-            int idx = (h + i) % table.Length;
-            
-            if (table[idx].State == SlotState.Occupied && table[idx].Key.Equals(key)) {
-                table[idx].Value = value;
-                return;
+        int home = GetHomeIndex(key);
+        int firstTombstoneIdx = -1;
+
+        for (int i = 0; i < _table.Length; i++)
+        {
+            int idx = (home + i) % _table.Length;
+
+            if (_table[idx].State == SlotState.Occupied)
+            {
+                if (_table[idx].Key.Equals(key))
+                {
+                    _table[idx].Value = value; // In-place update
+                    return;
+                }
             }
-            if (table[idx].State == SlotState.Tombstone && firstTombstone == -1) {
-                firstTombstone = idx;
-            } else if (table[idx].State == SlotState.Empty) {
-                int target = firstTombstone != -1 ? firstTombstone : idx;
-                table[target] = new Entry { Key = key, Value = value, State = SlotState.Occupied };
-                count++;
+            else if (_table[idx].State == SlotState.Tombstone)
+            {
+                if (firstTombstoneIdx == -1)
+                {
+                    firstTombstoneIdx = idx; // Remember first recyclable dead slot
+                }
+            }
+            else // SlotState.Empty
+            {
+                // Unbroken probe sequence ended: key is not present. Recycle or use empty.
+                int targetIdx = (firstTombstoneIdx != -1) ? firstTombstoneIdx : idx;
+                _table[targetIdx] = new Entry
+                {
+                    Key = key,
+                    Value = value,
+                    State = SlotState.Occupied
+                };
+                _count++;
                 return;
             }
         }
-        
-        if (firstTombstone != -1) {
-            table[firstTombstone] = new Entry { Key = key, Value = value, State = SlotState.Occupied };
-            count++;
+
+        // Edge case: Table completely filled with tombstones
+        if (firstTombstoneIdx != -1)
+        {
+            _table[firstTombstoneIdx] = new Entry
+            {
+                Key = key,
+                Value = value,
+                State = SlotState.Occupied
+            };
+            _count++;
             return;
         }
 
-        throw new InvalidOperationException("Hash table full");
+        throw new InvalidOperationException("Hash table capacity exhausted without empty slots.");
     }
-    
-    public bool TryGetValue(K key, out V value) {
-        int h = Hash(key);
-        
-        for (int i = 0; i < table.Length; i++) {
-            int idx = (h + i) % table.Length;
-            
-            if (table[idx].State == SlotState.Occupied && table[idx].Key.Equals(key)) {
-                value = table[idx].Value;
+
+    public bool TryGetValue(TKey key, out TValue value)
+    {
+        ArgumentNullException.ThrowIfNull(key);
+
+        int home = GetHomeIndex(key);
+
+        for (int i = 0; i < _table.Length; i++)
+        {
+            int idx = (home + i) % _table.Length;
+
+            if (_table[idx].State == SlotState.Occupied && _table[idx].Key.Equals(key))
+            {
+                value = _table[idx].Value;
                 return true;
             }
-            if (table[idx].State == SlotState.Empty) {
-                break; // Stop: key definitely does not exist
+
+            if (_table[idx].State == SlotState.Empty)
+            {
+                break; // Invariant: If key existed, it would appear before an Empty slot
             }
         }
-        
+
         value = default!;
         return false;
     }
 
-    public bool ContainsKey(K key) {
-        int h = Hash(key);
-        for (int i = 0; i < table.Length; i++) {
-            int idx = (h + i) % table.Length;
-            if (table[idx].State == SlotState.Occupied && table[idx].Key.Equals(key)) {
+    public bool ContainsKey(TKey key) => TryGetValue(key, out _);
+
+    public bool Remove(TKey key)
+    {
+        ArgumentNullException.ThrowIfNull(key);
+
+        int home = GetHomeIndex(key);
+
+        for (int i = 0; i < _table.Length; i++)
+        {
+            int idx = (home + i) % _table.Length;
+
+            if (_table[idx].State == SlotState.Occupied && _table[idx].Key.Equals(key))
+            {
+                // Soft-delete using Tombstone
+                _table[idx].State = SlotState.Tombstone;
+                _table[idx].Key = default!;
+                _table[idx].Value = default!;
+                _count--;
                 return true;
             }
-            if (table[idx].State == SlotState.Empty) {
-                break;
-            }
-        }
-        return false;
-    }
 
-    public bool Remove(K key) {
-        int h = Hash(key);
-
-        for (int i = 0; i < table.Length; i++) {
-            int idx = (h + i) % table.Length;
-
-            if (table[idx].State == SlotState.Occupied && table[idx].Key.Equals(key)) {
-                table[idx].State = SlotState.Tombstone; // Mark as tombstone
-                table[idx].Key = default!;
-                table[idx].Value = default!;
-                count--;
-                return true;
-            }
-            if (table[idx].State == SlotState.Empty) {
+            if (_table[idx].State == SlotState.Empty)
+            {
                 break;
             }
         }
 
         return false;
     }
-    
-    private void Resize() {
-        var oldTable = table;
-        table = new Entry[oldTable.Length * 2];
-        count = 0;
-        
-        foreach (var entry in oldTable) {
-            if (entry.State == SlotState.Occupied) {
-                Insert(entry.Key, entry.Value);
+
+    private void Resize(int newCapacity)
+    {
+        Entry[] oldTable = _table;
+        _table = new Entry[newCapacity];
+        _count = 0;
+
+        // Rehash only live occupied entries; tombstones are completely purged!
+        for (int i = 0; i < oldTable.Length; i++)
+        {
+            if (oldTable[i].State == SlotState.Occupied)
+            {
+                Put(oldTable[i].Key, oldTable[i].Value);
             }
         }
     }
-
-    public int Count => count;
-    public int Capacity => table.Length;
 }
 ```
 
-#### Python Implementation (Linear Probing with Tombstones)
+#### Modern Python (3.11+ — Idiomatic Typing & Sentinels)
 
 ```python
-class HashTableLinearProbing[K, V]:
-    """Open addressing hash table with linear probing and tombstone deletion.
+from typing import Generic, TypeVar
+
+K = TypeVar("K")
+V = TypeVar("V")
+
+
+class HashTableLinearProbing(Generic[K, V]):
+    """Open addressing hash table with linear probing and tombstone recycling.
     
-    Time: O(1) expected average lookup/insert/delete under SUHA with alpha <= 0.5
-    Space: O(M) contiguous array allocation, zero node pointers
+    Time Complexity: O(1) expected average lookup/insert/delete under SUHA with alpha <= 0.5
+    Auxiliary Space: O(M) contiguous array allocation, zero node heap pointers
     """
     _EMPTY = object()
     _TOMBSTONE = object()
 
     def __init__(self, initial_capacity: int = 16, load_factor_threshold: float = 0.5) -> None:
-        self.capacity: int = max(4, initial_capacity)
-        self.load_factor_threshold: float = load_factor_threshold
-        self.size: int = 0
-        self.keys: list = [self._EMPTY] * self.capacity
-        self.values: list = [None] * self.capacity
+        self._capacity: int = max(4, initial_capacity)
+        self._load_factor_threshold: float = load_factor_threshold
+        self._count: int = 0
+        self._keys: list = [self._EMPTY] * self._capacity
+        self._values: list = [None] * self._capacity
+
+    def __len__(self) -> int:
+        return self._count
 
     def _hash(self, key: K) -> int:
-        return abs(hash(key)) % self.capacity
+        return abs(hash(key)) % self._capacity
 
-    def insert(self, key: K, value: V) -> None:
-        """Insert or update key-value pair, reusing tombstones if encountered."""
-        if (self.size + 1) / self.capacity > self.load_factor_threshold:
-            self._resize()
+    def put(self, key: K, value: V) -> None:
+        """Insert or update key-value pair, recycling first tombstone if encountered."""
+        if (self._count + 1) / self._capacity > self._load_factor_threshold:
+            self._resize(self._capacity * 2)
 
-        idx = self._hash(key)
+        home = self._hash(key)
         first_tombstone = -1
 
-        for step in range(self.capacity):
-            curr = (idx + step) % self.capacity
-            k = self.keys[curr]
+        for step in range(self._capacity):
+            idx = (home + step) % self._capacity
+            current_key = self._keys[idx]
 
-            if k == key:
-                self.values[curr] = value
+            if current_key == key:
+                self._values[idx] = value
                 return
-            if k is self._TOMBSTONE and first_tombstone == -1:
-                first_tombstone = curr
-            elif k is self._EMPTY:
-                target = first_tombstone if first_tombstone != -1 else curr
-                self.keys[target] = key
-                self.values[target] = value
-                self.size += 1
+
+            if current_key is self._TOMBSTONE and first_tombstone == -1:
+                first_tombstone = idx
+            elif current_key is self._EMPTY:
+                target = first_tombstone if first_tombstone != -1 else idx
+                self._keys[target] = key
+                self._values[target] = value
+                self._count += 1
                 return
 
         if first_tombstone != -1:
-            self.keys[first_tombstone] = key
-            self.values[first_tombstone] = value
-            self.size += 1
+            self._keys[first_tombstone] = key
+            self._values[first_tombstone] = value
+            self._count += 1
             return
 
         raise RuntimeError("Hash table full")
 
     def get(self, key: K) -> V:
         """Retrieve value for key; raises KeyError if absent."""
-        idx = self._hash(key)
-        for step in range(self.capacity):
-            curr = (idx + step) % self.capacity
-            k = self.keys[curr]
-            if k == key:
-                return self.values[curr]
-            if k is self._EMPTY:
+        home = self._hash(key)
+        for step in range(self._capacity):
+            idx = (home + step) % self._capacity
+            current_key = self._keys[idx]
+
+            if current_key == key:
+                return self._values[idx]
+            if current_key is self._EMPTY:
                 break
+
         raise KeyError(f"Key not found: {key}")
 
     def contains_key(self, key: K) -> bool:
         """Return True if key is present in table, False otherwise."""
-        idx = self._hash(key)
-        for step in range(self.capacity):
-            curr = (idx + step) % self.capacity
-            k = self.keys[curr]
-            if k == key:
-                return True
-            if k is self._EMPTY:
-                break
-        return False
-
-    def __contains__(self, key: K) -> bool:
-        return self.contains_key(key)
-
-    def remove(self, key: K) -> bool:
-        """Mark slot as tombstone; returns True if deleted."""
-        idx = self._hash(key)
-        for step in range(self.capacity):
-            curr = (idx + step) % self.capacity
-            k = self.keys[curr]
-            if k == key:
-                self.keys[curr] = self._TOMBSTONE
-                self.values[curr] = None
-                self.size -= 1
-                return True
-            if k is self._EMPTY:
-                break
-        return False
-
-    def _resize(self) -> None:
-        old_keys = self.keys
-        old_vals = self.values
-        self.capacity *= 2
-        self.keys = [self._EMPTY] * self.capacity
-        self.values = [None] * self.capacity
-        self.size = 0
-        for k, v in zip(old_keys, old_vals):
-            if k is not self._EMPTY and k is not self._TOMBSTONE:
-                self.insert(k, v)
-```
-
-### 🔧 Operation 2: Double Hashing (Better Distribution)
-
-```csharp
-using System;
-
-public class HashTableDoubleHashing<K, V> where K : notnull {
-    private struct Entry {
-        public K Key;
-        public V Value;
-        public bool Occupied;
-    }
-    
-    private Entry[] table;
-    private int count = 0;
-    private const float LoadFactorThreshold = 0.5f;
-    
-    public HashTableDoubleHashing(int capacity = 16) {
-        table = new Entry[capacity];
-    }
-    
-    // Primary hash function
-    private int Hash1(K key) {
-        return Math.Abs(key.GetHashCode()) % table.Length;
-    }
-    
-    // Secondary hash function (must be coprime to table.Length for full coverage)
-    private int Hash2(K key) {
-        // Use different hash function; ensure non-zero and coprime
-        int h = Math.Abs(key.GetHashCode() * 31) % table.Length;
-        if (h == 0) h = 1;  // Ensure non-zero
-        return h;
-    }
-    
-    // Double hashing: h(k, i) = (h1(k) + i * h2(k)) mod m
-    public void Insert(K key, V value) {
-        int h1 = Hash1(key);
-        int h2 = Hash2(key);
-        
-        for (int i = 0; i < table.Length; i++) {
-            int idx = (h1 + i * h2) % table.Length;
-            
-            if (table[idx].Occupied && table[idx].Key.Equals(key)) {
-                table[idx].Value = value;
-                return;
-            }
-            
-            if (!table[idx].Occupied) {
-                table[idx] = new Entry { Key = key, Value = value, Occupied = true };
-                count++;
-                
-                if ((float)count / table.Length > LoadFactorThreshold) {
-                    Resize();
-                }
-                return;
-            }
-        }
-        
-        throw new InvalidOperationException("Hash table full");
-    }
-    
-    public bool TryGetValue(K key, out V value) {
-        int h1 = Hash1(key);
-        int h2 = Hash2(key);
-        
-        for (int i = 0; i < table.Length; i++) {
-            int idx = (h1 + i * h2) % table.Length;
-            
-            if (table[idx].Occupied && table[idx].Key.Equals(key)) {
-                value = table[idx].Value;
-                return true;
-            }
-            
-            if (!table[idx].Occupied) {
-                value = default!;
-                return false;
-            }
-        }
-        
-        value = default!;
-        return false;
-    }
-    
-    private void Resize() {
-        var oldTable = table;
-        table = new Entry[oldTable.Length * 2];
-        count = 0;
-        
-        foreach (var entry in oldTable) {
-            if (entry.Occupied) {
-                Insert(entry.Key, entry.Value);
-            }
-        }
-    }
-    
-    // Double hashing vs linear probing:
-    // Linear: Sequence 0, 1, 2, 3, 4, ... (predictable, causes clustering)
-    // Double: Sequence 0, h2, 2h2, 3h2, ... (unpredictable, avoids clustering)
-    //
-    // Example with h1 = 0, h2 = 3, m = 8:
-    // Linear:  0, 1, 2, 3, 4, 5, 6, 7 (hits every slot)
-    // Double:  0, 3, 6, 1, 4, 7, 2, 5 (permutation of all slots if h2 coprime)
-    //
-    // Double hashing: More probe locations spread across table
-    // Linear probing: Localizes clustering to consecutive blocks
-}
-```
-
-#### Python Implementation (Double Hashing)
-
-```python
-class HashTableDoubleHashing[K, V]:
-    """Open addressing hash table with double hashing to eliminate primary clustering.
-    
-    Probe sequence: h(k, i) = (h1(k) + i * h2(k)) % capacity
-    """
-    _EMPTY = object()
-    _TOMBSTONE = object()
-
-    def __init__(self, initial_capacity: int = 17, load_factor_threshold: float = 0.5) -> None:
-        self.capacity: int = max(5, initial_capacity)
-        self.load_factor_threshold: float = load_factor_threshold
-        self.size: int = 0
-        self.keys: list = [self._EMPTY] * self.capacity
-        self.values: list = [None] * self.capacity
-
-    def _hash1(self, key: K) -> int:
-        return abs(hash(key)) % self.capacity
-
-    def _hash2(self, key: K) -> int:
-        # Step size must be non-zero and coprime to table size
-        step = (abs(hash(key) * 31) % (self.capacity - 1)) + 1
-        return step
-
-    def insert(self, key: K, value: V) -> None:
-        if (self.size + 1) / self.capacity > self.load_factor_threshold:
-            self._resize()
-
-        h1 = self._hash1(key)
-        h2 = self._hash2(key)
-        first_tombstone = -1
-
-        for i in range(self.capacity):
-            idx = (h1 + i * h2) % self.capacity
-            k = self.keys[idx]
-
-            if k == key:
-                self.values[idx] = value
-                return
-            if k is self._TOMBSTONE and first_tombstone == -1:
-                first_tombstone = idx
-            elif k is self._EMPTY:
-                target = first_tombstone if first_tombstone != -1 else idx
-                self.keys[target] = key
-                self.values[target] = value
-                self.size += 1
-                return
-
-        if first_tombstone != -1:
-            self.keys[first_tombstone] = key
-            self.values[first_tombstone] = value
-            self.size += 1
-            return
-
-        raise RuntimeError("Hash table full")
-
-    def get(self, key: K) -> V:
-        h1 = self._hash1(key)
-        h2 = self._hash2(key)
-        for i in range(self.capacity):
-            idx = (h1 + i * h2) % self.capacity
-            k = self.keys[idx]
-            if k == key:
-                return self.values[idx]
-            if k is self._EMPTY:
-                break
-        raise KeyError(f"Key not found: {key}")
-
-    def _resize(self) -> None:
-        old_keys = self.keys
-        old_vals = self.values
-        self.capacity = self.capacity * 2 + 1
-        self.keys = [self._EMPTY] * self.capacity
-        self.values = [None] * self.capacity
-        self.size = 0
-        for k, v in zip(old_keys, old_vals):
-            if k is not self._EMPTY and k is not self._TOMBSTONE:
-                self.insert(k, v)
-```
-
----
-
-### 🔧 Operation 3: Robin Hood Hashing (Low Variance & Early Search Termination)
-
-#### Mechanics & Architectural Intuition
-Robin Hood hashing is an open addressing variant based on the moral principle: *"Take from the rich (small PSL) and give to the poor (large PSL)!"*
-
-1. **Probe Sequence Length (PSL):** Defined as the distance between an element's actual slot and its ideal home hash index `(current_index - home_index + capacity) % capacity`.
-   - PSL = 0: Resides in its ideal home bucket ("very rich").
-   - PSL >= 3: Suffered multiple collisions ("poor").
-2. **Swap Invariant on Insertion:** While probing along the table:
-   - If the incoming element has a **greater PSL** than the element currently occupying the slot (`incoming.PSL > occupant.PSL`), **SWAP them!**
-   - The incoming element claims the slot, and the displaced occupant becomes the new traveler, probing forward with its own PSL incremented.
-3. **Variance Equalization:** Unlike standard linear probing where unlucky items suffer 20-30 probe steps while others have 1, Robin Hood redistributes collisions evenly, ensuring nearly all items have PSL between 0 and 3.
-4. **Early Search Termination:** During a search, if `current_search_psl > table[idx].PSL`, **the key cannot possibly exist further ahead!** (If it did, Robin Hood swaps would have promoted our poorer key ahead of the current occupant). The search terminates immediately without probing all the way to an empty slot.
-5. **Backward Shift Deletion (Tombstone-Free):** When deleting an item, shift all subsequent elements in the cluster whose PSL > 0 backward by 1 position (decrementing their PSL). This completely eliminates the need for tombstones!
-
-#### C# Implementation (.NET 8/9: Robin Hood Hash Table)
-
-```csharp
-using System;
-
-public class RobinHoodHashTable<K, V> where K : notnull {
-    private struct Entry {
-        public K Key;
-        public V Value;
-        public int PSL; // -1 indicates empty slot
-    }
-
-    private Entry[] table;
-    private int count = 0;
-    private const float LoadFactorThreshold = 0.85f; // Robin Hood can sustain alpha up to 0.85
-
-    public RobinHoodHashTable(int capacity = 16) {
-        table = new Entry[capacity];
-        for (int i = 0; i < capacity; i++) table[i].PSL = -1;
-    }
-
-    private int Hash(K key) => Math.Abs(key.GetHashCode()) % table.Length;
-
-    public void Put(K key, V value) {
-        if ((float)(count + 1) / table.Length > LoadFactorThreshold) {
-            Resize();
-        }
-
-        int currIdx = Hash(key);
-        K currKey = key;
-        V currVal = value;
-        int currPsl = 0;
-
-        while (true) {
-            if (table[currIdx].PSL == -1) {
-                table[currIdx] = new Entry { Key = currKey, Value = currVal, PSL = currPsl };
-                count++;
-                return;
-            }
-
-            if (table[currIdx].Key.Equals(currKey)) {
-                table[currIdx].Value = currVal;
-                return;
-            }
-
-            // Steal from rich, give to poor
-            if (currPsl > table[currIdx].PSL) {
-                (currKey, table[currIdx].Key) = (table[currIdx].Key, currKey);
-                (currVal, table[currIdx].Value) = (table[currIdx].Value, currVal);
-                (currPsl, table[currIdx].PSL) = (table[currIdx].PSL, currPsl);
-            }
-
-            currIdx = (currIdx + 1) % table.Length;
-            currPsl++;
-        }
-    }
-
-    public bool TryGetValue(K key, out V value) {
-        int home = Hash(key);
-        int currIdx = home;
-        int psl = 0;
-
-        while (true) {
-            // Early termination on search miss!
-            if (table[currIdx].PSL == -1 || psl > table[currIdx].PSL) {
-                value = default!;
-                return false;
-            }
-
-            if (table[currIdx].Key.Equals(key)) {
-                value = table[currIdx].Value;
-                return true;
-            }
-
-            currIdx = (currIdx + 1) % table.Length;
-            psl++;
-            if (psl >= table.Length) break;
-        }
-
-        value = default!;
-        return false;
-    }
-
-    public bool ContainsKey(K key) => TryGetValue(key, out _);
-
-    public bool Remove(K key) {
-        int home = Hash(key);
-        int currIdx = home;
-        int psl = 0;
-
-        while (true) {
-            if (table[currIdx].PSL == -1 || psl > table[currIdx].PSL) return false;
-
-            if (table[currIdx].Key.Equals(key)) {
-                // Backward shift deletion: shift subsequent entries back 1 position
-                int nextIdx = (currIdx + 1) % table.Length;
-                while (table[nextIdx].PSL > 0) {
-                    table[currIdx] = table[nextIdx];
-                    table[currIdx].PSL--;
-                    currIdx = nextIdx;
-                    nextIdx = (nextIdx + 1) % table.Length;
-                }
-                table[currIdx].PSL = -1;
-                table[currIdx].Key = default!;
-                table[currIdx].Value = default!;
-                count--;
-                return true;
-            }
-
-            currIdx = (currIdx + 1) % table.Length;
-            psl++;
-            if (psl >= table.Length) break;
-        }
-        return false;
-    }
-
-    private void Resize() {
-        var oldTable = table;
-        table = new Entry[oldTable.Length * 2];
-        for (int i = 0; i < table.Length; i++) table[i].PSL = -1;
-        count = 0;
-
-        foreach (var entry in oldTable) {
-            if (entry.PSL != -1) {
-                Put(entry.Key, entry.Value);
-            }
-        }
-    }
-
-    public int Count => count;
-}
-```
-
-#### Python Implementation (3.11+: Robin Hood Hash Table)
-
-```python
-class RobinHoodHashTable[K, V]:
-    """Robin Hood open addressing hash table with backward-shift tombstone-free deletion.
-    
-    Invariants:
-      - Steal from rich (small PSL) to give to poor (high PSL).
-      - Early termination: stops probe when search_psl > occupant.PSL.
-    """
-    def __init__(self, capacity: int = 16, load_factor_threshold: float = 0.85) -> None:
-        self.capacity: int = max(4, capacity)
-        self.load_factor_threshold: float = load_factor_threshold
-        self.size: int = 0
-        self.keys: list = [None] * self.capacity
-        self.values: list = [None] * self.capacity
-        self.psl: list[int] = [-1] * self.capacity  # -1 denotes empty slot
-
-    def _hash(self, key: K) -> int:
-        return abs(hash(key)) % self.capacity
-
-    def put(self, key: K, value: V) -> None:
-        """Upsert key-value pair using Robin Hood swap heuristic."""
-        if (self.size + 1) / self.capacity > self.load_factor_threshold:
-            self._resize()
-
-        curr_idx = self._hash(key)
-        curr_key, curr_val, curr_psl = key, value, 0
-
-        while True:
-            if self.psl[curr_idx] == -1:
-                self.keys[curr_idx] = curr_key
-                self.values[curr_idx] = curr_val
-                self.psl[curr_idx] = curr_psl
-                self.size += 1
-                return
-
-            if self.keys[curr_idx] == curr_key:
-                self.values[curr_idx] = curr_val
-                return
-
-            if curr_psl > self.psl[curr_idx]:
-                curr_key, self.keys[curr_idx] = self.keys[curr_idx], curr_key
-                curr_val, self.values[curr_idx] = self.values[curr_idx], curr_val
-                curr_psl, self.psl[curr_idx] = self.psl[curr_idx], curr_psl
-
-            curr_idx = (curr_idx + 1) % self.capacity
-            curr_psl += 1
-
-    def get(self, key: K) -> V:
-        """Lookup key with early miss termination."""
-        curr_idx = self._hash(key)
-        curr_psl = 0
-
-        while True:
-            if self.psl[curr_idx] == -1 or curr_psl > self.psl[curr_idx]:
-                raise KeyError(f"Key not found: {key}")
-
-            if self.keys[curr_idx] == key:
-                return self.values[curr_idx]
-
-            curr_idx = (curr_idx + 1) % self.capacity
-            curr_psl += 1
-            if curr_psl >= self.capacity:
-                raise KeyError(f"Key not found: {key}")
-
-    def contains_key(self, key: K) -> bool:
         try:
             self.get(key)
             return True
@@ -952,164 +682,118 @@ class RobinHoodHashTable[K, V]:
             return False
 
     def remove(self, key: K) -> bool:
-        """Tombstone-free deletion via backward shift."""
-        curr_idx = self._hash(key)
-        curr_psl = 0
+        """Mark slot as tombstone; returns True if deleted."""
+        home = self._hash(key)
+        for step in range(self._capacity):
+            idx = (home + step) % self._capacity
+            current_key = self._keys[idx]
 
-        while True:
-            if self.psl[curr_idx] == -1 or curr_psl > self.psl[curr_idx]:
-                return False
-
-            if self.keys[curr_idx] == key:
-                next_idx = (curr_idx + 1) % self.capacity
-                while self.psl[next_idx] > 0:
-                    self.keys[curr_idx] = self.keys[next_idx]
-                    self.values[curr_idx] = self.values[next_idx]
-                    self.psl[curr_idx] = self.psl[next_idx] - 1
-                    curr_idx = next_idx
-                    next_idx = (next_idx + 1) % self.capacity
-
-                self.keys[curr_idx] = None
-                self.values[curr_idx] = None
-                self.psl[curr_idx] = -1
-                self.size -= 1
+            if current_key == key:
+                self._keys[idx] = self._TOMBSTONE
+                self._values[idx] = None
+                self._count -= 1
                 return True
+            if current_key is self._EMPTY:
+                break
 
-            curr_idx = (curr_idx + 1) % self.capacity
-            curr_psl += 1
-            if curr_psl >= self.capacity:
-                return False
+        return False
 
-    def _resize(self) -> None:
-        old_keys, old_vals, old_psl = self.keys, self.values, self.psl
-        self.capacity *= 2
-        self.keys = [None] * self.capacity
-        self.values = [None] * self.capacity
-        self.psl = [-1] * self.capacity
-        self.size = 0
-        for k, v, p in zip(old_keys, old_vals, old_psl):
-            if p != -1:
+    def _resize(self, new_capacity: int) -> None:
+        """Double capacity and rehash only active occupied keys, purging tombstones."""
+        old_keys = self._keys
+        old_vals = self._values
+        self._capacity = new_capacity
+        self._keys = [self._EMPTY] * self._capacity
+        self._values = [None] * self._capacity
+        self._count = 0
+
+        for k, v in zip(old_keys, old_vals):
+            if k is not self._EMPTY and k is not self._TOMBSTONE:
                 self.put(k, v)
 ```
 
 ---
 
-### 🔧 Operation 4: Rabin-Karp Rolling Hash (String Matching)
+### Implementation 2: Rabin-Karp Rolling Hash Substring Search
 
-#### C# Implementation
+#### Modern C# (.NET 8/9 — `ReadOnlySpan<char>` & Overflow-Proof Modulo)
 
 ```csharp
+using System;
 using System.Collections.Generic;
 
-public class KarpRabinRollingHash {
-    private const int PRIME = 101;      // Prime for modulo
-    private const int BASE = 256;       // Alphabet size
-    
-    // Compute hash for string starting at position [start, end)
-    public static long ComputeHash(string text, int start, int length) {
-        long hash = 0;
-        long basePower = 1;
-        
-        // Process characters right to left
-        for (int i = start + length - 1; i >= start; i--) {
-            hash = (hash + (text[i] * basePower) % PRIME + PRIME) % PRIME;
-            basePower = (basePower * BASE) % PRIME;
-        }
-        
-        return hash;
-    }
-    
-    // Rolling hash: update hash from [start, start+length) to [start+1, start+1+length)
-    // Removes text[start], adds text[start+length]
-    public static long RollingHash(string text, long prevHash, int start, 
-                                   int length, long basePowerM) {
-        // Remove first character contribution
-        long hash = (prevHash - (text[start] * basePowerM) % PRIME + PRIME) % PRIME;
-        
-        // Multiply by BASE (shift left)
-        hash = (hash * BASE) % PRIME;
-        
-        // Add new character
-        hash = (hash + text[start + length] % PRIME + PRIME) % PRIME;
-        
-        return hash;
-    }
-    
-    // Find all occurrences of pattern in text using Rabin-Karp
-    public static List<int> FindPattern(string text, string pattern) {
+namespace DsaCurriculum.Hashing;
+
+public static class RabinKarpSearch
+{
+    private const long PrimeMod = 1_000_000_007L; // Large 64-bit safe prime
+    private const long BaseRadix = 256L;          // Alphabet size (ASCII / Extended)
+
+    /// <summary>
+    /// Finds all 0-based starting indices where pattern occurs in text using Rabin-Karp Rolling Hash.
+    /// Time Complexity: Expected O(N + M), Worst-Case O(N * M) under pathological hash collisions.
+    /// Auxiliary Space: O(1) beyond returned match indices.
+    /// </summary>
+    public static List<int> FindOccurrences(string text, string pattern)
+    {
+        ArgumentNullException.ThrowIfNull(text);
+        ArgumentNullException.ThrowIfNull(pattern);
+
         var matches = new List<int>();
         int n = text.Length;
         int m = pattern.Length;
-        
-        if (m > n) return matches;
-        
-        // Compute base^(m-1) mod PRIME
-        long basePowerM = 1;
-        for (int i = 0; i < m - 1; i++) {
-            basePowerM = (basePowerM * BASE) % PRIME;
+
+        if (m == 0 || m > n) return matches;
+
+        // Precompute BasePower = (BaseRadix^(m - 1)) % PrimeMod
+        long basePower = 1;
+        for (int i = 0; i < m - 1; i++)
+        {
+            basePower = (basePower * BaseRadix) % PrimeMod;
         }
-        
-        // Compute hash for pattern
-        long patternHash = ComputeHash(pattern, 0, m);
-        
-        // Compute hash for first window of text
-        long textHash = ComputeHash(text, 0, m);
-        
-        // Check first window
-        if (patternHash == textHash && text.Substring(0, m) == pattern) {
-            matches.Add(0);
+
+        long patternHash = 0;
+        long windowHash = 0;
+
+        // Compute hash for pattern and initial window text[0..m-1]
+        for (int i = 0; i < m; i++)
+        {
+            patternHash = (patternHash * BaseRadix + pattern[i]) % PrimeMod;
+            windowHash = (windowHash * BaseRadix + text[i]) % PrimeMod;
         }
-        
-        // Rolling hash for remaining windows
-        for (int i = 1; i <= n - m; i++) {
-            // Update hash using rolling formula
-            textHash = RollingHash(text, textHash, i - 1, m, basePowerM);
-            
-            // Check if hash matches and verify actual string
-            if (patternHash == textHash && 
-                text.Substring(i, m) == pattern) {
-                matches.Add(i);
+
+        ReadOnlySpan<char> textSpan = text.AsSpan();
+        ReadOnlySpan<char> patternSpan = pattern.AsSpan();
+
+        for (int i = 0; i <= n - m; i++)
+        {
+            // Hash match check: Verify exact characters to eliminate spurious collision false positives
+            if (windowHash == patternHash)
+            {
+                if (textSpan.Slice(i, m).SequenceEqual(patternSpan))
+                {
+                    matches.Add(i);
+                }
+            }
+
+            // Slide window forward: roll hash in O(1)
+            if (i < n - m)
+            {
+                // Step 1: Remove outgoing character text[i] with modulo normalization
+                long outgoingContribution = (text[i] * basePower) % PrimeMod;
+                windowHash = (windowHash - outgoingContribution + PrimeMod) % PrimeMod;
+
+                // Step 2 & 3: Multiply base and add incoming character text[i + m]
+                windowHash = (windowHash * BaseRadix + text[i + m]) % PrimeMod;
             }
         }
-        
+
         return matches;
     }
-    
-    // Trace: Find "abc" in "abcabc"
-    // m = 3, n = 6
-    // basePowerM = BASE^(3-1) = 256^2
-    
-    // patternHash = hash("abc")
-    // textHash = hash("abc") [first window at 0]
-    // Match at 0!
-    
-    // Rolling:
-    //   Remove 'a' from position 0, add 'c' from position 3
-    //   textHash → hash("bca")
-    //   No match (different from "abc")
-    
-    // Rolling:
-    //   Remove 'b' from position 1, add 'a' from position 4
-    //   textHash → hash("cab")
-    //   No match
-    
-    // Rolling:
-    //   Remove 'c' from position 2, add 'b' from position 5
-    //   textHash → hash("abc")
-    //   Match at position 3!
-    
-    // Results: [0, 3]
-    //
-    // Time: O(n + m) expected
-    //   Build pattern hash: O(m)
-    //   First window hash: O(m)
-    //   Rolling for n-m windows: O(n-m) with O(1) per window
-    //   Verification: O(m) per match (rare in practice)
-    // Space: O(1) for hash values (vs O(nm) for naive)
 }
 ```
 
-#### Python Implementation (3.11+)
+#### Modern Python (3.11+ — Horner's Method & Built-in `pow`)
 
 ```python
 def rabin_karp_search(text: str, pattern: str) -> list[int]:
@@ -1117,208 +801,206 @@ def rabin_karp_search(text: str, pattern: str) -> list[int]:
     
     Time Complexity:
       Average: O(N + M) where N = len(text), M = len(pattern)
-      Worst-case: O(N * M) under severe hash collision degradation
+      Worst-case: O(N * M) under severe adversarial hash collision degradation
     Auxiliary Space: O(1) beyond the output match list
     """
     n, m = len(text), len(pattern)
     if m == 0 or m > n:
         return []
 
-    prime: int = 101       # Modulus prime
-    base: int = 256        # Alphabet radix
+    prime_mod: int = 1_000_000_007
+    base_radix: int = 256
     matches: list[int] = []
 
-    # Precompute high power: (base^(m - 1)) % prime
-    base_power: int = pow(base, m - 1, prime)
+    # Precompute high power weight: (base^(m - 1)) % prime
+    base_power: int = pow(base_radix, m - 1, prime_mod)
 
-    # Initial window hash fingerprints
+    # Compute initial fingerprints
     pattern_hash: int = 0
     window_hash: int = 0
     for i in range(m):
-        pattern_hash = (pattern_hash * base + ord(pattern[i])) % prime
-        window_hash = (window_hash * base + ord(text[i])) % prime
+        pattern_hash = (pattern_hash * base_radix + ord(pattern[i])) % prime_mod
+        window_hash = (window_hash * base_radix + ord(text[i])) % prime_mod
 
     for i in range(n - m + 1):
         if pattern_hash == window_hash:
-            # Hash collision check (verify exact characters)
+            # Hash collision check: verify actual characters
             if text[i : i + m] == pattern:
                 matches.append(i)
 
         if i < n - m:
-            # Roll hash: strip leading char, shift left, append trailing char
-            window_hash = (window_hash - ord(text[i]) * base_power) % prime
-            window_hash = (window_hash * base + ord(text[i + m])) % prime
-            window_hash = (window_hash + prime) % prime
+            # Roll window: subtract outgoing, shift base, add incoming
+            outgoing_contribution = (ord(text[i]) * base_power) % prime_mod
+            window_hash = (window_hash - outgoing_contribution + prime_mod) % prime_mod
+            window_hash = (window_hash * base_radix + ord(text[i + m])) % prime_mod
 
     return matches
 ```
 
-### 🔧 Operation 5: Plagiarism Detection Using Rolling Hash
+---
 
-```csharp
-using System.Collections.Generic;
+### Implementation 3: Robin Hood Hashing (Zero Tombstone Deletions)
 
-public class PlagiarismDetector {
-    // Find similar segments between two documents using rolling hash
-    public static List<(int, int, int)> FindSimilarSegments(
-        string doc1, string doc2, int segmentLength = 50) {
-        
-        var matches = new List<(int, int, int)>();
-        var hashMap = new Dictionary<long, List<int>>();
-        
-        // Index all segments in doc1
-        long basePower = 1;
-        for (int i = 0; i < segmentLength - 1; i++) {
-            basePower = (basePower * 256) % 101;
-        }
-        
-        long hash1 = KarpRabinRollingHash.ComputeHash(doc1, 0, segmentLength);
-        if (!hashMap.ContainsKey(hash1)) {
-            hashMap[hash1] = new List<int>();
-        }
-        hashMap[hash1].Add(0);
-        
-        for (int i = 1; i <= doc1.Length - segmentLength; i++) {
-            hash1 = KarpRabinRollingHash.RollingHash(
-                doc1, hash1, i - 1, segmentLength, basePower);
-            
-            if (!hashMap.ContainsKey(hash1)) {
-                hashMap[hash1] = new List<int>();
-            }
-            hashMap[hash1].Add(i);
-        }
-        
-        // Find matching segments in doc2
-        long hash2 = KarpRabinRollingHash.ComputeHash(doc2, 0, segmentLength);
-        
-        if (hashMap.ContainsKey(hash2)) {
-            foreach (int pos1 in hashMap[hash2]) {
-                if (doc1.Substring(pos1, segmentLength) == 
-                    doc2.Substring(0, segmentLength)) {
-                    matches.Add((pos1, 0, segmentLength));
-                }
-            }
-        }
-        
-        for (int i = 1; i <= doc2.Length - segmentLength; i++) {
-            hash2 = KarpRabinRollingHash.RollingHash(
-                doc2, hash2, i - 1, segmentLength, basePower);
-            
-            if (hashMap.ContainsKey(hash2)) {
-                foreach (int pos1 in hashMap[hash2]) {
-                    if (doc1.Substring(pos1, segmentLength) == 
-                        doc2.Substring(i, segmentLength)) {
-                        matches.Add((pos1, i, segmentLength));
-                    }
-                }
-            }
-        }
-        
-        return matches;
-    }
-    
-    // Time: O(n + m) for rolling hash indexing
-    // Space: O(n) for hash map
-    // Vs naive comparison: O(nm) time, no space optimization
-}
-```
-
-### 🔧 Operation 6: Hash Map / Set Pattern — Two Sum (Complement Lookup)
-
-```text
-Complement Lookup Array Traversal:
-Target = 9
-Index:      [ 0 ]      [ 1 ]      [ 2 ]      [ 3 ]
-Nums:         2          7         11         15
-
-Step 0: num = 2  -> complement = 9 - 2 = 7. Seen: {}              -> 7 not found -> Seen[2] = 0
-Step 1: num = 7  -> complement = 9 - 7 = 2. Seen: {2: 0}          -> 2 FOUND at index 0! Return [0, 1]
-```
-
-#### C# Implementation (.NET 8/9)
+#### C# (.NET 8/9 — Low-Variance PSL Heuristic & Backward Shift)
 
 ```csharp
 using System;
-using System.Collections.Generic;
 
-public static class TwoSumSolution {
-    /// <summary>
-    /// Finds indices of two numbers that add up to target using single-pass complement lookup.
-    /// Time Complexity: O(N) average single-pass hash lookups
-    /// Auxiliary Space: O(N) hash map storage
-    /// </summary>
-    public static int[] TwoSum(int[] nums, int target) {
-        ArgumentNullException.ThrowIfNull(nums);
-        var seen = new Dictionary<int, int>(capacity: nums.Length);
+namespace DsaCurriculum.Hashing;
 
-        for (int i = 0; i < nums.Length; i++) {
-            int complement = target - nums[i];
-            if (seen.TryGetValue(complement, out int complementIdx)) {
-                return [complementIdx, i]; // C# 12 collection expression
-            }
-            seen[nums[i]] = i;
+public sealed class RobinHoodHashTable<TKey, TValue> where TKey : notnull
+{
+    private struct Entry
+    {
+        public TKey Key;
+        public TValue Value;
+        public int PSL; // Probe Sequence Length: -1 indicates Empty
+    }
+
+    private Entry[] _table;
+    private int _count;
+    private const float LoadFactorThreshold = 0.85f; // Robin Hood can sustain higher alpha
+
+    public RobinHoodHashTable(int capacity = 16)
+    {
+        _table = new Entry[Math.Max(4, capacity)];
+        for (int i = 0; i < _table.Length; i++) _table[i].PSL = -1;
+        _count = 0;
+    }
+
+    public int Count => _count;
+
+    private int Hash(TKey key) => (int)((uint)key.GetHashCode() % (uint)_table.Length);
+
+    public void Put(TKey key, TValue value)
+    {
+        ArgumentNullException.ThrowIfNull(key);
+
+        if ((float)(_count + 1) / _table.Length > LoadFactorThreshold)
+        {
+            Resize(_table.Length * 2);
         }
 
-        return Array.Empty<int>();
+        int currIdx = Hash(key);
+        TKey currKey = key;
+        TValue currVal = value;
+        int currPsl = 0;
+
+        while (true)
+        {
+            if (_table[currIdx].PSL == -1) // Empty slot
+            {
+                _table[currIdx] = new Entry { Key = currKey, Value = currVal, PSL = currPsl };
+                _count++;
+                return;
+            }
+
+            if (_table[currIdx].Key.Equals(currKey))
+            {
+                _table[currIdx].Value = currVal; // In-place update
+                return;
+            }
+
+            // Robin Hood Heuristic: Steal from the rich (small PSL), give to the poor (large PSL)
+            if (currPsl > _table[currIdx].PSL)
+            {
+                (currKey, _table[currIdx].Key) = (_table[currIdx].Key, currKey);
+                (currVal, _table[currIdx].Value) = (_table[currIdx].Value, currVal);
+                (currPsl, _table[currIdx].PSL) = (_table[currIdx].PSL, currPsl);
+            }
+
+            currIdx = (currIdx + 1) % _table.Length;
+            currPsl++;
+        }
     }
-}
-```
 
-#### Python Implementation (3.11+)
+    public bool TryGetValue(TKey key, out TValue value)
+    {
+        ArgumentNullException.ThrowIfNull(key);
 
-```python
-def two_sum(nums: list[int], target: int) -> list[int]:
-    """Finds two indices such that nums[i] + nums[j] == target via single-pass hash map complement search.
-    
-    Time Complexity: O(N) expected single-pass hash lookups
-    Auxiliary Space: O(N) hash map storage
-    """
-    seen: dict[int, int] = {}
-    for idx, num in enumerate(nums):
-        complement = target - num
-        if complement in seen:
-            return [seen[complement], idx]
-        seen[num] = idx
-    return []
-```
+        int home = Hash(key);
+        int currIdx = home;
+        int psl = 0;
 
-### ⚠️ Critical Pitfalls
+        while (true)
+        {
+            // Early Termination on search miss!
+            // If our current PSL is greater than the occupant's PSL, this key CANNOT exist further ahead!
+            if (_table[currIdx].PSL == -1 || psl > _table[currIdx].PSL)
+            {
+                value = default!;
+                return false;
+            }
 
-> **Watch Out – Mistake 1: Integer Overflow in Rolling Hash**
+            if (_table[currIdx].Key.Equals(key))
+            {
+                value = _table[currIdx].Value;
+                return true;
+            }
 
-```csharp
-// BAD: Not using modulo, integer overflow
-long hash = text[i] * basePower;  // Can overflow!
+            currIdx = (currIdx + 1) % _table.Length;
+            psl++;
+            if (psl >= _table.Length) break;
+        }
 
-// CORRECT: Use modulo at each step
-long hash = (text[i] * basePower) % PRIME;
-hash = (hash + text[i+1] * basePower) % PRIME;
-```
+        value = default!;
+        return false;
+    }
 
-> **Watch Out – Mistake 2: Spurious Matches (Hash Collisions)**
+    public bool Remove(TKey key)
+    {
+        ArgumentNullException.ThrowIfNull(key);
 
-```csharp
-// BAD: Accept hash match without verifying actual string
-if (patternHash == textHash) {
-    return true;  // WRONG! Hash collision can occur
-}
+        int home = Hash(key);
+        int currIdx = home;
+        int psl = 0;
 
-// CORRECT: Verify actual string after hash match
-if (patternHash == textHash && 
-    text.Substring(i, m) == pattern) {
-    return true;  // Correct
-}
-```
+        while (true)
+        {
+            if (_table[currIdx].PSL == -1 || psl > _table[currIdx].PSL) return false;
 
-> **Watch Out – Mistake 3: Load Factor Mismanagement in Open Addressing**
+            if (_table[currIdx].Key.Equals(key))
+            {
+                // Backward-Shift Deletion: Physically close the hole without tombstones!
+                int nextIdx = (currIdx + 1) % _table.Length;
+                while (_table[nextIdx].PSL > 0)
+                {
+                    _table[currIdx] = _table[nextIdx];
+                    _table[currIdx].PSL--;
+                    currIdx = nextIdx;
+                    nextIdx = (nextIdx + 1) % _table.Length;
+                }
 
-```csharp
-// BAD: Allow load factor to exceed 0.75
-// Clustering gets severe, probing becomes O(n)
+                _table[currIdx].PSL = -1;
+                _table[currIdx].Key = default!;
+                _table[currIdx].Value = default!;
+                _count--;
+                return true;
+            }
 
-// CORRECT: Resize when alpha > 0.5
-if ((float)count / table.Length > 0.5f) {
-    Resize();  // Maintain alpha <= 0.5 for fast probing
+            currIdx = (currIdx + 1) % _table.Length;
+            psl++;
+            if (psl >= _table.Length) break;
+        }
+
+        return false;
+    }
+
+    private void Resize(int newCapacity)
+    {
+        Entry[] oldTable = _table;
+        _table = new Entry[newCapacity];
+        for (int i = 0; i < _table.Length; i++) _table[i].PSL = -1;
+        _count = 0;
+
+        foreach (ref readonly Entry entry in oldTable.AsSpan())
+        {
+            if (entry.PSL != -1)
+            {
+                Put(entry.Key, entry.Value);
+            }
+        }
+    }
 }
 ```
 
@@ -1327,8 +1009,6 @@ if ((float)count / table.Length > 0.5f) {
 ## ⚖️ CHAPTER 4: PERFORMANCE, TRADE-OFFS & REAL SYSTEMS
 
 ### ⚖️ Differences & Trade-off Matrix: Separate Chaining vs Open Addressing vs TreeMap
-
-A comprehensive systems engineering comparison across all collision resolution strategies and associative containers:
 
 | Dimension / Metric | Separate Chaining (Linked Lists / Trees) | Linear Probing | Quadratic Probing | Double Hashing | Robin Hood Hashing | TreeMap (Red-Black Tree) |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -1359,27 +1039,12 @@ A comprehensive systems engineering comparison across all collision resolution s
 ### 📊 Complexity Deconstruction
 
 | Operation / Paradigm | Time (Average) | Time (Worst-Case) | Auxiliary Space | Dominant Resource / Cache Impact |
-|---|---|---|---|---|
+| :--- | :--- | :--- | :--- | :--- |
 | **Linear Probing Insert/Search** | `O(1)` | `O(N)` | `O(M)` contiguous array | Spatial cache line locality (`L1/L2` prefetcher friendly); primary clustering degrades as `alpha -> 1.0`. |
 | **Double Hashing Insert/Search** | `O(1)` | `O(N)` | `O(M)` contiguous array | Eliminates clustering via secondary jump hash; loses consecutive cache line prefetching. |
 | **Separate Chaining (Reference)**| `O(1 + alpha)` | `O(N)` | `O(N + M)` pointer nodes | Pointer chasing causes random memory dereferences and cache misses. |
 | **Rabin-Karp Rolling Hash Search**| `O(N + M)` | `O(N * M)` | `O(1)` auxiliary | `O(1)` window sliding hash via Horner polynomial rolling formula; `O(M)` verification on match. |
 | **Two Sum Complement Hash Map**  | `O(N)` | `O(N)` | `O(N)` auxiliary map | Trades `O(N)` auxiliary memory to eliminate `O(N^2)` quadratic nested brute force comparisons. |
-
-> **Load Factor (`alpha = N / M`) Sensitivity in Open Addressing:**
-> Unlike separate chaining where `alpha` can exceed `1.0`, open addressing strictly requires `alpha < 1.0`. Expected probe steps under SUHA are `1 / (1 - alpha)` for search hits and `1 / (1 - alpha)^2` for search misses with linear probing. When `alpha >= 0.7`, probe chains cascade exponentially into contiguous clusters. Production open-address tables enforce resizing at `alpha = 0.5` to guarantee expected `O(1)` performance.
-
----
-
-### 🎙️ 45-Minute Interview Verbal Script
-
-> "When deciding between separate chaining and open addressing in high-performance system design, the decisive trade-off is cache locality versus load factor resilience.
->
-> In open addressing with linear probing, all entries reside in a single contiguous backing array with zero node allocation overhead. Because consecutive probe steps hit adjacent memory addresses, modern CPU hardware prefetchers load the entire probe sequence into L1/L2 cache lines simultaneously, yielding 3-to-5 cycle lookups. However, linear probing suffers from primary clustering: contiguous occupied blocks grow longer and merge, causing probe lengths to spike drastically as the load factor `alpha` exceeds 0.5. To maintain expected `O(1)` operations, we enforce aggressive resizing at `alpha = 0.5` and use tombstones during deletions so search sequences do not terminate prematurely.
->
-> When scaling to substring pattern matching and sliding window problems, naive comparison takes `O(N * M)`. With Rabin-Karp rolling hash, we view character windows as polynomial integers modulo a prime. By subtracting the outgoing character's weight, multiplying by the base radix, and adding the incoming character in `O(1)`, we maintain the rolling fingerprint in `O(N + M)` expected time. We only perform full character checks on hash equality to prevent false positives from spurious collisions.
->
-> For complement lookup patterns like Two Sum, a single-pass hash map records incoming elements and probes for `target - x` in expected `O(1)` time, converting an `O(N^2)` brute-force search into an optimal `O(N)` time and `O(N)` auxiliary space algorithm."
 
 ---
 
@@ -1389,48 +1054,30 @@ A comprehensive systems engineering comparison across all collision resolution s
 
 **Building on Week 3 Day 4:**
 - **Chaining (Day 4):** Separate chaining with linked lists
-- **Today:** Alternative collision resolution strategy
-- **Trade-offs:** Memory/simplicity vs cache locality
+- **Today:** Cache-friendly alternative collision resolution & sliding window rolling hashing
+- **Trade-offs:** Memory flexibility vs CPU hardware cache hierarchy
 
 **Building on Prior Weeks:**
-- **Arrays (Week 2 Day 1):** Open addressing uses array directly
-- **Strings (Week 2):** Rabin-Karp for efficient string matching
-- **Recursion (Week 1):** Recursive hashing formulas
+- **Arrays (Week 2 Day 1):** Open addressing uses flat arrays directly with zero node wrappers
+- **Strings (Week 2):** Rabin-Karp provides rapid rolling fingerprinting for substring discovery
+- **Prefix Sums (Week 2 Day 2):** Notice how rolling hash is the multiplicative analog of prefix sum ranges: `RangeSum(L, R) = Prefix[R] - Prefix[L-1]`!
 
-**Foreshadowing Future:**
-- **Week 5 (Patterns):** Rabin-Karp for pattern matching problems
-- **Week 8 (Graphs):** Hash-based algorithms for deduplication
-- **Week 10 (Advanced Hashing):** Consistent hashing, bloom filters
+**Foreshadowing Future Modules:**
+- **Week 5 (Patterns):** Rabin-Karp for longest duplicate substring and string pattern matching
+- **Week 8 (Graphs):** Deduplication and cycles via custom hash signatures
+- **Week 10 (Advanced Hashing):** Consistent hashing, bloom filters, and Count-Min sketch
 
-### Pattern Recognition: Randomization & Universality
+### 🧠 Socratic Reflection
 
-**Pattern 1: Universal Hash Families**
-- Randomized hash functions guarantee performance
-- Appears in load balancing, distributed systems, security
-
-**Pattern 2: Rolling Hash Principle**
-- Maintain state of sliding window hash
-- Extend to rolling checksums, rolling statistics, polynomial hashing
-
-**Pattern 3: Probe Sequences**
-- Different probing strategies (linear, quadratic, double)
-- Generalize to other searching scenarios
-
-### Socratic Reflection
-
-1. **On Clustering:** Why does linear probing cause primary clustering?
-
-2. **On Universality:** How does universal hashing prevent hash flooding attacks?
-
-3. **On Rolling Hash:** Why can we update hash in O(1) for a sliding window?
-
-4. **On Trade-offs:** When is open addressing better than chaining?
-
-5. **On Applications:** How do plagiarism detectors use rolling hash efficiently?
+1. **On Hardware Reality:** Why can an algorithm with higher theoretical comparisons (linear probing) run 3-5x faster than an algorithm with fewer comparisons (separate chaining) on modern x86/ARM processors?
+2. **On Probe Continuity:** Explain to a junior engineer why tombstone slots cannot simply be converted back to empty slots during a deletion operation.
+3. **On Modulo Arithmetic:** Why is adding `MOD` necessary before executing `% MOD` in C# when rolling a hash window backwards?
+4. **On Robin Hood Hashing:** Why does equalizing probe sequence lengths (PSL) speed up *unsuccessful* searches (misses)?
+5. **On Rabin-Karp:** Under what input condition would Rabin-Karp degrade to `O(N * M)` worst-case time? How do randomized prime moduli prevent this attack?
 
 ### 📌 Retention Hook
 
-> **The Essence:** *"Hash tables come in two flavors: separate chaining (simple, cache-unfriendly) and open addressing (complex, cache-friendly). Which dominates depends on hardware priorities. More profoundly, rolling hash shows how to maintain properties of sliding windows efficiently—a principle that extends beyond hashing to checksums, polynomials, and stream processing. Master both collision resolution and rolling hash, and you master efficient string algorithms and cache-aware systems design."*
+> **The Essence:** *"Hash tables come in two flavors: separate chaining (simple, cache-unfriendly) and open addressing (cache-optimal, tombstone-dependent). Which dominates depends on your hardware priorities. More profoundly, rolling hash shows how to maintain properties of sliding windows efficiently in O(1) arithmetic—a principle that extends from string search to network packet checksums, rsync deltas, and stream processing. Master both open addressing and rolling hash, and you master hardware-aware algorithms."*
 
 ---
 
@@ -1438,76 +1085,45 @@ A comprehensive systems engineering comparison across all collision resolution s
 
 ### 🏋️ Practice Problems
 
-| Problem | Difficulty | Key Concept |
-|---------|-----------|-------------|
-| Implement linear probing | 🟡 | Probing, load factor |
-| Implement double hashing | 🟠 | Independent hash functions |
-| Implement Rabin-Karp | 🟡 | Rolling hash, modulo arithmetic |
-| Find all occurrences | 🟡 | Pattern matching |
-| Plagiarism detection | 🟠 | Hash indexing + rolling hash |
-| DNA sequence matching | 🟠 | Rabin-Karp on biological data |
+| Problem | Difficulty | Key Concept | FAANG Relevance |
+| :--- | :---: | :--- | :--- |
+| **Implement Linear Probing Hash Table** | 🟡 Medium | Tombstones, recycling, resizing | Core systems / data structure rounds |
+| **Rabin-Karp Substring Search** | 🟡 Medium | Polynomial rolling hash, modulo math | Google, Meta string processing |
+| **Longest Duplicate Substring (LeetCode 1044)** | 🔴 Hard | Binary Search on Answer + Rabin-Karp | Meta Staff Bar Raiser |
+| **Repeated DNA Sequences (LeetCode 187)** | 🟡 Medium | Rolling bitmask / 4-radix hash | Amazon, Apple |
+| **Plagiarism Detector Engine** | 🟠 Med-Hard | Rolling hash chunking + inverted index | System Design & Low-Level Design |
 
-### 🎙️ Interview Questions
+### 🎙️ Live Interview Questions & Answers
 
-1. **Q:** Implement linear probing. Why does it suffer from clustering?  
-   **Follow-up:** How does quadratic probing or double hashing help?
+1. **Q: How does a tombstone differ from an empty slot during search vs during insertion?**  
+   *Candidate Answer:* "During a search, an empty slot immediately terminates the probe sequence because any element hashed to that cluster would have been placed prior to or at that empty slot. A tombstone, however, is transparent to search—the search continues probing forward. During an insertion, a tombstone is a candidate for reuse: we record the first tombstone seen, continue probing to ensure the key is not already present, and if we hit an empty slot without finding the key, we recycle the tombstone slot."
 
-2. **Q:** Explain Rabin-Karp algorithm. Why is rolling hash O(1)?  
-   **Follow-up:** How do you handle hash collisions?
+2. **Q: How do you choose the base and modulo for Rabin-Karp?**  
+   *Candidate Answer:* "The base radix should be greater than or equal to the alphabet size (for instance, 256 for ASCII, 26 for lowercase English, or 4 for DNA). The modulo should be a large prime—typically `10^9 + 7` or a 61-bit Mersenne prime—to minimize collision probability while fitting into 64-bit integer registers without overflowing during multiplication."
 
-3. **Q:** Find all occurrences of pattern in text in O(n+m) time.  
-   **Follow-up:** Compare with KMP algorithm from Day 4.
-
-4. **Q:** Design a plagiarism detector for 1 billion documents.  
-   **Follow-up:** How do you index efficiently? Search efficiently?
-
-5. **Q:** What's the difference between chaining and open addressing?  
-   **Follow-up:** When would you use each in production?
+3. **Q: What is the difference between primary clustering and secondary clustering?**  
+   *Candidate Answer:* "Primary clustering occurs in linear probing where occupied slots merge into long contiguous blocks, increasing collision likelihood for any key hashing near the block. Secondary clustering occurs in quadratic probing: different keys that hash to the *same* initial home bucket trace the exact same probe sequence, although contiguous blocks do not coalesce."
 
 ### ❌ Common Misconceptions
 
-- **Myth:** Open addressing is always faster than chaining.  
-  **Reality:** Depends on hardware, workload, and load factor.
-
-- **Myth:** Hash collisions should be minimized.  
-  **Reality:** Some collisions are inevitable; what matters is managing them efficiently.
-
-- **Myth:** Rolling hash guarantees correct string matching.  
-  **Reality:** Hash match indicates possible match; must verify actual string.
-
-- **Myth:** Double hashing is always better than linear probing.  
-  **Reality:** Linear probing is cache-friendly and practical; double hashing is theoretically better but 10% slower in practice.
-
-### 🚀 Advanced Concepts
-
-- **Cuckoo Hashing:** O(1) worst-case lookup (guarantees with probabilistic insertions)
-- **Hopscotch Hashing:** Cache-friendly cuckoo variant
-- **Robin Hood Hashing:** Reduce variance in probe lengths
-- **Cryptographic Hash Functions:** SHA, MD5 (one-way for security)
-- **Bloom Filters:** Probabilistic membership testing
-- **Locality-Sensitive Hashing:** Find similar items in high dimensions
-
-### 📚 External Resources
-
-- **CLRS Chapter 11:** Open addressing collision resolution
-- **MIT 6.006 Lecture 10:** Hashing and open addressing
-- **MIT 6.046 Lecture 4–5:** Universal hashing theory
-- **"Introduction to Algorithms":** Comprehensive treatment of all variants
-- **LeetCode:** Hash table problems with rolling hash focus
+- **Myth:** Open addressing is always superior to separate chaining.  
+  **Reality:** Open addressing requires strict load factor control (`alpha <= 0.50`). If memory is constrained and `alpha` approaches 1.0, open addressing collapses to `O(N)` while separate chaining degrades gracefully.
+- **Myth:** Rolling hash guarantees 100% collision-free string comparison.  
+  **Reality:** Due to the pigeonhole principle, any hash function that maps longer strings to a fixed integer range can collide. Production string search must verify actual character equality upon hash match.
+- **Myth:** Setting a slot to `null` is fine if no other keys hash to that same index.  
+  **Reality:** You cannot know whether other keys collided past this slot without scanning the rest of the cluster! Always write a tombstone sentinel.
 
 ---
 
 ## 📌 CLOSING REFLECTION
 
-Hash tables seem simple mechanically—hash key, probe array, handle collisions. But they embody deep principles:
+Hash tables look simple from a distance—hash a key, find an index, handle a collision. But deep systems engineering lies in how hardware executes those operations:
 
-**Collision Resolution Strategies:** Separate chaining is simple and flexible; open addressing trades complexity for cache locality. The choice depends on hardware priorities and workload. This is systems design: making informed trade-offs based on constraints.
+1. **Memory Hierarchy Alignment:** By replacing pointer-linked chains with contiguous flat arrays, open addressing aligns data layout with CPU cache lines.
+2. **Incremental State Evolution:** By transforming sliding window evaluation from `O(M)` recomputations into `O(1)` arithmetic updates, rolling hashes enable real-time streaming pattern recognition.
+3. **Invariant Discipline:** The tombstone pattern proves that maintaining search invariants requires designing for the lifecycle of data—not just its initial insertion.
 
-**Rolling Hash:** Maintain properties of sliding windows efficiently in O(1) updates. This principle extends beyond hashing to checksums, polynomials, and stream algorithms. Understanding rolling hash teaches incremental thinking: update state based on changes, not from scratch.
-
-**Universal Hashing:** Design hash functions that guarantee performance even against adversarial inputs. This brings randomization into algorithmic design: accept worst-case for excellent average-case.
-
-Master open addressing, rolling hash, and universal hashing—their mechanics, their trade-offs, their applications—and you master techniques that appear in plagiarism detection, DNA sequencing, security systems, and distributed computing.
+Master open addressing, tombstone recycling, and rolling hash mathematics, and you will build systems that are not only algorithmically optimal, but mechanically sympathetic to modern hardware.
 
 ---
 

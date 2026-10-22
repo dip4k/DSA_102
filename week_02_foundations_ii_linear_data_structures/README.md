@@ -1,39 +1,45 @@
-﻿# 📘 Linear Data Structures & Binary Search Invariants
+# 📘 Week 02: Linear Data Structures & Binary Search Invariants
 
 > 🧭 **Navigation:** [← Previous: Week 01](../week_01_foundations_i_computational_fundamentals/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 03 →](../week_03_foundations_iii_sorting_and_hashing/README.md)
 
 ---
 
 > 💡 **Instructor Guidance Note:**  
-> *Not all sections or topics are mandatory. As a learner, you can adapt your pace freely. If you are preparing on an accelerated interview timeline or already feel confident with specific foundational concepts, feel free to skip or skim optional topics and prioritize high-yield patterns based on your personal interview goals.*
+> *Welcome to Week 02! Having conquered computational fundamentals in Week 01, we now construct the primary data structures that form 80% of all software engineering: Arrays, Dynamic Buffers, Linked Lists, Stacks, Queues, and Binary Search boundaries. Focus on pointer manipulation, memory locality, and zero-allocation patterns.*
 
 ---
 
 ## 🎯 Weekly Mission & Conceptual Focus
 
-Master static/dynamic array memory layout, cache prefetching, singly/doubly linked lists, circular queues, stacks, and binary search invariants.
+Master static and dynamic array memory layouts, cache prefetching, singly and doubly linked lists with sentinel nodes, circular ring queues, stack mechanics, and boundary-proof binary search invariants.
 
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
-flowchart TD
-    Start["Week 02 Start"] --> Daily["Daily Invariant<br/>Deep<br/>Dives"]
-    Daily --> Playbook["Consolidated<br/>Playbook &<br/>Visuals"]
-    Playbook --> DualLang["Dual-Language<br/>Practice<br/>(C# & Python)"]
-    DualLang --> Mastery["Pattern Mastery &<br/>Verification"]
+flowchart LR
+    classDef arrayNode fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+    classDef listNode fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
+    classDef bufferNode fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
+    classDef searchNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+
+    D1["📦 Day 01: Arrays &<br/>Memory Layout"]:::arrayNode --> D2["📈 Day 02: Dynamic Arrays<br/>& Doubling"]:::arrayNode
+    D2 --> D3["🔗 Day 03: Linked Lists<br/>& Sentinels"]:::listNode
+    D3 --> D4["🔄 Day 04: Stacks, Queues<br/>& Ring Buffers"]:::bufferNode
+    D4 --> D5["🎯 Day 05: Binary Search<br/>Invariants"]:::searchNode
+    D5 --> D6["🔤 Day 06: Strings &<br/>Numerical Invariants"]:::searchNode
 ```
 
 ---
 
-## 📅 Day-by-Day Learning Path
+## 📅 The 6-Day YouTube-Style Masterclass Path
 
-| Day | Instructional Module | Focus & Core Objective |
-| :--- | :--- | :--- |
-| **Day 01** | [Arrays Memory Layout](Week_02_Day_01_Arrays_Memory_Layout_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 02** | [Dynamic Arrays Amortized Growth](Week_02_Day_02_Dynamic_Arrays_Amortized_Growth_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 03** | [Linked Lists](Week_02_Day_03_Linked_Lists_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 04** | [Stacks Queues Deques](Week_02_Day_04_Stacks_Queues_Deques_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 05** | [Binary Search Invariants](Week_02_Day_05_Binary_Search_Invariants_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 06** | [Strings Numbers](Week_02_Day_06_Strings_Numbers_Instructional.md) | Core Daily Concept Deep Dive |
+| Day / Episode | Masterclass Module | The 60-Second Hook & Core Concept | Key Interview Takeaway |
+| :--- | :--- | :--- | :--- |
+| **Day 01** | [📘 Arrays & Memory Layout](Week_02_Day_01_Arrays_Memory_Layout_Instructional.md) | 📦 *The Row of Numbered Lockers:* Why contiguous array indexing is pure arithmetic (`base + i * size`) with 1 ns L1 cache hits. | Articulate cache locality, spatial prefetching, and Span<T> in live rounds. |
+| **Day 02** | [📘 Dynamic Arrays & Amortized Growth](Week_02_Day_02_Dynamic_Arrays_Amortized_Growth_Instructional.md) | 📈 *The Expanding Suitcase:* Why doubling capacity gives O(1) amortized appends, and why naive 1-by-1 expansion creates an O(N^2) disaster. | Prove amortized O(1) via the Banker's accounting method on the whiteboard. |
+| **Day 03** | [📘 Linked Lists & Sentinel Surgery](Week_02_Day_03_Linked_Lists_Instructional.md) | 🔗 *The Scavenger Hunt & The Bodyguard:* Eliminating null checks with dummy sentinel nodes and mastering clean pointer surgery without losing head. | Execute in-place list reversal and cycle detection without null-pointer exceptions. |
+| **Day 04** | [📘 Stacks, Queues & Ring Buffers](Week_02_Day_04_Stacks_Queues_Deques_Instructional.md) | 🔄 *The Circular Carousel:* Implementing zero-allocation bounded ring buffers with modulo arithmetic, LIFO undo stacks, and FIFO processing. | Implement thread-safe ring buffers and explain array-backed vs linked structures. |
+| **Day 05** | [📘 Binary Search Invariants](Week_02_Day_05_Binary_Search_Invariants_Instructional.md) | 🎯 *The Caliper Squeeze & The Shrinking Window:* Demystifying `<` vs `<=`, `mid` overflow guards, and finding leftmost vs rightmost insertion points. | Write bug-free binary search in 3 minutes without off-by-one infinite loops. |
+| **Day 06** | [📘 Strings & Numerical Invariants](Week_02_Day_06_Strings_Numbers_Instructional.md) | 🔤 *The Immutable Scroll:* String builder allocations, ASCII sliding pointers, Unicode code points, and palindrome verification. | Defend memory-efficient string manipulation and avoid O(N^2) concatenation traps. |
 
 ---
 

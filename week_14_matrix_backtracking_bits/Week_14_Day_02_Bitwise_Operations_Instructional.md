@@ -1,334 +1,540 @@
-# 📅 Week 14, Day 2: Basic Bitwise Operations, Tricks, Subset Enumeration & Gray Codes
+# 📘 WEEK 14 DAY 2: BITWISE OPERATIONS & REGISTER TRICKS — THE SENIOR PLAYBOOK
 
-
-
-
-> 🧭 **Navigation:** [← Previous Day](Week_14_Day_01_Matrix_Operations_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_14_Day_03_Number_Theory_Basics_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_14_Day_01_Matrix_Operations_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Number Theory Basics →](Week_14_Day_03_Number_Theory_Basics_Instructional.md)
 > 
-> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
+> 💡 **Instructor Note:** *Bit manipulation is the ultimate test of low-level mechanical sympathy. In senior systems interviews, interviewers use bitwise problems to verify if you understand ALU single-cycle execution, two's complement arithmetic, branchless programming, and zero-allocation state compression.*
 
 ---
 
-Welcome to Day 2. Today, we study registers, binary digits manipulation, and how to pack full set structures into single-word registers with zero allocation costs.
+## 🎯 LEARNING OBJECTIVES
+
+*By the end of this module, you will be able to:*
+
+- 🎬 **Deconstruct** the Skyscraper Light Switch panel metaphor to explain bitmasking versus heap-allocated sets.
+- ⚡ **Master** the 5 canonical bitwise primitives: `n & (n - 1)`, `n & -n`, `(n >> i) & 1`, `n | (1 << i)`, and `n ^ (1 << i)`.
+- 🧮 **Solve** the entire Single Number trilogy: Single Number I (LC 136 - XOR accumulator), Single Number II (LC 137 - Modulo-3 counter), and Single Number III (LC 260 - LSB partition).
+- 🔄 **Enumerate** all $2^K$ submasks of a bitmask in strictly decreasing order in a single loop using `sub = (sub - 1) & mask`.
+- 🛑 **Avoid** the 4 fatal rookie traps: signed arithmetic shift `>>` sign-extension bugs, Python infinite-width integer sign-bit flips, operator precedence traps (`1 << n - 1`), and zero-check omissions in power-of-two tests.
+- 🎙️ **Deliver** the exact 3-sentence verbal script before writing bitwise code in a FAANG interview.
+- ⚡ **Ship** production-grade C# (.NET 8/9 using `>>>` unsigned shifts) and Python (3.11+ with 32-bit register masking) implementations.
 
 ---
 
-## 🎯 Learning Objectives
-*   Master basic bitwise operations: AND, OR, XOR, NOT, and shifting.
-*   Manipulate binary configurations using tricks like clearing and isolating the lowest set bit.
-*   Enumerate all submasks of a bitmask in decreasing order with a single loop.
-*   Understand Gray Code representations and populations counting (popcount) logic.
+## 🎬 PILLAR 1: THE 60-SECOND HOOK & EVERYDAY ANALOGIES
 
----
+### Analogy 1: The Skyscraper Light Switch Panel vs. The Excel Spreadsheet
 
-## 📘 Chapter 1: Context and Motivation
+Imagine you are the chief facilities engineer for an 80-story skyscraper in Manhattan. Every night, security needs to check which floors have lights turned on.
 
-### 1. The Core Engineering Challenge
-In high-performance computing, memory allocations are expensive. Managing collections of state flags using standard arrays or hash sets requires dynamic heap memory blocks, which triggers garbage collection cycles.
-Because a byte contains 8 bits, we can represent 8 distinct boolean values in a single byte, or up to 64 flags in a standard 64-bit integer register. Performing operations directly on these bits executes in a single clock cycle, bypasses the heap, and has zero memory allocation overhead.
+- **The Junior Approach (The Excel Spreadsheet / `HashSet<int>`):**
+  - Security creates a `HashSet<int>` on the heap.
+  - Every time a light turns on, security allocates a hash table node (24 bytes of heap memory, pointer dereferences, collision buckets).
+  - To check if Floor 42 is lit, security hashes 42, traverses a linked bucket chain, and risks a CPU cache miss (~50 nanoseconds).
+- **The Senior Architect (The Physical Switchboard / 64-bit Register):**
+  - All 64 floors are mapped to the 64 individual bits of a single unsigned 64-bit integer (`ulong flags`):
+    - Floor 0 = Bit 0 (`1 << 0`)
+    - Floor 42 = Bit 42 (`1UL << 42`)
+  - To check if Floor 42 is on: `(flags >> 42) & 1`.
+  - To toggle Floor 42: `flags ^= (1UL << 42)`.
+  - Execution time: **1 CPU clock cycle (~0.3 nanoseconds)!**
+  - Memory allocated: **ZERO BYTES ON THE HEAP!**
 
-### 2. Naive Pitfalls
-The standard way to check if a number is a power of two is to repeatedly divide it by 2:
-```csharp
-while (n % 2 == 0) { n /= 2; }
-return n == 1;
 ```
-This naive iterative approach takes O(log N) instructions. If we run this division repeatedly inside a high-frequency loop, it introduces significant performance overhead. 
-
-### 3. Real-world Anchor: Low-level Flags
-Operating systems and network protocols represent configurations as combined bit flags inside a single word. For example, file permissions in UNIX are packed into a single integer:
-*   Read (`R = 4` -> `100`), Write (`W = 2` -> `010`), and Execute (`X = 1` -> `001`).
-*   To enable Read and Write permissions, perform a bitwise OR: `4 | 2 = 6` (`110`).
++---------------------------------------------------------------------------------------+
+|                               THE BITWISE ADVANTAGE                                   |
++---------------------------------------------------------------------------------------+
+|  Hardware ALUs execute bitwise operations (AND, OR, XOR, SHIFT) in a SINGLE CLOCK    |
+|  CYCLE. They operate directly inside CPU registers with sub-nanosecond latency,      |
+|  completely bypassing memory buses, cache lines, and garbage collection pauses.       |
++---------------------------------------------------------------------------------------+
+```
 
 ---
 
-## 📘 Chapter 2: Mental Model
+### Analogy 2: Two's Complement & The LSB Magic (`n & -n`)
 
-### 1. The Fixed-Width Boolean Register
-Think of an integer as a fixed-capacity boolean array indices 0 to 31 or 63.
-*   Register index i corresponds to the boolean flag stored at the i-th bit: `(n >> i) & 1`.
-*   We can update this flag using bitwise operations:
+In two's complement arithmetic (the standard for all modern CPUs), how does hardware represent negative numbers?
+
+$$\mathbf{-n = \sim n + 1}$$
+
+Watch what happens to the binary bits of $n = 12$ (`0b00001100`):
+1. Invert all bits ($\sim n$): `0b11110011`
+2. Add 1 ($\sim n + 1$): `0b11110100`
+3. Notice that adding 1 carries all the way up to the **lowest set bit**, flipping trailing zeros back to zero and keeping the lowest set bit as `1`!
+4. Perform bitwise AND between $n$ and $-n$:
 
 ```text
-Position Index:   [ 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 ]
-Active Bitmask:   [ 0 | 1 | 0 | 0 | 1 | 1 | 0 | 1 ] = Value 77
-                                        ^
-                                   Isolating Bit at Index 3
+       n = 12 :    0 0 0 0 1 1 0 0
+      -n = -12:    1 1 1 1 0 1 0 0
+------------------------------------
+  n & -n =  4 :    0 0 0 0 0 1 0 0  ===> ISOLATES LOWEST SET BIT INSTANTLY!
 ```
 
-#### 🔌 Core Bit Operator Logic
-*   **AND (`&`)**: Intersects active bits. Useful for masking operations: `n & mask`.
-*   **OR (`|`)**: Unifies active bits. Useful for enabling flags: `n |= mask`.
-*   **XOR (`^`)**: Detects differences. If you flip a bit twice, it returns to its original state.
-*   **NOT (`~`)**: Symmetrically complements all bits.
-*   **Shifts (`<<`, `>>`)**: Moves components left or right. Each shift is equivalent to multiplying or dividing by 2.
+In a single ALU cycle, `n & -n` isolates the rightmost `1` bit and clears everything else!
 
 ---
 
-## 📘 Chapter 3: Mechanics
+## 🪜 PILLAR 2: THE SCAFFOLDING LADDER & TOY NAPKIN TRACES
 
-### 1. Fundamental Bit tricks
+Let's master the 5 core bitwise operations and the Single Number trilogy:
+
+```
+              [THE 5 ESSENTIAL BITWISE PRIMITIVES]
+                               │
+       ┌───────────────┬───────┴───────┬───────────────┐
+       ▼               ▼               ▼               ▼
+  [n & (n - 1)]     [n & -n]      [(n >> i) & 1]   [n | (1 << i)]
+  Clear Lowest    Isolate Lowest     Test i-th        Set i-th
+    Set Bit          Set Bit            Bit             Bit
+```
+
+---
+
+### Scaffold Level 1: The Essential Primitives
+
+```text
+1. Clear the lowest set bit:
+   n & (n - 1)
+   Example: n = 12 (0b1100) -> n - 1 = 11 (0b1011) -> 12 & 11 = 8 (0b1000). Cleared!
+
+2. Check if power of two:
+   n > 0 && (n & (n - 1)) == 0
+   A power of two has EXACTLY one set bit (e.g. 16 = 0b10000). Clearing it yields 0!
+
+3. Brian Kernighan's Popcount (Count Set Bits):
+   while (n > 0) { n &= (n - 1); count++; }
+   Loop runs exactly K times (where K is the number of 1-bits), not 32 times!
+
+4. Isolate the lowest set bit:
+   n & -n
+   Example: 12 & -12 = 4 (0b0100).
+```
+
+---
+
+### Scaffold Level 2: Single Number I (LeetCode 136) — XOR Cancellation
+
+**Problem:** Every element appears twice except for one unique element. Find that single element in $O(N)$ time and $O(1)$ memory.
+
+#### Core Mathematical Properties of XOR ($\oplus$):
+1. **Self-Inversion:** $x \oplus x = 0$ (Any number XORed with itself cancels to 0).
+2. **Identity:** $x \oplus 0 = x$.
+3. **Commutative & Associative:** Order does not matter!
+
+#### Toy Napkin Trace: `nums = [4, 1, 2, 1, 2]`
+
+```text
+Cumulative XOR accumulator:
+acc = 0
+acc ^= 4 -> 4
+acc ^= 1 -> 4 ^ 1
+acc ^= 2 -> 4 ^ 1 ^ 2
+acc ^= 1 -> 4 ^ (1 ^ 1) ^ 2 = 4 ^ 0 ^ 2 = 4 ^ 2
+acc ^= 2 -> 4 ^ (2 ^ 2) = 4 ^ 0 = 4!
+
+Result: 4. All duplicates annihilate each other; only the unique survivor remains!
+```
+
+---
+
+### Scaffold Level 3: Single Number III (LeetCode 260) — Two Unique Elements
+
+**Problem:** Every element appears twice except for **two** unique elements ($x$ and $y$). Find both in $O(N)$ time and $O(1)$ space.
+
+#### The Intuition:
+1. XOR all numbers together. The result is:
+   $$\text{xorSum} = x \oplus y$$
+2. Since $x \ne y$, $\text{xorSum} \ne 0$. There must be at least one bit where $x$ and $y$ differ!
+3. Isolate the lowest differing bit:
+   $$\text{diffBit} = \text{xorSum} \ \& \ (-\text{xorSum})$$
+4. Partition the entire array into two groups:
+   - Group A: Numbers where `(num & diffBit) == 0`
+   - Group B: Numbers where `(num & diffBit) != 0`
+5. $x$ and $y$ will fall into **different groups**! All other duplicates will fall into the same group and cancel out. XORing each group independently yields $x$ and $y$!
+
+```
+Napkin Trace: nums = [1, 2, 1, 3, 2, 5] (Unique: 3 and 5)
+1. Total XOR: 1^2^1^3^2^5 = 3 ^ 5 = 0b011 ^ 0b101 = 0b110 (6)
+2. diffBit = 6 & -6 = 2 (0b010) (Bit 1 differs!)
+3. Partition:
+   - Bit 1 is 0: [ 1, 1, 5 ] -> 1 ^ 1 ^ 5 = 5!
+   - Bit 1 is 1: [ 2, 2, 3 ] -> 2 ^ 2 ^ 3 = 3!
+Output: [ 3, 5 ]
+```
+
+---
+
+### Scaffold Level 4: Submask Enumeration (`sub = (sub - 1) & mask`)
+
+How do you iterate through all subsets of a given bitmask without testing all numbers up to $2^N$?
+
 ```csharp
-public static class BitwiseUtils {
-    // Check if power of two (guards against 0 and negatives)
-    public static bool IsPowerOfTwo(int n) {
-        return n > 0 && (n & (n - 1)) == 0;
+// Enumerates all submasks of 'mask' in strictly decreasing order
+int sub = mask;
+while (sub > 0)
+{
+    // Process submask
+    sub = (sub - 1) & mask;
+}
+// Process sub = 0 (empty set)
+```
+
+Why it works: Subtracting 1 flips the lowest set bit to 0 and all lower bits to 1. Bitwise ANDing with `mask` immediately eliminates all bits that weren't in `mask`, hopping directly to the next smaller valid submask in $O(1)$!
+
+---
+
+### 🧠 Pause & Predict Micro-Drill
+**Question:** In C#, what is the difference between `int x = -16; x >> 2;` versus `(int)((uint)x >>> 2);`?
+*Take 5 seconds to think.*
+-
+-
+-
+**Answer:** `>>` on signed `int` is an **Arithmetic Right Shift**: it preserves and replicates the negative sign bit (`1`), keeping the number negative! `>>>` (or cast to `uint`) is a **Logical Right Shift**: it fills vacated top bits with zeros (`0`), turning it into a positive number.
+
+---
+
+## 🎨 PILLAR 3: PRAGMATIC VISUAL MODELS
+
+### Single Number III Partitioning Pipeline
+
+```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
+flowchart TD
+    Start["📦 Input Array: (1, 2, 1, 3, 2, 5)<br/>Two elements appear once: x and y"] --> XORAll["⚡ Pass 1: Compute cumulative XOR<br/>xorSum = 3 ^ 5 = 0b110 (6)"]
+    
+    XORAll --> IsolateLSB["🔍 Isolate lowest differing bit:<br/>diffBit = xorSum &amp; (-xorSum) = 0b010 (2)"]
+    
+    IsolateLSB --> PartitionPass["🔄 Pass 2: Partition array elements<br/>based on (num &amp; diffBit)"]
+    
+    PartitionPass --> GroupA["Group A: (num &amp; diffBit) == 0<br/>Elements: (1, 1, 5)<br/>XOR Reduction: 1 ^ 1 ^ 5 = 5"]
+    PartitionPass --> GroupB["Group B: (num &amp; diffBit) != 0<br/>Elements: (2, 2, 3)<br/>XOR Reduction: 2 ^ 2 ^ 3 = 3"]
+    
+    GroupA --> Result["🎯 Solution: (3, 5)<br/>Zero allocations, strict O(N) time!"]
+    GroupB --> Result
+
+    classDef default fill:#f8f9fa,stroke:#37474f,stroke-width:2px,color:#263238
+    classDef actionNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef isolateNode fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
+    classDef winNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+
+    class Start,XORAll,PartitionPass,GroupA,GroupB actionNode
+    class IsolateLSB isolateNode
+    class Result winNode
+```
+
+---
+
+## 🛑 PILLAR 4: THE ROOKIE TRAP ZONE
+
+```
+=============================================================================================
+                                   THE ROOKIE TRAP ZONE
+=============================================================================================
+
+❌ ROOKIE TRAP 1: The Operator Precedence Trap (`1 << n - 1`)
+---------------------------------------------------------------------------------------------
+Problem: Writing `int mask = 1 << n - 1;` expecting `(1 << n) - 1`.
+Why it Fails: In C# and Python, subtraction `-` has HIGHER operator precedence than bit shift `<<`!
+`1 << n - 1` is evaluated as `1 << (n - 1)`, which creates a single bit at position (n - 1),
+NOT a mask of n consecutive ones!
+Senior Architect Fix: ALWAYS wrap bitwise shift operations in parentheses: `((1 << n) - 1)`.
+
+❌ ROOKIE TRAP 2: Omitting the Zero Guard in Power-of-Two Checks
+---------------------------------------------------------------------------------------------
+Problem: Checking if a number is a power of two with only: `(n & (n - 1)) == 0`.
+Why it Fails: If `n = 0`: `0 & -1 == 0` evaluates to TRUE! 0 is not a power of two!
+Senior Architect Fix: Always include the positive boundary check: `n > 0 && (n & (n - 1)) == 0`.
+
+❌ ROOKIE TRAP 3: Python Infinite-Precision Integer Inversion (`~x`)
+---------------------------------------------------------------------------------------------
+Problem: In Python, writing `~x` expecting a 32-bit inverted unsigned mask.
+Why it Fails: Python integers have arbitrary precision (virtual infinite width).
+In Python: `~0 = -1`, NOT `0xFFFFFFFF`! Negative numbers have infinite virtual leading 1s.
+Senior Architect Fix: Mask with 32-bit hex: `(~x) & 0xFFFFFFFF`.
+
+❌ ROOKIE TRAP 4: Arithmetic Shift Sign-Bit Replication Bug
+---------------------------------------------------------------------------------------------
+Problem: Using `int >> 1` on negative numbers expecting top bits to fill with zeros.
+Why it Fails: Signed right shift `>>` replicates the sign bit (`1`), keeping negative numbers
+negative forever and causing infinite loops in bit-counting while-loops.
+Senior Architect Fix: In C# .NET 7+, use the unsigned right shift operator `>>>`:
+`x >>> 1` or cast to `uint` before shifting.
+=============================================================================================
+```
+
+---
+
+## 🎙️ PILLAR 5: 45-MINUTE INTERVIEW TALK TRACK
+
+When solving bitwise problems in a FAANG interview, deliver this structured narrative:
+
+```
+[00:00 - 05:00] Clarifying Bit-Width & Signedness
+"Let's clarify the integer contracts:
+ 1. What is the bit width of our inputs (32-bit or 64-bit)?
+ 2. Can inputs be negative? If negative numbers exist, we must guard against signed right
+    shift sign-extension bugs.
+ 3. Are we optimizing for execution speed or memory? Bitwise manipulation runs in a single
+    CPU clock cycle and eliminates heap allocations entirely."
+
+[05:00 - 10:00] Deriving the Bit Invariant (Single Number III)
+"To find the two unique elements x and y in O(N) time and O(1) memory:
+ If we XOR all elements together, identical duplicates cancel out (a ^ a = 0).
+ We are left with xorSum = x ^ y.
+ Because x != y, at least one bit in xorSum must be 1.
+ We isolate this lowest differing bit using diffBit = xorSum & (-xorSum).
+ This bit serves as a binary discriminator: in the entire array, x and y will fall into
+ different partitions, while all duplicate pairs fall into the same partition.
+ A second linear pass reduces each partition independently, yielding x and y."
+
+[10:00 - 15:00] Explaining Overflow & Precedence Defenses
+"Notice that in C#, -int.MinValue overflows. To handle edge cases safely, we cast to uint
+ or long before computing diffBit. We wrap all shift operations in parentheses to prevent
+ subtraction precedence bugs."
+
+[15:00 - 35:00] Coding Implementation
+(Write clean, production C# / Python using bitwise operators.)
+
+[35:00 - 40:00] Dry Run & Tracing
+(Walk through nums = [1, 2, 1, 3, 2, 5], showing diffBit calculation and partition XORs.)
+
+[40:00 - 45:00] Complexity Deconstruction
+"Time Complexity: Exactly two linear passes -> O(N).
+ Auxiliary Space: O(1) purely in CPU registers, zero garbage collection pressure.
+ This is mathematically optimal for both time and space."
+```
+
+---
+
+## ⚡ PILLAR 6: PRODUCTION DUAL-LANGUAGE IMPLEMENTATIONS
+
+### Production C# (.NET 8/9 — Zero Allocation & Unsigned Shift Operators)
+
+```csharp
+namespace DsaMastery.BitwiseOperations;
+
+using System;
+using System.Collections.Generic;
+
+public static class BitwiseSolvers
+{
+    // =========================================================================
+    // 1. SINGLE NUMBER I (LeetCode 136) — XOR Accumulator
+    // Time: O(N) | Space: O(1)
+    // =========================================================================
+    public static int SingleNumber(int[] nums)
+    {
+        ArgumentNullException.ThrowIfNull(nums);
+        int result = 0;
+        foreach (int num in nums)
+        {
+            result ^= num; // Duplicate pairs cancel out: x ^ x = 0
+        }
+        return result;
     }
 
-    // Clear the rightmost set bit
-    public static int ClearLowestSetBit(int n) {
-        return n & (n - 1);
+    // =========================================================================
+    // 2. SINGLE NUMBER II (LeetCode 137) — Modulo-3 Counter
+    // Every element appears 3 times except one.
+    // Time: O(N) | Space: O(1)
+    // =========================================================================
+    public static int SingleNumberII(int[] nums)
+    {
+        ArgumentNullException.ThrowIfNull(nums);
+        int ones = 0, twos = 0;
+
+        foreach (int num in nums)
+        {
+            // ones tracks bits appearing 1 % 3 times
+            // twos tracks bits appearing 2 % 3 times
+            ones = (ones ^ num) & ~twos;
+            twos = (twos ^ num) & ~ones;
+        }
+
+        return ones;
     }
 
-    // Isolate the rightmost set bit (returns the isolated value)
-    public static int IsolateLowestSetBit(int n) {
-        return n & -n;
+    // =========================================================================
+    // 3. SINGLE NUMBER III (LeetCode 260) — Two Unique Elements
+    // Time: O(N) | Space: O(1)
+    // =========================================================================
+    public static int[] SingleNumberIII(int[] nums)
+    {
+        ArgumentNullException.ThrowIfNull(nums);
+
+        // Step 1: XOR all numbers together -> yields (x ^ y)
+        long xorSum = 0;
+        foreach (int num in nums)
+        {
+            xorSum ^= num;
+        }
+
+        // Step 2: Isolate the lowest set bit (use long to guard against int.MinValue overflow)
+        long diffBit = xorSum & -xorSum;
+
+        // Step 3: Partition and reduce each group
+        int x = 0, y = 0;
+        foreach (int num in nums)
+        {
+            if ((num & diffBit) == 0)
+            {
+                x ^= num;
+            }
+            else
+            {
+                y ^= num;
+            }
+        }
+
+        return [x, y];
     }
 
-    // Check if the i-th bit is set
-    public static bool CheckBit(int n, int i) {
-        return ((n >> i) & 1) == 1;
+    // =========================================================================
+    // 4. COUNTING BITS (LeetCode 338) — DP + Brian Kernighan Invariant
+    // Time: O(N) | Space: O(N) Output Array
+    // =========================================================================
+    public static int[] CountBits(int n)
+    {
+        if (n < 0) return [];
+        var ans = new int[n + 1];
+
+        for (int i = 1; i <= n; i++)
+        {
+            // Invariant: i and (i & (i - 1)) differ by exactly one set bit!
+            ans[i] = ans[i & (i - 1)] + 1;
+        }
+
+        return ans;
     }
 
-    // Set the i-th bit to 1
-    public static int SetBit(int n, int i) {
-        return n | (1 << i);
-    }
-
-    // Clear the i-th bit to 0
-    public static int ClearBit(int n, int i) {
-        return n & ~(1 << i);
-    }
-
-    // Toggle the i-th bit
-    public static int ToggleBit(int n, int i) {
-        return n ^ (1 << i);
+    // =========================================================================
+    // 5. REVERSE BITS (LeetCode 190) — 32-Bit Unsigned Logical Shifts
+    // Time: O(1) [32 iterations] | Space: O(1)
+    // =========================================================================
+    public static uint ReverseBits(uint n)
+    {
+        uint result = 0;
+        for (int i = 0; i < 32; i++)
+        {
+            result = (result << 1) | (n & 1u);
+            n >>>= 1; // Unsigned logical right shift (.NET 7+)
+        }
+        return result;
     }
 }
 ```
 
 ---
 
-### 2. Brian Kernighan's Popcount
-A naive population count algorithm shifts an integer bit by bit to count all set flags, which takes `O(word_size)` steps.
-**Brian Kernighan's algorithm** is faster because it executes exactly once per active set bit. It uses the property that subtracting 1 from a number flips all bits starting from its rightmost set bit.
-Therefore, performing `n & (n - 1)` clears the lowest set bit in exactly one cycle.
+### Production Python (3.11+ — Clean, Idiomatic Bitwise Operations)
 
-```csharp
-public static int PopCount(int n) {
-    int count = 0;
-    while (n > 0) {
-        n &= (n - 1); // Clears the lowest set bit
-        count++;
-    }
-    return count;
-}
-```
-
----
-
-### 3. Exhaustive Submask Loops
-Using a bitmask from 0 to 2^N - 1 lets you enumerate all possible subsets of an array of size N.
-To find all subsets (submasks) of a specific active bitmask, use this optimized loop. It systematically clears trailing bits and re-activates sub-bits that match your original filter mask, enumerating all valid submasks in decreasing order.
-
-```csharp
-public static List<int> EnumerateSubmasks(int mask) {
-    var submasks = new List<int>();
-    int submask = mask;
-    while (submask > 0) {
-        submasks.Add(submask);
-        // Step to next valid submask using algebraic intersection
-        submask = (submask - 1) & mask;
-    }
-    submasks.Add(0); // Include the empty set
-    return submasks;
-}
-```
-
----
-
-### 4. Gray Code Generation
-A Gray code is a binary representation system where consecutive numbers differ by exactly one bit.
-To convert an integer N to its Gray code representation, use this formula:
-Gray(N) = n ^ (n >> 1)
-
-### 4. Python Clarity-First Implementations
 ```python
-def is_power_of_two(n: int) -> bool:
-    """Verifies if positive integer n is a power of 2.
-    
-    Time Complexity: O(1) | Space Complexity: O(1)
-    """
-    return n > 0 and (n & (n - 1)) == 0
+from __future__ import annotations
+from typing import List
 
 
-def brian_kernighan_popcount(n: int) -> int:
-    """Counts active set bits in an integer.
-    
-    Time Complexity: O(Set Bits) | Space Complexity: O(1)
-    """
-    count = 0
-    while n > 0:
-        n &= n - 1 # Clear lowest set bit
-        count += 1
-    return count
+class BitwiseSolvers:
+    # =========================================================================
+    # 1. SINGLE NUMBER I (LeetCode 136)
+    # Time: O(N) | Space: O(1)
+    # =========================================================================
+    @staticmethod
+    def single_number(nums: List[int]) -> int:
+        result = 0
+        for num in nums:
+            result ^= num
+        return result
 
-
-def enumerate_submasks(mask: int) -> list[int]:
-    """Generates all subsets (submasks) of a given integer filter mask.
-    
-    Time Complexity: O(2^K) where K is number of set bits | Space Complexity: O(1)
-    """
-    submasks = []
-    sub = mask
-    while sub > 0:
-        submasks.append(sub)
-        sub = (sub - 1) & mask
-    submasks.append(0)
-    return submasks
-
-
-def integer_to_gray(n: int) -> int:
-    """Computes the Gray code representation of value n.
-    
-    Time Complexity: O(1) | Space Complexity: O(1)
-    """
-    return n ^ (n >> 1)
-```
-
----
-
----
-
-## 📘 Chapter 4: Performance, Invariants & Systems Architecture
-
-### 1. Exact Governing Invariants
-
-*   **Two's Complement & LSB Isolation Invariant**: In two's complement binary representation, `-n = ~n + 1`. Subtracting from zero inverts all bits and adds 1, which preserves the lowest set bit of `n` and flips all higher-order bits. Therefore:
-    `LSB(n) = n & -n`
-    isolates the unique lowest set bit in exactly one ALU instruction.
-*   **Brian Kernighan PopCount Invariant**: For any positive integer `n`, `n - 1` toggles the lowest set bit to 0 and flips all subsequent trailing zeros to 1, leaving all bits above the lowest set bit identical. Hence:
-    `n & (n - 1)`
-    clears strictly the rightmost set bit while preserving every higher bit. The loop runs exactly `K` times (where `K` is the Hamming weight / count of active set bits), terminating deterministically when `n = 0`.
-*   **Submask Enumeration Invariant**: For an initial bitmask `M`, the transition:
-    `sub = (sub - 1) & M`
-    monotonically decreases `sub` through strictly valid subsets of `M` (`sub & M == sub`). Subtracting 1 from `sub` flips its lowest set bit to 0 and all lower bits to 1; intersecting with `M` clears all bits not present in `M`. It enumerates all `2^K` submasks in descending order without visiting any invalid states. The sum across all subsets of size `N` satisfies:
-    `sum_{k=0}^N binom(N, k) * 2^k = (1 + 2)^N = 3^N`
-*   **Gray Code Invariant**: For any integer `n >= 0`, `Gray(n) = n ^ (n >> 1)`. For every consecutive pair `n` and `n + 1`, their Gray code representations differ at exactly one bit position (Hamming distance = 1), preventing multi-bit transitional glitches in hardware encoders.
-*   **XOR Cancellation Invariant**: XOR is associative, commutative, and self-inverting (`x ^ x = 0`, `x ^ 0 = x`). For any sequence where all elements except one appear with even frequency, folding via XOR reduces the entire sequence to the unique element in `O(N)` time and `O(1)` auxiliary space.
-
----
-
-### 2. Explicit Complexity Deconstruction
-
-| Operation | Time (Best / Avg / Worst) | Auxiliary Space | Output Space | Mathematical Derivation |
-| :--- | :--- | :--- | :--- | :--- |
-| **IsPowerOfTwo** | `O(1)` / `O(1)` / `O(1)` | `O(1)` | `O(1)` | Single branchless bitwise AND check: `n > 0 && (n & (n - 1)) == 0`. |
-| **Brian Kernighan PopCount** | `O(1)` / `O(K)` / `O(K)` | `O(1)` | `O(1)` | Executes exactly `K` iterations, where `K <= 32` (or `64`) is the number of set bits. |
-| **Submask Enumeration** | `O(1)` / `O(2^K)` / `O(2^K)` | `O(1)` | `O(2^K)` | Single mask with `K` set bits has exactly `2^K` submasks; `O(3^N)` total work over all `2^N` masks. |
-| **IntegerToGray** | `O(1)` / `O(1)` / `O(1)` | `O(1)` | `O(1)` | Single bitwise shift and XOR instruction. |
-| **Single Number (XOR)** | `O(N)` / `O(N)` / `O(N)` | `O(1)` | `O(1)` | Single linear pass accumulator; zero heap allocations. |
-| **Single Number II (Mod-3)** | `O(N)` / `O(N)` / `O(N)` | `O(1)` | `O(1)` | State machine tracking two 32-bit masks (`ones`, `twos`) over `N` elements. |
-
----
-
-### 3. Senior Interview Context: Hardware, Registers & Branchless Design
-
-*   **ALU Single-Cycle Throughput**: Bitwise instructions (`AND`, `OR`, `XOR`, `SHL`, `SHR`) execute in 1 CPU clock cycle with sub-nanosecond latency on modern x86/ARM cores. Unlike divisions (`DIV` taking 20-40 cycles) or modulo arithmetic, bit manipulation runs directly in CPU registers without memory access.
-*   **Branchless Programming & Pipeline Hazards**: High-performance systems use bit manipulation to eliminate conditional branches (`if`/`else`). A branch misprediction flushes the CPU pipeline, causing a 15-20 cycle penalty. Using bitwise expressions converts control dependencies into data dependencies, maximizing instruction-level parallelism (ILP).
-*   **Signed Shift vs Logical Shift Pitfall**:
-    - In C#, `>>` on signed `int` performs an **arithmetic shift** (replicates the sign bit). Use unsigned `uint` or the unsigned right-shift operator `>>>` (.NET 7+) to guarantee zero-fill.
-    - In Python, integers have arbitrary precision (infinite virtual width). Operations like `~n` invert an infinite sign bit. When simulating 32-bit registers, always mask results with `& 0xFFFFFFFF`.
-*   **State Compression in Scaled Systems**: In distributed state machines, graph search engines, and combinatorial solvers (TSP, Hamiltonian Path), storing visited states in `HashSet<int>` creates massive GC overhead and cache misses. Compressing states into a 64-bit integer bitmask reduces memory footprint by up to 64x and allows `O(1)` transition checks.
-
----
-
-## 🎙️ Senior 45-Minute Verbal Talk Track
-
-```text
-+-------------------------------------------------------------------------------+
-| PHASE 1: Constraints & Bit-Width Clarification (Minutes 00 - 05)              |
-| - Clarify word size (32-bit signed vs 64-bit unsigned), negative values.      |
-| - Verify whether input contains duplicates, zeros, or edge boundary limits.   |
-+-------------------------------------------------------------------------------+
-                                      │
-                                      ▼
-+-------------------------------------------------------------------------------+
-| PHASE 2: Naive Iteration & Bottleneck Analysis (Minutes 05 - 10)              |
-| - Propose naive linear bit-scan: 32 loop cycles with modulo/division.         |
-| - Highlight CPU cycle cost, branch predictor stalls, and GC heap pressure.    |
-+-------------------------------------------------------------------------------+
-                                      │
-                                      ▼
-+-------------------------------------------------------------------------------+
-| PHASE 3: Mathematical Invariant Derivation    (Minutes 10 - 20)               |
-| - Explain two's complement arithmetic: -n = ~n + 1 => n & -n isolates LSB.   |
-| - Prove n & (n - 1) clears the lowest set bit in exactly one instruction.     |
-| - Derive (sub - 1) & mask for optimal O(3^N) subset traversal.                |
-+-------------------------------------------------------------------------------+
-                                      │
-                                      ▼
-+-------------------------------------------------------------------------------+
-| PHASE 4: Branchless Production Implementation (Minutes 20 - 35)               |
-| - Implement idiomatic C# (.NET 8/9) and Python (3.11+) routines.              |
-| - Add defensive guards for n = 0, signed overflow, and empty edge cases.      |
-| - Use unsigned types (uint/ulong) to prevent sign-bit corruption.             |
-+-------------------------------------------------------------------------------+
-                                      │
-                                      ▼
-+-------------------------------------------------------------------------------+
-| PHASE 5: Hardware Verification & DP Scaling    (Minutes 35 - 45)              |
-| - Walk through complexity: O(K) time, O(1) auxiliary space.                  |
-| - Test extreme values: n = 0, n = 1, n = 2^31 - 1, n = -2^31.                 |
-| - Transition to Bitmask Dynamic Programming (TSP, subset sum, matching).      |
-+-------------------------------------------------------------------------------+
-```
-
-### Verbal Script Excerpts
-
-*   **Opening (Minutes 00-05)**: *"Before writing code, let me verify the integer specifications. Are we handling signed 32-bit integers or unsigned 64-bit registers? If the input can include zero or negative values, we must explicitly guard against sign-extension bugs and handle `n <= 0` gracefully."*
-*   **Invariant Articulation (Minutes 10-20)**: *"A naive popcount checks each of the 32 bits sequentially. However, Brian Kernighan's algorithm observes that `n - 1` borrows from the lowest set bit, flipping it to 0 and setting all trailing zero bits to 1. Computing `n & (n - 1)` therefore clears the lowest set bit while leaving all higher bits untouched. This means our loop runs in `O(K)` iterations where `K` is strictly the number of set bits, achieving optimal efficiency."*
-*   **Submask Enumeration Defense (Minutes 35-45)**: *"When iterating through submasks of a bitmask in dynamic programming, a naive loop tests all numbers from `0` to `mask`, taking `O(2^N * 2^N) = O(4^N)`. By using `sub = (sub - 1) & mask`, we only visit valid submasks. By the binomial theorem, the sum of `2^k` over all masks of size `k` equals `(1 + 2)^N = 3^N`, eliminating 75% of the computational work for `N = 15`."*
-
----
-
-## 📘 Chapter 5: Integration and Mastery
-
-### 1. Pattern Selection Rules
-*   *Use Bit Operations when*: You need to track set membership across small universes (`N <= 64`) with absolute zero heap memory allocation.
-*   *Use XOR Parity Checks when*: You need to isolate unique elements or detect mismatched pairs where duplicates cancel out symmetrically.
-*   *Use Submask Enumeration when*: Solving optimal partitioning problems (e.g., minimum cost to cover subsets, Traveling Salesperson).
-
-### 2. Follow-Up Variants
-*   **Single Number II** ([LeetCode 137](https://leetcode.com/problems/single-number-ii/)): An array contains duplicate elements appearing three times except for one unique element.
-    *   *Approach*: Use two bitmask variables (`ones` and `twos`) to track cumulative modulo-3 bit parity states. Python implementation:
-    ```python
-    def single_number_ii(nums: list[int]) -> int:
+    # =========================================================================
+    # 2. SINGLE NUMBER II (LeetCode 137) — Modulo-3 State Machine
+    # Time: O(N) | Space: O(1)
+    # =========================================================================
+    @staticmethod
+    def single_number_ii(nums: List[int]) -> int:
         ones, twos = 0, 0
         for num in nums:
             ones = (ones ^ num) & ~twos
             twos = (twos ^ num) & ~ones
+
+        # Python handles arbitrary precision; convert to 32-bit signed int if negative
+        if ones >= 2**31:
+            ones -= 2**32
         return ones
-    ```
-*   **State Compression DP: Traveling Salesperson (TSP)**: Maintain the set of visited nodes as a bitmask index. For state `(mask, u)`, bit position `i` represents whether vertex `i` has been visited. Transitions take `O(1)` bitwise operations.
+
+    # =========================================================================
+    # 3. SINGLE NUMBER III (LeetCode 260)
+    # Time: O(N) | Space: O(1)
+    # =========================================================================
+    @staticmethod
+    def single_number_iii(nums: List[int]) -> List[int]:
+        xor_sum = 0
+        for num in nums:
+            xor_sum ^= num
+
+        # Isolate lowest set bit
+        diff_bit = xor_sum & -xor_sum
+
+        x, y = 0, 0
+        for num in nums:
+            if num & diff_bit:
+                x ^= num
+            else:
+                y ^= num
+
+        return [x, y]
+
+    # =========================================================================
+    # 4. COUNTING BITS (LeetCode 338)
+    # Time: O(N) | Space: O(N) Output Array
+    # =========================================================================
+    @staticmethod
+    def count_bits(n: int) -> List[int]:
+        ans = [0] * (n + 1)
+        for i in range(1, n + 1):
+            ans[i] = ans[i & (i - 1)] + 1
+        return ans
+
+    # =========================================================================
+    # 5. SUBMASK ENUMERATION (Single Mask Decreasing Loop)
+    # Time: O(2^K) where K is number of set bits | Space: O(1)
+    # =========================================================================
+    @staticmethod
+    def enumerate_submasks(mask: int) -> List[int]:
+        submasks: List[int] = []
+        sub = mask
+        while sub > 0:
+            submasks.append(sub)
+            sub = (sub - 1) & mask
+        submasks.append(0)  # Empty set
+        return submasks
+```
 
 ---
 
-## 🛠️ Supplementary Material
+## 🔬 PERFORMANCE & COMPLEXITY DECONSTRUCTION
 
-### Practice Problems
-1.  **Single Number** ([LeetCode 136](https://leetcode.com/problems/single-number/)): Find the unique element in an array where all other elements appear twice.
-2.  **Number of 1 Bits** ([LeetCode 191](https://leetcode.com/problems/number-of-1-bits/)): Implement Brian Kernighan popcounting.
-3.  **Reverse Bits** ([LeetCode 190](https://leetcode.com/problems/reverse-bits/)): Symmetrically swap the bits in a 32-bit integer.
-4.  **Subsets** ([LeetCode 78](https://leetcode.com/problems/subsets/)): Enumerate all array subsets using integer bitmask shifts.
-5.  **Gray Code** ([LeetCode 89](https://leetcode.com/problems/gray-code/)): Generate a sequence of Gray codes from 0 to 2^N - 1.
-
-### Misconceptions and Corrections
-*   *Incorrect Idea*: Assuming that checking `(n & (n - 1)) == 0` is sufficient to prove that `n` is a power of two.
-    *   *Correction*: If `n == 0`, `n & (n - 1)` evaluates to `0` even though `0` is not a power of 2. For negative powers of two in signed integers (e.g., `-2147483648`), behavior varies. You must explicitly verify that `n > 0`.
-*   *Incorrect Idea*: Assuming Python's `~x` behaves identically to C#'s `~x` on 32-bit registers.
-    *   *Correction*: Python integers have unbounded precision. Inverting bit 0 of 0 yields `-1` (infinite leading ones) rather than `0xFFFFFFFF`. Mask with `& 0xFFFFFFFF` to clamp to 32 bits.
+| Problem / Primitive | Time Complexity | Auxiliary Space | Clock Cycles (x86/ARM) | Computational Principle |
+| :--- | :--- | :--- | :--- | :--- |
+| **Clear Lowest Bit (`n & (n-1)`)** | `O(1)` | `O(1)` | 1 cycle | Two's complement borrow subtraction |
+| **Isolate Lowest Bit (`n & -n`)** | `O(1)` | `O(1)` | 1 cycle | Inversion carry propagation |
+| **Single Number I (LC 136)** | `O(N)` | `O(1)` | $N$ ALU cycles | XOR self-cancellation ($x \oplus x = 0$) |
+| **Single Number II (LC 137)** | `O(N)` | `O(1)` | $4N$ cycles | 2-bit finite state machine modulo 3 |
+| **Single Number III (LC 260)** | `O(N)` | `O(1)` | $2N$ cycles | LSB partition boundary split |
+| **Submask Enumeration** | `O(2^K)` | `O(1)` | $2^K$ cycles | Algebraic submask step $(s - 1) \ \& \ M$ |
 
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_14_Day_01_Matrix_Operations_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_14_Day_03_Number_Theory_Basics_Instructional.md)
+## ⚔️ PRACTICE DRILLS & MASTERY PROBLEMS
+
+| # | Problem | Source | Difficulty | Target Bit Invariant |
+| :--- | :--- | :--- | :--- | :--- |
+| 1 | Single Number | LeetCode 136 | Easy | XOR cancellation accumulator |
+| 2 | Number of 1 Bits | LeetCode 191 | Easy | Brian Kernighan `n & (n - 1)` |
+| 3 | Counting Bits | LeetCode 338 | Easy | DP recurrence `ans[i] = ans[i & (i-1)] + 1` |
+| 4 | Single Number II | LeetCode 137 | Medium | Modulo-3 two-variable bit counters |
+| 5 | Single Number III | LeetCode 260 | Medium | LSB isolation partition split |
+| 6 | Subsets via Bitmask | LeetCode 78 | Medium | Iterating `mask = 0 .. (1 << N) - 1` |
+
+---
+
+> 🧭 **Navigation:** [← Previous Day](Week_14_Day_01_Matrix_Operations_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Number Theory Basics →](Week_14_Day_03_Number_Theory_Basics_Instructional.md)

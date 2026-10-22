@@ -1,387 +1,573 @@
-# 📅 Week 14, Day 3: Number Theory Basics, GCD, LCM, Primes & Modular Exponentiation
+# 📘 WEEK 14 DAY 3: NUMBER THEORY BASICS, GCD, PRIMES & MODULAR EXPONENTIATION — THE SENIOR PLAYBOOK
 
-
-
-
-> 🧭 **Navigation:** [← Previous Day](Week_14_Day_02_Bitwise_Operations_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_14_Day_04_Advanced_Strings_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_14_Day_02_Bitwise_Operations_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Advanced Strings →](Week_14_Day_04_Advanced_Strings_Instructional.md)
 > 
-> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
+> 💡 **Instructor Note:** *Number theory problems in FAANG loops test whether you understand mathematical invariants and physical register overflow limits. In this module, we master the Euclidean GCD algorithm, prime generation via the Sieve of Eratosthenes, logarithmic modular exponentiation, and Fermat's modular multiplicative inverse.*
 
 ---
 
-Welcome to Day 3. Today, we build practical number theory tools for coding interviews: GCD/LCM, prime generation, modular arithmetic, fast power, and modular inverse.
+## 🎯 LEARNING OBJECTIVES
+
+*By the end of this module, you will be able to:*
+
+- 🎬 **Deconstruct** the 12-Hour Clock face metaphor to explain modular congruence and why standard division fails in modular arithmetic.
+- 📐 **Implement** the Euclidean GCD and LCM algorithms with integer overflow prevention (`(a / gcd) * b`).
+- ⚡ **Prove** why trial division only needs to inspect numbers up to $\sqrt{N}$ and why the Sieve of Eratosthenes starts composite elimination at $p^2$.
+- 🚀 **Compute** modular powers $b^e \pmod M$ in $O(\log e)$ time using binary exponentiation (LC 50 Pow(x, n)).
+- 🧮 **Solve** modular division using Fermat's Little Theorem ($A^{-1} \equiv A^{P-2} \pmod P$) for prime moduli like $10^9 + 7$.
+- 🛑 **Avoid** the 4 classic rookie blunders: LCM product overflow, negative modulo results in C#/Java, using Fermat on composite moduli, and redundant composite sifting.
+- 🎙️ **Deliver** the exact 3-sentence verbal talk track before writing number theory code in a FAANG interview.
+- ⚡ **Ship** production-grade C# (.NET 8/9) and Python (3.11+) implementations with zero overflow risk.
 
 ---
 
-## 🎯 Learning Objectives
-*   Master the Euclidean algorithm for Greatest Common Divisor (GCD) and Least Common Multiple (LCM).
-*   Check primality with trial division and generate primes up to N using the Sieve of Eratosthenes.
-*   Understand modular arithmetic laws and implement logarithmic modular exponentiation.
-*   Find modular multiplicative inverses using Fermat's Little Theorem (prime modulus) and know when to use Extended Euclid.
+## 🎬 PILLAR 1: THE 60-SECOND HOOK & EVERYDAY ANALOGIES
+
+### Analogy 1: The 12-Hour Clock Face & Modular Space
+
+Look at the clock on your wall. It reads **9:00 AM**.
+
+What time will it be in **5 hours**?
+- Elementary math: $9 + 5 = 14:00$.
+- Clock reality: $14 \pmod{12} = \mathbf{2:00\text{ PM}}$!
+
+The number line does not stretch into infinity; it wraps around a circular ring of circumference $M$.
+
+In standard computer systems:
+- Addition wraps safely: $(A + B) \pmod M = ((A \pmod M) + (B \pmod M)) \pmod M$
+- Multiplication wraps safely: $(A \times B) \pmod M = ((A \pmod M) \times (B \pmod M)) \pmod M$
+
+**BUT WATCH OUT FOR DIVISION:**
+
+$$\mathbf{(A / B) \pmod M \ne ((A \pmod M) / (B \pmod M)) \pmod M}$$
+
+Look at this counterexample:
+$$\frac{12}{4} \pmod 5 = 3 \pmod 5 = \mathbf{3}$$
+$$(12 \pmod 5) / (4 \pmod 5) = 2 / 4 = \mathbf{0.5\text{ (A fraction! Nonsense in modular arithmetic!)!}}$$
+
+To divide in modular space, you cannot use elementary division. You must multiply by the **Modular Multiplicative Inverse** ($B^{-1}$)!
 
 ---
 
-## 📘 Chapter 1: Context and Motivation
+### Analogy 2: Finding Prime Factors (The Rectangle Folding Insight)
 
-### 1. The Core Engineering Challenge
-In algorithmic problems, values can become enormous quickly. Computing powers or combinations like N! can overflow fixed-width integers.
-But modular arithmetic changes the rules for division:
-`(A / B) % M != (A % M) / (B % M)`
+Suppose you are given the number **36** and want to check if it's prime. Do you need to test all divisors from 2 up to 35?
 
-So we need number theory to compute safely and correctly.
-
-### 2. Naive Pitfalls
-The naive way to compute modular powers like `b^e % m` is to multiply `b` by itself `e` times in a loop:
-```csharp
-long res = 1;
-for (int i = 0; i < e; i++) { res = (res * b) % m; }
-```
-This takes O(e) operations. If e approx. 10^9, this is too slow.
-
-### 3. Real-world Anchor: Encryption & Hashing
-Secure systems (HTTPS, SSH, signatures) rely on modular exponentiation and prime-based arithmetic.
-Hashing systems also use modulo arithmetic to keep values bounded and distribute keys.
-
----
-
-## 📘 Chapter 2: Mental Model
-
-### 1. Modular Congruence Wrapped Space
-Think of modular arithmetic as a circular clock face. Numbers wrap around a fixed modular range, preserving arithmetic relationships (sums and products) across boundaries:
+Think of 36 as the area of a rectangular carpet:
+$$\text{Area} = \text{Width} \times \text{Height} = 36$$
 
 ```text
-                        11   0   1
-                      10           2
-                     9       o       3   <-- 12-hour Clock Analogy
-                      8             4
-                        7    6    5
+  Pair 1:  1  x 36
+  Pair 2:  2  x 18
+  Pair 3:  3  x 12
+  Pair 4:  4  x  9
+  ----------------------------- Sqrt(36) = 6 (THE SADDLE POINT!)
+  Pair 5:  6  x  6
+  -----------------------------
+  Pair 6:  9  x  4  (Duplicate mirror!)
+  Pair 7: 12  x  3  (Duplicate mirror!)
+  Pair 8: 18  x  2  (Duplicate mirror!)
 ```
 
-Every integer `n > 1` has a unique prime factorization up to ordering, including exponents:
-`n = p_1^(a_1) * p_2^(a_2) * ... * p_k^(a_k)`
-This is the foundation for many number-theory shortcuts.
-
-#### 📐 Core Modulo Mechanics
-*   **Addition**: `(A + B) % M = ((A % M) + (B % M)) % M`
-*   **Multiplication**: `(A * B) % M = ((A % M) * (B % M)) % M`
-*   *Caveat*: Division is not direct. Use inverse only if denominator and modulus are coprime.
+Every factor below $\sqrt{N}$ is paired with a matching factor above $\sqrt{N}$!
+If a number has no divisor $\le \sqrt{N}$, it is **physically impossible** for it to have a divisor $> \sqrt{N}$!
+Testing up to $\sqrt{N}$ shrinks testing from 1,000,000 steps down to **1,000 steps**!
 
 ---
 
-## 📘 Chapter 3: Mechanics
+## 🪜 PILLAR 2: THE SCAFFOLDING LADDER & TOY NAPKIN TRACES
 
-### 1. Euclidean GCD and LCM
-The Euclidean Greatest Common Divisor (GCD) algorithm replaces the larger number with its modular remainder recursively until it reaches 0:
-gcd(a, b) = gcd(b, a % b)
+Let's master the 4 core number theory pillars:
 
-Invariant: the set of common divisors of (a, b) is identical to that of (b, a % b), so the GCD stays unchanged each step.
-
-```csharp
-public static long Gcd(long a, long b) {
-    while (b > 0) {
-        long temp = b;
-        b = a % b;
-        a = temp;
-    }
-    return Math.Abs(a);
-}
-
-public static long Lcm(long a, long b) {
-    if (a == 0 || b == 0) return 0;
-    // Divide first to prevent intermediate multiplication overflows
-    return Math.Abs(a / Gcd(a, b) * b);
-}
 ```
-
-### 2. Prime Checking (Trial Division)
-For a single number, trial divide up to sqrt(n). If no divisor exists, the number is prime.
-
-```csharp
-public static bool IsPrime(long n) {
-    if (n < 2) return false;
-    if (n % 2 == 0) return n == 2;
-    for (long d = 3; d * d <= n; d += 2) {
-        if (n % d == 0) return false;
-    }
-    return true;
-}
+                  [THE 4 NUMBER THEORY PILLARS]
+                                │
+        ┌───────────────────────┼───────────────────────┐
+        ▼                       ▼                       ▼
+   [1. EUCLIDEAN GCD]       [2. SIEVE]        [3. FAST MODPOW]
+   gcd(a, b) = gcd(b, a%b)  Primes to N       O(log e) squaring
+   Lamé: O(log min(a,b))    O(N log log N)    LeetCode 50
 ```
 
 ---
 
-### 3. Sieve of Eratosthenes (Prime Generation)
-To generate all primes up to N, create a boolean array representing raw primality. Starting from p=2, if p is prime, mark all of its multiples starting from p^2 as composite:
+### Scaffold Level 1: Euclidean GCD & Safe LCM
+
+**Theorem:** $\gcd(a, b) = \gcd(b, a \pmod b)$ with base case $\gcd(a, 0) = a$.
+The remainder strictly decreases by at least half every two steps ($a \pmod b < a / 2$), guaranteeing logarithmic termination in $O(\log(\min(a, b)))$.
+
+#### Hand Trace: `gcd(48, 18)`
+```text
+Step 1: gcd(48, 18) = gcd(18, 48 % 18) = gcd(18, 12)
+Step 2: gcd(18, 12) = gcd(12, 18 % 12) = gcd(12, 6)
+Step 3: gcd(12, 6)  = gcd(6, 12 % 6)   = gcd(6, 0)
+Base case b == 0 -> Return 6!
+```
+
+#### Safe Least Common Multiple (LCM):
+$$\text{lcm}(a, b) = \frac{a \times b}{\gcd(a, b)}$$
+> [!WARNING]
+> **Overflow Hazard:** If $a = 10^9$ and $b = 10^9$, multiplying $a \times b = 10^{18}$ overflows 32-bit signed integers immediately.
+> **Senior Safe Formula:** Divide first! $\mathbf{\text{lcm}(a, b) = (a / \gcd(a, b)) \times b}$.
+
+---
+
+### Scaffold Level 2: Sieve of Eratosthenes — Why Start at $p^2$?
+
+To generate all prime numbers up to $N$:
+1. Initialize a boolean array `isPrime` of size $N + 1$ with `true`. Mark 0 and 1 as `false`.
+2. For $p = 2, 3, 4, \dots$ while $p^2 \le N$:
+   - If `isPrime[p]` is true:
+     - Mark all multiples of $p$ as false, **starting from $m = p^2$**!
+
+#### Why start at $p^2$?
+- For $p = 5$: Multiples are $5 \times 2 = 10$, $5 \times 3 = 15$, $5 \times 4 = 20$, $5 \times 5 = 25$.
+- Notice that 10 was already crossed off by 2 ($2 \times 5$)!
+- 15 was already crossed off by 3 ($3 \times 5$)!
+- 20 was already crossed off by 2 ($2 \times 10$)!
+- The first multiple of $p$ that has **not** yet been eliminated by a smaller prime factor is **$p \times p$**!
+Starting at $p^2$ eliminates redundant work and establishes the legendary $O(N \log \log N)$ runtime.
+
+---
+
+### Scaffold Level 3: Fast Modular Exponentiation ($O(\log e)$)
+
+**Problem:** Compute $b^e \pmod M$ where $e = 10^9$. Naive repeated multiplication takes $10^9$ iterations (timeout!).
+
+#### The Binary Exponentiation Invariant:
+Represent the exponent $e$ in binary:
+$$13 = 8 + 4 + 1 = 0\text{b}1101$$
+$$b^{13} = b^8 \times b^4 \times b^1$$
+
+At each step:
+- If the lowest bit of $e$ is 1: fold `base` into our running result: `result = (result * base) % M`.
+- Square the base: `base = (base * base) % M`.
+- Shift $e$ right by 1: `e >>= 1`.
+
+#### Hand Trace: $3^{13} \pmod{10}$ ($e = 13 = \text{0b1101}$)
+```text
+Start: result = 1, base = 3, exp = 13 (0b1101)
+
+Step 1: exp & 1 == 1 -> result = (1 * 3) % 10 = 3
+        base = (3 * 3) % 10 = 9
+        exp >>= 1 -> exp = 6 (0b0110)
+
+Step 2: exp & 1 == 0 -> skip result
+        base = (9 * 9) % 10 = 81 % 10 = 1
+        exp >>= 1 -> exp = 3 (0b0011)
+
+Step 3: exp & 1 == 1 -> result = (3 * 1) % 10 = 3
+        base = (1 * 1) % 10 = 1
+        exp >>= 1 -> exp = 1 (0b0001)
+
+Step 4: exp & 1 == 1 -> result = (3 * 1) % 10 = 3
+        base = (1 * 1) % 10 = 1
+        exp >>= 1 -> exp = 0 (Loop finishes!)
+
+Final Answer: 3. Computed in 4 steps instead of 13!
+```
+
+---
+
+### Scaffold Level 4: Modular Multiplicative Inverse (Fermat's Little Theorem)
+
+**Theorem:** If $P$ is prime and $\gcd(A, P) = 1$, then:
+$$A^{P - 1} \equiv 1 \pmod P$$
+
+Multiply both sides by $A^{-1}$:
+$$A^{-1} \equiv A^{P - 2} \pmod P$$
+
+To divide $X$ by $A$ modulo prime $P$:
+$$(X / A) \pmod P \equiv (X \times A^{P - 2}) \pmod P$$
+
+This solves modular division for combinations $C(N, K) \pmod{10^9 + 7}$ in $O(\log P)$ time!
+
+---
+
+### 🧠 Pause & Predict Micro-Drill
+**Question:** In C#, what is the output of `-7 % 3`?
+*Take 5 seconds to think.*
+-
+-
+-
+**Answer:** **`-1`**! In C#, Java, and C++, `%` is the **remainder operator**, which preserves the sign of the numerator! In Python, `%` is the **floored modulo operator**, returning `2`. To guarantee non-negative modular values in C#, always normalize: `((val % mod) + mod) % mod`.
+
+---
+
+## 🎨 PILLAR 3: PRAGMATIC VISUAL MODELS
+
+### Fast Binary Exponentiation State Machine
+
+```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
+flowchart TD
+    Start["🚀 Enter ModPow(base, exp, mod)"] --> LoopCheck{"exp &gt; 0?"}
+    
+    LoopCheck -->|Yes| BitCheck{"exp &amp; 1 == 1?<br/>(Lowest bit set?)"}
+    BitCheck -->|Yes| Accumulate["⚡ Multiply into result:<br/>result = (result * base) % mod"]
+    BitCheck -->|No| SquareBase["🔄 Square Base:<br/>base = (base * base) % mod"]
+    Accumulate --> SquareBase
+    
+    SquareBase --> HalveExp["✂️ Halve Exponent:<br/>exp &gt;&gt;= 1"]
+    HalveExp --> LoopCheck
+    
+    LoopCheck -->|No: exp == 0| ReturnRes["🏁 Return result<br/>Completed in O(log exp) time!"]
+
+    classDef default fill:#f8f9fa,stroke:#37474f,stroke-width:2px,color:#263238
+    classDef checkNode fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
+    classDef actionNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef winNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+
+    class LoopCheck,BitCheck checkNode
+    class Accumulate,SquareBase,HalveExp actionNode
+    class ReturnRes winNode
+```
+
+---
+
+## 🛑 PILLAR 4: THE ROOKIE TRAP ZONE
+
+```
+=============================================================================================
+                                   THE ROOKIE TRAP ZONE
+=============================================================================================
+
+❌ ROOKIE TRAP 1: The Intermediate 64-Bit Multiplication Overflow
+---------------------------------------------------------------------------------------------
+Problem: Computing `(a * b) % mod` in C# where `mod = 3 * 10^9`.
+Why it Fails: `a * b` can reach 9 * 10^18, exceeding `long.MaxValue` (9.22 * 10^18).
+The product silently overflows into negative numbers, corrupting the modulo remainder!
+Senior Architect Fix: When `mod > 2 * 10^9`, use `Int128` in .NET 7/8/9, or Russian Peasant
+Safe Multiplication (`O(log b)` additions).
+
+❌ ROOKIE TRAP 2: Applying Fermat's Little Theorem to Composite Moduli
+---------------------------------------------------------------------------------------------
+Problem: Finding the modular inverse of A modulo 15 using `ModPow(A, 15 - 2, 15)`.
+Why it Fails: 15 is NOT prime (15 = 3 * 5)! Fermat's Little Theorem ONLY holds for prime moduli!
+Applying it to composite moduli returns completely incorrect mathematical values.
+Senior Architect Fix: For composite moduli, use the Extended Euclidean Algorithm to solve
+`a * x + m * y = gcd(a, m)`. If `gcd(a, m) != 1`, no inverse exists.
+
+❌ ROOKIE TRAP 3: Negative Remainder Bugs on Subtraction
+---------------------------------------------------------------------------------------------
+Problem: Computing `(a - b) % mod` in C# where `a = 3, b = 7, mod = 10`.
+Why it Fails: `(3 - 7) % 10 = -4 % 10 = -4`. An array indexed at -4 throws an exception!
+Senior Architect Fix: Always add `mod` before taking the remainder:
+`((a - b) % mod + mod) % mod`.
+
+❌ ROOKIE TRAP 4: Multiplying Before Dividing in LCM
+---------------------------------------------------------------------------------------------
+Problem: Writing `long lcm = (a * b) / Gcd(a, b);`.
+Why it Fails: `a * b` can overflow long integer limits before the division takes place.
+Senior Architect Fix: Always divide first: `(a / Gcd(a, b)) * b`.
+=============================================================================================
+```
+
+---
+
+## 🎙️ PILLAR 5: 45-MINUTE INTERVIEW TALK TRACK
+
+When solving number theory problems in a FAANG interview, deliver this script:
+
+```
+[00:00 - 05:00] Clarifying Constraints & Modulus Characteristics
+"Let's clarify the numerical bounds:
+ 1. What is the value of the modulus M? (e.g., 10^9 + 7).
+ 2. Is M guaranteed to be prime? If prime, we can use Fermat's Little Theorem for O(log M)
+    modular division. If composite, we must use the Extended Euclidean Algorithm.
+ 3. Can intermediate products exceed 64-bit signed integers? If mod <= 10^9, long fits
+    the square (10^18 < 9 * 10^18). If mod > 3 * 10^9, we must use Int128 or safe multiplication."
+
+[05:00 - 10:00] Deriving the Binary Exponentiation Invariant
+"To compute b^e % M in O(log e) rather than O(e) linear time:
+ We represent the exponent e in binary.
+ At each step, if the lowest bit is set (exp & 1 == 1), we fold the current base into our
+ running result.
+ We then square the base and shift exp right by 1.
+ The invariant (result * base^exp) % M == constant is preserved throughout, terminating
+ in floor(log2(e)) + 1 steps."
+
+[10:00 - 15:00] Sieve Optimization Justification
+"When generating primes up to N:
+ We only need outer loop trial checks up to sqrt(N).
+ For any prime p, all multiples k * p for k < p have already been crossed out by a prime
+ factor smaller than p.
+ Therefore, we start composite elimination at p * p, achieving O(N log log N) runtime."
+
+[15:00 - 35:00] Coding Implementation
+(Write production C# / Python using overflow guards and non-negative modulo normalization.)
+
+[35:00 - 40:00] Dry Run & Bounds Check
+(Walk through Gcd(48, 18), ModPow(3, 13, 10), and negative modulo normalization.)
+
+[40:00 - 45:00] Complexity Deconstruction
+"Gcd: O(log(min(a, b))) time, O(1) space.
+ Sieve: O(N log log N) time, O(N) space.
+ ModPow: O(log exp) time, O(1) auxiliary space.
+ Fermat Inverse: O(log mod) time, O(1) space."
+```
+
+---
+
+## ⚡ PILLAR 6: PRODUCTION DUAL-LANGUAGE IMPLEMENTATIONS
+
+### Production C# (.NET 8/9 — Safe Modular Math & Sieve)
 
 ```csharp
-public static bool[] Sieve(int limit) {
-    bool[] isPrime = new bool[limit + 1];
-    Array.Fill(isPrime, true);
-    if (limit >= 0) isPrime[0] = false;
-    if (limit >= 1) isPrime[1] = false;
+namespace DsaMastery.NumberTheory;
 
-    for (int p = 2; p * p <= limit; p++) {
-        if (isPrime[p]) {
-            // Mark multiples of p starting from p^2
-            for (int m = p * p; m <= limit; m += p) {
-                isPrime[m] = false;
+using System;
+
+public static class NumberTheorySolvers
+{
+    // =========================================================================
+    // 1. EUCLIDEAN GCD & SAFE LCM
+    // Time: O(log(min(a, b))) | Space: O(1)
+    // =========================================================================
+    public static long Gcd(long a, long b)
+    {
+        while (b != 0)
+        {
+            long temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return Math.Abs(a);
+    }
+
+    public static long Lcm(long a, long b)
+    {
+        if (a == 0 || b == 0) return 0;
+        // Divide first to prevent multiplication overflow
+        return Math.Abs((a / Gcd(a, b)) * b);
+    }
+
+    // =========================================================================
+    // 2. TRIAL DIVISION PRIMALITY TEST
+    // Time: O(sqrt(N)) | Space: O(1)
+    // =========================================================================
+    public static bool IsPrime(long n)
+    {
+        if (n < 2) return false;
+        if (n % 2 == 0) return n == 2;
+        if (n % 3 == 0) return n == 3;
+
+        // Step by 6: every prime > 3 is of form 6k +/- 1
+        for (long d = 5; d * d <= n; d += 6)
+        {
+            if (n % d == 0 || n % (d + 2) == 0)
+            {
+                return false;
             }
         }
+
+        return true;
     }
-    return isPrime;
-}
-```
 
----
+    // =========================================================================
+    // 3. SIEVE OF ERATOSTHENES (Prime Generation)
+    // Time: O(N log log N) | Space: O(N)
+    // =========================================================================
+    public static bool[] Sieve(int limit)
+    {
+        if (limit < 0) return [];
+        var isPrime = new bool[limit + 1];
+        Array.Fill(isPrime, true);
 
-### 4. Logarithmic Modular Exponentiation
-Fast modular exponentiation computes remainders in O(log e) time using binary decomposition. It squares the base and halves the exponent in each step:
+        if (limit >= 0) isPrime[0] = false;
+        if (limit >= 1) isPrime[1] = false;
 
-```csharp
-public static long ModPow(long b, long e, long m) {
-    if (m <= 0) throw new ArgumentException("Modulus must be positive.");
-    if (m == 1) return 0;
-    long res = 1 % m;
-    b = ((b % m) + m) % m;
-    while (e > 0) {
-        if ((e & 1) == 1) {
-            res = (res * b) % m;
+        for (int p = 2; (long)p * p <= limit; p++)
+        {
+            if (isPrime[p])
+            {
+                // Invariant: start marking at p * p!
+                for (int m = p * p; m <= limit; m += p)
+                {
+                    isPrime[m] = false;
+                }
+            }
         }
-        b = (b * b) % m;
-        e >>= 1;
+
+        return isPrime;
     }
-    return res;
+
+    // =========================================================================
+    // 4. FAST MODULAR EXPONENTIATION (LeetCode 50 Pow(x, n) Concept)
+    // Time: O(log exp) | Space: O(1)
+    // =========================================================================
+    public static long ModPow(long baseVal, long exp, long mod)
+    {
+        if (mod <= 0) throw new ArgumentOutOfRangeException(nameof(mod), "Modulus must be positive.");
+        if (mod == 1) return 0;
+
+        long result = 1;
+        baseVal = ((baseVal % mod) + mod) % mod; // Non-negative normalization
+
+        while (exp > 0)
+        {
+            if ((exp & 1) == 1)
+            {
+                result = (long)(((Int128)result * baseVal) % mod);
+            }
+
+            baseVal = (long)(((Int128)baseVal * baseVal) % mod);
+            exp >>= 1;
+        }
+
+        return result;
+    }
+
+    // =========================================================================
+    // 5. MODULAR INVERSE VIA FERMAT'S LITTLE THEOREM
+    // Requires: primeMod is strictly prime, gcd(val, primeMod) == 1.
+    // Time: O(log primeMod) | Space: O(1)
+    // =========================================================================
+    public static long ModularInverse(long val, long primeMod)
+    {
+        long normalized = ((val % primeMod) + primeMod) % primeMod;
+        if (normalized == 0)
+        {
+            throw new InvalidOperationException("Zero has no modular inverse.");
+        }
+
+        // A^(P-2) mod P
+        return ModPow(normalized, primeMod - 2, primeMod);
+    }
 }
 ```
 
 ---
 
-### 5. Modular Multiplicative Inverse
-The modular inverse of `A` modulo `P` is an integer `x` such that:
-`(A * x) % P == 1`  (often written `A * x = 1 (mod P)`)
-
-*   **Fermat's Little Theorem**: If `P` is prime and `gcd(A, P) == 1`, then:
-    `A^(P-1) = 1 (mod P)`
-*   Multiplying both sides by `A^(-1)`:
-    `A^(-1) = A^(P-2) (mod P)`
-
-```csharp
-public static long ModularInversePrime(long val, long primeMod) {
-    if (primeMod <= 1) {
-        throw new ArgumentException("Modulus must be > 1.");
-    }
-    long normalized = ((val % primeMod) + primeMod) % primeMod;
-    if (normalized == 0) {
-        throw new ArgumentException("No inverse exists because value is 0 modulo primeMod.");
-    }
-    // Valid when primeMod is prime.
-    return ModPow(normalized, primeMod - 2, primeMod);
-}
-```
-
-For composite modulus, use the Extended Euclidean Algorithm requiring `gcd(A, M) == 1`.
-
----
-
-### 6. Python Clarity-First Implementations
+### Production Python (3.11+ — Number Theory Toolkit)
 
 ```python
-def gcd(a: int, b: int) -> int:
-    """Computes Greatest Common Divisor in O(log(min(a, b))) time."""
-    while b > 0:
-        a, b = b, a % b
-    return abs(a)
+from __future__ import annotations
+import math
+from typing import List
 
 
-def lcm(a: int, b: int) -> int:
-    """Computes Least Common Multiple, dividing first to prevent overflow."""
-    if a == 0 or b == 0:
-        return 0
-    return abs((a // gcd(a, b)) * b)
+class NumberTheorySolvers:
+    # =========================================================================
+    # 1. EUCLIDEAN GCD & SAFE LCM
+    # Time: O(log(min(a, b))) | Space: O(1)
+    # =========================================================================
+    @staticmethod
+    def gcd(a: int, b: int) -> int:
+        while b != 0:
+            a, b = b, a % b
+        return abs(a)
 
+    @staticmethod
+    def lcm(a: int, b: int) -> int:
+        if a == 0 or b == 0:
+            return 0
+        return abs((a // NumberTheorySolvers.gcd(a, b)) * b)
 
-def is_prime(n: int) -> bool:
-    """Trial division primality test in O(sqrt(n)) time."""
-    if n < 2:
-        return False
-    if n % 2 == 0:
-        return n == 2
-    d = 3
-    while d * d <= n:
-        if n % d == 0:
+    # =========================================================================
+    # 2. TRIAL DIVISION PRIMALITY TEST
+    # Time: O(sqrt(N)) | Space: O(1)
+    # =========================================================================
+    @staticmethod
+    def is_prime(n: int) -> bool:
+        if n < 2:
             return False
-        d += 2
-    return True
+        if n % 2 == 0:
+            return n == 2
+        if n % 3 == 0:
+            return n == 3
 
+        d = 5
+        while d * d <= n:
+            if n % d == 0 or n % (d + 2) == 0:
+                return False
+            d += 6
 
-def sieve(limit: int) -> list[bool]:
-    """Generates primality table up to limit in O(N log log N) time."""
-    if limit < 0:
-        return []
-    is_p = [True] * (limit + 1)
-    if limit >= 0:
-        is_p[0] = False
-    if limit >= 1:
-        is_p[1] = False
+        return True
 
-    p = 2
-    while p * p <= limit:
-        if is_p[p]:
-            for m in range(p * p, limit + 1, p):
-                is_p[m] = False
-        p += 1
-    return is_p
+    # =========================================================================
+    # 3. SIEVE OF ERATOSTHENES
+    # Time: O(N log log N) | Space: O(N)
+    # =========================================================================
+    @staticmethod
+    def sieve(limit: int) -> List[bool]:
+        if limit < 0:
+            return []
+        is_prime = [True] * (limit + 1)
+        if limit >= 0:
+            is_prime[0] = False
+        if limit >= 1:
+            is_prime[1] = False
 
+        p = 2
+        while p * p <= limit:
+            if is_prime[p]:
+                # Start marking at p * p
+                for m in range(p * p, limit + 1, p):
+                    is_prime[m] = False
+            p += 1
 
-def mod_pow(base: int, exp: int, mod: int) -> int:
-    """Computes (base^exp) % mod in O(log exp) time."""
-    if mod <= 0:
-        raise ValueError("Modulus must be positive.")
-    if mod == 1:
-        return 0
-    res = 1 % mod
-    base = base % mod
-    while exp > 0:
-        if exp & 1:
-            res = (res * base) % mod
-        base = (base * base) % mod
-        exp >>= 1
-    return res
+        return is_prime
 
+    # =========================================================================
+    # 4. FAST MODULAR EXPONENTIATION
+    # Time: O(log exp) | Space: O(1)
+    # =========================================================================
+    @staticmethod
+    def mod_pow(base_val: int, exp: int, mod: int) -> int:
+        if mod <= 0:
+            raise ValueError("Modulus must be positive.")
+        if mod == 1:
+            return 0
 
-def modular_inverse_prime(val: int, prime_mod: int) -> int:
-    """Computes modular multiplicative inverse modulo a prime using Fermat's Little Theorem."""
-    if prime_mod <= 1:
-        raise ValueError("Modulus must be > 1.")
-    normalized = val % prime_mod
-    if normalized == 0:
-        raise ValueError("No inverse exists for 0 mod prime_mod.")
-    return mod_pow(normalized, prime_mod - 2, prime_mod)
+        result = 1
+        base_val = base_val % mod
+
+        while exp > 0:
+            if exp & 1:
+                result = (result * base_val) % mod
+            base_val = (base_val * base_val) % mod
+            exp >>= 1
+
+        return result
+
+    # =========================================================================
+    # 5. MODULAR INVERSE (Fermat's Little Theorem)
+    # Time: O(log prime_mod) | Space: O(1)
+    # =========================================================================
+    @staticmethod
+    def modular_inverse(val: int, prime_mod: int) -> int:
+        normalized = val % prime_mod
+        if normalized == 0:
+            raise ValueError("Zero has no modular inverse.")
+        return NumberTheorySolvers.mod_pow(normalized, prime_mod - 2, prime_mod)
 ```
 
 ---
 
-## 📘 Chapter 4: Performance, Invariants & Systems Architecture
+## 🔬 PERFORMANCE & COMPLEXITY DECONSTRUCTION
 
-### 1. Exact Governing Invariants
-
-*   **Euclidean GCD Invariant**: For any integers `a` and `b > 0`, `gcd(a, b) = gcd(b, a % b)`. Any common divisor of `a` and `b` divides `a - q * b = a % b`. The remainder strictly decreases by at least a factor of 2 every two steps (`a % b < a / 2`), guaranteeing logarithmic termination in at most `5 * log10(min(a, b))` iterations (Lamé's Theorem).
-*   **Primality Sifting Invariant**: If an integer `n` is composite, it can be factored into `n = a * b` where at least one factor satisfies `min(a, b) <= sqrt(n)`. Therefore, testing trial divisors up to `floor(sqrt(n))` without finding a factor strictly proves primality.
-*   **Sieve of Eratosthenes Marking Invariant**: When a prime `p` is processed, every composite multiple `k * p` for `k < p` has already been crossed out by a prime factor smaller than `p`. Starting multiple elimination at `p * p` guarantees zero redundant marking of composite numbers with smaller prime factors, establishing `O(N log log N)` runtime.
-*   **Binary Modular Exponentiation Invariant**: At each loop step, the invariant:
-    `(res * base^exp) % mod == constant`
-    is maintained. Halving `exp` and squaring `base` reduces the exponent to zero in `floor(log2(exp)) + 1` cycles without intermediate 64-bit integer overflow.
-*   **Fermat's Modular Inverse Invariant**: If `P` is prime and `gcd(A, P) == 1`, Fermat's Little Theorem establishes that `A^(P-1) = 1 (mod P)`. Multiplying both sides by `A^(-1)` yields `A^(-1) = A^(P-2) (mod P)`. This holds strictly for prime moduli.
+| Algorithm | Time Complexity | Auxiliary Space | Key Governing Theorem |
+| :--- | :--- | :--- | :--- |
+| **Euclidean GCD** | `O(log(min(a, b)))` | `O(1)` | Lamé's Theorem (worst case: Fibonacci pairs) |
+| **Safe LCM** | `O(log(min(a, b)))` | `O(1)` | Divide before multiply eliminates overflow |
+| **Trial Primality** | `O(sqrt(N))` | `O(1)` | Paired divisor symmetry across $\sqrt{N}$ |
+| **Sieve of Eratosthenes** | `O(N log log N)` | `O(N)` | Mertens' Second Theorem on harmonic sum of primes |
+| **Fast ModPow** | `O(log exp)` | `O(1)` | Binary exponentiation invariant |
+| **Fermat Modular Inverse** | `O(log primeMod)` | `O(1)` | Fermat's Little Theorem: $A^{P-1} \equiv 1 \pmod P$ |
 
 ---
 
-### 2. Explicit Complexity Deconstruction
+## ⚔️ PRACTICE DRILLS & MASTERY PROBLEMS
 
-| Algorithm | Time (Best / Avg / Worst) | Auxiliary Space | Output Space | Mathematical Derivation |
+| # | Problem | Source | Difficulty | Target Number Theory Concept |
 | :--- | :--- | :--- | :--- | :--- |
-| **Euclidean GCD** | `O(1)` / `O(log(min(a, b)))` / `O(log(min(a, b)))` | `O(1)` | `O(1)` | Worst case: consecutive Fibonacci numbers where remainder ratio converges to `1 / phi`. |
-| **Least Common Multiple** | `O(log(min(a, b)))` | `O(1)` | `O(1)` | Governed by single GCD computation: `a / gcd(a, b) * b`. |
-| **Trial Division Primality** | `O(1)` / `O(sqrt(n))` / `O(sqrt(n))` | `O(1)` | `O(1)` | Best case: even numbers (`O(1)`). Worst case: prime numbers requiring `sqrt(n) / 2` division checks. |
-| **Sieve of Eratosthenes** | `O(N log log N)` | `O(N)` | `O(N)` | Sum over primes: `sum_{p <= N} (N / p) = N * sum (1 / p) = N log log N` (Mertens' Second Theorem). |
-| **Modular Exponentiation** | `O(1)` / `O(log exp)` / `O(log exp)` | `O(1)` | `O(1)` | Bit-length of exponent: exactly `floor(log2(exp)) + 1` iterations. |
-| **Fermat Modular Inverse** | `O(log mod)` | `O(1)` | `O(1)` | Single `ModPow(val, mod - 2, mod)` call. |
+| 1 | Count Primes | LeetCode 204 | Medium | Sieve of Eratosthenes |
+| 2 | Pow(x, n) | LeetCode 50 | Medium | Fast binary exponentiation with negative powers |
+| 3 | Greatest Common Divisor of Strings | LeetCode 1071 | Easy | Euclidean GCD applied to string lengths |
+| 4 | Super Pow | LeetCode 372 | Medium | Modular exponentiation with array exponent |
+| 5 | Combinations nCr Modulo Prime | Classic | Medium | Precomputed factorials and Fermat modular inverse |
 
 ---
 
-### 3. Senior Interview Context: Hardware, Memory & Concurrency
-
-*   **64-Bit Integer Multiplication Overflow**:
-    In C# and C++, standard modular arithmetic uses `(a * b) % mod`. If `mod = 10^9 + 7`, the intermediate product `a * b` can reach `approx. 10^18`, which fits inside a signed 64-bit `long` (max `9.22 * 10^18`). However, if `mod > 3 * 10^9`, `a * b` overflows `long.MaxValue`, producing silent sign-bit wrap and incorrect results. In such environments, use **Russian Peasant Safe Multiplication** (`O(log B)`) or 128-bit integer primitives (`Int128` in .NET 7+, `__int128` in GCC).
-*   **Modulo Semantics Across Languages**:
-    - In C#, Java, and C++, `%` is the **remainder** operator: `-7 % 3 = -1`.
-    - In Python, `%` is the **modulo** operator (floored division): `-7 % 3 = 2`.
-    - Production rule: Always normalize modular values using `((val % mod) + mod) % mod` to ensure strict non-negative results in `[0, mod - 1]`.
-*   **Prime Sieve Memory Footprint**:
-    A naive `bool[]` array allocates 1 byte per boolean flag. For `limit = 10^8`, this consumes 100 MB of heap memory, exceeding L3 cache capacity and causing DRAM thrashing. In high-performance systems, pack primality flags into a `BitArray` or an array of `ulong[]` (64 flags per 8-byte word), shrinking memory usage to 12.5 MB.
-
----
-
-## 🎙️ Senior 45-Minute Verbal Talk Track
-
-```text
-+-------------------------------------------------------------------------------+
-| PHASE 1: Constraints & Modulus Validation (Minutes 00 - 05)                   |
-| - Verify magnitude of base, exponent, and modulus (e.g., mod = 10^9 + 7).     |
-| - Check if modulus is strictly prime (enabling Fermat) or composite.          |
-+-------------------------------------------------------------------------------+
-                                      │
-                                      ▼
-+-------------------------------------------------------------------------------+
-| PHASE 2: Naive Linear Approach & Bottleneck (Minutes 05 - 10)                 |
-| - Highlight naive O(exp) multiplication loop: 10^9 operations = timeout.      |
-| - Explain integer overflow hazard when chaining multiplications.              |
-+-------------------------------------------------------------------------------+
-                                      │
-                                      ▼
-+-------------------------------------------------------------------------------+
-| PHASE 3: Mathematical Invariants          (Minutes 10 - 20)                   |
-| - Derive binary exponentiation invariant: (res * base^exp) % mod == constant. |
-| - State Fermat's Little Theorem: A^(P-1) = 1 (mod P) => A^(P-2) = A^(-1).     |
-| - Prove Sieve of Eratosthenes starts composite marking at p * p.              |
-+-------------------------------------------------------------------------------+
-                                      │
-                                      ▼
-+-------------------------------------------------------------------------------+
-| PHASE 4: Clean Production Implementation  (Minutes 20 - 35)                   |
-| - Write clean, overflow-safe C# (.NET 8/9) and Python (3.11+) routines.       |
-| - Guard against edge cases: mod <= 1, exp = 0, val % mod = 0.                 |
-| - Enforce non-negative normalization: ((val % mod) + mod) % mod.              |
-+-------------------------------------------------------------------------------+
-                                      │
-                                      ▼
-+-------------------------------------------------------------------------------+
-| PHASE 5: Rigorous Verification & Extensions (Minutes 35 - 45)                 |
-| - Walk through complexity: O(log exp) time, O(1) auxiliary space.             |
-| - Verify edge cases: exp = 0 (returns 1 % mod), base = 0, primeMod = 2.       |
-| - Address extensions: Extended Euclidean Algorithm for composite moduli.      |
-+-------------------------------------------------------------------------------+
-```
-
-### Verbal Script Excerpts
-
-*   **Opening (Minutes 00-05)**: *"Before writing the modular inverse routine, let me verify the modulus characteristics. Is `mod` guaranteed to be a prime number (such as `10^9 + 7`), and is `val` guaranteed to be non-zero modulo `mod`? If `mod` is prime, Fermat's Little Theorem gives an optimal `O(log mod)` solution. If `mod` can be composite, we must use the Extended Euclidean Algorithm to solve `a * x + m * y = gcd(a, m)`."*
-*   **Invariant Articulation (Minutes 10-20)**: *"For fast modular exponentiation, we represent the exponent in binary. If the lowest bit of `exp` is 1, we fold `base` into our running result: `res = (res * base) % mod`. We then square `base = (base * base) % mod` and shift `exp >>= 1`. The invariant `(res * base^exp) % mod == constant` holds throughout, guaranteeing exact results in `O(log exp)` time with `O(1)` space."*
-*   **Sieve Composite Marking Defense (Minutes 35-45)**: *"Notice line 124 in the Sieve: we start marking composites at `m = p * p` rather than `2 * p`. This is because any smaller composite `k * p` (where `k < p`) has a prime factor smaller than `p`, meaning it was already marked when that smaller prime was processed. This eliminates redundant work and establishes the `O(N log log N)` bound."*
-
----
-
-## 📘 Chapter 5: Integration and Mastery
-
-### 1. Pattern Selection Rules
-*   *Use the Euclidean Algorithm when*: You need to simplify fraction ratios, verify coprime relationships, or solve linear Diophantine equations.
-*   *Use Trial Division when*: You need primality for a single query or small set of inputs (`N <= 10^{12}`).
-*   *Use the Sieve of Eratosthenes when*: You need dense primality queries or factor precomputations for all integers up to `10^7`.
-*   *Use Fermat's Modular Inverse when*: You need division under a known prime modulus, such as calculating combinations `C(N, K) % (10^9 + 7)`.
-*   *Use Extended Euclidean Algorithm when*: The modulus `M` is composite and you must determine if an inverse exists (`gcd(A, M) == 1`).
-
-### 2. Beginner to Advanced Progression
-1. **Beginner**: Implement iterative `Gcd`, `Lcm`, and single-number trial division primality.
-2. **Intermediate**: Implement Sieve of Eratosthenes and logarithmic modular exponentiation with negative input handling.
-3. **Advanced**: Precompute factorials and inverse factorials in `O(N)` time to answer `C(N, K) % P` combinations in `O(1)` per query.
-
----
-
-## 🛠️ Supplementary Material
-
-### Practice Problems
-1.  **Count Primes** ([LeetCode 204](https://leetcode.com/problems/count-primes/)): Count prime numbers less than a non-negative integer `n`.
-2.  **Pow(x, n)** ([LeetCode 50](https://leetcode.com/problems/powx-n/)): Implement binary exponentiation with negative powers.
-3.  **Greatest Common Divisor of Strings** ([LeetCode 1071](https://leetcode.com/problems/greatest-common-divisor-of-strings/)): Generalize numeric GCD to string periodicities.
-4.  **Super Pow** ([LeetCode 372](https://leetcode.com/problems/super-pow/)): Calculate `a^b % 1337` where `b` is an array of large decimal digits using Euler's Totient.
-5.  **Reconstruct Combinations Modulo Prime**: Compute `nCr % (10^9 + 7)` using precomputed factorial modular inverses.
-
-### Misconceptions and Corrections
-*   *Incorrect Idea*: Attempting to calculate modular inverses modulo composite numbers using Fermat's Little Theorem.
-    *   *Correction*: Fermat's Little Theorem strictly requires a prime modulus. For composite moduli, you must use the **Extended Euclidean Algorithm**; if `gcd(A, M) != 1`, no inverse exists.
-*   *Incorrect Idea*: Assuming `(a * b) % m` never overflows in 64-bit integers.
-    *   *Correction*: If `m > 3 * 10^9`, the product `a * b` exceeds `long.MaxValue` (`approx. 9.22 * 10^18`), leading to silent signed overflow. Use Russian Peasant safe multiplication or 128-bit integer registers.
-*   *Incorrect Idea*: Assuming `Lcm(a, b) = (a * b) / Gcd(a, b)` is safe.
-    *   *Correction*: Multiplying `a * b` first can cause 32-bit or 64-bit integer overflow. Always divide first: `(a / Gcd(a, b)) * b`.
-
----
-
-> 🧭 **Navigation:** [← Previous Day](Week_14_Day_02_Bitwise_Operations_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_14_Day_04_Advanced_Strings_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_14_Day_02_Bitwise_Operations_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Advanced Strings →](Week_14_Day_04_Advanced_Strings_Instructional.md)

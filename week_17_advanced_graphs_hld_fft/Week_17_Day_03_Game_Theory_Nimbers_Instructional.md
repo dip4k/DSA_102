@@ -1,98 +1,218 @@
-# 📘 Week 17, Day 3: Impartial Game Theory & Sprague-Grundy Theorem
+# 📘 WEEK 17 DAY 03: COMBINATORIAL GAME THEORY — NIMBERS & THE SPRAGUE-GRUNDY THEOREM
 
-> 🧭 **Navigation:** [← Previous Day](Week_17_Day_02_Slope_Trick_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_17_Day_04_Combinatorics_And_Counting_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day: Slope Trick](Week_17_Day_02_Slope_Trick_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Combinatorics & Counting →](Week_17_Day_04_Combinatorics_And_Counting_Instructional.md)
 > 
-> 💡 **Instructor Note:** *Game theory questions in senior technical interviews (Google, Citadel, Jane Street) often present deceptively complex multi-pile stone games. A naive candidate attempts minimax recursion or exponential DP, collapsing under multi-state dimensions. Senior engineers immediately check if the game is impartial, compute Grundy values via MEX, and resolve composite game states in O(1) via the Nim-sum (bitwise XOR).*
+> 💡 **Instructor Note:** *Combinatorial Game Theory often seems like black magic to junior engineers because two players taking turns with piles of stones can look like an intractable minimax decision tree of O(2^N) states. But through Charles Bouton's discovery and the Sprague-Grundy Theorem, every impartial turn-based game under normal play is isomorphic to a game of Nim, solved in O(1) or O(N) using bitwise XOR! Today, we master Nim-Sums and the MEX operator.*
 
 ---
 
-## 🎯 Learning Objectives
+## 🎯 LEARNING OBJECTIVES
 
-*   **Impartial Game Foundations:** Formulate impartial games under the Normal Play convention as Directed Acyclic Graphs (DAGs).
-*   **The Sprague-Grundy Theorem:** Understand why every impartial game is mathematically isomorphic to a single-pile Nim game of size equal to its Grundy value.
-*   **Minimum Excluded Value (MEX):** Compute Grundy values via `G(u) = MEX({G(v) : u -> v})` using efficient bitsets or presence arrays.
-*   **Composite Game Disjunction:** Evaluate multi-pile or multi-component games instantly via the XOR sum: `G_{total} = G_1 ^ G_2 ^ ... ^ G_k`.
-*   **Dual-Language Fluency:** Implement high-speed Grundy computation and Nim-sum evaluation in modern C# (.NET 8/9) and idiomatic Python (3.11+).
+*By the end of this module, you will be able to:*
 
----
-
-## ⚖️ FAANG Senior / Lead Interview Calibration
-
-When an interviewer presents a two-player turn-based game, senior candidates classify the system before writing code:
-
-| Game Class | Rule Criteria | Evaluation Technique | Runtime Complexity | Interview Expectation |
-| :--- | :--- | :--- | :--- | :--- |
-| **Partisan Games** | Players have distinct move sets (Chess, Go, Checkers). | Minimax / Alpha-Beta Pruning / Heuristics. | Exponential `O(b^d)` | System Design / Search algorithms. |
-| **Simple Impartial Game** | Both players share identical moves; single state. | Direct DP on P/N positions. | `O(N)` | Junior / Mid-level expectation. |
-| **Composite Impartial Game**| Players choose one of `k` independent games each turn. | **Sprague-Grundy Theorem + Nim-Sum (XOR)**. | **`O(N * M)` precomputation, `O(k)` query** | **Senior / Lead standard.** Avoids `O(N^k)` multi-dimensional DP! |
-
-### The Normal Play Convention
-*   **Normal Play:** The player who makes the last legal move wins (the player with no moves loses).
-*   **Misère Play:** The player who makes the last legal move loses. *(Note: Sprague-Grundy holds for Normal Play; Misère requires endgame parity adjustments).*
-*   **P-Position (Previous player wins):** Any move from this position leads to an N-position. The player whose turn it is loses (`Grundy = 0`).
-*   **N-Position (Next player wins):** There exists at least one move to a P-position. The player whose turn it is can force a win (`Grundy > 0`).
+- 🎬 **Internalize** the Matchstick Game and the Bitwise XOR Nim-Sum mental model without academic jargon.
+- 🪜 **Master** P-positions (Previous Player / Losing) vs N-positions (Next Player / Winning) states.
+- 🎨 **Visualize** the Sprague-Grundy function `G(u) = MEX({G(v) : u -> v})` across game state Directed Acyclic Graphs (DAGs).
+- 🛑 **Avoid** fatal rookie traps: exponential minimax recursion, confusion between normal and misère play, and off-by-one MEX set computations.
+- 🎙️ **Deliver** the exact 3-sentence verbal talk track defending Sprague-Grundy equivalence in technical interviews.
+- ⚡ **Implement** production-grade Nim and Sprague-Grundy solvers in C# (.NET 8/9) and Python (3.11+).
 
 ---
 
-## 📖 Chapter 1: Context & Physical Mental Models
+## 🎬 PILLAR 1: THE 60-SECOND HOOK & EVERYDAY ANALOGY
 
-### 1. The Game of Nim (Bouton's Theorem, 1901)
+### The Two-Player Matchstick Game & The XOR Mind Reader
 
-There are `k` piles of stones. On their turn, a player may remove any positive number of stones from any single pile.
-*   Let pile sizes be `[x_1, x_2, ..., x_k]`.
-*   Compute the **Nim-sum**: `S = x_1 ^ x_2 ^ ... ^ x_k` (bitwise XOR).
-*   **Theorem:**
-    - If `S != 0`: The current player is in an **N-position** (guaranteed win with optimal play).
-    - If `S == 0`: The current player is in a **P-position** (guaranteed loss against optimal play).
+Imagine you and a friend are playing a game with piles of matchsticks on a coffee table:
+- There are 3 piles of matchsticks: Pile A has **3**, Pile B has **4**, Pile C has **5**.
+- Players take turns. On your turn, you can take **any number of matchsticks (at least 1)** from **any single pile**.
+- The player who takes the very last matchstick wins (Normal Play convention).
+
+If you try to map out every possible turn using Minimax, you get an explosive decision tree with thousands of branches:
+*"If I take 2 from Pile A, then they could take 3 from Pile B, but if they take 1 from Pile C..."* Your head spins!
+
+Now, watch what a math professor or senior engineer does in **2 seconds**:
+They don't think about turns at all. They convert the pile sizes to binary and compute the **Bitwise XOR Sum (Nim-Sum)**:
 
 ```text
-Pile 1: 3 stones  -> Binary: 0 1 1
-Pile 2: 4 stones  -> Binary: 1 0 0
-Pile 3: 5 stones  -> Binary: 1 0 1
------------------------------------
-Nim-Sum (XOR):                0 1 0  (Decimal 2 != 0 -> Winning State!)
+Pile A: 3  -->  0 1 1  (binary)
+Pile B: 4  -->  1 0 0  (binary)
+Pile C: 5  -->  1 0 1  (binary)
+-----------------------------
+XOR Sum:        0 1 0  = 2  (Non-zero!)
 ```
 
-### 2. The Sprague-Grundy Theorem: Isomorphism to Nim
+The professor smiles and says: *"Because the XOR sum is not zero, Player 1 is mathematically guaranteed to win with optimal play. If you move first, you will win every single time!"*
 
-What if players cannot remove *any* number of stones, but must follow specific rules (e.g., only remove powers of 2, or divide a pile into two non-empty piles)?
-The **Sprague-Grundy Theorem** states:
-> *Every impartial game under the normal play convention is mathematically equivalent to a one-pile game of Nim with pile size `G`, where `G` is the Grundy value of the game.*
+Why? Because the XOR sum acts like an energy balance. 
+Any state with `XOR Sum != 0` can **always** be transitioned to `XOR Sum == 0`.
+And from `XOR Sum == 0`, **any legal move you make will always leave the XOR sum != 0**!
+You can force your opponent to receive `0` on every single turn until they are handed the ultimate zero: zero matchsticks left!
 
-If you have 5 independent games occurring concurrently on a table, you don't build a 5-dimensional DP table `dp[p1][p2][p3][p4][p5]` (which takes `O(N^5)` space). You simply compute the 1D Grundy value for each game independently, and XOR them together!
+---
+
+## 🪜 PILLAR 2: THE SCAFFOLDING LADDER & TOY NAPKIN TRACE
+
+### Step 1: P-Positions vs N-Positions
+
+In impartial combinatorial games, every game state is either:
+1. **P-Position (Previous Player Wins / Current Player Loses):**
+   - The player who just moved (previous) has secured a win.
+   - The player whose turn it is right now is in a **losing state**.
+   - **Terminal State:** A state with 0 legal moves is a P-position.
+   - Any move from a P-position leads **exclusively to an N-position**.
+2. **N-Position (Next Player Wins / Current Player Wins):**
+   - The player whose turn it is right now has at least one winning move.
+   - There exists **at least one move** leading to a P-position!
 
 ```text
-Game 1 (Grundy: g1) ----\
-Game 2 (Grundy: g2) ----->  Nim-Sum = g1 ^ g2 ^ g3 ^ g4
-Game 3 (Grundy: g3) -----/   If Nim-Sum > 0 -> Player 1 Wins!
-Game 4 (Grundy: g4) ----/    If Nim-Sum == 0 -> Player 2 Wins!
+The Winning Strategy:
+- If you start at an N-position: make the move that drops the game into a P-position for your opponent.
+- Your opponent has no choice but to return an N-position to you.
+- You repeat this until your opponent is stuck at the terminal state with no moves left!
 ```
 
 ---
 
-## 🏛️ Chapter 2: The Governing Invariants & Algorithmic Mechanics
+### Step 2: Bouton's Theorem for Nim
 
-### 1. Mathematical Invariants
+> **Bouton's Theorem (1901):**
+> In a game of Nim with pile sizes `[x_1, x_2, ..., x_k]`, the state is:
+> - A **P-position (Losing)** if and only if `x_1 ^ x_2 ^ ... ^ x_k == 0`.
+> - An **N-position (Winning)** if and only if `x_1 ^ x_2 ^ ... ^ x_k != 0`.
 
-1. **MEX (Minimum Excluded Value):**
-   `MEX(S) = min { x in {0, 1, 2, ...} : x not in S }`.
-   Example: `MEX({0, 1, 3}) = 2`; `MEX({1, 2, 3}) = 0`; `MEX({}) = 0`.
-2. **Grundy Value Invariant:**
-   For any state `u` in the game DAG:
-   `G(u) = MEX({ G(v) : u -> v is a legal move })`.
-   - Base case: For a terminal state `t` with no moves: `G(t) = MEX({}) = 0`.
-3. **Disjunctive Sum Invariant:**
-   If a composite game `G` consists of independent games `G_1, G_2, ..., G_k`:
-   `G = G_1 ^ G_2 ^ ... ^ G_k`.
-4. **Transition Winning Lemma:**
-   - From any state with `G(u) = 0`, every reachable state `v` has `G(v) != 0`.
-   - From any state with `G(u) > 0`, there exists at least one reachable state `v` with `G(v) = 0`.
+#### How to Find the Winning Move:
+1. Compute `S = x_1 ^ x_2 ^ ... ^ x_k`.
+2. Find the most significant bit (MSB) of `S`.
+3. Find any pile `x_i` that has a `1` at that MSB (such a pile is guaranteed to exist).
+4. Reduce pile `x_i` to `x_i' = x_i ^ S` (since the MSB of `x_i` is 1, `x_i ^ S < x_i`, so this is a valid reduction).
+5. The new XOR sum becomes `S ^ x_i ^ (x_i ^ S) = 0`!
 
 ---
 
-## 💻 Chapter 3: Idiomatic Dual-Language Code
+### Step 3: The Sprague-Grundy Theorem & MEX
 
-### C# Primary Implementation (.NET 8/9)
+What if the game is **not** Nim?
+What if the game is:
+- Moving a coin on a graph DAG?
+- Taking stones where you can only take 1, 3, or 4 stones?
+- Splitting a pile into two non-empty piles?
+
+The **Sprague-Grundy Theorem** proves that **ANY** impartial game under normal play is mathematically equivalent to a Nim pile of size `G(u)`, where `G(u)` is the **Grundy Value (Nimber)**!
+
+#### The Minimum Excluded Value (MEX):
+`MEX(S)` is the smallest non-negative integer **NOT** present in set `S`:
+- `MEX({}) = 0`
+- `MEX({1, 2, 3}) = 0` (0 is missing!)
+- `MEX({0, 1, 2, 4}) = 3` (3 is missing!)
+
+#### The Sprague-Grundy Function:
+For any state `u` in a game DAG:
+`G(u) = MEX({ G(v) : there is a legal move from u to v })`.
+
+- If `u` has no legal moves (terminal state): `G(u) = MEX({}) = 0`.
+- An independent composite game `G = G_1 + G_2 + ... + G_k` has Grundy value:
+  `G(Composite) = G(G_1) ^ G(G_2) ^ ... ^ G(G_k)`!
+- Player 1 wins if and only if `G(Composite) != 0`!
+
+---
+
+### 🧠 Pause & Predict Micro-Drills
+
+> **Drill 1:** Suppose you can only remove 1, 2, or 3 stones from a single pile of size `N`. What is the Grundy value `G(N)`?
+> *Pause here and calculate for N = 0, 1, 2, 3, 4!*
+>
+> **Answer:** 
+> - `G(0) = MEX({}) = 0`
+> - `G(1) = MEX({G(0)}) = MEX({0}) = 1`
+> - `G(2) = MEX({G(0), G(1)}) = MEX({0, 1}) = 2`
+> - `G(3) = MEX({G(0), G(1), G(2)}) = MEX({0, 1, 2}) = 3`
+> - `G(4) = MEX({G(1), G(2), G(3)}) = MEX({1, 2, 3}) = 0`!
+> Notice the pattern: `G(N) = N % 4`! (This is LeetCode 292: Nim Game).
+> Player 1 wins if and only if `N % 4 != 0`.
+
+> **Drill 2:** What is the difference between Normal Play and Misère Play?
+> *Pause here and think!*
+>
+> **Answer:**
+> In **Normal Play**, the player who makes the last move wins (the player with no moves loses).
+> In **Misère Play**, the player forced to take the last stone loses! In Nim, Misère play is identical to Normal play until all remaining piles have size 1, at which point you take enough to leave an odd number of size-1 piles for your opponent.
+
+---
+
+## 🎨 PILLAR 3: PRAGMATIC VISUAL MODELS & DECISION FLOWS
+
+### Modern Hex Flowchart: Sprague-Grundy Evaluation
+
+```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
+flowchart TD
+    State["Compute Grundy Value G(u)"] --> Moves{"Are there legal<br/>moves from u?"}
+    Moves -->|No: Terminal State| Base["G(u) = 0<br/>P-Position (Losing)"]
+    Moves -->|Yes| Recurse["Compute G(v) for all legal transitions u &rarr; v"]
+    Recurse --> SSet["Collect reachable values into set S = { G(v) }"]
+    SSet --> Mex["G(u) = MEX(S)<br/>Smallest missing integer &ge; 0"]
+    Mex --> Eval{"Is G(u) == 0?"}
+    Eval -->|Yes| PPos["P-Position: Current player loses!"]
+    Eval -->|No| NPos["N-Position: Current player wins!"]
+
+    style State fill:#e1f5fe,stroke:#0288d1,color:#01579b
+    style Moves fill:#fff3e0,stroke:#ef6c00,color:#e65100
+    style Base fill:#ffebee,stroke:#c62828,color:#b71c1c
+    style Recurse fill:#f3e5f5,stroke:#8e24aa,color:#4a148c
+    style SSet fill:#f3e5f5,stroke:#8e24aa,color:#4a148c
+    style Mex fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style Eval fill:#fff3e0,stroke:#ef6c00,color:#e65100
+    style PPos fill:#ffebee,stroke:#c62828,color:#b71c1c
+    style NPos fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+```
+
+---
+
+## 🛑 PILLAR 4: THE ROOKIE TRAP ZONE
+
+### Side-by-Side Comparison: Blunders vs. Senior Architect Patterns
+
+| Dimension | ❌ Rookie Blunder | ✅ Senior Architect Pattern |
+| :--- | :--- | :--- |
+| **Search Paradigm** | Writes an exponential Minimax recursion tree `O(2^N)` for impartial games with independent sub-games. | Uses the Sprague-Grundy Theorem: computes Grundy value for sub-games in `O(N)` and XORs them in `O(1)`. |
+| **MEX Definition Off-by-One** | Defines MEX as the minimum value in set `S` (`min(S)`), completely destroying Grundy values. | Defines MEX as the smallest non-negative integer **missing** from `S` (`MEX({0, 1, 3}) = 2`). |
+| **Terminal Condition** | Assigns `G(terminal) = -1` or `null`, failing base cases. | Assigns `G(terminal) = MEX({}) = 0` (0 is the smallest missing non-negative integer). |
+| **Composite Games** | Attempts to model all piles simultaneously in a multidimensional DP: `dp[p1][p2][p3]`. | Evaluates each pile independently as `G(p_i)` and computes the composite Grundy value via `G(p1) ^ G(p2) ^ G(p3)`. |
+| **Partisan vs Impartial Confusion**| Attempts to apply Nim-sums to Chess or Checkers where players have different allowed pieces (Partisan Games). | Recognizes that Sprague-Grundy applies strictly to **Impartial Games** (both players have identical allowed moves from any state). |
+
+---
+
+## 🎙️ PILLAR 5: 45-MINUTE INTERVIEW TALK TRACK
+
+### The Exact 3-Sentence Verbal Script
+
+Speak these exact three sentences before writing code:
+
+```text
++--------------------------------------------------------------------------------------------------+
+|                              THE SENIOR GAME THEORY TALK TRACK                                    |
++--------------------------------------------------------------------------------------------------+
+| 1. The Game Characterization:                                                                    |
+|    "Because both players have identical legal moves from any state, this is an impartial game    |
+|    under normal play, which can be modeled as a Directed Acyclic Graph of game states."          |
+|                                                                                                  |
+| 2. The Sprague-Grundy Invariant:                                                                 |
+|    "By the Sprague-Grundy Theorem, each independent sub-game is isomorphic to a single Nim pile  |
+|    whose size equals the MEX of the Grundy values of all reachable next states."                 |
+|                                                                                                  |
+| 3. The Nim-Sum Synthesis:                                                                        |
+|    "The composite game is won by Player 1 if and only if the bitwise XOR sum of all sub-game     |
+|    Grundy values is non-zero, allowing us to determine the winning strategy in O(N) instead     |
+|    of exponential minimax search."                                                               |
++--------------------------------------------------------------------------------------------------+
+```
+
+---
+
+## ⚡ PILLAR 6: PRODUCTION DUAL-LANGUAGE IMPLEMENTATIONS
+
+### C# Primary Implementation (.NET 8/9): Nim & Sprague-Grundy Solver
 
 ```csharp
 using System;
@@ -101,211 +221,168 @@ using System.Collections.Generic;
 namespace AdvancedDataStructures;
 
 /// <summary>
-/// Implements Sprague-Grundy theorem evaluation for impartial games.
-/// Computes Grundy values via MEX and evaluates multi-pile composite states via Nim-sum.
+/// Production Combinatorial Game Theory solver.
+/// Evaluates Nim games, winning moves, and Sprague-Grundy values for impartial games.
 /// </summary>
-public static class SpragueGrundy
+public static class GameTheorySolver
 {
     /// <summary>
-    /// Computes the Minimum Excluded non-negative integer (MEX) in O(K) time using a boolean lookup.
+    /// Evaluates if Player 1 has a winning strategy in standard Nim.
+    /// Returns true if XOR sum != 0.
     /// </summary>
-    public static int CalculateMex(ReadOnlySpan<int> reachableGrundyValues)
+    public static bool CanWinNim(ReadOnlySpan<int> piles)
     {
-        int max = -1;
-        for (int i = 0; i < reachableGrundyValues.Length; i++)
+        int xorSum = 0;
+        foreach (int pile in piles)
         {
-            if (reachableGrundyValues[i] > max) max = reachableGrundyValues[i];
+            xorSum ^= pile;
         }
-
-        Span<bool> present = stackalloc bool[max + 2];
-        for (int i = 0; i < reachableGrundyValues.Length; i++)
-        {
-            int val = reachableGrundyValues[i];
-            if (val <= max + 1)
-            {
-                present[val] = true;
-            }
-        }
-
-        for (int mex = 0; mex < present.Length; mex++)
-        {
-            if (!present[mex]) return mex;
-        }
-
-        return max + 1;
+        return xorSum != 0;
     }
 
     /// <summary>
-    /// Precomputes Grundy values for all pile sizes up to maxPile under given transition rules.
-    /// Example rules: [1, 2, 4] means a player can take 1, 2, or 4 stones.
+    /// Finds the optimal winning move in standard Nim.
+    /// Returns (pileIndex, newPileSize) that hands a 0-XOR state to the opponent.
     /// </summary>
-    public static int[] PrecomputeGrundyTable(int maxPile, int[] transitionRules)
+    public static (int PileIndex, int NewSize)? FindWinningMove(int[] piles)
     {
-        ArgumentNullException.ThrowIfNull(transitionRules);
-        var grundy = new int[maxPile + 1];
-        grundy[0] = 0; // Terminal state has Grundy value 0
+        ArgumentNullException.ThrowIfNull(piles);
+        int xorSum = 0;
+        foreach (int p in piles) xorSum ^= p;
 
-        var buffer = new List<int>(transitionRules.Length);
+        if (xorSum == 0) return null; // Losing state (P-position); no guaranteed winning move
 
-        for (int state = 1; state <= maxPile; state++)
+        for (int i = 0; i < piles.Length; i++)
         {
-            buffer.Clear();
-            foreach (int move in transitionRules)
+            int targetSize = piles[i] ^ xorSum;
+            if (targetSize < piles[i])
             {
-                if (state >= move)
-                {
-                    buffer.Add(grundy[state - move]);
-                }
+                return (i, targetSize);
             }
-
-            grundy[state] = CalculateMex(buffer.ToArray());
         }
 
-        return grundy;
+        return null;
     }
 
     /// <summary>
-    /// Determines whether the first player has an unconditional winning strategy.
-    /// Returns true if Nim-sum > 0 (N-position), false otherwise.
+    /// Computes the Sprague-Grundy value G(n) where a player can remove any count in allowedMoves.
+    /// Uses memoization to avoid redundant subproblem evaluations.
     /// </summary>
-    public static bool CanFirstPlayerWin(int[] pileSizes, int[] transitionRules)
+    public static int ComputeGrundy(int n, int[] allowedMoves, int[] memo)
     {
-        ArgumentNullException.ThrowIfNull(pileSizes);
-        ArgumentNullException.ThrowIfNull(transitionRules);
-        if (pileSizes.Length == 0) return false;
+        if (n == 0) return 0;
+        if (memo[n] != -1) return memo[n];
 
-        int maxPile = 0;
-        foreach (int size in pileSizes)
+        HashSet<int> reachableGrundy = new();
+        foreach (int move in allowedMoves)
         {
-            if (size > maxPile) maxPile = size;
+            if (n >= move)
+            {
+                reachableGrundy.Add(ComputeGrundy(n - move, allowedMoves, memo));
+            }
         }
 
-        int[] grundyTable = PrecomputeGrundyTable(maxPile, transitionRules);
-
-        int nimSum = 0;
-        foreach (int size in pileSizes)
+        // Compute MEX (Minimum Excluded Value)
+        int mex = 0;
+        while (reachableGrundy.Contains(mex))
         {
-            nimSum ^= grundyTable[size];
+            mex++;
         }
 
-        return nimSum != 0;
+        return memo[n] = mex;
     }
 }
 ```
 
-### Python Secondary Implementation (Python 3.11+)
+---
+
+### Python Secondary Implementation (Python 3.11+): Complete Game Theory Solver
 
 ```python
-from typing import List, Set
+from typing import List, Tuple, Optional
 
-def calculate_mex(reachable: Set[int]) -> int:
-    """Computes the Minimum Excluded non-negative integer in O(|reachable|)."""
-    mex = 0
-    while mex in reachable:
-        mex += 1
-    return mex
-
-def precompute_grundy_table(max_pile: int, transition_rules: List[int]) -> List[int]:
+class GameTheorySolver:
     """
-    Computes Grundy values for all states up to max_pile via 1D DP and MEX.
-    State 0 is terminal with Grundy value 0.
+    Production Game Theory Solver in Python.
+    Calculates Nim-sums, winning moves, and Sprague-Grundy MEX values.
     """
-    grundy = [0] * (max_pile + 1)
+    @staticmethod
+    def can_win_nim(piles: List[int]) -> bool:
+        """Returns True if Player 1 has a winning strategy (XOR sum != 0)."""
+        xor_sum = 0
+        for pile in piles:
+            xor_sum ^= pile
+        return xor_sum != 0
 
-    for state in range(1, max_pile + 1):
-        reachable: Set[int] = set()
-        for move in transition_rules:
-            if state >= move:
-                reachable.add(grundy[state - move])
-        grundy[state] = calculate_mex(reachable)
+    @staticmethod
+    def find_winning_move(piles: List[int]) -> Optional[Tuple[int, int]]:
+        """
+        Finds a move (pile_index, new_pile_size) that transitions the game
+        into a P-position (XOR sum == 0) for the opponent.
+        """
+        xor_sum = 0
+        for pile in piles:
+            xor_sum ^= pile
 
-    return grundy
+        if xor_sum == 0:
+            return None  # Current player is in a losing state
 
-def can_first_player_win(pile_sizes: List[int], transition_rules: List[int]) -> bool:
-    """
-    Evaluates composite impartial game via Sprague-Grundy theorem.
-    Returns True if Player 1 has a guaranteed winning strategy.
-    """
-    if not pile_sizes:
-        return False
+        for i, pile in enumerate(piles):
+            target_size = pile ^ xor_sum
+            if target_size < pile:
+                return (i, target_size)
 
-    max_pile = max(pile_sizes)
-    grundy_table = precompute_grundy_table(max_pile, transition_rules)
+        return None
 
-    # Composite state evaluation via XOR Nim-Sum
-    nim_sum = 0
-    for size in pile_sizes:
-        nim_sum ^= grundy_table[size]
+    @staticmethod
+    def compute_grundy(n: int, allowed_moves: List[int], memo: Optional[List[int]] = None) -> int:
+        """
+        Computes the Grundy value G(n) using the Sprague-Grundy Theorem and MEX.
+        """
+        if memo is None:
+            memo = [-1] * (n + 1)
+        if n == 0:
+            return 0
+        if memo[n] != -1:
+            return memo[n]
 
-    return nim_sum != 0
+        reachable_nimbers = set()
+        for move in allowed_moves:
+            if n >= move:
+                reachable_nimbers.add(GameTheorySolver.compute_grundy(n - move, allowed_moves, memo))
+
+        # MEX: Smallest non-negative integer not in reachable_nimbers
+        mex = 0
+        while mex in reachable_nimbers:
+            mex += 1
+
+        memo[n] = mex
+        return mex
 ```
 
 ---
 
-## 📊 Chapter 4: Explicit Complexity Deconstruction
+## 📊 EXPLICIT COMPLEXITY DECONSTRUCTION
 
-| Operation | Time Complexity | Auxiliary Space | Bottleneck & Invariant |
-| :--- | :--- | :--- | :--- |
-| **`CalculateMex`** | `O(Deg)` (where `Deg` = number of moves) | `O(Deg)` stack memory | Scans smallest missing non-negative integer. |
-| **`PrecomputeGrundyTable`** | `O(MaxPile * |Rules|)` | `O(MaxPile)` table | 1D Dynamic programming memoization. |
-| **`NimSum` Query** | `O(K)` (where `K` = number of piles) | `O(1)` scalar register | Bitwise XOR sum across pile Grundy values. |
-| **Total Game Evaluation** | `O(MaxPile * |Rules| + K)` | `O(MaxPile)` | Replaces `O(MaxPile^K)` exponential multi-grid DP! |
-
-### Mathematical Proof of the XOR Nim-Sum
-*   Let `g = g_1 ^ g_2 ^ ... ^ g_k`.
-*   **Claim 1:** If `g == 0`, every legal move from any game `i` changes `g_i` to `g_i' != g_i`, so the new Nim-sum `g' = 0 ^ g_i ^ g_i' != 0`. (No move can stay at 0).
-*   **Claim 2:** If `g > 0`, let `d` be the most significant bit of `g`. There exists at least one pile `i` whose `g_i` has bit `d` set. Because `g_i ^ g < g_i`, by the definition of MEX, there exists a valid transition from `g_i` to `g_i' = g_i ^ g`. Making this move produces `g' = g ^ g_i ^ g_i' = 0`.
-*   By induction, `g > 0` is an N-position and `g == 0` is a P-position.
+| Paradigm | Number of Piles | Allowed Moves | Time Complexity | Auxiliary Space | Strategy |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Standard Nim** | `K` piles | Any count from 1 pile | **`O(K)`** | `O(1)` | Direct bitwise XOR sum of all pile sizes. |
+| **Sub-game Nimber** | Single pile `N` | Fixed set `M` moves | **`O(N * |M|)`** | `O(N)` memo table | MEX evaluation over reachable transition states. |
+| **Composite Game** | `K` sub-games | Custom transitions | **`O(K * N * |M|)`** | `O(N)` | Compute `G(p_i)` for each sub-game, then XOR. |
+| **Minimax Brute Force**| Any | Any | `O(B^D)` (Exponential) | `O(D)` stack | Catastrophic without Nimber decomposition. |
 
 ---
 
-## 🎙️ Chapter 5: 45-Minute Senior / Lead Verbal Interview Script
-
-```text
-[00:00 - 05:00] Clarify & Problem Modeling
-Candidate: "We have two players alternately removing stones from multiple piles under fixed subtraction rules. 
-           First, let's verify game classifications:
-           1. Is it impartial? Yes, both players have identical legal moves from any state.
-           2. Is it finite with no cycles? Yes, moves strictly decrease stone counts.
-           3. Normal Play convention? Yes, the player who cannot make a move loses.
-           A naive approach uses minimax or a K-dimensional DP table taking O(N^K), which collapses. 
-           Instead, by the Sprague-Grundy theorem, every independent pile is isomorphic to a Nim pile 
-           with size equal to its Grundy value, and the combined game is evaluated in O(1) via the Nim-sum."
-
-[05:00 - 15:00] Invariants & Trade-offs
-Candidate: "The Grundy value of any state is G(u) = MEX({G(v) : u -> v}).
-           Terminal states with no legal moves have G(0) = MEX({}) = 0.
-           For a game with K independent piles, the composite Grundy value is G_total = G(p1) ^ G(p2) ^ ... ^ G(pK).
-           If G_total > 0, the first player has a guaranteed winning strategy (N-position).
-           If G_total == 0, the second player wins under optimal play (P-position).
-           I will precompute the Grundy table in O(N * |Rules|) and XOR the piles in O(K)."
-
-[15:00 - 35:00] Implementation Protocol
-Candidate: "I'll implement the solution in three clean components:
-           - `CalculateMex`: takes the collection of reachable Grundy values and finds the smallest missing non-negative integer.
-           - `PrecomputeGrundyTable`: 1D DP iterating state from 1 to MaxPile, accumulating reachable Grundy values and calling MEX.
-           - `CanFirstPlayerWin`: iterates over all pile sizes, XORing their Grundy values, returning nimSum != 0."
-
-[35:00 - 45:00] Complexity Deconstruction & Strategic Edge Cases
-Candidate: "Precomputation takes O(N * |Rules|) time and O(N) memory; answering the query takes O(K) time.
-           Edge cases:
-           - All piles empty (size 0): Nim-sum is 0, correctly identifying Player 2 win.
-           - Two identical piles: G ^ G = 0. Player 2 wins by using the 'Mimic Strategy' (mirroring every move Player 1 makes).
-           - Rules exceeding pile size: correctly handled by `state >= move` boundary check."
-```
-
----
-
-## 🔍 Chapter 6: Granular Edge-Case & Invariant Verification Table
+## 🔍 GRANULAR EDGE-CASE & INVARIANT VERIFICATION TABLE
 
 | Edge Case Scenario | Concrete Input | Expected Behavior | Invariant Verification & Handling |
 | :--- | :--- | :--- | :--- |
-| **All Piles Empty** | `pileSizes = [0, 0, 0]` | Returns `false` (Player 2 wins). | `nimSum = 0 ^ 0 ^ 0 = 0`, terminal state classification. |
-| **Two Identical Piles** | `pileSizes = [7, 7]`, arbitrary rules | Returns `false` (Player 2 wins). | Identical Grundy values satisfy `G ^ G = 0`; Player 2 mirrors Player 1's moves. |
-| **Rule Larger Than All Piles** | `pileSizes = [2]`, `rules = [5, 10]` | Returns `false` (No legal moves). | `buffer` remains empty; `MEX({}) = 0`; `nimSum = 0`. |
-| **Single Pile Game** | `pileSizes = [5]`, `rules = [1, 2, 3]` | Returns `true` if `G[5] != 0`. | Single element directly evaluates `G[5] != 0`. |
-| **Cycle of Grundy Values** | Subtraction game `rules = [1, 2, 3]` | Grundy sequence periodic modulo 4: `[0, 1, 2, 3, 0, 1, 2, 3...]`. | Deterministic DP reproduces known Sprague-Grundy periodicity. |
+| **All Empty Piles** | `piles = [0, 0, 0]` | Returns `false` (P-position). | `xorSum == 0`, player has no legal moves. |
+| **Single Pile of Size N** | `piles = [42]` | Returns `true`; winning move is `(0, 0)`. | Takes entire pile in 1 turn, leaving 0 for opponent. |
+| **Two Equal Piles** | `piles = [7, 7]` | Returns `false` (`7 ^ 7 == 0`). | Symmetric copycat strategy guarantees Player 2 wins. |
+| **MEX with Missing Zero** | Reachable Grundy values = `{1, 2, 3}` | Returns `0`. | `0` is the smallest missing non-negative integer. |
+| **Unbounded Pile Sizes** | `piles[i] = 10^9` | Evaluates XOR in `O(1)` without overflow. | 32-bit and 64-bit integer XOR holds safely. |
 
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_17_Day_02_Slope_Trick_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_17_Day_04_Combinatorics_And_Counting_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day: Slope Trick](Week_17_Day_02_Slope_Trick_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Combinatorics & Counting →](Week_17_Day_04_Combinatorics_And_Counting_Instructional.md)

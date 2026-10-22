@@ -470,8 +470,8 @@ if (i != minIdx)
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    R["Array [5, 2, 8, 1,<br/>3, 9,<br/>4, 7]"]
-    R --> N1["Partition: [2, 1,<br/>3, 4]<br/>[5] [8, 9, 7]"]
+    R["Array (5, 2, 8, 1,<br/>3, 9,<br/>4, 7)"]
+    R --> N1["Partition: (2, 1,<br/>3, 4)<br/>(5) (8, 9, 7)"]
 ```
 
 

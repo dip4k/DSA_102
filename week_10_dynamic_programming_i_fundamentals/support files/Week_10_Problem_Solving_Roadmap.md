@@ -39,9 +39,9 @@ This document provides a **three-stage progression** for problem-solving:
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     Start["Dynamic<br/>Programming<br/>Problem"] --> Q1{"What is the<br/>structure of<br/>the subproblem?"}
-    Q1 -->|Single array prefix or 1D steps| P1["1D DP: dp[i]<br/>depends on<br/>dp[i-1], dp[i-2]<br/>(O(1) space)"]
-    Q1 -->|Two strings, sequences, or 2D grid| P2["2D DP: dp[i][j]<br/>(Grid paths, Edit<br/>Distance, LCS)"]
-    Q1 -->|Capacity / weight budget with choices| P3["Knapsack DP:<br/>dp[i][w]<br/>(0/1 or Unbounded)"]
+    Q1 -->|Single array prefix or 1D steps| P1["1D DP: dp(i)<br/>depends on<br/>dp(i-1), dp(i-2)<br/>(O(1) space)"]
+    Q1 -->|Two strings, sequences, or 2D grid| P2["2D DP: dp(i)(j)<br/>(Grid paths, Edit<br/>Distance, LCS)"]
+    Q1 -->|Capacity / weight budget with choices| P3["Knapsack DP:<br/>dp(i)(w)<br/>(0/1 or Unbounded)"]
     Q1 -->|Increasing sequence or ordering| P4["Patience Sorting /<br/>Binary<br/>Search LIS O(N log<br/>N)"]
     Q1 -->|Decision state machine| P5["State Machine DP:<br/>(e.g. Stock<br/>trading with<br/>cooldown)"]
 ```

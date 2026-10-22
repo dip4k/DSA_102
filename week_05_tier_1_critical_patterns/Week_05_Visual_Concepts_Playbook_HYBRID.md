@@ -390,14 +390,14 @@ Find the contiguous subarray with the largest sum. At each index, decide:
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    Current["Current Element:<br/>nums[i]"]
-    Check{"Is current_sum +<br/>nums[i]<br/>> nums[i]?"}
-    Extend["➕ Extend<br/>Subarray<br/>current_sum +=<br/>nums[i]"]
-    Restart["🔄 Restart<br/>Subarray<br/>current_sum =<br/>nums[i]"]
+    Current["Current Element:<br/>nums(i)"]
+    Check{"Is current_sum +<br/>nums(i)<br/>&gt; nums(i)?"}
+    Extend["➕ Extend<br/>Subarray<br/>current_sum +=<br/>nums(i)"]
+    Restart["🔄 Restart<br/>Subarray<br/>current_sum =<br/>nums(i)"]
     Update["🏆 global_max =<br/>max(global_max,<br/>current_sum)"]
 
     Current --> Check
-    Check -->|"Yes (current_sum > 0)"| Extend
+    Check -->|"Yes (current_sum &gt; 0)"| Extend
     Check -->|"No (current_sum &le; 0)"| Restart
     Extend --> Update
     Restart --> Update
@@ -494,9 +494,9 @@ Move two pointers at different speeds through a linked list. If a cycle exists, 
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    classDef init fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
-    classDef cycle fill:#fce4ec,stroke:#c2185b,color:#880e4f,stroke-width:2px;
-    classDef meet fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20,stroke-width:2px;
+    classDef init fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px
+    classDef cycle fill:#fce4ec,stroke:#c2185b,color:#880e4f,stroke-width:2px
+    classDef meet fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20,stroke-width:2px
 
     Head["Head (0)"]:::init --> N1["Node 1"]:::init
     N1 --> N2["Cycle Entry (2)"]:::cycle

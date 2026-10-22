@@ -42,7 +42,7 @@ Design a data structure that follows the constraints of a **Least Recently Used 
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    subgraph HashMap ["_cache: Dictionary[int, LruNode]"]
+    subgraph HashMap["_cache: Dictionary(int, LruNode)"]
         K1["Key: 1"] --> N1
         K2["Key: 2"] --> N2
         K3["Key: 3"] --> N3
@@ -206,15 +206,15 @@ To achieve true O(1) operations, we combine:
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    subgraph Lookups ["_nodeMap: Key -> Node"]
+    subgraph Lookups["_nodeMap: Key -&gt; Node"]
         K1["Key 10"] --> N1["Node(K:10, V:A,<br/>Freq:1)"]
         K2["Key 20"] --> N2["Node(K:20, V:B,<br/>Freq:2)"]
         K3["Key 30"] --> N3["Node(K:30, V:C,<br/>Freq:2)"]
     end
 
-    subgraph FreqBuckets ["_freqMap: Frequency -> DoublyLinkedList (LRU ordered)"]
+    subgraph FreqBuckets["_freqMap: Frequency -&gt; DoublyLinkedList (LRU ordered)"]
         F1["Freq 1"] --> L1["DLL (Head ↔ Node<br/>10 ↔<br/>Tail)"]
-        F2["Freq 2"] --> L2["DLL (Head ↔ Node<br/>30 [MRU]<br/>↔ Node 20 [LRU] ↔<br/>Tail)"]
+        F2["Freq 2"] --> L2["DLL (Head ↔ Node<br/>30 (MRU)<br/>↔ Node 20 (LRU) ↔<br/>Tail)"]
     end
 
     MF["_minFrequency = 1"] -.-> F1

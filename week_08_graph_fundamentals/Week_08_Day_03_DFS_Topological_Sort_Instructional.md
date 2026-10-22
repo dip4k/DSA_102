@@ -1,208 +1,868 @@
-# 📘 Week 8 Day 3: DFS & Topological Sort — Engineering Guide
+# 📘 Week 8 Day 3: DFS & Topological Sort — The Engineering Masterclass
 
-> 🧭 **Navigation:** [← Previous Day](Week_08_Day_02_Breadth_First_Search_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_08_Day_04_Connectivity_and_Bipartite_Graphs_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day: Breadth-First Search (BFS)](Week_08_Day_02_Breadth_First_Search_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Connectivity & Bipartite Graphs →](Week_08_Day_04_Connectivity_and_Bipartite_Graphs_Instructional.md)
 > 
-> 💡 **Instructor Note:** *Topological sorting applies exclusively to Directed Acyclic Graphs (DAGs). Master two canonical interview paradigms: (1) 3-State DFS Cycle Detection + Post-Order Reversal, and (2) Kahn's In-Degree Queue Algorithm. In technical interviews, Kahn's algorithm is preferred whenever you must detect cycles without recursion stack limits or when a tie-breaking order (e.g., lexicographical) is required.*
+> 💡 **Instructor Note:** *Topological sorting is the algorithmic backbone of build systems (Bazel, CMake, MSBuild), package orchestrators (npm, NuGet, pip), task schedulers (Airflow), and database transaction deadlock engines. In Tier-1 FAANG interviews, you must master two foundational paradigms: **Kahn's BFS In-Degree Algorithm** and **3-Color DFS Post-Order Reversal**. You must be able to derive both from first principles, explain their call stack safety trade-offs, and debug subtle cycle-detection edge cases on the whiteboard under live interview pressure.*
 
 ---
 
 ## 🎯 LEARNING OBJECTIVES
 
-By the end of this chapter, you will be able to:
+By the end of this masterclass, you will be able to:
 
-- **Formalize** Directed Acyclic Graphs (DAGs) and the prerequisite-respecting linear ordering invariant.
-- **Deconstruct** the mechanics of the Call Stack vs. an Explicit Heap Stack, avoiding stack overflow on degenerate linear graphs.
-- **Master** Discovery and Finish timestamps (`discovery[u]`, `finish[u]`) and the Parenthesis Theorem for edge classification.
-- **Implement** DFS with 3-state coloring (`UNVISITED` / White, `VISITING` / Gray, `VISITED` / Black) to detect directed cycles and generate topological orders.
-- **Explain** why a 2-state boolean visited flag fails on diamond DAGs, generating false-positive cycles.
-- **Implement** Kahn's in-degree algorithm with FIFO queues and min-heap lexicographical ordering in modern C# (.NET 8/9) and Python (3.11+).
-- **Traverse** disconnected directed graphs to ensure every component and forest is validated.
-- **Diagnose & avoid** beginner pitfalls: self-loops, parallel edge degree inflation, reversed post-order sequences, and recursion stack overflow.
-- **Deliver** a structured 45-minute technical interview script for Course Schedule and dependency build systems.
+- **Deconstruct** Directed Acyclic Graphs (DAGs) and formulate the exact linear ordering invariant that governs dependency resolution.
+- **Implement Kahn's In-Degree Algorithm** from scratch, understanding how in-degree tracking mechanically peels zero-dependency layers like an onion.
+- **Master DFS 3-Color State Transitions** (`White` = 0 / Unvisited, `Gray` = 1 / Active in Call Stack, `Black` = 2 / Fully Processed), and explain why naive 2-state boolean flags fail on diamond graphs.
+- **Differentiate** all four directed edge classes: Tree Edges, Back Edges (cycles!), Forward Edges, and Cross Edges using discovery and finish timestamps.
+- **Deliver** production-grade implementations for **LeetCode 207 (Course Schedule)** and **LeetCode 210 (Course Schedule II)** in modern C# (.NET 8/9) and clean Python (3.11+).
+- **Eliminate** the top 6 rookie blunders: reversed prerequisite edge parsing, corrupted partial orders on cycles, call stack overflow on deep linear chains, and missing forest outer loops.
+- **Articulate** the exact 3-sentence FAANG interview talk track that commands the room before you write a single line of code.
 
 ---
 
-## 📖 CHAPTER 1: CONTEXT & MOTIVATION
+## 🎬 PILLAR 1: THE 60-SECOND HOOK & EVERYDAY ANALOGY
 
-### The Problem of Dependency Scheduling
+### The University Degree Nightmare & The Package Build Engine
 
-Any system executing tasks with prerequisite constraints is solving a topological sort:
-1. **Package Managers (NuGet, npm, pip):** A library cannot be loaded until all its transitive dependencies have initialized.
-2. **Build Systems (MSBuild, CMake, Make):** Target binaries cannot link until object files compile. Circular imports indicate invalid build graphs.
-3. **Database Transaction Deadlocks:** A directed wait-for graph tracks resource locks; a directed cycle indicates deadlock requiring a transaction rollback.
-4. **Academic Course Scheduling (LeetCode 207 & 210):** Students must complete prerequisite courses before taking advanced electives.
-
-### The Topological Invariant
-
-For every directed edge `u -> v`, vertex `u` must appear **before** vertex `v` in the linear ordering:
+Imagine you and I enroll at Stanford to study Computer Science. On Day 1, the academic advisor hands us a prerequisite handbook:
+- To take **CS 107 (Computer Organization)**, you must first complete **CS 106B (Data Structures)**.
+- To take **CS 110 (Operating Systems)**, you must complete **CS 107**.
+- But suppose a clerical typo occurs in the course catalog: **CS 106B** now lists **CS 110** as its prerequisite!
 
 ```
-Topological Invariant:
-For every edge u ---> v:
-Linear Output: [ ... u ... v ... ]
-(u is scheduled strictly before v)
+Circular Prerequisite Deadlock:
+    [ CS 106B ]  ======> requires ======>  [ CS 107 ]
+         ^                                     |
+         |                                     | requires
+     requires                                  v
+         +================================= [ CS 110 ]
 ```
 
-- If the graph contains a **directed cycle** (`A -> B -> C -> A`), no linear ordering can satisfy all constraints simultaneously.
-- A topological sort exists **if and only if** the directed graph is acyclic (a DAG).
+What happens to our graduation date? It is delayed **infinitely**. You cannot take 106B without 110, you cannot take 110 without 107, and you cannot take 107 without 106B. The registrar has trapped you in a **circular dependency deadlock**.
+
+This is not just academic trivia. Every time you type `npm install`, `dotnet restore`, `pip install`, or compile a multi-million-line monorepo in **Bazel** or **MSBuild**, the engine builds a dependency graph:
+- Package `React-DOM` depends on `React`.
+- Package `Redux-Toolkit` depends on `Immer` and `Redux`.
+- If Package `A` imports Package `B`, and Package `B` imports Package `A`, your compiler crashes with an unresolvable cyclic import error.
+
+### The Topological Invariant in Plain English
+
+A **Topological Sort** of a directed graph is a linear ordering of its vertices such that for every directed edge `u -> v`, vertex `u` comes strictly before vertex `v` in the sequence.
+
+```
+The Physical Invariant:
+For every directed edge:   ( u ) ------------> ( v )
+Linear Execution Sequence: [ ... u ... ... ... v ... ]
+                           (Prerequisite)     (Dependent)
+```
+
+> [!IMPORTANT]
+> **The Golden Law of Topological Sorting:**
+> A topological ordering exists **if and only if** the graph contains **NO directed cycles**. A directed graph with no cycles is called a **Directed Acyclic Graph (DAG)**. If a cycle exists, at least one dependency is physically impossible to satisfy, and no valid sequence exists.
 
 ---
 
-## 🧠 CHAPTER 2: BUILDING THE MENTAL MODEL
+## 🪜 PILLAR 2: THE SCAFFOLDING LADDER & TOY NAPKIN TRACE
 
-### 1. Edge Classification & The 3-State Coloring Model
+Let's build intuition by hand-tracing both canonical approaches on the identical 4-node DAG.
 
-When executing DFS on a directed graph, edges fall into four distinct categories:
-1. **Tree Edges:** Edges leading to unvisited nodes (`UNVISITED` / White). These form the DFS spanning forest.
-2. **Back Edges:** Edges pointing to an active ancestor currently on the recursion call stack (`VISITING` / Gray). **A back edge proves a directed cycle exists.**
-3. **Forward Edges:** Non-tree edges pointing from an ancestor to an already-finished descendant (`VISITED` / Black).
-4. **Cross Edges:** Edges pointing to an already-finished node in a different, already-explored branch (`VISITED` / Black).
+### The Canonical 4-Node Diamond DAG
 
-```
-The 3-State State Machine:
-  [ 0: UNVISITED ] ---> [ 1: VISITING ] ---> [ 2: VISITED ]
-       (White)               (Gray)               (Black)
-                         On Call Stack        Finished & Popped
-                               |
-                      Encounter Gray again?
-                      ===> CYCLE DETECTED!
-```
-
-#### Why a 2-State (Boolean) Flag Fails: The Diamond DAG Trap
-
-Consider a classic "diamond" DAG with 4 nodes: `0 -> 1 -> 3` and `0 -> 2 -> 3`.
+We have 4 courses (`0, 1, 2, 3`) and the following prerequisites:
+- Course `0` is a foundation with zero prerequisites.
+- Taking `0` unlocks Course `1` and Course `2`.
+- Course `3` requires **both** Course `1` and Course `2` to be completed.
 
 ```
-Diamond DAG (Acyclic!):
-       ( 0 )
-      /     \
-     v       v
-   ( 1 )   ( 2 )
-      \     /
-       v   v
-       ( 3 )
-```
+       Canonical 4-Node Diamond DAG:
+                 ( 0 )
+                /     \
+               v       v
+             ( 1 )   ( 2 )
+               \       /
+                v     v
+                 ( 3 )
 
-1. Start DFS at `0`.
-2. Visit `1`, then visit `3`.
-3. Node `3` has no outgoing edges: it finishes.
-4. Backtrack to `0`, then visit `2`.
-5. From `2`, inspect edge `2 -> 3`.
-- **With a 2-state boolean `visited` array:** `visited[3]` is `true`. A naive algorithm flags `3` as already visited and incorrectly claims a cycle exists!
-- **With 3-state coloring:** `state[3]` is `VISITED` (Black). It is **not** on the active call stack (`state[3] != VISITING`). The edge `2 -> 3` is recognized as a harmless **Cross Edge**. The graph is correctly confirmed as acyclic!
-
----
-
-### 2. Discovery & Finish Times (Timestamping)
-
-By maintaining a global counter `time`, DFS records two critical timestamps for every vertex `u`:
-- `discovery[u]`: Timestamp when vertex `u` is first discovered and colored Gray.
-- `finish[u]`: Timestamp when all edges incident from `u` have been fully explored and `u` is colored Black.
-
-```
-Parenthesis Theorem:
-For any two vertices u and v, their intervals [d[u], f[u]] and [d[v], f[v]]
-are either:
-1. Entirely disjoint: (u and v are in separate branches)
-      [ d[u] ... f[u] ]     [ d[v] ... f[v] ]
-2. Strictly nested: (v is a descendant of u in the DFS tree)
-      [ d[u] ... [ d[v] ... f[v] ] ... f[u] ]
-```
-
-**Topological Sort Connection:** In a DAG, for every directed edge `u -> v`, `finish[u] > finish[v]`. Therefore, sorting vertices by **descending finish time** (or appending to a list upon finishing and reversing) produces a valid topological ordering!
-
----
-
-### 3. Call Stack vs. Explicit Heap Stack
-
-```
-Recursion Call Stack:                 Explicit Heap Stack:
-Thread Memory (Limited: 1 MB)         Heap Memory (Gigabytes)
-+-----------------------+              +-----------------------+
-| Frame 3: Dfs(Node 3)  |              | Stack.Push((3, 0))    |
-+-----------------------+              +-----------------------+
-| Frame 2: Dfs(Node 2)  |              | Stack.Push((2, 1))    |
-+-----------------------+              +-----------------------+
-| Frame 1: Dfs(Node 1)  |              | Stack.Push((1, 1))    |
-+-----------------------+              +-----------------------+
-| Frame 0: Dfs(Node 0)  |              | Stack.Push((0, 2))    |
-+-----------------------+              +-----------------------+
-Vulnerable to StackOverflow            Safe for V = 10^5+ nodes
+Directed Edges:
+  0 -> 1
+  0 -> 2
+  1 -> 3
+  2 -> 3
 ```
 
 ---
 
-### 4. Visualizing Kahn's In-Degree Progression
+### Approach A: Kahn's Algorithm (BFS-based In-Degree Draining)
+
+**The Intuitive Mental Model:** Think of an onion. 
+1. Find all courses that have **zero prerequisites** (in-degree = 0). These are ready to take immediately.
+2. Complete those courses (put them in our graduation sequence).
+3. "Erase" them from the university catalog along with all their outgoing requirements (decrement the in-degrees of their direct downstream neighbors).
+4. Any neighbor whose in-degree drops to 0 is now unlocked! Repeat until all courses are taken.
+
+#### Step 1: Compute Initial In-Degrees
+- Node `0`: 0 incoming edges -> `inDegree[0] = 0`
+- Node `1`: 1 incoming edge (from `0`) -> `inDegree[1] = 1`
+- Node `2`: 1 incoming edge (from `0`) -> `inDegree[2] = 1`
+- Node `3`: 2 incoming edges (from `1` and `2`) -> `inDegree[3] = 2`
 
 ```
-Sample Prerequisite DAG:
-       ( 0 ) ------> ( 1 )
-         |             |
-         |             v
-         +---------> ( 2 ) ------> ( 3 )
+Initial In-Degree Table:
++------------+---+---+---+---+
+| Vertex     | 0 | 1 | 2 | 3 |
++------------+---+---+---+---+
+| In-Degree  | 0 | 1 | 1 | 2 |
++------------+---+---+---+---+
+Queue: [ 0 ] (Only nodes with inDegree == 0 enter!)
+Processed Count = 0
+Order = []
+```
 
-Edges: 0 -> 1, 0 -> 2, 1 -> 2, 2 -> 3
+#### Step-by-Step Draining Execution:
 
-Kahn's In-Degree Progression:
-  Initial In-Degrees: { 0: 0, 1: 1, 2: 2, 3: 1 }
-  Queue (In-Degree == 0): [ 0 ]
+| Step | Action Taken | Dequeued `u` | Neighbors Updated | New In-Degrees `[0, 1, 2, 3]` | Queue State | Output Order `order` |
+| :---: | :--- | :---: | :---: | :---: | :---: | :--- |
+| **0** | Seed Queue with `inDegree == 0` | — | — | `[0, 1, 1, 2]` | `[ 0 ]` | `[ ]` |
+| **1** | Dequeue `0`, increment count to 1 | **0** | `1`: `1 - 1 = 0`<br/>`2`: `1 - 1 = 0` | `[0, 0, 0, 2]` | `[ 1, 2 ]` | `[ 0 ]` |
+| **2** | Dequeue `1`, increment count to 2 | **1** | `3`: `2 - 1 = 1` | `[0, 0, 0, 1]` | `[ 2 ]` | `[ 0, 1 ]` |
+| **3** | Dequeue `2`, increment count to 3 | **2** | `3`: `1 - 1 = 0` | `[0, 0, 0, 0]` | `[ 3 ]` | `[ 0, 1, 2 ]` |
+| **4** | Dequeue `3`, increment count to 4 | **3** | None | `[0, 0, 0, 0]` | `[ ]` | `[ 0, 1, 2, 3 ]` |
 
-  Pop 0: Output [ 0 ]
-         Decrement neighbors 1 & 2: { 1: 0, 2: 1 } --> Enqueue 1: [ 1 ]
-  Pop 1: Output [ 0, 1 ]
-         Decrement neighbor 2:      { 2: 0 }       --> Enqueue 2: [ 2 ]
-  Pop 2: Output [ 0, 1, 2 ]
-         Decrement neighbor 3:      { 3: 0 }       --> Enqueue 3: [ 3 ]
-  Pop 3: Output [ 0, 1, 2, 3 ] (All 4 nodes processed -> Valid DAG!)
+Queue is empty. `processedCount = 4 == V (4)`.
+**Valid Topological Sort Found:** `[ 0, 1, 2, 3 ]` (or `[ 0, 2, 1, 3 ]` depending on queue order).
+
+```
+Why Kahn's Detects Cycles:
+If there is a cycle (e.g. 3 -> 0), the in-degrees in the cycle will NEVER reach 0.
+They can never enter the queue!
+When the queue runs dry, processedCount < V.
+Cycle detected in O(V + E) time with zero recursion!
 ```
 
 ---
 
-## ⚙️ CHAPTER 3: MECHANICS & DUAL-LANGUAGE IMPLEMENTATIONS
+> [!TIP]
+> ### 🧠 Pause & Predict #1
+> **Scenario:** Suppose an additional edge is added: `3 -> 0`.
+> 1. What would `inDegree[0]` become initially?
+> 2. What would the queue contain at Step 0?
+> 3. What would the algorithm return?
+>
+> *Take 10 seconds to trace this in your head before reading the answer below!*
+>
+> **Answer:**
+> 1. `inDegree[0]` becomes `1` (edge `3 -> 0`).
+> 2. Initial in-degrees: `[0: 1, 1: 1, 2: 1, 3: 2]`. **NO vertex has in-degree 0!**
+> 3. The initial queue is completely **EMPTY** (`[]`). The `while` loop never executes!
+> 4. `processedCount = 0 != 4`. Kahn's instantly identifies a cycle and returns an empty list `[]`.
 
-### 1. DFS 3-State Cycle Detection & Topological Sort (Recursive)
+---
 
-Vertices are pushed to the output list only upon completion of all outgoing transitions (post-order finish). Reversing this post-order sequence yields a valid topological sort.
+### Approach B: DFS with 3-Color State Transitions (Post-Order Reversal)
 
-#### C# (.NET 8/9) Implementation
+**The Intuitive Mental Model:** Imagine you are a deep explorer walking a maze of dependencies.
+- You can't graduate a course until you've explored **all** courses that depend on it down the rabbit hole.
+- To detect cycles, think of holding a **red yarn string** behind you back to your current ancestors. If you turn a corner and bump into your own active yarn string, you walked in a circle!
 
+#### The 3 Colors:
+- **`0 = White (UNVISITED)`**: Completely unexplored territory.
+- **`1 = Gray (VISITING)`**: Currently on the active recursion call stack (your yarn string is tied here).
+- **`2 = Black (VISITED)`**: Completely explored; all outgoing branches are finished and popped. Safe!
+
+```
+The 3-Color Lifecycle:
+   ( White: 0 )  ======> Enter DFS ======>  ( Gray: 1 )
+   [Unvisited]                              [On Call Stack]
+                                                   |
+                             Encounter Gray again? |
+                             ===> CYCLE DETECTED!  | All outgoing edges explored
+                                                   v
+                                            ( Black: 2 )
+                                            [Finished & Added to Post-Order]
+```
+
+#### Step-by-Step Execution on the 4-Node Diamond:
+
+1. **Start `Dfs(0)`:**
+   - Mark `state[0] = Gray (1)`. Active call stack: `[0]`.
+   - Inspect edge `0 -> 1`. Node `1` is `White`. Call `Dfs(1)`.
+2. **Inside `Dfs(1)`:**
+   - Mark `state[1] = Gray (1)`. Active call stack: `[0, 1]`.
+   - Inspect edge `1 -> 3`. Node `3` is `White`. Call `Dfs(3)`.
+3. **Inside `Dfs(3)`:**
+   - Mark `state[3] = Gray (1)`. Active call stack: `[0, 1, 3]`.
+   - Node `3` has **no outgoing edges** (leaf/sink).
+   - Exploration of `3` complete! Mark `state[3] = Black (2)`.
+   - Append `3` to `postOrder`: `postOrder = [ 3 ]`.
+   - Return from `Dfs(3)` back to `Dfs(1)`.
+4. **Back in `Dfs(1)`:**
+   - All outgoing edges of `1` explored. Mark `state[1] = Black (2)`.
+   - Append `1` to `postOrder`: `postOrder = [ 3, 1 ]`.
+   - Return from `Dfs(1)` back to `Dfs(0)`.
+5. **Back in `Dfs(0)`:**
+   - Next neighbor of `0`: inspect edge `0 -> 2`. Node `2` is `White`. Call `Dfs(2)`.
+6. **Inside `Dfs(2)`:**
+   - Mark `state[2] = Gray (1)`. Active call stack: `[0, 2]`.
+   - Inspect edge `2 -> 3`. Node `3` is **Black (2)**!
+   - Is `3` a cycle? **NO!** `3` is `Black`, not `Gray`. It is finished, not an ancestor on our active call stack! This is a **Cross Edge**. Safely ignore!
+   - All outgoing edges of `2` explored. Mark `state[2] = Black (2)`.
+   - Append `2` to `postOrder`: `postOrder = [ 3, 1, 2 ]`.
+   - Return from `Dfs(2)` back to `Dfs(0)`.
+7. **Back in `Dfs(0)`:**
+   - All outgoing edges of `0` explored. Mark `state[0] = Black (2)`.
+   - Append `0` to `postOrder`: `postOrder = [ 3, 1, 2, 0 ]`.
+8. **Final Step: Reverse Post-Order!**
+   - Reverse `[ 3, 1, 2, 0 ]` -> **`[ 0, 2, 1, 3 ]`** (A perfectly valid topological ordering!).
+
+```
+Why Post-Order Reversal Works:
+A node only turns Black AFTER all its downstream dependencies turn Black.
+Therefore, a dependent (e.g. 3) ALWAYS enters postOrder BEFORE its prerequisite (e.g. 0).
+Reversing the list puts prerequisites first!
+```
+
+---
+
+> [!TIP]
+> ### 🧠 Pause & Predict #2
+> **Scenario:** Look closely at Step 6 above. When `Dfs(2)` visited `3`, `state[3]` was already `Black (2)`.
+> What would happen if we used a simple 2-state boolean array `bool[] visited` where `visited[3] == true` simply meant "already seen"?
+>
+> *Why does standard undirected cycle detection crash and burn here?*
+>
+> **Answer:**
+> With a simple `bool[] visited`, when path `0 -> 2 -> 3` encounters `3`, it would see `visited[3] == true`. If the algorithm treats `visited == true` as a cycle, it will **falsely flag a cycle on a completely valid DAG!**
+> This is why directed graphs strictly require **3 states**:
+> - `White`: Unvisited
+> - `Gray`: Currently on the call stack (Ancestor) -> **CYCLE!**
+> - `Black`: Finished in an earlier branch -> **Harmless cross/forward edge!**
+
+---
+
+## 🎨 PILLAR 3: PRAGMATIC VISUAL MODELS
+
+### 1. ASCII In-Degree Queue Draining Waves
+
+Observe how Kahn's algorithm processes vertices in concentric waves of zero-dependency frontiers:
+
+```
+                      KAHN'S BFS IN-DEGREE DRAINING WAVES
+                      
+Wave 0 (In-Degree = 0):                 [ 0 ]              <-- Ready to take immediately
+                                       /     \
+                                      v       v
+Wave 1 (In-Degree = 0 after W0):    [ 1 ]   [ 2 ]          <-- Unlocked simultaneously
+                                      \       /
+                                       v     v
+Wave 2 (In-Degree = 0 after W1):        [ 3 ]              <-- Unlocked only after BOTH 1 & 2 finish
+
+Memory Buffer Snapshots:
+-----------------------------------------------------------------------------
+Timestamp    Active Queue       In-Degree Array [0,1,2,3]    Output Order
+-----------------------------------------------------------------------------
+T0 (Init)    [ 0 ]              [ 0, 1, 1, 2 ]               [ ]
+T1 (Pop 0)   [ 1, 2 ]           [ -, 0, 0, 2 ]               [ 0 ]
+T2 (Pop 1)   [ 2 ]              [ -, -, 0, 1 ]               [ 0, 1 ]
+T3 (Pop 2)   [ 3 ]              [ -, -, -, 0 ]               [ 0, 1, 2 ]
+T4 (Pop 3)   [ ]                [ -, -, -, - ]               [ 0, 1, 2, 3 ]
+-----------------------------------------------------------------------------
+Total Processed: 4 / 4 Nodes. Status: VALID DAG (No Cycles).
+```
+
+---
+
+### 2. State Machine: 3-Color DFS State Transitions
+
+This state transition diagram illustrates when a cycle is proven versus when an edge is simply a benign cross edge:
+
+```mermaid
+stateDiagram-v2
+    [*] --> White : Node Created (Unvisited)
+    
+    White --> Gray : DFS Enters Node (Pushed to Call Stack)
+    
+    Gray --> Gray : Back-Edge to Gray Ancestor!\n🛑 CYCLE DETECTED!
+    
+    Gray --> Black : All Outgoing Edges Explored\n(Popped from Stack & Appended to Post-Order)
+    
+    Black --> [*] : Completed Vertex
+    
+    note right of Gray
+      Gray represents the active recursion stack.
+      Encountering Gray proves an ancestor path loop.
+    end note
+    
+    note right of Black
+      Reaching Black via a different path is a
+      benign Cross Edge (e.g. Diamond DAG).
+    end note
+```
+
+---
+
+### 3. Architectural Decision Flowchart: Kahn's vs. DFS
+
+When should you use Kahn's vs. 3-Color DFS in an actual interview? Follow this battle-tested decision tree:
+
+```mermaid
+flowchart TD
+    Start["Directed Graph Problem"] --> Q1{"What is the goal?"}
+    
+    Q1 -->|Cycle Detection Only| Q2{"Recursion Stack Risk?<br/>(V &ge; 10^5 or Chain DAG)"}
+    Q1 -->|Topological Ordering| Q3{"Order Constraints?"}
+    
+    Q2 -->|Yes: Stack Overflow Risk| KahnsCycle["⚡ Kahn's In-Degree BFS<br/>(Safe O(V) Heap Queue)"]
+    Q2 -->|No: Standard Tree/Graph| DFSCycle["🔍 3-Color DFS<br/>(White / Gray / Black)"]
+    
+    Q3 -->|Lexicographically Smallest Order| KahnsPQ["🏆 Kahn's + Min-Heap<br/>(PriorityQueue / heapq)"]
+    Q3 -->|Any Valid Order| KahnsStandard["⚡ Kahn's BFS or DFS Post-Order<br/>(Kahn's preferred for stack safety)"]
+
+    style Start fill:#e1f5fe,stroke:#0288d1,color:#01579b
+    style KahnsCycle fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style DFSCycle fill:#fff3e0,stroke:#e65100,color:#bf360c
+    style KahnsPQ fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c
+    style KahnsStandard fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+```
+
+---
+
+## 🛑 PILLAR 4: THE ROOKIE TRAP ZONE
+
+### Side-by-Side Architectural Blunder Comparisons
+
+#### Trap 1: The 2-State Boolean Visited Trap (Diamond False Alarm)
+
+> [!WARNING]
+> In undirected graphs, checking `visited[v] == true && v != parent` detects cycles. In directed graphs, this completely breaks on diamond graphs (`0 -> 1 -> 3` and `0 -> 2 -> 3`). Node `3` is visited twice along valid, acyclic paths!
+
+```csharp
+// ❌ ROOKIE BLUNDER: 2-State Boolean visited flags cross-edges as cycles
+bool[] visited = new bool[n];
+bool HasCycle(int u) {
+    visited[u] = true;
+    foreach (int v in adj[u]) {
+        if (visited[v]) return true; // BUG! Flags diamond cross-edges as cycles!
+        if (HasCycle(v)) return true;
+    }
+    return false;
+}
+
+// ✅ SENIOR ARCHITECT PATTERN: 3-State coloring strictly isolates back-edges
+int[] state = new int[n]; // 0: White, 1: Gray, 2: Black
+bool HasCycle(int u) {
+    state[u] = 1; // Gray: on active call stack
+    foreach (int v in adj[u]) {
+        if (state[v] == 1) return true; // TRUE CYCLE: back-edge to active ancestor!
+        if (state[v] == 0 && HasCycle(v)) return true;
+        // If state[v] == 2 (Black), it's a finished cross-edge; safely ignore!
+    }
+    state[u] = 2; // Black: finished exploring all downstream paths
+    return false;
+}
+```
+
+---
+
+#### Trap 2: Inverted Prerequisite Edge Direction
+
+> [!CAUTION]
+> In LeetCode 207 & 210, the input is given as pairs `[a, b]`, which explicitly states: *"To take course `a`, you must first take course `b`"*.
+> - **The Prerequisite is `b`**.
+> - **The Dependent is `a`**.
+> - Therefore, the directed dependency edge is **`b -> a`**, NOT `a -> b`!
+>
+> If you add edge `a -> b`, you invert the entire graph, compute the reverse dependencies, and produce an invalid schedule.
+
+```csharp
+// ❌ ROOKIE BLUNDER: Reading [a, b] as edge a -> b
+foreach (var edge in prerequisites) {
+    int a = edge[0];
+    int b = edge[1];
+    adj[a].Add(b);      // WRONG: Inverts the dependency flow!
+    inDegree[b]++;     // WRONG: Prerequisite gets inflated in-degree!
+}
+
+// ✅ SENIOR ARCHITECT PATTERN: Clarify u -> v semantics upfront
+foreach (var edge in prerequisites) {
+    int course = edge[0];
+    int prereq = edge[1];
+    adj[prereq].Add(course); // CORRECT: Prerequisite unlocks the course
+    inDegree[course]++;     // CORRECT: Course waits for its prerequisite
+}
+```
+
+---
+
+#### Trap 3: Returning a Corrupted Partial Order on Cycle
+
+> [!WARNING]
+> If a graph contains both a cycle AND acyclic components (e.g. `0 -> 1 -> 0` and `2 -> 3`), Kahn's algorithm will successfully process nodes `2` and `3`. If you simply return the accumulated list without checking its length, you return a partial schedule for a broken graph!
+
+```csharp
+// ❌ ROOKIE BLUNDER: Returns partial array even when cycle exists
+return order; // BUG: Might only have 2 elements when numCourses = 4!
+
+// ✅ SENIOR ARCHITECT PATTERN: Invariant validation against total vertex count
+return processedCount == numCourses ? order : Array.Empty<int>();
+```
+
+---
+
+#### Trap 4: Forgetting the Outer Loop (Disconnected Forests)
+
+> [!WARNING]
+> Real-world dependency graphs are rarely single connected components. They are forests containing multiple disconnected islands. Calling `Dfs(0)` once leaves isolated components completely unvisited. If an isolated component contains a cycle, you will fail to detect it!
+
+```csharp
+// ❌ ROOKIE BLUNDER: Assumes node 0 reaches everything
+Dfs(0); // BUG: Misses disconnected component cycles (e.g., 2 -> 3 -> 2)!
+
+// ✅ SENIOR ARCHITECT PATTERN: Sweep every vertex through an outer loop
+for (int i = 0; i < numCourses; i++) {
+    if (state[i] == 0) {
+        if (Dfs(i)) return false; // Cycle found in some component!
+    }
+}
+```
+
+---
+
+## 🎙️ PILLAR 5: 45-MINUTE INTERVIEW TALK TRACK
+
+### The Golden 3-Sentence Script (Deliver Before Writing Code)
+
+When the interviewer asks: *"There are `numCourses` courses labeled `0` to `numCourses - 1`. Given prerequisite pairs `[a, b]`, can a student finish all courses? If so, return the order."*
+
+Look at them and say:
+
+> 🗣️ *"We can model this as a Directed Acyclic Graph where each prerequisite pair `[a, b]` represents a directed dependency edge from prerequisite `b` to course `a`. A valid course sequence exists if and only if the graph has no directed cycles, which is the exact definition of a topological sort. I will use Kahn's in-degree BFS algorithm because it operates in `O(V + E)` time, requires `O(V)` auxiliary space, and completely avoids the recursion stack overflow risks associated with deep linear graphs in production."*
+
+---
+
+### The 4-Phase Interview Breakdown
+
+#### Phase 1: Clarification & Edge Contracts (0–5 Mins)
+- **Edge Direction:** "To confirm: `[a, b]` means `b` is the prerequisite of `a`, so our edge is `b -> a`?"
+- **Output Contract:** "If a cycle is detected, should I return an empty array `[]`?"
+- **Multiple Valid Orders:** "If multiple valid topological sorts exist, is any valid sequence acceptable?"
+- **Constraints:** "What are the bounds on `numCourses` (`V`) and prerequisites (`E`)? If `V = 10^5`, Kahn's BFS is strongly preferred over recursive DFS to avoid thread stack exhaustion."
+
+#### Phase 2: High-Level Approach & Invariant (5–12 Mins)
+- State the Kahn's Invariant: *"Nodes with `inDegree == 0` have no pending prerequisites and can be scheduled immediately. Processing a node decrements the in-degrees of its children. If our processed count matches `numCourses`, we have a valid topological order. Otherwise, a cycle exists."*
+- Propose the data structures: `int[] inDegree`, `List<int>[] adj`, and `Queue<int> queue`.
+
+#### Phase 3: Live Coding Walkthrough (12–32 Mins)
+- Write the input parsing cleanly, guard against edge inversion.
+- Seed the queue with all initial `inDegree == 0` nodes.
+- Run the standard BFS queue draining loop while populating the output array.
+- Validate `processedCount == numCourses`.
+
+#### Phase 4: Edge-Case Dry Run & Verification (32–40 Mins)
+Walk the interviewer through these 4 boundary cases:
+1. **Empty / No Prerequisites (`E = 0`):** Every node starts with `inDegree = 0`. All enter the queue in wave 0. Returns `[0, 1, ..., V-1]`.
+2. **Mutual Deadlock Cycle (`0 -> 1` and `1 -> 0`):** Initial in-degrees are `[1, 1]`. Queue starts empty. `processedCount = 0 != 2`. Returns `[]`.
+3. **Disconnected Components (`0 -> 1` and `2 -> 3`):** Nodes `0` and `2` both start with `inDegree = 0`. Queue processes both components smoothly.
+4. **Self-Loop (`0 -> 0`):** `inDegree[0] = 1`. Node `0` never enters the queue. Returns `[]`.
+
+---
+
+## ⚡ PILLAR 6: PRODUCTION DUAL-LANGUAGE IMPLEMENTATIONS
+
+### Problem 1: LeetCode 207 — Course Schedule (Cycle Detection)
+
+Return `true` if you can finish all courses; otherwise return `false`.
+
+#### Approach 1A: Kahn's BFS In-Degree Draining (Industry Standard)
+
+##### C# (.NET 8/9) Implementation
 ```csharp
 using System;
 using System.Collections.Generic;
 
-public sealed class DfsTopologicalSorter
+public sealed class CourseScheduleKahn
 {
-    private const int Unvisited = 0; // White
-    private const int Visiting = 1;  // Gray: On active recursion call stack
-    private const int Visited = 2;   // Black: Fully explored & finished
-
-    public static (bool HasCycle, int[] Order) Sort(int numCourses, int[][] prerequisites)
+    /// <summary>
+    /// Determines if all courses can be finished using Kahn's In-Degree BFS.
+    /// Time Complexity: O(V + E) - Visits every vertex and traverses every edge once.
+    /// Auxiliary Space: O(V + E) - Adjacency list plus in-degree array and queue.
+    /// </summary>
+    public static bool CanFinish(int numCourses, int[][] prerequisites)
     {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(numCourses);
+        // Guard clause: Single course or non-existent constraints are trivially valid
+        if (numCourses <= 1 || prerequisites == null || prerequisites.Length == 0)
+        {
+            return true;
+        }
+
+        // 1. Build Adjacency List and compute In-Degrees
         var adj = new List<int>[numCourses];
-        for (int i = 0; i < numCourses; i++) adj[i] = new List<int>();
+        for (int i = 0; i < numCourses; i++)
+        {
+            adj[i] = new List<int>();
+        }
+
+        var inDegree = new int[numCourses];
+        foreach (var edge in prerequisites)
+        {
+            int course = edge[0];
+            int prereq = edge[1];
+
+            // Prerequisite must come before the course: prereq -> course
+            adj[prereq].Add(course);
+            inDegree[course]++;
+        }
+
+        // 2. Seed Queue with all zero-dependency courses
+        var queue = new Queue<int>();
+        for (int i = 0; i < numCourses; i++)
+        {
+            if (inDegree[i] == 0)
+            {
+                queue.Enqueue(i);
+            }
+        }
+
+        // 3. Process BFS frontier
+        int processedCount = 0;
+        while (queue.Count > 0)
+        {
+            int current = queue.Dequeue();
+            processedCount++;
+
+            foreach (int neighbor in adj[current])
+            {
+                inDegree[neighbor]--;
+                if (inDegree[neighbor] == 0)
+                {
+                    queue.Enqueue(neighbor);
+                }
+            }
+        }
+
+        // Invariant: If processedCount == numCourses, the graph is a DAG (no cycles)
+        return processedCount == numCourses;
+    }
+}
+```
+
+##### Python (3.11+) Implementation
+```python
+from collections import deque
+from typing import List
+
+def can_finish_kahns(num_courses: int, prerequisites: List[List[int]]) -> bool:
+    """
+    Determines if all courses can be finished using Kahn's algorithm (BFS In-Degree).
+    Time Complexity: O(V + E)
+    Auxiliary Space: O(V + E)
+    """
+    if num_courses <= 1 or not prerequisites:
+        return True
+
+    # 1. Build Adjacency List and In-Degree counts
+    adj: List[List[int]] = [[] for _ in range(num_courses)]
+    in_degree = [0] * num_courses
+
+    for course, prereq in prerequisites:
+        adj[prereq].append(course)
+        in_degree[course] += 1
+
+    # 2. Seed Queue with all in-degree == 0 courses
+    queue = deque([i for i in range(num_courses) if in_degree[i] == 0])
+    processed_count = 0
+
+    # 3. Drain frontier
+    while queue:
+        curr = queue.popleft()
+        processed_count += 1
+
+        for neighbor in adj[curr]:
+            in_degree[neighbor] -= 1
+            if in_degree[neighbor] == 0:
+                queue.append(neighbor)
+
+    # Invariant: Acycle graph iff all vertices were processed
+    return processed_count == num_courses
+```
+
+---
+
+#### Approach 1B: 3-Color State DFS (Cycle Detection)
+
+##### C# (.NET 8/9) Implementation
+```csharp
+using System;
+using System.Collections.Generic;
+
+public sealed class CourseScheduleDfs
+{
+    private const int Unvisited = 0; // White: Unexplored
+    private const int Visiting = 1;  // Gray: On active recursion call stack
+    private const int Visited = 2;   // Black: Fully explored, safe
+
+    /// <summary>
+    /// Detects directed cycles using 3-color DFS state transitions.
+    /// Time Complexity: O(V + E)
+    /// Auxiliary Space: O(V + E) - Recursion stack up to O(V).
+    /// </summary>
+    public static bool CanFinish(int numCourses, int[][] prerequisites)
+    {
+        if (numCourses <= 1 || prerequisites == null || prerequisites.Length == 0)
+        {
+            return true;
+        }
+
+        var adj = new List<int>[numCourses];
+        for (int i = 0; i < numCourses; i++)
+        {
+            adj[i] = new List<int>();
+        }
 
         foreach (var edge in prerequisites)
         {
-            int dest = edge[0];
-            int src = edge[1];
-            adj[src].Add(dest); // src must precede dest
+            adj[edge[1]].Add(edge[0]);
         }
 
         var state = new int[numCourses];
-        var finishOrder = new List<int>(numCourses);
-        bool hasCycle = false;
 
-        void Dfs(int u)
+        // Local function for recursive DFS traversal
+        bool HasCycle(int u)
         {
-            if (hasCycle) return;
-            state[u] = Visiting; // Enter node: mark Gray
+            state[u] = Visiting; // Mark Gray (on active call stack)
 
             foreach (int v in adj[u])
             {
                 if (state[v] == Visiting)
                 {
-                    hasCycle = true; // Back-edge to an active ancestor -> CYCLE!
+                    return true; // Back-edge to active ancestor found -> CYCLE!
+                }
+
+                if (state[v] == Unvisited && HasCycle(v))
+                {
+                    return true;
+                }
+            }
+
+            state[u] = Visited; // Mark Black (fully explored)
+            return false;
+        }
+
+        // Outer loop guarantees coverage across disconnected forests
+        for (int i = 0; i < numCourses; i++)
+        {
+            if (state[i] == Unvisited)
+            {
+                if (HasCycle(i))
+                {
+                    return false; // Cycle detected: cannot finish all courses
+                }
+            }
+        }
+
+        return true;
+    }
+}
+```
+
+##### Python (3.11+) Implementation
+```python
+from typing import List
+
+def can_finish_dfs(num_courses: int, prerequisites: List[List[int]]) -> bool:
+    """
+    Detects directed cycles using 3-color DFS state transitions.
+    Time Complexity: O(V + E)
+    Auxiliary Space: O(V + E)
+    """
+    if num_courses <= 1 or not prerequisites:
+        return True
+
+    UNVISITED, VISITING, VISITED = 0, 1, 2
+    adj: List[List[int]] = [[] for _ in range(num_courses)]
+    for course, prereq in prerequisites:
+        adj[prereq].append(course)
+
+    state = [UNVISITED] * num_courses
+
+    def has_cycle(u: int) -> bool:
+        state[u] = VISITING  # Mark Gray: on current call stack
+
+        for v in adj[u]:
+            if state[v] == VISITING:
+                return True  # Back-edge to an active ancestor -> CYCLE!
+            if state[v] == UNVISITED:
+                if has_cycle(v):
+                    return True
+
+        state[u] = VISITED   # Mark Black: finished
+        return False
+
+    # Outer loop to handle disconnected components
+    for i in range(num_courses):
+        if state[i] == UNVISITED:
+            if has_cycle(i):
+                return False
+
+    return True
+```
+
+---
+
+### Problem 2: LeetCode 210 — Course Schedule II (Ordering Output)
+
+Return the ordering of courses you should take to finish all courses. If impossible, return an empty array.
+
+#### Approach 2A: Kahn's BFS In-Degree Ordering (Production Preferred)
+
+##### C# (.NET 8/9) Implementation
+```csharp
+using System;
+using System.Collections.Generic;
+
+public sealed class CourseScheduleOrderKahn
+{
+    /// <summary>
+    /// Returns a valid course sequence using Kahn's algorithm.
+    /// Time Complexity: O(V + E)
+    /// Auxiliary Space: O(V + E)
+    /// </summary>
+    public static int[] FindOrder(int numCourses, int[][] prerequisites)
+    {
+        if (numCourses <= 0) return Array.Empty<int>();
+
+        var adj = new List<int>[numCourses];
+        for (int i = 0; i < numCourses; i++)
+        {
+            adj[i] = new List<int>();
+        }
+
+        var inDegree = new int[numCourses];
+        foreach (var edge in prerequisites)
+        {
+            int course = edge[0];
+            int prereq = edge[1];
+            adj[prereq].Add(course);
+            inDegree[course]++;
+        }
+
+        var queue = new Queue<int>();
+        for (int i = 0; i < numCourses; i++)
+        {
+            if (inDegree[i] == 0)
+            {
+                queue.Enqueue(i);
+            }
+        }
+
+        var order = new int[numCourses];
+        int writeIdx = 0;
+
+        while (queue.Count > 0)
+        {
+            int current = queue.Dequeue();
+            order[writeIdx++] = current;
+
+            foreach (int neighbor in adj[current])
+            {
+                inDegree[neighbor]--;
+                if (inDegree[neighbor] == 0)
+                {
+                    queue.Enqueue(neighbor);
+                }
+            }
+        }
+
+        // Return ordering only if ALL courses were successfully scheduled
+        return writeIdx == numCourses ? order : Array.Empty<int>();
+    }
+}
+```
+
+##### Python (3.11+) Implementation
+```python
+from collections import deque
+from typing import List
+
+def find_order_kahns(num_courses: int, prerequisites: List[List[int]]) -> List[int]:
+    """
+    Returns valid topological ordering using Kahn's BFS algorithm.
+    Time Complexity: O(V + E)
+    Auxiliary Space: O(V + E)
+    """
+    if num_courses <= 0:
+        return []
+
+    adj: List[List[int]] = [[] for _ in range(num_courses)]
+    in_degree = [0] * num_courses
+
+    for course, prereq in prerequisites:
+        adj[prereq].append(course)
+        in_degree[course] += 1
+
+    queue = deque([i for i in range(num_courses) if in_degree[i] == 0])
+    order: List[int] = []
+
+    while queue:
+        curr = queue.popleft()
+        order.append(curr)
+
+        for neighbor in adj[curr]:
+            in_degree[neighbor] -= 1
+            if in_degree[neighbor] == 0:
+                queue.append(neighbor)
+
+    return order if len(order) == num_courses else []
+```
+
+---
+
+#### Approach 2B: DFS Post-Order Reversal with 3-Color States
+
+##### C# (.NET 8/9) Implementation
+```csharp
+using System;
+using System.Collections.Generic;
+
+public sealed class CourseScheduleOrderDfs
+{
+    private const int Unvisited = 0; // White
+    private const int Visiting = 1;  // Gray
+    private const int Visited = 2;   // Black
+
+    /// <summary>
+    /// Generates topological order by reversing post-order DFS finish sequence.
+    /// Time Complexity: O(V + E)
+    /// Auxiliary Space: O(V + E)
+    /// </summary>
+    public static int[] FindOrder(int numCourses, int[][] prerequisites)
+    {
+        if (numCourses <= 0) return Array.Empty<int>();
+
+        var adj = new List<int>[numCourses];
+        for (int i = 0; i < numCourses; i++)
+        {
+            adj[i] = new List<int>();
+        }
+
+        foreach (var edge in prerequisites)
+        {
+            adj[edge[1]].Add(edge[0]);
+        }
+
+        var state = new int[numCourses];
+        var postOrder = new List<int>(numCourses);
+        bool hasCycle = false;
+
+        void Dfs(int u)
+        {
+            if (hasCycle) return;
+            state[u] = Visiting;
+
+            foreach (int v in adj[u])
+            {
+                if (state[v] == Visiting)
+                {
+                    hasCycle = true; // Cycle detected
                     return;
                 }
                 if (state[v] == Unvisited)
@@ -211,317 +871,90 @@ public sealed class DfsTopologicalSorter
                 }
             }
 
-            state[u] = Visited; // Leave node: mark Black
-            finishOrder.Add(u); // Post-order append
+            state[u] = Visited;
+            postOrder.Add(u); // Finish node: append to post-order list
         }
 
-        // Outer loop guarantees processing all disconnected components
         for (int i = 0; i < numCourses; i++)
         {
             if (state[i] == Unvisited)
             {
                 Dfs(i);
-                if (hasCycle) return (true, []);
+                if (hasCycle) return Array.Empty<int>();
             }
         }
 
-        finishOrder.Reverse(); // Post-order reversed produces topological ordering
-        return (false, finishOrder.ToArray());
+        // Reverse post-order to obtain valid topological sequence
+        postOrder.Reverse();
+        return postOrder.ToArray();
     }
 }
 ```
 
-#### Python (3.11+) Implementation
-
+##### Python (3.11+) Implementation
 ```python
-from typing import List, Tuple
+from typing import List
 
-def dfs_topological_sort(num_courses: int, prerequisites: List[List[int]]) -> Tuple[bool, List[int]]:
-    """DFS 3-state coloring topological sort with cycle detection."""
+def find_order_dfs(num_courses: int, prerequisites: List[List[int]]) -> List[int]:
+    """
+    Generates topological order by reversing DFS post-order finish sequence.
+    Time Complexity: O(V + E)
+    Auxiliary Space: O(V + E)
+    """
+    if num_courses <= 0:
+        return []
+
     UNVISITED, VISITING, VISITED = 0, 1, 2
-    
     adj: List[List[int]] = [[] for _ in range(num_courses)]
-    for dest, src in prerequisites:
-        adj[src].append(dest)
+    for course, prereq in prerequisites:
+        adj[prereq].append(course)
 
     state = [UNVISITED] * num_courses
-    finish_order: List[int] = []
+    post_order: List[int] = []
     has_cycle = False
 
     def dfs(u: int) -> None:
         nonlocal has_cycle
         if has_cycle:
             return
-        state[u] = VISITING  # Enter node: Gray
 
+        state[u] = VISITING
         for v in adj[u]:
             if state[v] == VISITING:
-                has_cycle = True  # Back-edge detected!
+                has_cycle = True
                 return
             if state[v] == UNVISITED:
                 dfs(v)
 
-        state[u] = VISITED  # Finished node: Black
-        finish_order.append(u)
+        state[u] = VISITED
+        post_order.append(u)
 
-    # Outer loop handles disconnected components and forests
     for i in range(num_courses):
         if state[i] == UNVISITED:
             dfs(i)
             if has_cycle:
-                return True, []
+                return []
 
-    finish_order.reverse()
-    return False, finish_order
+    post_order.reverse()
+    return post_order
 ```
 
 ---
 
-### 2. Explicit Stack Iterative DFS (Heap-Safe DFS)
+### Staff-Level Bonus: Lexicographically Smallest Order (Kahn's + Min-Heap)
 
-To eliminate recursion stack overflow risks on deep chain topologies (`V = 10^5`), simulate the call stack manually using an explicit stack on the heap.
+In FAANG interviews (e.g. Google Alien Dictionary or tie-breaking task scheduling), you may be instructed: *"If multiple valid topological sorts exist, return the lexicographically smallest order."*
 
-#### C# (.NET 8/9) Implementation
+Kahn's algorithm handles this with zero algorithmic changes—simply replace the FIFO `Queue` with a **Min-Heap** (`PriorityQueue<int, int>` in C# / `heapq` in Python)!
 
+#### C# (.NET 8/9) Min-Heap Implementation
 ```csharp
 using System;
 using System.Collections.Generic;
 
-public static class ExplicitStackDfsSorter
+public static class LexicographicalTopologicalSort
 {
-    private const int Unvisited = 0;
-    private const int Visiting = 1;
-    private const int Visited = 2;
-
-    public static (bool HasCycle, int[] Order) Sort(int numCourses, int[][] prerequisites)
-    {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(numCourses);
-        var adj = new List<int>[numCourses];
-        for (int i = 0; i < numCourses; i++) adj[i] = new List<int>();
-
-        foreach (var edge in prerequisites)
-        {
-            int dest = edge[0];
-            int src = edge[1];
-            adj[src].Add(dest);
-        }
-
-        var state = new int[numCourses];
-        var finishOrder = new List<int>(numCourses);
-
-        for (int i = 0; i < numCourses; i++)
-        {
-            if (state[i] != Unvisited) continue;
-
-            // Stack stores (Node, NextNeighborIndex) to resume loops on backtrack
-            var stack = new Stack<(int Vertex, int EdgeIdx)>();
-            state[i] = Visiting;
-            stack.Push((i, 0));
-
-            while (stack.Count > 0)
-            {
-                var (u, edgeIdx) = stack.Pop();
-
-                if (edgeIdx < adj[u].Count)
-                {
-                    // Re-push u with incremented neighbor pointer
-                    stack.Push((u, edgeIdx + 1));
-                    int v = adj[u][edgeIdx];
-
-                    if (state[v] == Visiting)
-                    {
-                        return (true, []); // Back-edge detected!
-                    }
-                    if (state[v] == Unvisited)
-                    {
-                        state[v] = Visiting;
-                        stack.Push((v, 0));
-                    }
-                }
-                else
-                {
-                    // All outgoing edges from u are finished
-                    state[u] = Visited;
-                    finishOrder.Add(u);
-                }
-            }
-        }
-
-        finishOrder.Reverse();
-        return (false, finishOrder.ToArray());
-    }
-}
-```
-
-#### Python (3.11+) Implementation
-
-```python
-from typing import List, Tuple
-
-def explicit_stack_dfs_sort(num_courses: int, prerequisites: List[List[int]]) -> Tuple[bool, List[int]]:
-    """Iterative 3-state DFS using an explicit heap stack to prevent recursion overflow."""
-    adj: List[List[int]] = [[] for _ in range(num_courses)]
-    for dest, src in prerequisites:
-        adj[src].append(dest)
-
-    UNVISITED, VISITING, VISITED = 0, 1, 2
-    state = [UNVISITED] * num_courses
-    finish_order: List[int] = []
-
-    for i in range(num_courses):
-        if state[i] == UNVISITED:
-            # Stack stores [vertex, next_neighbor_index]
-            stack = [(i, 0)]
-            state[i] = VISITING
-
-            while stack:
-                u, edge_idx = stack[-1]
-
-                if edge_idx < len(adj[u]):
-                    stack[-1] = (u, edge_idx + 1)
-                    v = adj[u][edge_idx]
-
-                    if state[v] == VISITING:
-                        return True, []  # Back-edge detected!
-                    elif state[v] == UNVISITED:
-                        state[v] = VISITING
-                        stack.append((v, 0))
-                else:
-                    stack.pop()
-                    state[u] = VISITED
-                    finish_order.append(u)
-
-    finish_order.reverse()
-    return False, finish_order
-```
-
----
-
-### 3. Discovery & Finish Time Timestamping DFS
-
-Tracking arrival and departure timestamps enables formal edge classification (Tree, Back, Forward, and Cross edges).
-
-#### Dual-Language Implementation
-
-```csharp
-public static class DfsTimestampTracker
-{
-    public static (int[] Discovery, int[] Finish) ComputeTimestamps(int n, List<int>[] adj)
-    {
-        var discovery = new int[n];
-        var finish = new int[n];
-        Array.Fill(discovery, -1);
-        Array.Fill(finish, -1);
-        int timer = 0;
-
-        void Dfs(int u)
-        {
-            discovery[u] = timer++;
-            foreach (int v in adj[u])
-            {
-                if (discovery[v] == -1)
-                {
-                    Dfs(v);
-                }
-            }
-            finish[u] = timer++;
-        }
-
-        for (int i = 0; i < n; i++)
-        {
-            if (discovery[i] == -1) Dfs(i);
-        }
-
-        return (discovery, finish);
-    }
-}
-```
-
-```python
-from typing import List, Tuple
-
-def dfs_compute_timestamps(n: int, adj: List[List[int]]) -> Tuple[List[int], List[int]]:
-    """Records discovery and finish timestamps for all vertices."""
-    discovery = [-1] * n
-    finish = [-1] * n
-    timer = 0
-
-    def dfs(u: int) -> None:
-        nonlocal timer
-        discovery[u] = timer
-        timer += 1
-        for v in adj[u]:
-            if discovery[v] == -1:
-                dfs(v)
-        finish[u] = timer
-        timer += 1
-
-    for i in range(n):
-        if discovery[i] == -1:
-            dfs(i)
-
-    return discovery, finish
-```
-
----
-
-### 4. Kahn's Algorithm (In-Degree Queue BFS) & Lexicographical Ordering
-
-Iterative topological sort using a FIFO queue of vertices with `in_degree == 0`. If the count of processed vertices is less than `V`, a cycle exists.
-
-#### C# (.NET 8/9) Implementation
-
-```csharp
-using System;
-using System.Collections.Generic;
-
-public static class KahnsTopologicalSorter
-{
-    public static (bool HasCycle, int[] Order) Sort(int numCourses, int[][] prerequisites)
-    {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(numCourses);
-        var adj = new List<int>[numCourses];
-        for (int i = 0; i < numCourses; i++) adj[i] = new List<int>();
-
-        var inDegree = new int[numCourses];
-        foreach (var edge in prerequisites)
-        {
-            int dest = edge[0];
-            int src = edge[1];
-            adj[src].Add(dest);
-            inDegree[dest]++;
-        }
-
-        var queue = new Queue<int>();
-        for (int i = 0; i < numCourses; i++)
-        {
-            if (inDegree[i] == 0)
-                queue.Enqueue(i);
-        }
-
-        var order = new int[numCourses];
-        int processedCount = 0;
-
-        while (queue.Count > 0)
-        {
-            int u = queue.Dequeue();
-            order[processedCount++] = u;
-
-            foreach (int v in adj[u])
-            {
-                inDegree[v]--;
-                if (inDegree[v] == 0)
-                {
-                    queue.Enqueue(v);
-                }
-            }
-        }
-
-        return processedCount == numCourses ? (false, order) : (true, []);
-    }
-
-    // Lexicographically smallest topological sort using PriorityQueue
-    public static (bool HasCycle, int[] Order) SortLexicographical(int numCourses, int[][] prerequisites)
+    public static int[] FindSmallestOrder(int numCourses, int[][] prerequisites)
     {
         var adj = new List<int>[numCourses];
         for (int i = 0; i < numCourses; i++) adj[i] = new List<int>();
@@ -533,207 +966,97 @@ public static class KahnsTopologicalSorter
             inDegree[edge[0]]++;
         }
 
-        var pq = new PriorityQueue<int, int>();
+        // Min-Heap ensures we always pick the lowest numerical course ID among ready courses
+        var minHeap = new PriorityQueue<int, int>();
         for (int i = 0; i < numCourses; i++)
         {
-            if (inDegree[i] == 0) pq.Enqueue(i, i); // Min-heap by node ID
+            if (inDegree[i] == 0) minHeap.Enqueue(i, i);
         }
 
         var order = new int[numCourses];
-        int processedCount = 0;
+        int writeIdx = 0;
 
-        while (pq.Count > 0)
+        while (minHeap.Count > 0)
         {
-            int u = pq.Dequeue();
-            order[processedCount++] = u;
+            int current = minHeap.Dequeue();
+            order[writeIdx++] = current;
 
-            foreach (int v in adj[u])
+            foreach (int neighbor in adj[current])
             {
-                inDegree[v]--;
-                if (inDegree[v] == 0) pq.Enqueue(v, v);
+                inDegree[neighbor]--;
+                if (inDegree[neighbor] == 0)
+                {
+                    minHeap.Enqueue(neighbor, neighbor);
+                }
             }
         }
 
-        return processedCount == numCourses ? (false, order) : (true, []);
+        return writeIdx == numCourses ? order : Array.Empty<int>();
     }
 }
 ```
 
-#### Python (3.11+) Implementation
-
+#### Python (3.11+) Min-Heap Implementation
 ```python
 import heapq
-from collections import deque
-from typing import List, Tuple
+from typing import List
 
-def kahns_topological_sort(num_courses: int, prerequisites: List[List[int]]) -> Tuple[bool, List[int]]:
-    """Kahn's in-degree queue BFS algorithm for topological sort and cycle detection."""
+def find_smallest_order(num_courses: int, prerequisites: List[List[int]]) -> List[int]:
+    """Topological sort returning lexicographically smallest order via Min-Heap."""
     adj: List[List[int]] = [[] for _ in range(num_courses)]
     in_degree = [0] * num_courses
 
-    for dest, src in prerequisites:
-        adj[src].append(dest)
-        in_degree[dest] += 1
+    for course, prereq in prerequisites:
+        adj[prereq].append(course)
+        in_degree[course] += 1
 
-    queue = deque(i for i in range(num_courses) if in_degree[i] == 0)
-    order: List[int] = []
-
-    while queue:
-        u = queue.popleft()
-        order.append(u)
-
-        for v in adj[u]:
-            in_degree[v] -= 1
-            if in_degree[v] == 0:
-                queue.append(v)
-
-    if len(order) == num_courses:
-        return False, order
-    return True, []
-
-def kahns_lexicographical_sort(num_courses: int, prerequisites: List[List[int]]) -> Tuple[bool, List[int]]:
-    """Kahn's algorithm using min-heap for lexicographically smallest order."""
-    adj: List[List[int]] = [[] for _ in range(num_courses)]
-    in_degree = [0] * num_courses
-
-    for dest, src in prerequisites:
-        adj[src].append(dest)
-        in_degree[dest] += 1
-
+    # Min-Heap of all currently available courses
     pq = [i for i in range(num_courses) if in_degree[i] == 0]
     heapq.heapify(pq)
     order: List[int] = []
 
     while pq:
-        u = heapq.heappop(pq)
-        order.append(u)
+        curr = heapq.heappop(pq)
+        order.append(curr)
 
-        for v in adj[u]:
-            in_degree[v] -= 1
-            if in_degree[v] == 0:
-                heapq.heappush(pq, v)
+        for neighbor in adj[curr]:
+            in_degree[neighbor] -= 1
+            if in_degree[neighbor] == 0:
+                heapq.heappush(pq, neighbor)
 
-    if len(order) == num_courses:
-        return False, order
-    return True, []
+    return order if len(order) == num_courses else []
 ```
 
 ---
 
-## 📊 CHAPTER 4: COMPLEXITY DECONSTRUCTION
+## 📊 COMPLEXITY DECONSTRUCTION
 
-| Algorithm | Time Complexity | Auxiliary Space | Output Space | Stack Overflow Risk |
+| Paradigm | Time Complexity | Auxiliary Space | Output Space | Stack Safety (`V = 10^5`) | Lexicographical Suitability |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Kahn's BFS (FIFO Queue)** | `O(V + E)` | `O(V + E)` | `O(V)` | ✅ **Zero Risk** (Heap memory) | Natural via Min-Heap swap |
+| **Kahn's + Min-Heap** | `O((V + E) log V)` | `O(V + E)` | `O(V)` | ✅ **Zero Risk** (Heap memory) | 🏆 **Gold Standard** |
+| **DFS 3-Color (Recursive)** | `O(V + E)` | `O(V + E)` | `O(V)` | ❌ **High Risk** (Thread stack crash) | Unnatural (requires sorting adj in reverse) |
+| **DFS (Explicit Stack)** | `O(V + E)` | `O(V + E)` | `O(V)` | ✅ **Safe** (Simulated call stack on heap)| Complex boilerplate |
+
+### Key Mechanical Insights:
+1. **Adjacency Construction:** Building `adj` requires traversing all `E` edges -> `O(E)`.
+2. **Vertex Draining:** Every vertex enters the queue or DFS call stack at most once -> `O(V)`.
+3. **Edge Examination:** Every directed edge is traversed exactly once -> `O(E)`.
+4. **Total Time:** `O(V + E)` linear time. Optimal because any algorithm must at least inspect all edges and vertices.
+
+---
+
+## 🏋️ CURATED FAANG PRACTICE LADDER
+
+| Problem | LeetCode # | Difficulty | Target Time | Core Pattern & Invariant |
 | :--- | :--- | :--- | :--- | :--- |
-| **DFS 3-State (Recursive)** | `O(V + E)` | `O(V)` (`state` + Call Stack) | `O(V)` (`order`) | High (Linear chain crashes default thread stack) |
-| **DFS 3-State (Explicit Stack)** | `O(V + E)` | `O(V)` (`state` + Heap Stack) | `O(V)` (`order`) | Zero (Heap allocated) |
-| **Kahn's Algorithm (FIFO Queue)** | `O(V + E)` | `O(V)` (`in_degree` + Queue) | `O(V)` (`order`) | Zero (Purely iterative) |
-| **Kahn's Algorithm (Min-Heap)** | `O(V log V + E)` | `O(V)` (`in_degree` + Heap) | `O(V)` (`order`) | Zero (Purely iterative) |
-
-### Mechanical Comparison: Kahn's vs. DFS
-
-1. **Stack Safety:** In languages with restricted default thread stacks (Python default recursion limit 1,000; Windows C# 1 MB stack), a degenerate line DAG with `10^5` nodes will cause a stack overflow during recursive DFS. Kahn's uses heap memory via a queue and cannot overflow.
-2. **Lexicographical Constraints:** If an interview requires returning the lexicographically smallest topological order, Kahn's algorithm trivially accommodates this by replacing the FIFO queue with a min-heap (`PriorityQueue` in C# / `heapq` in Python). Doing this in DFS requires sorting adjacency lists in reverse, which is less natural.
-3. **Cycle Discovery Moment:** Kahn's detects cycles when the queue empties before all vertices are visited (`processedCount < V`). DFS detects cycles the moment a back-edge to a `VISITING` vertex is touched.
+| **Course Schedule** | #207 | 🟡 Medium | 15 mins | Cycle detection in directed graph (Kahn's or 3-color DFS) |
+| **Course Schedule II** | #210 | 🟡 Medium | 15 mins | Kahn's queue draining or DFS post-order reversal |
+| **Alien Dictionary** | #269 | 🔴 Hard | 25 mins | Build DAG from lexicographical word comparisons + Topo Sort |
+| **Minimum Height Trees** | #310 | 🟡 Medium | 20 mins | Reverse Kahn's: trim degree-1 leaf nodes inward until <= 2 roots remain |
+| **Sequence Reconstruction**| #444 | 🟡 Medium | 20 mins | Unique Topo Sort: Queue size must remain strictly 1 at every step |
+| **Sort Items by Groups** | #1203 | 🔴 Hard | 35 mins | Hierarchical Double Topo Sort: Group-level and item-level DAGs |
 
 ---
 
-## 🎙️ CHAPTER 5: 45-MINUTE INTERVIEW VERBAL SCRIPT
-
-### Phase 1: Clarification & Constraint Scoping (0–5 Mins)
-- **Candidate:** "Before writing code, let's clarify the relationship semantics:
-  1. For each pair `[a, b]`, does `b -> a` represent taking `b` before `a`?
-  2. If the graph contains a cycle, what should be returned (empty array)?
-  3. If multiple valid topological orders exist, does any valid order suffice?
-  4. What are the constraints on `V` (courses) and `E` (dependencies)?"
-- **Interviewer:** "`b` must be taken before `a`. Return an empty array if invalid. Any order is acceptable. `V <= 10^5, E <= 2 * 10^5`."
-- **Candidate:** "This is a Directed Acyclic Graph topological sort problem. I can use either DFS with 3-state coloring or Kahn's in-degree BFS algorithm.
-  - With `V = 10^5`, a long dependency chain could trigger stack overflow in Python or .NET without increased stack space.
-  - Therefore, I recommend **Kahn's algorithm**. It is purely iterative, uses an array for in-degrees and a queue for frontier exploration, runs in `O(V + E)` time, and uses `O(V)` auxiliary space."
-
-### Phase 2: High-Level Approach & Trade-Offs (5–12 Mins)
-- **Candidate:** "I'll implement Kahn's algorithm:
-  1. Construct the adjacency list and compute `inDegree[dest]` for each prerequisite.
-  2. Enqueue all vertices with `inDegree == 0`.
-  3. Dequeue vertex `u`, add it to `order`, and decrement `inDegree[v]` for all neighbors. If any neighbor reaches `0`, enqueue it.
-  4. Finally, if `processedCount == numCourses`, return `order`; otherwise, a cycle exists, so return an empty array."
-
-### Phase 3: Live Coding Walkthrough (12–32 Mins)
-- **Candidate:** "I'll write the code now. Notice the input edge inversion: prerequisites are specified as `[course, prereq]`, meaning the directed edge is `prereq -> course`. In the BFS loop, decrementing `inDegree` simulates stripping finished dependencies from the graph."
-
-### Phase 4: Edge Cases & Verification (32–40 Mins)
-- **Candidate:** "Let's dry-run edge cases:
-  1. **Graph with no edges (`E = 0`):** All nodes have in-degree 0; all are enqueued immediately; returns `[0, 1, ..., V-1]`.
-  2. **Disconnected components:** Handled naturally; all component source nodes are enqueued at step 1.
-  3. **Mutual cycle (`0 -> 1 -> 0`):** Neither reaches in-degree 0; queue remains empty; returns `[]`.
-  4. **Self-loop (`0 -> 0`):** In-degree is 1; never enqueued; returns `[]`."
-
----
-
-## 🛠️ CHAPTER 6: COMMON PITFALLS & DECISION FRAMEWORK
-
-### Deep Dive: Beginner Pitfalls & Traps
-
-#### 1. The 2-State (Boolean) Visited Trap on Diamond DAGs
-- **The Bug:** Using a boolean `visited[u]` array in DFS cycle detection.
-- **The Consequence:** When multiple paths converge on a common descendant (diamond pattern), the second path visits an already-visited node and wrongly flags a cycle.
-- **The Fix:** Strictly use **3 states** (`UNVISITED`, `VISITING`, `VISITED`). Only a back-edge to a `VISITING` node indicates a cycle.
-
-#### 2. Disconnected Graphs & Forest Cycles
-- **The Bug:** Calling DFS or Kahn's starting only from node `0`.
-- **The Consequence:** If a disconnected component has a cycle (e.g. `2 -> 3 -> 2`), but node `0` cannot reach it, the algorithm wrongly concludes the entire graph is acyclic!
-- **The Fix:** Outer loop over all nodes `0` to `V - 1`.
-
-#### 3. Self-Loops (`u -> u`)
-- **The Bug:** An edge points from a node to itself.
-- **The Consequence:** A self-loop is a directed cycle of length 1. In Kahn's algorithm, `inDegree[u]` is at least 1, so `u` never enters the queue. In DFS, `state[u] == VISITING` triggers immediate cycle detection.
-
-#### 4. Parallel Edges Inflating In-Degrees
-- **The Bug:** Input contains duplicate edges `(u, v)` multiple times.
-- **The Consequence:** `inDegree[v]` is incremented twice for the same dependency. When `u` is processed once, `inDegree[v]` only decrements by 1 and never hits 0, wrongly flagging a cycle!
-- **The Fix:** Either deduplicate input edges using a hash set, or filter adjacent duplicates during graph construction.
-
-#### 5. Missing Post-Order Reversal in DFS
-- **The Bug:** Appending finished nodes to `order` and returning without reversing.
-- **The Consequence:** Nodes with out-degree 0 (sinks) finish first and end up at the beginning of the list, producing a reversed topological sort!
-- **The Fix:** Always reverse the finished list or prepend elements to the output.
-
-#### 6. Recursion Stack Overflow on Linear DAGs
-- **The Bug:** Calling recursive DFS when `V = 10^5` on a chain graph `0 -> 1 -> 2 -> ... -> 10^5`.
-- **The Consequence:** Exceeds the default thread stack and crashes the process.
-- **The Fix:** Use Kahn's algorithm or an explicit heap stack.
-
----
-
-### Decision Framework
-
-```
-                          [ Directed Graph Problem ]
-                                       |
-                 +---------------------+---------------------+
-                 |                                           |
-          [ Cycle Detection ]                         [ Linear Ordering ]
-                 |                                           |
-      Is recursion stack deep?                       Need Min/Max Order?
-         +-------+-------+                               +-------+-------+
-         |               |                               |               |
-        YES              NO                             YES              NO
-         |               |                               |               |
-      Kahn's BFS      DFS 3-State                    Kahn's + Heap    Kahn's BFS
-       (O(V+E))        (O(V+E))                       (O(V log V))     or DFS
-```
-
----
-
-## 🏋️ PRACTICE LADDER
-
-| Problem | LeetCode # | Difficulty | Pattern | Primary Invariant |
-| :--- | :--- | :--- | :--- | :--- |
-| **Course Schedule** | #207 | 🟡 Medium | Cycle Detection | Directed cycle implies impossible schedule |
-| **Course Schedule II** | #210 | 🟡 Medium | Topological Sort | Kahn's queue or DFS post-order reversal |
-| **Alien Dictionary** | #269 | 🔴 Hard | Graph Build + Topo Sort | Prefix mismatch invalidation + Kahn's |
-| **Sequence Reconstruction**| #444 | 🟡 Medium | Unique Topo Sort | Queue size must remain exactly 1 at all steps |
-| **Minimum Height Trees** | #310 | 🟡 Medium | In-Degree Trimming | Prune degree-1 leaves inward until <= 2 roots remain |
-
----
-
-> 🧭 **Navigation:** [← Previous Day](Week_08_Day_02_Breadth_First_Search_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_08_Day_04_Connectivity_and_Bipartite_Graphs_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day: Breadth-First Search (BFS)](Week_08_Day_02_Breadth_First_Search_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Connectivity & Bipartite Graphs →](Week_08_Day_04_Connectivity_and_Bipartite_Graphs_Instructional.md)

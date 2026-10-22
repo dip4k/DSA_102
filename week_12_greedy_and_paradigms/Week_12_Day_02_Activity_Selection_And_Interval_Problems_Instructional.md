@@ -2,7 +2,7 @@
 
 > 🧭 **Navigation:** [← Previous Day](Week_12_Day_01_Greedy_Fundamentals_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_12_Day_03_Huffman_Coding_And_Optimal_Trees_Instructional.md)
 > 
-> 💡 **Instructor Note:** *Interval problems form one of the highest-frequency patterns in engineering loops. Master the distinction between interval selection (greedy earliest finish time), interval partitioning (sweep-line or min-heap), and weighted intervals (dynamic programming).*
+> 💡 **Instructor Note:** *Interval problems form one of the highest-frequency patterns in FAANG engineering loops. Master the critical distinction between interval selection (greedy earliest finish time on a single resource), interval partitioning (sweep-line or min-heap across multiple resources), interval merging, and weighted intervals (dynamic programming).*
 
 ---
 
@@ -10,286 +10,642 @@
 
 *By the end of this chapter, you will be able to:*
 
-- 🎯 **Disambiguate** the 4 core interval problem archetypes instantly in interview settings.
-- ⚙️ **Implement** production-grade solutions for Activity Selection and Meeting Rooms in C# (.NET 8/9 with `PriorityQueue`) and Python (3.11+ with `heapq`).
-- ⚖️ **Explain** why sorting by start time or duration fails, while sorting by earliest finish time is provably optimal.
-- 🧠 **Defend** interval selection using a clean, intuitive Exchange Argument.
-- 🏭 **Architect** resource schedulers for calendar backends, cloud worker pools, and video ad slots.
+- 🎬 **Internalize** the core greedy intuition: why earliest finish time provably minimizes opportunity cost.
+- 🎯 **Disambiguate** the 4 canonical interval archetypes (Selection, Partitioning, Merging, Weighted) in under 15 seconds.
+- 🪜 **Execute** step-by-step hand traces for Activity Selection, Non-overlapping Intervals (LC 435), and Meeting Rooms II (LC 253).
+- 🎨 **Visualize** timeline conflicts using ASCII range tracks and structured Mermaid decision flows.
+- 🛑 **Avoid** the fatal rookie traps: sorting by start time for selection, comparator integer overflow, and endpoint off-by-one errors (`start == end`).
+- 🎙️ **Deliver** the exact 3-sentence interview talk track to convince a FAANG Staff interviewer before writing code.
+- ⚡ **Ship** production-grade C# (.NET 8/9 with `Array.Sort`, zero-allocation structs, and `PriorityQueue`) and Python 3.11+ implementations.
 
 ---
 
-## 📖 CHAPTER 1: CONTEXT & MOTIVATION
+## 🎬 PILLAR 1: THE 60-SECOND HOOK & EVERYDAY ANALOGY
 
-### The Engineering Challenge
+### The Film Festival Marathon
 
-You are building a resource scheduling service for a cloud platform. Customers submit compute jobs defined by an interval `[start, end)`.
-Depending on the customer's tier, you face different operational objectives:
+Imagine you and I have tickets to an all-day independent film festival. Screenings run continuously from 8:00 AM to midnight across various screening rooms. You have one personal mission today: **watch the absolute maximum number of full movies in a single day**. You cannot be in two theaters at once.
 
-1. **Dedicated Worker (Single Machine):** Maximize the total count of non-overlapping jobs that can execute on one CPU core.
-2. **Cluster Autoscaler:** Calculate the minimum number of worker nodes required to execute *all* incoming jobs without conflict.
-3. **Revenue Maximization:** If each job pays a custom monetary rate, maximize total dollar payout.
-
-If you attack all three with the same approach, you will fail.
-- Objective 1 is **Activity Selection** -> Solved by **Greedy (Earliest Finish Time)** in `O(N log N)` time and `O(1)` auxiliary space.
-- Objective 2 is **Interval Partitioning (Meeting Rooms II)** -> Solved by **Sweep-Line** or **Min-Heap** in `O(N log N)` time and `O(N)` space.
-- Objective 3 is **Weighted Interval Scheduling** -> Greedy fails; requires **Dynamic Programming** with Binary Search in `O(N log N)` time and `O(N)` space.
+How do you pick your schedule? Let's test your natural instincts:
 
 ```
-THE INTERVAL DECISION MATRIX:
-+-----------------------------------+-----------------------------------+
-| Problem Archetype                 | Optimal Algorithmic Paradigm      |
-+-----------------------------------+-----------------------------------+
-| 1. Max Non-Overlapping Count      | Greedy (Sort by Finish Time)      |
-| 2. Min Resource Allocation (Rooms)| Greedy Sweep-Line / Min-Heap      |
-| 3. Merge Overlapping Ranges       | Two-Pointer Scan (Sort by Start)  |
-| 4. Maximize Weighted Profit       | Dynamic Programming + Bisect      |
-+-----------------------------------+-----------------------------------+
+Intuition Test 1: "Should I pick the movie with the SHORTEST runtime?"
+Sounds logical! Short movies mean quick completions, right?
+WRONG. Look at this trap:
+Movie A (Masterpiece):  [ 8:00 AM -------------------------------- 12:00 PM ] (4 hours)
+Movie B (Short Film):                         [ 11:50 AM - 12:10 PM ]         (20 mins!)
+Movie C (Epic Drama):                                     [ 12:00 PM ----------------- 4:00 PM ] (4 hours)
+
+If you greedily pick the 20-minute short film (Movie B), it starts 10 minutes before Movie A ends
+and finishes 10 minutes after Movie C starts! Picking Movie B kills BOTH Movie A and Movie C!
+You watch 1 movie instead of 2. Shortest duration FAILS.
 ```
 
----
-
-## 🧠 CHAPTER 2: THE GREEDY INTERVAL MENTAL MODEL
-
-### Why Earliest Finish Time (EFT) Wins
-
-Consider 3 candidate greedy rules for selecting the maximum number of non-overlapping intervals:
-
 ```
-Candidate Rule 1: Earliest Start Time
-Counterexample:
-  Job A: [0 ---------------------------------------------------- 100]
-  Job B:   [1 --- 3]
-  Job C:              [4 --- 6]
-  Rule 1 picks Job A first, blocking Jobs B and C. Optimal = 2, Rule 1 = 1. (FAILS)
+Intuition Test 2: "Should I pick the movie that STARTS EARLIEST?"
+Sounds disciplined! Start the day early, right?
+WRONG. Look at this nightmare:
+Movie A (Director's Cut): [ 8:00 AM ---------------------------------------------------- 6:00 PM ] (10 hours!)
+Movie B (Morning Doc):      [ 8:30 AM - 10:00 AM ]
+Movie C (Noon Comedy):                               [ 10:30 AM - 12:00 PM ]
+Movie D (Afternoon Indie):                                                    [ 1:00 PM - 2:30 PM ]
 
-Candidate Rule 2: Shortest Duration
-Counterexample:
-  Job A: [0 ---- 5]
-  Job B:       [4 - 6]   <-- Shortest duration (length = 2)
-  Job C:          [5 ---- 10]
-  Rule 2 picks Job B, blocking both Job A and Job C. Optimal = 2, Rule 2 = 1. (FAILS)
-
-Candidate Rule 3: Earliest Finish Time (WINNER)
-Physical Intuition:
-  By choosing the interval that finishes earliest, you leave the maximum possible
-  unallocated timeline for future tasks. You minimize "opportunity cost".
+Movie A starts earliest at 8:00 AM. If you lock into Movie A, you are trapped in that dark theater
+until 6:00 PM, completely missing Movies B, C, and D! You watch 1 movie instead of 3.
+Earliest start time FAILS catastrophically.
 ```
 
-### Visualizing the Timeline Sweep
+### The Golden Rule: Pick the Movie That ENDS EARLIEST!
+
+Why does **Earliest Finish Time (EFT)** win every single time?
+
+Think about what happens physically when a movie ends: **you walk out into the lobby.**
+The earlier you are standing in that festival lobby, the **maximum possible remaining timeline** you preserve for the rest of your day! 
+
+Every minute earlier that your current movie finishes is an extra minute of freedom for future movies. You are strictly **minimizing opportunity cost**.
 
 ```
-Activities:
-  A: [1, 4)
-  B: [3, 5)
-  C: [0, 6)
-  D: [5, 7)
-  E: [3, 9)
-  F: [8, 11)
-
-Timeline: 0  1  2  3  4  5  6  7  8  9  10 11
-C:        [-----------)
-A:           [--------)
-B:                 [-----)
-D:                       [-----)
-E:                 [-----------------)
-F:                                   [--------)
-
-Greedy Pass Sorted by Finish Time:
-1. Sort by finish: A(4), B(5), C(6), D(7), E(9), F(11)
-2. Pick A(ends 4): Selected -> [A], LastEnd = 4
-3. Check B(starts 3): 3 < 4 (Conflict) -> Skip
-4. Check C(starts 0): 0 < 4 (Conflict) -> Skip
-5. Check D(starts 5): 5 >= 4 (Compatible!) -> Selected -> [A, D], LastEnd = 7
-6. Check E(starts 3): 3 < 7 (Conflict) -> Skip
-7. Check F(starts 8): 8 >= 7 (Compatible!) -> Selected -> [A, D, F], LastEnd = 11
-
-Final Selection: {A, D, F} -> Exactly 3 non-overlapping activities.
-```
-
-### The Simplified Exchange Argument
-
-```
-Exchange Proof for Activity Selection:
-1. Let G = [g1, g2, ..., gk] be the greedy schedule sorted by finish time.
-2. Let OPT = [o1, o2, ..., om] be any optimal schedule, sorted by finish time (m >= k).
-3. If G == OPT, greedy is optimal.
-4. If G != OPT, let the first difference occur at step 1:
-   - By greedy design, g1 has the earliest finish time among ALL valid activities.
-   - Therefore: Finish(g1) <= Finish(o1).
-5. Substitute o1 with g1 in OPT:
-   - Since g1 finishes at or before o1, g1 cannot conflict with o2, o3, ..., om.
-   - The modified schedule OPT' = [g1, o2, ..., om] is still valid and has size m.
-6. Repeat this substitution for all elements by induction.
-   OPT can be transformed entirely into G without reducing the activity count.
-   Therefore, k == m, proving G is globally optimal.
++-------------------------------------------------------------------------------------------+
+|                          THE GOLDEN INTERVAL SCHEDULING PRINCIPLE                         |
++-------------------------------------------------------------------------------------------+
+|  "To maximize total non-overlapping tasks on a single resource, always commit to the task |
+|   that FINISHES EARLIEST. Finishing early leaves the maximum unallocated runway for all   |
+|   subsequent opportunities."                                                              |
++-------------------------------------------------------------------------------------------+
 ```
 
 ---
 
-## ⚙️ CHAPTER 3: PRODUCTION IMPLEMENTATIONS
+### The 4 Interval Problem Archetypes
 
-### Pattern 1: Activity Selection (Maximum Non-Overlapping Intervals)
+Before touching code, you must instantly diagnose which interval problem archetype your interviewer is presenting:
 
-#### Production C# (.NET 8/9)
+```
+THE 4 CANONICAL INTERVAL ARCHETYPES:
++----+--------------------------------+--------------------+-----------------------------+-----------------------+
+| #  | Archetype                      | Resource Model     | Core Objective              | Optimal Paradigm      |
++----+--------------------------------+--------------------+-----------------------------+-----------------------+
+| 1  | Activity Selection (LC 435/452)| 1 Single Machine   | Maximize non-overlapping    | Greedy: Sort by END   |
+| 2  | Interval Partitioning (LC 253) | Infinite Machines  | Minimize parallel machines  | Sweep-Line / Min-Heap |
+| 3  | Interval Merging (LC 56/57)    | Timeline Union     | Merge overlapping segments  | Sort by START + Scan  |
+| 4  | Weighted Scheduling (LC 1235)  | 1 Machine + Profit | Maximize total dollar yield | DP + Binary Search    |
++----+--------------------------------+--------------------+-----------------------------+-----------------------+
+```
+
+---
+
+## 🪜 PILLAR 2: THE SCAFFOLDING LADDER & TOY NAPKIN TRACES
+
+Let's build your intuition progressively: from a 4-element napkin trace to classic FAANG mediums.
+
+---
+
+### Level 1: The Toy Napkin Trace (Activity Selection)
+
+Let's trace Activity Selection on 4 toy intervals:
+`Raw Intervals: [1, 4], [3, 5], [0, 6], [5, 7]`
+
+#### Step 1: Sort by End Time Ascending
+- `I1: [1, 4]` (End = 4)
+- `I2: [3, 5]` (End = 5)
+- `I3: [0, 6]` (End = 6)
+- `I4: [5, 7]` (End = 7)
+
+#### Step 2: The Physical Pointer Walkthrough
+We maintain two state variables:
+- `count`: number of selected non-overlapping activities.
+- `lastEnd`: the timestamp when our resource becomes free. Initially `-infinity`.
+
+```text
+TIMELINE TRACE:
+Time:   0   1   2   3   4   5   6   7
+I3:     [-------------------)           (End = 6)
+I1:         [-----------)               (End = 4)  <-- Selected!
+I2:                 [-------)           (End = 5)  <-- Overlaps with I1!
+I4:                         [-------)   (End = 7)  <-- Selected!
+```
+
+```text
+--------------------------------------------------------------------------------------
+Step | Candidate | Range  | Check: Start >= lastEnd? | Verdict | New lastEnd | Count
+--------------------------------------------------------------------------------------
+1    | I1        | [1, 4] | 1 >= -inf -> TRUE        | SELECT  | 4           | 1
+2    | I2        | [3, 5] | 3 >= 4    -> FALSE       | SKIP    | 4           | 1
+3    | I3        | [0, 6] | 0 >= 4    -> FALSE       | SKIP    | 4           | 1
+4    | I4        | [5, 7] | 5 >= 4    -> TRUE        | SELECT  | 7           | 2
+--------------------------------------------------------------------------------------
+Final Answer: 2 Activities Selected: { [1, 4], [5, 7] }.
+```
+
+> 🧠 **Pause & Predict Micro-Drill 1:**
+> Suppose a 5th activity `I5: [4, 5]` was added to the input. If intervals are defined as half-open `[start, end)` where touching endpoints do not conflict, would `I5` be selected?
+> *Pause for 5 seconds and think!*
+> 
+> **Answer:** YES! When sorted by end time, `[4, 5]` has `End = 5` and starts at `4`. Since `lastEnd` was `4`, `4 >= 4` evaluates to `TRUE`. `I5` is selected, updating `lastEnd = 5`, and then `I4: [5, 7]` is also selected (`5 >= 5`), yielding a total of 3 activities!
+
+---
+
+### Level 2: Warm-Up -> Non-overlapping Intervals (LeetCode 435)
+
+**The Problem:** Given an array of intervals `intervals`, return the *minimum number of intervals you need to remove* to make the rest of the intervals non-overlapping.
+
+**The Aha! Reduction:**
+Asking *"What is the minimum number of intervals to remove?"* is the exact mathematical inverse of asking *"What is the maximum number of non-overlapping intervals we can keep?"*
+
+```text
+Minimum Removals = Total Intervals - Maximum Non-Overlapping Intervals
+```
+
+#### Hand-Trace on `intervals = [[1, 2], [2, 3], [3, 4], [1, 3]]`:
+1. **Sort by End Time:**
+   - `[1, 2]` (End = 2)
+   - `[2, 3]` (End = 3)
+   - `[1, 3]` (End = 3)
+   - `[3, 4]` (End = 4)
+2. **Execute Single-Pass Greedy:**
+   - Take `[1, 2]`: `lastEnd = 2`, `kept = 1`.
+   - Take `[2, 3]`: `start = 2 >= lastEnd (2)` -> Keep! `lastEnd = 3`, `kept = 2`.
+   - Check `[1, 3]`: `start = 1 < lastEnd (3)` -> Conflict! Must remove! `removals = 1`.
+   - Take `[3, 4]`: `start = 3 >= lastEnd (3)` -> Keep! `lastEnd = 4`, `kept = 3`.
+3. **Result:** Kept = 3, Removals = `4 - 3 = 1`. Removed interval: `[1, 3]`.
+
+> 🧠 **Pause & Predict Micro-Drill 2:**
+> Can we solve LeetCode 435 by sorting by **start time**?
+> *Think carefully!*
+> 
+> **Answer:** Yes, BUT with a twist! If you sort by start time, when two intervals conflict (`curr.start < prev.end`), you must greedily **delete the interval that ends LATER** (`prev.end = min(prev.end, curr.end)`) to preserve the earliest possible boundary. Sorting by end time is cleaner because the greedy choice is automatic!
+
+---
+
+### Level 3: Classic FAANG Medium -> Burst Balloons with Minimum Arrows (LeetCode 452)
+
+**The Problem:** Balloons are flat discs on an x-axis represented by `points[i] = [x_start, x_end]`. An arrow shot straight up at coordinate `x` bursts all balloons where `x_start <= x <= x_end`. Find the minimum arrows required.
+
+**The Interval Translation:**
+An arrow shot at coordinate `x` bursts a group of mutually overlapping intervals. To maximize the balloons burst by one arrow, **shoot the arrow through the EARLIEST end coordinate among all active balloons!**
+
+#### Hand-Trace on `points = [[10, 16], [2, 8], [1, 6], [7, 12]]`:
+1. **Sort by End Coordinate Ascending:**
+   - B1: `[1, 6]`   (End = 6)
+   - B2: `[2, 8]`   (End = 8)
+   - B3: `[7, 12]`  (End = 12)
+   - B4: `[10, 16]` (End = 16)
+2. **Greedy Arrow Walkthrough:**
+   - **Shoot Arrow 1** at `x = 6` (end of B1).
+   - Check B2 `[2, 8]`: Starts at `2 <= 6`. Arrow 1 pierces B2!
+   - Check B3 `[7, 12]`: Starts at `7 > 6`. Arrow 1 misses! We must spend **Arrow 2** at `x = 12` (end of B3).
+   - Check B4 `[10, 16]`: Starts at `10 <= 12`. Arrow 2 pierces B4!
+3. **Total Arrows Needed = 2.** (Arrow 1 at `x = 6`, Arrow 2 at `x = 12`).
+
+```text
+BALLOON COORDINATE VISUALIZATION:
+Time/X: 1  2  3  4  5  6  7  8  9  10  11  12  13  14  15  16
+B1:     [==============) (End 6)
+B2:        [=================) (End 8)
+                     ▲ (Arrow 1 shot at x=6 hits B1 and B2!)
+B3:                       [=================) (End 12)
+B4:                                    [==================) (End 16)
+                                             ▲ (Arrow 2 shot at x=12 hits B3 and B4!)
+```
+
+---
+
+### Level 4: Classic FAANG Medium / Hard -> Meeting Rooms II (LeetCode 253)
+
+**The Problem:** Given meeting intervals `[[start_i, end_i]]`, return the **minimum number of conference rooms** required so that no two meetings clash.
+
+**The Pivot in Mindset:**
+- In Activity Selection: 1 room is fixed. You drop conflicting meetings.
+- In Meeting Rooms II: **Every single meeting is mandatory.** When a conflict occurs, you cannot skip; you must open a new room!
+
+We have two standard approaches: **Min-Heap** and **Chronological Sweep-Line**.
+
+#### Approach A: The Min-Heap Simulation
+1. Sort meetings by **start time** ascending.
+2. Maintain a Min-Heap containing the `end` times of all active rooms.
+3. For each meeting `[start, end]`:
+   - If `start >= heap.Peek()`: The earliest-finishing meeting is over! Reuse that room (`heap.Dequeue()`).
+   - Otherwise: All currently occupied rooms are busy. Allocate a brand new room.
+   - Enqueue current `end` time into the heap.
+4. Final answer: `heap.Count`.
+
+#### Hand-Trace on `intervals = [[0, 30], [5, 10], [15, 20]]`:
+- **Sort by Start:** `M1: [0, 30], M2: [5, 10], M3: [15, 20]`.
+- **Step 1 (M1 `[0, 30]`):** Heap is empty. Allocate Room 1. Heap: `[30]`.
+- **Step 2 (M2 `[5, 10]`):** Start `5 < heap.Peek() (30)`. Conflict! Allocate Room 2. Heap: `[10, 30]`.
+- **Step 3 (M3 `[15, 20]`):** Start `15 >= heap.Peek() (10)`. Room 2 is free! Reuse it: pop `10`, push `20`. Heap: `[20, 30]`.
+- **Final Result:** Heap size = 2 rooms.
+
+```text
+ROOM ALLOCATION TIMELINE:
+Room 1: [ M1: 0 ------------------------------------------- 30 ]
+Room 2:      [ M2: 5 - 10 ]      [ M3: 15 - 20 ]
+Time:   0....5.........10........15.......20................30
+```
+
+#### Approach B: The Chronological Sweep-Line
+Transform each interval `[start, end]` into two point events:
+- `(start, +1)` -> Room required.
+- `(end, -1)`   -> Room released.
+
+Sort all events by time. **Crucial Tie-Breaker:** If an end event and a start event occur at the exact same timestamp (e.g., `10`), the end event (`-1`) **MUST** be processed before the start event (`+1`) so the room is vacated before being reoccupied!
+
+```text
+Events for [[0, 30], [5, 10], [15, 20]]:
+(0, +1), (5, +1), (10, -1), (15, +1), (20, -1), (30, -1)
+
+Sweep-line running balance:
+Time  0: delta +1 -> Active Rooms = 1 (Peak = 1)
+Time  5: delta +1 -> Active Rooms = 2 (Peak = 2)
+Time 10: delta -1 -> Active Rooms = 1
+Time 15: delta +1 -> Active Rooms = 2 (Peak = 2)
+Time 20: delta -1 -> Active Rooms = 1
+Time 30: delta -1 -> Active Rooms = 0
+Peak Concurrency = 2!
+```
+
+---
+
+## 🎨 PILLAR 3: PRAGMATIC VISUAL MODELS
+
+### Visual Model 1: Why Sorting by Start Fails (ASCII Contrast)
+
+```text
+INPUT CANDIDATES:
+Activity A: [ 0 ---------------------------------------------------- 100 ]
+Activity B:   [ 1 --- 3 ]
+Activity C:               [ 4 --- 6 ]
+
+==========================================================================
+ATTEMPT 1: SORT BY START TIME (FATAL TRAP)
+==========================================================================
+Sorted Order: A [0, 100], B [1, 3], C [4, 6]
+
+Timeline:
+A: [====================================================================] <-- Commits to A!
+B:   [-----] (Starts at 1 < 100 -> BLOCKED!)
+C:               [-----] (Starts at 4 < 100 -> BLOCKED!)
+
+Selected: { A } -> Total = 1 Activity. (FAILURE!)
+
+==========================================================================
+ATTEMPT 2: SORT BY END TIME (GREEDY OPTIMUM)
+==========================================================================
+Sorted Order: B [1, 3] (End 3), C [4, 6] (End 6), A [0, 100] (End 100)
+
+Timeline:
+B:   [-----]                    <-- Selected! lastEnd = 3
+C:               [-----]        <-- 4 >= 3 -> Selected! lastEnd = 6
+A: [=========================...] <-- 0 < 6 -> Conflict! Skipped
+
+Selected: { B, C } -> Total = 2 Activities. (GLOBAL OPTIMUM!)
+```
+
+---
+
+### Visual Model 2: Interval Problem Classification & Decision Engine
+
+```mermaid
+flowchart TD
+    classDef startNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef decisionNode fill:#fff9c4,stroke:#fbc02d,stroke-width:2px,color:#f57f17
+    classDef actionNode fill:#e8f5e9,stroke:#43a047,stroke-width:2px,color:#1b5e20
+
+    Q1{"What is the Core Objective?"}:::decisionNode
+    Act["🎯 Maximize Non-Overlapping Tasks<br/>(1 Resource / Drop conflicts)"]:::actionNode
+    Rooms["🏢 Minimize Resources / Rooms<br/>(Keep ALL tasks / Measure peak)"]:::actionNode
+    Merge["🔗 Merge Overlapping Ranges<br/>(Consolidate intervals)"]:::actionNode
+    Weight["💰 Maximize Weighted Value<br/>(Tasks have custom profits)"]:::actionNode
+
+    RuleAct["👉 Sort by END time<br/>Greedy Earliest Finish Time (LC 435, 452)"]:::startNode
+    RuleRooms["👉 Sort by START time<br/>Min-Heap or Sweep-Line (LC 253)"]:::startNode
+    RuleMerge["👉 Sort by START time<br/>Two-Pointer Linear Merge (LC 56)"]:::startNode
+    RuleWeight["👉 Sort by End + DP<br/>Binary Search + Memoization (LC 1235)"]:::startNode
+
+    Q1 -->|"Single Resource Max Count"| Act
+    Q1 -->|"Multi-Resource Peak Concurrency"| Rooms
+    Q1 -->|"Union of Intervals"| Merge
+    Q1 -->|"Profit / Weights"| Weight
+
+    Act --> RuleAct
+    Rooms --> RuleRooms
+    Merge --> RuleMerge
+    Weight --> RuleWeight
+```
+
+---
+
+### Visual Model 3: Meeting Rooms II Room Assignment Flowchart
+
+```mermaid
+flowchart TD
+    classDef startNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef decisionNode fill:#fff9c4,stroke:#fbc02d,stroke-width:2px,color:#f57f17
+    classDef actionNode fill:#e8f5e9,stroke:#43a047,stroke-width:2px,color:#1b5e20
+    classDef alertNode fill:#ffebee,stroke:#e53935,stroke-width:2px,color:#b71c1c
+
+    Start["📦 Fetch Next Meeting (Start, End)<br/>(Sorted by Start Time)"]:::startNode
+    Check{"Does Start &ge; Earliest Free Room?<br/>(Start &ge; Heap.Peek?)"}:::decisionNode
+    Reuse["♻️ Reuse Existing Room:<br/>Heap.Dequeue() then Heap.Enqueue(End)"]:::actionNode
+    Alloc["➕ Allocate Brand-New Room:<br/>Heap.Enqueue(End)"]:::alertNode
+    Done["🏁 All Meetings Processed:<br/>Result = Heap.Count"]:::startNode
+
+    Start --> Check
+    Check -->|"Yes (Room Freed)"| Reuse
+    Check -->|"No (All Rooms Busy)"| Alloc
+    Reuse --> Done
+    Alloc --> Done
+```
+
+---
+
+## 🛑 PILLAR 4: THE ROOKIE TRAP ZONE
+
+### Side-by-Side Architectural Comparisons
+
+```text
++---------------------------------------------------------------------------------------------------------+
+|                                    ROOKIE TRAP VS SENIOR ARCHITECT                                     |
++------------------------------------+--------------------------------------------------------------------+
+| ❌ ROOKIE BLUNDER                  | ✅ SENIOR ARCHITECT PATTERN                                        |
++------------------------------------+--------------------------------------------------------------------+
+| Sorting by START time for Activity | Always sort by END time for selection/removal problems.            |
+| Selection or Non-overlapping tasks | Earliest finish time minimizes opportunity cost on future slots.   |
++------------------------------------+--------------------------------------------------------------------+
+| Confusing single-resource          | Clearly isolate the objective:                                     |
+| scheduling with multi-resource     | - Single Resource: Drop conflicts -> Sort by END time.             |
+| allocation.                        | - Multiple Resources: Keep all -> Sort by START time + Min-Heap.   |
++------------------------------------+--------------------------------------------------------------------+
+| Off-by-one on boundary endpoints   | Verify domain definitions immediately:                             |
+| (treating start == end as conflict)| - LC 435: [1, 2] and [2, 3] do NOT overlap (start >= lastEnd ok).  |
+|                                    | - LC 452: [1, 2] and [2, 3] DO overlap (arrow at 2 bursts both).   |
++------------------------------------+--------------------------------------------------------------------+
+| Integer subtraction overflow:      | Never use subtraction for comparison in C# or Java!                |
+| (a, b) => a[1] - b[1]              | If a[1] = -2*10^9 and b[1] = 2*10^9, a[1] - b[1] overflows!       |
+|                                    | Always use: a[1].CompareTo(b[1])                                   |
++------------------------------------+--------------------------------------------------------------------+
+```
+
+### Code Blunder Drill 1: Integer Overflow in Comparators
+
+```csharp
+// ❌ ROOKIE BLUNDER: Triggers integer underflow/overflow on extreme values
+Array.Sort(intervals, (a, b) => a[1] - b[1]); 
+// If a[1] is int.MinValue (-2,147,483,648) and b[1] is 1,
+// a[1] - b[1] wraps around to positive 2,147,483,647! Corrupting sort order!
+
+// ✅ SENIOR ARCHITECT PATTERN: Safe 3-way comparison
+Array.Sort(intervals, static (a, b) => a[1].CompareTo(b[1]));
+```
+
+### Code Blunder Drill 2: Sorting Criteria Mismatch
+
+```python
+# ❌ ROOKIE BLUNDER: Attempting Activity Selection sorted by start time
+intervals.sort(key=lambda x: x[0])
+# Fails when interval [0, 100] comes before [1, 2] and [3, 4]!
+
+# ✅ SENIOR ARCHITECT PATTERN: Sort by finish time
+intervals.sort(key=lambda x: x[1])
+```
+
+---
+
+## 🎙️ PILLAR 5: 45-MINUTE INTERVIEW TALK TRACK
+
+### The 3-Sentence Verbal Script (Say This Before Writing Any Code)
+
+> *"1. To solve this interval scheduling problem, I will classify it as single-resource activity selection where touching endpoints `[1, 2]` and `[2, 3]` are considered non-overlapping.*
+> 
+> *2. I will sort the intervals by their end times in ascending order, because greedily choosing the interval that finishes earliest minimizes opportunity cost and leaves the maximum possible timeline open for subsequent tasks.*
+> 
+> *3. Then, in a single linear pass tracking the latest finish boundary `lastEnd`, I will keep compatible intervals and increment removals on conflicts, giving an optimal `O(N log N)` time and `O(1)` auxiliary space solution."*
+
+---
+
+### The 45-Minute Stage-by-Stage Conversational Guide
+
+```text
+[00:00 - 05:00] Clarifying Interval Semantics
+Candidate: "Let's clarify three critical boundaries:
+ 1. Are intervals half-open [start, end) or closed [start, end]?
+    In LeetCode 435, intervals touching at an endpoint do not overlap.
+ 2. Can timestamps be negative, and can start == end (zero-length intervals)?
+ 3. Is the input array mutable in-place, or should we preserve original memory?"
+
+[05:00 - 12:00] Proving Why Earliest Finish Time (EFT) Wins
+Candidate: "A naive brute-force could test all 2^N subsets for overlap in O(2^N * N).
+ Why does greedy work here?
+ If we sort by start time, an early 10-hour meeting blocks multiple 30-minute meetings.
+ If we sort by shortest duration, a short meeting right in the middle blocks two meetings.
+ Earliest finish time is mathematically optimal by an exchange argument:
+ Suppose an optimal schedule OPT starts with meeting X instead of our greedy choice G.
+ Since G finishes at or before X by definition, swapping X with G cannot overlap with
+ any subsequent meetings in OPT. Thus, the greedy choice never degrades the optimal solution."
+
+[12:00 - 25:00] Architectural Implementation (C# / Python)
+Candidate: "I will implement the single-pass greedy scan.
+ In C#, I'll use Array.Sort with a safe `CompareTo` to avoid integer subtraction overflow.
+ In Python, `intervals.sort(key=lambda x: x[1])`.
+ We track `lastEnd`. When `current.Start < lastEnd`, we increment `removals`.
+ Otherwise, we update `lastEnd = current.End`."
+
+[25:00 - 35:00] Code Execution & Tracing
+Candidate: "Let me trace this through our toy napkin test case `[[1, 2], [2, 3], [3, 4], [1, 3]]`..."
+
+[35:00 - 42:00] Complexity Verification
+Candidate: "Time Complexity: O(N log N) dominated strictly by the comparator sort.
+ The subsequent scan is a single linear O(N) pass.
+ Space Complexity: O(1) auxiliary space if sorted in place, or O(N) in Python if using sorted()."
+
+[42:00 - 45:00] Edge Cases & Defense
+Candidate: "Edge cases verified:
+ - Empty or single interval -> Returns 0 removals immediately.
+ - All intervals identical -> Removes N - 1 intervals.
+ - All disjoint -> Removes 0 intervals.
+ - Touching boundaries [1, 2], [2, 3] -> Correctly recognized as non-overlapping."
+```
+
+---
+
+## ⚡ PILLAR 6: PRODUCTION DUAL-LANGUAGE IMPLEMENTATIONS
+
+### Problem 1: Non-Overlapping Intervals (LeetCode 435)
+
+#### C# (.NET 8/9 Production Implementation)
 
 ```csharp
 namespace DsaMastery.Intervals;
 
 using System;
-using System.Collections.Generic;
 
-public readonly record struct Interval(int Start, int End);
-
-public static class ActivitySelector
+public static class NonOverlappingIntervalsSolver
 {
     /// <summary>
-    /// Returns the maximum count of non-overlapping intervals.
+    /// Computes the minimum number of intervals to remove to make the rest non-overlapping.
     /// Time Complexity: O(N log N) dominated by sorting.
-    /// Space Complexity: O(1) auxiliary (in-place sort on Array/Span).
+    /// Auxiliary Space: O(1) in-place sort on 2D array coordinates.
     /// </summary>
-    public static int MaxNonOverlappingCount(Interval[] intervals)
+    public static int EraseOverlapIntervals(int[][] intervals)
     {
+        // Guard clauses
         ArgumentNullException.ThrowIfNull(intervals);
-        if (intervals.Length <= 1) return intervals.Length;
-
-        // Sort by end time ascending; tie-break by start time ascending
-        Array.Sort(intervals, static (a, b) =>
+        if (intervals.Length <= 1)
         {
-            int cmp = a.End.CompareTo(b.End);
-            return cmp != 0 ? cmp : a.Start.CompareTo(b.Start);
-        });
+            return 0;
+        }
 
-        int count = 1;
-        int lastEnd = intervals[0].End;
+        // Sort by end time ascending; use CompareTo to eliminate integer overflow risks
+        Array.Sort(intervals, static (a, b) => a[1].CompareTo(b[1]));
+
+        int removals = 0;
+        int lastEnd = intervals[0][1];
 
         for (int i = 1; i < intervals.Length; i++)
         {
-            if (intervals[i].Start >= lastEnd)
+            int currentStart = intervals[i][0];
+            int currentEnd = intervals[i][1];
+
+            // If current starts before previous ends, we have a conflict.
+            // Greedily remove current (since previous has earlier or equal finish time).
+            if (currentStart < lastEnd)
             {
-                count++;
-                lastEnd = intervals[i].End;
+                removals++;
+            }
+            else
+            {
+                // Non-overlapping: advance our valid finish boundary
+                lastEnd = currentEnd;
             }
         }
 
-        return count;
-    }
-
-    /// <summary>
-    /// Returns the actual selected non-overlapping intervals.
-    /// Space Complexity: O(N) for result list.
-    /// </summary>
-    public static List<Interval> SelectMaxActivities(Interval[] intervals)
-    {
-        ArgumentNullException.ThrowIfNull(intervals);
-        if (intervals.Length == 0) return [];
-
-        Array.Sort(intervals, static (a, b) => a.End.CompareTo(b.End));
-
-        var selected = new List<Interval> { intervals[0] };
-        int lastEnd = intervals[0].End;
-
-        for (int i = 1; i < intervals.Length; i++)
-        {
-            if (intervals[i].Start >= lastEnd)
-            {
-                selected.Add(intervals[i]);
-                lastEnd = intervals[i].End;
-            }
-        }
-
-        return selected;
+        return removals;
     }
 }
 ```
 
-#### Production Python (3.11+)
+#### Python 3.11+ Production Implementation
 
 ```python
-from typing import List, Tuple
+from typing import List
 
-def max_non_overlapping_count(intervals: List[Tuple[int, int]]) -> int:
-    """
-    Computes maximum non-overlapping intervals count using earliest finish time greedy rule.
-    Time Complexity: O(N log N)
-    Space Complexity: O(1) auxiliary memory
-    """
-    if not intervals:
-        return 0
+class NonOverlappingIntervalsSolver:
+    @staticmethod
+    def erase_overlap_intervals(intervals: List[List[int]]) -> int:
+        """
+        Computes minimum intervals to remove for zero overlap using earliest finish time.
+        Time Complexity: O(N log N)
+        Auxiliary Space: O(1) if sorting in place
+        """
+        if not intervals or len(intervals) <= 1:
+            return 0
 
-    # Sort in-place by finish time ascending
-    intervals.sort(key=lambda x: x[1])
+        # Sort in-place by end time ascending
+        intervals.sort(key=lambda x: x[1])
 
-    count = 1
-    last_end = intervals[0][1]
+        removals = 0
+        last_end = intervals[0][1]
 
-    for start, end in intervals[1:]:
-        if start >= last_end:
-            count += 1
-            last_end = end
+        for i in range(1, len(intervals)):
+            current_start, current_end = intervals[i]
 
-    return count
+            # If current starts before previous ends, conflict detected
+            if current_start < last_end:
+                removals += 1
+            else:
+                last_end = current_end
 
-def select_max_activities(intervals: List[Tuple[int, int]]) -> List[Tuple[int, int]]:
-    """
-    Returns the chosen subset of non-overlapping intervals.
-    """
-    if not intervals:
-        return []
-
-    sorted_intervals = sorted(intervals, key=lambda x: x[1])
-    selected = [sorted_intervals[0]]
-    last_end = sorted_intervals[0][1]
-
-    for start, end in sorted_intervals[1:]:
-        if start >= last_end:
-            selected.append((start, end))
-            last_end = end
-
-    return selected
+        return removals
 ```
 
 ---
 
-### Pattern 2: Meeting Rooms II (Interval Partitioning / Minimum Rooms)
+### Problem 2: Minimum Number of Arrows to Burst Balloons (LeetCode 452)
 
-**Problem Statement:**
-Given an array of meeting time intervals `[[start_i, end_i]]`, find the minimum number of conference rooms required so that no two meetings overlap in the same room.
+#### C# (.NET 8/9 Production Implementation)
 
-**Greedy Mechanics: Min-Heap vs Sweep-Line**
-1. **Min-Heap Approach:**
-   - Sort intervals by **start time** ascending.
-   - Maintain a min-heap storing the `end` times of active rooms.
-   - For each new meeting:
-     - If `meeting.start >= heap.Peek()`: the earliest finishing room has freed up! Reuse it (`heap.Dequeue()`).
-     - Otherwise: allocate a new room.
-     - Enqueue `meeting.end` into the heap.
-   - Peak size of the heap is the answer.
-2. **Sweep-Line Approach:**
-   - Split each interval into two events: `(start, +1)` and `(end, -1)`.
-   - Sort events by timestamp. If timestamps match, process `end (-1)` before `start (+1)` so back-to-back meetings don't trigger a new room.
-   - Track running concurrency; record the peak concurrency.
+```csharp
+namespace DsaMastery.Intervals;
 
+using System;
+
+public static class BurstBalloonsSolver
+{
+    /// <summary>
+    /// Computes the minimum number of arrows to burst all balloons.
+    /// Time Complexity: O(N log N)
+    /// Auxiliary Space: O(1)
+    /// </summary>
+    public static int FindMinArrowShots(int[][] points)
+    {
+        ArgumentNullException.ThrowIfNull(points);
+        if (points.Length == 0)
+        {
+            return 0;
+        }
+
+        // CRITICAL: Must use CompareTo. (a, b) => a[1] - b[1] will overflow on int.MinValue / MaxValue!
+        Array.Sort(points, static (a, b) => a[1].CompareTo(b[1]));
+
+        int arrows = 1;
+        int currentArrowPos = points[0][1];
+
+        for (int i = 1; i < points.Length; i++)
+        {
+            int balloonStart = points[i][0];
+            int balloonEnd = points[i][1];
+
+            // If the balloon starts strictly after the current arrow position,
+            // the previous arrow cannot reach it. We must fire a new arrow.
+            if (balloonStart > currentArrowPos)
+            {
+                arrows++;
+                currentArrowPos = balloonEnd; // Shoot at the end of current balloon
+            }
+        }
+
+        return arrows;
+    }
+}
 ```
-ASCII Room Allocation Timeline:
-Meetings: M1 [1, 4), M2 [2, 5), M3 [5, 8), M4 [3, 6), M5 [7, 9)
 
-Sorted by Start: M1[1,4), M2[2,5), M4[3,6), M3[5,8), M5[7,9)
+#### Python 3.11+ Production Implementation
 
-Room 1: [ M1: 1-4 )        [ M3: 5-8 )
-Room 2:    [ M2: 2-5 )                [ M5: 7-9 )
-Room 3:       [ M4: 3-6 )
+```python
+from typing import List
 
-Min-Heap State Evolution:
-Step 1 (M1 [1,4)): Heap = [4]                   (1 room)
-Step 2 (M2 [2,5)): Start 2 < 4. Heap = [4, 5]   (2 rooms)
-Step 3 (M4 [3,6)): Start 3 < 4. Heap = [4, 5, 6](3 rooms - Peak!)
-Step 4 (M3 [5,8)): Start 5 >= 4. Reuse R1. Pop 4, Push 8. Heap = [5, 6, 8]
-Step 5 (M5 [7,9)): Start 7 >= 5. Reuse R2. Pop 5, Push 9. Heap = [6, 8, 9]
+class BurstBalloonsSolver:
+    @staticmethod
+    def find_min_arrow_shots(points: List[List[int]]) -> int:
+        """
+        Determines the minimum arrows needed to burst all balloons.
+        Time Complexity: O(N log N)
+        Auxiliary Space: O(1)
+        """
+        if not points:
+            return 0
 
-Total Rooms Needed = 3
+        # Sort balloons by their end coordinate
+        points.sort(key=lambda x: x[1])
+
+        arrows = 1
+        arrow_pos = points[0][1]
+
+        for i in range(1, len(points)):
+            start, end = points[i]
+            # If current balloon starts after the current arrow, shoot a new arrow
+            if start > arrow_pos:
+                arrows += 1
+                arrow_pos = end
+
+        return arrows
 ```
 
-#### Production C# (.NET 8/9 with `PriorityQueue`)
+---
+
+### Problem 3: Meeting Rooms II (LeetCode 253)
+
+#### C# (.NET 8/9 Production Implementation — Min-Heap & Sweep-Line)
 
 ```csharp
 namespace DsaMastery.Intervals;
@@ -297,35 +653,41 @@ namespace DsaMastery.Intervals;
 using System;
 using System.Collections.Generic;
 
+public readonly record struct MeetingInterval(int Start, int End);
+
 public static class MeetingRoomsScheduler
 {
     /// <summary>
-    /// Approach 1: Min-Heap of room end times using PriorityQueue.
+    /// Approach 1: Min-Heap of active room end times via PriorityQueue.
     /// Time Complexity: O(N log N)
-    /// Space Complexity: O(N) auxiliary memory for heap
+    /// Auxiliary Space: O(N) heap allocations
     /// </summary>
-    public static int MinMeetingRoomsHeap(Interval[] intervals)
+    public static int MinMeetingRoomsHeap(MeetingInterval[] intervals)
     {
         ArgumentNullException.ThrowIfNull(intervals);
-        if (intervals.Length <= 1) return intervals.Length;
+        if (intervals.Length <= 1)
+        {
+            return intervals.Length;
+        }
 
-        // Sort by start time ascending
+        // Sort by START time ascending
         Array.Sort(intervals, static (a, b) => a.Start.CompareTo(b.Start));
 
-        // PriorityQueue acts as a min-heap storing end times
+        // PriorityQueue acts as a min-heap tracking end times of occupied rooms
         var roomEndHeap = new PriorityQueue<int, int>();
         roomEndHeap.Enqueue(intervals[0].End, intervals[0].End);
 
         for (int i = 1; i < intervals.Length; i++)
         {
             var current = intervals[i];
-            
-            // Check if earliest meeting has finished
+
+            // If the earliest meeting finishes at or before the current meeting starts, reuse room!
             if (roomEndHeap.TryPeek(out int earliestEnd, out _) && current.Start >= earliestEnd)
             {
-                roomEndHeap.Dequeue(); // Reuse room
+                roomEndHeap.Dequeue(); // Release room
             }
 
+            // Assign room (either reused or newly created) with current meeting's end time
             roomEndHeap.Enqueue(current.End, current.End);
         }
 
@@ -333,41 +695,50 @@ public static class MeetingRoomsScheduler
     }
 
     /// <summary>
-    /// Approach 2: Sweep-Line Event Sorting.
+    /// Approach 2: Chronological Two-Pointer Sweep-Line (Zero-allocation friendly).
     /// Time Complexity: O(N log N)
-    /// Space Complexity: O(N) auxiliary memory for events
+    /// Auxiliary Space: O(N) for coordinate extraction
     /// </summary>
-    public static int MinMeetingRoomsSweepLine(Interval[] intervals)
+    public static int MinMeetingRoomsSweepLine(MeetingInterval[] intervals)
     {
         ArgumentNullException.ThrowIfNull(intervals);
-        if (intervals.Length <= 1) return intervals.Length;
-
-        int n = intervals.Length;
-        var events = new (int Time, int Delta)[2 * n];
-        int idx = 0;
-
-        foreach (var interval in intervals)
+        if (intervals.Length <= 1)
         {
-            events[idx++] = (interval.Start, 1);  // Room opens
-            events[idx++] = (interval.End, -1);   // Room frees
+            return intervals.Length;
         }
 
-        // Sort by Time ascending. If times match, -1 (end) comes before +1 (start)
-        Array.Sort(events, static (a, b) =>
-        {
-            int cmp = a.Time.CompareTo(b.Time);
-            return cmp != 0 ? cmp : a.Delta.CompareTo(b.Delta);
-        });
+        int n = intervals.Length;
+        int[] startTimes = new int[n];
+        int[] endTimes = new int[n];
 
+        for (int i = 0; i < n; i++)
+        {
+            startTimes[i] = intervals[i].Start;
+            endTimes[i] = intervals[i].End;
+        }
+
+        Array.Sort(startTimes);
+        Array.Sort(endTimes);
+
+        int startPtr = 0;
+        int endPtr = 0;
         int activeRooms = 0;
         int maxRooms = 0;
 
-        foreach (var evt in events)
+        while (startPtr < n)
         {
-            activeRooms += evt.Delta;
-            if (activeRooms > maxRooms)
+            // If next event is a meeting start
+            if (startTimes[startPtr] < endTimes[endPtr])
             {
-                maxRooms = activeRooms;
+                activeRooms++;
+                maxRooms = Math.Max(maxRooms, activeRooms);
+                startPtr++;
+            }
+            else
+            {
+                // A meeting has ended: free a room
+                activeRooms--;
+                endPtr++;
             }
         }
 
@@ -376,153 +747,118 @@ public static class MeetingRoomsScheduler
 }
 ```
 
-#### Production Python (3.11+ with `heapq`)
+#### Python 3.11+ Production Implementation (Heap & Two-Pointer Sweep)
 
 ```python
 import heapq
-from typing import List, Tuple
+from typing import List
 
-def min_meeting_rooms_heap(intervals: List[Tuple[int, int]]) -> int:
-    """
-    Computes minimum meeting rooms using a min-heap of active room end times.
-    Time Complexity: O(N log N)
-    Space Complexity: O(N) for heap storage
-    """
-    if not intervals:
-        return 0
+class MeetingRoomsScheduler:
+    @staticmethod
+    def min_meeting_rooms_heap(intervals: List[List[int]]) -> int:
+        """
+        Finds minimum meeting rooms using a min-heap of active room end times.
+        Time Complexity: O(N log N)
+        Auxiliary Space: O(N)
+        """
+        if not intervals:
+            return 0
 
-    # Sort intervals by start time ascending
-    sorted_intervals = sorted(intervals, key=lambda x: x[0])
+        # Sort intervals by START time
+        intervals.sort(key=lambda x: x[0])
 
-    # Min-heap stores end times of ongoing meetings
-    end_heap: List[int] = []
-    heapq.heappush(end_heap, sorted_intervals[0][1])
+        # Min-heap stores end times of active meetings
+        end_heap: List[int] = []
+        heapq.heappush(end_heap, intervals[0][1])
 
-    for start, end in sorted_intervals[1:]:
-        # If earliest meeting ended before or at current start, reuse that room
-        if start >= end_heap[0]:
-            heapq.heappop(end_heap)
+        for start, end in intervals[1:]:
+            # If the earliest ending meeting finished before/at current start, reuse room
+            if start >= end_heap[0]:
+                heapq.heappop(end_heap)
 
-        # Allocate room (either reused or new)
-        heapq.heappush(end_heap, end)
+            heapq.heappush(end_heap, end)
 
-    return len(end_heap)
+        return len(end_heap)
 
-def min_meeting_rooms_sweep(intervals: List[Tuple[int, int]]) -> int:
-    """
-    Computes minimum meeting rooms using sweep-line event transformation.
-    Time Complexity: O(N log N)
-    Space Complexity: O(N) for event storage
-    """
-    events: List[Tuple[int, int]] = []
-    for start, end in intervals:
-        events.append((start, 1))   # Start meeting (+1 room)
-        events.append((end, -1))    # End meeting (-1 room)
+    @staticmethod
+    def min_meeting_rooms_sweep(intervals: List[List[int]]) -> int:
+        """
+        Finds minimum meeting rooms using two sorted pointer arrays.
+        Time Complexity: O(N log N)
+        Auxiliary Space: O(N)
+        """
+        if not intervals:
+            return 0
 
-    # Sort by time. At matching time, -1 (end) precedes +1 (start)
-    events.sort(key=lambda x: (x[0], x[1]))
+        start_times = sorted([i[0] for i in intervals])
+        end_times = sorted([i[1] for i in intervals])
 
-    current_rooms = 0
-    max_rooms = 0
+        start_ptr = 0
+        end_ptr = 0
+        active_rooms = 0
+        max_rooms = 0
 
-    for _, delta in events:
-        current_rooms += delta
-        max_rooms = max(max_rooms, current_rooms)
+        while start_ptr < len(intervals):
+            if start_times[start_ptr] < end_times[end_ptr]:
+                active_rooms += 1
+                max_rooms = max(max_rooms, active_rooms)
+                start_ptr += 1
+            else:
+                active_rooms -= 1
+                end_ptr += 1
 
-    return max_rooms
+        return max_rooms
 ```
 
 ---
 
-## ⚖️ CHAPTER 4: PERFORMANCE & COMPLEXITY DECONSTRUCTION
+## ⚖️ PERFORMANCE & COMPLEXITY DECONSTRUCTION
 
-### Complexity Comparison
+### Explicit Complexity Breakdown
 
-| Problem | Primary Operation | Time Complexity | Auxiliary Space | Bottleneck |
-| :--- | :--- | :--- | :--- | :--- |
-| **Activity Selection** | Sort by End Time + Scan | `O(N log N)` | `O(1)` | Array sort comparisons |
-| **Meeting Rooms II (Heap)** | Sort by Start + Heap Ops | `O(N log N)` | `O(N)` | Heapify & sift-down ops |
-| **Meeting Rooms II (Sweep)** | Sort `2N` Events + Scan | `O(N log N)` | `O(N)` | 2N event sorting |
-| **Weighted Interval (DP)** | Sort + Bisect + DP Array | `O(N log N)` | `O(N)` | Binary search per index |
+| Algorithm Pattern | Primary Operation | Time Complexity | Auxiliary Space | Bottleneck | Hardware/Cache Impact |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Activity Selection** | Sort by End + 1 Pass | `O(N log N)` | `O(1)` | Array sort comparisons | Highest cache hits (linear scan) |
+| **Balloons (LC 452)** | Sort by End + 1 Pass | `O(N log N)` | `O(1)` | Array sort comparisons | Sequential memory traversal |
+| **Meeting Rooms (Heap)** | Sort by Start + Heap Ops | `O(N log N)` | `O(N)` | Heapify & sift-down ops | Moderate (pointer jumps in heap) |
+| **Meeting Rooms (Sweep)**| Dual Array Sort + 2 Pointers| `O(N log N)` | `O(N)` | Dual array sorting | Highly cache-friendly contiguous reads |
+| **Weighted Intervals** | Sort by End + Bisect + DP | `O(N log N)` | `O(N)` | Binary search per index | Cache misses during binary search jumps |
 
-#### Critical Engineering Realities:
-- **Zero Allocations in C#:** For high-throughput schedulers, sort interval arrays in place via `Array.Sort` or `MemoryExtensions.Sort` using stack-allocated structs or spans to eliminate GC pressure.
-- **Cache Locality:** Sweep-line traverses contiguous arrays linearly (`O(N)` cache hits), whereas heap structures jump memory pointers during sift-downs. On inputs with `N > 10^5`, sweep-line often beats heaps in raw wall-clock time despite identical Big-O.
-
----
-
-## 🎙️ CHAPTER 5: 45-MINUTE INTERVIEW VERBAL SCRIPT
-
-```
-[00:00 - 05:00] Clarifying Interval Semantics
-"Let's clarify the boundary semantics:
- 1. Are intervals half-open [start, end) or closed [start, end]?
-    If half-open, a meeting ending at 4 and another starting at 4 do NOT conflict.
- 2. Can start and end times be negative or zero?
- 3. Are intervals pre-sorted?
- For Activity Selection, our goal is to maximize the count of jobs on one machine.
- For Meeting Rooms, our goal is to minimize the total machines required for all jobs."
-
-[05:00 - 12:00] Proving the Greedy Criterion
-"Why does earliest finish time work for Activity Selection while earliest start fails?
- If we sort by start time, a single long job like [0, 100] could prevent 20 shorter jobs.
- If we sort by duration, [4, 6] could conflict with [0, 5] and [5, 10].
- Earliest finish time is optimal because it minimizes the remaining timeline used.
- An exchange argument formally confirms this: if any optimal solution picks a different
- first job, swapping it with our earliest finisher preserves validity without reducing size."
-
-[12:00 - 25:00] Explaining the Architecture: Min-Heap vs Sweep-Line
-"For Meeting Rooms II:
- Option A: Min-Heap. Sort by start time. Maintain a min-heap of active end times.
- If the next meeting starts after heap.Peek(), we pop and reuse that room.
- Otherwise, we push and expand the room count.
- 
- Option B: Sweep-Line. Transform N intervals into 2N events (start = +1, end = -1).
- Sort events chronologically. If timestamps tie, end events (-1) MUST precede start (+1)
- so that a room is released before a new meeting claims it.
- I will implement the Min-Heap approach first, as it allows returning active room assignments."
-
-[25:00 - 35:00] Clean Coding (Walk through the implementation)
-"In C#, I'll use PriorityQueue<int, int> available in .NET 6+.
- In Python, I'll use heapq. Notice how we handle the empty input edge case..."
-
-[35:00 - 42:00] Complexity Verification
-"Time Complexity: Sorting takes O(N log N). In the heap approach, we do N heap insertions
- and at most N deletions. Total time is O(N log N).
- Space Complexity: The heap holds at most N elements, giving O(N) auxiliary space."
-
-[42:00 - 45:00] Edge Cases & Defenses
-"Edge cases covered:
- - Empty or single interval -> Return 0 or 1 immediately.
- - Identical intervals -> Stack concurrently, allocating separate rooms.
- - Back-to-back meetings [1, 4) and [4, 7) -> Valid reuse of Room 1 because 4 >= 4."
-```
+#### Critical Staff-Level Engineering Insights:
+1. **Why Sweep-Line Beats Heap in Wall-Clock Time:**
+   Even though both approaches share identical `O(N log N)` Big-O complexity, the Two-Pointer Sweep-line runs over two flat, contiguous arrays (`startTimes` and `endTimes`). Modern CPU L1/L2 caches prefetch contiguous memory smoothly. Min-heaps, by contrast, perform non-sequential child/parent array jumps during `SiftUp` and `SiftDown` operations. For `N > 10^5`, the two-pointer sweep regularly clocks 25–40% faster.
+2. **Zero Allocation in C# High-Throughput Microservices:**
+   When scheduling cloud jobs or high-frequency trade windows, avoid allocating `List<T>` or wrapper objects. Pass `Span<Interval>` and use `Array.Sort` or stack-allocated memory to maintain a zero-GC allocation footprint.
 
 ---
 
 ## ⚔️ SUPPLEMENTARY OUTCOMES
 
-### 🏋️ Practice Problems
+### 🏋️ Practice Problems (Ordered by Cognitive ROI)
 
-| # | Problem | Source | Difficulty | Key Concept |
-| :--- | :--- | :--- | :--- | :--- |
-| 1 | Non-overlapping Intervals | LeetCode 435 | Medium | Activity Selection (`N - max_count`) |
-| 2 | Minimum Arrows to Burst Balloons | LeetCode 452 | Medium | Greedy coordinate overlap |
-| 3 | Meeting Rooms II | LeetCode 253 | Medium | Min-heap / Sweep-line |
-| 4 | Merge Intervals | LeetCode 56 | Medium | Two-pointer interval merging |
-| 5 | Insert Interval | LeetCode 57 | Medium | Ordered insertion & compaction |
-| 6 | Interval List Intersections | LeetCode 986 | Medium | Dual two-pointer sweep |
-| 7 | Car Pooling | LeetCode 1094 | Medium | Difference array / capacity check |
-| 8 | Employee Free Time | LeetCode 759 | Hard | Merge busy ranges, invert gaps |
+| # | Problem | Source | Difficulty | Optimal Paradigm | Key Invariant |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 1 | Non-overlapping Intervals | LeetCode 435 | Medium | Greedy (Sort by End) | `Removals = N - max_compatible` |
+| 2 | Minimum Number of Arrows to Burst Balloons | LeetCode 452 | Medium | Greedy (Sort by End) | Shoot arrow at earliest balloon end |
+| 3 | Meeting Rooms II | LeetCode 253 | Medium | Min-Heap / Sweep-Line | Track peak concurrent overlaps |
+| 4 | Merge Intervals | LeetCode 56 | Medium | Sort by Start + Two Pointers | Expand running interval if `start <= lastEnd` |
+| 5 | Insert Interval | LeetCode 57 | Medium | 3-Phase Linear Scan | Left disjoint -> Merge overlap -> Right disjoint |
+| 6 | Interval List Intersections | LeetCode 986 | Medium | Dual Pointer Sweep | Overlap = `[max(s1, s2), min(e1, e2)]` |
+| 7 | Car Pooling | LeetCode 1094 | Medium | Difference Array / Sweep | Verify peak passengers <= vehicle capacity |
+| 8 | Employee Free Time | LeetCode 759 | Hard | Min-Heap / Sweep-Line | Invert intervals between merged busy times |
 
-### 🎙️ Interview Questions
+---
 
-1. **Q:** How do you convert LeetCode 435 (Non-overlapping Intervals) to Activity Selection?
-   - *Answer:* The minimum intervals to remove equals `Total Intervals - Maximum Non-Overlapping Intervals`.
-2. **Q:** What happens in sweep-line if start (+1) is sorted before end (-1) at the same timestamp?
-   - *Answer:* It artificially spikes peak concurrency by 1, wrongly requiring an extra room for back-to-back meetings.
-3. **Q:** Why does weighted interval scheduling require dynamic programming?
-   - *Answer:* An interval with high profit might finish late, invalidating the greedy "earliest finish" advantage.
+### 🎙️ Staff Interview Defense Questions
+
+1. **Q:** *"Why does sorting by start time fail for Activity Selection, but work for Meeting Rooms II?"*
+   - **Answer:** In Activity Selection, we have a **single resource** and want to maximize completed tasks. Selecting the earliest finisher minimizes remaining timeline occupied. In Meeting Rooms II, we must schedule **every single meeting across infinite rooms**, so we must process arrivals chronologically (by start time) to see if a freed room is already available before allocating a new one.
+2. **Q:** *"In Sweep-Line Meeting Rooms, what happens if an end event (-1) and a start event (+1) occur at the exact same second?"*
+   - **Answer:** If we process the start event first, our running room count artificially spikes by 1, allocating an unnecessary room. We must break ties by processing the end event first, reflecting that the room is vacated right before the next meeting enters.
+3. **Q:** *"When does greedy interval scheduling break down completely?"*
+   - **Answer:** As soon as intervals carry non-uniform weights or revenue values (Weighted Interval Scheduling). An interval finishing late might yield $10,000, while three early intervals yield only $10 each. Local greedy earliest finish time cannot weigh long-term revenue, requiring Dynamic Programming with Binary Search (`O(N log N)`).
+4. **Q:** *"How do you defend the earliest finish time greedy choice without formal math proofs in an interview?"*
+   - **Answer:** Use the 3-step Exchange Argument. Suppose an optimal schedule OPT chose a different first job `X` instead of our greedy choice `G`. Because `G` finishes at or before `X`, swapping `X` with `G` cannot conflict with any other chosen tasks in OPT. Thus, OPT remains fully valid with the exact same count, proving greedy is globally optimal.
 
 ---
 

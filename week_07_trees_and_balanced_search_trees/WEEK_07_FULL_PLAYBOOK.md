@@ -307,12 +307,12 @@ Visit nodes **layer-by-layer** left-to-right using a **FIFO Queue**. Used for **
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     subgraph BFSQueue["BFS Layer by Layer"]
-        L5["Depth 0: [5]"]:::lvl0
-        L3["Depth 1: [3]"]:::lvl1
-        L7["Depth 1: [7]"]:::lvl1
-        L1["Depth 2: [1]"]:::lvl2
-        L4["Depth 2: [4]"]:::lvl2
-        L8["Depth 2: [8]"]:::lvl2
+        L5["Depth 0: (5)"]:::lvl0
+        L3["Depth 1: (3)"]:::lvl1
+        L7["Depth 1: (7)"]:::lvl1
+        L1["Depth 2: (1)"]:::lvl2
+        L4["Depth 2: (4)"]:::lvl2
+        L8["Depth 2: (8)"]:::lvl2
 
         L5 --> L3
         L5 --> L7
@@ -876,7 +876,7 @@ For AVL, `|BF| <= 1` at every node.
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    subgraph LL["LL Imbalance -> Single Right Rotate"]
+    subgraph LL["LL Imbalance -&gt; Single Right Rotate"]
         LL_B5["5"] --> LL_B3["3"]
         LL_B3 --> LL_B1["1"]
         LL_B5 -.->|"Right Rotate(5)"| LL_A3["3 (Root)"]
@@ -884,7 +884,7 @@ flowchart TD
         LL_A3 --> LL_A5["5"]
     end
 
-    subgraph LR["LR Imbalance -> Double Rotation"]
+    subgraph LR["LR Imbalance -&gt; Double Rotation"]
         LR_B5["5"] --> LR_B2["2"]
         LR_B2 --> LR_B3["3"]
         LR_B5 -.->|"1. Left Rotate(2)<br/>2. Right Rotate(5)"| LR_A3["3 (Root)"]

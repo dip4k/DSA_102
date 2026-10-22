@@ -1,118 +1,207 @@
-# 📘 Week 16, Day 3: Persistent Data Structures & Path Copying
+# 📘 WEEK 16 DAY 03: PERSISTENT DATA STRUCTURES & PATH COPYING
 
-> 🧭 **Navigation:** [← Previous Day](Week_16_Day_02_Link_Cut_Trees_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_16_Day_04_Cache_Oblivious_Algorithms_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day: Link-Cut Trees](Week_16_Day_02_Link_Cut_Trees_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Cache-Oblivious Algorithms →](Week_16_Day_04_Cache_Oblivious_Algorithms_Instructional.md)
 > 
-> 💡 **Instructor Note:** *Persistence is the algorithmic foundation of Git, immutable functional languages (Clojure, Scala), and Multi-Version Concurrency Control (MVCC) in databases like PostgreSQL. In FAANG/Quant coding interviews, Persistent Segment Trees are frequently tested for solving range order queries (e.g., Range K-th Smallest Element) in `O(log N)` time. Implementing path copying in 30 lines is a critical senior coding skill.*
+> 💡 **Instructor Note:** *Persistence is the algorithmic foundation of Git, immutable functional languages (Clojure, Scala), and Multi-Version Concurrency Control (MVCC) in databases like PostgreSQL and CockroachDB. In senior FAANG/Quant coding interviews, Persistent Segment Trees are frequently tested for solving online Range Order queries (e.g., Range K-th Smallest Element) in `O(log N)` time. Implementing path copying in 30 lines is a critical senior coding skill.*
 
 ---
 
-## 🎯 Learning Objectives
+## 🎯 LEARNING OBJECTIVES
 
-*   **Persistence Taxonomy:** Differentiate Partial Persistence, Full Persistence, and Confluent Persistence.
-*   **Path Copying Mechanics:** Master spine duplication where mutations copy only the `O(log N)` path from root to leaf while safely sharing untouched subtrees by reference.
-*   **Prefix Histogram Invariant:** Solve the classic online Range K-th Smallest Query by subtracting two version roots: `Tree[R] - Tree[L - 1]`.
-*   **Production GC & Memory Pools:** Implement static array-pooled nodes to eliminate garbage collection fragmentation under high-frequency versioning.
-*   **Dual-Language Fluency:** Deliver clean, zero-leak implementations in modern C# (.NET 8/9) and idiomatic Python (3.11+).
+*By the end of this module, you will be able to:*
 
----
-
-## ⚖️ FAANG Senior / Lead Interview Calibration
-
-In senior systems and algorithmic rounds (Google L5/L6, Citadel, Meta, Snowflake), persistence is evaluated through both design trade-offs and concrete implementation:
-
-| Architectural Strategy | Point Update Time | Query Time | Space Per Update | Structural Mutations Allowed? | Production Use Case |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Full Copy (Snapshotting)** | `O(N)` | `O(1)` | `O(N)` | ✅ Yes | Infrequent backup snapshots. |
-| **Fat Node Technique** | `O(log M)` | `O(log M)` per step | `O(1)` per field | ❌ No (Topology is fixed) | Versioned database record fields. |
-| **Path Copying (Node Copying)** | `O(log N)` | `O(log N)` | `O(log N)` | ✅ Yes (Subtree sharing) | Git trees, Persistent Segment Trees, MVCC. |
-
-### When Full Code is Required vs Conceptual Discussion
-*   **Full Code Expected (30 Minutes):** Range K-th Smallest Element in an array (SPOJ `MKTHNUM` / LeetCode Hard). The candidate is expected to coordinate-compress the array, build `N` persistent segment tree versions, and execute `query_kth(root[L-1], root[R], k)` in `O(log N)` time.
-*   **Conceptual Systems Round (Staff / Principal):** Designing a Git-like object store or an MVCC storage engine. The candidate must articulate:
-    1. Why Merkle Trees rely on persistent path copying (changing a file changes its leaf hash, requiring re-hashing only its ancestor tree nodes up to the commit root).
-    2. How reference counts or garbage collection handle dead version pruning without copying shared branches.
+- 🎬 **Internalize** the Git commit "Time Machine" and spine duplication mental model without academic jargon.
+- 🪜 **Master** the persistence taxonomy: Partial Persistence vs Full Persistence vs Confluent Persistence.
+- 🎨 **Visualize** Path Copying: creating only `O(log N)` new nodes along the mutated spine while safely sharing untouched subtrees by reference.
+- 🛑 **Avoid** fatal rookie traps: in-place mutations leaking past versions, memory explosion from full snapshotting, and missing coordinate compression.
+- 🎙️ **Deliver** the exact 3-sentence verbal talk track explaining Prefix Histogram Subtraction (`Tree[R] - Tree[L - 1]`).
+- ⚡ **Implement** high-performance, zero-allocation Persistent Segment Trees in C# (.NET 8/9) and Python (3.11+).
 
 ---
 
-## 📖 Chapter 1: Context & Physical Mental Models
+## 🎬 PILLAR 1: THE 60-SECOND HOOK & EVERYDAY ANALOGY
 
-### 1. The Path Copying Mental Model
+### The Git Commit & The Photocopy with Sticky Notes
 
-Imagine modifying a leaf node `4` in a binary tree:
-*   Instead of mutating the existing tree in place, we create a **new Root (v2)**.
-*   Untouched branches (e.g., the entire left subtree) are **shared by reference**.
-*   Only the direct ancestors of the modified node (the "spine") are newly allocated.
+Imagine you are managing a 1,000-page legal contract or a large code repository with 100,000 files:
+- Every time an engineer changes **one single line of code in one file**, what does Git do?
+- Does Git duplicate the entire 100,000 files to make a new commit folder?
+- **Absolutely not!** If Git did that, your hard drive would run out of disk space after 20 commits!
+
+Instead, Git creates a **Merkle Tree**:
+- It creates a new version of the modified file.
+- It creates a new folder object pointing to that new file.
+- **Every other untouched folder and file is shared by reference!**
 
 ```text
-Version 1 Root [v1]                        Version 2 Root [v2]
-      /         \                                /         \
-  [Node L]    [Node R1]                  [Node L] (Shared) [Node R2] (New)
-   /    \       /     \                                    /     \
- [1]    [2]   [3]     [4] (Old)                          [3]     [4'] (New)
-                                                       (Shared)
+Commit 1 (v1 Root):                  Commit 2 (v2 Root):
+      [Root v1]                           [Root v2]  <-- Brand new root!
+      /       \                           /       \
+  [Folder A] [Folder B]               [Folder A]  [Folder B'] <-- Only this spine is copied!
+   /      \    /      \                (Shared)    /      \
+ [f1]    [f2] [f3]   [f4]                        [f3]    [f4_new]
+                                               (Shared)
 ```
 
-Notice that `Node L` and `[3]` are never duplicated. Both `v1` and `v2` are fully functional, independent trees that can be queried concurrently without locks or mutexes.
+Notice:
+- `Folder A`, `f1`, `f2`, and `f3` are **never duplicated**!
+- Both Commit 1 and Commit 2 are fully valid, independent snapshots of the entire repository.
+- You can inspect Commit 1, checkout Commit 2, or query differences between them in nanoseconds.
 
-### 2. Prefix Histogram Trick for Range K-th Queries
-
-To find the `k`-th smallest number in an arbitrary subarray `nums[L ... R]`:
-1. Coordinate-compress all unique values into ranks `1 ... U`.
-2. Build version `i` of a Persistent Segment Tree by inserting the rank of `nums[i]` into version `i - 1`.
-3. Node `u` in version `i` stores `count`: how many elements in prefix `nums[1 ... i]` fall into the rank interval `[low, high]`.
-4. Because segment tree counts are additive:
-   `Count_in_range(L ... R) = Count(Version_R) - Count(Version_{L-1})`.
-5. We walk both roots simultaneously: if `left_child(Version_R).count - left_child(Version_{L-1}).count >= k`, the answer lies in the left child; otherwise, we subtract that count from `k` and step into the right child!
+That is a **Persistent Data Structure**: a data structure that preserves all previous versions of itself when modified. Any modification creates a new logical version while sharing the vast majority of untouched memory!
 
 ---
 
-## 🏛️ Chapter 2: The Governing Invariants & Algorithmic Mechanics
+## 🪜 PILLAR 2: THE SCAFFOLDING LADDER & TOY NAPKIN TRACE
 
-### 1. Mathematical Invariants
+### Step 1: The Persistence Hierarchy
 
-1. **Spine Allocation Invariant:** For a segment tree spanning range `[1, U]`, the height is `H = ceil(log2(U)) + 1`. Every point update creates **exactly `H` new nodes**. All other `2^H - 1 - H` nodes are referenced from the previous version.
-2. **Immutability Invariant:** Once a node index is assigned and initialized, its fields (`leftChild`, `rightChild`, `count`) are **strictly read-only**. No pointer write ever modifies an existing node.
-3. **Prefix Additivity:** Let `S_i` be the multiset `{nums[1], nums[2], ..., nums[i]}`. For any interval `[a, b]`:
-   `|S_R cap [a, b]| - |S_{L-1} cap [a, b]| = |nums[L ... R] cap [a, b]|`.
+| Persistence Level | Read Allowed | Write Allowed | History Structure | Production Example |
+| :--- | :--- | :--- | :--- | :--- |
+| **Ephemeral (Standard)** | Only latest version | Only latest version | Single state | Standard `List<T>`, Array |
+| **Partial Persistence** | Any historical version | Only latest version | Linear chain | Time-series metrics, Git commit log |
+| **Full Persistence** | Any historical version | Any historical version (branching) | Directed Tree of versions | Git branches, undo/redo trees |
+| **Confluent Persistence** | Any historical version | Can merge two historical versions | Directed Acyclic Graph (DAG) | Git branch merge (`git merge`) |
 
-### 2. Exact Recurrences & Transitions
+---
 
-#### Update Recurrence
-To insert value `val` into version `prev`:
+### Step 2: The Path Copying Mechanism
+
+In a balanced Binary Tree of size `N`:
+- The height of the tree is `H = ceil(log2(N))`.
+- When an element is updated or inserted at a leaf:
+  - Only the leaf and its ancestors up to the root are affected.
+  - Exactly **`H` nodes** change their values or child pointers.
+  - All other `N - H` nodes in the tree remain completely unchanged!
+- **Path Copying Rule:** Allocate exactly `H` new nodes for the modified spine. Point unchanged child pointers back to the corresponding subtrees in the previous version!
+
 ```text
-Update(prev, l, r, val):
-    curr = allocate_new_node()
-    curr.count = prev.count + 1
-    If l == r:
-        return curr
-    mid = l + (r - l) / 2
-    If val <= mid:
-        curr.left = Update(prev.left, l, mid, val)
-        curr.right = prev.right  // Shared by reference
-    Else:
-        curr.left = prev.left    // Shared by reference
-        curr.right = Update(prev.right, mid + 1, r, val)
-    return curr
-```
-
-#### Range K-th Binary Search Recurrence
-```text
-QueryKth(nodeL, nodeR, l, r, k):
-    If l == r:
-        return l
-    count_left = nodeR.left.count - nodeL.left.count
-    mid = l + (r - l) / 2
-    If count_left >= k:
-        return QueryKth(nodeL.left, nodeR.left, l, mid, k)
-    Else:
-        return QueryKth(nodeL.right, nodeR.right, mid + 1, r, k - count_left)
+Spine Allocation Count:
+For N = 1,000,000 elements:
+- Full Snapshot: 1,000,000 new nodes per mutation!
+- Path Copying:  ceil(log2(1,000,000)) = 20 new nodes per mutation!
+Space savings: 99.998% memory reduction!
 ```
 
 ---
 
-## 💻 Chapter 3: Idiomatic Dual-Language Code
+### Step 3: Prefix Histogram Subtraction for Range K-th Queries
 
-### C# Primary Implementation (.NET 8/9)
+The classic Tier-1 FAANG interview problem:
+> *"Given an array `nums` of length `N`, answer `Q` queries: find the `k`-th smallest number in subarray `nums[L ... R]` in `O(log N)` time."*
+
+#### The Rookie Attempt:
+Sorting `nums[L ... R]` for each query takes `O((R - L) log (R - L))` -> `O(Q * N log N)`. With `Q = 10^5, N = 10^5`, this takes 100 seconds and causes Time Limit Exceeded (TLE).
+
+#### The Senior Architect Invariant:
+1. Coordinate-compress all unique numbers into ranks `1 ... U`.
+2. Treat the Persistent Segment Tree as a **Versioned Prefix Frequency Histogram**:
+   - `Version 0`: Empty segment tree (all counts = 0).
+   - `Version i`: Insert rank of `nums[i]` into `Version i - 1`.
+   - Node `u` in `Version i` stores: *"How many numbers in prefix `nums[1 ... i]` fall into range `[low, high]`?"*
+3. Because frequency counts are additive:
+   `Count_in_range(L ... R) = Count(Version_R) - Count(Version_{L-1})`!
+4. To find the `k`-th smallest:
+   Walk down `Version_R` and `Version_{L-1}` simultaneously:
+   - `leftCount = LeftChild(Version_R).count - LeftChild(Version_{L-1}).count`.
+   - If `leftCount >= k`: the `k`-th smallest number is in the left half! Step left in both versions.
+   - If `leftCount < k`: the `k`-th smallest number is in the right half! Step right in both versions, setting `k = k - leftCount`.
+   - Reaches leaf in `O(log N)` steps!
+
+---
+
+### 🧠 Pause & Predict Micro-Drills
+
+> **Drill 1:** How many total nodes are created if we insert `N = 100,000` elements into a persistent segment tree?
+> *Pause here and calculate on a napkin!*
+>
+> **Answer:**
+> Height `H = ceil(log2(100,000)) approx 17`.
+> Each insertion creates `H + 1` nodes.
+> Total nodes allocated: `100,000 * 18 approx 1.8 * 10^6` nodes.
+> An array of 2 million integers easily fits in under 20 MB of RAM!
+
+> **Drill 2:** What is the base case in `QueryKth(nodeL, nodeR, low, high, k)`?
+> *Pause here and think!*
+>
+> **Answer:**
+> When `low == high`: we have narrowed the search to a single distinct coordinate-compressed value. Return `low`!
+
+---
+
+## 🎨 PILLAR 3: PRAGMATIC VISUAL MODELS & DECISION FLOWS
+
+### Modern Hex Flowchart: The Path Copying Decision Process
+
+```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
+flowchart TD
+    Start["Update(prevNode, low, high, targetVal)"] --> NewNode["1. Allocate newNode<br/>count = prevNode.count + 1"]
+    NewNode --> Base{"Is low == high?<br/>Leaf reached?"}
+    Base -->|Yes| Ret["Return newNode"]
+    Base -->|No| Check{"Is targetVal &le; mid?"}
+    Check -->|Left Branch| L["newNode.left = Update(prev.left, low, mid)<br/>newNode.right = prev.right (Shared!)"]
+    Check -->|Right Branch| R["newNode.left = prev.left (Shared!)<br/>newNode.right = Update(prev.right, mid+1, high)"]
+    L --> Ret
+    R --> Ret
+
+    style Start fill:#e1f5fe,stroke:#0288d1,color:#01579b
+    style NewNode fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style Base fill:#fff3e0,stroke:#ef6c00,color:#e65100
+    style Check fill:#fff3e0,stroke:#ef6c00,color:#e65100
+    style L fill:#f3e5f5,stroke:#8e24aa,color:#4a148c
+    style R fill:#f3e5f5,stroke:#8e24aa,color:#4a148c
+    style Ret fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+```
+
+---
+
+## 🛑 PILLAR 4: THE ROOKIE TRAP ZONE
+
+### Side-by-Side Comparison: Blunders vs. Senior Architect Patterns
+
+| Dimension | ❌ Rookie Blunder | ✅ Senior Architect Pattern |
+| :--- | :--- | :--- |
+| **Immutability Invariant** | Mutates an existing node's child pointer or count in-place: `prev.count++`, corrupting all earlier versions. | Always allocates a new node when updating; existing nodes are strictly read-only. |
+| **Memory Allocation Churn** | Uses object-oriented `new Node()` for every point update, causing millions of tiny GC heap allocations and cache misses. | Pre-allocates a flat contiguous struct array (`Node[] _pool`) with zero GC overhead. |
+| **Value Domain Range** | Builds segment tree directly on raw array values (e.g. `nums[i] = 10^9`), requiring a segment tree of size `10^9` (memory crash). | Pre-sorts unique values into a coordinate-compression table, constraining rank domain strictly to `[1 ... N]`. |
+| **Prefix Subtraction Off-by-One** | Queries `Count(Version_R) - Count(Version_L)`, accidentally omitting the element at index `L`. | Queries `Count(Version_R) - Count(Version_{L - 1})` to correctly include the left boundary `L`. |
+| **Zero Version Boundary** | Leaves `Version 0` uninitialized, causing null pointer exceptions when querying `L = 1` (`Version_{L - 1} = Version 0`). | Initializes a dummy `Version 0` where all counts and child pointers are index `0` (null node). |
+
+---
+
+## 🎙️ PILLAR 5: 45-MINUTE INTERVIEW TALK TRACK
+
+### The Exact 3-Sentence Verbal Script
+
+Speak these exact three sentences before writing code:
+
+```text
++--------------------------------------------------------------------------------------------------+
+|                              THE SENIOR PERSISTENT TREE TALK TRACK                                |
++--------------------------------------------------------------------------------------------------+
+| 1. The Bottleneck & Architecture:                                                                |
+|    "Answering online Range K-th Smallest queries by sorting takes O(N log N) per query, which   |
+|    is unacceptable for Q = 10^5 queries; full tree snapshotting requires prohibitive O(N^2)     |
+|    space."                                                                                       |
+|                                                                                                  |
+| 2. The Path Copying Solution:                                                                    |
+|    "By building a Persistent Segment Tree where each prefix version duplicates only the          |
+|    O(log N) spine of modified ancestors while sharing untouched subtrees by reference, we       |
+|    bound space to O(N log N) total."                                                             |
+|                                                                                                  |
+| 3. The Prefix Histogram Pitch:                                                                   |
+|    "Because segment tree counts are additive, subtracting Version_{L-1} from Version_R yields    |
+|    the exact frequency histogram of subarray [L .. R], allowing us to binary search the k-th     |
+|    element in strictly O(log N) time per query."                                                 |
++--------------------------------------------------------------------------------------------------+
+```
+
+---
+
+## ⚡ PILLAR 6: PRODUCTION DUAL-LANGUAGE IMPLEMENTATIONS
+
+### C# Primary Implementation (.NET 8/9): Array-Pooled Persistent Segment Tree
 
 ```csharp
 using System;
@@ -121,8 +210,8 @@ using System.Collections.Generic;
 namespace AdvancedDataStructures;
 
 /// <summary>
-/// High-performance, array-pooled Persistent Segment Tree.
-/// Solves online Range K-th Smallest queries in O(log N) time with zero GC churn.
+/// Production-grade Persistent Segment Tree using a pre-allocated flat node pool.
+/// Solves online Range K-th Smallest queries in O(log N) time with zero GC allocation churn.
 /// </summary>
 public sealed class PersistentSegmentTree
 {
@@ -140,7 +229,7 @@ public sealed class PersistentSegmentTree
         }
     }
 
-    private readonly Node[] _tree;
+    private readonly Node[] _pool;
     private int _nodeCount;
     private readonly int _maxVal;
 
@@ -148,217 +237,171 @@ public sealed class PersistentSegmentTree
     {
         _maxVal = maxVal;
         // Each version adds at most ceil(log2(maxVal)) + 2 nodes
-        int maxNodes = (maxVersions + 1) * 32;
-        _tree = new Node[maxNodes];
-        _tree[0] = new Node(0, 0, 0); // Sentinel null node at index 0
+        int poolSize = (maxVersions + 1) * 25 + 100;
+        _pool = new Node[poolSize];
         _nodeCount = 0;
+
+        // Node 0 represents the canonical empty NIL node
+        _pool[0] = new Node(0, 0, 0);
+    }
+
+    private int AllocateNode(int left, int right, int count)
+    {
+        int id = ++_nodeCount;
+        _pool[id] = new Node(left, right, count);
+        return id;
     }
 
     /// <summary>
-    /// Creates a new version containing value inserted into the previous version.
-    /// Allocates exactly O(log maxVal) new nodes.
+    /// Inserts value into previous version, returning new version root index in O(log N).
     /// </summary>
-    public int Update(int prevRoot, int l, int r, int value)
+    public int Insert(int prevRoot, int val)
     {
-        int curr = ++_nodeCount;
+        return Update(prevRoot, 1, _maxVal, val);
+    }
 
-        if (l == r)
-        {
-            _tree[curr] = new Node(0, 0, _tree[prevRoot].Count + 1);
-            return curr;
-        }
+    private int Update(int prev, int l, int r, int val)
+    {
+        int curr = AllocateNode(_pool[prev].LeftChild, _pool[prev].RightChild, _pool[prev].Count + 1);
+        if (l == r) return curr;
 
         int mid = l + (r - l) / 2;
-        int nextLeft = _tree[prevRoot].LeftChild;
-        int nextRight = _tree[prevRoot].RightChild;
-
-        if (value <= mid)
+        if (val <= mid)
         {
-            nextLeft = Update(_tree[prevRoot].LeftChild, l, mid, value);
+            int newLeft = Update(_pool[prev].LeftChild, l, mid, val);
+            _pool[curr] = new Node(newLeft, _pool[curr].RightChild, _pool[curr].Count);
         }
         else
         {
-            nextRight = Update(_tree[prevRoot].RightChild, mid + 1, r, value);
+            int newRight = Update(_pool[prev].RightChild, mid + 1, r, val);
+            _pool[curr] = new Node(_pool[curr].LeftChild, newRight, _pool[curr].Count);
         }
 
-        _tree[curr] = new Node(nextLeft, nextRight, _tree[prevRoot].Count + 1);
         return curr;
     }
 
     /// <summary>
-    /// Queries the k-th smallest element in range [versionL, versionR] in O(log maxVal) time.
+    /// Finds k-th smallest element rank in subarray [L .. R] in O(log N) time.
     /// </summary>
-    public int QueryKth(int leftRoot, int rightRoot, int l, int r, int k)
+    public int QueryKth(int rootLMinus1, int rootR, int k)
     {
-        if (l == r)
-        {
-            return l;
-        }
+        return QueryKthInternal(rootLMinus1, rootR, 1, _maxVal, k);
+    }
 
-        int leftCount = _tree[_tree[rightRoot].LeftChild].Count - _tree[_tree[leftRoot].LeftChild].Count;
+    private int QueryKthInternal(int nodeL, int nodeR, int l, int r, int k)
+    {
+        if (l == r) return l;
+
+        int leftCount = _pool[_pool[nodeR].LeftChild].Count - _pool[_pool[nodeL].LeftChild].Count;
         int mid = l + (r - l) / 2;
 
         if (leftCount >= k)
         {
-            return QueryKth(_tree[leftRoot].LeftChild, _tree[rightRoot].LeftChild, l, mid, k);
+            return QueryKthInternal(_pool[nodeL].LeftChild, _pool[nodeR].LeftChild, l, mid, k);
         }
         else
         {
-            return QueryKth(_tree[leftRoot].RightChild, _tree[rightRoot].RightChild, mid + 1, r, k - leftCount);
+            return QueryKthInternal(_pool[nodeL].RightChild, _pool[nodeR].RightChild, mid + 1, r, k - leftCount);
         }
     }
 }
 ```
 
-### Python Secondary Implementation (Python 3.11+)
+---
+
+### Python Secondary Implementation (Python 3.11+): Complete Persistent Segment Tree
 
 ```python
 from typing import List, Tuple
 
+class PersistentSegmentTreeNode:
+    __slots__ = ('left', 'right', 'count')
+    def __init__(self, left: int = 0, right: int = 0, count: int = 0):
+        self.left: int = left
+        self.right: int = right
+        self.count: int = count
+
 class PersistentSegmentTree:
-    """Persistent Segment Tree for online range k-th order statistics."""
+    """
+    Production Persistent Segment Tree with flat array pool.
+    Answers online Range K-th Smallest queries in O(log N).
+    """
+    def __init__(self, max_versions: int, max_val: int):
+        self.max_val: int = max_val
+        # Allocate pool of nodes (index 0 is sentinel NIL node)
+        self.pool: List[PersistentSegmentTreeNode] = [PersistentSegmentTreeNode(0, 0, 0)]
+        self.version_roots: List[int] = [0]
 
-    def __init__(self, max_val: int):
-        self.max_val = max_val
-        # Flat arrays for cache efficiency and zero object-allocation overhead
-        self.lc: List[int] = [0]
-        self.rc: List[int] = [0]
-        self.count: List[int] = [0]
+    def _allocate(self, left: int, right: int, count: int) -> int:
+        self.pool.append(PersistentSegmentTreeNode(left, right, count))
+        return len(self.pool) - 1
 
-    def update(self, prev_root: int, l: int, r: int, val: int) -> int:
-        """Inserts val into tree rooted at prev_root, returning the new root index."""
-        curr = len(self.count)
-        self.lc.append(0)
-        self.rc.append(0)
-        self.count.append(self.count[prev_root] + 1)
+    def insert(self, prev_root: int, val: int) -> int:
+        """Inserts val into prev_root, returning the new version root index."""
+        new_root = self._update(prev_root, 1, self.max_val, val)
+        self.version_roots.append(new_root)
+        return new_root
 
+    def _update(self, prev: int, l: int, r: int, val: int) -> int:
+        prev_node = self.pool[prev]
+        curr = self._allocate(prev_node.left, prev_node.right, prev_node.count + 1)
         if l == r:
             return curr
 
-        mid = (l + r) // 2
+        mid = l + (r - l) // 2
         if val <= mid:
-            new_left = self.update(self.lc[prev_root], l, mid, val)
-            self.lc[curr] = new_left
-            self.rc[curr] = self.rc[prev_root]
+            new_left = self._update(prev_node.left, l, mid, val)
+            self.pool[curr].left = new_left
         else:
-            new_right = self.update(self.rc[prev_root], mid + 1, r, val)
-            self.lc[curr] = self.lc[prev_root]
-            self.rc[curr] = new_right
+            new_right = self._update(prev_node.right, mid + 1, r, val)
+            self.pool[curr].right = new_right
 
         return curr
 
-    def query_kth(self, left_root: int, right_root: int, l: int, r: int, k: int) -> int:
-        """Finds k-th smallest rank in subarray bounded by versions (left_root, right_root]."""
+    def query_kth(self, l_idx: int, r_idx: int, k: int) -> int:
+        """
+        Returns k-th smallest element rank in subarray [l_idx .. r_idx] (1-indexed).
+        """
+        root_l_minus_1 = self.version_roots[l_idx - 1]
+        root_r = self.version_roots[r_idx]
+        return self._query(root_l_minus_1, root_r, 1, self.max_val, k)
+
+    def _query(self, node_l: int, node_r: int, l: int, r: int, k: int) -> int:
         if l == r:
             return l
 
-        count_left = self.count[self.lc[right_root]] - self.count[self.lc[left_root]]
-        mid = (l + r) // 2
+        left_count = self.pool[self.pool[node_r].left].count - self.pool[self.pool[node_l].left].count
+        mid = l + (r - l) // 2
 
-        if count_left >= k:
-            return self.query_kth(self.lc[left_root], self.lc[right_root], l, mid, k)
+        if left_count >= k:
+            return self._query(self.pool[node_l].left, self.pool[node_r].left, l, mid, k)
         else:
-            return self.query_kth(self.lc[left_root], self.rc[right_root], mid + 1, r, k - count_left)
-
-def solve_range_kth(nums: List[int], queries: List[Tuple[int, int, int]]) -> List[int]:
-    """Demonstrates complete end-to-end Range K-th query pipeline."""
-    # Step 1: Coordinate Compression
-    sorted_unique = sorted(set(nums))
-    val_to_rank = {v: i + 1 for i, v in enumerate(sorted_unique)}
-    rank_to_val = {i + 1: v for i, v in enumerate(sorted_unique)}
-    m = len(sorted_unique)
-
-    # Step 2: Build N Persistent Versions
-    pst = PersistentSegmentTree(m)
-    roots = [0]
-    for x in nums:
-        new_root = pst.update(roots[-1], 1, m, val_to_rank[x])
-        roots.append(new_root)
-
-    # Step 3: Answer Queries in O(log M) time each
-    answers = []
-    for l, r, k in queries:
-        # 1-indexed bounds: subarray nums[l-1 ... r-1]
-        rank = pst.query_kth(roots[l - 1], roots[r], 1, m, k)
-        answers.append(rank_to_val[rank])
-
-    return answers
+            return self._query(self.pool[node_l].right, self.pool[node_r].right, mid + 1, r, k - left_count)
 ```
 
 ---
 
-## 📊 Chapter 4: Explicit Complexity Deconstruction
+## 📊 EXPLICIT COMPLEXITY DECONSTRUCTION
 
-| Operation | Time Complexity | Auxiliary Space Per Call | Cumulative Space After `M` Updates | Memory & Cache Reality |
+| Operation | Time Complexity | Auxiliary Space | Memory Allocation | System Reality |
 | :--- | :--- | :--- | :--- | :--- |
-| **Tree Initialization** | `O(1)` | `O(1)` | `O(1)` sentinel | Single sentinel node allocated at index 0. |
-| **Point Update (Path Copy)**| `O(log U)` | `O(log U)` stack | `O(M log U)` | Appends `log2(U) + 1` entries into flat arrays; contiguous memory append. |
-| **Range K-th Query** | `O(log U)` | `O(log U)` stack | `O(1)` (Read-only) | Reads across two different versions simultaneously; branch predictions are clean. |
-| **Full Version Snapshot** | `O(1)` | `O(1)` | `O(1)` | Saving a version is merely recording the integer root index (`roots.Add(newRoot)`). |
-
-### Mathematical Memory Proof
-*   For an array of length `N` with values in coordinate range `[1, U]`:
-*   Depth of the segment tree is `H = ceil(log2(U)) + 1`.
-*   At each step `i in [1, N]`, exactly one path of length `H` is visited.
-*   Every node on that path allocates exactly 1 node record.
-*   Total memory consumed after inserting `N` elements is strictly bounded by:
-    `Total Nodes = 1 + N * (ceil(log2(U)) + 1)`.
-*   For `N = 100,000` and `U = 100,000`, `log2(100,000) approx 17`.
-    `Total Nodes approx 100,000 * 18 = 1,800,000` nodes.
-    In C# / Python using flat 4-byte integers (`left, right, count = 12 bytes` per node), the entire structure occupies **~21.6 MB**—easily fitting within modern L3 cache!
+| **Point Update (Insert)** | `O(log N)` | `O(log N)` stack | `O(log N)` new nodes | Copies only root-to-leaf spine; untouched subtrees shared by reference. |
+| **Range K-th Query** | `O(log N)` | `O(log N)` stack | `O(1)` allocations | Simultaneous dual-version walk using prefix frequency counts. |
+| **Range Frequency Query** | `O(log N)` | `O(log N)` stack | `O(1)` allocations | Standard segment tree query on `Version_R - Version_{L - 1}`. |
+| **Version Rollback** | `O(1)` | `O(1)` | `O(1)` | Simply switch the active root pointer to any historical version index. |
 
 ---
 
-## 🎙️ Chapter 5: 45-Minute Senior / Lead Verbal Interview Script
-
-```text
-[00:00 - 05:00] Clarify & Problem Modeling
-Candidate: "We are asked to answer multiple queries of the form: 'What is the k-th smallest element in subarray 
-           nums[L ... R]?' with N, Q up to 10^5.
-           A naive approach sorts each range in O((R - L) log (R - L)), yielding O(Q * N log N), which times out.
-           An offline approach using a Merge-Sort Tree or Fenwick Tree takes O(N log^2 N), but cannot handle online queries.
-           With Persistent Segment Trees, we can precalculate N versions in O(N log N) space and time, 
-           and answer each query online in O(log N) time."
-
-[05:00 - 15:00] Invariants & Trade-offs
-Candidate: "The key mathematical invariant is prefix additivity. 
-           Version i stores the frequency histogram of elements in prefix nums[1 ... i].
-           Because frequencies are additive, the frequency histogram of range [L ... R] is precisely 
-           Histogram(Version_R) - Histogram(Version_{L-1}).
-           Instead of deep-copying trees—which would take O(N^2) memory—we use Path Copying. 
-           When we insert element i, only the O(log N) nodes from root to the modified leaf are created. 
-           All other subtrees are shared by reference with Version i - 1."
-
-[15:00 - 35:00] Implementation Protocol
-Candidate: "To avoid garbage collection churn in C# / Python, I will use flat index-based arrays rather 
-           than heap-allocated node objects:
-           - Arrays `lc`, `rc`, and `count`, where index 0 is a permanent dummy null node.
-           - In `Update`, we allocate a new node index, copy the count, and recurse on the active half 
-             while sharing the unchanged child pointer from the previous root.
-           - In `QueryKth`, we step through both version roots simultaneously: if the count in the left 
-             child of Version R minus Version L-1 is >= k, the answer is in the left child; else we recurse 
-             right with k decreased by that count."
-
-[35:00 - 45:00] Complexity Deconstruction & Production Systems
-Candidate: "Total construction time is O(N log N) and space is strictly bounded by O(N log N).
-           Each query takes O(log N) time with zero dynamic memory allocation.
-           In production databases, this is the exact principle behind Copy-on-Write B-Trees (LMDB) and 
-           Git commit DAGs: immutable histories where commits point to shared directory tree nodes."
-```
-
----
-
-## 🔍 Chapter 6: Granular Edge-Case & Invariant Verification Table
+## 🔍 GRANULAR EDGE-CASE & INVARIANT VERIFICATION TABLE
 
 | Edge Case Scenario | Concrete Input | Expected Behavior | Invariant Verification & Handling |
 | :--- | :--- | :--- | :--- |
-| **Subarray of Length 1** | Range `[i, i]`, `k = 1` | Returns `nums[i]` immediately. | `count_left` evaluates correctly against `Version_i - Version_{i-1}`; resolves at leaf `l == r`. |
-| **Query Minimum Element** | Range `[L, R]`, `k = 1` | Returns minimum value in range. | Always branches left until reaching smallest non-zero frequency rank. |
-| **Query Maximum Element** | Range `[L, R]`, `k = R - L + 1` | Returns maximum value in range. | Left counts are depleted; recurses right until reaching largest active rank. |
-| **All Identical Elements** | `nums = [7, 7, 7, 7]`, `k = 2` | Returns `7`. | All insertions update the exact same rank slot; count increments correctly. |
-| **Large Coordinates Outside Int Range** | `nums = [-10^9, 10^9]` | Handled seamlessly. | Coordinate compression maps values to ranks `1 ... M`, avoiding sparse index bounds. |
-| **Querying Against Version 0** | Query prefix `[1, R]` | `left_root = roots[0] = 0`. | Index 0 is permanently initialized with `count = 0, lc = 0, rc = 0`, acting as an arithmetic identity. |
+| **Subarray of Length 1** | `nums = [42]`, query `L = 1, R = 1, k = 1` | Returns `42`. | `Count(v1) - Count(v0) = 1 >= k`, walks directly to leaf `42`. |
+| **Duplicate Array Values** | `nums = [5, 5, 5]`, query `k = 2` | Returns `5`. | Rank counts accumulate properly at the single leaf node. |
+| **Query Full Range** | `L = 1, R = N, k = 1` | Returns minimum element of entire array. | `rootLMinus1 = 0` (NIL node), query resolves in `O(log N)`. |
+| **Max Coordinate Values** | Values up to `10^9` | Ranks mapped to `1 ... U` (`U <= N`). | Coordinate compression table maps continuous numbers to ranks `1 ... N`. |
+| **Memory Pool Exhaustion Guard** | Pool size calculation | Pre-allocates `(N + 1) * (log2(N) + 2)`. | Fixed-size array guarantees zero GC pauses in high-throughput trading/analytics. |
 
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_16_Day_02_Link_Cut_Trees_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_16_Day_04_Cache_Oblivious_Algorithms_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day: Link-Cut Trees](Week_16_Day_02_Link_Cut_Trees_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Cache-Oblivious Algorithms →](Week_16_Day_04_Cache_Oblivious_Algorithms_Instructional.md)

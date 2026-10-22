@@ -1,25 +1,26 @@
-﻿# 📘 Advanced Strings, Range Queries & Network Flow
+# 📘 WEEK 15: ADVANCED STRINGS, RANGE QUERIES & NETWORK FLOW
 
 > 🧭 **Navigation:** [← Previous: Week 14](../week_14_matrix_backtracking_bits/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 16 →](../week_16_advanced_data_structures/README.md)
-
----
-
-> 💡 **Instructor Guidance Note:**  
-> *Not all sections or topics are mandatory. As a learner, you can adapt your pace freely. If you are preparing on an accelerated interview timeline or already feel confident with specific foundational concepts, feel free to skip or skim optional topics and prioritize high-yield patterns based on your personal interview goals.*
+> 
+> 💡 **Instructor Note:** *Week 15 covers the pinnacle of advanced algorithmic infrastructure: linear string matching via Tries & the Z-Algorithm, dynamic interval updates via Segment Trees with Lazy Propagation, and maximum network flow reductions via Edmonds-Karp, Dinic's Algorithm, and the Min-Cut Theorem.*
 
 ---
 
 ## 🎯 Weekly Mission & Conceptual Focus
 
-Linear Z-algorithm matching, Segment Trees with Lazy Propagation, Ford-Fulkerson max-flow, bipartite matching reductions, and min-cut bottlenecks.
+Master prefix retrieval trees (Tries), the rightmost matching window Z-Algorithm, logarithmic interval range queries (Segment Trees & Binary Indexed Trees / Fenwick), the "Sticky Note" Lazy Propagation architecture, residual network graphs, augmenting path discovery, Dinic's level-graph blocking flow, and bipartite matching reductions.
 
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
-flowchart TD
-    Start["Week 15 Start"] --> Daily["Daily Invariant<br/>Deep<br/>Dives"]
-    Daily --> Playbook["Consolidated<br/>Playbook &<br/>Visuals"]
-    Playbook --> DualLang["Dual-Language<br/>Practice<br/>(C# & Python)"]
-    DualLang --> Mastery["Pattern Mastery &<br/>Verification"]
+flowchart LR
+    D1["Day 1: Tries &<br/>Z-Algorithm<br/>(O(N) String Search)"] --> D2["Day 2: Segment Trees<br/>& BIT<br/>(Lazy Propagation)"]
+    D2 --> D3["Day 3: Network Flow<br/>Basics<br/>(Edmonds-Karp & Min-Cut)"]
+    D3 --> D4["Day 4: Flow Applications<br/>& Dinic<br/>(Bipartite Matching)"]
+    D4 --> D5["Day 5: Scaled Systems<br/>(Capacity Scaling &<br/>Node Splitting)"]
+
+    classDef default fill:#f8f9fa,stroke:#37474f,stroke-width:2px,color:#263238
+    classDef dayNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    class D1,D2,D3,D4,D5 dayNode
 ```
 
 ---
@@ -28,11 +29,11 @@ flowchart TD
 
 | Day | Instructional Module | Focus & Core Objective |
 | :--- | :--- | :--- |
-| **Day 01** | [Z Algorithm And Advanced String Matching](Week_15_Day_01_Z_Algorithm_And_Advanced_String_Matching_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 02** | [Segment Trees Range Queries](Week_15_Day_02_Segment_Trees_Range_Queries_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 03** | [Network Flow Basics](Week_15_Day_03_Network_Flow_Basics_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 04** | [Network Flow Applications](Week_15_Day_04_Network_Flow_Applications_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 05** | [Design Patterns Extensions](Week_15_Day_05_Design_Patterns_Extensions_Instructional.md) | Core Daily Concept Deep Dive |
+| **Day 01** | [Advanced String Structures: Tries & Z-Algorithm](Week_15_Day_01_Z_Algorithm_And_Advanced_String_Matching_Instructional.md) | Prefix Trees with zero-leak bottom-up pruning, phonebook autocomplete, Z-algorithm linear matching window $[L, R]$, and string periodicity. |
+| **Day 02** | [Range Queries: Segment Trees & Fenwick Trees](Week_15_Day_02_Segment_Trees_Range_Queries_Instructional.md) | Binary Indexed Trees ($i \ \& \ -i$ LSB interval ladder), Segment Trees in 1D array ($4N$), and the "Post-It Note" Lazy Propagation architecture. |
+| **Day 03** | [Network Flow Fundamentals: Edmonds-Karp & Min-Cut](Week_15_Day_03_Network_Flow_Basics_Instructional.md) | Physical intuition of residual graphs (forward capacity vs backward undo flow), BFS augmenting path termination in $O(V \cdot E^2)$, and Max-Flow Min-Cut duality. |
+| **Day 04** | [Network Flow Applications: Dinic & Bipartite Matching](Week_15_Day_04_Network_Flow_Applications_Instructional.md) | Dinic's two-phase level graph DAG + DFS blocking flow with dead-end elimination ($ptr$ array), $O(E \sqrt{V})$ unit networks, and Maximum Bipartite Matching. |
+| **Day 05** | [Scaled Network Flow Systems & Capacity Scaling](Week_15_Day_05_Design_Patterns_Extensions_Instructional.md) | Capacity scaling thresholding ($\Delta = 2^k$) in $O(E \log U)$, node-splitting transformations for vertex capacity bottlenecks, and multi-constraint routing. |
 
 ---
 

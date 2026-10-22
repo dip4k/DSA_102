@@ -19,7 +19,7 @@ flowchart TD
 
     D1 --> P1["Physical Wall<br/>Dominance &<br/>Cache-Resident<br/>Windows:<br/>O(N) Time, O(1)<br/>Space"]
     D2 --> P2["Powers-of-Two<br/>Ancestor<br/>Lifting: O(log N)<br/>Query,<br/>Explicit Cycle<br/>Invariants"]
-    D3 --> P3["Dimension<br/>Compression:<br/>100 MB -> 20 KB L1<br/>Cache,<br/>Greedy Exchange<br/>Arguments"]
+    D3 --> P3["Dimension<br/>Compression:<br/>100 MB -&gt; 20 KB L1<br/>Cache,<br/>Greedy Exchange<br/>Arguments"]
     D4 --> P4["Monotonic Deque<br/>Domination &<br/>Sentinel<br/>Doubly-Linked List<br/>Hygiene"]
     D5 --> P5["Bisection<br/>Partitioning:<br/>O(log(min(M, N))),<br/>6<br/>Failure Archetype<br/>Antidotes"]
 ```

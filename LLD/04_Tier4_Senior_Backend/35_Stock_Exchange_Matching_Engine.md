@@ -292,17 +292,17 @@ flowchart TD
     MatchAsk -->|Yes| ExecBuy["Match Quantity =<br/>Min(Buy.Remaining,<br/>Ask.Remaining)<br/>Price = Ask.Price<br/>Emit Trade"]
     ExecBuy --> RemoveAsk{"Is Ask Fully<br/>Filled?"}
     RemoveAsk -->|Yes| PopAsk["Remove Ask from<br/>OrderBook"]
-    RemoveAsk -->|No| CheckRemainingBuy{"Buy Remaining > 0?"}
+    RemoveAsk -->|No| CheckRemainingBuy{"Buy Remaining &gt; 0?"}
     PopAsk --> CheckRemainingBuy
     CheckRemainingBuy -->|Yes| MatchAsk
     CheckRemainingBuy -->|No| Done["Execution Complete"]
     MatchAsk -->|No / Book Empty| AddBuyToBook["Add Buy Order to<br/>Bids<br/>SortedSet"]
 
-    CheckSide -->|Sell Order| MatchBid{"Is Highest Bid >=<br/>Sell<br/>Price?"}
+    CheckSide -->|Sell Order| MatchBid{"Is Highest Bid &ge;<br/>Sell<br/>Price?"}
     MatchBid -->|Yes| ExecSell["Match Quantity =<br/>Min(Sell.Remaining,<br/>Bid.Remaining)<br/>Price = Bid.Price<br/>Emit Trade"]
     ExecSell --> RemoveBid{"Is Bid Fully<br/>Filled?"}
     RemoveBid -->|Yes| PopBid["Remove Bid from<br/>OrderBook"]
-    RemoveBid -->|No| CheckRemainingSell{"Sell Remaining ><br/>0?"}
+    RemoveBid -->|No| CheckRemainingSell{"Sell Remaining &gt;<br/>0?"}
     PopBid --> CheckRemainingSell
     CheckRemainingSell -->|Yes| MatchBid
     CheckRemainingSell -->|No| Done

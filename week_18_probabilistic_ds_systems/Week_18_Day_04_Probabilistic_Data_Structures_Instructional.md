@@ -1,529 +1,418 @@
-# 📘 Week 18, Day 4: Probabilistic Data Structures in Distributed Systems
+# 📘 WEEK 18 DAY 04: PROBABILISTIC DATA STRUCTURES — BLOOM FILTERS, COUNT-MIN SKETCH & HYPERLOGLOG
 
-> 🧭 **Navigation:** [← Previous Day](Week_18_Day_03_Heavy_Light_Decomposition_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_18_Day_05_Algorithmic_Systems_Design_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day: Heavy-Light Decomposition](Week_18_Day_03_Heavy_Light_Decomposition_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Algorithmic Systems Design →](Week_18_Day_05_Algorithmic_Systems_Design_Instructional.md)
 > 
-> 💡 **Instructor Note:** *Probabilistic data structures trade 100% precision for exponential space savings. Master the mathematical derivations of Bloom Filter false positives, Count-Min Sketch error bounds, and HyperLogLog cardinality estimation.*
+> 💡 **Instructor Note:** *In hyperscale distributed systems (Cassandra, Bigtable, Redis, Google Chrome), exact data structures collapse under memory pressure. If you have 10 billion items, storing exact keys takes 100 gigabytes of RAM! Probabilistic data structures make a deliberate trade-off: sacrifice 1% of mathematical perfection to achieve a 99.9% reduction in memory footprint. Today, we master Bloom Filters, Count-Min Sketch, and HyperLogLog.*
 
 ---
 
-## 🎯 Learning Objectives
+## 🎯 LEARNING OBJECTIVES
 
-*   **Core Mental Model:** Understand how hashing with controlled collisions enables constant-memory membership testing, frequency tracking, and cardinality estimation at massive scale.
-*   **Exact Mathematical Bounds:**
-    *   **Bloom Filter:** Derive false positive rate `p = (1 - e^(-kn/m))^k` and optimal hash count `k = (m/n) * ln(2)`.
-    *   **Count-Min Sketch:** Derive width `w = ceil(e / epsilon)` and depth `d = ceil(ln(1 / delta))` with guarantee `a_hat <= a + epsilon * ||a||_1`.
-    *   **HyperLogLog:** Derive standard error `SE = 1.04 / sqrt(m)` using harmonic mean estimation across `m = 2^b` registers.
-*   **Production Systems Anchors:** Ground these structures in production engines: Apache Cassandra/RocksDB SSTable bloom filters, Redis `PFADD`/`PFCOUNT`, and Cloudflare/TinyLFU edge admission caches.
-*   **Algorithmic Protocol:** Implement complete, robust engines in modern C# (.NET 8/9) and Python (3.11+).
+*By the end of this module, you will be able to:*
 
-## ⚖️ FAANG Senior / Lead Interview Calibration
-
-In Tier-1 distributed systems design (L5/L6/L7), choosing the exact probabilistic primitive differentiates a senior engineer who builds scalable systems from a junior developer who runs out of RAM:
-
-| Probabilistic Primitive | Core Question Answered | False Outcomes | Memory Footprint (10^8 items) | Key Architectural Anchor | Interview Calibration Bar |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Exact Hash Set** | Membership | Zero Error (100% exact) | ~3.2 GB RAM | In-memory Redis Set | Baseline; rejected when scale hits millions of keys. |
-| **Standard Bloom Filter** | Membership | False Positives (`p`), Zero False Negatives | ~120 MB RAM (`~10` bits/item) | **Apache Cassandra / RocksDB SSTables** | **Mandatory L5/L6 anchor: derive `p = (1 - e^(-kn/m))^k`.** |
-| **Cuckoo Filter** | Membership with Deletions | False Positives (`p`), Zero False Negatives | ~96 MB RAM | High-churn edge caches | Mention when deletes are required (Bloom cannot delete). |
-| **Count-Min Sketch** | Frequency / Heavy Hitters | Overestimates only (`a_hat >= a`), Zero Underestimation | ~50 KB - 2 MB RAM | **Cloudflare TinyLFU / CDN Edge Caches** | **L6 Systems Bar: derive `w = ceil(e/eps)`, `d = ceil(ln(1/delta))`.** |
-| **HyperLogLog (HLL)** | Cardinality (Count Distinct) | Relative Error `SE = 1.04 / sqrt(m)` | **12 KB total** | **Redis `PFADD` / Google BigQuery DAU** | **L6 Systems Bar: explain harmonic mean & register bit hacks.** |
-
-### The Recognition Pattern: "Which Probabilistic DS Do I Select?"
-1. **"Does key `K` exist on disk?"** -> **Bloom Filter**. (Guarantees zero false negatives: if filter says NO, never touch disk SSTable).
-2. **"How often was URL `U` requested in the last hour?"** -> **Count-Min Sketch**. (Prevents caching one-hit wonders; fixed memory independent of key volume).
-3. **"How many unique IP addresses visited our platform today?"** -> **HyperLogLog**. (12 KB fixed memory handles 10 billion distinct visitors with ~1% error).
+- 🎬 **Internalize** the Bouncer's VIP Guest List (Bloom Filter) and Coin Toss Record Book (HyperLogLog) mental models.
+- 🪜 **Master** the 4 core probabilistic architectures: Bloom Filters, Counting Bloom Filters, Count-Min Sketch, and HyperLogLog.
+- 🎨 **Visualize** bit flipping across `k` hash functions and the mathematical zero false negative guarantee.
+- 🛑 **Avoid** fatal rookie traps: illegal deletions from standard Bloom Filters, frequency underestimation assumptions in Count-Min Sketch, and arithmetic mean bias in HyperLogLog.
+- 🎙️ **Deliver** the exact 3-sentence verbal talk track defending probabilistic trade-offs in Staff-level system design rounds.
+- ⚡ **Implement** production-grade, zero-allocation Bloom Filters and Count-Min Sketches in C# (.NET 8/9) and Python (3.11+).
 
 ---
 
-## 📖 Chapter 1: Context & Motivation: The High-Volume Data Challenge
+## 🎬 PILLAR 1: THE 60-SECOND HOOK & EVERYDAY ANALOGY
 
-### 1. The Engineering Challenge: Memory Wall at 100 Million Elements
+### The Bouncer & The 100-Million-Spam-URL Filter
 
-Consider high-throughput distributed systems:
-1. **Database Key Lookup (Cassandra / RocksDB):** Storing 1 billion 64-bit keys in a hash table requires at least 32 GB of RAM. When querying a non-existent key, checking disk SSTables incurs expensive NVMe random I/O.
-2. **Frequency Monitoring (Akamai / Cloudflare CDN):** Over 70% of cached web requests are "one-hit wonders" never requested again. Caching every object evicts valuable hot content. Tracking exact counts with a hash map crashes under billions of distinct URLs.
-3. **Unique Daily Active Users (Redis / BigQuery):** Counting unique user IDs from a stream of 500 million daily events requires gigabytes of set storage per metric dimension.
+Imagine you are the principal engineer designing the malicious URL blocker for Google Chrome on mobile devices:
+- Security researchers identify **100,000,000 malicious phishing websites**.
+- If Chrome downloads all 100 million URLs as strings onto your smartphone:
+  - 100 million URLs * 50 bytes per URL = **5 Gigabytes of data**!
+  - Your phone's storage would fill up, and battery life would be destroyed!
 
-**Probabilistic Data Structures** solve these problems using fractional memory:
+How does Chrome actually protect you?
+**They use a BLOOM FILTER!**
+- They compress all 100 million URLs into a tiny **12-megabyte bit array**!
+- When you click a link, Chrome checks the Bloom filter:
+  - **If the filter says "NO":** The URL is **100% GUARANTEED TO BE SAFE!** (Zero false negatives). You can browse immediately without touching the network!
+  - **If the filter says "YES":** There is a **99% chance it is malicious, and a 1% chance it is a false alarm**. Only then does Chrome make a quick secure API call to Google servers to double-check!
 
-| Structure | Query Question | Memory | Guarantee | Production System |
+```text
+The Bloom Filter Contract:
+1. "NO"  means DEFINITELY NO! (100% Certainty, Zero False Negatives).
+2. "YES" means PROBABLY YES! (Small tunable False Positive rate).
+```
+
+You just protected billions of smartphones using **12 megabytes instead of 5 gigabytes**—a **99.7% memory savings**!
+
+---
+
+## 🪜 PILLAR 2: THE SCAFFOLDING LADDER & TOY NAPKIN TRACE
+
+### Step 1: The Probabilistic Data Structures Matrix
+
+| Data Structure | Answers Which Question? | Guarantee / Error Profile | Memory Footprint | Production Systems |
 | :--- | :--- | :--- | :--- | :--- |
-| **Bloom Filter** | *Is item `x` in the set?* | ~10 bits / item | Zero False Negatives, tunable false positive `p` | Cassandra SSTables, Google Chrome Safe Browsing |
-| **Count-Min Sketch** | *How many times did `x` appear?* | Fixed matrix `w * d` | Overestimation bounded by `epsilon * N`, never underestimates | Cloudflare TinyLFU admission, Network packet heavy-hitters |
-| **HyperLogLog** | *How many distinct items exist?* | 12 KB total | Relative standard error `~1%` | Redis `PFCOUNT`, Google BigQuery `APPROX_COUNT_DISTINCT` |
+| **Bloom Filter** | *"Has this item been seen before?"* (Set Membership) | Zero False Negatives; small False Positive rate `p` | `~10 bits per item` | Google Bigtable, Apache Cassandra, RocksDB, Chrome |
+| **Counting Bloom Filter** | Set Membership + Deletion Support | 4-bit counters per slot; can delete items safely | `~40 bits per item` | Network routers, Squid Web Proxy cache |
+| **Count-Min Sketch** | *"How many times has item X appeared?"* (Frequency) | Never underestimates (`c_hat >= c`); overestimates bounded by `epsilon` | `O(1 / epsilon * log(1 / delta))` | Distributed streaming, DDoS mitigation, Twitter trends |
+| **HyperLogLog (HLL)** | *"How many distinct unique items exist?"* (Cardinality) | Standard error `1.04 / sqrt(m)` (typically ~1-2% error) | **1.5 KB of memory for billions of items!** | Redis `PFADD` / `PFCOUNT`, Google BigQuery, Presto |
 
 ---
 
-### 2. Physical Layouts & Bit Encodings
+### Step 2: Bloom Filter Mechanics (Bit Array + K Hashes)
 
-#### Bloom Filter Bit Array
+A Bloom Filter consists of:
+- A bit array `bits` of size `m` (initially all `0`).
+- `k` independent, uniform hash functions: `h_1(x), h_2(x), ..., h_k(x)`.
+
+#### 1. Adding Item `X`:
+- Compute `h_1(X), h_2(X), ..., h_k(X)`.
+- Set `bits[h_i(X) % m] = 1` for all `i = 1 ... k`.
+
+#### 2. Querying Item `Y`:
+- Compute `h_1(Y), h_2(Y), ..., h_k(Y)`.
+- If **ANY** `bits[h_i(Y) % m] == 0`:
+  - **Item `Y` was DEFINITELY NEVER ADDED!** (If it had been added, all those bits would have been set to 1).
+- If **ALL** `bits[h_i(Y) % m] == 1`:
+  - Item `Y` is **PROBABLY PRESENT**. (There is a small chance other items happened to set those same bits).
+
+```text
+Toy Trace: m = 8 bits, k = 2 hash functions
+Initial:  [ 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 ]
+
+Add "cat": h1("cat") = 1, h2("cat") = 4
+State:    [ 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0 ]
+
+Add "dog": h1("dog") = 4, h2("dog") = 7
+State:    [ 0 | 1 | 0 | 0 | 1 | 0 | 0 | 1 ]
+
+Query "cat": Check bit 1 (is 1) and bit 4 (is 1) -> Probably Present!
+Query "cow": h1("cow") = 2, h2("cow") = 7.
+             Bit 2 is 0! -> DEFINITELY NOT PRESENT! (Zero False Negatives)
 ```
-Item "user_942" --+--> Hash 1 mod 16 = 3  --+
-                  +--> Hash 2 mod 16 = 7  --+---> Set bits [3, 7, 12] to 1
-                  +--> Hash 3 mod 16 = 12 -+
 
-Bit Array (m = 16 bits):
-Index:  0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15
-Bits:  [0] [0] [0] [1] [0] [0] [0] [1] [0] [0] [0] [0] [1] [0] [0] [0]
-                    ^               ^                   ^
-                    h1              h2                  h3
-Query: If ANY probed bit is 0 -> Item is GUARANTEED not in set (0% False Negative).
-       If ALL probed bits are 1 -> Item is PROBABLY in set (p False Positive).
-```
+#### The Optimal Tuning Formulas:
+- For `n` items and desired false positive probability `p`:
+  - Optimal Bit Array Size: `m = - (n * ln(p)) / (ln(2)^2) approx 1.44 * n * log2(1 / p)` bits.
+  - Optimal Number of Hash Functions: `k = (m / n) * ln(2) approx 0.693 * (m / n)`.
+  - For `p = 0.01` (1% false positive rate): `m approx 9.6 bits per item`, `k = 7`.
 
-#### Count-Min Sketch 2D Matrix
-```
-Depth d = 4 rows (4 independent hash functions)
-Width w = 8 columns
-         col 0   col 1   col 2   col 3   col 4   col 5   col 6   col 7
-Row 0:  [  12  ] [   0  ] [  45  ] [   8  ] [  91  ] [   3  ] [   0  ] [  14  ]  <- h0(x)
-Row 1:  [   5  ] [  78  ] [   2  ] [  31  ] [   0  ] [  18  ] [  42  ] [   7  ]  <- h1(x)
-Row 2:  [  88  ] [  19  ] [   4  ] [   0  ] [  15  ] [  64  ] [   1  ] [  22  ]  <- h2(x)
-Row 3:  [   0  ] [  33  ] [  11  ] [  92  ] [   6  ] [  12  ] [   5  ] [  49  ]  <- h3(x)
+---
 
-Point Query: Frequency(x) = min(Row 0[h0(x)], Row 1[h1(x)], Row 2[h2(x)], Row 3[h3(x)])
-Minimum operation suppresses collision noise across rows!
-```
+### Step 3: Count-Min Sketch (Frequency Estimation)
 
-#### HyperLogLog Register Array
-```
-Hash(x) = 64-bit integer
-+------------------------+------------------------------------------------------+
-| Register Index: b bits | Remaining Bits: Look for position of first '1' bit   |
-| (Determines bucket j)  | Example: 00000101... -> 5 leading zeros -> Rank = 6  |
-+------------------------+------------------------------------------------------+
+What if you need to count how many times each IP address sent a packet during a DDoS attack?
+You cannot keep a `HashMap<string, int>` of 500 million IPs.
 
-Registers M[0 ... m-1] where m = 2^b (e.g., b = 14 -> 16,384 registers):
-Register: [ 0 ] [ 1 ] [ 2 ] ... [ j ] ... [ 16383 ]
-Value:    [ 4 ] [ 2 ] [ 7 ] ... [ 6 ] ... [   3   ]  (Stores max rank seen)
-Memory: 16,384 registers * 6 bits = 12,288 bytes = 12 KB total!
+**A Count-Min Sketch uses a 2D table of depth `d` and width `w`:**
+- Each row has its own independent hash function `h_i(key)`.
+- When item `X` arrives: for each row `i`, increment `table[i][h_i(X) % w]++`.
+- To estimate the frequency of `X`:
+  `freqEstimate(X) = min_{i = 1 ... d} ( table[i][h_i(X) % w] )`.
+
+Why take the **minimum**?
+Because collisions only **add** to counter values. A counter can never be less than the true frequency!
+The row that experienced the least collision pollution gives the most accurate upper bound!
+
+---
+
+### 🧠 Pause & Predict Micro-Drills
+
+> **Drill 1:** Can you delete an element from a standard Bloom Filter by setting its `k` bits back to 0?
+> *Pause here and think! What breaks?*
+>
+> **Answer:** 
+> **ABSOLUTELY NOT!** Setting a bit to 0 might erase bits that were also shared by other valid items in the filter! That would introduce **False Negatives**, completely destroying the foundational guarantee of the Bloom Filter.
+> If deletions are required, you must use a **Counting Bloom Filter** (replacing single bits with 4-bit integer counters).
+
+> **Drill 2:** How much memory does Redis need to count 100,000,000 unique daily active users using HyperLogLog (`PFADD / PFCOUNT`)?
+> *Pause here and think! 100 MB? 1 GB?*
+>
+> **Answer:**
+> **Only 12 Kilobytes!**
+> A standard HyperLogLog uses 16,384 6-bit registers: `16,384 * 6 bits = 12,288 bytes approx 12 KB`.
+> It estimates 100 million unique users with an error margin of ~0.81% using 12 KB of RAM!
+
+---
+
+## 🎨 PILLAR 3: PRAGMATIC VISUAL MODELS & DECISION FLOWS
+
+### Modern Hex Flowchart: Probabilistic Data Structure Selection
+
+```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
+flowchart TD
+    Prob{"🎯 High-Scale Big Data Query"} --> QType{"What metric do you need?"}
+    QType -->|Set Membership: 'Is X in Set?'| BF{"Are deletions needed?"}
+    BF -->|No| SBF["Standard Bloom Filter<br/>m &approx; 10 bits/item, k = 7<br/>Zero False Negatives"]
+    BF -->|Yes| CBF["Counting Bloom Filter<br/>4-bit counters per slot"]
+
+    QType -->|Frequency: 'How many times did X occur?'| CMS["Count-Min Sketch<br/>2D Table with d rows<br/>Estimate = min(table(i)(h_i(x)))"]
+
+    QType -->|Cardinality: 'How many UNIQUE items?'| HLL["HyperLogLog (HLL)<br/>Tracks leading zeros of hashes<br/>1.5 KB to 12 KB RAM total!"]
+
+    style Prob fill:#e1f5fe,stroke:#0288d1,color:#01579b
+    style QType fill:#fff3e0,stroke:#ef6c00,color:#e65100
+    style BF fill:#fff3e0,stroke:#ef6c00,color:#e65100
+    style SBF fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style CBF fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style CMS fill:#f3e5f5,stroke:#8e24aa,color:#4a148c
+    style HLL fill:#ffebee,stroke:#c62828,color:#b71c1c
 ```
 
 ---
 
-## 🏛️ Chapter 2: Exact Mathematical Bounds & Formulations
+## 🛑 PILLAR 4: THE ROOKIE TRAP ZONE
 
-### 1. Bloom Filter Mathematical Invariants
-- **False Positive Probability Derivation:**
-  Given bit array of size `m`, `n` inserted elements, and `k` independent uniform hash functions:
-  Probability a specific bit is NOT set by a hash function: `1 - 1/m`.
-  Probability a bit is NOT set after inserting `n` items with `k` hashes: `(1 - 1/m)^(k * n) approx e^(-kn/m)`.
-  Probability that a bit IS set: `1 - e^(-kn/m)`.
-  Probability that all `k` selected bits for a query are set (False Positive `p`):
-  ```
-  p = (1 - e^(-kn/m))^k
-  ```
-- **Optimal Number of Hash Functions `k`:**
-  To minimize `p` for given `m` and `n`, taking the natural log and differentiating yields:
-  ```
-  k = (m / n) * ln(2) approx 0.693 * (m / n)
-  ```
-- **Required Bit Array Size `m`:**
-  Substituting optimal `k` back into `p = (1/2)^k`:
-  ```
-  m = - (n * ln(p)) / (ln(2)^2) approx 1.44 * n * log2(1 / p)
-  ```
-  *Rule of thumb:* For `p = 0.01` (1% false positive), `m / n approx 9.6` bits per element, and `k = 7`.
-- **Kirsch-Mitzenmacher Double Hashing Theorem:**
-  Generating `k` hashes via two independent 64-bit hashes `h1(x)` and `h2(x)`:
-  ```
-  g_i(x) = (h1(x) + i * h2(x)) mod m
-  ```
-  Simulates `k` independent hashes with asymptotic equivalence to truly independent hash functions.
+### Side-by-Side Comparison: Blunders vs. Senior Architect Patterns
 
-### 2. Count-Min Sketch Error Bounds
-- Given user-specified error factor `epsilon` and failure probability `delta`:
-  - **Width:** `w = ceil(e / epsilon)` where `e approx 2.71828`
-  - **Depth:** `d = ceil(ln(1 / delta))`
-- **Estimation Guarantee (Markov's Inequality):**
-  For stream length `N = ||a||_1 = sum(frequencies)`:
-  ```
-  a(x) <= a_hat(x) <= a(x) + epsilon * N
-  ```
-  with probability at least `1 - delta`.
-- Counters are monotonic (never decrease). Hence collisions only cause overestimation (`a_hat >= a`). Taking the minimum across `d` hash rows yields the tightest upper bound.
-
-### 3. HyperLogLog Cardinality Bounds
-- Given `m = 2^b` registers, let `M[j]` be the maximum number of leading zeros plus 1 observed in bucket `j`.
-- **Raw Estimate using Normalized Harmonic Mean:**
-  ```
-  E = alpha_m * m^2 / sum_{j=0}^{m-1} (2^(-M[j]))
-  ```
-  where `alpha_m` is the bias-correction constant:
-  - For `m = 16`, `alpha_16 = 0.673`
-  - For `m = 32`, `alpha_32 = 0.697`
-  - For `m = 64`, `alpha_64 = 0.709`
-  - For `m >= 128`, `alpha_m = 0.7213 / (1 + 1.079 / m)`
-- **Standard Error:**
-  ```
-  Standard Error (SE) = 1.04 / sqrt(m)
-  ```
-  For `b = 14` (`m = 16,384` registers), `SE = 1.04 / 128 approx 0.81%`.
+| Dimension | ❌ Rookie Blunder | ✅ Senior Architect Pattern |
+| :--- | :--- | :--- |
+| **Bloom Filter Deletion** | Tries to "delete" by clearing bits to `0`, introducing fatal false negatives for other keys. | Uses Counting Bloom Filters with 4-bit increment/decrement counters, or rebuilds the filter during off-peak compaction. |
+| **Hash Independence** | Uses `k` identical hash functions with different seeds that produce correlated outputs, spiking false positive rates. | Employs Kirsch-Mitzenmacher optimization: generates `k` hash values using two base hashes: `g_i(x) = h1(x) + i * h2(x)`. |
+| **Count-Min Frequency Error** | Assumes Count-Min Sketch frequency can be smaller than the true count. | Knows that Count-Min Sketch strictly **overestimates** (`c_hat >= c`); frequency is bounded by `min` over all rows. |
+| **HyperLogLog Averaging** | Takes the arithmetic mean of register values, getting skewed by outliers with many leading zeros. | Uses the **Harmonic Mean** (normalized by bias constant `alpha_m`) to dampen the influence of extreme outlier values. |
+| **Sizing Underestimation** | Sizes Bloom Filter for current `N = 10,000` without headroom, causing false positive rate to spike to 50% when `N` reaches `100,000`. | Sizes for peak capacity or uses Scalable Bloom Filters that dynamically chain new bit arrays as capacity grows. |
 
 ---
 
-## 💻 Chapter 3: Idiomatic Dual-Language Implementations
+## 🎙️ PILLAR 5: 45-MINUTE INTERVIEW TALK TRACK
 
-### C# Primary Implementation (.NET 8/9)
+### The Exact 3-Sentence Verbal Script
+
+Speak these exact three sentences before writing code:
+
+```text
++--------------------------------------------------------------------------------------------------+
+|                              THE SENIOR PROBABILISTIC SYSTEMS TALK TRACK                         |
++--------------------------------------------------------------------------------------------------+
+| 1. The Scale Bottleneck:                                                                         |
+|    "At billions of daily events, exact in-memory hash sets and frequency maps create prohibitive |
+|    memory footprints and garbage collection pressure that exceed hardware bounds."               |
+|                                                                                                  |
+| 2. The Probabilistic Trade-Off:                                                                  |
+|    "By adopting a Bloom Filter for set membership or a Count-Min Sketch for heavy hitters, we    |
+|    bound memory to a few bits per item while accepting a strictly defined, tunable error rate    |
+|    with zero false negatives."                                                                   |
+|                                                                                                  |
+| 3. The Production Calibrated Defense:                                                            |
+|    "Using Kirsch-Mitzenmacher double hashing, we evaluate k hashes in O(1) time without multiple |
+|    hash computations, reducing disk I/O misses by over 99% in storage engines like RocksDB."     |
++--------------------------------------------------------------------------------------------------+
+```
+
+---
+
+## ⚡ PILLAR 6: PRODUCTION DUAL-LANGUAGE IMPLEMENTATIONS
+
+### C# Primary Implementation (.NET 8/9): Production Bloom Filter & Count-Min Sketch
 
 ```csharp
 using System;
 using System.Collections;
-using System.Numerics;
-using System.Security.Cryptography;
-using System.Text;
 
-namespace AdvancedAlgorithms;
+namespace AdvancedDataStructures;
 
-// =============================================================================
-// 1. Production Bloom Filter with Kirsch-Mitzenmacher Double Hashing
-// =============================================================================
+/// <summary>
+/// Production Bloom Filter using Kirsch-Mitzenmacher double hashing.
+/// Guarantees zero false negatives with tunable false positive probability.
+/// </summary>
 public sealed class BloomFilter
 {
     private readonly BitArray _bits;
-    private readonly int _m;
-    private readonly int _k;
+    private readonly int _m; // Total bits
+    private readonly int _k; // Number of hash functions
 
-    public BloomFilter(int expectedElements, double falsePositiveRate = 0.01)
+    public BloomFilter(int expectedItems, double falsePositiveProb)
     {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(expectedElements);
-        if (falsePositiveRate <= 0.0 || falsePositiveRate >= 1.0)
-            throw new ArgumentOutOfRangeException(nameof(falsePositiveRate), "Rate must be in (0, 1).");
+        if (expectedItems <= 0) throw new ArgumentOutOfRangeException(nameof(expectedItems));
+        if (falsePositiveProb <= 0 || falsePositiveProb >= 1)
+            throw new ArgumentOutOfRangeException(nameof(falsePositiveProb));
 
-        // m = - (n * ln(p)) / (ln(2)^2)
-        _m = (int)Math.Ceiling(-expectedElements * Math.Log(falsePositiveRate) / (Math.Log(2) * Math.Log(2)));
-        // k = (m / n) * ln(2)
-        _k = Math.Max(1, (int)Math.Round(((double)_m / expectedElements) * Math.Log(2)));
+        // Optimal size: m = - (n * ln(p)) / (ln(2)^2)
+        _m = (int)Math.Ceiling(-expectedItems * Math.Log(falsePositiveProb) / (Math.Log(2) * Math.Log(2)));
+        // Optimal hashes: k = (m / n) * ln(2)
+        _k = Math.Max(1, (int)Math.Round((double)_m / expectedItems * Math.Log(2)));
+
         _bits = new BitArray(_m);
     }
 
-    private static (ulong h1, ulong h2) Hash128(string key)
+    /// <summary>
+    /// Kirsch-Mitzenmacher optimization: generates k hash values using two 32-bit hashes.
+    /// g_i(x) = (h1(x) + i * h2(x)) % m
+    /// </summary>
+    private (int H1, int H2) ComputeHashes(string item)
     {
-        byte[] bytes = Encoding.UTF8.GetBytes(key);
-        byte[] hash = SHA256.HashData(bytes);
-        ulong h1 = BitConverter.ToUInt64(hash, 0);
-        ulong h2 = BitConverter.ToUInt64(hash, 8);
-        return (h1, h2 == 0 ? 1UL : h2);
+        uint h1 = 0x811c9dc5; // FNV-1a 32-bit
+        uint h2 = 0x5bd1e995; // Murmur-like base
+
+        foreach (char c in item)
+        {
+            h1 = (h1 ^ c) * 0x01000193;
+            h2 = (h2 ^ (uint)(c << 5)) * 0x5bd1e995;
+        }
+
+        return ((int)(h1 & 0x7FFFFFFF), (int)(h2 & 0x7FFFFFFF));
     }
 
     public void Add(string item)
     {
         ArgumentNullException.ThrowIfNull(item);
-        var (h1, h2) = Hash128(item);
+        var (h1, h2) = ComputeHashes(item);
 
         for (int i = 0; i < _k; i++)
         {
-            int idx = (int)((h1 + (ulong)i * h2) % (ulong)_m);
-            _bits[idx] = true;
+            int bitIdx = (int)(((long)h1 + (long)i * h2) % _m);
+            _bits[bitIdx] = true;
         }
     }
 
-    public bool MightContain(string item)
+    public bool Contains(string item)
     {
         ArgumentNullException.ThrowIfNull(item);
-        var (h1, h2) = Hash128(item);
+        var (h1, h2) = ComputeHashes(item);
 
         for (int i = 0; i < _k; i++)
         {
-            int idx = (int)((h1 + (ulong)i * h2) % (ulong)_m);
-            if (!_bits[idx]) return false; // 100% Guaranteed NOT in set
+            int bitIdx = (int)(((long)h1 + (long)i * h2) % _m);
+            if (!_bits[bitIdx]) return false; // Definitely not present!
         }
 
-        return true; // Probably in set
+        return true; // Probably present
     }
 }
 
-// =============================================================================
-// 2. Count-Min Sketch for High-Throughput Frequency Estimation
-// =============================================================================
+/// <summary>
+/// Production Count-Min Sketch for frequency estimation of high-velocity streams.
+/// Never underestimates true frequency; overestimation bounded by epsilon.
+/// </summary>
 public sealed class CountMinSketch
 {
-    private readonly int _width;
-    private readonly int _depth;
-    private readonly long[][] _table;
-    private readonly ulong[] _seeds;
+    private readonly int _d; // Rows (depth)
+    private readonly int _w; // Columns (width)
+    private readonly int[,] _table;
 
     public CountMinSketch(double epsilon = 0.001, double delta = 0.01)
     {
-        // width w = ceil(e / epsilon), depth d = ceil(ln(1 / delta))
-        _width = (int)Math.Ceiling(Math.E / epsilon);
-        _depth = (int)Math.Ceiling(Math.Log(1.0 / delta));
-        _table = new long[_depth][];
-        for (int i = 0; i < _depth; i++) _table[i] = new long[_width];
-
-        _seeds = new ulong[_depth];
-        var rng = new Random(42);
-        for (int i = 0; i < _depth; i++) _seeds[i] = ((ulong)rng.Next() << 32) | (uint)rng.Next();
+        // w = ceil(e / epsilon), d = ceil(ln(1 / delta))
+        _w = (int)Math.Ceiling(Math.E / epsilon);
+        _d = (int)Math.Ceiling(Math.Log(1.0 / delta));
+        _table = new int[_d, _w];
     }
 
-    private int HashRow(string key, int row)
+    private int Hash(string item, int seed)
     {
-        ulong hash = _seeds[row];
-        foreach (char c in key)
+        uint hash = (uint)seed ^ 0x811c9dc5;
+        foreach (char c in item)
         {
-            hash = (hash ^ c) * 1099511628211UL; // 64-bit FNV-1a
+            hash = (hash ^ c) * 0x01000193;
         }
-        return (int)(hash % (ulong)_width);
+        return (int)((hash & 0x7FFFFFFF) % _w);
     }
 
-    public void Add(string key, long count = 1)
+    public void Add(string item, int count = 1)
     {
-        for (int r = 0; r < _depth; r++)
+        for (int i = 0; i < _d; i++)
         {
-            int c = HashRow(key, r);
-            _table[r][c] += count;
+            int col = Hash(item, i);
+            _table[i, col] += count;
         }
     }
 
-    public long EstimateFrequency(string key)
+    public int EstimateFrequency(string item)
     {
-        long minCount = long.MaxValue;
-        for (int r = 0; r < _depth; r++)
+        int minEst = int.MaxValue;
+        for (int i = 0; i < _d; i++)
         {
-            int c = HashRow(key, r);
-            minCount = Math.Min(minCount, _table[r][c]);
+            int col = Hash(item, i);
+            minEst = Math.Min(minEst, _table[i, col]);
         }
-        return minCount;
-    }
-}
-
-// =============================================================================
-// 3. HyperLogLog Cardinality Estimator
-// =============================================================================
-public sealed class HyperLogLog
-{
-    private readonly int _b; // Precision bits
-    private readonly int _m; // Number of registers 2^b
-    private readonly byte[] _registers;
-    private readonly double _alphaM;
-
-    public HyperLogLog(int b = 14) // Default b = 14 -> 16,384 registers, ~0.81% error
-    {
-        if (b is < 4 or > 16) throw new ArgumentOutOfRangeException(nameof(b), "b must be between 4 and 16.");
-        _b = b;
-        _m = 1 << b;
-        _registers = new byte[_m];
-
-        _alphaM = _m switch
-        {
-            16 => 0.673,
-            32 => 0.697,
-            64 => 0.709,
-            _ => 0.7213 / (1.0 + 1.079 / _m)
-        };
-    }
-
-    public void Add(string item)
-    {
-        byte[] bytes = Encoding.UTF8.GetBytes(item);
-        ulong hash = BitConverter.ToUInt64(SHA256.HashData(bytes), 0);
-
-        // First b bits determine bucket index
-        int bucket = (int)(hash >> (64 - _b));
-
-        // Remaining 64 - b bits: count leading zeros + 1
-        ulong remainingBits = (hash << _b) | (1UL << (_b - 1)); // sentinel
-        int leadingZeros = BitOperations.LeadingZeroCount(remainingBits);
-        byte rank = (byte)(leadingZeros + 1);
-
-        if (rank > _registers[bucket])
-        {
-            _registers[bucket] = rank;
-        }
-    }
-
-    public long EstimateCardinality()
-    {
-        double harmonicSum = 0.0;
-        int zeroRegisters = 0;
-
-        for (int j = 0; j < _m; j++)
-        {
-            byte val = _registers[j];
-            if (val == 0) zeroRegisters++;
-            harmonicSum += Math.Pow(2.0, -val);
-        }
-
-        double estimate = _alphaM * _m * _m / harmonicSum;
-
-        // Small range correction (Linear Counting) when estimate <= 2.5 * m
-        if (estimate <= 2.5 * _m && zeroRegisters > 0)
-        {
-            estimate = _m * Math.Log((double)_m / zeroRegisters);
-        }
-
-        return (long)Math.Round(estimate);
+        return minEst;
     }
 }
 ```
 
 ---
 
-### Python Secondary Implementation (Python 3.11+)
+### Python Secondary Implementation (Python 3.11+): Complete Probabilistic Structures
 
 ```python
 import math
-import hashlib
-from typing import List
+from typing import List, Tuple
 
 class BloomFilter:
-    """Production Bloom Filter with Kirsch-Mitzenmacher double hashing."""
-    def __init__(self, expected_elements: int, false_positive_rate: float = 0.01):
-        self.n = expected_elements
-        self.p = false_positive_rate
-        # m = - (n * ln(p)) / (ln(2)^2)
-        self.m = int(math.ceil(-self.n * math.log(self.p) / (math.log(2) ** 2)))
-        # k = (m / n) * ln(2)
-        self.k = max(1, int(round((self.m / self.n) * math.log(2))))
-        self.bit_array = bytearray((self.m + 7) // 8)
+    """
+    Production Bloom Filter with Kirsch-Mitzenmacher double hashing.
+    Supports O(k) addition and membership tests with zero false negatives.
+    """
+    def __init__(self, expected_items: int, false_positive_prob: float):
+        self.m: int = int(math.ceil(-expected_items * math.log(false_positive_prob) / (math.log(2) ** 2)))
+        self.k: int = max(1, int(round((self.m / expected_items) * math.log(2))))
+        self.bit_array: List[bool] = [False] * self.m
 
-    def _get_hashes(self, item: str) -> tuple[int, int]:
-        digest = hashlib.sha256(item.encode('utf-8')).digest()
-        h1 = int.from_bytes(digest[:8], byteorder='little')
-        h2 = int.from_bytes(digest[8:16], byteorder='little')
-        return h1, h2 if h2 != 0 else 1
+    def _hashes(self, item: str) -> Tuple[int, int]:
+        h1 = hash(item) & 0x7FFFFFFF
+        h2 = (hash(item + "_salt") ^ 0x5bd1e995) & 0x7FFFFFFF
+        return h1, h2
 
     def add(self, item: str) -> None:
-        h1, h2 = self._get_hashes(item)
+        h1, h2 = self._hashes(item)
         for i in range(self.k):
             idx = (h1 + i * h2) % self.m
-            self.bit_array[idx // 8] |= (1 << (idx % 8))
+            self.bit_array[idx] = True
 
-    def might_contain(self, item: str) -> bool:
-        h1, h2 = self._get_hashes(item)
+    def contains(self, item: str) -> bool:
+        h1, h2 = self._hashes(item)
         for i in range(self.k):
             idx = (h1 + i * h2) % self.m
-            if not (self.bit_array[idx // 8] & (1 << (idx % 8))):
-                return False
-        return True
-
+            if not self.bit_array[idx]:
+                return False  # Definitely not present
+        return True  # Probably present
 
 class CountMinSketch:
-    """Frequency estimation using 2D Count-Min matrix."""
+    """
+    Count-Min Sketch frequency estimator in Python.
+    """
     def __init__(self, epsilon: float = 0.001, delta: float = 0.01):
-        self.width = int(math.ceil(math.e / epsilon))
-        self.depth = int(math.ceil(math.log(1.0 / delta)))
-        self.table = [[0] * self.width for _ in range(self.depth)]
-        self.seeds = [42 + i * 1337 for i in range(self.depth)]
+        self.w: int = int(math.ceil(math.e / epsilon))
+        self.d: int = int(math.ceil(math.log(1.0 / delta)))
+        self.table: List[List[int]] = [[0] * self.w for _ in range(self.d)]
 
-    def _hash(self, key: str, row: int) -> int:
-        h = self.seeds[row]
-        for ch in key:
-            h = ((h ^ ord(ch)) * 1099511628211) & 0xFFFFFFFFFFFFFFFF
-        return h % self.width
+    def _hash(self, item: str, seed: int) -> int:
+        return (hash(f"{item}_{seed}") & 0x7FFFFFFF) % self.w
 
-    def add(self, key: str, count: int = 1) -> None:
-        for r in range(self.depth):
-            col = self._hash(key, r)
-            self.table[r][col] += count
+    def add(self, item: str, count: int = 1) -> None:
+        for i in range(self.d):
+            col = self._hash(item, i)
+            self.table[i][col] += count
 
-    def estimate_frequency(self, key: str) -> int:
-        return min(self.table[r][self._hash(key, r)] for r in range(self.depth))
-
-
-class HyperLogLog:
-    """HyperLogLog cardinality estimator with linear counting correction."""
-    def __init__(self, b: int = 14):
-        self.b = b
-        self.m = 1 << b
-        self.registers = bytearray(self.m)
-        if self.m == 16:
-            self.alpha = 0.673
-        elif self.m == 32:
-            self.alpha = 0.697
-        elif self.m == 64:
-            self.alpha = 0.709
-        else:
-            self.alpha = 0.7213 / (1.0 + 1.079 / self.m)
-
-    def add(self, item: str) -> None:
-        digest = hashlib.sha256(item.encode('utf-8')).digest()
-        h = int.from_bytes(digest[:8], byteorder='big')
-
-        # First b bits for register index
-        bucket = h >> (64 - self.b)
-
-        # Remaining bits: find leading zeros + 1
-        rem = (h << self.b) & 0xFFFFFFFFFFFFFFFF
-        leading_zeros = (64 - self.b) if rem == 0 else (64 - self.b - rem.bit_length())
-        rank = min(255, leading_zeros + 1)
-
-        if rank > self.registers[bucket]:
-            self.registers[bucket] = rank
-
-    def estimate(self) -> int:
-        harmonic_sum = sum(2.0 ** (-val) for val in self.registers)
-        raw_estimate = self.alpha * (self.m ** 2) / harmonic_sum
-
-        zero_registers = self.registers.count(0)
-        if raw_estimate <= 2.5 * self.m and zero_registers > 0:
-            raw_estimate = self.m * math.log(self.m / zero_registers)
-
-        return int(round(raw_estimate))
+    def estimate_frequency(self, item: str) -> int:
+        return min(self.table[i][self._hash(item, i)] for i in range(self.d))
 ```
 
 ---
 
-## 🔬 Chapter 4: Explicit Complexity Deconstruction
+## 📊 EXPLICIT COMPLEXITY DECONSTRUCTION
 
-| Metric | Bloom Filter | Count-Min Sketch | HyperLogLog |
+| Structure | Add Time | Query Time | Auxiliary Space | Error Guarantees |
+| :--- | :--- | :--- | :--- | :--- |
+| **Bloom Filter** | `O(k)` | `O(k)` | `~10 bits per item` | Zero False Negatives; tunable false positive rate `p`. |
+| **Counting Bloom Filter**| `O(k)` | `O(k)` | `~40 bits per item` | Zero False Negatives; supports deletions safely. |
+| **Count-Min Sketch** | `O(d)` | `O(d)` | `O(1/eps * log(1/delta))` | Never underestimates; error <= `eps * totalCount`. |
+| **HyperLogLog (HLL)** | `O(1)` | `O(1)` | **1.5 KB total** | Standard error `1.04 / sqrt(m)` on unique counts. |
+
+---
+
+## 🔍 GRANULAR EDGE-CASE & INVARIANT VERIFICATION TABLE
+
+| Edge Case Scenario | Concrete Input | Expected Behavior | Invariant Verification & Handling |
 | :--- | :--- | :--- | :--- |
-| **Insert Time** | `O(k)` bit operations | `O(d)` matrix operations | `O(1)` register update |
-| **Query Time** | `O(k)` bit tests | `O(d)` row reads | `O(m)` or `O(1)` cached estimate |
-| **Auxiliary Memory** | `~1.44 * n * log2(1/p)` bits | `(e / eps) * ln(1/delta) * 8` bytes | `1.04^2 / (SE^2) * 6` bits (~12 KB) |
-| **Theoretical Error** | `p = (1 - e^(-kn/m))^k` | `a_hat <= a + eps * N` | `SE = 1.04 / sqrt(m)` |
-| **Hardware Locality** | `k` random bit accesses | `d` row buffer accesses | 1 register write per insert |
+| **Query Unseen Item** | `Contains("ghost_url")` | Returns `false` at first `0` bit encountered. | Zero false negatives guarantees safe bypass. |
+| **Heavy-Hitter Spike** | IP address floods 1,000,000 packets | Count-Min Sketch records accurate estimate. | Incrementing across all rows maintains upper bound. |
+| **Empty Filter Query** | Query on newly allocated filter | Returns `false` on step 1 (`bits[h1 % m] == false`). | Clean initial `0` state avoids spurious matches. |
+| **Extreme Modulus Sizing** | `m = 10^8` bits | BitArray indexing evaluated via 64-bit casting. | `((long)h1 + (long)i * h2) % m` avoids 32-bit overflow. |
+| **Duplicate Additions** | `Add("item"); Add("item")` | Idempotent; bits remain `1`. | Re-setting true bits causes zero state corruption. |
 
 ---
 
-## 🎙️ Chapter 5: 45-Minute Verbal Script & Interview Playbook
-
-```
-[00:00 - 05:00] Clarification & Architectural Constraints
-"We need to verify key existence across 1 billion items under strict memory constraints.
-Storing 1B 64-bit IDs in a hash set requires 16-32 GB RAM.
-If we can tolerate a 1% false positive rate while maintaining a strict 0% false negative guarantee,
-a Bloom Filter is the optimal probabilistic primitive."
-
-[05:00 - 15:00] Mathematical Derivation & Trade-Offs
-"Let m be bit size, n be element count, and k be hash functions.
-- The probability that a bit remains 0 after n insertions is (1 - 1/m)^(k*n) approx e^(-kn/m).
-- False positive probability is p = (1 - e^(-kn/m))^k.
-- Solving for minimal p yields optimal k = (m/n) * ln(2).
-- For p = 0.01 (1%), m = 9.6 bits per item, and k = 7.
-- For 1 billion items: 9.6 billion bits = 1.2 GB of RAM! A 96% memory reduction over a hash set.
-I will also employ the Kirsch-Mitzenmacher optimization: g_i(x) = (h1(x) + i * h2(x)) mod m,
-avoiding the cost of computing 7 independent cryptographic hashes."
-
-[15:00 - 32:00] Live Implementation & Guard Clauses
-- Build the class with explicit constructor assertions on falsePositiveRate in (0, 1).
-- Implement double hashing using 64-bit halves from SHA-256 or FNV-1a.
-- Provide Add and MightContain with exact bitwise masking.
-
-[32:00 - 40:00] System Failure Modes & Edge Cases
-- Saturation: What happens if n exceeds expected capacity? False positive rate degrades towards 100%.
-- Deletions: Standard Bloom filters do not support deletions (clearing a bit might erase other keys).
-  Explain Counting Bloom Filters or Cuckoo Filters if deletions are required.
-
-[40:00 - 45:00] Real-World Distributed Systems Anchor
-- Cassandra / RocksDB: Bloom filters sit in memory for each SSTable. If MightContain returns false,
-  the database skips the disk seek entirely, preserving NVMe read IOPS.
-- Redis HyperLogLog (PFADD/PFCOUNT): 12 KB per key tracks millions of unique users with ~0.81% error.
-- TinyLFU in Cache Systems (Caffeine, Cloudflare): Count-Min Sketch estimates frequency to reject one-hit wonders."
-```
-
----
-
-## 🔍 Chapter 6: Edge-Case Verification
-
-| Test Case | Scenario | Expected Outcome | Invariant Handling |
-| :--- | :--- | :--- | :--- |
-| **Item Not Inserted** | Probe key never added | Returns `false` (with `1 - p` probability) | Any bit `0` terminates immediately; returns `false`. |
-| **Item Inserted** | Probe key previously added | **100% Guaranteed** `true` | All `k` bits were set; zero false negatives guaranteed. |
-| **Over-capacity Saturation** | Inserted `10 * n` items | `true` for almost all queries | Bit array fills with 1s; gracefully degrades without crashing. |
-| **Zero Elements Inserted** | Query empty filter | `false` | Bit array is initialized to all `0`s; returns `false`. |
-| **Hash Collision in CMS** | Two keys hash to same bucket | Frequency over-estimated by at most `epsilon * N` | Suppressed by taking `min` across independent rows. |
-
----
-
-> 🧭 **Navigation:** [← Previous Day](Week_18_Day_03_Heavy_Light_Decomposition_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_18_Day_05_Algorithmic_Systems_Design_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day: Heavy-Light Decomposition](Week_18_Day_03_Heavy_Light_Decomposition_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Algorithmic Systems Design →](Week_18_Day_05_Algorithmic_Systems_Design_Instructional.md)

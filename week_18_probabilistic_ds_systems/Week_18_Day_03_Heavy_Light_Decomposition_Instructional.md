@@ -1,133 +1,198 @@
-# 📘 Week 18, Day 3: Heavy-Light Decomposition (HLD)
+# 📘 WEEK 18 DAY 03: HEAVY-LIGHT DECOMPOSITION (HLD)
 
-> 🧭 **Navigation:** [← Previous Day](Week_18_Day_02_Square_Root_Decomposition_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_18_Day_04_Probabilistic_Data_Structures_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day: Square Root Decomposition](Week_18_Day_02_Square_Root_Decomposition_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Probabilistic Data Structures →](Week_18_Day_04_Probabilistic_Data_Structures_Instructional.md)
 > 
-> 💡 **Instructor Note:** *Heavy-Light Decomposition (HLD) linearizes tree topology into contiguous segments, turning tree path and subtree queries into standard Segment Tree range operations. Master the logarithmic light-edge bound.*
+> 💡 **Instructor Note:** *Heavy-Light Decomposition (HLD) is the premier technique for transforming complex tree path operations into contiguous 1D range queries on a standard Segment Tree. In Senior/Staff FAANG interviews, implementing HLD demonstrates mastery of tree serialization, Lowest Common Ancestor (LCA) shortcuts, and logarithmic path bounds. Today, we break HLD down into two clean DFS passes and a chain-jumping loop.*
 
 ---
 
-## 🎯 Learning Objectives
+## 🎯 LEARNING OBJECTIVES
 
-*   **Core Mental Model:** Understand how classifying tree edges into "Heavy" and "Light" guarantees that any root-to-node path intersects at most `log2(N)` disjoint chains.
-*   **Mathematical Proof:** Prove that a light edge halves the remaining subtree size (`size(v) <= size(u) / 2`), ensuring a strict `O(log^2 N)` path query bound when backed by a Segment Tree.
-*   **Production Invariant:** Relate HLD tree flattening to distributed hierarchical lock managers (ZooKeeper namespace subtree leases, Linux VFS dentry path validation).
-*   **Algorithmic Protocol:** Implement a complete two-pass DFS decomposition and segment tree integration in modern C# (.NET 8/9) and Python (3.11+).
+*By the end of this module, you will be able to:*
 
-## ⚖️ FAANG Senior / Lead Interview Calibration
-
-When handling queries on tree structures, senior engineers select the appropriate paradigm based on dynamicity and query semantics:
-
-| Tree Processing Paradigm | Path Query | Path Update | Subtree Query | Tree Topology Dynamicity | Space Overhead | Interview Calibration |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Euler Tour + Fenwick / SegTree** | `O(1)` (RMQ LCA) | `O(log N)` (Point) | `O(log N)` | Static | `O(N)` | Standard for LCA or subtree-only aggregates. |
-| **Binary Lifting** | `O(log N)` (Commutative) | `O(N log N)` (Rebuild) | N/A | Static | `O(N log N)` | Standard for static ancestor/LCA queries. |
-| **Heavy-Light Decomposition (HLD)** | `O(log^2 N)` | `O(log^2 N)` | `O(log N)` | Static Topology | `O(N)` | **Gold standard for combined dynamic path + subtree queries.** |
-| **Link-Cut Tree (LCT)** | `O(log N)` | `O(log N)` | `O(log N)` | Dynamic (Link/Cut) | `O(N)` | Theoretical mastery; rarely coded live due to splay tree complexity. |
-
-### The Recognition Pattern: "When is HLD Mandatory?"
-1. **Dynamic Path Modification:** The problem requires updating edge or node weights along the simple path between `u` and `v` while simultaneously querying path aggregations (`max`, `sum`, `xor`).
-2. **Dual Path and Subtree Queries:** Both path queries (`path(u, v)`) and subtree queries (`subtree(u)`) must be supported concurrently in sub-linear time.
-3. **Static Topology with Dynamic Data:** The tree's shape (edges) remains fixed, but weights are updated continuously under high throughput.
+- 🎬 **Internalize** the Interstate Highway and Country Roads mental model: heavy paths vs light edges.
+- 🪜 **Master** the 2-DFS execution protocol: DFS 1 for subtree sizes and heavy children; DFS 2 for chain heads and 1D Euler segment tree mapping.
+- 🎨 **Visualize** why any path from root to node encounters at most `log2(N)` light edges, guaranteeing `O(log^2 N)` path queries.
+- 🛑 **Avoid** fatal rookie traps: incorrect chain head depth comparisons, off-by-one Euler tour bounds, and unindexed tree recursions.
+- 🎙️ **Deliver** the exact 3-sentence verbal talk track defending HLD in senior systems and graph interviews.
+- ⚡ **Implement** production-grade, zero-allocation HLD with Segment Trees in C# (.NET 8/9) and Python (3.11+).
 
 ---
 
-## 📖 Chapter 1: Context & Motivation
+## 🎬 PILLAR 1: THE 60-SECOND HOOK & EVERYDAY ANALOGY
 
-### 1. The Engineering Challenge: Arbitrary Tree Path Queries
+### The Interstate Highway vs. The Country Dirt Roads
 
-In tree data structures, standard problems include:
-- Find the maximum edge/node weight on the simple path between node `u` and node `v`.
-- Add a value `delta` to every node along the path from `u` to `v`.
-- Query or update the sum of all nodes in the subtree rooted at `u`.
+Imagine you are designing a nationwide highway transit grid connecting 100,000 cities in a tree topology:
+- If every single road between cities is a single-lane winding dirt path:
+  - Traveling between City A and City B requires driving through hundreds of slow country roads (`O(N)` traversal).
 
-Naive graph search (BFS/DFS) takes `O(N)` per query. If a system handles `Q = 100,000` path queries on a tree with `N = 100,000` nodes, naive traversal requires `10^10` operations, resulting in catastrophic timeouts.
+How does a federal highway authority optimize this?
+**They pave high-speed INTERSTATE FREEWAYS along the busiest trunk lines!**
+- For every city, look at all the towns that branch off it.
+- Whichever branch has the **largest population (largest subtree size)** gets designated the **HEAVY EDGE (The Interstate Freeway)**!
+- All other smaller branches are designated **LIGHT EDGES (Country Road Exits)**.
 
-**Heavy-Light Decomposition (HLD)** maps the tree onto a single contiguous 1D array such that:
-1. Every **heavy chain** occupies a contiguous interval `[pos[head], pos[tail]]`.
-2. Every **subtree** occupies a single contiguous interval `[pos[u], pos[u] + size[u] - 1]`.
-
-Path queries between `u` and `v` traverse at most `O(log N)` heavy chains, querying the underlying Segment Tree in `O(log N)` per chain, achieving a guaranteed `O(log^2 N)` query latency.
-
----
-
-### 2. Physical Layout & Chain Decomposition
-
-```
-Original Tree Structure:
-         (1) [size=9]
-        // \
-       //   \
-      //     \
-   (2)[size=6] (3)[size=2]
-   // \           \
-  //   \           \
-(4)[s=4] (5)[s=1]  (6)[s=1]
- //
-//
-(7)[s=3]
-//
-(8)[s=1]
-
-Legend:
-  // : Heavy Edge (leads to child with maximum subtree size)
-  \  : Light Edge (leads to any smaller child)
-
-Linearized 1D Segment Tree Array:
-+-------+-------+-------+-------+-------+-------+-------+-------+-------+
-| Pos 0 | Pos 1 | Pos 2 | Pos 3 | Pos 4 | Pos 5 | Pos 6 | Pos 7 | Pos 8 |
-+-------+-------+-------+-------+-------+-------+-------+-------+-------+
-| Node 1| Node 2| Node 4| Node 7| Node 8| Node 5| Node 3| Node 6|  ...  |
-+-------+-------+-------+-------+-------+-------+-------+-------+-------+
-<----------- Heavy Chain 1 ------------><- HC 2 -><--- Heavy Chain 3 --->
+```text
+City 1 (Root, Population 100k)
+  || (Heavy Interstate Freeway)
+City 2 (Population 70k) 
+  || (Heavy Interstate Freeway)
+City 5 (Population 45k) ---------> City 9 (Light Exit, Pop 5k)
+  ||                                  \
+City 8 (Pop 30k)                      City 12 (Pop 2k)
 ```
 
----
+Now, what is the mathematical guarantee?
+Because a "Light Edge" only branches to a child with **less than half the parent's population (`size < parent_size / 2`)**:
+**Every time you take a light exit, the remaining population CUTS IN HALF!**
+In a tree of `100,000` cities, you can take at most **`log2(100,000) approx 17` light exits** before reaching your destination!
+The rest of the trip is flying at 80 mph down a continuous Interstate Freeway!
 
-## 🏛️ Chapter 2: Mathematical Formulation & Governing Invariants
-
-### 1. Heavy vs. Light Edge Classification
-For a node `u` with children `v_1, v_2, ..., v_k`:
-- **Heavy Child:** The unique child `v*` maximizing `size(v)`. In case of a tie, choose arbitrarily.
-- **Heavy Edge:** The directed edge `(u, v*)`.
-- **Light Edge:** Any edge `(u, v_i)` where `v_i != v*`.
-
-### 2. The Logarithmic Light-Edge Lemma
-> **Theorem:** Any simple path from the root to any arbitrary leaf node crosses at most `floor(log2(N))` light edges.
-
-**Proof by Subtree Shrinkage:**
-1. Let `(u, v)` be a light edge.
-2. By definition, `u` has a heavy child `v*` such that `size(v*) >= size(v)`.
-3. The total size of `u` includes `u` itself, `v*`, `v`, and any other children:
-   `size(u) = 1 + size(v*) + size(v) + sum(size(other)) >= 1 + 2 * size(v) > 2 * size(v)`
-4. Therefore:
-   `size(v) < size(u) / 2`
-5. Every time we step down a light edge, the subtree size strictly shrinks by more than half.
-6. Since the root starts with `size(root) = N` and the minimum subtree size is `1`, one can transition across a light edge at most `log2(N)` times before reaching size 1.
-
-### 3. Path Traversal Invariant
-To query the path between `u` and `v`:
-- While `head[u] != head[v]`:
-  - Identify which chain head is deeper in the tree (suppose `depth[head[u]] >= depth[head[v]]`).
-  - Query the contiguous segment `[pos[head[u]], pos[u]]` in the Segment Tree.
-  - Jump up to `parent[head[u]]`. (This step traverses a light edge!).
-- When `head[u] == head[v]`, both nodes reside on the identical heavy chain.
-  - Query the single contiguous segment `[min(pos[u], pos[v]), max(pos[u], pos[v])]`.
+That is **Heavy-Light Decomposition**: decomposing any tree into at most `log2(N)` continuous heavy chains, mapped directly onto a **1D Segment Tree** for `O(log^2 N)` path updates and queries!
 
 ---
 
-## 💻 Chapter 3: Idiomatic Dual-Language Implementations
+## 🪜 PILLAR 2: THE SCAFFOLDING LADDER & TOY NAPKIN TRACE
 
-### C# Primary Implementation (.NET 8/9)
+### Step 1: The 2-DFS Construction Protocol
+
+We construct HLD using two distinct, linear-time DFS passes:
+
+#### DFS 1: Tree Metrics & Heavy Child Identification
+For each node `u`:
+1. Record `depth[u]` and `parent[u]`.
+2. Compute `size[u] = 1 + Sum size[v]` for all children `v`.
+3. Identify `heavyChild[u]`: the child `v` with the maximum `size[v]`. (All other children are light).
+
+#### DFS 2: 1D Flattening & Chain Head Assignment
+We flatten the tree into a 1D array so that **every heavy chain occupies contiguous indices**:
+1. Assign `pos[u] = ++timer` (its index in the Segment Tree).
+2. Assign `head[u]`:
+   - If `u` is the heavy child of its parent, `head[u] = head[parent[u]]` (extends the existing heavy chain).
+   - If `u` is a light child (or root), `head[u] = u` (starts a brand-new heavy chain).
+3. **CRITICAL INSTRUCTION:** Recursively visit `heavyChild[u]` **FIRST**!
+   Visiting the heavy child first guarantees that all nodes on the same heavy chain receive **strictly consecutive integers** in `pos[]`!
+4. Recursively visit all other light children.
+
+---
+
+### Step 2: Querying a Path Between Nodes `u` and `v`
+
+To query the sum or maximum on the path between `u` and `v`:
+1. While `head[u] != head[v]` (nodes belong to different heavy chains):
+   - Compare depths of their chain heads: `depth[head[u]]` vs `depth[head[v]]`.
+   - Pick the node with the **deeper head** (say `u`).
+   - Query the segment tree over the contiguous segment `[pos[head[u]] ... pos[u]]`.
+   - Jump `u` upward: `u = parent[head[u]]`.
+2. When `head[u] == head[v]` (both nodes now belong to the **same heavy chain**):
+   - They lie on a single contiguous segment in the segment tree!
+   - Query the segment tree over `[min(pos[u], pos[v]) ... max(pos[u], pos[v])]`.
+   - Accumulate and return the answer!
+
+Total chain jumps: at most `O(log N)`. Each segment tree query takes `O(log N)`.
+**Total path query time: `O(log^2 N)`!**
+
+---
+
+### 🧠 Pause & Predict Micro-Drills
+
+> **Drill 1:** How do you update an entire **subtree** rooted at `u` in HLD?
+> *Pause here and think! Do we need to jump chains?*
+>
+> **Answer:** 
+> **No!** Because DFS visits all descendants of `u` before backtracking, the entire subtree of `u` occupies a single contiguous range in the 1D segment tree: `[pos[u] ... pos[u] + size[u] - 1]`.
+> A subtree update or query is just **ONE single segment tree operation in `O(log N)`**!
+
+> **Drill 2:** What is the maximum number of heavy chains on any path from root to leaf in a tree of size `N = 100,000`?
+> *Pause here and calculate!*
+>
+> **Answer:**
+> `ceil(log2(100,000)) approx 17`.
+> A path crosses at most 17 heavy chains and 17 light edges.
+
+---
+
+## 🎨 PILLAR 3: PRAGMATIC VISUAL MODELS & DECISION FLOWS
+
+### Modern Hex Flowchart: HLD Path Query Loop
+
+```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
+flowchart TD
+    Start["QueryPath(u, v)"] --> Check{"Is head(u) == head(v)?<br/>Are u and v on the same chain?"}
+    Check -->|No| Compare{"depth(head(u)) &gt; depth(head(v))?<br/>Which chain head is deeper?"}
+    Compare -->|u is deeper| JumpU["ans += SegTree.Query(pos(head(u)), pos(u))<br/>u = parent(head(u))"]
+    Compare -->|v is deeper| JumpV["ans += SegTree.Query(pos(head(v)), pos(v))<br/>v = parent(head(v))"]
+    JumpU --> Check
+    JumpV --> Check
+    Check -->|Yes: Final Chain| Final["ans += SegTree.Query(min(pos(u), pos(v)), max(pos(u), pos(v)))<br/>Return ans"]
+
+    style Start fill:#e1f5fe,stroke:#0288d1,color:#01579b
+    style Check fill:#fff3e0,stroke:#ef6c00,color:#e65100
+    style Compare fill:#fff3e0,stroke:#ef6c00,color:#e65100
+    style JumpU fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style JumpV fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style Final fill:#f3e5f5,stroke:#8e24aa,color:#4a148c
+```
+
+---
+
+## 🛑 PILLAR 4: THE ROOKIE TRAP ZONE
+
+### Side-by-Side Comparison: Blunders vs. Senior Architect Patterns
+
+| Dimension | ❌ Rookie Blunder | ✅ Senior Architect Pattern |
+| :--- | :--- | :--- |
+| **DFS 2 Child Traversal** | Iterates through children in arbitrary order, shattering the contiguous property of heavy chains. | Explicitly recurses on `heavyChild[u]` first, ensuring all nodes on the same chain have consecutive `pos[]` indices. |
+| **Chain Head Comparison** | Compares `depth[u] > depth[v]` instead of `depth[head[u]] > depth[head[v]]`, jumping the wrong chain and creating infinite loops. | Strictly compares `depth[head[u]] > depth[head[v]]` to hoist the deeper chain head up to its parent. |
+| **Subtree Range Bounds** | Queries `[pos[u] ... pos[u] + size[u]]`, introducing an off-by-one out-of-bounds index error. | Queries `[pos[u] ... pos[u] + size[u] - 1]` (exactly `size[u]` elements). |
+| **Tree Mutation Support** | Attempts to use HLD for a dynamic forest where edges are added and removed online. | Uses Link-Cut Trees (LCT) for dynamic forests; preserves HLD strictly for static-topology trees. |
+| **Recursive Stack Overflow** | Uses deep recursion on degenerate tree lines of `100,000` nodes, hitting a stack overflow crash. | Implements iterative DFS or increases stack reservation for deep graph traversals. |
+
+---
+
+## 🎙️ PILLAR 5: 45-MINUTE INTERVIEW TALK TRACK
+
+### The Exact 3-Sentence Verbal Script
+
+Speak these exact three sentences before writing code:
+
+```text
++--------------------------------------------------------------------------------------------------+
+|                              THE SENIOR HLD TALK TRACK SCRIPT                                     |
++--------------------------------------------------------------------------------------------------+
+| 1. The Tree Decomposition Architecture:                                                          |
+|    "To support logarithmic path updates and path queries on a tree, we decompose the tree into   |
+|    vertex-disjoint heavy paths by prioritizing the child with the largest subtree size."         |
+|                                                                                                  |
+| 2. The 1D Flattening Invariant:                                                                  |
+|    "By visiting the heavy child first during our second DFS, every heavy chain is assigned       |
+|    strictly contiguous indices in our Euler tour, allowing us to back all path operations with a  |
+|    standard 1D Segment Tree."                                                                    |
+|                                                                                                  |
+| 3. The Logarithmic Path Guarantee:                                                              |
+|    "Because any path crosses at most log2(N) light edges, querying between two arbitrary nodes   |
+|    requires jumping at most log2(N) heavy chain heads, resolving in O(log^2 N) time with zero    |
+|    garbage collection overhead."                                                                 |
++--------------------------------------------------------------------------------------------------+
+```
+
+---
+
+## ⚡ PILLAR 6: PRODUCTION DUAL-LANGUAGE IMPLEMENTATIONS
+
+### C# Primary Implementation (.NET 8/9): Production Heavy-Light Decomposition
 
 ```csharp
 using System;
 using System.Collections.Generic;
 
-namespace AdvancedAlgorithms;
+namespace AdvancedDataStructures;
 
 /// <summary>
-/// Production-grade Heavy-Light Decomposition with embedded Segment Tree.
-/// Supports path sum queries and path updates in O(log^2 N), and subtree queries in O(log N).
+/// Production Heavy-Light Decomposition with Segment Tree.
+/// Supports O(log^2 N) path queries/updates and O(log N) subtree queries on static trees.
 /// </summary>
 public sealed class HeavyLightDecomposition
 {
@@ -135,326 +200,273 @@ public sealed class HeavyLightDecomposition
     private readonly List<int>[] _adj;
     private readonly int[] _parent;
     private readonly int[] _depth;
+    private readonly int[] _size;
     private readonly int[] _heavy;
     private readonly int[] _head;
     private readonly int[] _pos;
-    private readonly int[] _subtreeSize;
-    private int _curPos;
+    private int _timer;
 
-    private readonly SegmentTree _segTree;
+    // Flat Segment Tree for range sums
+    private readonly long[] _tree;
 
-    public HeavyLightDecomposition(int n, List<int>[] adj, int root = 1)
+    public HeavyLightDecomposition(int n)
     {
         _n = n;
-        _adj = adj;
+        _adj = new List<int>[n + 1];
+        for (int i = 0; i <= n; i++) _adj[i] = new List<int>();
+
         _parent = new int[n + 1];
         _depth = new int[n + 1];
+        _size = new int[n + 1];
         _heavy = new int[n + 1];
         _head = new int[n + 1];
         _pos = new int[n + 1];
-        _subtreeSize = new int[n + 1];
-
-        Array.Fill(_heavy, -1);
-
-        // Pass 1: Compute subtree sizes, depths, parents, and heavy children
-        DfsSize(root, 0, 0);
-
-        // Pass 2: Decompose into heavy chains and assign contiguous positions
-        _curPos = 0;
-        DfsHld(root, root);
-
-        _segTree = new SegmentTree(n);
+        _tree = new long[4 * (n + 1)];
     }
 
-    private int DfsSize(int u, int p, int d)
+    public void AddEdge(int u, int v)
+    {
+        _adj[u].Add(v);
+        _adj[v].Add(u);
+    }
+
+    public void Build(int root = 1)
+    {
+        _timer = 0;
+        Dfs1(root, 0, 0);
+        Dfs2(root, root);
+    }
+
+    private void Dfs1(int u, int p, int d)
     {
         _parent[u] = p;
         _depth[u] = d;
-        int size = 1;
-        int maxChildSize = 0;
+        _size[u] = 1;
+        _heavy[u] = 0;
+        int maxSubtree = 0;
 
         foreach (int v in _adj[u])
         {
             if (v == p) continue;
-            int childSize = DfsSize(v, u, d + 1);
-            size += childSize;
-            if (childSize > maxChildSize)
+            Dfs1(v, u, d + 1);
+            _size[u] += _size[v];
+            if (_size[v] > maxSubtree)
             {
-                maxChildSize = childSize;
+                maxSubtree = _size[v];
                 _heavy[u] = v;
             }
         }
-
-        _subtreeSize[u] = size;
-        return size;
     }
 
-    private void DfsHld(int u, int h)
+    private void Dfs2(int u, int h)
     {
         _head[u] = h;
-        _pos[u] = ++_curPos;
+        _pos[u] = ++_timer;
 
-        // Traverse heavy child first so heavy chain elements get contiguous positions
-        if (_heavy[u] != -1)
+        // Recurse on heavy child FIRST to maintain contiguous 1D range
+        if (_heavy[u] != 0)
         {
-            DfsHld(_heavy[u], h);
+            Dfs2(_heavy[u], h);
         }
 
-        // Traverse remaining light children, each becoming the head of its own chain
         foreach (int v in _adj[u])
         {
-            if (v != _parent[u] && v != _heavy[u])
-            {
-                DfsHld(v, v);
-            }
+            if (v == _parent[u] || v == _heavy[u]) continue;
+            Dfs2(v, v); // Light child starts new chain
         }
     }
 
-    /// <summary>
-    /// Queries the sum of node values along the simple path between u and v in O(log^2 N).
-    /// </summary>
-    public long QueryPath(int u, int v)
+    // Segment Tree Operations
+    private void UpdateTree(int node, int l, int r, int targetPos, long val)
     {
-        long total = 0;
-
-        while (_head[u] != _head[v])
+        if (l == r)
         {
-            if (_depth[_head[u]] < _depth[_head[v]])
-            {
-                (u, v) = (v, u);
-            }
-
-            // [pos[head[u]], pos[u]] is a contiguous segment
-            total += _segTree.Query(1, 1, _n, _pos[_head[u]], _pos[u]);
-            u = _parent[_head[u]];
+            _tree[node] += val;
+            return;
         }
-
-        if (_depth[u] > _depth[v])
-        {
-            (u, v) = (v, u);
-        }
-
-        total += _segTree.Query(1, 1, _n, _pos[u], _pos[v]);
-        return total;
+        int mid = l + (r - l) / 2;
+        if (targetPos <= mid) UpdateTree(node * 2, l, mid, targetPos, val);
+        else UpdateTree(node * 2 + 1, mid + 1, r, targetPos, val);
+        _tree[node] = _tree[node * 2] + _tree[node * 2 + 1];
     }
 
-    /// <summary>
-    /// Queries the sum of all nodes in the subtree rooted at u in O(log N).
-    /// </summary>
-    public long QuerySubtree(int u)
+    private long QueryTree(int node, int l, int r, int ql, int qr)
     {
-        int left = _pos[u];
-        int right = _pos[u] + _subtreeSize[u] - 1;
-        return _segTree.Query(1, 1, _n, left, right);
+        if (ql <= l && r <= qr) return _tree[node];
+        int mid = l + (r - l) / 2;
+        long sum = 0;
+        if (ql <= mid) sum += QueryTree(node * 2, l, mid, ql, qr);
+        if (qr > mid) sum += QueryTree(node * 2 + 1, mid + 1, r, ql, qr);
+        return sum;
     }
 
     public void UpdateNode(int u, long val)
     {
-        _segTree.Update(1, 1, _n, _pos[u], val);
+        UpdateTree(1, 1, _n, _pos[u], val);
     }
 
-    // =========================================================================
-    // Underlying 1-Indexed Contiguous Segment Tree
-    // =========================================================================
-    private sealed class SegmentTree
+    public long QueryPath(int u, int v)
     {
-        private readonly long[] _tree;
-        public SegmentTree(int size) => _tree = new long[4 * size];
-
-        public void Update(int node, int l, int r, int idx, long val)
+        long res = 0;
+        while (_head[u] != _head[v])
         {
-            if (l == r) { _tree[node] = val; return; }
-            int mid = (l + r) / 2;
-            if (idx <= mid) Update(2 * node, l, mid, idx, val);
-            else Update(2 * node + 1, mid + 1, r, idx, val);
-            _tree[node] = _tree[2 * node] + _tree[2 * node + 1];
+            if (_depth[_head[u]] > _depth[_head[v]])
+            {
+                res += QueryTree(1, 1, _n, _pos[_head[u]], _pos[u]);
+                u = _parent[_head[u]];
+            }
+            else
+            {
+                res += QueryTree(1, 1, _n, _pos[_head[v]], _pos[v]);
+                v = _parent[_head[v]];
+            }
         }
 
-        public long Query(int node, int l, int r, int ql, int qr)
-        {
-            if (ql <= l && r <= qr) return _tree[node];
-            if (r < ql || l > qr) return 0;
-            int mid = (l + r) / 2;
-            return Query(2 * node, l, mid, ql, qr) + Query(2 * node + 1, mid + 1, r, ql, qr);
-        }
+        // On the same chain: query contiguous segment
+        if (_depth[u] > _depth[v]) (u, v) = (v, u);
+        res += QueryTree(1, 1, _n, _pos[u], _pos[v]);
+        return res;
+    }
+
+    public long QuerySubtree(int u)
+    {
+        return QueryTree(1, 1, _n, _pos[u], _pos[u] + _size[u] - 1);
     }
 }
 ```
 
 ---
 
-### Python Secondary Implementation (Python 3.11+)
+### Python Secondary Implementation (Python 3.11+): Complete Heavy-Light Decomposition
 
 ```python
+import sys
 from typing import List
 
-class SegmentTree:
-    """1-indexed range sum Segment Tree."""
-    def __init__(self, size: int):
-        self.size = size
-        self.tree = [0] * (4 * size)
-
-    def update(self, node: int, l: int, r: int, idx: int, val: int) -> None:
-        if l == r:
-            self.tree[node] = val
-            return
-        mid = (l + r) // 2
-        if idx <= mid:
-            self.update(2 * node, l, mid, idx, val)
-        else:
-            self.update(2 * node + 1, mid + 1, r, idx, val)
-        self.tree[node] = self.tree[2 * node] + self.tree[2 * node + 1]
-
-    def query(self, node: int, l: int, r: int, ql: int, qr: int) -> int:
-        if ql <= l and r <= qr:
-            return self.tree[node]
-        if r < ql or l > qr:
-            return 0
-        mid = (l + r) // 2
-        return (
-            self.query(2 * node, l, mid, ql, qr)
-            + self.query(2 * node + 1, mid + 1, r, ql, qr)
-        )
-
+# Increase recursion depth for deep trees
+sys.setrecursionlimit(200000)
 
 class HeavyLightDecomposition:
-    """Production Heavy-Light Decomposition for trees."""
-    def __init__(self, n: int, adj: List[List[int]], root: int = 1):
-        self.n = n
-        self.adj = adj
-        self.parent = [0] * (n + 1)
-        self.depth = [0] * (n + 1)
-        self.heavy = [-1] * (n + 1)
-        self.head = [0] * (n + 1)
-        self.pos = [0] * (n + 1)
-        self.subtree_size = [0] * (n + 1)
-        self.cur_pos = 0
+    """
+    Production-grade Heavy-Light Decomposition with flat segment tree.
+    Supports O(log^2 N) path sum queries and O(log N) subtree queries.
+    """
+    def __init__(self, n: int):
+        self.n: int = n
+        self.adj: List[List[int]] = [[] for _ in range(n + 1)]
+        self.parent: List[int] = [0] * (n + 1)
+        self.depth: List[int] = [0] * (n + 1)
+        self.size: List[int] = [0] * (n + 1)
+        self.heavy: List[int] = [0] * (n + 1)
+        self.head: List[int] = [0] * (n + 1)
+        self.pos: List[int] = [0] * (n + 1)
+        self.timer: int = 0
+        self.tree: List[int] = [0] * (4 * (n + 1))
 
-        # Pass 1: Tree characteristics
-        self._dfs_size(root, 0, 0)
+    def add_edge(self, u: int, v: int) -> None:
+        self.adj[u].append(v)
+        self.adj[v].append(u)
 
-        # Pass 2: Heavy-chain decomposition
-        self._dfs_hld(root, root)
+    def build(self, root: int = 1) -> None:
+        self._dfs1(root, 0, 0)
+        self.timer = 0
+        self._dfs2(root, root)
 
-        self.seg_tree = SegmentTree(n)
-
-    def _dfs_size(self, u: int, p: int, d: int) -> int:
+    def _dfs1(self, u: int, p: int, d: int) -> None:
         self.parent[u] = p
         self.depth[u] = d
-        size = 1
-        max_c_size = 0
+        self.size[u] = 1
+        max_sub = 0
 
         for v in self.adj[u]:
             if v == p:
                 continue
-            c_size = self._dfs_size(v, u, d + 1)
-            size += c_size
-            if c_size > max_c_size:
-                max_c_size = c_size
+            self._dfs1(v, u, d + 1)
+            self.size[u] += self.size[v]
+            if self.size[v] > max_sub:
+                max_sub = self.size[v]
                 self.heavy[u] = v
 
-        self.subtree_size[u] = size
-        return size
-
-    def _dfs_hld(self, u: int, h: int) -> None:
+    def _dfs2(self, u: int, h: int) -> None:
         self.head[u] = h
-        self.cur_pos += 1
-        self.pos[u] = self.cur_pos
+        self.timer += 1
+        self.pos[u] = self.timer
 
-        # Heavy child prioritized to ensure contiguous indices
-        if self.heavy[u] != -1:
-            self._dfs_hld(self.heavy[u], h)
+        # Heavy child visited FIRST
+        if self.heavy[u] != 0:
+            self._dfs2(self.heavy[u], h)
 
         for v in self.adj[u]:
             if v != self.parent[u] and v != self.heavy[u]:
-                self._dfs_hld(v, v)
+                self._dfs2(v, v)
+
+    def _update_tree(self, node: int, l: int, r: int, target_pos: int, val: int) -> None:
+        if l == r:
+            self.tree[node] += val
+            return
+        mid = (l + r) // 2
+        if target_pos <= mid:
+            self._update_tree(node * 2, l, mid, target_pos, val)
+        else:
+            self._update_tree(node * 2 + 1, mid + 1, r, target_pos, val)
+        self.tree[node] = self.tree[node * 2] + self.tree[node * 2 + 1]
+
+    def _query_tree(self, node: int, l: int, r: int, ql: int, qr: int) -> int:
+        if ql <= l and r <= qr:
+            return self.tree[node]
+        mid = (l + r) // 2
+        res = 0
+        if ql <= mid:
+            res += self._query_tree(node * 2, l, mid, ql, qr)
+        if qr > mid:
+            res += self._query_tree(node * 2 + 1, mid + 1, r, ql, qr)
+        return res
+
+    def update_node(self, u: int, val: int) -> None:
+        self._update_tree(1, 1, self.n, self.pos[u], val)
 
     def query_path(self, u: int, v: int) -> int:
-        total = 0
+        res = 0
         while self.head[u] != self.head[v]:
-            if self.depth[self.head[u]] < self.depth[self.head[v]]:
-                u, v = v, u
-
-            total += self.seg_tree.query(
-                1, 1, self.n, self.pos[self.head[u]], self.pos[u]
-            )
-            u = self.parent[self.head[u]]
+            if self.depth[self.head[u]] > self.depth[self.head[v]]:
+                res += self._query_tree(1, 1, self.n, self.pos[self.head[u]], self.pos[u])
+                u = self.parent[self.head[u]]
+            else:
+                res += self._query_tree(1, 1, self.n, self.pos[self.head[v]], self.pos[v])
+                v = self.parent[self.head[v]]
 
         if self.depth[u] > self.depth[v]:
             u, v = v, u
-
-        total += self.seg_tree.query(1, 1, self.n, self.pos[u], self.pos[v])
-        return total
+        res += self._query_tree(1, 1, self.n, self.pos[u], self.pos[v])
+        return res
 
     def query_subtree(self, u: int) -> int:
-        left = self.pos[u]
-        right = self.pos[u] + self.subtree_size[u] - 1
-        return self.seg_tree.query(1, 1, self.n, left, right)
-
-    def update_node(self, u: int, val: int) -> None:
-        self.seg_tree.update(1, 1, self.n, self.pos[u], val)
+        return self._query_tree(1, 1, self.n, self.pos[u], self.pos[u] + self.size[u] - 1)
 ```
 
 ---
 
-## 🔬 Chapter 4: Explicit Complexity Deconstruction
+## 📊 EXPLICIT COMPLEXITY DECONSTRUCTION
 
-| Operation | Time Bound | Auxiliary Memory | Architectural Reason |
+| Operation | Time Complexity | Auxiliary Space | Mechanism |
 | :--- | :--- | :--- | :--- |
-| **Preprocessing (DFS 1 & 2)** | `O(N)` | `O(N)` recursion stack | Visits each edge and node exactly twice. |
-| **Segment Tree Build** | `O(N)` | `4 * N` array slots | Pre-allocated flat array representing complete binary tree. |
-| **Path Query / Update** | `O(log^2 N)` | `O(1)` heap | Crosses `<= log2(N)` heavy chains; each segment tree query is `O(log N)`. |
-| **Subtree Query / Update**| `O(log N)` | `O(1)` heap | Subtree forms a single contiguous range `[pos[u], pos[u] + size[u] - 1]`. |
-| **Lowest Common Ancestor**| `O(log N)` | `O(1)` heap | Implicitly computed while jumping chain heads toward equal heads. |
+| **HLD Build (DFS 1 + 2)**| `O(N)` | `O(N)` arrays | Two linear graph traversals. |
+| **Point Update** | `O(log N)` | `O(1)` | Standard single-point update on 1D Segment Tree. |
+| **Path Query `(u, v)`** | **`O(log^2 N)`** | `O(1)` | Jumps at most `log2(N)` heavy chains; queries Segment Tree. |
+| **Subtree Query `(u)`** | **`O(log N)`** | `O(1)` | Direct range query on `[pos[u] ... pos[u] + size[u] - 1]`. |
 
 ---
 
-## 🎙️ Chapter 5: 45-Minute Verbal Script & Interview Playbook
+## 🔍 GRANULAR EDGE-CASE & INVARIANT VERIFICATION TABLE
 
-```
-[00:00 - 05:00] Clarification & Invariant Formulation
-"We are tasked with performing high-frequency path updates and path queries on a general tree of N = 100,000 nodes.
-Standard DFS per query would degrade to O(Q * N) = 10^10 operations, which will TLE.
-Binary lifting solves LCA in O(log N) but does not readily support range updates on arbitrary path intervals.
-I will use Heavy-Light Decomposition to partition the tree into heavy chains mapped to a Segment Tree."
-
-[05:00 - 15:00] Mathematical Justification
-"I define the heavy child of node u as the child with the largest subtree size.
-Edges to heavy children form heavy chains; all other edges are light edges.
-Key Lemma: When transitioning across a light edge from u to child v, size(v) < size(u) / 2.
-Therefore, any path from the root to any node crosses at most log2(N) light edges.
-Because heavy chains are contiguous in our DFS linearization, a path between any u and v
-decomposes into at most 2 * log2(N) contiguous intervals.
-Querying each interval on a Segment Tree takes O(log N), giving an overall query time of O(log^2 N)."
-
-[15:00 - 32:00] Implementation Protocol
-- Implement DfsSize to collect subtree sizes, depths, and heavy children.
-- Implement DfsHld prioritizing the heavy child first, assigning pos[u] sequentially.
-- Implement QueryPath: repeatedly jump the head of the deeper node's heavy chain, query the segment tree,
-  and step to parent[head[u]] until both nodes share the same heavy chain.
-
-[32:00 - 40:00] Verification & Subtree Property
-"Notice that any subtree rooted at u also occupies a strictly contiguous range:
-[pos[u], pos[u] + subtreeSize[u] - 1]. Thus subtree queries take just O(log N)!"
-
-[40:00 - 45:00] Real-World Distributed Systems Anchor
-"In distributed hierarchical namespaces like ZooKeeper or Linux file system dentry caches,
-path-based permissions and hierarchical lock acquisitions require verifying ancestor chains.
-Linearizing trees into interval ranges enables constant-time subtree invalidation."
-```
-
----
-
-## 🔍 Chapter 6: Edge-Case Verification
-
-| Test Case | Scenario | Expected Outcome | Invariant Handling |
+| Edge Case Scenario | Concrete Input | Expected Behavior | Invariant Verification & Handling |
 | :--- | :--- | :--- | :--- |
-| **Single Node Tree** | `N = 1, adj = []` | Path `(1, 1)` queries node 1 | `head[1] == 1`, loops terminate immediately, queries `pos[1]`. |
-| **Linear Chain (Skewed Tree)** | Tree is a linked list `1-2-3-4` | Solved in `O(log N)` | All edges are heavy edges; the entire tree is a single heavy chain! |
-| **Star Graph** | Root 1 connected to leaves `2, ..., N` | Solved in `O(log N)` | One child is chosen heavy; all others are light chains of length 1. |
-| **Node is Ancestor of Other** | `u` is direct ancestor of `v` | Path `(u, v)` queries single upward sweep | `head` jumps until `u` and `v` align; no overshooting occurs. |
-| **Query Identical Node** | `QueryPath(u, u)` | Evaluates single index `pos[u]` | Handled directly by `pos[u]` to `pos[u]` interval. |
+| **Single Node Path Query** | `QueryPath(u, u)` | Returns value of node `u`. | `head[u] == head[v]` triggers `[pos[u] ... pos[u]]` range. |
+| **Adjacent Nodes Query** | Direct parent-child edge `(u, v)` | Evaluates path sum across 2 nodes. | Resolves in 1 or 2 chain segments. |
+| **Root Subtree Query** | `QuerySubtree(1)` (whole tree) | Returns sum of all elements in tree. | Range `[1 ... N]` covers the entire segment tree. |
+| **Star Graph Topology** | Center root connected to `N - 1` leaves | Resolves correctly; 1 heavy child, others light. | Light chain heads jump directly to root in 1 step. |
+| **Degenerate Line Graph** | Tree is a straight line of `N = 100,000` | Entire tree becomes 1 single heavy chain! | All path queries resolve in **`O(log N)`** (1 chain jump)! |
 
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_18_Day_02_Square_Root_Decomposition_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_18_Day_04_Probabilistic_Data_Structures_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day: Square Root Decomposition](Week_18_Day_02_Square_Root_Decomposition_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Probabilistic Data Structures →](Week_18_Day_04_Probabilistic_Data_Structures_Instructional.md)

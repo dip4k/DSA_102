@@ -1,38 +1,41 @@
-﻿# 📘 Graph Fundamentals & Traversals
+# 📘 Week 08: Graph Fundamentals & Traversals
 
 > 🧭 **Navigation:** [← Previous: Week 07](../week_07_trees_and_balanced_search_trees/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 09 →](../week_09_graph_algorithms_i/README.md)
 
 ---
 
-> 💡 **Instructor Guidance Note:**  
-> *Not all sections or topics are mandatory. As a learner, you can adapt your pace freely. If you are preparing on an accelerated interview timeline or already feel confident with specific foundational concepts, feel free to skip or skim optional topics and prioritize high-yield patterns based on your personal interview goals.*
+## 🎬 Welcome to Week 08: The Network Architect's Masterclass!
 
----
+Trees have a peaceful property: there is exactly one path between any two nodes and cycles are physically impossible. But in real-world distributed architectures—social networks, microservice dependency graphs, route planning, and build systems—nodes connect arbitrarily, cycles lurk everywhere, and disconnected components isolate data.
 
-## 🎯 Weekly Mission & Conceptual Focus
-
-Adjacency lists vs matrices, queue-based BFS shortest paths, recursive/stack DFS, topological sort via Kahn's algorithm, cycle detection, and SCCs.
+This week bridges you from linear/tree thinking to arbitrary network topology: **adjacency lists vs adjacency matrices**, **FIFO wave shortest-path BFS**, **LIFO 3-color cycle detection DFS**, **dependency scheduling with Kahn's topological sort**, **2-coloring bipartite validation**, and **Kosaraju/Tarjan Strongly Connected Components (SCCs)**.
 
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
-flowchart TD
-    Start["Week 08 Start"] --> Daily["Daily Invariant<br/>Deep<br/>Dives"]
-    Daily --> Playbook["Consolidated<br/>Playbook &<br/>Visuals"]
-    Playbook --> DualLang["Dual-Language<br/>Practice<br/>(C# & Python)"]
-    DualLang --> Mastery["Pattern Mastery &<br/>Verification"]
+flowchart LR
+    D1["Day 01: Graph Representations<br/>🕸️ Lists, Matrices & Edge Bounds"] --> D2["Day 02: BFS Shortest Paths<br/>🌊 Concentric Waves & Level Queues"]
+    D2 --> D3["Day 03: DFS & Topological Sort<br/>🔄 3-Color Cycles & Kahn DAGs"]
+    D3 --> D4["Day 04: Connectivity & Bipartite<br/>🎨 2-Coloring & Disjoint Islands"]
+    D4 --> D5["Day 05: Strongly Connected Components<br/>🔗 Kosaraju & Tarjan Low-Links"]
+
+    style D1 fill:#e1f5fe,stroke:#0288d1,color:#01579b
+    style D2 fill:#ede7f6,stroke:#5e35b1,color:#311b92
+    style D3 fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style D4 fill:#fff3e0,stroke:#e65100,color:#bf360c
+    style D5 fill:#fce4ec,stroke:#c2185b,color:#880e4f
 ```
 
 ---
 
 ## 📅 Day-by-Day Learning Path
 
-| Day | Instructional Module | Focus & Core Objective |
-| :--- | :--- | :--- |
-| **Day 01** | [Graph Models and Representations](Week_08_Day_01_Graph_Models_and_Representations_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 02** | [Breadth First Search](Week_08_Day_02_Breadth_First_Search_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 03** | [DFS Topological Sort](Week_08_Day_03_DFS_Topological_Sort_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 04** | [Connectivity and Bipartite Graphs](Week_08_Day_04_Connectivity_and_Bipartite_Graphs_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 05** | [Strongly Connected Components](Week_08_Day_05_Strongly_Connected_Components_Instructional.md) | Core Daily Concept Deep Dive |
+| Day | Instructional Masterclass | Core Mental Model & Intuition | Key Pattern / Invariant |
+| :--- | :--- | :--- | :--- |
+| **Day 01** | [Graph Models & Representations](Week_08_Day_01_Graph_Models_and_Representations_Instructional.md) | **The Flight Route Map:** Dense hubs vs sparse routes. | Sparse `O(V + E)` adjacency list vs dense `O(V^2)` matrix, directed vs undirected. |
+| **Day 02** | [Breadth-First Search (BFS)](Week_08_Day_02_Breadth_First_Search_Instructional.md) | **The Ripple in a Pond:** Unweighted equidistant shortest paths. | FIFO queue, distance array, marking visited on enqueue to prevent duplicates. |
+| **Day 03** | [DFS & Topological Sort](Week_08_Day_03_DFS_Topological_Sort_Instructional.md) | **The University Curriculum:** Pre-requisite scheduling in DAGs. | Kahn's in-degree queue, 3-color DFS (White/Gray/Black), cycle detection. |
+| **Day 04** | [Connectivity & Bipartite Graphs](Week_08_Day_04_Connectivity_and_Bipartite_Graphs_Instructional.md) | **The Two-Party Negotiation:** 2-coloring without conflict. | Connected components count, odd-length cycle detection, 2-coloring conflict. |
+| **Day 05** | [Strongly Connected Components (SCC)](Week_08_Day_05_Strongly_Connected_Components_Instructional.md) | **The Roundabout Interchange:** Mutual reachability in directed networks. | Kosaraju two-pass DFS on transposed graph, Tarjan `low_link` discovery stack. |
 
 ---
 
@@ -46,8 +49,6 @@ flowchart TD
 ---
 
 ## 🛠️ The 5 Core Support Files (`support files/`)
-
-Every week is accompanied by five dedicated support files located in the `support files/` subdirectory:
 
 1.  📋 [Daily Progress Checklist](support%20files/Week_08_Daily_Progress_Checklist.md) — Step-by-step accountability tracker for theory, coding, and variants.
 2.  🧭 [Weekly Guidelines & Mental Models](support%20files/Week_08_Guidelines.md) — Strategic roadmap, common pitfalls, and conceptual anchors.

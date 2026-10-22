@@ -1,177 +1,398 @@
-# 📘 Week 16, Day 1: Skip Lists & Treaps
+# 📘 WEEK 16 DAY 01: SKIP LISTS & TREAPS — PROBABILISTIC BALANCED DATA STRUCTURES
 
-> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_16_Day_02_Link_Cut_Trees_Instructional.md)
+> 🧭 **Navigation:** [← Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Link-Cut Trees →](Week_16_Day_02_Link_Cut_Trees_Instructional.md)
 > 
-> 💡 **Instructor Note:** *In senior technical interviews, you will almost never be asked to implement an AVL or Red-Black tree from scratch because the rebalancing rotations contain dozens of edge cases. However, Skip Lists and Treaps are high-yield interview targets: Skip Lists test your concurrent systems architecture knowledge (e.g., Redis Sorted Sets, LevelDB MemTables), while Treaps provide the cleanest 30-line balanced tree implementation via Split and Merge.*
+> 💡 **Instructor Note:** *In senior technical interviews, you will almost never be asked to implement an AVL or Red-Black tree from scratch because the rebalancing rotations contain dozens of brittle edge cases. Instead, top engineering teams at Redis, Apple, Google, and RocksDB reach for probabilistic data structures: **Skip Lists** (the backbone of Redis Sorted Sets and LevelDB MemTables) and **Treaps** (the elegant 30-line tree that replaces rotations with Split and Merge algebra). Today, we bridge theory and production systems.*
 
 ---
 
-## 🎯 Learning Objectives
+## 🎯 LEARNING OBJECTIVES
 
-*   **Probabilistic Balance Model:** Master how randomized priorities convert arbitrary insertion sequences into average-case balanced trees with expected `O(log N)` height.
-*   **Skip List Express Lanes:** Internalize multi-level linked lists with geometric promotion (`p = 0.5` or `p = 0.25`), reducing pointer traversal from `O(N)` to `O(log N)`.
-*   **Split & Merge Tree Algebra:** Replace fragile AVL/Red-Black rotation logic with the two fundamental Treap primitives: `Split` and `Merge`.
-*   **Production Calibration (Redis & Storage Engines):** Clearly articulate why production systems like Redis `ZSET` and RocksDB choose Skip Lists over Red-Black trees.
-*   **Dual-Language Mastery:** Implement memory-conscious, zero-leak Treap operations in modern C# (.NET 8/9) and idiomatic Python (3.11+).
+*By the end of this module, you will be able to:*
+
+- 🎬 **Internalize** the Skip List "Express Subway" and Treap "Lottery Ticket" mental models without academic jargon.
+- 🪜 **Master** the step-by-step split and merge tree algebra, replacing brittle AVL/Red-Black tree rotations.
+- 🎨 **Visualize** multi-level pointer skips, level promotion coin flips, and Treap Cartesian dual invariants (BST + Max-Heap).
+- 🛑 **Avoid** fatal rookie traps: off-by-one level boundaries, unbounded random promotion, and memory leaks during functional splits.
+- 🎙️ **Deliver** the exact 3-sentence verbal talk track explaining why Redis chose Skip Lists over Red-Black trees.
+- ⚡ **Implement** production-grade, zero-leak implementations in C# (.NET 8/9) and Python (3.11+).
 
 ---
 
-## ⚖️ FAANG Senior / Lead Interview Calibration
+## 🎬 PILLAR 1: THE 60-SECOND HOOK & EVERYDAY ANALOGY
 
-In a 45-minute FAANG or Tier-1 quantitative interview (Google, Meta, Citadel, Stripe), interviewers calibrate expectations based on seniority:
+### The Local Subway vs. The Bullet Express Train
 
-| Dimension | Mid-Level (L4 / SDE II) | Senior / Lead (L5 / L6 / Staff) |
+Imagine you are commuting on the New York City Subway or the London Underground.
+You want to get from Station 1 to Station 99.
+
+- If you take the **Local Train**, it stops at *every single station*: Station 1, 2, 3, 4 ... 99.
+- That is a standard **Singly Linked List**: search time is strictly `O(N)`. It doesn't matter that the list is sorted; you cannot jump forward because you don't have random access!
+
+Now, how does a city transit authority solve this bottleneck?
+They don't throw away the local track. They lay down an **Express Track** on top:
+- The Express Train only stops at major hubs: Station 1, 10, 20, 30 ... 90.
+- And above that, they build a **Super-Express Track** that only stops at Station 1 and Station 50!
+
+```text
+[Super Express Level 2]  (Station 01) -----------------------------------> (Station 50) -------------------------> [NIL]
+                              |                                                |
+[Express Track Level 1]  (Station 01) ---------> (Station 25) -----------> (Station 50) ---------> (Station 75) -> [NIL]
+                              |                     |                          |                     |
+[Local Track Level 0]    (Station 01) -> (10) -> (Station 25) -> (38) -> (Station 50) -> (62) -> (Station 75) -> [NIL]
+```
+
+To travel to **Station 62**:
+1. You board the Super Express at Station 1, look ahead: Station 50 is before 62, Station NIL is after. You zoom directly to **Station 50** in 1 jump!
+2. At Station 50, you drop down to the Express Track: the next stop is Station 75, which overshoots 62. So you stay at Station 50.
+3. You drop down to the Local Track: from 50, you walk to 62. Target reached in **3 hops instead of 62 stops!**
+
+That is a **Skip List**: a sorted linked list augmented with a geometric hierarchy of express forward pointers!
+
+---
+
+### The Treap: How to Stop Balanced Trees from Driving You Crazy
+
+If you have ever tried coding an AVL tree or a Red-Black tree under live whiteboard pressure, you know the dread:
+Left-Right double rotations, red-red parent-uncle color flips, height bookkeeping... It is 150 lines of panic.
+
+What if we could guarantee a balanced Binary Search Tree using a simple **coin flip**?
+
+Enter the **Treap (Tree + Heap)**:
+- Every node receives two attributes: `(Key, Priority)`.
+- The **Key** obeys the classic **BST Rule**: everything in the left subtree is `< Key`, everything in the right subtree is `> Key`.
+- The **Priority** is a random integer generated on the fly. It obeys the **Max-Heap Rule**: a parent's priority is always `>=` its children's priorities!
+
+```text
+                  (Key: 50 | Priority: 99)
+                        /          \
+      (Key: 25 | Priority: 84)    (Key: 75 | Priority: 72)
+            /        \
+  (Key: 10 | 40)   (Key: 30 | 60)
+```
+
+Why is this genius? Because if priorities are chosen purely at random, inserting keys into a Treap is mathematically identical to shuffling the keys into a random order and inserting them into a standard BST. 
+The expected height of a randomized BST is proven to be `2 * ln(N) approx 1.39 * log2(N)`. 
+**No complex rotations required.** You get `O(log N)` search, insert, and delete with 100% mathematical certainty in expectation!
+
+---
+
+## 🪜 PILLAR 2: THE SCAFFOLDING LADDER & TOY NAPKIN TRACE
+
+### Step 1: Geometric Coin Flipping (How Nodes Choose Their Height)
+
+When inserting a new key into a Skip List, how many express levels does it get?
+We flip a fair coin (`p = 0.5`):
+- Heads: Promote to Level 1. Flip again!
+- Heads: Promote to Level 2. Flip again!
+- Tails: Stop.
+
+```text
+Element:    Coin Flips:         Assigned Level:
+Node 10  -> Tails               -> Level 0 (Local only)
+Node 25  -> Heads, Heads, Tails -> Level 2 (Local + Semi-Exp + Super-Exp)
+Node 38  -> Tails               -> Level 0
+Node 50  -> Heads, Tails        -> Level 1 (Local + Semi-Exp)
+```
+
+On average:
+- 100% of nodes exist at Level 0.
+- 50% of nodes reach Level 1.
+- 25% of nodes reach Level 2.
+- `(1/2)^k` of nodes reach Level `k`.
+
+The expected total number of pointers per node is:
+`1 + 1/2 + 1/4 + 1/8 + ... = 2 pointers per node!`
+With just 2 pointers per node on average, search drops from `O(N)` to `O(log N)`.
+
+---
+
+### Step 2: The Treap Algebra — Split and Merge
+
+Instead of writing tree rotations, senior engineers build Treaps using two algebraic functions: `Split` and `Merge`.
+
+#### 1. `Split(T, K) -> (L, R)`
+Divides Treap `T` into two independent Treaps:
+- Treap `L` contains all nodes with `Key <= K`.
+- Treap `R` contains all nodes with `Key > K`.
+
+```text
+Toy Trace: Split Treap T at K = 30
+           (25 | 80)
+          /         \
+    (10 | 50)      (40 | 70)
+                  /         \
+            (30 | 60)      (50 | 40)
+
+Step 1: Check root (25). Is 25 <= 30? YES!
+        Node 25 and its left child (10) belong to Left Tree L.
+        Recursively split Node 25's right child at K = 30.
+
+Step 2: Check node (40). Is 40 <= 30? NO!
+        Node 40 and its right child (50) belong to Right Tree R.
+        Recursively split Node 40's left child at K = 30.
+
+Step 3: Check node (30). Is 30 <= 30? YES!
+        Node 30 belongs to L. Its right child is null. Done!
+
+Resulting Trees:
+       Tree L (Keys <= 30):             Tree R (Keys > 30):
+           (25 | 80)                         (40 | 70)
+          /         \                                 \
+    (10 | 50)      (30 | 60)                         (50 | 40)
+```
+
+#### 2. `Merge(L, R) -> T`
+Takes two Treaps `L` and `R` where **every key in `L` is strictly smaller than every key in `R`**, and merges them into a single valid Treap!
+
+- Compare `L.priority` vs `R.priority`.
+- The higher priority becomes the new root!
+- If `L.priority >= R.priority`, `L` is the root. Its right child becomes `Merge(L.right, R)`.
+- If `R.priority > L.priority`, `R` is the root. Its left child becomes `Merge(L, R.left)`.
+
+---
+
+### 🧠 Pause & Predict Micro-Drills
+
+> **Drill 1:** How do you insert a new key `X` with priority `P` into a Treap using ONLY `Split` and `Merge`?
+> *Pause here and think before scrolling!*
+>
+> **Answer:** 
+> 1. `(L, R) = Split(root, X)` (Splits into `< X` and `> X`).
+> 2. `newNode = new Node(X, P)`.
+> 3. `root = Merge(Merge(L, newNode), R)`.
+> Exactly 3 lines of code! No rotations!
+
+> **Drill 2:** How do you delete key `X` from a Treap?
+> *Pause here and think!*
+>
+> **Answer:**
+> 1. `(L, R) = Split(root, X)` (L has `<= X`, R has `> X`).
+> 2. `(L_clean, Target) = Split(L, X - 1)` (L_clean has `< X`, Target has `= X`).
+> 3. `root = Merge(L_clean, R)`. The target node is discarded!
+
+---
+
+## 🎨 PILLAR 3: PRAGMATIC VISUAL MODELS & DECISION FLOWS
+
+### Modern Hex Flowchart: Operations in a Treap
+
+```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
+flowchart TD
+    Op{"🎯 Treap Operation"} -->|Insert Key X| S1["1. Split(Root, X)<br/>Yields (L, R)"]
+    S1 --> S2["2. Create Node(X, RandPrio)"]
+    S2 --> S3["3. Merge(Merge(L, Node), R)"]
+
+    Op -->|Delete Key X| D1["1. Split(Root, X)<br/>Yields (L, R)"]
+    D1 --> D2["2. Split(L, X - 1)<br/>Yields (L_clean, Target)"]
+    D2 --> D3["3. Merge(L_clean, R)<br/>Target dropped!"]
+
+    Op -->|Search Key X| F1["Standard BST Traversal<br/>O(log N) Expected"]
+
+    style Op fill:#e1f5fe,stroke:#0288d1,color:#01579b
+    style S1 fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style S2 fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style S3 fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style D1 fill:#ffebee,stroke:#c62828,color:#b71c1c
+    style D2 fill:#ffebee,stroke:#c62828,color:#b71c1c
+    style D3 fill:#ffebee,stroke:#c62828,color:#b71c1c
+    style F1 fill:#fff3e0,stroke:#ef6c00,color:#e65100
+```
+
+---
+
+### Skip List Pointer Search Diagram (ASCII Contiguous Model)
+
+```text
+Level 3: [Head] ------------------------------------------------------> [50] -------------------------> [NIL]
+             |                                                            |
+Level 2: [Head] -----------------------------> [25] ------------------> [50] -------------> [75] ------> [NIL]
+             |                                  |                         |                   |
+Level 1: [Head] ------------> [10] ----------> [25] ----------> [35] -> [50] -------------> [75] ------> [NIL]
+             |                 |                |                |        |                   |
+Level 0: [Head] -> [3] -----> [10] -> [17] -> [25] -> [31] -> [35] -> [50] -> [62] ----> [75] -> [88] -> [NIL]
+                                                |
+                                          Search for 31:
+                                          1. L3: Jump to 50? Overshoot! Drop to L2.
+                                          2. L2: Jump to 25. Next is 50 (overshoot). Drop to L1.
+                                          3. L1: At 25. Next is 35 (overshoot). Drop to L0.
+                                          4. L0: At 25. Step right -> [31] FOUND!
+```
+
+---
+
+## 🛑 PILLAR 4: THE ROOKIE TRAP ZONE
+
+### Side-by-Side Comparison: Blunders vs. Senior Architect Patterns
+
+| Dimension | ❌ Rookie Blunder | ✅ Senior Architect Pattern |
 | :--- | :--- | :--- |
-| **Skip Lists** | Explain `O(log N)` search; describe multi-level pointer navigation. | Contrast lock-free concurrent Skip Lists against mutex-heavy Red-Black trees; analyze Redis `ZSET` cache locality and memory overhead per node (`1 / (1 - p)` pointers). |
-| **Treaps** | Implement basic BST search and discuss why priorities prevent degeneracy. | Code functional `Split` and `Merge` in under 20 minutes; explain Cartesian tree equivalence; extend to Implicit Treaps for range reversals (Rope data structures). |
-| **When Code is Required** | Code Treap `Search` and `Insert`. | Code complete `Split` and `Merge` with zero pointer leaks, handle duplicates, and derive the expected tree height `E[height] = 2 * ln(N) + O(1)`. |
-| **Conceptual Only** | Recognize that coin flips yield `O(log N)` average runtime. | Discuss failure probability bounds (Chernoff bound: probability that depth exceeds `c * log N` drops as `N^(-alpha)`). |
-
-### The Production Trade-off: Why Redis Uses Skip Lists Instead of Red-Black Trees
-1. **Range Queries are Contiguous:** In a Skip List, Level 0 is a standard doubly-linked list. Executing `ZRANGEBYSCORE min max` requires finding the lower bound in `O(log N)` and then walking forward along Level 0. In an RB-Tree, range traversals require repeated tree successor lookups (`O(log N)` each or stack-based in-order traversal).
-2. **Lock-Free Concurrency:** Mutex contention in balanced trees is severe because root rebalancing locks the entire tree. Skip lists only lock local forward pointers during insertion, making concurrent lock-free skip lists (like Java's `ConcurrentSkipListMap`) vastly more scalable.
-3. **Simplicity and Memory Tuning:** With promotion probability `p = 0.25`, the expected number of pointers per node is `1 / (1 - 0.25) = 1.33`. An RB-Tree node requires 3 pointers (left, right, parent) plus 1 color bit per node. The memory difference is negligible, but Skip List implementation is a fraction of the complexity.
+| **Skip List Level Generation** | Calls `rand()` in an infinite loop without a cap: `while(rand()%2 == 0) lvl++;` causing stack/pointer overflow. | Caps promotion at `MAX_LEVEL = 16` or `32` (`log2(N)` maximum threshold). |
+| **Treap Priority Distribution** | Uses small integer priorities (e.g. `1..10`), causing frequent priority collisions and unbalanced degradation. | Generates 32-bit or 64-bit random integers (`Random.Shared.Next()`), making collision probability negligible (`1 / 2^31`). |
+| **Treap Split Pointer Memory** | Forgets to nullify severed references during split, leading to subtle cyclic graphs and memory leaks. | Returns fresh tuple references `(L, R)` while assigning severed branch to `null` before recursing. |
+| **Concurrency & Rebalancing** | Recommends Red-Black trees for high-concurrency multi-threaded workloads. | Recommends Skip Lists: Skip Lists allow lock-free atomic compare-and-swap (CAS) pointer updates without locking the entire tree root. |
+| **Range Scan Performance** | Performs range queries in a BST via repeated `FindNext()` calls (`O(K log N)`). | Utilizes Skip List Level 0: locates lower bound in `O(log N)` and traverses contiguous Level 0 pointers in `O(K)`. |
 
 ---
 
-## 📖 Chapter 1: Context & Physical Mental Models
+### Concrete Trap Deep Dive: Redis Sorted Sets (ZSET) Architecture
 
-### 1. The Skip List: Express Subway Analogy
-
-A standard sorted linked list has `O(N)` lookup because you must inspect every station. A Skip List adds express tracks above the local track:
-
-```text
-[Level 2 Express]  (Head) -----------------------------> [25] -------------------------> [80] -> NIL
-                     |                                     |                                |
-[Level 1 Semi-Exp] (Head) ------------> [10] ----------> [25] ------------> [50] -------> [80] -> NIL
-                     |                    |                |                 |              |
-[Level 0 Local]    (Head) -> [3] ------> [10] -> [17] -> [25] -> [31] ----> [50] -> [62] > [80] -> NIL
-```
-
-*   **Search Path for Key 31:**
-    1. Start at `Level 2`: Compare `Head` to `25`. `31 > 25`, jump to `25`. Compare to `80`. `31 < 80`, drop down to `Level 1` at node `25`.
-    2. At `Level 1`: Next node is `50`. `31 < 50`, drop down to `Level 0` at node `25`.
-    3. At `Level 0`: Next node is `31`. Target found! Total comparisons: 5 instead of 6 sequential scans.
-
-### 2. The Treap: Tree + Heap Hybrid
-
-A Treap (Tree + Heap) assigns every element two attributes: `(Key, Priority)`.
-*   **Key:** Satisfies the **Binary Search Tree** invariant (left < root < right).
-*   **Priority:** A uniformly distributed random number chosen independently upon insertion. Satisfies the **Max-Heap** invariant (`priority(node) >= max(priority(left), priority(right))`).
-
-```text
-               (Key: 50, Prio: 95)
-                  /             \
-      (Key: 25, Prio: 82)     (Key: 80, Prio: 71)
-         /           \                    \
-(Key: 10, Prio: 40) (Key: 31, Prio: 55) (Key: 90, Prio: 33)
-```
-
-**Why is it balanced?** If priorities are chosen uniformly at random, a Treap is mathematically identical to a randomized Binary Search Tree where keys are inserted in decreasing order of their priorities. Because a random permutation of `N` keys produces a BST with expected height `2 * ln(N) approx 1.386 * log2(N)`, the Treap is guaranteed to be balanced in expectation without complex tree balance factors.
+> [!WARNING]
+> In an interview, if the interviewer asks: *"Why did Salvatore Sanfilippo (creator of Redis) use a Skip List instead of a Red-Black Tree for `ZSET`?"*
+> 
+> **❌ The Rookie Answer:** *"Because Skip Lists are faster than Red-Black trees."* (Incorrect — both are `O(log N)` in time).
+> 
+> **✅ The Senior Architect Answer:**
+> 1. **Contiguous Range Queries:** `ZRANGEBYSCORE` requires scanning elements in a score interval `[min, max]`. In a Skip List, Level 0 is a standard linked list. We locate the start node in `O(log N)` and perform a sequential linear scan in `O(K)` with superior CPU prefetch cache locality. In an RB-Tree, in-order successor traversal requires stack allocation or parent pointer chasing.
+> 2. **Low Implementation & Lock Overhead:** A concurrent Skip List only requires locking local forward pointers during insertion. Rebalancing an RB-Tree may rotate all the way up to the root, requiring coarse-grained locks that destroy multi-threaded throughput.
+> 3. **Tunable Memory Footprint:** By setting promotion probability `p = 0.25`, the average number of pointers per node drops to `1 / (1 - 0.25) = 1.33`. An RB-Tree node requires 3 pointers (`left`, `right`, `parent`) plus color bits. Skip lists use less memory!
 
 ---
 
-## 🏛️ Chapter 2: The Governing Invariants & Algorithmic Mechanics
+## 🎙️ PILLAR 5: 45-MINUTE INTERVIEW TALK TRACK
 
-### 1. Mathematical Invariants
+### The Exact 3-Sentence Verbal Script
 
-1. **BST Invariant:** For every node `u`:
-   - For all `v` in `u.left`: `v.key < u.key`
-   - For all `w` in `u.right`: `w.key > u.key`
-2. **Heap Invariant:** For every node `u`:
-   - If `u.left != null`: `u.priority >= u.left.priority`
-   - If `u.right != null`: `u.priority >= u.right.priority`
-3. **Cartesian Uniqueness Theorem:** If all keys are distinct and all priorities are distinct, there exists exactly **one unique Treap** topology representing that set of elements.
-
-### 2. Treap Algebra: Split and Merge
-
-Instead of writing rotations (`rotateLeft`, `rotateRight`), modern production Treaps are governed by two algebraic primitives:
-
-#### Split Operation
-Given a Treap `T` and a boundary key `K`, split `T` into two Treaps `L` and `R` such that:
-*   All keys in `L` are `<= K`
-*   All keys in `R` are `> K`
+Speak these exact three sentences before touching the keyboard:
 
 ```text
-Split(T, K):
-  If T is null -> return (null, null)
-  If T.key <= K:
-      (L_sub, R_sub) = Split(T.right, K)
-      T.right = L_sub
-      return (T, R_sub)
-  Else:
-      (L_sub, R_sub) = Split(T.left, K)
-      T.left = R_sub
-      return (L_sub, T)
++--------------------------------------------------------------------------------------------------+
+|                              THE SENIOR BALANCED STRUCTURES TALK TRACK                            |
++--------------------------------------------------------------------------------------------------+
+| 1. The Bottleneck & Architecture:                                                                |
+|    "While deterministic balanced trees like AVL and Red-Black guarantee worst-case O(log N)     |
+|    height, their rebalancing rotations introduce high implementation risk and severe mutex       |
+|    contention in concurrent systems."                                                            |
+|                                                                                                  |
+| 2. The Probabilistic Solution:                                                                   |
+|    "By introducing independent random priorities, a Treap guarantees an expected tree height of  |
+|    2 * ln(N) through Cartesian dual invariants, allowing us to implement balanced search,       |
+|    insert, and delete purely via clean O(log N) Split and Merge primitives."                     |
+|                                                                                                  |
+| 3. The Production Calibrated Trade-off:                                                         |
+|    "If this service required high-throughput concurrent range scans—like Redis ZSETs or          |
+|    RocksDB MemTables—I would choose a Skip List to leverage CAS forward-pointer updates and      |
+|    contiguous Level-0 sequential scans."                                                         |
++--------------------------------------------------------------------------------------------------+
 ```
-
-#### Merge Operation
-Given two Treaps `L` and `R` where **every key in `L` is strictly less than every key in `R`**, merge them into a single valid Treap `T`.
-
-```text
-Merge(L, R):
-  If L is null -> return R
-  If R is null -> return L
-  If L.priority > R.priority:
-      L.right = Merge(L.right, R)
-      return L
-  Else:
-      R.left = Merge(L, R.left)
-      return R
-```
-
-#### Mutation via Split & Merge
-*   **Insert(key):** Split root into `(L, R)` at `key`. Create `node = TreapNode(key, random())`. Root becomes `Merge(Merge(L, node), R)`.
-*   **Delete(key):** Split root into `(L, Rest)` at `key - 1`. Split `Rest` into `(Mid, R)` at `key`. Root becomes `Merge(L, R)` (discarding `Mid`).
 
 ---
 
-## 💻 Chapter 3: Idiomatic Dual-Language Code
+### 45-Minute Live Interview Pacing Guide
 
-### C# Primary Implementation (.NET 8/9)
+```text
+[00:00 - 05:00] Clarify Requirements & API Contract:
+- Operations needed: Search, Insert, Delete, Range Query?
+- Concurrency requirements: Single-threaded or multi-producer/multi-consumer?
+- Bound constraints: N <= 10^5, duplicate keys allowed?
+
+[05:00 - 12:00] Invariant Formulation & Math Defense:
+- State the BST Invariant on Keys and Max-Heap Invariant on random priorities.
+- Explain Cartesian Uniqueness: distinct keys + distinct priorities = exactly one valid tree.
+- State Split and Merge contracts.
+
+[12:00 - 30:00] Production-Grade Coding:
+- Code TreapNode with Key, Priority, Left, Right.
+- Code recursive Split(root, key) returning (L, R).
+- Code recursive Merge(L, R) respecting max priority.
+- Assemble Insert and Delete in 3 lines each.
+
+[30:00 - 40:00] Complexity & Edge-Case Dry Run:
+- Trace empty root, single node, split boundary smaller than all keys, split boundary larger than all keys.
+- Explain expected O(log N) time, O(log N) auxiliary recursion stack space.
+
+[40:00 - 45:00] System Extensibility Drill:
+- Discuss Implicit Treaps for range reversals (Ropes, text editors).
+- Contrast with Skip Lists for concurrent lock-free systems.
+```
+
+---
+
+## ⚡ PILLAR 6: PRODUCTION DUAL-LANGUAGE IMPLEMENTATIONS
+
+### C# Primary Implementation (.NET 8/9): Production Treap via Split & Merge
 
 ```csharp
 using System;
-using System.Collections.Generic;
 
 namespace AdvancedDataStructures;
 
 /// <summary>
-/// Represents a node in a randomized Treap (Cartesian Tree).
-/// </summary>
-public sealed class TreapNode
-{
-    public int Key { get; }
-    public int Priority { get; }
-    public TreapNode? Left { get; set; }
-    public TreapNode? Right { get; set; }
-
-    public TreapNode(int key, int priority)
-    {
-        Key = key;
-        Priority = priority;
-    }
-}
-
-/// <summary>
-/// High-performance Treap supporting expected O(log N) operations via Split and Merge.
+/// Production-grade Treap (Cartesian Tree) supporting O(log N) expected Search, Insert, and Delete.
+/// Implemented using clean algebraic Split and Merge primitives with zero rebalancing rotations.
 /// </summary>
 public sealed class Treap
 {
+    private sealed class Node
+    {
+        public int Key { get; }
+        public int Priority { get; }
+        public Node? Left { get; set; }
+        public Node? Right { get; set; }
+
+        public Node(int key, int priority)
+        {
+            Key = key;
+            Priority = priority;
+        }
+    }
+
+    private Node? _root;
     private readonly Random _rand = new();
-    public TreapNode? Root { get; private set; }
+
+    public int Count { get; private set; }
 
     /// <summary>
-    /// Splits Treap rooted at t into:
-    /// - left: all keys <= key
-    /// - right: all keys > key
+    /// Searches for key in expected O(log N) time.
     /// </summary>
-    public static (TreapNode? Left, TreapNode? Right) Split(TreapNode? t, int key)
+    public bool Contains(int key)
     {
-        if (t is null)
+        Node? curr = _root;
+        while (curr != null)
         {
-            return (null, null);
+            if (curr.Key == key) return true;
+            curr = key < curr.Key ? curr.Left : curr.Right;
         }
+        return false;
+    }
+
+    /// <summary>
+    /// Inserts key with uniform random priority in expected O(log N) time.
+    /// </summary>
+    public void Insert(int key)
+    {
+        if (Contains(key)) return; // Prevent duplicate keys in dynamic set
+
+        int priority = _rand.Next(1, int.MaxValue);
+        Node newNode = new(key, priority);
+
+        var (left, right) = Split(_root, key);
+        _root = Merge(Merge(left, newNode), right);
+        Count++;
+    }
+
+    /// <summary>
+    /// Deletes key in expected O(log N) time.
+    /// </summary>
+    public bool Delete(int key)
+    {
+        if (!Contains(key)) return false;
+
+        var (left, right) = Split(_root, key);
+        var (leftClean, _) = Split(left, key - 1);
+
+        _root = Merge(leftClean, right);
+        Count--;
+        return true;
+    }
+
+    /// <summary>
+    /// Splits Treap T into two subtrees: L (all keys <= key) and R (all keys > key).
+    /// </summary>
+    private static (Node? L, Node? R) Split(Node? t, int key)
+    {
+        if (t is null) return (null, null);
 
         if (t.Key <= key)
         {
@@ -188,14 +409,14 @@ public sealed class Treap
     }
 
     /// <summary>
-    /// Merges two Treaps l and r under the precondition that max_key(l) < min_key(r).
-    /// Preserves Max-Heap priority invariant.
+    /// Merges Treap L and Treap R where all keys in L are strictly smaller than keys in R.
     /// </summary>
-    public static TreapNode? Merge(TreapNode? l, TreapNode? r)
+    private static Node? Merge(Node? l, Node? r)
     {
         if (l is null) return r;
         if (r is null) return l;
 
+        // Max-Heap Priority Invariant
         if (l.Priority >= r.Priority)
         {
             l.Right = Merge(l.Right, r);
@@ -207,301 +428,36 @@ public sealed class Treap
             return r;
         }
     }
-
-    /// <summary>
-    /// Inserts a key with a cryptographically uniform random priority.
-    /// Does not insert duplicate keys.
-    /// </summary>
-    public void Insert(int key)
-    {
-        if (Contains(key)) return;
-
-        var (left, right) = Split(Root, key);
-        var newNode = new TreapNode(key, _rand.Next());
-        Root = Merge(Merge(left, newNode), right);
-    }
-
-    /// <summary>
-    /// Deletes a key from the Treap if present.
-    /// </summary>
-    public bool Delete(int key)
-    {
-        if (!Contains(key)) return false;
-
-        var (left, rest) = Split(Root, key - 1);
-        var (target, right) = Split(rest, key);
-
-        // Discard target node and merge left with right
-        Root = Merge(left, right);
-        return true;
-    }
-
-    /// <summary>
-    /// Standard BST search in O(depth).
-    /// </summary>
-    public bool Contains(int key)
-    {
-        TreapNode? curr = Root;
-        while (curr is not null)
-        {
-            if (curr.Key == key) return true;
-            curr = key < curr.Key ? curr.Left : curr.Right;
-        }
-        return false;
-    }
-
-    /// <summary>
-    /// In-order traversal yielding elements in sorted order.
-    /// </summary>
-    public IEnumerable<int> InOrder()
-    {
-        var stack = new Stack<TreapNode>();
-        TreapNode? curr = Root;
-
-        while (curr is not null || stack.Count > 0)
-        {
-            while (curr is not null)
-            {
-                stack.Push(curr);
-                curr = curr.Left;
-            }
-
-            curr = stack.Pop();
-            yield return curr.Key;
-            curr = curr.Right;
-        }
-    }
-}
-
-/// <summary>
-/// Represents a node in a multi-level Skip List.
-/// </summary>
-public sealed class SkipListNode
-{
-    public int Value { get; }
-    public SkipListNode?[] Forward { get; }
-
-    public SkipListNode(int value, int level)
-    {
-        Value = value;
-        Forward = new SkipListNode?[level];
-    }
-}
-
-/// <summary>
-/// Probabilistic Skip List maintaining expected O(log N) Search, Insert, and Erase.
-/// Mirrors Redis ZSET and RocksDB MemTable index mechanics.
-/// </summary>
-public sealed class SkipList
-{
-    private const int MaxLevel = 16;
-    private const double P = 0.5;
-    private readonly SkipListNode _head = new(-1, MaxLevel);
-    private int _level = 1;
-    private readonly Random _rand = new();
-
-    private int RandomLevel()
-    {
-        int lvl = 1;
-        while (_rand.NextDouble() < P && lvl < MaxLevel)
-        {
-            lvl++;
-        }
-        return lvl;
-    }
-
-    public bool Search(int target)
-    {
-        var curr = _head;
-        for (int i = _level - 1; i >= 0; i--)
-        {
-            while (curr.Forward[i] is not null && curr.Forward[i]!.Value < target)
-            {
-                curr = curr.Forward[i]!;
-            }
-        }
-        curr = curr.Forward[0];
-        return curr is not null && curr.Value == target;
-    }
-
-    public void Add(int num)
-    {
-        var update = new SkipListNode[MaxLevel];
-        var curr = _head;
-
-        for (int i = _level - 1; i >= 0; i--)
-        {
-            while (curr.Forward[i] is not null && curr.Forward[i]!.Value < num)
-            {
-                curr = curr.Forward[i]!;
-            }
-            update[i] = curr;
-        }
-
-        int lvl = RandomLevel();
-        if (lvl > _level)
-        {
-            for (int i = _level; i < lvl; i++)
-            {
-                update[i] = _head;
-            }
-            _level = lvl;
-        }
-
-        var newNode = new SkipListNode(num, lvl);
-        for (int i = 0; i < lvl; i++)
-        {
-            newNode.Forward[i] = update[i].Forward[i];
-            update[i].Forward[i] = newNode;
-        }
-    }
-
-    public bool Erase(int num)
-    {
-        var update = new SkipListNode[MaxLevel];
-        var curr = _head;
-
-        for (int i = _level - 1; i >= 0; i--)
-        {
-            while (curr.Forward[i] is not null && curr.Forward[i]!.Value < num)
-            {
-                curr = curr.Forward[i]!;
-            }
-            update[i] = curr;
-        }
-
-        curr = curr.Forward[0];
-        if (curr is null || curr.Value != num) return false;
-
-        for (int i = 0; i < _level; i++)
-        {
-            if (update[i].Forward[i] != curr) break;
-            update[i].Forward[i] = curr.Forward[i];
-        }
-
-        while (_level > 1 && _head.Forward[_level - 1] is null)
-        {
-            _level--;
-        }
-
-        return true;
-    }
 }
 ```
 
-### Python Secondary Implementation (Python 3.11+)
+---
+
+### Python Secondary Implementation (Python 3.11+): Complete Skip List
 
 ```python
 import random
-from typing import Optional, Tuple, Iterator
-
-class TreapNode:
-    __slots__ = ('key', 'priority', 'left', 'right')
-
-    def __init__(self, key: int, priority: Optional[int] = None):
-        self.key: int = key
-        self.priority: int = priority if priority is not None else random.randint(1, 1 << 30)
-        self.left: Optional['TreapNode'] = None
-        self.right: Optional['TreapNode'] = None
-
-class Treap:
-    """Randomized balanced search tree maintaining BST on keys and Max-Heap on priorities."""
-
-    def __init__(self):
-        self.root: Optional[TreapNode] = None
-
-    @staticmethod
-    def split(t: Optional[TreapNode], key: int) -> Tuple[Optional[TreapNode], Optional[TreapNode]]:
-        """
-        Splits tree t into:
-          - left: all nodes with key <= boundary
-          - right: all nodes with key > boundary
-        """
-        if t is None:
-            return None, None
-
-        if t.key <= key:
-            l_sub, r_sub = Treap.split(t.right, key)
-            t.right = l_sub
-            return t, r_sub
-        else:
-            l_sub, r_sub = Treap.split(t.left, key)
-            t.left = r_sub
-            return l_sub, t
-
-    @staticmethod
-    def merge(l: Optional[TreapNode], r: Optional[TreapNode]) -> Optional[TreapNode]:
-        """
-        Merges Treap l and Treap r assuming max(l.keys) < min(r.keys).
-        Maintains Max-Heap invariant by priority comparison.
-        """
-        if l is None or r is None:
-            return l or r
-
-        if l.priority >= r.priority:
-            l.right = Treap.merge(l.right, r)
-            return l
-        else:
-            r.left = Treap.merge(l, r.left)
-            return r
-
-    def insert(self, key: int) -> None:
-        """Inserts key into Treap if not already present."""
-        if self.contains(key):
-            return
-
-        l, r = Treap.split(self.root, key)
-        new_node = TreapNode(key)
-        self.root = Treap.merge(Treap.merge(l, new_node), r)
-
-    def delete(self, key: int) -> bool:
-        """Removes key from Treap. Returns True if found and removed."""
-        if not self.contains(key):
-            return False
-
-        l, rest = Treap.split(self.root, key - 1)
-        _, r = Treap.split(rest, key)
-        self.root = Treap.merge(l, r)
-        return True
-
-    def contains(self, key: int) -> bool:
-        """Standard BST search in O(height) time."""
-        curr = self.root
-        while curr:
-            if curr.key == key:
-                return True
-            curr = curr.left if key < curr.key else curr.right
-        return False
-
-    def in_order(self) -> Iterator[int]:
-        """Generator yielding keys in ascending order."""
-        stack = []
-        curr = self.root
-        while curr or stack:
-            while curr:
-                stack.append(curr)
-                curr = curr.left
-            curr = stack.pop()
-            yield curr.key
-            curr = curr.right
+from typing import Optional, List
 
 class SkipListNode:
     __slots__ = ('val', 'forward')
+    
     def __init__(self, val: int, level: int):
         self.val: int = val
-        self.forward: list[Optional['SkipListNode']] = [None] * level
+        self.forward: List[Optional['SkipListNode']] = [None] * level
 
 class SkipList:
     """
-    Probabilistic multi-level Skip List.
-    Expected O(log N) search, insert, and delete.
+    Production-grade Skip List with geometric level promotion.
+    Supports O(log N) average Search, Insert, and Erase.
     """
-    MAX_LEVEL = 16
-    P = 0.5
+    MAX_LEVEL: int = 16
+    P: float = 0.5  # Coin flip promotion probability
 
     def __init__(self):
-        self.head = SkipListNode(-1, self.MAX_LEVEL)
-        self.level = 1
+        # Sentinel head node with maximum level capacity
+        self.head: SkipListNode = SkipListNode(-1, self.MAX_LEVEL)
+        self.level: int = 1
 
     def _random_level(self) -> int:
         lvl = 1
@@ -511,16 +467,20 @@ class SkipList:
 
     def search(self, target: int) -> bool:
         curr = self.head
+        # Traverse downwards from highest active express lane
         for i in range(self.level - 1, -1, -1):
             while curr.forward[i] and curr.forward[i].val < target:
                 curr = curr.forward[i]
+        
+        # Advance 1 step on Level 0
         curr = curr.forward[0]
         return curr is not None and curr.val == target
 
     def add(self, num: int) -> None:
-        update = [None] * self.MAX_LEVEL
+        update: List[Optional[SkipListNode]] = [None] * self.MAX_LEVEL
         curr = self.head
 
+        # Find insertion predecessors at every level
         for i in range(self.level - 1, -1, -1):
             while curr.forward[i] and curr.forward[i].val < num:
                 curr = curr.forward[i]
@@ -538,7 +498,7 @@ class SkipList:
             update[i].forward[i] = new_node
 
     def erase(self, num: int) -> bool:
-        update = [None] * self.MAX_LEVEL
+        update: List[Optional[SkipListNode]] = [None] * self.MAX_LEVEL
         curr = self.head
 
         for i in range(self.level - 1, -1, -1):
@@ -548,13 +508,14 @@ class SkipList:
 
         curr = curr.forward[0]
         if not curr or curr.val != num:
-            return False
+            return False  # Target element not present
 
         for i in range(self.level):
             if update[i].forward[i] is not curr:
                 break
             update[i].forward[i] = curr.forward[i]
 
+        # Shrink active level height if top lanes are now empty
         while self.level > 1 and self.head.forward[self.level - 1] is None:
             self.level -= 1
 
@@ -563,77 +524,31 @@ class SkipList:
 
 ---
 
-## 📊 Chapter 4: Explicit Complexity Deconstruction
+## 📊 EXPLICIT COMPLEXITY DECONSTRUCTION
 
 | Operation | Best Case | Expected / Average | Worst Case | Auxiliary Space | Memory & Cache Reality |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Search** | `O(1)` (at root) | `O(log N)` | `O(N)` | `O(1)` iterative | Node pointers cause pointer chasing / cache misses. |
-| **Split** | `O(1)` | `O(log N)` | `O(N)` | `O(log N)` stack | Recursive call stack bounded by tree height. |
-| **Merge** | `O(1)` | `O(log N)` | `O(N)` | `O(log N)` stack | Touches only the right spine of `L` and left spine of `R`. |
-| **Insert** | `O(1)` | `O(log N)` | `O(N)` | `O(log N)` stack | Split + 2 Merges; creates exactly 1 heap node. |
-| **Delete** | `O(1)` | `O(log N)` | `O(N)` | `O(log N)` stack | 2 Splits + 1 Merge; unlinks 1 node for garbage collection. |
-| **Skip List Search** | `O(1)` | `O(log N)` | `O(N)` | `O(1)` | Forward pointers per node; Level 0 linear scan has decent cache prefetching. |
-
-### Mathematical Bound Justification
-*   **Expected Depth of Key `i`:** Let keys be sorted `k_1 < k_2 < ... < k_N`. Key `k_j` is an ancestor of `k_i` if and only if `priority(k_j)` is the maximum priority among all keys in the range `[min(i, j), max(i, j)]`. Because priorities are independent and identically distributed uniform random variables, this happens with probability `1 / (|i - j| + 1)`.
-*   Summing over all `j`:
-    `E[depth(i)] = Sum_{j=1}^N (1 / (|i - j| + 1)) = H_i + H_{N-i+1} - 1 <= 2 * ln(N) + O(1)`.
-*   Therefore, expected search, split, and merge time is strictly bounded by `O(log N)`.
-*   **Worst-Case Probability:** A Treap degenerates to a line of length `N` only if priorities are generated in strictly monotonic order. The probability of this event is `1 / N!`, which for `N = 100` is less than `10^(-157)` (effectively zero in physical universe lifetimes).
+| **Treap Search** | `O(1)` (at root) | `O(log N)` | `O(N)` | `O(1)` iterative | Heap-allocated node pointer hops incur L1/L2 misses. |
+| **Treap Split** | `O(1)` | `O(log N)` | `O(N)` | `O(log N)` stack | Traverses single root-to-leaf path; bounded by tree height. |
+| **Treap Merge** | `O(1)` | `O(log N)` | `O(N)` | `O(log N)` stack | Touches only the right spine of `L` and left spine of `R`. |
+| **Treap Insert / Delete** | `O(1)` | `O(log N)` | `O(N)` | `O(log N)` stack | Split + Merge algebra; zero complex rotation state machines. |
+| **Skip List Search** | `O(1)` | `O(log N)` | `O(N)` | `O(1)` iterative | Forward pointers array per node; Level 0 linear scan has high spatial locality. |
+| **Skip List Insert / Erase** | `O(1)` | `O(log N)` | `O(N)` | `O(MAX_LEVEL)` | Predecessor array lookup; updates `lvl` pointer references in place. |
 
 ---
 
-## 🎙️ Chapter 5: 45-Minute Senior / Lead Verbal Interview Script
-
-```text
-[00:00 - 05:00] Clarify & Problem Modeling
-Candidate: "We need a dynamic set that supports fast Search, Insert, and Delete. A standard BST gives O(log N) 
-           average performance, but an adversarial sorted stream degrades it to O(N). AVL and Red-Black trees 
-           guarantee worst-case O(log N) via deterministic rotations, but they require complex color flips and 
-           double rotations. For this interview, would you like me to implement a Treap via Split and Merge, 
-           or discuss the concurrent trade-offs of a Skip List?"
-Interviewer: "Let's implement the Treap. Explain why it remains balanced."
-
-[05:00 - 15:00] Invariants & Trade-offs
-Candidate: "A Treap maintains two simultaneous invariants: BST on keys, and Max-Heap on uniformly distributed 
-           random priorities. By the Cartesian uniqueness theorem, distinct keys and priorities yield a unique 
-           tree topology—the exact same topology as if we inserted the keys in priority order into a regular BST.
-           Since priorities are random, the expected tree height is 2 * ln(N), or approximately 1.39 * log2(N).
-           Instead of writing left and right rotations, I will implement Split and Merge. 
-           Split divides a Treap into keys <= K and keys > K in O(log N). 
-           Merge takes two Treaps where all keys in L are strictly smaller than all keys in R, merging them in O(log N).
-           Insert and Delete are simply combinations of Split and Merge."
-
-[15:00 - 35:00] Coding Protocol & Invariant Preservation
-Candidate: [Writes Split and Merge]
-           "Notice how clean Split is: if root.Key <= K, the entire left subtree and root belong to L, so we 
-           recursively split the right child. The boundary condition is base null returning (null, null).
-           In Merge, we compare priorities to respect the Max-Heap property. If L.priority >= R.priority, L remains 
-           the root, and its right child becomes Merge(L.right, R).
-           Now Insert is trivial: Split at key, create node, Merge(Merge(left, node), right).
-           Delete splits at key - 1 and key to isolate the target node, then merges the outer subtrees."
-
-[35:00 - 45:00] Complexity Deconstruction & Production Systems
-Candidate: "All operations run in expected O(log N) time with O(log N) recursion stack space.
-           In production, if we were building Redis Sorted Sets or LevelDB MemTables, we would use a Skip List 
-           instead of a Treap. Skip Lists allow lock-free concurrent updates by CAS-modifying forward pointers 
-           without restructuring parent trees, and Level 0 provides O(1) contiguous pointer range scans."
-```
-
----
-
-## 🔍 Chapter 6: Granular Edge-Case & Invariant Verification Table
+## 🔍 GRANULAR EDGE-CASE & INVARIANT VERIFICATION TABLE
 
 | Edge Case Scenario | Concrete Input | Expected Behavior | Invariant Verification & Handling |
 | :--- | :--- | :--- | :--- |
-| **Empty Treap Mutation** | `root = null; Delete(10)` | Returns `false`; `root` remains `null`. | Guard `if (t is null) return (null, null)` in `Split`. |
-| **Duplicate Insertion** | `Insert(42); Insert(42)` | Second insert is a no-op; set size remains 1. | `Contains(key)` guard check prevents duplicate keys. |
-| **Split Key Smaller Than All Elements** | Treap `{10, 20, 30}`, `Split(5)` | `L = null`, `R = {10, 20, 30}`. | Traversal goes purely left; `t.Left` becomes `null`. |
-| **Split Key Larger Than All Elements** | Treap `{10, 20, 30}`, `Split(50)` | `L = {10, 20, 30}`, `R = null`. | Traversal goes purely right; `t.Right` becomes `null`. |
-| **Merge with Empty Subtree** | `Merge(null, R)` or `Merge(L, null)` | Returns `R` or `L` directly in `O(1)`. | Base case returns `l ?? r` immediately without priority check. |
-| **Single Node Deletion** | Treap `{42}`, `Delete(42)` | `root` becomes `null`. | `Split` isolates `mid = {42}`, outer `L` and `R` are `null`, `Merge(null, null)` returns `null`. |
-| **Priority Collision** | Two nodes generated with equal priority | Handled gracefully via `>=` branch. | Stable comparison defaults to left tree being parent, preserving heap validity. |
+| **Empty Structure Query** | `Contains(42)` on empty Treap / Skip List | Returns `false` immediately. | Guard `if (_root == null)` or `curr.forward[0] == null`. |
+| **Duplicate Insertion** | `Insert(42); Insert(42)` | Duplicate ignored; count remains 1. | `Contains(key)` guard prevents duplicate tree insertion. |
+| **Split Key Smaller Than All Nodes** | Treap `{10, 20, 30}`, `Split(5)` | `L = null`, `R = {10, 20, 30}`. | Traversal goes strictly left; `t.Left` becomes `null`. |
+| **Split Key Larger Than All Nodes** | Treap `{10, 20, 30}`, `Split(50)` | `L = {10, 20, 30}`, `R = null`. | Traversal goes strictly right; `t.Right` becomes `null`. |
+| **Merge with Null Subtree** | `Merge(null, R)` or `Merge(L, null)` | Returns non-null tree in `O(1)`. | Base case returns `l ?? r` immediately without priority comparison. |
+| **Skip List Level Shrink** | Erasing the only node that reached `MAX_LEVEL` | `level` counter decrements safely. | `while (level > 1 && head.forward[level - 1] == null) level--;` |
+| **Priority Collision** | Two nodes share identical priority | Handled stably via `>=` branch. | Stable comparison defaults to left tree being root, preserving valid heap ordering. |
 
 ---
 
-> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_16_Day_02_Link_Cut_Trees_Instructional.md)
+> 🧭 **Navigation:** [← Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Link-Cut Trees →](Week_16_Day_02_Link_Cut_Trees_Instructional.md)

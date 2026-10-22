@@ -38,11 +38,11 @@ Instead of executing an expensive Depth-First Search (DFS) traversal down the su
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 graph TD
-    Root["Root Node<br/>['i': 12, 'iron':<br/>5,<br/>'island': 4]"]
-    Root -->|"char 'i'"| NodeI["Node 'i'<br/>Top-3: ['i love<br/>you': 5,<br/>'island': 4,<br/>'ironman':<br/>3]"]
-    NodeI -->|"char ' '"| NodeISpace["Node 'i '<br/>Top-3: ['i love<br/>you': 5,<br/>'i love leetcode':<br/>2]"]
-    NodeI -->|"char 's'"| NodeIS["Node 'is'<br/>Top-3: ['island':<br/>4]"]
-    NodeI -->|"char 'r'"| NodeIR["Node 'ir'<br/>Top-3: ['ironman':<br/>3]"]
+    Root["Root Node<br/>('i': 12, 'iron':<br/>5,<br/>'island': 4)"]
+    Root -->|"char 'i'"| NodeI["Node 'i'<br/>Top-3: ('i love<br/>you': 5,<br/>'island': 4,<br/>'ironman':<br/>3)"]
+    NodeI -->|"char ' '"| NodeISpace["Node 'i '<br/>Top-3: ('i love<br/>you': 5,<br/>'i love leetcode':<br/>2)"]
+    NodeI -->|"char 's'"| NodeIS["Node 'is'<br/>Top-3: ('island':<br/>4)"]
+    NodeI -->|"char 'r'"| NodeIR["Node 'ir'<br/>Top-3: ('ironman':<br/>3)"]
 ```
 
 ### Keystroke Lifecycle & Concurrency Flow

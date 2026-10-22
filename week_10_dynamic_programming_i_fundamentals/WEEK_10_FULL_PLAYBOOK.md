@@ -259,21 +259,21 @@ Space: O(n) for dp array
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    classDef top fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
-    classDef bot fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
-    classDef comp fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:2px;
+    classDef top fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px
+    classDef bot fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px
+    classDef comp fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:2px
 
     R["⚖️ Dynamic<br/>Programming:<br/>Top-Down vs.<br/>Bottom-Up"]:::comp
 
     subgraph TopDown["🧠 Top-Down (Memoization)"]
-        T1["• Natural<br/>Recursive<br/>Formulation<br/>(Problem -><br/>Base cases)"]:::top
+        T1["• Natural<br/>Recursive<br/>Formulation<br/>(Problem -&gt;<br/>Base cases)"]:::top
         T2["• Computes ONLY<br/>required<br/>subproblems lazily"]:::top
         T3["• Memory: Table<br/>O(N) +<br/>Call Stack O(N)<br/>frames"]:::top
         T4["• Risk: Recursion<br/>depth<br/>limit /<br/>StackOverflow on<br/>large N"]:::top
     end
 
     subgraph BottomUp["📊 Bottom-Up (Tabulation)"]
-        B1["• Iterative Table<br/>Fill<br/>(Base cases -><br/>Problem)"]:::bot
+        B1["• Iterative Table<br/>Fill<br/>(Base cases -&gt;<br/>Problem)"]:::bot
         B2["• Computes<br/>subproblems in<br/>strict topological<br/>dependency order"]:::bot
         B3["• Memory: Allows<br/>1D/O(1)<br/>rolling space<br/>optimization!"]:::bot
         B4["• Cache friendly:<br/>Contiguous memory<br/>access,<br/>zero call-stack<br/>overhead"]:::bot
@@ -1933,9 +1933,9 @@ Space complexity: O(_______)
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    classDef start fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
-    classDef decision fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
-    classDef algo fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+    classDef start fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px
+    classDef decision fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px
+    classDef algo fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px
 
     R["🎯<br/>Algorithmic<br/>Paradigm<br/>Recognition"]:::start
     R --> D1{"Optimal<br/>Substructure?<br/>(Solution contains<br/>sub-solutions)"}:::decision

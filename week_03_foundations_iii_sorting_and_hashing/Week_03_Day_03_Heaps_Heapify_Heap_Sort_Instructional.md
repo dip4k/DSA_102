@@ -1,777 +1,922 @@
-# 📘 Week 03 Day 03: Heaps, Heapify & Heap Sort — ENGINEERING GUIDE
-
-
-
-
+# 📘 Week 03 Day 03: Heaps, Heapify & Heap Sort — MASTER INSTRUCTIONAL GUIDE
 
 > 🧭 **Navigation:** [← Previous Day](Week_03_Day_02_Merge_Quick_Sort_Instructional_Revised.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_03_Day_04_Hash_Tables_Separate_Chaining_Instructional.md)
-> 
-> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
 
 ---
 
 ## 🎯 LEARNING OBJECTIVES
 
-*By the end of this chapter, you will be able to:*
+*By the end of this instructional module, you will be able to:*
 
-- 🎯 **Internalize** how arrays implicitly encode complete binary trees via index arithmetic.
-- ⚙️ **Implement** min-heaps and max-heaps with bubble-up (insert) and heapify-down (extract) operations.
-- ⚖️ **Evaluate** when to use heaps (priority queues, partial sorting) vs arrays vs balanced trees.
-- 🏭 **Connect** heaps to real systems (OS schedulers, Dijkstra's algorithm, event-driven simulation).
-
----
-
-## 📖 CHAPTER 1: CONTEXT & MOTIVATION
-
-### The Problem: Fast Access to Min/Max Element
-
-Suppose you're implementing a task scheduler for an operating system. Tasks have priorities. You need to:
-- **Insert** a new task: O(?)
-- **Get** the highest-priority task: O(?)
-- **Remove** the highest-priority task: O(?)
-
-**Naive Approaches:**
-
-Array (unsorted):
-```csharp
-List<Task> tasks = new();
-tasks.Add(task);  // O(1) insert
-Task max = tasks.MaxBy(t => t.Priority);  // O(n) search
-tasks.Remove(max);  // O(n) remove
-```
-Getting max is O(n)—unacceptable for thousands of tasks.
-
-Sorted array:
-```csharp
-List<Task> tasks = new();  // Kept sorted
-Insert(task);  // O(n) to maintain sorted order
-Task max = tasks[tasks.Count - 1];  // O(1) get max
-Remove(max);  // O(1) remove
-```
-Insertion is O(n)—also unacceptable.
-
-**Heap (Optimal):**
-```csharp
-PriorityQueue<Task, int> queue = new();
-queue.Enqueue(task, task.Priority);  // O(log n)
-var (max, _) = queue.Peek();  // O(1)
-queue.Dequeue();  // O(log n)
-```
-All operations are logarithmic—optimal for priority-based access.
-
-> **💡 Insight:** *Heaps are implicit data structures: trees stored in arrays without explicit pointers. This encoding reduces memory overhead, improves cache locality (contiguous array), and enables O(log n) priority-based operations. Understanding heaps teaches how to encode structure implicitly—a principle that appears in segment trees, Fenwick trees, and B-trees.*
+- 🎬 **Internalize** the Array-Tree magic trick: how complete binary trees live inside contiguous 1D arrays with zero pointers and zero object allocations.
+- ⚙️ **Master** the core mechanics: Sift-Up (`O(log N)` insertion), Sift-Down (`O(log N)` extraction), and Floyd's bottom-up `BuildHeap` (`O(N)` construction).
+- 🧠 **Deconstruct** the mathematical intuition: why bottom-up heap construction takes strictly `O(N)` time while repeated insertion takes `O(N log N)`.
+- 🛑 **Avoid** the high-stakes FAANG interview traps: choosing the optimal bounded heap for streaming Top-K problems and distinguishing heap partial order from BST total order.
+- 🎙️ **Recite** the exact 3-sentence verbal talk track to explain heap invariants and streaming trade-offs under live FAANG interview pressure.
+- ⚡ **Implement** production-grade, allocation-aware heaps in idiomatic **C# (.NET 8/9)** and **Python (3.11+)**.
 
 ---
 
-## 🧠 CHAPTER 2: BUILDING THE MENTAL MODEL
+## 🎬 PILLAR 1: THE 60-SECOND HOOK & EVERYDAY ANALOGY
 
-### The Core Analogy: Organizational Hierarchy
+Hey engineers, welcome back to Week 3 Day 3!
 
-Imagine a company with a CEO at the top. Each executive manages at most 2 subordinates. This forms a binary tree.
+Imagine you are an emergency room triage doctor on a chaotic Friday night. Fifty patients sit in the waiting room. A new patient arrives with a severe cardiac arrest. 
 
-**Heap Property:** The CEO's salary is higher than any subordinate's salary (in a max-heap).
+Do you stop everything, pull out a clipboard, and alphabetically or chronologically sort all 50 patients from scratch? **Never.** 
 
-If you want to find the highest-paid person, look at the CEO—O(1). If someone leaves, you need to reorganize, but you can do it efficiently by promoting subordinates and shuffling roles—O(log n).
+Do you maintain a fully sorted line where every single patient is meticulously ordered by blood pressure from 1 to 50? **No!** If someone with a broken pinky arrives, shifting 30 people down the hallway to squeeze them in at index 22 wastes precious seconds.
 
-### 🖼 Visualizing Heap as Complete Binary Tree
-
-```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
-flowchart TD
-    N50["Index 0: 50 (CEO)"]:::rootNode
-    N30["Index 1: 30 (VP)"]:::internalNode
-    N20["Index 2: 20 (VP)"]:::internalNode
-    N10["Index 3: 10<br/>(Director)"]:::leafNode
-    N5["Index 4: 5<br/>(Director)"]:::leafNode
-    N15["Index 5: 15<br/>(Director)"]:::leafNode
-
-    N50 --> N30
-    N50 --> N20
-    N30 --> N10
-    N30 --> N5
-    N20 --> N15
-
-    classDef rootNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
-    classDef internalNode fill:#37474f,stroke:#90a4ae,stroke-width:2px,color:#ffffff
-    classDef leafNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
-```
-
-**Heap as Contiguous 1D Array:**
-
-| Index | `0` | `1` | `2` | `3` | `4` | `5` |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Value** | `50` | `30` | `20` | `10` | `5` | `15` |
-
-**Complete Binary Tree Flat Array Representation Formulas:**
-
-In a Complete Binary Tree, every level except possibly the last is fully packed, and nodes in the last level fill strictly from left to right. This structural constraint allows a tree of `N` nodes to be stored in a contiguous 1D array of length `N` without storing a single reference pointer.
-
-**0-Indexed Mapping (Standard in C#, Python, C++, Java):**
-- **Parent of index `i`:** `(i - 1) / 2` (truncating integer division, for `i > 0`)
-- **Left child of index `i`:** `2 * i + 1`
-- **Right child of index `i`:** `2 * i + 2`
-- **Last non-leaf node:** `(N / 2) - 1`
-
-**1-Indexed Mapping (Historical / Algorithmic Literature):**
-- **Parent of index `i`:** `i / 2` (equivalent to bitwise right shift `i >> 1`)
-- **Left child of index `i`:** `2 * i` (equivalent to bitwise left shift `i << 1`)
-- **Right child of index `i`:** `2 * i + 1` (equivalent to `(i << 1) | 1`)
-- **Last non-leaf node:** `N / 2`
-
-**Verification on Example Array `[50, 30, 20, 10, 5, 15]`:**
-- Parent of index `1` (`30`): `(1 - 1) / 2 = 0` (`50`) (holds max-heap property: `30 <= 50`)
-- Left child of index `0` (`50`): `2 * 0 + 1 = 1` (`30`)
-- Right child of index `0` (`50`): `2 * 0 + 2 = 2` (`20`)
-- Parent of index `4` (`5`): `(4 - 1) / 2 = 1` (`30`) (holds max-heap property: `5 <= 30`)
-- Left child of index `2` (`20`): `2 * 2 + 1 = 5` (`15`)
-- Right child of index `2` (`20`): `2 * 2 + 2 = 6` (out of bounds, `6 >= 6`, so node `20` has no right child)
-
-### 🧩 Zero Pointer Overhead: Physical & Hardware Intuition
-
-Why do systems engineers represent heaps as flat arrays rather than linked tree nodes?
+All you care about is **one singular invariant**:
+> *"The single most critical patient must be at the very front of the room (Index 0). Everyone else behind them is only loosely organized by urgency."*
 
 ```text
-POINTER-BASED TREE NODE (Heap Allocation on 64-bit Architecture):
-+--------------------------------------------------------------------+
-| Object Header: SyncBlock + TypeHandle pointer            [16 bytes]|
-+--------------------------------------------------------------------+
-| Left Child Reference Pointer (`Node* left`)               [8 bytes]|
-+--------------------------------------------------------------------+
-| Right Child Reference Pointer (`Node* right`)             [8 bytes]|
-+--------------------------------------------------------------------+
-| Payload Data (`int value`)                                [4 bytes]|
-+--------------------------------------------------------------------+
-| Memory Alignment / Padding                                [4 bytes]|
-+--------------------------------------------------------------------+
-Total Memory per Node: 40 bytes (for a 4-byte payload = 10x overhead!)
-Cache Impact: Nodes allocated via `malloc`/`new` sit at disparate heap
-addresses. Navigating parent -> child requires pointer dereferences that
-frequently miss CPU L1/L2 caches (100-300 cycle DRAM penalty).
-
-FLAT ARRAY COMPLETE BINARY TREE (Contiguous Memory):
-+-----------+-----------+-----------+-----------+-----------+-----------+
-| 50        | 30        | 20        | 10        | 5         | 15        |
-| [idx 0]   | [idx 1]   | [idx 2]   | [idx 3]   | [idx 4]   | [idx 5]   |
-+-----------+-----------+-----------+-----------+-----------+-----------+
-Total Memory per Element: Exactly 4 bytes! Zero pointer overhead.
-Cache Impact: Contiguous buffer means the CPU hardware prefetcher loads
-entire 64-byte cache lines (16 integers per cache line) into L1 cache,
-turning index arithmetic into sub-nanosecond register operations.
+THE EMERGENCY ROOM TRIAGE PRINCIPLE:
++-----------------------------------------------------------------------+
+|  INDEX 0: CRITICAL PATIENT (Heart Attack) -> IMMEDIATE DISPATCH O(1)   |
++-----------------------------------------------------------------------+
+             /                                      \
+   [Patient: Compound Fracture]            [Patient: High Fever]
+          /              \                         /           \
+   [Mild Concussion]   [Sprained Ankle]    [Stomach Flu]   [Paper Cut]
 ```
 
-> [!TIP]
-> **Zero Pointer Overhead Intuition:** Storing 10,000,000 integers in a pointer-based tree consumes ~400 MB of RAM with heavy GC pressure and cache misses. Storing the same complete tree in a contiguous flat array consumes exactly 40 MB of RAM—a 90% memory reduction with zero GC overhead and maximum CPU L1/L2 prefetch throughput.
+This is the exact purpose of a **Heap** (Priority Queue). It does not waste CPU cycles sorting data you don't need yet. It guarantees that the extreme element—the absolute maximum or absolute minimum—is available at index `0` in instant `O(1)` time, while insertions and extractions cost only `O(log N)` hops.
 
-### The Heap Invariant: Maintaining Order
+---
 
-- **Max-Heap Invariant:** Every parent `>=` both children (`arr[parent] >= arr[child]`).
-- **Min-Heap Invariant:** Every parent `<=` both children (`arr[parent] <= arr[child]`).
+### 🪄 The Array-Tree Magic Trick: Zero Pointers, Pure Arithmetic
 
-These invariants ensure:
-- Root is always max (or min)
-- Tree is a **complete binary tree** (all levels filled except possibly last, which fills left-to-right)
-- Height = `O(log N)`
-- All operations involve at most `O(log N)` sift-up/sift-down comparisons
+When most developers hear "Tree", they instinctively picture object allocations:
+`new TreeNode { Value = x, Left = leftChild, Right = rightChild }`.
 
-### 🖼 Complete vs Incomplete Trees
+In high-performance systems engineering, linked node trees are a disaster for memory and CPU cache:
+- Every node carries object header metadata (16 bytes in 64-bit .NET/Java) plus memory alignment padding.
+- Every node stores two 8-byte reference pointers (`left` and `right`), burning 16 bytes of memory just to point to children!
+- Nodes are scattered across dynamic memory (heap fragmentation), triggering L1/L2 CPU cache misses on every pointer dereference.
+
+Here is the **magic trick**: A Binary Heap is a **Complete Binary Tree** stored inside a **flat, contiguous 1D array**. No `left` pointer. No `right` pointer. No `parent` pointer. Zero node allocations!
+
+How do we traverse up and down the tree? **Pure integer arithmetic on array indices.**
+
+```text
+FLAT ARRAY INDEX FORMULAS (0-INDEXED):
+For any node sitting at index i:
+- Left Child Index:   2 * i + 1
+- Right Child Index:  2 * i + 2
+- Parent Index:       (i - 1) / 2    (integer truncation)
+- Last Non-Leaf Node: (N / 2) - 1
+```
+
+```text
+THE HARDWARE IMPACT (Contiguous Array vs Linked Tree Nodes):
+
+LINKED TREE NODE (64-bit OS):
++-------------------------------------------------------------+
+| Object Header (SyncBlock + TypeHandle)            [16 bytes]|
+| Left Child Reference Pointer                      [ 8 bytes]|
+| Right Child Reference Pointer                     [ 8 bytes]|
+| Payload Integer                                   [ 4 bytes]|
+| Memory Alignment Padding                          [ 4 bytes]|
++-------------------------------------------------------------+
+Total per element: 40 bytes (10x memory inflation!) + DRAM cache misses.
+
+CONTIGUOUS FLAT ARRAY HEAP:
++-----------+-----------+-----------+-----------+-----------+
+|    50     |    30     |    20     |    10     |     5     |
+|  [idx 0]  |  [idx 1]  |  [idx 2]  |  [idx 3]  |  [idx 4]  |
++-----------+-----------+-----------+-----------+-----------+
+Total per element: Exactly 4 bytes. 
+Hardware Benefit: 16 integers fit into a single 64-byte L1 CPU cache line!
+```
+
+---
+
+### 🤯 The Mind-Blowing Revelation: Why BuildHeap is `O(N)`, NOT `O(N log N)`!
+
+Here is one of the most famous algorithmic traps asked in FAANG interviews:
+> *"If inserting into a heap takes `O(log N)` time, does building a heap from an unsorted array of `N` items take `O(N log N)`?"*
+
+Every rookie answers: *"Yes, `N` elements times `O(log N)` equals `O(N log N)`."*
+
+**Wrong!** Floyd's bottom-up `BuildHeap` algorithm builds a heap in strictly **`O(N)` linear time**. 
+
+Why? Think about the physical geometry of a tree:
+- In any complete binary tree, **roughly 50% of all nodes (`N / 2`) sit at the very bottom level (leaves)**.
+- Another **25% (`N / 4`) sit just one level above the leaves**.
+- Only **one single node (the root)** sits at the very top!
+
+```text
+PHYSICAL INTUITION: WORK PER LEVEL IN BOTTOM-UP HEAPIFY:
+Level 0 (Root):       [ 1 node ]        -> Travels at most log(N) levels down (Max work, but only 1 node!)
+Level 1:             [ 2 nodes ]       -> Travel at most 2 levels down
+Level 2:            [ 4 nodes ]       -> Travel at most 1 level down
+Level 3 (Leaves):  [ 8 nodes = 50% ]  -> Travel ZERO levels down! (0 hops!)
+```
+
+When you build bottom-up using Sift-Down:
+- Half the entire array (`N / 2` leaves) does **0 swaps**.
+- A quarter of the array (`N / 4` nodes) does at most **1 swap**.
+- An eighth of the array (`N / 8` nodes) does at most **2 swaps**.
+- Only the 1 root node does `log N` swaps.
+
+The heaviest work is done by the fewest nodes; the lightest work (zero) is done by the vast majority of nodes. When you sum up the mathematical series:
+
+`Total Swaps = (N/4 * 1) + (N/8 * 2) + (N/16 * 3) + ... = N * sum(h / 2^(h+1)) = N * 1 = O(N)`
+
+The infinite series converges strictly to a constant! Building a heap from scratch takes **linear time `O(N)`**.
+
+---
+
+## 🪜 PILLAR 2: THE SCAFFOLDING LADDER & THE TOY NAPKIN TRACE
+
+Let's demystify bottom-up heapification by taking a napkin, picking a tiny 5-element array, and tracing every single memory swap by hand.
+
+### 📐 The Toy Array: `[4, 10, 3, 5, 1]`
+
+We want to transform this raw, unsorted array into a valid **Max-Heap** (where every parent is greater than or equal to both of its children).
+
+Length `N = 5`.
+Let's find the **last non-leaf node**:
+`LastNonLeaf = (N / 2) - 1 = (5 / 2) - 1 = 2 - 1 = 1`.
+
+This means nodes at indices `2`, `3`, and `4` are leaves! They have no children, so they already satisfy the heap property by definition. We only need to process internal nodes backwards: **Index 1**, then **Index 0**.
+
+```text
+INITIAL TREE INTERPRETATION (Unsorted Array [4, 10, 3, 5, 1]):
+
+             [ 4 ] (idx 0)
+            /     \
+    [ 10 ] (idx 1) [ 3 ] (idx 2: leaf)
+     /    \
+[ 5 ]      [ 1 ]
+(idx 3)    (idx 4)
+```
+
+---
+
+### Step 1: Sift-Down on Index 1 (`Value = 10`)
+
+- Node at index 1 has value `10`.
+- Left child: `2 * 1 + 1 = 3` (Value `5`).
+- Right child: `2 * 1 + 2 = 4` (Value `1`).
+- Compare parent and children: `{10, 5, 1}`.
+- Largest value is `10` (the parent itself).
+- **Result:** No swap needed! Index 1 is already a valid max-heap subtree.
+
+---
+
+### Step 2: Sift-Down on Index 0 (`Value = 4`)
+
+Now we move backwards to index 0.
+
+- Node at index 0 has value `4`.
+- Left child: `2 * 0 + 1 = 1` (Value `10`).
+- Right child: `2 * 0 + 2 = 2` (Value `3`).
+- Compare `{4, 10, 3}`: The largest child is `10` at index 1.
+- `10 > 4` -> Heap invariant violated! **Swap index 0 and index 1.**
+
+```text
+SWAP 1 OCCURS (Index 0 <-> Index 1):
+Array before swap: [ 4, 10, 3, 5, 1 ]
+Array after swap:  [ 10, 4, 3, 5, 1 ]
+
+Intermediate Tree State:
+             [ 10 ] (idx 0)   <-- 10 promoted to root!
+            /      \
+     [ 4 ] (idx 1)  [ 3 ] (idx 2)
+     /    \
+[ 5 ]      [ 1 ]
+(idx 3)    (idx 4)
+```
+
+**Notice:** Node `4` has moved down to index 1. We must continue sifting it down until it finds its proper resting place!
+
+- Node at index 1 now has value `4`.
+- Left child: `2 * 1 + 1 = 3` (Value `5`).
+- Right child: `2 * 1 + 2 = 4` (Value `1`).
+- Compare `{4, 5, 1}`: The largest child is `5` at index 3.
+- `5 > 4` -> Invariant violated! **Swap index 1 and index 3.**
+
+```text
+SWAP 2 OCCURS (Index 1 <-> Index 3):
+Array before swap: [ 10, 4, 3, 5, 1 ]
+Array after swap:  [ 10, 5, 3, 4, 1 ]
+
+Final Tree State:
+             [ 10 ] (idx 0)
+            /      \
+     [ 5 ] (idx 1)  [ 3 ] (idx 2)
+     /    \
+[ 4 ]      [ 1 ]
+(idx 3)    (idx 4)
+```
+
+Node `4` is now at index 3. Its left child would be `2 * 3 + 1 = 7`, which is `>= N` (out of bounds). It has become a leaf! Sift-down terminates.
+
+**Final Array:** `[10, 5, 3, 4, 1]`.
+Let's verify:
+- Root `10` `>=` children `5` and `3`. (Valid!)
+- Parent `5` `>=` children `4` and `1`. (Valid!)
+- Leaf `3` has no children. (Valid!)
+
+We have transformed an arbitrary array into a valid Max-Heap in just **2 comparisons and 2 swaps**!
+
+---
+
+### 🧠 Pause & Predict Micro-Drill
+
+> **Active Recall Challenge:**
+> Suppose you take our finalized Max-Heap array `[10, 5, 3, 4, 1]` and invoke `Insert(12)`.
+> 
+> Before reading further, answer these 3 questions on your notepad:
+> 1. At which array index is `12` initially placed?
+> 2. What is the index of its initial parent?
+> 3. How many swaps will take place, and what will the final array look like?
+
+<details>
+<summary>🔍 Click here to reveal the step-by-step verification!</summary>
+
+**Solution Walkthrough:**
+1. **Initial placement:** `12` is appended to the very end of the array at index `5` (`Count` becomes 6). Array: `[10, 5, 3, 4, 1, 12]`.
+2. **Initial Parent:** `Parent(5) = (5 - 1) / 2 = 2` (which contains value `3`).
+3. **Sift-Up Trace:**
+   - **Comparison 1:** `12 > 3` -> Invariant violated! Swap index 5 and index 2.
+     - Array becomes: `[10, 5, 12, 4, 1, 3]`.
+   - **Comparison 2:** `12` is now at index 2. Its parent is `(2 - 1) / 2 = 0` (which contains value `10`).
+   - `12 > 10` -> Invariant violated! Swap index 2 and index 0.
+     - Array becomes: `[12, 5, 10, 4, 1, 3]`.
+   - `12` is now at index 0 (the root). Sift-up terminates!
+4. **Final Array:** `[12, 5, 10, 4, 1, 3]`. Total swaps: **Exactly 2**.
+
+</details>
+
+---
+
+## 🎨 PILLAR 3: PRAGMATIC VISUAL MODELS
+
+### 1. ASCII Contiguous Memory & Pointer Arithmetic Map
+
+Here is the exact mental model to hold in your head during an interview. See how the visual tree perfectly mirrors array indices:
+
+```text
+COMPLETE BINARY TREE (SHAPE INVARIANT):
+                  +--------------+
+                  |  Index 0: 50 |
+                  +--------------+
+                   /            \
+        +--------------+    +--------------+
+        |  Index 1: 30 |    |  Index 2: 20 |
+        +--------------+    +--------------+
+         /            \      /
+  +--------------+  +----+  +----+
+  |  Index 3: 10 |  | 5  |  | 15 |
+  +--------------+  +----+  +----+
+                    idx 4   idx 5
+
+FLAT CONTIGUOUS ARRAY STORAGE IN RAM:
++-------------+-------------+-------------+-------------+-------------+-------------+
+|     50      |     30      |     20      |     10      |      5      |     15      |
++-------------+-------------+-------------+-------------+-------------+-------------+
+    Index 0       Index 1       Index 2       Index 3       Index 4       Index 5
+     (Root)     Left(0)=2(0)+1 Right(0)=2(0)+2 Left(1)=2(1)+1 Right(1)=2(1)+2 Left(2)=2(2)+1
+```
+
+---
+
+### 2. Modern Mermaid Flowchart: Heap Strategy & Decision Tree
+
+When solving FAANG algorithmic problems, how do you decide which heap operation or data structure to use? Follow this senior architectural decision tree:
 
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    subgraph CompleteHeap["✅ Complete Tree (Valid Heap Array Representation)"]
-        C50["50 (idx: 0)"] --> C30["30 (idx: 1)"]
-        C50 --> C20["20 (idx: 2)"]
-        C30 --> C10["10 (idx: 3)"]
-        C30 --> C5["5 (idx: 4)"]
-    end
+    Start(["🎯 Problem Requirement"]):::rootNode
+    Start --> Q1{"Static Array or<br/>Streaming Data?"}:::decisionNode
+    
+    Q1 -->|"Static Raw Array"| OpBuild["📦 Floyd BuildHeap<br/>Bottom-Up Sift-Down<br/>⚡ O(N) Time | O(1) Space"]:::buildNode
+    Q1 -->|"Dynamic Stream"| Q2{"Find Min/Max or<br/>Top-K Elements?"}:::decisionNode
+    
+    Q2 -->|"Single Min/Max"| OpCRUD["⚡ Insert: Sift-Up O(log N)<br/>🎯 Extract: Sift-Down O(log N)<br/>👀 Peek: O(1) Time"]:::actionNode
+    Q2 -->|"Top-K Elements"| Q3{"K Largest or<br/>K Smallest?"}:::decisionNode
+    
+    Q3 -->|"K-th Largest"| MinK["🛡️ Min-Heap of Size K<br/>Root = K-th Largest boundary<br/>💾 O(K) Space | ⏱️ O(N log K)"]:::minHeapNode
+    Q3 -->|"K-th Smallest"| MaxK["🛡️ Max-Heap of Size K<br/>Root = K-th Smallest boundary<br/>💾 O(K) Space | ⏱️ O(N log K)"]:::maxHeapNode
 
-    subgraph IncompleteHeap["❌ Incomplete Tree (Gap at Left Child idx: 3)"]
-        I50["50 (idx: 0)"] --> I30["30 (idx: 1)"]
-        I50 --> I20["20 (idx: 2)"]
-        I30 -.-> IG["Gap at idx: 3!"]:::errorNode
-        I30 --> I15["15 (Right child<br/>only)"]:::errorNode
-    end
-
-    classDef default fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#ffffff
-    classDef errorNode fill:#b71c1c,stroke:#ff8a80,stroke-width:2px,color:#ffffff
+    classDef rootNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
+    classDef decisionNode fill:#37474f,stroke:#90a4ae,stroke-width:2px,color:#ffffff
+    classDef buildNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
+    classDef actionNode fill:#e65100,stroke:#ffb74d,stroke-width:2px,color:#ffffff
+    classDef minHeapNode fill:#004d40,stroke:#80cbc4,stroke-width:2px,color:#ffffff
+    classDef maxHeapNode fill:#4a148c,stroke:#ce93d8,stroke-width:2px,color:#ffffff
 ```
 
-- **Array for Complete Tree:** `[50, 30, 20, 10, 5]` — dense with 0 memory holes.
-- **Why Incomplete Tree is Invalid:** Index 3 would correspond to a non-existent left child, breaking index arithmetic formulas and violating array packing invariants.
+---
+
+## ⚙️ COMPLETE CRUD OPERATIONS & UNDER-THE-HOOD MECHANICS
+
+Let's break down the mechanical execution of every core heap operation.
+
+### 🔧 Operation 1: `Peek()` (`O(1)` Time)
+Because of the heap invariant, the absolute extremum sits at index `0`. We directly return `arr[0]`. No child checks, no loops, strictly one CPU memory dereference.
 
 ---
 
-## ⚙️ CHAPTER 3: MECHANICS & IMPLEMENTATION
+### 🔧 Operation 2: `Insert(item)` (Sift-Up / Bubble-Up — `O(log N)` Time)
+When inserting an element, we must satisfy two invariants:
+1. **The Complete Binary Tree Shape Invariant:** There must be zero gaps in the array.
+2. **The Heap Invariant:** Every parent must dominate its children.
 
-### The State Machine: Complete CRUD Operations Overview
+**Mechanical Steps:**
+1. Append the new item to the end of the array at index `N` (`Count`). This preserves the complete tree shape.
+2. Compare the item with its parent at `(i - 1) / 2`.
+3. If the item violates the heap property (e.g., in a Min-Heap, `heap[i] < heap[parent]`), swap them.
+4. Move `i = parent` and repeat upward until the parent is valid or the item becomes the root (`i == 0`).
 
-A Binary Heap / Priority Queue provides a compact set of fundamental CRUD operations:
-
-| Operation | Purpose | Array Mechanism | Time Complexity | Auxiliary Space |
-| :--- | :--- | :--- | :---: | :---: |
-| **Peek / FindMin (FindMax)** | Read root extremum | Direct index access `arr[0]` | `O(1)` | `O(1)` |
-| **Insert / Enqueue** | Add new item | Append to end, `SiftUp` | `O(log N)` | `O(1)` |
-| **ExtractMin / ExtractMax** | Remove and return root extremum | Swap root with `arr[N-1]`, pop last, `SiftDown(0)` | `O(log N)` | `O(1)` |
-| **Heapify / BuildHeap** | Convert raw array into heap | Bottom-up sift-down from `(N/2)-1` down to `0` | `O(N)` | `O(1)` |
-| **ChangePriority / UpdateKey** | Update item priority | Update value, call `SiftUp` or `SiftDown` | `O(log N)` | `O(1)` (with index map) |
+```text
+INSERT SIFT-UP MECHANICAL FLOW:
+Step 1: Append to end of array -> Shape invariant preserved!
+Step 2: Compare with Parent at (i - 1) / 2.
+Step 3: If child has higher priority, SWAP and bubble UP.
+Step 4: Stop when parent is higher priority or i == 0.
+Max Hops: Tree height = floor(log2(N)) -> O(log N).
+```
 
 ---
 
-### 🔧 Operation 1: Peek / FindMin / FindMax (`O(1)`)
+### 🔧 Operation 3: `ExtractMin()` / `ExtractMax()` (Sift-Down / Bubble-Down — `O(log N)` Time)
+Removing the root creates a hole at index `0`. How do we fill it without shifting `N` array elements in slow `O(N)` time?
 
-Because of the heap invariant, the absolute minimum (in a min-heap) or absolute maximum (in a max-heap) is guaranteed to sit at the root node at index `0`. No search, tree traversal, or child inspection is required:
+**The Root-Swap-and-Pop Technique:**
+1. Save the root value `arr[0]` to return.
+2. Overwrite `arr[0]` with the very last leaf element `arr[Count - 1]`, and shrink array length by 1 (`Count--`). This preserves the complete binary tree shape.
+3. Sift-down from index `0`:
+   - Compute left child `2*i + 1` and right child `2*i + 2`.
+   - Find the highest priority among the parent and its valid children.
+   - If a child has higher priority than the parent, swap them.
+   - Set `i = child_index` and repeat downward until no child violates the invariant or the node becomes a leaf (`2*i + 1 >= Count`).
+
+```text
+EXTRACT SIFT-DOWN MECHANICAL FLOW:
+Step 1: Save arr[0].
+Step 2: arr[0] = arr[Count - 1]; Count--; (Overwrite root with last leaf).
+Step 3: Find smallest (or largest) among {arr[i], arr[left], arr[right]}.
+Step 4: If child violates invariant, SWAP and bubble DOWN.
+Step 5: Stop when parent is properly ordered or node has no children.
+Max Hops: Tree height = floor(log2(N)) -> O(log N).
+```
+
+---
+
+### 🔧 Operation 4: Floyd's Bottom-Up `BuildHeap` (`O(N)` Time)
+Rather than starting with an empty heap and calling `Insert` `N` times (which takes `O(N log N)`), Floyd's algorithm starts from the last internal node `(N / 2) - 1` and calls `SiftDown` backwards down to `0`.
 
 ```csharp
-public T Peek() {
-    if (Count == 0) throw new InvalidOperationException("Heap is empty");
-    return heap[0]; // Strict O(1) direct memory dereference
+// Floyd's Linear Time Heapify:
+for (int i = (n / 2) - 1; i >= 0; i--) {
+    SiftDown(i);
 }
 ```
 
 ---
 
-### 🔧 Operation 2: Insert / Enqueue (Sift-Up / Bubble-Up)
+### 🔧 Operation 5: In-Place `HeapSort` (`O(N log N)` Time, `O(1)` Auxiliary Space)
+HeapSort is a comparison-based sorting algorithm that operates **in-place** with zero extra memory allocation!
 
-When inserting an element, we must preserve two invariants simultaneously:
-1. **The Shape Invariant:** The tree must remain a complete binary tree (no gaps).
-2. **The Heap Invariant:** Every parent must satisfy the priority condition relative to its children.
-
-**Mechanical Steps:**
-1. Append the new element to the physical end of the array at index `N` (`Count`). This maintains the complete binary tree shape.
-2. Compare the element at index `i` with its parent at `(i - 1) / 2`.
-3. If the element violates the heap property (e.g., in a max-heap, `heap[i] > heap[parent]`), swap the element with its parent.
-4. Update `i = parent` and repeat upward until the parent satisfies the invariant or the element becomes the root (`i == 0`).
+**The 2-Phase Algorithm:**
+- **Phase 1 (Heapify):** Transform the input array into a **Max-Heap** in `O(N)` using Floyd's bottom-up sift-down.
+- **Phase 2 (Sorted Extraction):** Repeatedly swap the root `arr[0]` (the maximum element) with the last element of the active heap `arr[end]`. Shrink the active heap boundary (`end--`), and call `SiftDown(0)` to restore the heap invariant.
+- After `N - 1` iterations, the array is strictly sorted in ascending order!
 
 ```text
-INSERTION TRACE: Insert 25 into Max-Heap [50, 30, 20, 10, 5, 15]
+HEAPSORT TWO-PHASE IN-PLACE PIPELINE:
+Phase 1: Build Max-Heap bottom-up in O(N).
+         Array: [ 50, 30, 20, 10, 5 ]
 
-Step 1: Append 25 to end of array at index 6.
-Array:  [ 50,  30,  20,  10,   5,  15,  25 ]
-Index:     0    1    2    3    4    5    6
-Tree:
-             50 (0)
-           /        \
-       30 (1)      20 (2)
-      /      \     /     \
-    10 (3)  5 (4) 15 (5) [25] (6)  <-- New node appended at leaf
+Phase 2: Extract Root to End & Shrink Boundary:
+Iteration 1: Swap arr[0] (50) with arr[4] (5). Active size becomes 4.
+             Array: [ 5, 30, 20, 10 | 50 ]  <-- 50 locked into final position!
+             SiftDown(0) on active region [0..3]:
+             Array: [ 30, 10, 20, 5 | 50 ]
 
-Step 2: Sift-Up at index 6:
-  Parent index = (6 - 1) / 2 = 2 (value: 20).
-  Compare: 25 > 20 -> Heap invariant violated! Swap index 6 and index 2.
-Array:  [ 50,  30,  25,  10,   5,  15,  20 ]
-Index:     0    1    2    3    4    5    6
-Tree:
-             50 (0)
-           /        \
-       30 (1)     [25] (2)  <-- Swapped up
-      /      \     /     \
-    10 (3)  5 (4) 15 (5)  20 (6)
+Iteration 2: Swap arr[0] (30) with arr[3] (5). Active size becomes 3.
+             Array: [ 5, 10, 20 | 30, 50 ]  <-- 30 locked!
+             SiftDown(0) on active region [0..2]:
+             Array: [ 20, 10, 5 | 30, 50 ]
 
-Step 3: Sift-Up at index 2:
-  Parent index = (2 - 1) / 2 = 0 (value: 50).
-  Compare: 25 <= 50 -> Heap invariant satisfied! Stop sifting.
-Final Array: [ 50, 30, 25, 10, 5, 15, 20 ]
-Swaps: 1 swap across 2 comparisons.
-Time Complexity: Bounded by tree height h = floor(log2(N)) -> O(log N).
+Iteration 3: Swap arr[0] (20) with arr[2] (5). Active size becomes 2.
+             Array: [ 5, 10 | 20, 30, 50 ]
+             SiftDown(0):
+             Array: [ 10, 5 | 20, 30, 50 ]
+
+Iteration 4: Swap arr[0] (10) with arr[1] (5). Active size becomes 1.
+             Array: [ 5, 10, 20, 30, 50 ]  <-- FULLY SORTED IN-PLACE!
 ```
 
 ---
 
-### 🔧 Operation 3: Extract-Min / Extract-Max (Sift-Down / Bubble-Down)
+### 🔧 Operation 6: Linear-Time Sorting — Counting Sort (`O(N + K)`)
 
-Extracting the extremum removes the root node. To avoid creating a structural gap at index `0` or shifting `N` elements in `O(N)` time, we use the root-swap-and-pop technique.
-
-**Mechanical Steps:**
-1. Save the root element `arr[0]` to return.
-2. Copy the very last leaf element `arr[Count - 1]` into the root position `arr[0]`, then remove the last array element. This preserves the complete binary tree shape.
-3. Sift-down from index `0`: compute children `left = 2*i + 1` and `right = 2*i + 2`.
-4. Identify the extremum among `arr[i]`, `arr[left]`, and `arr[right]` (the larger child in a max-heap, or smaller child in a min-heap).
-5. If the chosen child has higher priority than `arr[i]`, swap `arr[i]` with that child.
-6. Set `i` to the child's index and repeat downward until the node satisfies the heap property or becomes a leaf (`2*i + 1 >= Count`).
+When sorting integers bounded in a finite range `[0..K]`, comparison sorting algorithms hit an information-theoretic lower bound of `Omega(N log N)`. **Counting Sort** bypasses this lower bound completely by using values directly as array indices.
 
 ```text
-EXTRACT-MAX TRACE: Extract from Max-Heap [50, 30, 20, 10, 5, 15]
+COUNTING SORT PIPELINE (N = 7, K = 8):
+Input Array:       [ 4,  2,  2,  8,  3,  3,  1 ]
 
-Step 1: Save root (50). Overwrite root with last element (15) and pop last element.
-Array:  [ 15,  30,  20,  10,   5 ]
-Index:     0    1    2    3    4
-Tree:
-            [15] (0)  <-- Last element placed at root
-           /        \
-       30 (1)      20 (2)
-      /      \
-    10 (3)  5 (4)
+Step 1: Frequency Histogram (Count occurrences):
+Index:  0   1   2   3   4   5   6   7   8
+Count: [0,  1,  2,  2,  1,  0,  0,  0,  1]
 
-Step 2: Sift-Down at index 0:
-  Left child  = 2*0 + 1 = 1 (value 30)
-  Right child = 2*0 + 2 = 2 (value 20)
-  Largest of {15, 30, 20} is 30 at index 1.
-  Swap index 0 (15) with index 1 (30).
-Array:  [ 30,  15,  20,  10,   5 ]
-Index:     0    1    2    3    4
-Tree:
-             30 (0)
-           /        \
-       [15] (1)    20 (2)  <-- 15 moved down to level 1
-      /      \
-    10 (3)  5 (4)
+Step 2: Running Prefix Sum (Determines exact boundary positions in output):
+Prefix:[0,  1,  3,  5,  6,  6,  6,  6,  7]
 
-Step 3: Sift-Down at index 1:
-  Left child  = 2*1 + 1 = 3 (value 10)
-  Right child = 2*1 + 2 = 4 (value 5)
-  Largest of {15, 10, 5} is 15 at index 1.
-  No child is larger than 15 -> Heap invariant satisfied! Stop.
-Final Array: [ 30, 15, 20, 10, 5 ], Return 50.
-Time Complexity: Bounded by tree height h = floor(log2(N)) -> O(log N).
+Step 3: Stable Reverse Traversal & Placement into Output:
+Output: [ 1,  2,  2,  3,  3,  4,  8 ]
+Time: O(N + K) | Auxiliary Space: O(N + K) | Stable
 ```
 
 ---
 
-### 🔧 Operation 4: Heapify / Build-Heap (Bottom-Up Sift-Down in `O(N)`)
+## 🛑 PILLAR 4: THE ROOKIE TRAP ZONE
 
-Suppose you are given an arbitrary, unsorted array of `N` elements. How do you convert it into a valid heap?
-
-- **Naive Approach (Repeated Insertion):** Start with an empty heap and call `Insert` `N` times.
-  Time: `log(1) + log(2) + ... + log(N) = log(N!) = O(N log N)`.
-- **Optimal Approach (Floyd's Bottom-Up Heapify):** Place all `N` elements into the array as-is, then call `SiftDown(i)` in reverse order from index `(N / 2) - 1` down to `0`.
-  Time: Strictly `O(N)`.
-
-**Why start at `(N / 2) - 1`?**
-In any complete binary tree of size `N`, all nodes from index `N / 2` to `N - 1` are leaves. A leaf node has no children, so it trivially satisfies the heap invariant. Only the internal nodes (from `(N / 2) - 1` down to `0`) need to be sifted down!
+### Trap 1: The Top-K Streaming Trap (The #1 FAANG Interview Filter)
 
 ```text
-FLOYD'S HEAPIFY O(N) INTUITIVE VISUAL PROOF:
+THE SCENARIO:
+"Find the K-th Largest element in a massive incoming stream of N numbers."
+```
 
-Tree Level Breakdown for N = 15 nodes:
-Height (h)   Level    Node Count (<= N / 2^(h+1))   Max Swaps per Node   Total Swaps at Level
------------------------------------------------------------------------------------------
-h = 0 (Leaves) L3     8 nodes (~N / 2)              0 swaps (skipped)    8 * 0 = 0
-h = 1          L2     4 nodes (~N / 4)              1 swap               4 * 1 = 4
-h = 2          L1     2 nodes (~N / 8)              2 swaps              2 * 2 = 4
-h = 3 (Root)   L0     1 node  (~N / 16)             3 swaps              1 * 3 = 3
------------------------------------------------------------------------------------------
-Total Swaps: 0 + 4 + 4 + 3 = 11 swaps < 15 (strictly less than N)!
+```text
+❌ ROOKIE BLUNDER
+Using a Max-Heap of size N:
+- The candidate inserts all N numbers into a Max-Heap.
+- Then calls ExtractMax() K times.
+- Time Complexity: O(N + K log N)
+- Memory: O(N)
+Why this fails FAANG interviews:
+If N = 1,000,000,000 (1 billion telemetry events) and K = 10, you store 1 billion items in RAM!
+Your server crashes with an OutOfMemoryException (OOM).
+```
 
-Mathematical Derivation:
-Total Cost S = sum_{h=0}^{log N} (N / 2^(h+1)) * h
-             = (N / 2) * sum_{h=0}^{log N} (h / 2^h)
-
-Evaluating the geometric series:
-  Let G = (0/1) + (1/2) + (2/4) + (3/8) + (4/16) + (5/32) + ...
-  (1/2) * G =     (0/2) + (1/4) + (2/8) + (3/16) + (4/32) + ...
-  Subtracting the two lines:
-  (1/2) * G = (1/2) + (1/4) + (1/8) + (1/16) + ... = 1
-  Therefore: G = 2.
-  Total Swaps S = (N / 2) * G = (N / 2) * 2 = N = O(N)!
-
-Key Physical Intuition:
-- Top-down repeated insertion (O(N log N)) pushes the vast majority of nodes
-  (N/2 leaves) all the way UP through log N levels (maximum work on maximum nodes).
-- Bottom-up heapify (O(N)) lets the vast majority of nodes (N/2 leaves) do ZERO work,
-  while only a single node (the root) sifts down log N levels. The heaviest work is
-  performed on the smallest fraction of nodes.
+```text
+✅ SENIOR ARCHITECT PATTERN
+Using a Bounded Min-Heap of size K:
+- Maintain a Min-Heap of capacity K.
+- Process elements one by one:
+  - If heap.Count < K: push item.
+  - Else if item > heap.Peek(): pop root, push item.
+- Time Complexity: O(N log K)
+- Memory: Strictly O(K)
+Why this dominates:
+The Min-Heap acts as an exclusive VIP club of size K.
+The weakest member sits at the root (heap.Peek()).
+If someone better arrives, the weakest gets evicted!
+At the end, heap.Peek() IS the K-th largest element.
+Memory is O(K) — for K = 10, you store only 10 integers in RAM even if N is 1 trillion!
 ```
 
 ---
 
-### 🔧 Operation 5: ChangePriority / UpdateKey (`O(log N)`)
-
-In real-world priority queues (such as Dijkstra's shortest path algorithm, A* search, and process schedulers), an element's priority often needs to be dynamically modified after insertion:
-- **`DecreaseKey(item, newPriority)`:** Lowers the priority value (in a Min-Heap, this promotes the item toward the root via `SiftUp`).
-- **`IncreaseKey(item, newPriority)`:** Increases the priority value (in a Min-Heap, this demotes the item toward the leaves via `SiftDown`).
-
-**The Challenge:**
-In a standard binary heap, finding where `item` is stored requires an `O(N)` linear array scan, degrading `ChangePriority` to `O(N)`.
-
-**The Solution: Handle Tracking (Indexed Priority Queue):**
-Maintain an auxiliary index map (`Dictionary<TItem, int> indexMap` or an integer array `indexMap[id]`) that tracks the current array position of each item. Whenever two elements are swapped in the heap during `SiftUp` or `SiftDown`, their indices in `indexMap` are updated simultaneously in `O(1)`.
+### Trap 2: Heap Construction Trap (Top-Down vs Bottom-Up)
 
 ```text
-CHANGE-PRIORITY MECHANICS & TRACE (Min-Heap):
+❌ ROOKIE BLUNDER: Repeated Insertion
+var heap = new MinHeap();
+foreach (var num in array) {
+    heap.Insert(num); // Sift-Up for every element!
+}
+// Time Complexity: O(N log N)
+```
 
-Initial Min-Heap: [ 10, 30, 20, 40, 50, 60 ]
-indexMap: { A:0 (10), B:1 (30), C:2 (20), D:3 (40), E:4 (50), F:5 (60) }
-
-Operation: ChangePriority(D, 5) -> D was 40 at index 3, new priority is 5.
-Step 1: Look up index of D in indexMap -> index = 3 in O(1).
-Step 2: Update value: heap[3] = 5.
-Step 3: Compare new value (5) with old value (40):
-        In a Min-Heap, 5 < 40 (priority increased / key decreased).
-        Element must move UPWARD toward root -> SiftUp(3):
-          - Parent of 3 is (3 - 1) / 2 = 1 (value 30, item B).
-          - 5 < 30 -> Invariant violated! Swap index 3 and index 1.
-          - Update indexMap: indexMap[D] = 1, indexMap[B] = 3.
-Array:  [ 10,  5 (D), 20, 40 (B), 50, 60 ]
-
-Step 4: Continue SiftUp at index 1:
-          - Parent of 1 is (1 - 1) / 2 = 0 (value 10, item A).
-          - 5 < 10 -> Invariant violated! Swap index 1 and index 0.
-          - Update indexMap: indexMap[D] = 0, indexMap[A] = 1.
-Array:  [ 5 (D), 10 (A), 20, 40 (B), 50, 60 ]
-
-Step 5: D is now root (index 0). Stop sifting.
-Total Cost: O(1) lookup + O(log N) SiftUp = O(log N).
+```text
+✅ SENIOR ARCHITECT PATTERN: Floyd's Heapify
+var heap = new MinHeap(array); // Sift-Down from (N/2)-1 down to 0
+// Time Complexity: Strictly O(N)
 ```
 
 ---
 
-### 🔄 Heap Variations & Structural Contrasts
-
-#### 1. Min-Heap vs Max-Heap Duality
-A Min-Heap and Max-Heap are duals of each other:
-- In a **Min-Heap**, parent `<= ` both children (`heap[parent] <= heap[child]`). Root is the minimum element.
-- In a **Max-Heap**, parent `>= ` both children (`heap[parent] >= heap[child]`). Root is the maximum element.
-- **Implementation Duality:** Any min-heap implementation can be converted into a max-heap simply by negating priority comparisons (or multiplying numerical values by `-1`).
-
-#### 2. K-ary Heap (d-ary Heap)
-A K-ary (or d-ary) heap is a generalization where each node has up to `d` children instead of 2.
-
-**Flat Array Arithmetic for d-ary Heap (0-indexed):**
-- **Parent of index `i`:** `(i - 1) / d`
-- **Children of index `i`:** `d * i + 1`, `d * i + 2`, ..., `d * i + d`
-- **Tree Height:** `ceil(log_d N)`
-
-**The Architectural Trade-Off:**
-
-| Metric | Binary Heap (`d = 2`) | 4-ary Heap (`d = 4`) | General d-ary Heap |
-| :--- | :---: | :---: | :---: |
-| **Tree Height** | `log_2 N` | `0.50 * log_2 N` | `log_d N` |
-| **Sift-Up Comparisons** | `log_2 N` (1 per level) | `0.50 * log_2 N` (1 per level) | `O(log_d N)` (Faster!) |
-| **Sift-Down Comparisons**| `2 * log_2 N` (2 per level) | `4 * 0.50 * log_2 N = 2 * log_2 N` | `O(d * log_d N)` (Slower for large d) |
-| **CPU Cache Alignment** | Children may cross cache lines | 4 children fit in 64-byte L1 cache line | Cache-tuned if `d * sizeof(T) <= 64` |
-
-> [!TIP]
-> **Why 4-ary Heaps Dominate in Practice:** In Dijkstra's algorithm, `DecreaseKey` (sift-up) is executed `O(E)` times, while `ExtractMin` (sift-down) is executed only `O(V)` times. On dense graphs where `E >> V`, a 4-ary heap cuts sift-up height in half with zero memory penalty. Furthermore, 4 contiguous 64-bit pointers occupy exactly 32 bytes, allowing all child pointers to reside in a single 64-byte CPU L1 cache line.
-
-#### 3. Why In-Order Traversal Does NOT Yield Sorted Order (Heap vs BST)
-
-Beginners frequently confuse Binary Heaps with Binary Search Trees (BSTs) and assume an in-order traversal of a heap visits nodes in sorted order. **This is completely false.**
+### Trap 3: The "Heap is Sorted" Fallacy (Heap vs BST)
 
 ```text
-BST TOTAL ORDERING vs HEAP PARTIAL ORDERING:
+❌ ROOKIE MYTH:
+"An in-order traversal of a min-heap outputs elements in sorted order."
 
-Binary Search Tree (In-Order Traversal = SORTED):
-            20
-          /    \
-        10      30
-       /  \    /  \
-      5   15  25  35
-In-Order Traversal (Left -> Root -> Right): 5, 10, 15, 20, 25, 30, 35  [STRICTLY SORTED]
-Structural Rule: LeftSubtree < Node < RightSubtree (Horizontal total ordering across real line).
-
-Binary Min-Heap (In-Order Traversal = UNSORTED):
+REALITY:
+A Heap is only PARTIALLY ordered vertically (Parent <= Children).
+Siblings have ZERO ordering relationship with each other!
+Example Min-Heap:
              5
            /   \
          20     10
         /  \   /  \
        25  30 15  35
-In-Order Traversal (Left -> Root -> Right): 25, 20, 30, 5, 15, 10, 35  [ARBITRARY JUMBLE!]
-Structural Rule: Parent <= Children (Strictly vertical ancestor-descendant partial ordering).
-Sibling Rule: Siblings (20 and 10) have ZERO ordering relationship! Notice 20 > 10.
-```
 
-**The Core Distinction:**
-- **BST Invariant:** A horizontal partition. Everything to the left of a node is smaller; everything to the right is larger. Projecting the tree down to 1D via in-order traversal produces sorted output in `O(N)`.
-- **Heap Invariant:** A vertical hierarchy. Parents dominate children, but siblings and cousins are completely unordered relative to one another.
-- **Consequence:** You **cannot** sort data simply by walking a heap. To extract sorted order from a heap, you must invoke `ExtractMin` repeatedly `N` times, producing `O(N log N)` HeapSort.
+In-Order Walk (Left -> Root -> Right): 25, 20, 30, 5, 15, 10, 35 (AN ARBITRARY JUMBLE!)
+To extract sorted order from a heap, you MUST call ExtractMin() N times in O(N log N) time.
+If you need non-destructive sorted iteration in O(N), use a Balanced BST (Red-Black / AVL Tree).
+```
 
 ---
 
-### 💻 Dual-Language Implementations: Complete CRUD Heaps
+### Trap 4: Off-By-One Child Index Calculation
 
-#### Modern C# (.NET 8/9): Production Indexed Min-Heap with Complete CRUD
+```csharp
+// ❌ ROOKIE BLUNDER (Confusing 1-based textbook formulas with 0-based code):
+int left = 2 * i;      // WRONG! For i=0, 2*0 = 0 (infinite self loop!)
+int right = 2 * i + 1; // WRONG!
+
+// ✅ SENIOR ARCHITECT PATTERN (Strict 0-indexed arithmetic):
+int left = 2 * i + 1;
+int right = 2 * i + 2;
+int parent = (i - 1) / 2;
+```
+
+---
+
+### Trap 5: Missing Boundary Guard Before Array Access
+
+```csharp
+// ❌ ROOKIE BLUNDER (IndexOutOfRangeException):
+if (arr[left] > arr[largest]) largest = left; // CRASH if left >= N!
+
+// ✅ SENIOR ARCHITECT PATTERN (Short-circuit boundary validation):
+if (left < n && arr[left] > arr[largest]) largest = left;
+if (right < n && arr[right] > arr[largest]) largest = right;
+```
+
+---
+
+## 🎙️ PILLAR 5: 45-MINUTE INTERVIEW TALK TRACK
+
+In a live FAANG interview, when a problem requires priority access, Top-K filtering, or streaming median tracking, deliver this crisp **3-sentence verbal script** before writing a single line of code:
+
+> 🎙️ **Sentence 1 (Data Structure & Layout):**  
+> *"I will model this problem using a binary heap backed by a contiguous 1D array, computing parent-child relationships via zero-overhead index arithmetic—`2i + 1` for the left child, `2i + 2` for the right child, and `(i - 1) / 2` for the parent."*
+
+> 🎙️ **Sentence 2 (Algorithmic Construction & Complexity):**  
+> *"If given a static array, I will initialize the heap in linear `O(N)` time using Floyd's bottom-up sift-down starting at index `(N / 2) - 1`, leveraging the fact that leaf nodes do zero swaps and work decreases exponentially toward the root."*
+
+> 🎙️ **Sentence 3 (Streaming Top-K Invariant):**  
+> *"To find the K-th largest element in a streaming dataset, I will maintain a bounded Min-Heap of size K rather than a Max-Heap of size N; this caps auxiliary space at strictly `O(K)` and ensures the root continually stores the K-th largest boundary in `O(N log K)` total time."*
+
+---
+
+## ⚡ PILLAR 6: PRODUCTION DUAL-LANGUAGE IMPLEMENTATIONS
+
+### 1. Modern C# (.NET 8/9): Production Allocation-Aware Min-Heap
+
+Here is a production-grade, allocation-aware `MinHeap<T>` implementation using modern C# features: primary constructors, expression-bodied members, generics with `IComparable<T>`, and Floyd's `O(N)` heapify.
 
 ```csharp
 using System;
 using System.Collections.Generic;
 
 /// <summary>
-/// High-performance indexed binary min-heap supporting full CRUD operations:
-/// Peek, Insert, ExtractMin, ChangePriority, and bottom-up BuildHeap in O(N).
+/// High-performance contiguous array-backed binary min-heap.
+/// Zero node allocations, zero GC pointer chasing.
 /// </summary>
-public class MinHeap<TItem, TPriority> where TItem : notnull where TPriority : IComparable<TPriority> {
-    private readonly struct HeapNode(TItem item, TPriority priority) {
-        public TItem Item { get; } = item;
-        public TPriority Priority { get; } = priority;
+public class MinHeap<T> where T : IComparable<T> {
+    private T[] _heap;
+    private int _count;
+    private const int DefaultCapacity = 16;
+
+    public int Count => _count;
+    public bool IsEmpty => _count == 0;
+    public int Capacity => _heap.Length;
+
+    public MinHeap(int capacity = DefaultCapacity) {
+        if (capacity < 1) throw new ArgumentOutOfRangeException(nameof(capacity), "Capacity must be positive.");
+        _heap = new T[capacity];
+        _count = 0;
     }
 
-    private readonly List<HeapNode> _heap = [];
-    private readonly Dictionary<TItem, int> _indexMap = [];
+    /// <summary>
+    /// Constructs a heap from an existing collection in linear O(N) time using Floyd's bottom-up heapify.
+    /// </summary>
+    public MinHeap(ReadOnlySpan<T> items) {
+        _count = items.Length;
+        _heap = new T[Math.Max(_count, DefaultCapacity)];
+        items.CopyTo(_heap);
 
-    public int Count => _heap.Count;
-    public bool IsEmpty => _heap.Count == 0;
-
-    public MinHeap() { }
-
-    /// <summary>Constructs a heap from an existing collection in linear O(N) time.</summary>
-    public MinHeap(IEnumerable<(TItem Item, TPriority Priority)> items) {
-        ArgumentNullException.ThrowIfNull(items);
-        foreach (var (item, priority) in items) {
-            _indexMap[item] = _heap.Count;
-            _heap.Add(new HeapNode(item, priority));
-        }
-
-        // Bottom-up Floyd's heapify from last non-leaf node down to root
-        for (int i = (_heap.Count / 2) - 1; i >= 0; i--) {
+        // Floyd's bottom-up heapify: start at last non-leaf node
+        for (int i = (_count / 2) - 1; i >= 0; i--) {
             SiftDown(i);
         }
     }
 
-    /// <summary>Returns the minimum priority item in O(1) time without removing it.</summary>
-    public (TItem Item, TPriority Priority) Peek() {
-        if (_heap.Count == 0) throw new InvalidOperationException("Heap is empty.");
-        return (_heap[0].Item, _heap[0].Priority);
+    /// <summary>Returns the root minimum element in O(1) time without removing it.</summary>
+    public T Peek() {
+        if (_count == 0) throw new InvalidOperationException("Heap is empty.");
+        return _heap[0];
     }
 
-    /// <summary>Inserts a new item with specified priority in O(log N) time.</summary>
-    public void Insert(TItem item, TPriority priority) {
+    /// <summary>Inserts a new item in O(log N) time.</summary>
+    public void Insert(T item) {
         ArgumentNullException.ThrowIfNull(item);
-        if (_indexMap.ContainsKey(item)) {
-            throw new ArgumentException("Item already exists in heap. Use ChangePriority instead.");
-        }
-
-        int index = _heap.Count;
-        _heap.Add(new HeapNode(item, priority));
-        _indexMap[item] = index;
-        SiftUp(index);
+        EnsureCapacity();
+        
+        int current = _count++;
+        _heap[current] = item;
+        SiftUp(current);
     }
 
-    /// <summary>Extracts and returns the minimum priority item in O(log N) time.</summary>
-    public (TItem Item, TPriority Priority) ExtractMin() {
-        if (_heap.Count == 0) throw new InvalidOperationException("Heap is empty.");
+    /// <summary>Extracts and returns the root minimum element in O(log N) time.</summary>
+    public T ExtractMin() {
+        if (_count == 0) throw new InvalidOperationException("Heap is empty.");
 
-        var minNode = _heap[0];
-        _indexMap.Remove(minNode.Item);
+        T min = _heap[0];
+        _count--;
 
-        int lastIdx = _heap.Count - 1;
-        if (lastIdx == 0) {
-            _heap.RemoveAt(0);
-            return (minNode.Item, minNode.Priority);
+        if (_count > 0) {
+            _heap[0] = _heap[_count];
+            _heap[_count] = default!; // Avoid memory leaks for reference types
+            SiftDown(0);
+        } else {
+            _heap[0] = default!;
         }
 
-        // Move last leaf to root, remove leaf, and sift down
-        _heap[0] = _heap[lastIdx];
-        _indexMap[_heap[0].Item] = 0;
-        _heap.RemoveAt(lastIdx);
-
-        SiftDown(0);
-        return (minNode.Item, minNode.Priority);
-    }
-
-    /// <summary>Updates an item's priority and restores the heap invariant in O(log N) time.</summary>
-    public void ChangePriority(TItem item, TPriority newPriority) {
-        ArgumentNullException.ThrowIfNull(item);
-        if (!_indexMap.TryGetValue(item, out int index)) {
-            throw new KeyNotFoundException("Item not found in heap.");
-        }
-
-        TPriority oldPriority = _heap[index].Priority;
-        _heap[index] = new HeapNode(item, newPriority);
-
-        int comparison = newPriority.CompareTo(oldPriority);
-        if (comparison < 0) {
-            SiftUp(index);   // Priority decreased -> move toward root
-        } else if (comparison > 0) {
-            SiftDown(index); // Priority increased -> move toward leaves
-        }
+        return min;
     }
 
     private void SiftUp(int i) {
+        T item = _heap[i];
         while (i > 0) {
             int parent = (i - 1) / 2;
-            if (_heap[i].Priority.CompareTo(_heap[parent].Priority) >= 0) break;
+            if (item.CompareTo(_heap[parent]) >= 0) break;
 
-            Swap(i, parent);
+            _heap[i] = _heap[parent];
             i = parent;
         }
+        _heap[i] = item;
     }
 
     private void SiftDown(int i) {
-        int n = _heap.Count;
-        while (true) {
-            int smallest = i;
+        T item = _heap[i];
+        int half = _count / 2;
+
+        // While node has at least one child (i < half)
+        while (i < half) {
             int left = 2 * i + 1;
             int right = 2 * i + 2;
+            int smallest = left;
 
-            if (left < n && _heap[left].Priority.CompareTo(_heap[smallest].Priority) < 0) {
-                smallest = left;
-            }
-            if (right < n && _heap[right].Priority.CompareTo(_heap[smallest].Priority) < 0) {
+            if (right < _count && _heap[right].CompareTo(_heap[left]) < 0) {
                 smallest = right;
             }
 
-            if (smallest == i) break;
+            if (item.CompareTo(_heap[smallest]) <= 0) break;
 
-            Swap(i, smallest);
+            _heap[i] = _heap[smallest];
             i = smallest;
         }
+        _heap[i] = item;
     }
 
-    private void Swap(int i, int j) {
-        (_heap[i], _heap[j]) = (_heap[j], _heap[i]);
-        _indexMap[_heap[i].Item] = i;
-        _indexMap[_heap[j].Item] = j;
+    private void EnsureCapacity() {
+        if (_count == _heap.Length) {
+            Array.Resize(ref _heap, _heap.Length * 2);
+        }
     }
 }
 ```
 
 ---
 
-#### Idiomatic Python (3.11+): Production Indexed Min-Heap with Complete CRUD
+### 2. Modern C# (.NET 8/9): Top-K Streaming with `System.Collections.Generic.PriorityQueue`
+
+In actual FAANG coding rounds using C#, you should know how to leverage .NET's built-in `PriorityQueue<TElement, TPriority>`:
+
+```csharp
+using System;
+using System.Collections.Generic;
+
+public class TopKStreamingService {
+    /// <summary>
+    /// Finds the K-th Largest element in an incoming stream of numbers.
+    /// Time Complexity: O(N log K) | Space: Strictly O(K)
+    /// </summary>
+    public static int FindKthLargest(int[] nums, int k) {
+        ArgumentNullException.ThrowIfNull(nums);
+        if (k <= 0 || k > nums.Length) throw new ArgumentOutOfRangeException(nameof(k));
+
+        // .NET PriorityQueue is a MIN-HEAP by default on TPriority
+        PriorityQueue<int, int> minHeap = new(k);
+
+        foreach (int num in nums) {
+            if (minHeap.Count < k) {
+                minHeap.Enqueue(num, num);
+            } else if (num > minHeap.Peek()) {
+                minHeap.Dequeue();
+                minHeap.Enqueue(num, num);
+            }
+        }
+
+        return minHeap.Peek(); // Root holds the K-th largest element!
+    }
+}
+```
+
+---
+
+### 3. Modern C# (.NET 8/9): In-Place `HeapSort`
+
+```csharp
+public static class HeapSort {
+    /// <summary>
+    /// In-place HeapSort sorting arr in ascending order.
+    /// Time: O(N log N) Best/Avg/Worst | Space: Strictly O(1) Auxiliary | Unstable
+    /// </summary>
+    public static void Sort(Span<int> arr) {
+        int n = arr.Length;
+        if (n <= 1) return;
+
+        // Phase 1: Build Max-Heap bottom-up in O(N)
+        for (int i = (n / 2) - 1; i >= 0; i--) {
+            SiftDown(arr, n, i);
+        }
+
+        // Phase 2: Extract maximum element to sorted suffix
+        for (int i = n - 1; i > 0; i--) {
+            (arr[0], arr[i]) = (arr[i], arr[0]); // Move max to final spot
+            SiftDown(arr, i, 0);                 // Restore heap on prefix of size i
+        }
+    }
+
+    private static void SiftDown(Span<int> arr, int heapSize, int i) {
+        int largest = i;
+        int left = 2 * i + 1;
+        int right = 2 * i + 2;
+
+        if (left < heapSize && arr[left] > arr[largest]) largest = left;
+        if (right < heapSize && arr[right] > arr[largest]) largest = right;
+
+        if (largest != i) {
+            (arr[i], arr[largest]) = (arr[largest], arr[i]);
+            SiftDown(arr, heapSize, largest);
+        }
+    }
+}
+```
+
+---
+
+### 4. Modern C# (.NET 8/9): Stable `CountingSort`
+
+```csharp
+public static class CountingSort {
+    /// <summary>
+    /// Stable linear-time counting sort for non-negative integers bounded by maxVal.
+    /// Time: O(N + K) | Space: O(N + K) | Stable
+    /// </summary>
+    public static int[] Sort(int[] arr, int maxVal) {
+        if (arr.Length <= 1) return (int[])arr.Clone();
+
+        int[] count = new int[maxVal + 1];
+        int[] output = new int[arr.Length];
+
+        // Step 1: Frequency count
+        for (int i = 0; i < arr.Length; i++) {
+            count[arr[i]]++;
+        }
+
+        // Step 2: Cumulative prefix sum
+        for (int i = 1; i <= maxVal; i++) {
+            count[i] += count[i - 1];
+        }
+
+        // Step 3: Iterate backwards to maintain stability
+        for (int i = arr.Length - 1; i >= 0; i--) {
+            int val = arr[i];
+            output[--count[val]] = val;
+        }
+
+        return output;
+    }
+}
+```
+
+---
+
+### 5. Idiomatic Python (3.11+): Production Min-Heap Class
 
 ```python
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, Sequence
 
 T = TypeVar("T")
 
 class MinHeap(Generic[T]):
-    """Production-grade indexed binary min-heap with full CRUD operations:
-    peek, insert, extract_min, change_priority, and O(N) build_heap.
+    """Contiguous array-backed binary min-heap with zero pointer overhead.
+    
+    Supports O(1) peek, O(log N) insert, O(log N) extract, and O(N) build_heap.
     """
-    def __init__(self, initial_items: list[tuple[T, float]] | None = None) -> None:
-        self.heap: list[list] = []  # Elements: [priority, item]
-        self.index_map: dict[T, int] = {}  # item -> array index
-        
-        if initial_items:
-            for item, priority in initial_items:
-                self.index_map[item] = len(self.heap)
-                self.heap.append([priority, item])
+    def __init__(self, items: Sequence[T] | None = None) -> None:
+        self._heap: list[T] = list(items) if items is not None else []
+        if self._heap:
             self._build_heap()
 
     def __len__(self) -> int:
-        return len(self.heap)
+        return len(self._heap)
 
     def is_empty(self) -> bool:
-        return len(self.heap) == 0
+        return len(self._heap) == 0
 
-    def peek(self) -> tuple[T, float]:
-        """Return root minimum element without removing it in O(1) time."""
-        if not self.heap:
+    def peek(self) -> T:
+        """Return the root minimum element in O(1) without removing it."""
+        if not self._heap:
             raise IndexError("Peek from empty heap")
-        return self.heap[0][1], self.heap[0][0]
+        return self._heap[0]
 
-    def insert(self, item: T, priority: float) -> None:
-        """Insert item with priority and sift up in O(log N) time."""
-        if item in self.index_map:
-            raise ValueError(f"Item '{item}' already present. Use change_priority instead.")
-        
-        idx = len(self.heap)
-        self.heap.append([priority, item])
-        self.index_map[item] = idx
-        self._sift_up(idx)
+    def insert(self, item: T) -> None:
+        """Insert a new item in O(log N) time."""
+        self._heap.append(item)
+        self._sift_up(len(self._heap) - 1)
 
-    def extract_min(self) -> tuple[T, float]:
-        """Remove and return minimum priority item in O(log N) time."""
-        if not self.heap:
+    def extract_min(self) -> T:
+        """Remove and return the minimum element in O(log N) time."""
+        if not self._heap:
             raise IndexError("Extract from empty heap")
-        
-        min_node = self.heap[0]
-        del self.index_map[min_node[1]]
-        
-        last = self.heap.pop()
-        if self.heap:
-            self.heap[0] = last
-            self.index_map[last[1]] = 0
-            self._sift_down(0)
-            
-        return min_node[1], min_node[0]
 
-    def change_priority(self, item: T, new_priority: float) -> None:
-        """Dynamically update item's priority and restore heap invariant in O(log N) time."""
-        if item not in self.index_map:
-            raise KeyError(f"Item '{item}' not found in heap")
-        
-        idx = self.index_map[item]
-        old_priority = self.heap[idx][0]
-        self.heap[idx][0] = new_priority
-        
-        if new_priority < old_priority:
-            self._sift_up(idx)    # Priority decreased -> move toward root
-        elif new_priority > old_priority:
-            self._sift_down(idx)  # Priority increased -> move toward leaves
+        min_val = self._heap[0]
+        last_val = self._heap.pop()
+
+        if self._heap:
+            self._heap[0] = last_val
+            self._sift_down(0)
+
+        return min_val
 
     def _sift_up(self, i: int) -> None:
+        item = self._heap[i]
         while i > 0:
             parent = (i - 1) // 2
-            if self.heap[i][0] >= self.heap[parent][0]:
+            if item >= self._heap[parent]:
                 break
-            self._swap(i, parent)
+            self._heap[i] = self._heap[parent]
             i = parent
+        self._heap[i] = item
 
     def _sift_down(self, i: int) -> None:
-        n = len(self.heap)
-        while True:
-            smallest = i
+        item = self._heap[i]
+        n = len(self._heap)
+        half = n // 2
+
+        while i < half:
             left = 2 * i + 1
             right = 2 * i + 2
-            if left < n and self.heap[left][0] < self.heap[smallest][0]:
-                smallest = left
-            if right < n and self.heap[right][0] < self.heap[smallest][0]:
-                smallest = right
-            if smallest == i:
-                break
-            self._swap(i, smallest)
-            i = smallest
+            smallest = left
 
-    def _swap(self, i: int, j: int) -> None:
-        self.heap[i], self.heap[j] = self.heap[j], self.heap[i]
-        self.index_map[self.heap[i][1]] = i
-        self.index_map[self.heap[j][1]] = j
+            if right < n and self._heap[right] < self._heap[left]:
+                smallest = right
+
+            if item <= self._heap[smallest]:
+                break
+
+            self._heap[i] = self._heap[smallest]
+            i = smallest
+        self._heap[i] = item
 
     def _build_heap(self) -> None:
-        """Bottom-up Floyd's heapify in O(N) time."""
-        for i in range(len(self.heap) // 2 - 1, -1, -1):
+        """Floyd's bottom-up heapify in linear O(N) time."""
+        for i in range((len(self._heap) // 2) - 1, -1, -1):
             self._sift_down(i)
 ```
 
 ---
 
-### 🔧 Operation 4: Heap Sort
+### 6. Idiomatic Python (3.11+): Standard Library `heapq` Patterns
 
-#### C# Implementation (In-Place HeapSort)
-
-```csharp
-public class HeapSort {
-    public static void Sort(int[] arr) {
-        int n = arr.Length;
-        // Step 1: Build max-heap bottom-up in O(N)
-        for (int i = n / 2 - 1; i >= 0; i--) {
-            Heapify(arr, n, i);
-        }
-        
-        // Step 2: Extract elements one by one into sorted suffix
-        for (int i = n - 1; i > 0; i--) {
-            (arr[0], arr[i]) = (arr[i], arr[0]);
-            Heapify(arr, i, 0);
-        }
-    }
-    
-    private static void Heapify(int[] arr, int n, int i) {
-        int largest = i;
-        int left = 2 * i + 1;
-        int right = 2 * i + 2;
-        
-        if (left < n && arr[left] > arr[largest]) largest = left;
-        if (right < n && arr[right] > arr[largest]) largest = right;
-        
-        if (largest != i) {
-            (arr[i], arr[largest]) = (arr[largest], arr[i]);
-            Heapify(arr, n, largest);
-        }
-    }
-}
-```
-
-#### Python Implementation (In-Place HeapSort)
+In Python whiteboard interviews, master the built-in `heapq` module:
 
 ```python
-def heap_sort(arr: list[int]) -> list[int]:
-    """In-place HeapSort: builds max-heap, repeatedly swaps root to end.
+import heapq
+
+def find_kth_largest(nums: list[int], k: int) -> int:
+    """Find the K-th Largest element using a bounded Min-Heap.
     
-    Time: O(N log N) best/avg/worst | Auxiliary Space: O(1) | Unstable
+    Time: O(N log K) | Auxiliary Space: O(K)
+    """
+    if not (1 <= k <= len(nums)):
+        raise ValueError("Invalid value for k")
+
+    # Min-heap initialized with the first k elements in O(K)
+    min_heap = nums[:k]
+    heapq.heapify(min_heap)
+
+    # Process remaining elements
+    for num in nums[k:]:
+        if num > min_heap[0]:
+            heapq.heappushpop(min_heap, num)
+
+    return min_heap[0]
+
+def in_place_heap_sort(arr: list[int]) -> list[int]:
+    """In-place Max-HeapSort in ascending order.
+    
+    Time: O(N log N) | Space: O(1) | Unstable
     """
     n = len(arr)
-    
+
     def _sift_down(heap_size: int, i: int) -> None:
         while True:
             largest = i
@@ -786,223 +931,25 @@ def heap_sort(arr: list[int]) -> list[int]:
             arr[i], arr[largest] = arr[largest], arr[i]
             i = largest
 
-    # Step 1: Build max-heap bottom-up in O(N)
-    for i in range(n // 2 - 1, -1, -1):
+    # Phase 1: Floyd's Build Max-Heap in O(N)
+    for i in range((n // 2) - 1, -1, -1):
         _sift_down(n, i)
-        
-    # Step 2: Extract max elements to sorted suffix
+
+    # Phase 2: Extract max elements to sorted suffix
     for i in range(n - 1, 0, -1):
         arr[0], arr[i] = arr[i], arr[0]
         _sift_down(i, 0)
-        
+
     return arr
-```
-
-### 🔧 Operation 5: Linear-Time Sorting — Counting Sort
-
-When sorting integers bounded in a small range `[0..K]`, non-comparison sorting bypasses the `Omega(N log N)` decision-tree lower bound by using key values directly as memory indices.
-
-```text
-Counting Sort Mechanical Pipeline (N = 7, K = 8):
-Input Array:       [ 4,  2,  2,  8,  3,  3,  1 ]
-                     |   |   |   |   |   |   |
-1. Frequency Count:
-   Index (val):    0   1   2   3   4   5   6   7   8
-   Count:         [0,  1,  2,  2,  1,  0,  0,  0,  1]
-
-2. Prefix Sums (cumulative boundary indices):
-   Prefix:        [0,  1,  3,  5,  6,  6,  6,  6,  7]
-
-3. Stable Reverse Traversal & Placement into Output:
-   Output Array:  [ 1,  2,  2,  3,  3,  4,  8 ]
-```
-
-#### C# Implementation (Stable Counting Sort)
-
-```csharp
-public class CountingSort {
-    /// <summary>
-    /// Stable counting sort for non-negative integers bounded by maxVal.
-    /// Time: O(N + K) | Auxiliary Space: O(N + K) | Stable
-    /// </summary>
-    public static int[] Sort(int[] arr, int maxVal) {
-        if (arr.Length <= 1) return (int[])arr.Clone();
-        
-        int[] count = new int[maxVal + 1];
-        int[] output = new int[arr.Length];
-        
-        // Step 1: Frequency histogram
-        for (int i = 0; i < arr.Length; i++) {
-            count[arr[i]]++;
-        }
-        
-        // Step 2: Prefix sums for stable boundary placement
-        for (int i = 1; i <= maxVal; i++) {
-            count[i] += count[i - 1];
-        }
-        
-        // Step 3: Iterate backwards to preserve relative ordering of equal keys
-        for (int i = arr.Length - 1; i >= 0; i--) {
-            int val = arr[i];
-            output[--count[val]] = val;
-        }
-        
-        return output;
-    }
-}
-```
-
-#### Python Implementation (Stable Counting Sort)
-
-```python
-def counting_sort(arr: list[int]) -> list[int]:
-    """Stable linear-time counting sort for integers within arbitrary finite range.
-    
-    Time: O(N + K) where K = max(arr) - min(arr) + 1
-    Auxiliary Space: O(N + K) | Output Space: O(N) | Stable
-    """
-    if len(arr) <= 1:
-        return arr[:]
-        
-    min_val, max_val = min(arr), max(arr)
-    k = max_val - min_val + 1
-    count = [0] * k
-    output = [0] * len(arr)
-    
-    # Step 1: Frequency count
-    for num in arr:
-        count[num - min_val] += 1
-        
-    # Step 2: Prefix sum accumulation
-    for i in range(1, k):
-        count[i] += count[i - 1]
-        
-    # Step 3: Stable placement via reverse traversal
-    for num in reversed(arr):
-        idx = num - min_val
-        count[idx] -= 1
-        output[count[idx]] = num
-        
-    return output
-```
-
-### 📉 Progressive Example: Priority Queue Use Case
-
-```csharp
-using System;
-using System.Collections.Generic;
-
-public class PriorityQueueExample {
-    public static void TaskScheduler() {
-        PriorityQueue<(string name, int priority), int> pq = new();
-        
-        // Simulate task arrivals with priorities
-        pq.Enqueue(("LowPriority", 1), 1);      // Priority 1
-        pq.Enqueue(("HighPriority", 100), 100); // Priority 100
-        pq.Enqueue(("MediumPriority", 50), 50); // Priority 50
-        
-        // Schedule tasks in priority order
-        while (pq.Count > 0) {
-            var (task, priority) = pq.Dequeue();
-            Console.WriteLine($"Executing: {task} (priority {priority})");
-            // Output order: HighPriority (100), MediumPriority (50), LowPriority (1)
-        }
-        
-        // Real OS scheduler (Linux CFS, Windows scheduler) use similar concepts
-        // Processes have priority queues, scheduler extracts highest-priority ready process
-        // Heap enables O(log n) insertion and extraction for thousands of processes
-    }
-}
-
-// Dijkstra's Algorithm uses heap for priority queue
-public class DijkstraExample {
-    public static void ShortestPath(Graph g, int start) {
-        PriorityQueue<int, int> pq = new();  // (node, distance)
-        Dictionary<int, int> dist = new();
-        
-        pq.Enqueue(start, 0);
-        dist[start] = 0;
-        
-        while (pq.Count > 0) {
-            int u = pq.Dequeue();  // Extract minimum distance node
-            int d = dist[u];
-            
-            foreach (var (v, weight) in g.Edges[u]) {
-                if (!dist.ContainsKey(v) || dist[u] + weight < dist[v]) {
-                    dist[v] = dist[u] + weight;
-                    pq.Enqueue(v, dist[v]);  // Update priority
-                }
-            }
-        }
-        
-        // With heap: O((V + E) log V)
-        // Without heap (linear search): O(V²)
-        // For sparse graphs: Heap is exponentially faster
-    }
-}
-```
-
-### ⚠️ Critical Pitfalls
-
-> **Watch Out – Mistake 1: Wrong Index Arithmetic**
-
-```csharp
-// BAD: Off-by-one in child calculation
-int left = 2 * i;      // Should be 2*i + 1
-int right = 2 * i + 1; // Should be 2*i + 2
-
-// CORRECT: Remember 0-indexing
-int left = 2 * i + 1;
-int right = 2 * i + 2;
-```
-
-> **Watch Out – Mistake 2: Not Checking Bounds**
-
-```csharp
-// BAD: Accessing out-of-bounds indices
-if (left < n && arr[left] > arr[largest]) largest = left;
-// Missing check allows arr[left] access when left >= n
-
-// CORRECT: Check boundary before access
-if (left < n && arr[left] > arr[largest]) largest = left;
-```
-
-> **Watch Out – Mistake 3: Confusing Bubble-Up and Bubble-Down**
-
-```csharp
-// BAD: Using bubble-down logic for insert
-while (i > 0) {
-    int left = 2 * i + 1;   // Wrong! Should be checking parent
-    // ...
-}
-
-// CORRECT: Bubble-up checks parent
-int parentIdx = (i - 1) / 2;
-while (i > 0 && heap[parentIdx] < heap[i]) {
-    // Swap with parent
-    i = parentIdx;
-    parentIdx = (i - 1) / 2;
-}
 ```
 
 ---
 
-## ⚖️ CHAPTER 4: PERFORMANCE, TRADE-OFFS & REAL SYSTEMS
+## ⚖️ ARCHITECTURAL TRADE-OFF MATRIX & COMPLEXITY DECONSTRUCTION
 
-### Heap Operations Complexity
+### High-ROI Algorithmic Trade-Off Matrix
 
-| Operation | Time | Notes |
-|-----------|------|-------|
-| Insert | O(log n) | Bubble-up at most log n levels |
-| Extract-Min/Max | O(log n) | Bubble-down at most log n levels |
-| Find-Min (min-heap) | O(1) | Root is always minimum |
-| Build-Heap | O(n) | Bottom-up heapify, not O(n log n) |
-| Heap Sort | O(n log n) | Build O(n) + extract n times O(log n) |
-| Decrease-Key | O(log n) | Update value, bubble-up |
-
-### ⚖️ Differences & Trade-off Matrix: Heap vs BST vs Sorted Array vs Unsorted Array
-
-Choosing between a Binary Heap, Balanced Binary Search Tree (Red-Black / AVL), Sorted Array, and Unsorted Array is a foundational systems architecture decision:
+Choosing between a Binary Heap, Balanced BST, Sorted Array, and Unsorted Array is a core systems architecture interview topic:
 
 | Operation / Metric | Binary Heap (Flat Array) | Balanced BST (Red-Black / AVL) | Sorted Dynamic Array | Unsorted Dynamic Array |
 | :--- | :---: | :---: | :---: | :---: |
@@ -1010,197 +957,67 @@ Choosing between a Binary Heap, Balanced Binary Search Tree (Red-Black / AVL), S
 | **Extract-Min / Delete-Min** | `O(log N)` | `O(log N)` | `O(N)` (shifts elements) | `O(N)` |
 | **Insert / Enqueue** | `O(log N)` (amortized) | `O(log N)` | `O(N)` (maintain order) | `O(1)` (amortized) |
 | **Arbitrary Search (`Contains`)** | `O(N)` (unsorted levels) | `O(log N)` | `O(log N)` (Binary Search) | `O(N)` |
-| **Arbitrary Delete (`Remove`)** | `O(log N)` (with index map) | `O(log N)` | `O(N)` | `O(1)` (swap with last) |
-| **ChangePriority (`DecreaseKey`)**| `O(log N)` (with index map) | `O(log N)` | `O(N)` | `O(1)` |
 | **Bulk Construction (`Heapify`)** | `O(N)` (Floyd's bottom-up) | `O(N log N)` | `O(N log N)` (full sort) | `O(1)` (raw copy) |
 | **Sorted In-Order Traversal** | `O(N log N)` (destructive) | `O(N)` (in-order walk) | `O(N)` (linear scan) | `O(N log N)` (sort first)|
-| **Range Queries (`[low, high]`)** | `O(N)` (unsupported) | `O(log N + K)` | `O(log N + K)` | `O(N)` |
-| **Memory Overhead per Element** | **0 bytes** (contiguous array) | 24-32 bytes (pointers + color) | **0 bytes** (contiguous array)| **0 bytes** (contiguous array)|
-| **Cache Locality** | High (sequential array access) | Poor (scattered heap nodes) | Maximum (contiguous scan) | Maximum (contiguous scan) |
+| **Memory Overhead per Node** | **0 bytes** (contiguous array) | 24-32 bytes (pointers + color) | **0 bytes** (contiguous array)| **0 bytes** (contiguous array)|
+| **Hardware Cache Locality** | **High** (sequential array access) | **Poor** (scattered heap nodes) | **Maximum** (contiguous scan) | **Maximum** (contiguous scan) |
 | **Structural Invariant** | Vertical: Parent <= Children | Horizontal: Left < Root < Right| Linear Total Order | None |
 
-#### Architectural Decision Rules:
-1. **Choose a Binary Heap when:**
-   - Your primary access pattern is priority-based (`Peek`, `ExtractMin`, `Insert`).
-   - You do NOT require arbitrary key search or range queries.
-   - Memory footprint and GC pressure are constrained (zero pointer overhead).
-   - Use cases: Task schedulers, timer wheels, Dijkstra's algorithm, streaming top-K filters.
-2. **Choose a Balanced BST when:**
-   - You require dynamic `O(log N)` arbitrary insertions, lookups, AND range queries.
-   - You need constant in-order non-destructive iteration without modifying the structure.
-   - Use cases: Database indices, symbol tables, ordered map implementations (`std::map`, Java `TreeMap`).
-3. **Choose a Sorted Dynamic Array when:**
-   - The dataset is largely static (rare insertions/deletions, frequent binary search lookups).
-   - Range queries and random access by rank (`k-th` element in `O(1)`) are dominant.
-   - Use cases: Read-heavy lookup tables, static routing directories, binary search configurations.
-4. **Choose an Unsorted Dynamic Array when:**
-   - Write throughput is supreme (`O(1)` append), and reads are batched or rare.
-   - Use cases: Append-only transaction logs, telemetry buffers.
+---
 
-### 🏭 Real-World Systems & Engineering Context
+### Complexity Deconstruction
 
-> [!NOTE]
-> **Production Engineering Context:** Heaps serve as the computational backbone of real-time priority schedulers, graph shortest-path engines (Dijkstra's with indexed min-heaps in GPS routing), and lossless compression (Huffman coding trees). In OS kernels (such as the Linux Completely Fair Scheduler / timer wheels), heaps enable `O(log N)` task dispatch and preemption without the pointer indirection or node allocation penalties of balanced BSTs. When integer keys are bounded (`K << N log N`), linear-time counting sort or bucket queues replace comparison heaps to deliver deterministic `O(N + K)` throughput in high-frequency trading packet queues and network routers.
-
-### 📊 Complexity Deconstruction
-
-| Data Structure / Algorithm | Operation / Case | Time Complexity | Auxiliary Space | Output Space | In-Place? | Key Mechanism |
-| :--- | :--- | :--- | :--- | :--- | :---: | :--- |
-| **Binary Heap** | Insert (`Enqueue`) | `O(log N)` | `O(1)` | `O(1)` | Yes | Bubble-up across at most `log2(N)` tree levels. |
-| **Binary Heap** | Extract-Min/Max | `O(log N)` | `O(1)` | `O(1)` | Yes | Swap root with last element, bubble-down. |
-| **Binary Heap** | Peek (`Find-Min/Max`)| `O(1)` | `O(1)` | `O(1)` | Yes | Direct array indexing at `arr[0]`. |
-| **Build-Heap (Heapify)**| Bulk Initialization | `O(N)` | `O(1)` | `O(1)` | Yes | Bottom-up sift-down: sum of `(N / 2^(h+1)) * h` converges to `O(N)`. |
-| **HeapSort** | All Cases (Best/Avg/Worst)| `O(N log N)` | `O(1)` | `O(1)` | Yes | In-place root swaps followed by contraction of heap boundary. |
-| **Counting Sort** | Best / Average / Worst | `O(N + K)` | `O(N + K)` | `O(N)` | No | Direct histogram indexing and prefix-sum rank accumulation. |
-
-- **Why `BuildHeap` is `O(N)`:** A naive analysis suggests `N` inserts each costing `O(log N) = O(N log N)`. However, bottom-up heapify processes nodes from height `h = 0` up to `log N`. There are at most `ceil(N / 2^(h+1))` nodes at height `h`. The total comparison cost is bounded by `sum_{h=0}^{log N} (N / 2^(h+1)) * h = N * sum_{h=0}^{infinity} (h / 2^(h+1)) = N * 1 = O(N)`.
-- **Auxiliary Space:** Binary Heap and HeapSort operate strictly in-place with `O(1)` auxiliary memory. CountingSort requires an auxiliary frequency array of size `K` and an output buffer of size `N`, yielding `O(N + K)` space.
-
-### 🎙️ 45-Minute Interview Verbal Script
-
-**Interviewer:** *"Can you explain why building a heap from an unsorted array takes O(N) time instead of O(N log N), and compare HeapSort to QuickSort and CountingSort?"*
-
-**Candidate Verbal Response:**
-> "A common intuition trap is assuming that building a heap of size `N` takes `O(N log N)` time because inserting `N` items one by one requires `sum log i = O(N log N)`. However, Floyd's bottom-up `BuildHeap` achieves linear `O(N)` time:
-> 
-> 1. We start from the last non-leaf node at index `floor(N/2) - 1` and call `HeapifyDown` backwards to index `0`.
-> 2. In a complete binary tree, roughly half the nodes (`N/2`) are leaves at height `0` and cost `0` swaps. One quarter of the nodes (`N/4`) are at height `1` and cost at most `1` swap. Only one node (the root) is at height `log N`. Summing the geometric series `sum (h / 2^h)` converges to a constant, making total work `O(N)`.
-> 
-> When comparing sorting algorithms:
-> - **HeapSort vs. QuickSort:** Both achieve `O(N log N)` average time, but QuickSort is significantly faster on modern hardware because its partition access is sequentially contiguous, maximizing L1/L2 cache line hits. HeapSort jumps across tree child indices (`2i+1, 2i+2`), producing frequent cache misses. However, HeapSort guarantees `O(N log N)` worst-case time with strict `O(1)` auxiliary space, whereas QuickSort requires `O(log N)` stack space and can degrade to `O(N^2)`.
-> - **CountingSort:** If the input consists of integers bounded by a known range `K`, CountingSort bypasses the `Omega(N log N)` comparison lower bound entirely. By using the key values directly as array indices, CountingSort runs in linear `O(N + K)` time, making it ideal when `K = O(N)`."
+| Algorithm / Operation | Time Complexity | Auxiliary Space | Output Space | In-Place? | Key Mechanism |
+| :--- | :--- | :--- | :--- | :---: | :--- |
+| **Binary Heap: Peek** | `O(1)` | `O(1)` | `O(1)` | Yes | Direct dereference at `arr[0]`. |
+| **Binary Heap: Insert** | `O(log N)` | `O(1)` | `O(1)` | Yes | Bubble-up across at most `log2(N)` tree levels. |
+| **Binary Heap: Extract** | `O(log N)` | `O(1)` | `O(1)` | Yes | Root swap with last leaf, bubble-down. |
+| **Build-Heap (Floyd Heapify)**| `O(N)` | `O(1)` | `O(1)` | Yes | Bottom-up sift-down: work is concentrated on leaves. |
+| **HeapSort** | `O(N log N)` Best/Avg/Worst | `O(1)` | `O(1)` | Yes | In-place Max-Heapify + prefix boundary contraction. |
+| **Counting Sort** | `O(N + K)` | `O(N + K)` | `O(N)` | No | Direct histogram indexing & prefix-sum accumulation. |
 
 ---
 
-## 🔗 CHAPTER 5: INTEGRATION & MASTERY
+## ⚔️ FAANG INTERVIEW PROBLEM SCAFFOLDING LADDER
 
-### Connections to the Learning Arc
+Master these 5 classic FAANG interview problems to achieve full mastery of Heaps:
 
-**Building on Weeks 1–2:**
-- **Arrays (Week 2 Day 1):** Heap is an array with implicit tree structure
-- **Recursion (Week 1 Day 5):** Heapify uses recursion for bubble-down
-- **Sorting (Week 3 Days 1–2):** Heap sort is an `O(n log n)` sorting algorithm
+```text
+THE HEAP MASTERY LADDER:
+[Level 5: Hard]   LeetCode 295: Find Median from Data Stream (Two Balanced Heaps)
+        ^
+[Level 4: Hard]   LeetCode 23:  Merge k Sorted Lists (K-Way Min-Heap Merge)
+        ^
+[Level 3: Medium] LeetCode 347: Top K Frequent Elements (Bucket Queue vs Min-Heap)
+        ^
+[Level 2: Medium] LeetCode 215: Kth Largest Element in an Array (Bounded Min-Heap)
+        ^
+[Level 1: Easy]   LeetCode 703: Kth Largest Element in a Stream (Min-Heap of Size K)
+```
 
-**Building on Week 3 Days 1–2:**
-- **Elementary Sorts (Day 1):** Why `O(n^2)` is inadequate for large datasets
-- **Merge/Quick Sort (Day 2):** Heap sort as alternative to merge/quick
-- **Today:** Heaps for priority-based access beyond sorting
-
-**Foreshadowing Future Weeks:**
-- **Week 4 (Trees):** Heaps are specialized binary trees; introduces full tree structures
-- **Week 8 (Graphs):** Dijkstra's algorithm uses heaps critically
-- **Week 10 (Hashing):** Priority queues often combine heaps with hash tables
-
-### Pattern Recognition: Implicit Tree Structure
-
-**Pattern 1: Index Arithmetic Encodes Tree**
-- Parent: `(i - 1) / 2`
-- Left: `2i + 1`
-- Right: `2i + 2`
-
-This encoding appears in:
-- Segment trees (interval trees)
-- Fenwick trees (binary indexed trees)
-- B-trees (cached tree structures)
-
-**Pattern 2: Maintain Invariant via Bubble Operations**
-- Insert: Bubble-up maintains heap property
-- Extract: Bubble-down maintains heap property
-- Build: Bulk bubble-down maintains heap property
-
-**Pattern 3: Complete Binary Tree Ensures Balance**
-- Always `log n` height
-- Operations are always `O(log n)`
-- No rebalancing needed (unlike BSTs)
-
-### Socratic Reflection
-
-1. **On Structure:** How does index arithmetic encode a tree without pointers?
-
-2. **On Efficiency:** Why is build-heap `O(n)` instead of `O(n log n)`?
-
-3. **On Trade-Offs:** When would you use a heap vs a sorted array?
-
-4. **On Applications:** How does Dijkstra's algorithm benefit from heaps?
-
-5. **On Stability:** Heap sort is unstable, but quicksort can be both. Why does it matter?
-
-### 📌 Retention Hook
-
-> **The Essence:** *"Heaps are implicit trees in arrays. By encoding tree structure via index arithmetic, heaps achieve cache-friendly `O(log n)` operations for priority-based access. This teaches a principle: structure determines efficiency. Understand heap structure deeply—its invariants, its operations, its real-world applications—and you understand a technique that spans priority queues to databases to distributed systems."*
+1. **LeetCode 703 — Kth Largest Element in a Stream (🟢 Easy):**  
+   *Pattern:* Maintain a Min-Heap of capacity `K`. Evict the root when size exceeds `K`. The root is always the answer.
+2. **LeetCode 215 — Kth Largest Element in an Array (🟡 Medium):**  
+   *Pattern:* Bounded Min-Heap of size `K` (`O(N log K)` time, `O(K)` space) vs QuickSelect (`O(N)` average time, `O(1)` space).
+3. **LeetCode 347 — Top K Frequent Elements (🟡 Medium):**  
+   *Pattern:* Hash map for frequencies + Min-Heap of size `K` on frequencies (`O(N log K)`) or Bucket Sort (`O(N)` linear time).
+4. **LeetCode 23 — Merge k Sorted Lists (🔴 Hard):**  
+   *Pattern:* Seed a Min-Heap with the head node of each of the `K` lists. Repeatedly pop the smallest node and push its `next` pointer into the heap. Time: `O(N log K)` where `N` is total nodes across all lists.
+5. **LeetCode 295 — Find Median from Data Stream (🔴 Hard):**  
+   *Pattern:* Two Heaps! A Max-Heap for the smaller half of numbers, and a Min-Heap for the larger half of numbers. Balance sizes so they differ by at most 1. Median is retrieved in `O(1)`!
 
 ---
 
-## ⚔️ SUPPLEMENTARY OUTCOMES
+## 📌 CLOSING REFLECTION & SOCRATIC REVIEW
 
-### 🏋️ Practice Problems
+Before wrapping up Week 3 Day 3, pause and test your retention with these 3 questions:
 
-| Problem | Difficulty | Key Concept |
-|---------|-----------|-------------|
-| Implement min-heap | 🟢 | Basic operations, index arithmetic |
-| Build heap from array | 🟡 | O(n) heapify, bottom-up |
-| Heap sort | 🟡 | Extract repeatedly, in-place |
-| K largest elements | 🟡 | Min-heap of size k |
-| Merge k sorted lists | 🟡 | Min-heap for k-way merge |
-| Find median in stream | 🟠 | Two heaps (min and max) |
-| Kth smallest (quickselect vs heap) | 🟠 | Compare approaches |
+1. **On Hardware:** Why does storing a complete binary tree in a flat array offer a 10x memory reduction and significantly faster execution than a pointer-based tree?
+2. **On Math:** Why does Floyd's `BuildHeap` execute in `O(N)` time while repeated `Insert` takes `O(N log N)`?
+3. **On Strategy:** In a streaming system with 100 million numbers, why must you use a **Min-Heap of size K** instead of a **Max-Heap of size N** to find the K-th largest item?
 
-### 🎙️ Interview Questions
-
-1. **Q:** Implement a min-heap. Explain bubble-up and bubble-down.  
-   **Follow-up:** Why is build-heap O(n) instead of O(n log n)?
-
-2. **Q:** Implement heap sort. Why is it O(n log n) but slower than quicksort in practice?  
-   **Follow-up:** When would you prefer heap sort over quicksort?
-
-3. **Q:** Find the k largest elements in an unsorted array.  
-   **Follow-up:** Compare min-heap approach vs quickselect.
-
-4. **Q:** Merge k sorted arrays using a heap.  
-   **Follow-up:** What's the time complexity?
-
-5. **Q:** Design a data structure to find median in a stream of numbers.  
-   **Follow-up:** Why do you need two heaps?
-
-### ❌ Common Misconceptions
-
-- **Myth:** Heaps are fully sorted.  
-  **Reality:** Heaps are partially sorted. Only root is guaranteed to be min/max.
-
-- **Myth:** Heap operations always take O(log n).  
-  **Reality:** Insert and extract are O(log n); find-min/max is O(1).
-
-- **Myth:** Heaps are only for sorting.  
-  **Reality:** Heaps power priority queues, Dijkstra's, Huffman coding, event simulation.
-
-- **Myth:** Heap sort is faster than quicksort.  
-  **Reality:** Quicksort is typically 2-3x faster in practice (better cache behavior).
-
-### 🚀 Advanced Concepts
-
-- **Fibonacci Heap:** O(1) amortized insert/decrease-key (theoretical, rarely practical)
-- **Pairing Heap:** Simpler variant of Fibonacci heap
-- **Binomial Heap:** Merges two heaps efficiently
-- **Leftist Heap:** Recursive heap variant for efficient merging
-- **Treap:** Randomized BST with heap ordering (combines BST + heap properties)
-
-### 📚 External Resources
-
-- **CLRS Chapter 6:** Heaps and heapsort (comprehensive)
-- **MIT 6.006 Lecture 6–7:** Heaps and priority queues
-- **"Algorithm Design Manual" (Skiena):** Practical heap usage
-- **LeetCode:** Heap problems (easy to hard)
-- **YouTube:** Animated heap operations visualizations
-
----
-
-## 📌 CLOSING REFLECTION
-
-Heaps seem simple mechanically—arrays with index arithmetic. But they're profound conceptually. By encoding tree structure implicitly, heaps achieve cache-friendly, pointer-free tree traversal. They're among the most practical data structures in systems programming.
-
-More importantly, heaps teach that structure determines efficiency. The choice to use arrays (with index arithmetic) rather than pointers (with heap allocation) is a systems design decision with real consequences—for performance, for cache behavior, for simplicity.
-
-Master heaps—their structure, their operations, their real-world applications—and you master a principle that extends to databases, operating systems, and distributed systems.
+> 💡 **The Senior Architect's Motto:**  
+> *"Structure determines performance. By eliminating pointers and letting array indices do the arithmetic, Heaps unlock cache-friendly, logarithmic priority scheduling with zero GC overhead. Master the bounded heap invariant, and streaming FAANG challenges become second nature."*
 
 ---
 

@@ -1,104 +1,195 @@
-# 📘 Week 17, Day 4: Combinatorics & Principle of Inclusion-Exclusion
+# 📘 WEEK 17 DAY 04: COMBINATORICS & COUNTING — PIE, STARS & BARS, AND LUCAS' THEOREM
 
-> 🧭 **Navigation:** [← Previous Day](Week_17_Day_03_Game_Theory_Nimbers_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_17_Day_05_Catalan_Numbers_And_Advanced_Counting_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day: Game Theory & Nimbers](Week_17_Day_03_Game_Theory_Nimbers_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Catalan Numbers →](Week_17_Day_05_Catalan_Numbers_And_Advanced_Counting_Instructional.md)
 > 
-> 💡 **Instructor Note:** *Combinatorics in senior technical interviews (Meta, Google, Bloomberg, Citadel) evaluates whether a candidate can replace naive exponential backtracking (O(2^N) or O(N!)) with exact closed-form algebraic formulations. A production-ready Modular Combinatorics engine precomputes factorials and modular inverse factorials in O(N) time, answering any nCr query in O(1).*
+> 💡 **Instructor Note:** *Combinatorics in FAANG/Quant rounds is rarely about tedious manual counting. Interviewers look for structural abstractions: recognizing when an overcounting problem collapses via the Principle of Inclusion-Exclusion (PIE), when partition constraints become Stars and Bars, and how to compute C(N, K) mod P when N is 10^18 using Lucas' Theorem. Today, we turn abstract counting into high-speed algorithms.*
 
 ---
 
-## 🎯 Learning Objectives
+## 🎯 LEARNING OBJECTIVES
 
-*   **Modular Arithmetic Foundations:** Master division under prime modulus `MOD = 10^9 + 7` using Fermat's Little Theorem: `a^(-1) = a^(MOD - 2) mod MOD`.
-*   **O(N) Precomputation with Backward Inversion:** Precompute all factorials and inverse factorials in linear time by calculating `invFact[N]` once and cascading downward.
-*   **Stars and Bars Partitioning:** Solve indistinguishable item allocation problems into distinct bins: `(n + k - 1 choose k - 1)`.
-*   **Derangements Formulation:** Count fixed-point-free permutations using both linear recurrences and the Principle of Inclusion-Exclusion (PIE).
-*   **Principle of Inclusion-Exclusion (PIE):** Systematically compute the size of set unions via bitmask parity aggregation.
-*   **Dual-Language Fluency:** Deliver clean, zero-allocation modular combinatorics engines in modern C# (.NET 8/9) and idiomatic Python (3.11+).
+*By the end of this module, you will be able to:*
 
----
-
-## ⚖️ FAANG Senior / Lead Interview Calibration
-
-Counting problems appear frequently in Big Tech rounds. Senior candidates navigate the complexity spectrum:
-
-| Problem Formulation | Naive Approach | Optimal Formulation | Time Complexity | Interview Requirement |
-| :--- | :--- | :--- | :--- | :--- |
-| **Calculate `nCr mod P` for `Q` queries** | Recompute on the fly (`O(Q * N)`) | Precompute `fact` and `invFact` | `O(N + Q)` | **Full code expected in 10 minutes.** |
-| **Distribute items into bins** | Backtracking recursion `O(k^n)` | Stars and Bars formula | `O(1)` query | Mathematical recognition expected instantly. |
-| **Permutations with no fixed points** | Permutation generation `O(N!)` | Derangements recurrence | `O(N)` | Derivation via PIE expected on whiteboard. |
-| **Count arrays satisfying constraints** | Exponential DP `O(2^N)` | Principle of Inclusion-Exclusion | `O(2^K)` (where `K` = constraints) | Senior / Lead standard for constraint counting. |
-
-### The "Fermat's Little Theorem" Trap
-Many candidates know that `inv(x) = pow(x, MOD - 2, MOD)`. However, computing the inverse for every factorial individually takes `O(N log MOD)`.
-A Senior candidate demonstrates **backward prefix cascading**:
-```text
-Compute fact[i] forward in O(N).
-Compute invFact[N] = pow(fact[N], MOD - 2, MOD) in O(log MOD).
-For i = N - 1 down to 0:
-    invFact[i] = (invFact[i + 1] * (i + 1)) mod MOD
-```
-This reduces modular inversions from `N` exponentiations down to **exactly 1 exponentiation**, achieving true **`O(N)` linear precomputation**.
+- 🎬 **Internalize** the Ice Cream Party Venn Diagram (PIE) and Dividing Cookies (Stars and Bars) mental models.
+- 🪜 **Master** the Inclusion-Exclusion bitmask formulation, alternating signs by subset parity `(-1)^|S|`.
+- 🎨 **Visualize** Stars and Bars partitions: placing `K - 1` dividers among `N` items to solve integer equations.
+- 🛑 **Avoid** fatal rookie traps: floating-point division in combinations, applying Lucas' Theorem to composite moduli, and intermediate 64-bit modular multiplication overflow.
+- 🎙️ **Deliver** the exact 3-sentence verbal talk track defending combinatorial abstractions in senior technical rounds.
+- ⚡ **Implement** production-grade modular factorials, combinations, and Lucas' Theorem in C# (.NET 8/9) and Python (3.11+).
 
 ---
 
-## 📖 Chapter 1: Context & Physical Mental Models
+## 🎬 PILLAR 1: THE 60-SECOND HOOK & EVERYDAY ANALOGY
 
-### 1. Stars and Bars (Balls in Bins)
+### The Ice Cream Venn Diagram & The Cookie Dividers
 
-Suppose you have `n = 7` identical items (stars) to distribute among `k = 3` distinct bins.
-Represent the partition by placing `k - 1 = 2` divider bars among the 7 stars:
+#### 1. The Principle of Inclusion-Exclusion (PIE)
+Imagine you are hosting an office party and survey 100 engineers about dessert preferences:
+- 50 engineers like Chocolate.
+- 40 engineers like Vanilla.
+- 30 engineers like Strawberry.
+
+Can you just add them together? `50 + 40 + 30 = 120`!
+Wait! You only have 100 engineers! Where did the extra 20 come from?
+**Overcounting!** Engineers who like *both* Chocolate and Vanilla were counted twice.
 
 ```text
-Bin 1: 3 items      Bin 2: 2 items      Bin 3: 2 items
-
-     *   *   *    |    *   *    |    *   *
-    (Star Star Star)   (Star Star)  (Star Star)
+The Inclusion-Exclusion Rule:
+1. ADD individual single sets:              + |A| + |B| + |C|
+2. SUBTRACT all pair-wise intersections:     - (|A cap B| + |B cap C| + |C cap A|)
+3. ADD back the triple intersection:        + |A cap B cap C|
 ```
 
-*   Total positions available: `n + k - 1` (7 stars + 2 bars = 9 positions).
-*   Any choice of 2 bar positions defines a unique distribution.
-*   **Formula (Non-negative integers `x_i >= 0`):**
-    `Total Ways = (n + k - 1 choose k - 1)`.
-*   **Formula (Positive integers `x_i >= 1`):**
-    Pre-assign 1 item to each bin, leaving `n - k` items to distribute:
-    `Total Ways = (n - 1 choose k - 1)`.
+Every odd-sized intersection is added; every even-sized intersection is subtracted!
+In computer algorithms, whenever you need to count objects satisfying *at least one* constraint, or count objects satisfying *no bad constraints*, PIE gives you the exact answer without enumerating permutations!
 
-### 2. The Principle of Inclusion-Exclusion (PIE)
+---
 
-To find the size of the union of multiple sets, we cannot simply add their sizes because elements in overlaps are overcounted:
+#### 2. Stars and Bars (Dividing Cookies Among Kids)
+
+Suppose you have **7 identical chocolate chip cookies** and want to distribute them among **3 kids** (Alice, Bob, and Charlie).
+Each kid must get at least 0 cookies: `Alice + Bob + Charlie = 7`.
+How many different ways can you distribute them?
+
+Line up the 7 cookies as "Stars" (`*`):
+`*  *  *  *  *  *  *`
+
+To split 7 cookies into 3 groups, how many dividers ("Bars" `|`) do you need?
+**Exactly 2 dividers!**
 
 ```text
-|A U B U C| = |A| + |B| + |C|                  <-- Level 1: Add single sets (+)
-              - (|A cap B| + |A cap C| + |B cap C|)  <-- Level 2: Subtract pairwise overlaps (-)
-              + |A cap B cap C|                <-- Level 3: Add triple overlap (+)
+Example 1:   * * | * * * | * *       --> Alice gets 2, Bob gets 3, Charlie gets 2
+Example 2:   | * * * * * | * *       --> Alice gets 0, Bob gets 5, Charlie gets 2
+Example 3:   * * * * * * * | |       --> Alice gets 7, Bob gets 0, Charlie gets 0
 ```
 
-General Formula:
-`|Union_{i=1}^m A_i| = Sum_{k=1}^m (-1)^{k-1} * Sum_{1 <= i_1 < ... < i_k <= m} |A_{i_1} cap ... cap A_{i_k}|`.
+Notice the magic:
+You have `7 stars + 2 bars = 9 total positions`.
+Any choice of where to place the 2 bars forms a unique, valid distribution!
+Number of ways = `C(7 + 3 - 1, 3 - 1) = C(9, 2) = (9 * 8) / 2 = 36 ways!`
 
 ---
 
-## 🏛️ Chapter 2: The Governing Invariants & Algorithmic Mechanics
+## 🪜 PILLAR 2: THE SCAFFOLDING LADDER & TOY NAPKIN TRACE
 
-### 1. Mathematical Invariants
+### Step 1: The Combinatorial Toolkit
 
-1. **Modular Inverse Correctness:**
-   By Fermat's Little Theorem, if `MOD` is prime and `gcd(a, MOD) == 1`:
-   `a^(MOD - 1) = 1 (mod MOD)` -> `a * a^(MOD - 2) = 1 (mod MOD)`.
-   Therefore, `a^(-1) = a^(MOD - 2) mod MOD`.
-2. **Combination Formula:**
-   `nCr(n, r) = n! / (r! * (n - r)!) = fact[n] * invFact[r] * invFact[n - r] mod MOD`.
-3. **Derangement Recurrence:**
-   Let `D(n)` be the number of derangements of `n` items:
-   - `D(0) = 1`, `D(1) = 0`.
-   - `D(n) = (n - 1) * (D(n - 1) + D(n - 2))` for `n >= 2`.
-   - Closed form via PIE: `D(n) = n! * Sum_{i=0}^n ((-1)^i / i!)`.
+| Technique | Problem Trigger | Mathematical Formula | Time Complexity |
+| :--- | :--- | :--- | :--- |
+| **Modular Combinations `C(N, K)`** | Choose `K` items from `N` mod prime `P` | `N! * (K!)^(-1) * ((N-K)!)^(-1) % P` | `O(N)` precompute, `O(1)` query |
+| **Stars and Bars (Non-Negative)** | `x_1 + ... + x_k = n`, with `x_i >= 0` | `C(n + k - 1, k - 1)` | `O(1)` via factorial tables |
+| **Stars and Bars (Positive)** | `x_1 + ... + x_k = n`, with `x_i >= 1` | `C(n - 1, k - 1)` | `O(1)` via factorial tables |
+| **Derangements `D_n`** | Permutations where no element is in its original position | `D_n = (n - 1) * (D_{n-1} + D_{n-2})` | `O(N)` DP |
+| **Inclusion-Exclusion (PIE)** | Count items avoiding `M` bad properties | `Sum_{S subseteq M} (-1)^|S| * N(S)` | `O(2^M)` bitmask scan |
+| **Lucas' Theorem** | `C(N, K) % P` where `N <= 10^18`, `P <= 10^5` (prime) | `Prod C(n_i, k_i) % P` in base `P` | `O(P + log_P(N))` |
 
 ---
 
-## 💻 Chapter 3: Idiomatic Dual-Language Code
+### Step 2: Lucas' Theorem for Massive Coordinates (`N <= 10^18`)
 
-### C# Primary Implementation (.NET 8/9)
+Suppose an interviewer asks:
+> *"Compute `C(10^18, 10^12) % 10007` where 10007 is prime."*
+
+#### The Rookie Panic:
+You cannot precompute factorials up to `10^18` (would require 1 billion gigabytes of RAM).
+
+#### The Senior Lucas' Theorem Solution:
+Write `N` and `K` in base `P`:
+- `N = n_m * P^m + ... + n_1 * P + n_0`
+- `K = k_m * P^m + ... + k_1 * P + k_0`
+
+Then by **Lucas' Theorem**:
+`C(N, K) == C(n_m, k_m) * C(n_{m-1}, k_{m-1}) * ... * C(n_0, k_0) (mod P)`.
+
+Because each base-`P` digit satisfies `0 <= n_i, k_i < P`, each `C(n_i, k_i)` is a small combination where numbers are strictly `< P`!
+If any `k_i > n_i`, the answer is immediately **`0`**!
+Total time: **`O(P)` to precompute factorials up to `P`, then `O(log_P(N))` per query!**
+
+---
+
+### 🧠 Pause & Predict Micro-Drills
+
+> **Drill 1:** How many derangements exist for `N = 3` items `[1, 2, 3]`?
+> *Pause here and write them down!*
+>
+> **Answer:** 
+> Derangements: `[2, 3, 1]` and `[3, 1, 2]`. Exactly **2 derangements**!
+> Formula: `D_1 = 0, D_2 = 1, D_3 = (3 - 1) * (D_2 + D_1) = 2 * (1 + 0) = 2`.
+
+> **Drill 2:** What is `C(10, 15)`?
+> *Pause here and think!*
+>
+> **Answer:**
+> **`0`!** You cannot choose 15 items from a set of 10. In Lucas' Theorem, if any `k_i > n_i`, the term evaluates to `0`, making the entire product `0`!
+
+---
+
+## 🎨 PILLAR 3: PRAGMATIC VISUAL MODELS & DECISION FLOWS
+
+### Modern Hex Flowchart: The Combinatorics Route Planner
+
+```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
+flowchart TD
+    Prob{"🎯 Counting Problem"} -->|Partition items into bins| SB["Stars & Bars<br/>C(n + k - 1, k - 1)"]
+    Prob -->|Count with overlapping bad properties| PIE["Inclusion-Exclusion (PIE)<br/>Bitmask sign alternating (-1)^|S|"]
+    Prob -->|C(N, K) mod P with N &le; 10^6| ModFact["Modular Factorials<br/>Fact(N) * InvFact(K) * InvFact(N-K)"]
+    Prob -->|C(N, K) mod P with N &le; 10^18| Lucas["Lucas' Theorem<br/>Decompose into base-P digits"]
+
+    style Prob fill:#e1f5fe,stroke:#0288d1,color:#01579b
+    style SB fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style PIE fill:#fff3e0,stroke:#ef6c00,color:#e65100
+    style ModFact fill:#f3e5f5,stroke:#8e24aa,color:#4a148c
+    style Lucas fill:#ffebee,stroke:#c62828,color:#b71c1c
+```
+
+---
+
+## 🛑 PILLAR 4: THE ROOKIE TRAP ZONE
+
+### Side-by-Side Comparison: Blunders vs. Senior Architect Patterns
+
+| Dimension | ❌ Rookie Blunder | ✅ Senior Architect Pattern |
+| :--- | :--- | :--- |
+| **Combination Division** | Calculates `fact[n] / (fact[k] * fact[n-k])` using integer division before modulo, losing precision. | Multiplies by modular inverse: `fact[n] * invFact[k] % P * invFact[n-k] % P`. |
+| **Lucas' Theorem Modulus** | Applies Lucas' Theorem when `P` is a composite number (e.g. `P = 10^9 + 7` composite factors), breaking the theorem. | Verifies `P` is strictly prime. (For composite moduli, uses prime factorization + Chinese Remainder Theorem). |
+| **64-bit Multiplication Overflow**| Multiplies two numbers up to `10^9` without casting to 64-bit `long`: `(a * b) % P`, producing silent negative overflow. | Casts to `(long)a * b % P` at every intermediate multiplication. |
+| **Stars and Bars Boundary** | Uses non-negative formula `C(n + k - 1, k - 1)` when bins must be strictly positive (`x_i >= 1`). | Uses positive formula `C(n - 1, k - 1)`, or substitutes `y_i = x_i - 1` to restore non-negative bounds. |
+| **Inclusion-Exclusion Parity** | Forgets that the empty subset `S = {}` corresponds to `(-1)^0 = +1`, or misaligns the sign in complement counting. | Explicitly formulates: `Total - Count(Bad_1 U Bad_2 ...)`, alternating signs properly. |
+
+---
+
+## 🎙️ PILLAR 5: 45-MINUTE INTERVIEW TALK TRACK
+
+### The Exact 3-Sentence Verbal Script
+
+Speak these exact three sentences before writing code:
+
+```text
++--------------------------------------------------------------------------------------------------+
+|                              THE SENIOR COMBINATORICS TALK TRACK                                  |
++--------------------------------------------------------------------------------------------------+
+| 1. The Combinatorial Abstraction:                                                                |
+|    "This problem maps directly to partitioning N indistinguishable items into K distinguishable  |
+|    bins with lower-bound constraints, which evaluates to C(N + K - 1, K - 1) via Stars and Bars."|
+|                                                                                                  |
+| 2. The Modular Arithmetic Invariant:                                                             |
+|    "Because calculations are evaluated modulo prime P, we precompute factorial and inverse       |
+|    factorial arrays using Fermat's Little Theorem, allowing each combination query to resolve in  |
+|    strictly O(1) time with zero floating-point division."                                        |
+|                                                                                                  |
+| 3. The Massive Coordinate Defense:                                                               |
+|    "If N and K exceed 10^6 and reach 10^18, we decompose their base-P representations using      |
+|    Lucas' Theorem, reducing the calculation to the product of small base-P binomial coefficients  |
+|    in O(P + log_P(N)) time."                                                                     |
++--------------------------------------------------------------------------------------------------+
+```
+
+---
+
+## ⚡ PILLAR 6: PRODUCTION DUAL-LANGUAGE IMPLEMENTATIONS
+
+### C# Primary Implementation (.NET 8/9): Production Modular Combinatorics & Lucas' Theorem
 
 ```csharp
 using System;
@@ -106,235 +197,185 @@ using System;
 namespace AdvancedDataStructures;
 
 /// <summary>
-/// Production modular combinatorics engine.
-/// Precomputes factorials and inverse factorials in O(N) to answer nCr and nPr queries in O(1).
+/// Production Combinatorics and Modular Arithmetic solver.
+/// Supports O(1) combinations via precomputed inverse factorials and Lucas' Theorem for N <= 10^18.
 /// </summary>
-public sealed class ModularCombinatorics
+public sealed class CombinatoricsSolver
 {
-    public const int Mod = 1_000_000_007;
     private readonly long[] _fact;
     private readonly long[] _invFact;
-    private readonly int _maxN;
+    private readonly long _mod;
 
-    public ModularCombinatorics(int maxN)
+    public CombinatoricsSolver(int maxN, long mod)
     {
-        _maxN = maxN;
+        _mod = mod;
         _fact = new long[maxN + 1];
         _invFact = new long[maxN + 1];
 
         _fact[0] = 1;
         _invFact[0] = 1;
 
-        // Step 1: Forward precomputation of factorials in O(N)
         for (int i = 1; i <= maxN; i++)
         {
-            _fact[i] = (_fact[i - 1] * i) % Mod;
+            _fact[i] = (_fact[i - 1] * i) % _mod;
         }
 
-        // Step 2: Single modular exponentiation for invFact[maxN] in O(log Mod)
-        _invFact[maxN] = ModPow(_fact[maxN], Mod - 2, Mod);
-
-        // Step 3: Backward cascading precomputation of inverse factorials in O(N)
+        _invFact[maxN] = ModPow(_fact[maxN], _mod - 2, _mod);
         for (int i = maxN - 1; i >= 1; i--)
         {
-            _invFact[i] = (_invFact[i + 1] * (i + 1)) % Mod;
+            _invFact[i] = (_invFact[i + 1] * (i + 1)) % _mod;
         }
     }
 
-    public static long ModPow(long baseVal, long exp, long mod)
+    private static long ModPow(long baseVal, long exp, long mod)
     {
-        long result = 1;
+        long res = 1;
         baseVal %= mod;
         while (exp > 0)
         {
-            if ((exp & 1) == 1) result = (result * baseVal) % mod;
+            if ((exp & 1) == 1) res = (res * baseVal) % mod;
             baseVal = (baseVal * baseVal) % mod;
             exp >>= 1;
         }
-        return result;
+        return res;
     }
 
     /// <summary>
-    /// Computes nCr modulo 10^9 + 7 in O(1) time.
+    /// Computes C(n, k) % mod in O(1) time for n <= maxN.
     /// </summary>
-    public long NCr(int n, int r)
+    public long NCr(int n, int k)
     {
-        if (r < 0 || r > n || n > _maxN) return 0;
-        return _fact[n] * _invFact[r] % Mod * _invFact[n - r] % Mod;
+        if (k < 0 || k > n) return 0;
+        return _fact[n] * _invFact[k] % _mod * _invFact[n - k] % _mod;
     }
 
     /// <summary>
-    /// Computes nPr modulo 10^9 + 7 in O(1) time.
-    /// </summary>
-    public long NPr(int n, int r)
-    {
-        if (r < 0 || r > n || n > _maxN) return 0;
-        return _fact[n] * _invFact[n - r] % Mod;
-    }
-
-    /// <summary>
-    /// Stars and Bars: Number of ways to distribute n identical items into k distinct bins.
-    /// Non-negative solutions: x1 + x2 + ... + xk = n (xi >= 0).
+    /// Solves Stars and Bars: number of non-negative integer solutions to x_1 + ... + x_k = n.
     /// </summary>
     public long StarsAndBars(int n, int k)
     {
-        if (n < 0 || k <= 0) return 0;
+        if (n == 0 && k == 0) return 1;
+        if (k <= 0) return 0;
         return NCr(n + k - 1, k - 1);
     }
 
     /// <summary>
-    /// Computes the number of derangements of n elements in O(N) time.
+    /// Computes C(n, k) % p using Lucas' Theorem for massive coordinates up to 10^18 (p must be prime).
     /// </summary>
-    public static long Derangements(int n)
+    public static long LucasNCr(long n, long k, int p)
     {
-        if (n == 0) return 1;
-        if (n == 1) return 0;
+        if (k < 0 || k > n) return 0;
+        if (k == 0) return 1;
 
-        long prev2 = 1; // D(0)
-        long prev1 = 0; // D(1)
-        long curr = 0;
+        long res = 1;
+        CombinatoricsSolver smallSolver = new(p, p);
 
-        for (int i = 2; i <= n; i++)
+        while (n > 0 || k > 0)
         {
-            curr = ((i - 1) * (prev1 + prev2)) % Mod;
-            prev2 = prev1;
-            prev1 = curr;
+            int nDigit = (int)(n % p);
+            int kDigit = (int)(k % p);
+
+            if (kDigit > nDigit) return 0;
+
+            res = (res * smallSolver.NCr(nDigit, kDigit)) % p;
+            n /= p;
+            k /= p;
         }
 
-        return curr;
+        return res;
     }
 }
 ```
 
-### Python Secondary Implementation (Python 3.11+)
+---
+
+### Python Secondary Implementation (Python 3.11+): Complete Combinatorics Solver
 
 ```python
 from typing import List
 
-class ModularCombinatorics:
-    """Precomputes factorials and modular inverse factorials for O(1) nCr queries."""
-    MOD: int = 1_000_000_007
-
-    def __init__(self, max_n: int):
-        self.max_n = max_n
+class CombinatoricsSolver:
+    """
+    Production-grade Combinatorics and Modular Arithmetic solver in Python.
+    Supports O(1) modular binomial coefficients and Lucas' Theorem for N <= 10^18.
+    """
+    def __init__(self, max_n: int, mod: int):
+        self.mod: int = mod
         self.fact: List[int] = [1] * (max_n + 1)
         self.inv_fact: List[int] = [1] * (max_n + 1)
 
-        # Forward factorial precomputation
         for i in range(1, max_n + 1):
-            self.fact[i] = (self.fact[i - 1] * i) % self.MOD
+            self.fact[i] = (self.fact[i - 1] * i) % self.mod
 
-        # Single modular exponentiation at max_n
-        self.inv_fact[max_n] = pow(self.fact[max_n], self.MOD - 2, self.MOD)
-
-        # Backward cascade for inverse factorials
+        self.inv_fact[max_n] = pow(self.fact[max_n], self.mod - 2, self.mod)
         for i in range(max_n - 1, 0, -1):
-            self.inv_fact[i] = (self.inv_fact[i + 1] * (i + 1)) % self.MOD
+            self.inv_fact[i] = (self.inv_fact[i + 1] * (i + 1)) % self.mod
 
-    def ncr(self, n: int, r: int) -> int:
-        """Returns nCr modulo 10^9 + 7 in O(1) time."""
-        if r < 0 or r > n or n > self.max_n:
+    def ncr(self, n: int, k: int) -> int:
+        """Computes C(n, k) % mod in O(1) time."""
+        if k < 0 or k > n:
             return 0
-        return self.fact[n] * self.inv_fact[r] % self.MOD * self.inv_fact[n - r] % self.MOD
-
-    def npr(self, n: int, r: int) -> int:
-        """Returns nPr modulo 10^9 + 7 in O(1) time."""
-        if r < 0 or r > n or n > self.max_n:
-            return 0
-        return self.fact[n] * self.inv_fact[n - r] % self.MOD
+        return self.fact[n] * self.inv_fact[k] % self.mod * self.inv_fact[n - k] % self.mod
 
     def stars_and_bars(self, n: int, k: int) -> int:
-        """Distributes n identical items into k distinct non-negative bins."""
-        if n < 0 or k <= 0:
+        """Solves x_1 + ... + x_k = n for non-negative integers x_i >= 0."""
+        if n == 0 and k == 0:
+            return 1
+        if k <= 0:
             return 0
         return self.ncr(n + k - 1, k - 1)
 
-def derangements(n: int, mod: int = 1_000_000_007) -> int:
-    """Computes number of derangements of n elements in O(N) time and O(1) space."""
-    if n == 0:
-        return 1
-    if n == 1:
-        return 0
+    @staticmethod
+    def lucas_ncr(n: int, k: int, p: int) -> int:
+        """
+        Computes C(n, k) % p via Lucas' Theorem for massive n, k <= 10^18.
+        p must be prime and <= 10^5.
+        """
+        if k < 0 or k > n:
+            return 0
+        if k == 0:
+            return 1
 
-    prev2, prev1 = 1, 0
-    for i in range(2, n + 1):
-        curr = ((i - 1) * (prev1 + prev2)) % mod
-        prev2, prev1 = prev1, curr
-    return prev1
+        small_solver = CombinatoricsSolver(p, p)
+        res = 1
+
+        while n > 0 or k > 0:
+            n_digit = n % p
+            k_digit = k % p
+
+            if k_digit > n_digit:
+                return 0
+
+            res = (res * small_solver.ncr(n_digit, k_digit)) % p
+            n //= p
+            k //= p
+
+        return res
 ```
 
 ---
 
-## 📊 Chapter 4: Explicit Complexity Deconstruction
+## 📊 EXPLICIT COMPLEXITY DECONSTRUCTION
 
-| Operation | Time Complexity | Auxiliary Space | Bottleneck & Invariant |
-| :--- | :--- | :--- | :--- |
-| **Factorial Array Precompute** | `O(N)` | `O(N)` | Simple forward multiplications. |
-| **`invFact[N]` Calculation** | `O(log MOD)` | `O(1)` | Binary exponentiation `pow(x, MOD - 2)`. |
-| **Inverse Cascade Precompute** | `O(N)` | `O(N)` | Backward multiplications: `invFact[i] = invFact[i+1] * (i+1)`. |
-| **Single `nCr` Query** | `O(1)` | `O(1)` | Three array lookups and two modular multiplications. |
-| **Derangements `D(N)`** | `O(N)` | `O(1)` | Two-variable rolling DP state machine. |
-| **Bitmask PIE over `M` sets** | `O(2^M)` | `O(1)` | Exhaustive subset traversal using sign `(-1)^|S|`. |
-
-### Mathematical Proof: Why Backward Cascade Works
-*   By definition: `invFact[i] = 1 / (i!)`.
-*   Notice: `1 / (i!) = (i + 1) / ((i + 1)!) = (i + 1) * invFact[i + 1]`.
-*   Taking this modulo `MOD` preserves exact field inverses because `gcd(i + 1, MOD) == 1`.
-*   Thus, starting at `invFact[N]` and multiplying by `(i + 1)` moving down to 1 correctly produces every inverse factorial without performing expensive `O(log MOD)` inversions for each element.
+| Paradigm | `N, K` Bound | Modulus `P` | Precomputation Time | Query Time | Auxiliary Space |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Factorial Table Combinations** | `N <= 10^6` | Prime `P` | `O(N)` | **`O(1)`** | `O(N)` table |
+| **Stars and Bars** | `N, K <= 10^6`| Prime `P` | `O(N + K)` | **`O(1)`** | `O(N + K)` table |
+| **Lucas' Theorem** | `N, K <= 10^18`| Prime `P <= 10^5`| `O(P)` | **`O(log_P(N))`** | `O(P)` table |
+| **Inclusion-Exclusion (PIE)** | `M` conditions | Any | None | **`O(2^M)`** | `O(1)` |
 
 ---
 
-## 🎙️ Chapter 5: 45-Minute Senior / Lead Verbal Interview Script
-
-```text
-[00:00 - 05:00] Clarify & Problem Modeling
-Candidate: "We are asked to answer Q queries computing combinations nCr modulo 10^9 + 7 where N <= 10^6 and Q <= 10^5.
-           If we compute each combination naively using modular inverses on the fly, each query takes O(N log MOD), 
-           leading to O(Q * N log MOD)—which will severely timeout.
-           Instead, I will build an O(N) precomputation engine: factorials and modular inverse factorials. 
-           Once precomputed, every subsequent combination query executes in O(1) time."
-
-[05:00 - 15:00] Invariants & Trade-offs
-Candidate: "Since MOD = 10^9 + 7 is prime, Fermat's Little Theorem states a^(MOD - 1) = 1 (mod MOD), 
-           so the modular inverse is a^(MOD - 2) mod MOD.
-           A common pitfall is calling modular inverse on every element, taking O(N log MOD). 
-           I will optimize this to true O(N):
-           1. Compute fact[0...N] in O(N).
-           2. Invert ONLY the last element: invFact[N] = pow(fact[N], MOD - 2) in O(log MOD).
-           3. Cascade backward: invFact[i] = invFact[i + 1] * (i + 1) mod MOD in O(N).
-           Now nCr(n, r) is simply fact[n] * invFact[r] * invFact[n - r] mod MOD in O(1)."
-
-[15:00 - 35:00] Implementation Protocol
-Candidate: "I'll implement the `ModularCombinatorics` class:
-           - Verify bounds: `if (r < 0 || r > n) return 0;`.
-           - In `ModPow`: use standard binary exponentiation.
-           - Implement `StarsAndBars(n, k)`: mapping to `NCr(n + k - 1, k - 1)` for distributing n identical 
-             items among k bins.
-           - Implement `Derangements(n)`: using the O(1) memory two-pointer recurrence D(n) = (n - 1)*(D(n-1) + D(n-2))."
-
-[35:00 - 45:00] Complexity Deconstruction & Edge Cases
-Candidate: "Precomputation takes O(N + log MOD) time and O(N) space. Each query is O(1).
-           Edge cases:
-           - r = 0 or r = n: yields 1.
-           - r > n: guard clause returns 0 immediately.
-           - 64-bit integer overflow: intermediate products in C# and Python must be typed to prevent 
-             32-bit register overflow prior to modulo."
-```
-
----
-
-## 🔍 Chapter 6: Granular Edge-Case & Invariant Verification Table
+## 🔍 GRANULAR EDGE-CASE & INVARIANT VERIFICATION TABLE
 
 | Edge Case Scenario | Concrete Input | Expected Behavior | Invariant Verification & Handling |
 | :--- | :--- | :--- | :--- |
-| **`r = 0` (Choose 0 elements)** | `nCr(10, 0)` | Returns `1`. | `fact[10] * invFact[0] * invFact[10] = 1`. |
-| **`r = n` (Choose all elements)**| `nCr(10, 10)` | Returns `1`. | `fact[10] * invFact[10] * invFact[0] = 1`. |
-| **`r > n` (Invalid combination)** | `nCr(5, 8)` | Returns `0`. | Guard clause `if (r > n) return 0;` prevents out-of-bounds array access. |
-| **`r < 0` (Negative index)** | `nCr(5, -2)` | Returns `0`. | Guard clause `if (r < 0) return 0;`. |
-| **Stars & Bars with `n = 0`** | `StarsAndBars(0, 5)` | Returns `1`. | `NCr(0 + 5 - 1, 4) = NCr(4, 4) = 1` (1 way: all bins empty). |
-| **Single Item Derangement** | `Derangements(1)` | Returns `0`. | A single item cannot be placed anywhere other than position 1. |
-| **Zero Item Derangement** | `Derangements(0)` | Returns `1`. | Vacuously true: the empty permutation has no fixed points. |
+| **K Exceeds N** | `NCr(5, 10)` | Returns `0`. | Guard `if (k < 0 || k > n) return 0;`. |
+| **Zero Items Selection** | `NCr(10, 0)` | Returns `1`. | `fact[0] * invFact[0] % mod` evaluates to 1. |
+| **Single Bin Partition** | `StarsAndBars(7, 1)` | Returns `1` (all items go to the only bin). | `C(7 + 1 - 1, 1 - 1) = C(7, 0) = 1`. |
+| **Lucas Base Digit Mismatch** | `n = 14 (base 5: 24), k = 8 (base 5: 13)` | Evaluates `C(2, 1) * C(4, 3) = 2 * 4 = 8 % 5 = 3`. | Modular multiplication on small digits holds. |
+| **Lucas Automatic Pruning** | `n = 10, k = 7, p = 3` (`n_1 = 3, k_1 = 2, k_0 > n_0`) | Immediately returns `0`. | Base-3 digit `k_0 > n_0` triggers zero multiplication. |
 
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_17_Day_03_Game_Theory_Nimbers_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_17_Day_05_Catalan_Numbers_And_Advanced_Counting_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day: Game Theory & Nimbers](Week_17_Day_03_Game_Theory_Nimbers_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Catalan Numbers →](Week_17_Day_05_Catalan_Numbers_And_Advanced_Counting_Instructional.md)

@@ -1,113 +1,215 @@
-# 📘 Week 17, Day 1: Convex Hull Trick & DP Slope Optimization
+# 📘 WEEK 17 DAY 01: CONVEX HULL TRICK & DP SLOPE OPTIMIZATION
 
-> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_17_Day_02_Slope_Trick_Instructional.md)
+> 🧭 **Navigation:** [← Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Slope Trick →](Week_17_Day_02_Slope_Trick_Instructional.md)
 > 
-> 💡 **Instructor Note:** *Convex Hull Trick (CHT) is the quintessential bridge between computational geometry and dynamic programming. In quantitative trading (Citadel, Jane Street, Jump) and Tier-1 Big Tech algorithmic rounds (Google, Meta), recognizing when an O(N^2) DP with linear cross-terms can be optimized to O(N log N) or O(N) using a lower envelope of lines is an essential L5/L6 differentiator.*
+> 💡 **Instructor Note:** *Convex Hull Trick (CHT) is the quintessential bridge between computational geometry and dynamic programming. In quantitative trading (Citadel, Jane Street, Jump) and Tier-1 Big Tech algorithmic loops (Google, Meta), recognizing when an O(N^2) quadratic DP with linear cross-terms can be optimized to O(N log N) or strictly O(N) using a lower envelope of lines is an essential Senior / Staff differentiator. Today, we master the geometry and the zero-float cross-multiplication pruning.*
 
 ---
 
-## 🎯 Learning Objectives
+## 🎯 LEARNING OBJECTIVES
 
-*   **Algebraic Recognition:** Identify DP state transitions of the form `dp[i] = min_{j < i} (m_j * x_i + b_j)` that represent linear envelope evaluations.
-*   **Lower Envelope Geometry:** Understand why lines with decreasing slopes create a convex lower envelope with monotonically increasing intersection points.
-*   **Zero-Float Redundancy Pruning:** Master the cross-multiplication inequality `(b3 - b1) * (m1 - m2) <= (b2 - b1) * (m1 - m3)` to prune obsolete lines without floating-point division errors.
-*   **Monotonic vs Dynamic CHT:** Delineate two-pointer deques (`O(N)`), binary search on deques (`O(N log N)`), and Li Chao segment trees for arbitrary line insertion.
-*   **Dual-Language Implementation:** Build production-grade CHT solvers in modern C# (.NET 8/9) and idiomatic Python (3.11+).
+*By the end of this module, you will be able to:*
+
+- 🎬 **Internalize** the Discount Shipping Courier mental model and lower envelope of lines without academic jargon.
+- 🪜 **Master** algebraic recognition: identify DP transitions containing `m_j * x_i + b_j` cross-products.
+- 🎨 **Visualize** line intersections and the "IsBad" pruning condition where obsolete lines are popped from the deque.
+- 🛑 **Avoid** fatal rookie traps: floating-point division rounding errors, 64-bit integer overflow, and min-vs-max slope direction flips.
+- 🎙️ **Deliver** the exact 3-sentence verbal talk track defending CHT slope optimization in senior technical interviews.
+- ⚡ **Implement** production-grade, zero-float Monotonic Deque CHT in C# (.NET 8/9) and Python (3.11+).
 
 ---
 
-## ⚖️ FAANG Senior / Lead Interview Calibration
+## 🎬 PILLAR 1: THE 60-SECOND HOOK & EVERYDAY ANALOGY
 
-When an interviewer presents a DP problem with quadratic state transitions, senior candidates evaluate the optimization spectrum:
+### The Bulk Shipping Courier Contract
 
-| CHT Variant | Slopes `m_j` | Query Coordinates `x_i` | Add Line Time | Query Min Time | Total DP Time | Interview Coding Expectation |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Monotonic Deque (Two Pointers)** | Monotonic | Monotonic | `O(1)` amortized | `O(1)` amortized | `O(N)` | **Full code expected in 20 minutes.** |
-| **Monotonic Deque (Binary Search)**| Monotonic | Arbitrary | `O(1)` amortized | `O(log N)` | `O(N log N)` | **Full code expected in 20 minutes.** |
-| **Dynamic CHT (Set of Lines)** | Arbitrary | Arbitrary | `O(log N)` | `O(log N)` | `O(N log N)` | Conceptual only; iterator maintenance is error-prone. |
-| **Li Chao Segment Tree** | Arbitrary | Fixed coordinate range | `O(log C)` | `O(log C)` | `O(N log C)` | Accepted alternative for arbitrary slopes. |
+Imagine you run an e-commerce fulfillment warehouse shipping thousands of packages every day.
+You have contracts with different logistics couriers:
+- Courier 1 charges: `$100 flat fee + $10 per kilogram`.
+- Courier 2 charges: `$250 flat fee + $5 per kilogram`.
+- Courier 3 charges: `$600 flat fee + $2 per kilogram`.
 
-### The Recognition Pattern: "How Do I Know It's CHT?"
-Look for quadratic DP transitions where the cost function contains a **cross product of terms dependent solely on `i` and `j`**:
+Every morning, you ask: *"For a package weighing `X` kilograms, which courier gives me the cheapest price?"*
+
+```text
+Cost Formula: Cost = Slope (Rate per kg) * X (Weight) + Intercept (Flat fee)
+              y    = m * X + b
+
+Line 1 (Courier 1): y = 10 * X + 100
+Line 2 (Courier 2): y =  5 * X + 250
+Line 3 (Courier 3): y =  2 * X + 600
+```
+
+Notice:
+- For light packages (`X < 30 kg`): Courier 1 is the cheapest.
+- For medium packages (`30 <= X <= 116 kg`): Courier 2 is the cheapest.
+- For heavy cargo (`X > 116 kg`): Courier 3 is the cheapest.
+
+Now, suppose you have `N = 100,000` packages to ship.
+If you inspect all `N` couriers for every single package, you do `100,000 * 100,000 = 10,000,000,000` operations (`O(N^2)` brute-force DP). Your server crashes from Time Limit Exceeded (TLE).
+
+**The Convex Hull Trick insight:**
+All those courier pricing lines form a **Lower Envelope** (the bottom boundary of the lines).
+Because package weights increase monotonically and courier slopes decrease monotonically, you don't search all lines!
+You maintain a **Deque of optimal lines** and advance a pointer forward in amortized **`O(1)` time per package**, cutting runtime from **`O(N^2)` to `O(N)`**!
+
+---
+
+## 🪜 PILLAR 2: THE SCAFFOLDING LADDER & TOY NAPKIN TRACE
+
+### Step 1: How to Spot CHT in an Interview DP Equation
+
+In an interview, the problem will **never** say: *"Use Convex Hull Trick!"*
+Instead, you will write a standard quadratic DP equation:
+`dp[i] = min_{j < i} (dp[j] + cost(j, i))`
+
+Watch how the algebra reveals CHT:
+Suppose `cost(j, i) = (pref[i] - pref[j])^2`:
 ```text
 dp[i] = min_{j < i} ( dp[j] + (pref[i] - pref[j])^2 )
       = min_{j < i} ( dp[j] + pref[i]^2 - 2 * pref[i] * pref[j] + pref[j]^2 )
       = pref[i]^2 + min_{j < i} ( (-2 * pref[j]) * pref[i] + (dp[j] + pref[j]^2) )
-                                     ^^^^^^^^^^^^   ^^^^^^^^   ^^^^^^^^^^^^^^^^^^
-                                         m_j           x_i            b_j
 ```
-Notice:
-*   Slope: `m_j = -2 * pref[j]` (depends only on `j`).
-*   Query point: `x_i = pref[i]` (depends only on `i`).
-*   Y-intercept: `b_j = dp[j] + pref[j]^2` (depends only on `j`).
-This transforms an `O(N^2)` quadratic check into finding the lowest line among candidate lines `L_j(x) = m_j * x + b_j` at coordinate `x_i`.
+
+Group terms by who depends on what:
+- `x_i = pref[i]` (Depends strictly on current index `i` -> The Query Coordinate `x`).
+- `m_j = -2 * pref[j]` (Depends strictly on candidate index `j` -> The Slope `m`).
+- `b_j = dp[j] + pref[j]^2` (Depends strictly on candidate index `j` -> The Y-Intercept `b`).
+
+`dp[i] = pref[i]^2 + min_{j < i} (m_j * x_i + b_j)`!
+The subproblem is simply: **Find the minimum value among candidate lines `y = m_j * x + b_j` at coordinate `x = x_i`!**
 
 ---
 
-## 📖 Chapter 1: Context & Physical Mental Models
+### Step 2: Line Intersections & The "IsBad" Pruning Rule
 
-### 1. The Lower Envelope of Lines
-
-Consider three lines with decreasing slopes: `L1` (steepest negative), `L2` (moderate), and `L3` (flattest).
-As `x` moves from `-infinity` to `+infinity`, which line produces the minimum value?
+Suppose we have lines `L1` and `L2` in our hull, and we want to add line `L3` (where slopes are decreasing: `m1 > m2 > m3`):
+- Where do `L1` and `L2` intersect?
+  `m1 * x + b1 = m2 * x + b2  ==>  x12 = (b2 - b1) / (m1 - m2)`.
+- Where do `L1` and `L3` intersect?
+  `x13 = (b3 - b1) / (m1 - m3)`.
 
 ```text
- y ^
-   |   L1 \
-   |       \
-   |        \   L2 \
-   |         \      \
-   |          \  *---*----- L3 ----
-   |           \/     \
-   |           /\      \
-   +----------*--*------------------> x
-             x12  x23
+The Pruning Invariant:
+If x13 <= x12:
+Line L3 becomes cheaper than Line L1 BEFORE Line L2 ever had a chance to be the minimum!
+Line L2 is completely shadowed and will NEVER be optimal for any x.
+We pop Line L2 from the back of the deque!
 ```
-
-*   For `x < x12`: `L1` is the minimum line.
-*   For `x12 <= x <= x23`: `L2` is the minimum line.
-*   For `x > x23`: `L3` is the minimum line.
-The lower boundary of all these line segments forms a **convex lower envelope**.
-
-### 2. Pruning Redundant Lines (The "IsBad" Condition)
-
-Suppose we have lines `L1` and `L2` in our hull, and we want to insert `L3` (with slope `m3 < m2 < m1`).
-*   Let `x12` be the intersection of `L1` and `L2`: `x12 = (b2 - b1) / (m1 - m2)`.
-*   Let `x13` be the intersection of `L1` and `L3`: `x13 = (b3 - b1) / (m1 - m3)`.
-*   If `x13 <= x12`, line `L3` becomes better than `L1` *before* `L2` ever had a chance to become the minimum!
-*   Therefore, **`L2` is completely redundant** and will never be optimal for any `x`. We pop `L2` from the deque!
 
 ```text
-Redundancy Condition:
-  (b3 - b1) / (m1 - m3) <= (b2 - b1) / (m1 - m2)
+Zero-Float Integer Cross-Multiplication:
+   (b3 - b1) / (m1 - m3) <= (b2 - b1) / (m1 - m2)
 
-To prevent division by zero or floating-point rounding errors:
-  Cross-multiply: (b3 - b1) * (m1 - m2) <= (b2 - b1) * (m1 - m3)
+To avoid division by zero and floating-point precision loss:
+   Cross-multiply:
+   (b3 - b1) * (m1 - m2) <= (b2 - b1) * (m1 - m3)
 ```
 
 ---
 
-## 🏛️ Chapter 2: The Governing Invariants & Algorithmic Mechanics
+### Step 3: Two-Pointer Querying in `O(1)` Amortized
 
-### 1. Mathematical Invariants
-
-1. **Monotonic Slopes Invariant:** Lines stored in the deque have strictly decreasing slopes:
-   `m_0 > m_1 > m_2 > ... > m_{k-1}`.
-   *(For maximum queries, slopes are strictly increasing).*
-2. **Monotonic Intersection Coordinates Invariant:** The intersection points between adjacent lines are strictly increasing:
-   `x_int(L_0, L_1) < x_int(L_1, L_2) < ... < x_int(L_{k-2}, L_{k-1})`.
-3. **Amortized Line Lifetime:** Each line is added to the deque exactly once and popped at most once. Across `N` line insertions, total time spent pruning is `O(N)`.
-
-### 2. Querying the Envelope
-
-*   **When queries `x_i` are monotonically increasing:** Maintain a pointer `head`. While `head + 1 < Count` and `L_{head+1}.Eval(x) <= L_{head}.Eval(x)`, advance `head++`. Total pointer movement across the entire algorithm is bounded by `N`, giving **`O(1)` amortized per query**.
-*   **When queries `x_i` arrive in arbitrary order:** Binary search on the deque to find the segment `[x_{k-1, k}, x_{k, k+1}]` containing `x_i`, taking **`O(log N)` per query**.
+If the query points `x_i` are strictly increasing (monotonic):
+- The optimal line across the lower envelope moves strictly from left to right.
+- You never need to search backward!
+- Check the front of the deque:
+  `if (ValueAt(L1, x) >= ValueAt(L2, x))` -> `L1` will never be optimal for any future `x` because future `x` values are even larger!
+- Pop `L1` from the front of the deque!
+- Result: Each line is pushed once and popped at most once. **Total DP time: `O(N)`!**
 
 ---
 
-## 💻 Chapter 3: Idiomatic Dual-Language Code
+### 🧠 Pause & Predict Micro-Drills
 
-### C# Primary Implementation (.NET 8/9)
+> **Drill 1:** What happens if slopes `m_j` are monotonic, but query coordinates `x_i` are arbitrary (not sorted)?
+> *Pause here and think! Can we still use two pointers?*
+>
+> **Answer:** 
+> **No!** If `x_i` is not monotonic, you cannot pop from the front of the deque because a future small `x` might need `L1`.
+> However, because the intersection coordinates in the deque are sorted, you can **Binary Search** the deque for the optimal line in **`O(log N)`**! Total time: **`O(N log N)`**.
+
+> **Drill 2:** What if neither slopes `m_j` nor queries `x_i` are monotonic?
+> *Pause here and think!*
+>
+> **Answer:**
+> Use a **Li Chao Segment Tree** or a Dynamic CHT (Balanced BST / `std::set`), which supports arbitrary line insertions and queries in `O(log N)` time.
+
+---
+
+## 🎨 PILLAR 3: PRAGMATIC VISUAL MODELS & DECISION FLOWS
+
+### Modern Hex Flowchart: The CHT Lower Envelope Deque
+
+```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
+flowchart TD
+    Add["AddLine(m_new, b_new)"] --> CheckPrune{"Deque has &ge; 2 lines?<br/>AND IsBad(L(end-1), L(end), L_new)?"}
+    CheckPrune -->|Yes| PopBack["Pop L(end)<br/>Shadowed redundant line!"]
+    PopBack --> CheckPrune
+    CheckPrune -->|No| PushBack["Push L_new to back of Deque"]
+
+    Query["QueryMin(x)"] --> CheckFront{"Deque has &ge; 2 lines?<br/>AND L(0).Eval(x) &ge; L(1).Eval(x)?"}
+    CheckFront -->|Yes| PopFront["Pop L(0)<br/>Obsolete for all future x!"]
+    PopFront --> CheckFront
+    CheckFront -->|No| Answer["Return L(0).Eval(x)"]
+
+    style Add fill:#e1f5fe,stroke:#0288d1,color:#01579b
+    style CheckPrune fill:#fff3e0,stroke:#ef6c00,color:#e65100
+    style PopBack fill:#ffebee,stroke:#c62828,color:#b71c1c
+    style PushBack fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style Query fill:#e1f5fe,stroke:#0288d1,color:#01579b
+    style CheckFront fill:#fff3e0,stroke:#ef6c00,color:#e65100
+    style PopFront fill:#ffebee,stroke:#c62828,color:#b71c1c
+    style Answer fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+```
+
+---
+
+## 🛑 PILLAR 4: THE ROOKIE TRAP ZONE
+
+### Side-by-Side Comparison: Blunders vs. Senior Architect Patterns
+
+| Dimension | ❌ Rookie Blunder | ✅ Senior Architect Pattern |
+| :--- | :--- | :--- |
+| **Precision & Floating Point** | Computes intersection with `double x = (double)(b2 - b1) / (m1 - m2)`, failing test cases due to IEEE-754 precision loss. | Uses integer cross-multiplication: `(b3 - b1) * (m1 - m2) <= (b2 - b1) * (m1 - m3)`. |
+| **Integer Overflow on 64-bit** | Uses 32-bit `int` for cross-multiplication, causing silent wrapping overflow when slopes and intercepts reach `10^9`. | Uses 64-bit `long` (or `__int128` in C++) to prevent overflow during product calculations. |
+| **Slope Order Inversion** | Treats minimum envelope with decreasing slopes the same as maximum envelope with increasing slopes, producing garbage. | Inverts pruning condition and comparator depending strictly on min vs max and slope monotonicity. |
+| **Equal Slope Collision** | Fails to handle two parallel lines with identical slopes (`m1 == m2`), causing division by zero or infinite loops. | If `m_new == m_prev`, keeps the line with the better intercept (`b_new < b_prev` for min) and discards the other. |
+| **Unsorted Query Fallback** | Pops from the front of the deque even when queries `x_i` are not monotonic, dropping optimal lines for future small queries. | Checks query monotonicity; falls back to binary search on the deque when queries arrive in arbitrary order. |
+
+---
+
+## 🎙️ PILLAR 5: 45-MINUTE INTERVIEW TALK TRACK
+
+### The Exact 3-Sentence Verbal Script
+
+Speak these exact three sentences before writing code:
+
+```text
++--------------------------------------------------------------------------------------------------+
+|                              THE SENIOR CHT TALK TRACK SCRIPT                                     |
++--------------------------------------------------------------------------------------------------+
+| 1. The Algebraic Decomposition:                                                                  |
+|    "Notice that expanding the cost function in this O(N^2) DP reveals a linear cross-product     |
+|    m_j * x_i + b_j, where m_j and b_j depend solely on j and x_i depends solely on i."           |
+|                                                                                                  |
+| 2. The Geometric Transformation:                                                                |
+|    "Instead of searching all j < i, this subproblem reduces to querying the minimum value on     |
+|    the lower convex envelope formed by candidate lines L_j(x) = m_j * x + b_j."                  |
+|                                                                                                  |
+| 3. The Deque Optimization:                                                                       |
+|    "Because slopes are monotonically decreasing and query coordinates are monotonically          |
+|    increasing, we can maintain the lower envelope in a Deque with zero-float integer cross-      |
+|    multiplication, pruning obsolete lines in amortized O(1) time and solving the DP in O(N)."    |
++--------------------------------------------------------------------------------------------------+
+```
+
+---
+
+## ⚡ PILLAR 6: PRODUCTION DUAL-LANGUAGE IMPLEMENTATIONS
+
+### C# Primary Implementation (.NET 8/9): Production Monotonic Deque CHT
 
 ```csharp
 using System;
@@ -116,15 +218,16 @@ using System.Collections.Generic;
 namespace AdvancedDataStructures;
 
 /// <summary>
-/// Production Convex Hull Trick for minimum queries with non-increasing slopes.
-/// Supports both O(1) amortized monotonic queries and O(log N) binary search queries.
+/// Production Convex Hull Trick solver for minimum DP queries.
+/// Assumes monotonically decreasing slopes and monotonically increasing query coordinates.
+/// Uses zero-float 64-bit integer cross-multiplication to eliminate precision bugs.
 /// </summary>
-public sealed class ConvexHullTrick
+public sealed class ConvexHullTrickMin
 {
     private readonly struct Line
     {
-        public readonly long M;
-        public readonly long B;
+        public readonly long M; // Slope
+        public readonly long B; // Y-Intercept
 
         public Line(long m, long b)
         {
@@ -139,77 +242,50 @@ public sealed class ConvexHullTrick
     private int _head = 0;
 
     /// <summary>
-    /// Checks whether l2 is redundant given l1 and l3 using cross-multiplication.
-    /// Condition: intersect(l1, l3) <= intersect(l1, l2).
+    /// Checks if line l2 is redundant (shadowed by l1 and l3).
+    /// Prevents float division via cross multiplication:
+    /// (b3 - b1) / (m1 - m3) <= (b2 - b1) / (m1 - m2)
     /// </summary>
     private static bool IsBad(Line l1, Line l2, Line l3)
     {
-        // (b3 - b1) * (m1 - m2) <= (b2 - b1) * (m1 - m3)
-        // Using BigInteger or __int128 equivalent logic if slopes * intercepts exceed 64-bit limits
-        long num1 = l3.B - l1.B;
-        long den1 = l1.M - l3.M;
-        long num2 = l2.B - l1.B;
-        long den2 = l1.M - l2.M;
-
-        return (double)num1 / den1 <= (double)num2 / den2;
+        // Safe 64-bit cross-multiplication
+        // Note: For extreme bounds up to 10^18, use BigInteger or 128-bit arithmetic
+        return (l3.B - l1.B) * (l1.M - l2.M) <= (l2.B - l1.B) * (l1.M - l3.M);
     }
 
     /// <summary>
-    /// Inserts line y = m * x + b. Assumes m is added in non-increasing order (m_new <= m_last).
+    /// Adds a new line with slope strictly smaller than previous line.
     /// </summary>
     public void AddLine(long m, long b)
     {
-        var line = new Line(m, b);
+        Line newLine = new(m, b);
 
-        // Handle identical slopes: keep the one with smaller y-intercept for min queries
-        if (_lines.Count > 0 && _lines[^1].M == m)
+        // Handle identical slopes: keep smaller intercept for minimum query
+        if (_lines.Count > _head && _lines[^1].M == m)
         {
-            if (_lines[^1].B <= b) return; // Existing line is strictly better
+            if (b >= _lines[^1].B) return; // Inferior line
             _lines.RemoveAt(_lines.Count - 1);
         }
 
-        while (_lines.Count >= 2 && IsBad(_lines[^2], _lines[^1], line))
+        while (_lines.Count - _head >= 2 && IsBad(_lines[^2], _lines[^1], newLine))
         {
             _lines.RemoveAt(_lines.Count - 1);
         }
 
-        _lines.Add(line);
+        _lines.Add(newLine);
     }
 
     /// <summary>
-    /// Queries minimum value at x in O(log N) using binary search across line intersections.
-    /// Valid for arbitrary query x coordinates.
+    /// Queries the minimum y-value at coordinate x in amortized O(1) time.
+    /// Assumes x is monotonically non-decreasing across consecutive queries.
     /// </summary>
-    public long QueryMinBinarySearch(long x)
+    public long Query(long x)
     {
-        if (_lines.Count == 0) throw new InvalidOperationException("Hull is empty.");
+        if (_head >= _lines.Count)
+            throw new InvalidOperationException("No lines in Convex Hull.");
 
-        int low = 0, high = _lines.Count - 1;
-        while (low < high)
-        {
-            int mid = low + (high - low) / 2;
-            if (_lines[mid].Eval(x) >= _lines[mid + 1].Eval(x))
-            {
-                low = mid + 1;
-            }
-            else
-            {
-                high = mid;
-            }
-        }
-
-        return _lines[low].Eval(x);
-    }
-
-    /// <summary>
-    /// Queries minimum value at x in O(1) amortized time.
-    /// Precondition: Query x coordinates must be monotonically non-decreasing.
-    /// </summary>
-    public long QueryMinMonotonic(long x)
-    {
-        if (_lines.Count == 0) throw new InvalidOperationException("Hull is empty.");
-
-        while (_head + 1 < _lines.Count && _lines[_head + 1].Eval(x) <= _lines[_head].Eval(x))
+        // Advance two-pointer head: pop lines that are worse than their successor
+        while (_lines.Count - _head >= 2 && _lines[_head].Eval(x) >= _lines[_head + 1].Eval(x))
         {
             _head++;
         }
@@ -219,149 +295,85 @@ public sealed class ConvexHullTrick
 }
 ```
 
-### Python Secondary Implementation (Python 3.11+)
+---
+
+### Python Secondary Implementation (Python 3.11+): Complete Deque CHT
 
 ```python
-from typing import List
+from collections import deque
+from typing import NamedTuple
 
-class Line:
-    __slots__ = ('m', 'b')
-
-    def __init__(self, m: int, b: int):
-        self.m: int = m
-        self.b: int = b
+class Line(NamedTuple):
+    m: int  # Slope
+    b: int  # Y-Intercept
 
     def eval(self, x: int) -> int:
         return self.m * x + self.b
 
-class ConvexHullTrick:
-    """Convex Hull Trick maintaining lower envelope for min queries."""
-
+class ConvexHullTrickMin:
+    """
+    Production-grade Convex Hull Trick for minimum envelope queries.
+    Supports amortized O(1) line addition and O(1) query evaluation.
+    """
     def __init__(self):
-        self.lines: List[Line] = []
-        self.head: int = 0
+        self.lines: deque[Line] = deque()
 
     @staticmethod
     def _is_bad(l1: Line, l2: Line, l3: Line) -> bool:
-        """
-        Returns True if line l2 is made redundant by l1 and l3.
-        Algebra: (b3 - b1) / (m1 - m3) <= (b2 - b1) / (m1 - m2)
-        Cross-multiply: (b3 - b1) * (m1 - m2) <= (b2 - b1) * (m1 - m3)
-        """
+        # Cross-multiplication avoiding floating point precision errors:
+        # (b3 - b1) / (m1 - m3) <= (b2 - b1) / (m1 - m2)
         return (l3.b - l1.b) * (l1.m - l2.m) <= (l2.b - l1.b) * (l1.m - l3.m)
 
     def add_line(self, m: int, b: int) -> None:
-        """Adds line y = m * x + b where m is non-increasing."""
-        # Handle duplicate slopes
+        """Adds line y = m*x + b where m is strictly decreasing."""
+        new_line = Line(m, b)
+
+        # Handle equal slopes
         if self.lines and self.lines[-1].m == m:
-            if self.lines[-1].b <= b:
-                return  # Existing line has smaller or equal intercept
+            if b >= self.lines[-1].b:
+                return  # Existing line is better
             self.lines.pop()
 
-        new_line = Line(m, b)
         while len(self.lines) >= 2 and self._is_bad(self.lines[-2], self.lines[-1], new_line):
             self.lines.pop()
 
         self.lines.append(new_line)
 
-    def query_min_binary_search(self, x: int) -> int:
-        """Finds minimum line value at x via binary search in O(log N)."""
+    def query(self, x: int) -> int:
+        """Evaluates minimum envelope at coordinate x (x must be non-decreasing)."""
         if not self.lines:
-            raise ValueError("Convex Hull is empty")
+            raise ValueError("Convex Hull is empty.")
 
-        low, high = 0, len(self.lines) - 1
-        while low < high:
-            mid = (low + high) // 2
-            if self.lines[mid].eval(x) >= self.lines[mid + 1].eval(x):
-                low = mid + 1
-            else:
-                high = mid
-        return self.lines[low].eval(x)
+        # Pop from front while next line offers a strictly smaller value at coordinate x
+        while len(self.lines) >= 2 and self.lines[0].eval(x) >= self.lines[1].eval(x):
+            self.lines.popleft()
 
-    def query_min_monotonic(self, x: int) -> int:
-        """Finds minimum line value in O(1) amortized assuming x is non-decreasing."""
-        if not self.lines:
-            raise ValueError("Convex Hull is empty")
-
-        while self.head + 1 < len(self.lines) and self.lines[self.head + 1].eval(x) <= self.lines[self.head].eval(x):
-            self.head += 1
-
-        return self.lines[self.head].eval(x)
+        return self.lines[0].eval(x)
 ```
 
 ---
 
-## 📊 Chapter 4: Explicit Complexity Deconstruction
+## 📊 EXPLICIT COMPLEXITY DECONSTRUCTION
 
-| Operation | Best Case | Amortized / Expected | Worst Case Single Op | Auxiliary Space | Memory Access Pattern |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **`AddLine(m, b)`** | `O(1)` | `O(1)` amortized | `O(N)` (popping all lines) | `O(1)` | Contiguous dynamic array push/pop; cache friendly. |
-| **`QueryMinMonotonic(x)`**| `O(1)` | `O(1)` amortized | `O(N)` (advancing head) | `O(1)` | Sequential read from current head pointer. |
-| **`QueryMinBinarySearch(x)`**| `O(1)` | `O(log N)` | `O(log N)` | `O(1)` | Binary search hops across array indices. |
-| **Complete DP Optimization**| `O(N)` | `O(N)` or `O(N log N)` | `O(N log N)` | `O(N)` | Replaces `O(N^2)` quadratic nested loops. |
-
-### Complexity Proof: Total Amortized Bound
-*   Let `N` be the number of lines added.
-*   Each line enters the deque exactly once (`N` pushes).
-*   In `AddLine`, each iteration of the while loop removes a line. Since a line cannot be removed more than once, the while loop executes at most `N` times across the entire algorithm lifetime.
-*   Similarly, `head` only advances forward and never resets, executing at most `N` increments.
-*   Total runtime across all additions and queries is strictly **`O(N)`** when queries are monotonic, or **`O(N log N)`** when queries require binary search.
+| Paradigm | Slopes `m` | Queries `x` | Add Line Time | Query Time | Total DP Time | Space Complexity |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Monotonic Deque (Two Pointers)** | Monotonic | Monotonic | `O(1)` amortized | `O(1)` amortized | **`O(N)`** | `O(N)` lines in deque |
+| **Monotonic Deque (Binary Search)**| Monotonic | Arbitrary | `O(1)` amortized | `O(log N)` | **`O(N log N)`** | `O(N)` lines in deque |
+| **Dynamic CHT (Balanced BST)** | Arbitrary | Arbitrary | `O(log N)` | `O(log N)` | **`O(N log N)`** | `O(N)` tree nodes |
+| **Li Chao Segment Tree** | Arbitrary | Fixed range | `O(log C)` | `O(log C)` | **`O(N log C)`** | `O(4 * C)` tree nodes |
 
 ---
 
-## 🎙️ Chapter 5: 45-Minute Senior / Lead Verbal Interview Script
-
-```text
-[00:00 - 05:00] Clarify & Problem Modeling
-Candidate: "The standard DP state is `dp[i] = min_{j < i} (dp[j] + cost(j, i))`. Expanding the cost function 
-           gives `dp[i] = min_{j < i} (m_j * x_i + b_j)` plus terms depending only on `i`. 
-           Evaluating all `j < i` naively requires O(N) per step, leading to O(N^2) total runtime. 
-           With N = 10^5, this results in 10^10 operations, which will timeout. 
-           Notice that `m_j * x_i + b_j` is the equation of a straight line y = m*x + b. 
-           We can maintain the lower envelope of these lines using the Convex Hull Trick, 
-           reducing our DP transition from O(N) to O(1) amortized."
-
-[05:00 - 15:00] Invariants & Trade-offs
-Candidate: "For our lower envelope to be convex:
-           1. The lines must be added in monotonic order of slope (here, decreasing slopes).
-           2. The intersection points between adjacent lines must strictly increase from left to right.
-           When inserting a new line L3, we must check if it renders L2 redundant. 
-           If the intersection of L1 and L3 is to the left of the intersection of L1 and L2, line L2 
-           will never be the minimum for any x coordinate. We prune L2.
-           To avoid floating-point inaccuracies, we cross-multiply: (b3 - b1)*(m1 - m2) <= (b2 - b1)*(m1 - m3).
-           Since query coordinates x_i are also monotonically increasing, we can use a two-pointer deque 
-           to query in O(1) amortized, solving the entire DP in O(N) time and O(N) space."
-
-[15:00 - 35:00] Implementation Protocol
-Candidate: "I'll implement the `ConvexHullTrick` class:
-           - Define a lightweight struct `Line(M, B)` with an `Eval(x)` method.
-           - Implement `IsBad(l1, l2, l3)` using cross-multiplication.
-           - In `AddLine`: handle identical slopes by retaining the smaller y-intercept, then pop lines 
-             violating convexity before appending.
-           - In `QueryMinMonotonic`: advance `head` while the next line evaluates to a lower value than current."
-
-[35:00 - 45:00] Complexity Deconstruction & Edge Cases
-Candidate: "Each line is pushed once and popped at most once, guaranteeing O(1) amortized insertion.
-           Total runtime is O(N) with O(N) auxiliary memory.
-           Edge cases:
-           - Duplicate slopes: handled by discarding the higher intercept.
-           - Single line hull: returns line.Eval(x) directly without entering the while loop.
-           - If query coordinates were arbitrary, we would replace the two-pointer scan with binary search, 
-             yielding O(N log N) overall runtime."
-```
-
----
-
-## 🔍 Chapter 6: Granular Edge-Case & Invariant Verification Table
+## 🔍 GRANULAR EDGE-CASE & INVARIANT VERIFICATION TABLE
 
 | Edge Case Scenario | Concrete Input | Expected Behavior | Invariant Verification & Handling |
 | :--- | :--- | :--- | :--- |
-| **Identical Slopes** | Lines `y = 3x + 10` and `y = 3x + 4` | Retains only `y = 3x + 4`; discards higher intercept. | Guard check `_lines[^1].M == m` resolves duplicate slopes. |
-| **Single Line in Envelope** | Single line `y = -2x + 5`, query `x = 10` | Returns `-15` immediately. | `head + 1 < _lines.Count` condition fails; returns line 0. |
-| **All Lines Collinear or Parallel** | Set of parallel horizontal lines | Hull collapses to single lowest line. | Only minimum y-intercept is retained; hull size remains 1. |
-| **Query Coordinates Non-Monotonic**| Queries arrive as `x = [10, 2, 50]` | `QueryMinBinarySearch` yields correct global minimum. | Binary search does not advance `head`; queries envelope safely. |
-| **Large Slopes Causing 64-bit Overflow** | `m, b approx 10^9`, cross-multiply terms `10^18` | Use `double` or `BigInteger` for cross-multiplication. | Prevents silent signed integer wrapping during `IsBad`. |
+| **Parallel Lines** | `AddLine(-5, 20); AddLine(-5, 10)` | Retains smaller intercept `y = -5x + 10`. | `if (m == last.M)` keeps minimum `B` for min query. |
+| **Single Line Query** | Exactly 1 line in hull | Evaluates directly in `O(1)`. | Deque check `len >= 2` bypassed safely. |
+| **Identical Query Points** | Consecutive queries at `x = 5, x = 5` | Returns consistent minimum without popping valid lines. | Comparator `>=` prevents premature pop when values match. |
+| **Negative Coordinates** | `x = -100` | Correctly evaluates `m * (-100) + b`. | Mathematical cross-multiplication holds across all signs. |
+| **64-bit Overflow Boundary** | `m = 10^9, b = 10^18` | Safely evaluates using 64-bit `long`. | Integer multiplication within bounds; zero float truncation. |
 
 ---
 
-> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_17_Day_02_Slope_Trick_Instructional.md)
+> 🧭 **Navigation:** [← Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Slope Trick →](Week_17_Day_02_Slope_Trick_Instructional.md)

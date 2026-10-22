@@ -838,14 +838,14 @@ WHY NOT GREEDY:
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    classDef sort fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
-    classDef slot fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
-    classDef prune fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:1.5px;
+    classDef sort fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px
+    classDef slot fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px
+    classDef prune fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:1.5px
 
     R["💼 Job<br/>Sequencing with<br/>Deadlines &<br/>Profits"]:::sort
     R --> S1["1️⃣ Sort all jobs<br/>in<br/>descending order<br/>of<br/>profit (Greedy<br/>Choice)"]:::sort
-    S1 --> S2["2️⃣ For each job<br/>j: Find<br/>latest available<br/>time<br/>slot t &le;<br/>deadline[j]"]:::slot
-    S2 -->|Slot available| Sched["✅ Schedule<br/>job j in slot<br/>t<br/>Add profit[j],<br/>mark slot<br/>t occupied"]:::slot
+    S1 --> S2["2️⃣ For each job<br/>j: Find<br/>latest available<br/>time<br/>slot t &le;<br/>deadline(j)"]:::slot
+    S2 -->|Slot available| Sched["✅ Schedule<br/>job j in slot<br/>t<br/>Add profit(j),<br/>mark slot<br/>t occupied"]:::slot
     S2 -->|"No slot &le; deadline[j]"| Drop["❌ All prior<br/>slots taken:<br/>Drop job j"]:::prune
 ```
 

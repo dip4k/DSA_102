@@ -127,17 +127,17 @@ flowchart TD
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart LR
-    classDef known fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
-    classDef target fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
-    classDef action fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+    classDef known fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px
+    classDef target fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px
+    classDef action fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px
 
-    U["Node u<br/>dist[u] = 5"]:::known
-    V["Node v<br/>Old dist[v] = 12"]:::target
+    U["Node u<br/>dist(u) = 5"]:::known
+    V["Node v<br/>Old dist(v) = 12"]:::target
     U -->|"Edge weight w = 3"| V
-    Rel{"⚖️ Is<br/>dist[u] + w<br/>&lt;<br/>dist[v]?<br/>5 + 3 = 8 &lt; 12"}
+    Rel{"⚖️ Is<br/>dist(u) + w<br/>&lt;<br/>dist(v)?<br/>5 + 3 = 8 &lt; 12"}
     U --> Rel
     V --> Rel
-    Rel -->|Yes: Relax Edge| NewV["✅ Update<br/>dist[v] = 8<br/>parent[v] = u"]:::action
+    Rel -->|Yes: Relax Edge| NewV["✅ Update<br/>dist(v) = 8<br/>parent(v) = u"]:::action
 ```
 
 
@@ -198,13 +198,13 @@ flowchart TD
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    classDef src fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
-    classDef fail fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:2px;
-    classDef alt fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+    classDef src fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px
+    classDef fail fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:2px
+    classDef alt fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px
 
-    A["Source Node A<br/>dist[A] = 0"]:::src
+    A["Source Node A<br/>dist(A) = 0"]:::src
     B["Target Node B<br/>Greedy settles at<br/>10"]:::fail
-    C["Intermediate Node<br/>C<br/>dist[C] = 5"]:::alt
+    C["Intermediate Node<br/>C<br/>dist(C) = 5"]:::alt
 
     A -->|"weight = 10"| B
     A -->|"weight = 5"| C
@@ -220,14 +220,14 @@ flowchart TD
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    classDef dp fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
-    classDef step fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:1.5px;
-    classDef opt fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+    classDef dp fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px
+    classDef step fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:1.5px
+    classDef opt fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px
 
     R["📐<br/>Bellman–Ford as<br/>Dynamic<br/>Programming"]:::dp
-    R --> S["State: dp[k][v] =<br/>Shortest distance<br/>to v<br/>using at most k<br/>edges"]:::step
-    S --> Rec["🔄<br/>Transition:<br/>dp[k][v] =<br/>min( dp[k-1][v],<br/>min_{(u,v)}<br/>(dp[k-1][u] +<br/>w(u,v)) )"]:::step
-    Rec --> Opt["💾 Space<br/>Optimization:<br/>Flatten 2D table<br/>dp[V][V]<br/>into 1D array<br/>dist[V]<br/>Updated in-place<br/>across<br/>V-1 passes"]:::opt
+    R --> S["State: dp(k)(v) =<br/>Shortest distance<br/>to v<br/>using at most k<br/>edges"]:::step
+    S --> Rec["🔄<br/>Transition:<br/>dp(k)(v) =<br/>min( dp(k-1)(v),<br/>min_{(u,v)}<br/>(dp(k-1)(u) +<br/>w(u,v)) )"]:::step
+    Rec --> Opt["💾 Space<br/>Optimization:<br/>Flatten 2D table<br/>dp(V)(V)<br/>into 1D array<br/>dist(V)<br/>Updated in-place<br/>across<br/>V-1 passes"]:::opt
 ```
 
 
@@ -237,9 +237,9 @@ flowchart TD
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    classDef pass fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
-    classDef check fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:1.5px;
-    classDef alert fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:2px;
+    classDef pass fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px
+    classDef check fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:1.5px
+    classDef alert fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:2px
 
     P1["1️⃣ Pass 1:<br/>Guaranteed<br/>optimal for paths<br/>with<br/>&le; 1 edge"]:::pass
     P1 --> P2["2️⃣ Pass 2:<br/>Guaranteed<br/>optimal for paths<br/>with<br/>&le; 2 edges"]:::pass
@@ -285,13 +285,13 @@ flowchart LR
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart LR
-    classDef box fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
-    classDef time fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:1.5px;
-    classDef space fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:1.5px;
+    classDef box fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px
+    classDef time fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:1.5px
+    classDef space fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:1.5px
 
     BF["⚡<br/>Bellman–Ford<br/>Resource<br/>Deconstruction"]:::box
     BF --> T["⏱️ Time<br/>Complexity: O(V *<br/>E)<br/>(V - 1 iterations)<br/>×<br/>(E edge<br/>relaxations per<br/>pass)"]:::time
-    BF --> S["💾 Auxiliary<br/>Space: O(V)<br/>1D array<br/>dist[0..V-1] and<br/>predecessor[0..V-1]"]:::space
+    BF --> S["💾 Auxiliary<br/>Space: O(V)<br/>1D array<br/>dist(0..V-1) and<br/>predecessor(0..V-1)"]:::space
 ```
 
 
@@ -330,8 +330,8 @@ flowchart LR
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    classDef bad fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:2px;
-    classDef good fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+    classDef bad fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:2px
+    classDef good fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px
 
     subgraph Wrong["❌ WRONG: i or j loop outermost"]
         W1["for i = 0..V-1<br/>for j = 0..V-1<br/>for k = 0..V-1"]:::bad
@@ -341,7 +341,7 @@ flowchart TD
 
     subgraph Correct["✅ CORRECT: k loop MUST be outermost"]
         C1["for k = 0..V-1<br/>(Intermediate<br/>Pivot)<br/>for i = 0..V-1<br/>(Source)<br/>for j = 0..V-1<br/>(Destination)"]:::good
-        C2["Invariant: At step<br/>k,<br/>dist[i][j]<br/>reflects<br/>shortest path<br/>using ONLY<br/>intermediate<br/>vertices in set<br/>{0..k}.<br/>Guarantees DP<br/>subproblem<br/>optimality!"]:::good
+        C2["Invariant: At step<br/>k,<br/>dist(i)(j)<br/>reflects<br/>shortest path<br/>using ONLY<br/>intermediate<br/>vertices in set<br/>{0..k}.<br/>Guarantees DP<br/>subproblem<br/>optimality!"]:::good
         C1 --> C2
     end
 ```
@@ -398,9 +398,9 @@ flowchart TD
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    classDef step fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
-    classDef dsu fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:1.5px;
-    classDef prune fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:1.5px;
+    classDef step fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px
+    classDef dsu fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:1.5px
+    classDef prune fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:1.5px
 
     K["🌲 Kruskal's<br/>Edge-Centric<br/>Greedy Strategy"]:::step
     K --> S1["1️⃣ Sort all E<br/>edges by<br/>ascending weight:<br/>O(E log<br/>E)"]:::step
@@ -416,8 +416,8 @@ flowchart TD
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    classDef step fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
-    classDef grow fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+    classDef step fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px
+    classDef grow fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px
 
     P["🌲 Prim's<br/>Vertex-Centric<br/>Growing Strategy"]:::step
     P --> S1["1️⃣ Start from<br/>arbitrary<br/>source node<br/>(e.g. Node 0)"]:::step
@@ -446,8 +446,8 @@ flowchart TD
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    classDef cut fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
-    classDef min fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+    classDef cut fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px
+    classDef min fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px
 
     C["✂️ The Cut<br/>Property<br/>(MST Optimality<br/>Guarantee)"]:::cut
     C --> P1["Partition graph<br/>vertices<br/>into two disjoint<br/>subsets: S and V -<br/>S"]:::cut
@@ -466,20 +466,20 @@ flowchart TD
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    classDef root fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
-    classDef child fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:1.5px;
+    classDef root fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px
+    classDef child fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:1.5px
 
     subgraph Tree1["🌲 Set 1 (Root = 0)"]
-        R0["Node 0 (parent[0]<br/>= 0)"]:::root
-        N1["Node 1 (parent[1]<br/>= 0)"]:::child
-        N2["Node 2 (parent[2]<br/>= 0)"]:::child
+        R0["Node 0 (parent(0)<br/&ge; 0)"]:::root
+        N1["Node 1 (parent(1)<br/&ge; 0)"]:::child
+        N2["Node 2 (parent(2)<br/&ge; 0)"]:::child
         N1 --> R0
         N2 --> R0
     end
 
     subgraph Tree2["🌲 Set 2 (Root = 3)"]
-        R3["Node 3 (parent[3]<br/>= 3)"]:::root
-        N4["Node 4 (parent[4]<br/>= 3)"]:::child
+        R3["Node 3 (parent(3)<br/&ge; 3)"]:::root
+        N4["Node 4 (parent(4)<br/&ge; 3)"]:::child
         N4 --> R3
     end
 ```
@@ -500,15 +500,15 @@ flowchart TD
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    classDef deep fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:2px;
-    classDef bal fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+    classDef deep fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:2px
+    classDef bal fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px
 
     subgraph Bad["❌ Naive Union (No Rank): Chain Degeneration"]
         B1["Arbitrary<br/>attachment<br/>makes tall linear<br/>trees:<br/>0 ← 1 ← 2 ← 3<br/>Find operation<br/>degrades<br/>to O(N) linear<br/>scan!"]:::deep
     end
 
     subgraph Good["✅ Union-by-Rank: Bounded Tree Height"]
-        G1["Attach shorter<br/>tree under<br/>taller tree root:<br/>rank[root_a] ><br/>rank[root_b] →<br/>parent[root_b] =<br/>root_a<br/>Height strictly<br/>bounded<br/>to O(log N)<br/>without<br/>compression!"]:::bal
+        G1["Attach shorter<br/>tree under<br/>taller tree root:<br/>rank(root_a) &gt;<br/>rank(root_b) →<br/>parent(root_b) =<br/>root_a<br/>Height strictly<br/>bounded<br/>to O(log N)<br/>without<br/>compression!"]:::bal
     end
 ```
 
@@ -534,8 +534,8 @@ flowchart TD
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    classDef app fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
-    classDef use fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:1.5px;
+    classDef app fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px
+    classDef use fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:1.5px
 
     D["⚡ Top DSU<br/>Real-World &<br/>Interview<br/>Applications"]:::app
     D --> A1["1️⃣ Cycle<br/>Detection &<br/>Kruskal's MST<br/>Detect cycles by<br/>testing<br/>if endpoints<br/>already<br/>share root"]:::use

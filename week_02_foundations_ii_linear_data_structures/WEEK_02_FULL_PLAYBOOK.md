@@ -637,7 +637,7 @@ flowchart LR
     classDef node fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
     classDef nullNode fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,color:#616161
 
-    N1["🟢 Head: [10<br/>| •]"]:::headNode --> N2["📦 Node: [20<br/>| •]"]:::node --> N3["📦 Node: [30<br/>| •]"]:::node --> N4["📦 Node: [40<br/>| •]"]:::node --> N5["🛑 null"]:::nullNode
+    N1["🟢 Head: (10<br/>| •)"]:::headNode --> N2["📦 Node: (20<br/>| •)"]:::node --> N3["📦 Node: (30<br/>| •)"]:::node --> N4["📦 Node: (40<br/>| •)"]:::node --> N5["🛑 null"]:::nullNode
 ```
 
 

@@ -1,25 +1,26 @@
-﻿# 📘 Backtracking & Branch and Bound
+# 📘 WEEK 13: BACKTRACKING, BRANCH AND BOUND & AMORTIZED ANALYSIS
 
 > 🧭 **Navigation:** [← Previous: Week 12](../week_12_greedy_and_paradigms/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Next: Week 14 →](../week_14_matrix_backtracking_bits/README.md)
-
----
-
-> 💡 **Instructor Guidance Note:**  
-> *Not all sections or topics are mandatory. As a learner, you can adapt your pace freely. If you are preparing on an accelerated interview timeline or already feel confident with specific foundational concepts, feel free to skip or skim optional topics and prioritize high-yield patterns based on your personal interview goals.*
+> 
+> 💡 **Instructor Note:** *Week 13 covers the mastery of exhaustive search under constraints, mathematical upper/lower bounding, and sequence cost amortization. In senior and Staff interviews, these problems separate engineers who blindly guess from those who can rigorously defend the boundaries of computational feasibility.*
 
 ---
 
 ## 🎯 Weekly Mission & Conceptual Focus
 
-Combinatorial search spaces: N-Queens, Sudoku, permutation and subset pruning, state restoration, branch-and-bound bounds, and amortized cost analysis.
+Master the full combinatorial spectrum: Depth-First Search on implicit decision trees, state symmetry restoration (Choose / Explore / Unchoose), early constraint pruning, Best-First Branch and Bound with continuous relaxations, the 3 classical frameworks of Amortized Analysis (Aggregate, Banker's, Potential), and hybrid strategies like Meet-in-the-Middle for $N = 40$.
 
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
-flowchart TD
-    Start["Week 13 Start"] --> Daily["Daily Invariant<br/>Deep<br/>Dives"]
-    Daily --> Playbook["Consolidated<br/>Playbook &<br/>Visuals"]
-    Playbook --> DualLang["Dual-Language<br/>Practice<br/>(C# & Python)"]
-    DualLang --> Mastery["Pattern Mastery &<br/>Verification"]
+flowchart LR
+    D1["Day 1: Backtracking<br/>Fundamentals<br/>(Subsets, Permutations)"] --> D2["Day 2: Constraint<br/>Puzzles<br/>(N-Queens, Sudoku)"]
+    D2 --> D3["Day 3: Branch & Bound<br/>Optimization<br/>(0/1 Knapsack W=10^9)"]
+    D3 --> D4["Day 4: Amortized<br/>Analysis<br/>(Banker's, DSU)"]
+    D4 --> D5["Day 5: Mixed<br/>Paradigms<br/>(Meet-in-the-Middle)"]
+
+    classDef default fill:#f8f9fa,stroke:#37474f,stroke-width:2px,color:#263238
+    classDef dayNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    class D1,D2,D3,D4,D5 dayNode
 ```
 
 ---
@@ -28,11 +29,11 @@ flowchart TD
 
 | Day | Instructional Module | Focus & Core Objective |
 | :--- | :--- | :--- |
-| **Day 01** | [Backtracking Fundamentals](Week_13_Day_01_Backtracking_Fundamentals_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 02** | [Backtracking Problems](Week_13_Day_02_Backtracking_Problems_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 03** | [Branch And Bound](Week_13_Day_03_Branch_And_Bound_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 04** | [Amortized Analysis](Week_13_Day_04_Amortized_Analysis_Instructional.md) | Core Daily Concept Deep Dive |
-| **Day 05** | [Mixed Paradigm Problems](Week_13_Day_05_Mixed_Paradigm_Problems_Instructional.md) | Core Daily Concept Deep Dive |
+| **Day 01** | [Backtracking Fundamentals](Week_13_Day_01_Backtracking_Fundamentals_Instructional.md) | Universal Choose / Explore / Unchoose state symmetry, Subsets (LC 78), Permutations (LC 46), Combination Sum (LC 39), avoiding mutable reference bugs. |
+| **Day 02** | [Classic Backtracking Problems](Week_13_Day_02_Backtracking_Problems_Instructional.md) | Exhaustive vs Short-Circuit target search, N-Queens (LC 51) with $O(1)$ diagonal hashing, Sudoku Solver (LC 37) with boolean bubbling, Word Search (LC 79) with in-place grid masking. |
+| **Day 03** | [Branch and Bound](Week_13_Day_03_Branch_And_Bound_Instructional.md) | Best-First Search via PriorityQueue, admissible continuous relaxations (Fractional Knapsack for 0/1 Knapsack), pruning when theoretical upper bound $\le$ best known profit. |
+| **Day 04** | [Amortized Analysis](Week_13_Day_04_Amortized_Analysis_Instructional.md) | Aggregate Method, Banker's Accounting Method, Potential Method $\Phi(D)$, proving $O(1)$ geometric doubling vs $O(N)$ arithmetic growth, Disjoint Set Union $O(\alpha(N))$. |
+| **Day 05** | [Mixed Paradigm Problems](Week_13_Day_05_Mixed_Paradigm_Problems_Instructional.md) | Meet-in-the-Middle for $N = 40$, Backtracking with Memoization (Word Break II - LC 140), and the 60-Second Constraint-to-Complexity Rosetta Stone. |
 
 ---
 

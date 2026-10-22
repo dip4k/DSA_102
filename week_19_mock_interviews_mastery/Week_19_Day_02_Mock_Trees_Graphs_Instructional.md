@@ -1,424 +1,413 @@
-# 📘 Week 19, Day 2: Mock Round 2: Trees, BSTs & Graph Traversals
+# 📘 WEEK 19 DAY 02: MOCK ROUND 2 — TREES, GRAPHS & BIDIRECTIONAL BFS
 
-> 🧭 **Navigation:** [← Previous Day](Week_19_Day_01_Mock_Arrays_Strings_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_19_Day_03_Mock_Dynamic_Programming_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day: Arrays & Strings Mock](Week_19_Day_01_Mock_Arrays_Strings_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Dynamic Programming Mock →](Week_19_Day_03_Mock_Dynamic_Programming_Instructional.md)
 > 
-> 💡 **Instructor Note:** *This round tests structural intuition on hierarchical and directed relationships. Pay special attention to Binary Lifting power-of-two jumps and Kahn's algorithm topological sorting with cycle detection.*
+> 💡 **Instructor Note:** *In senior coding rounds, tree and graph problems separate candidates who rely on memorized templates from those who truly understand state space pruning. Today, we simulate two high-frequency Tier-1 interview classics: **Binary Tree Maximum Path Sum (LeetCode 124)** — where candidates must distinguish between the path sum returned upward versus the arch path updated globally; and **Word Ladder (LeetCode 127)** — where bidirectional BFS slashes exponential queue memory.*
 
 ---
 
-## 🎯 Learning Objectives
+## 🎯 LEARNING OBJECTIVES
 
-*   **Interview Simulation:** Experience an authentic 45-minute live senior coding interview on tree queries and directed graph dependency resolution.
-*   **Dialogue Navigation:** Defend the transition from naive `O(N)` tree path traversals to `O(log N)` binary lifting jumps and handle topological cycles defensively.
-*   **3-Tiered Hint Recovery:** Master systematic hint extraction for multi-dimensional tree table states without losing seniority points.
-*   **Senior Rubric Mastery:** Evaluate solutions against top-tier criteria: Precomputation Space/Time Trade-offs, Recursion Stack Safeguards, and Cycle Invariant Enforcement.
+*By the end of this module, you will be able to:*
 
-## ⚖️ FAANG Senior / Lead Interview Calibration
-
-Tree and graph interview problems separate candidates by how defensively they treat cycle invariants, recursion limits, and precomputation trade-offs:
-
-| Pattern | Precomputation Time | Query Time | Auxiliary Memory | Stack Vulnerability | Senior Calibration Bar |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Naive Tree Walk LCA** | `O(1)` | `O(N)` | `O(1)` | High in skewed tree | Reject. Fails repeated query SLAs. |
-| **Euler Tour + RMQ (Tarjan)** | `O(N)` / `O(N log N)` | `O(1)` | `O(N log N)` | Moderate | Strong candidate signal; high implementation complexity. |
-| **Binary Lifting LCA** | `O(N log N)` | `O(log N)` | `O(N log N)` (~7 MB) | Prevented via iterative DFS | **Senior Standard (L5): Clear, bug-free, bit-level jumps.** |
-| **Kahn's Topological Sort** | N/A | `O(V + E)` | `O(V + E)` queue | Zero recursion (BFS queue) | **Senior Standard (L5): Explicit cycle detection invariant.** |
-| **DFS 3-Color Cycle Detection**| N/A | `O(V + E)` | `O(V)` call stack | Vulnerable to deep chain SOE | Must note stack limits in Python (`sys.setrecursionlimit`). |
-
-### The Interviewer's Hidden Rubric: What We Listen For
-1. **Scale Clarification:** Does the candidate ask whether the tree is static or dynamic before picking an LCA algorithm?
-2. **Cycle Detection Invariant:** In topological sort, does the candidate verify that the output count equals `numCourses` rather than assuming the graph is a DAG?
-3. **Bitwise Power-of-Two Mechanics:** Does the candidate understand how `(depthDiff & (1 << j)) != 0` lifts a node along its binary representation?
+- 🎬 **Simulate** an authentic 45-minute live senior interview on tree traversals and graph shortest paths.
+- 🪜 **Master** the post-order DFS distinction: returning the single-branch gain upward while updating the global arch path.
+- 🎨 **Visualize** Bidirectional BFS frontier expansion: alternating search frontiers to cut branching complexity from `O(B^D)` to `O(2 * B^(D/2))`.
+- 🛑 **Avoid** fatal rookie traps: propagating 2-child arch paths upward to parent nodes, initializing max path to `0` on all-negative trees, and unbounded hash set allocations.
+- 🎙️ **Deliver** the exact 3-sentence verbal talk track defending bidirectional frontier pruning before writing code.
+- ⚡ **Implement** production-grade tree recursion and graph traversals in C# (.NET 8/9) and Python (3.11+).
 
 ---
 
-## 📖 Chapter 1: Live Interview Simulation & Dialogue Transcript
+## 🎬 PILLAR 1: THE 60-SECOND HOOK & EVERYDAY ANALOGY
 
-### Problem Statement
-> **Interviewer:** *"We are building a distributed permissions service. Organizations are structured as a tree of `N` nodes (up to `10^5`). We must answer `Q = 10^5` queries of the form: 'Given employees `u` and `v`, find their lowest common manager (Lowest Common Ancestor)' in real time."*
+### The Mountain Overpass vs. The Fork in the Road
 
-```
-Tree Ancestry Visualization:
-           (1) [Root CEO]
-          /   \
-        (2)   (3)
-       /   \     \
-     (4)   (5)   (6)
-    /
-  (7)
-Query: LCA(7, 5) -> Manager (2)
+Imagine you are hiking through a mountain range shaped like a binary tree:
+- You want to find the **most scenic continuous hiking trail (Maximum Path Sum)**.
+- At any summit (Node `X`), you have two mountain valleys below you (Left Subtree and Right Subtree):
+  - You can walk up the Left Valley, cross over the summit `X`, and walk down the Right Valley. That forms an **Arch Bridge Trail (`Left + Node + Right`)**!
+  - **BUT WAIT:** What if your hiking guide (the parent node above `X`) asks you: *"Bring the trail up to my summit!"*
+  - Can you include both the Left Valley AND the Right Valley?
+  - **NO!** A path cannot branch into two paths; a path must be a continuous single line!
+  - To your parent, you can only offer **ONE single branch**: `Node + max(Left, Right)`!
+
+```text
+The Core Tree Invariant:
+1. Locally at Node X (The Arch Bridge):
+   Path through X can use BOTH children: X + max(0, LeftGain) + max(0, RightGain)
+   --> Update global max path here!
+
+2. Upward to Parent (The Straight Line):
+   You can only extend ONE branch upward: X + max(0, max(LeftGain, RightGain))
+   --> Return this value to the caller!
 ```
 
 ---
 
-### Authentic Interviewer Dialogue Transcript
+### The Search Parties: Unidirectional vs. Bidirectional BFS
 
-**Candidate:** "Thank you. Let's clarify the system scale and operational constraints:
-1. Is the tree static after construction, or are nodes dynamically added and removed during queries?
-2. Is the tree guaranteed to be connected with a single root, or can it be a forest?
-3. What is the maximum node ID, and is it 1-indexed or 0-indexed?"
+Now imagine two hikers get lost in a massive, sprawling forest with millions of trails (Word Ladder):
+- One hiker is at the North Cabin (`beginWord`).
+- The other hiker is at the South Lodge (`endWord`).
+- If Search Party 1 starts at the North Cabin and fans out in all directions:
+  - Step 1: 10 trails.
+  - Step 2: 100 trails.
+  - Step 3: 1,000 trails...
+  - By Step 6: **1,000,000 trails to search!** (`O(B^D)` exponential explosion).
 
-**Interviewer:** "The organization tree is static once loaded. It is a single connected tree rooted at node 1. Node IDs range from 1 to `N`, where `N <= 10^5`. There are `Q = 10^5` queries."
-
-**Candidate:** "Understood. Let's analyze the naive approach first:
-For any query `(u, v)`:
-- We could compute the depths of both nodes.
-- Walk the deeper node upward step-by-step until depths match.
-- Walk both nodes upward together step-by-step until they meet at their LCA.
-In a skewed tree (e.g., a linked list of `10^5` nodes), walking upward takes `O(N)` steps per query.
-Across `Q = 10^5` queries, total time is `O(Q * N) = 10^10` operations—which would take several seconds and fail our low-latency SLA."
-
-**Interviewer:** "That would definitely violate our SLA. How can we accelerate repeated queries on a static tree?"
-
-**Candidate:** "Since the tree is static, we can invest in **preprocessing**.
-Instead of stepping upward 1 step at a time, we can jump in **powers of 2**:
-We precompute a table `up[u][k]` representing the `2^k`-th ancestor of node `u`.
-Because any integer depth difference `D` can be expressed as a unique sum of powers of 2 (its binary representation), we can lift any node by `D` levels in at most `ceil(log2(N))` jumps!
-- Preprocessing: `O(N log N)` time and space via DFS and dynamic programming:
-  `up[u][k] = up[up[u][k-1]][k-1]`.
-- Per Query:
-  1. Lift the deeper node to match the shallower node's depth in `O(log N)` steps.
-  2. If `u == v`, one was an ancestor of the other; return `u`.
-  3. Simultaneously lift both `u` and `v` by descending powers of 2 whenever `up[u][k] != up[v][k]`.
-  4. After the loop, `u` and `v` sit directly beneath the LCA. The LCA is `up[u][0]`.
-- Query Latency: `O(log N)` = at most 17 operations per query! Total query phase: `< 20ms`."
-
-**Interviewer:** "Very crisp formulation. Please write the code."
+What does a smart rescue team do?
+**They send TWO search parties simultaneously!**
+- Party 1 searches 3 steps out from the North Cabin (`1,000` trails).
+- Party 2 searches 3 steps out from the South Lodge (`1,000` trails).
+- Total trails searched: `1,000 + 1,000 = 2,000 trails`!
+- The moment their search perimeters touch, **the shortest path is found!**
+We just reduced the search space from **1,000,000 states to 2,000 states**—a **500x speedup**!
 
 ---
 
-## 🧭 Chapter 2: 3-Tiered Hint Progression
+## 🪜 PILLAR 2: THE SCAFFOLDING LADDER & TOY NAPKIN TRACE
 
-```
-+-----------------------------------------------------------------------------+
-| TIER 1: GENTLE NUDGE (Contextual Awareness)                                 |
-| "If repeated queries need to jump up a tree, why jump 1 step when you can   |
-| jump in powers of 2? How does binary representation help with distances?"   |
-+-----------------------------------------------------------------------------+
-                                       |
-                                       v
-+-----------------------------------------------------------------------------+
-| TIER 2: STRUCTURAL ANCHOR (Algorithmic Primitive)                           |
-| "Define up[u][k] as the 2^k-th ancestor of node u. The 2^k-th ancestor is   |
-| the 2^(k-1)-th ancestor of the 2^(k-1)-th ancestor. Precompute this via    |
-| dynamic programming during tree traversal."                                 |
-+-----------------------------------------------------------------------------+
-                                       |
-                                       v
-+-----------------------------------------------------------------------------+
-| TIER 3: TACTICAL CODE HINT (Implementation Mechanics)                        |
-| "Set up[u][k] = up[up[u][k-1]][k-1]. To query LCA(u, v): align depths by   |
-| jumping the deeper node using bits of (depth[u] - depth[v]). Then loop k    |
-| from logN down to 0: if up[u][k] != up[v][k], jump u = up[u][k], v = up[v][k].|
-| Finally, return up[u][0]."                                                  |
-+-----------------------------------------------------------------------------+
+### Step 1: Maximum Path Sum (LeetCode 124) Napkin Trace
+
+Consider tree:
+```text
+        (-10)
+        /   \
+       9    (20)
+           /    \
+          15     7
 ```
 
+Post-order DFS evaluation:
+1. Leaf `9`: returns `max(0, 9) = 9`. Arch path = `9`. Global max = `9`.
+2. Leaf `15`: returns `max(0, 15) = 15`. Global max = `15`.
+3. Leaf `7`: returns `max(0, 7) = 7`.
+4. Node `20`:
+   - Left gain = `15`, Right gain = `7`.
+   - Local arch path: `20 + 15 + 7 = 42`!
+   - Update Global max = `max(15, 42) = 42`!
+   - Return upward: `20 + max(15, 7) = 20 + 15 = 35`.
+5. Root `-10`:
+   - Left gain = `9`, Right gain = `35`.
+   - Local arch path: `-10 + 9 + 35 = 34`.
+   - Global max remains `42`!
+
+Final Answer: **`42`** (Path `15 -> 20 -> 7`).
+
 ---
 
-## 📊 Chapter 3: Senior Evaluation Rubric
+### Step 2: Bidirectional BFS (LeetCode 127) Frontier Swapping
 
-| Dimension | Unsatisfactory (Level 1) | Developing (Level 2) | Senior Bar (Level 3) | Staff/Principal Bar (Level 4) |
-| :--- | :--- | :--- | :--- | :--- |
-| **Problem Formulation** | Proposes recursive tree walk per query without caching; misses SLA timeout. | Recognizes `O(N)` query problem; suggests path array intersection with high overhead. | Derives Binary Lifting `up[u][k]` recurrence independently; defends `O(log N)` query time. | Formulates Binary Lifting immediately; discusses Tarjan's offline LCA (`O(N + Q)`) as alternative. |
-| **Boundary Questioning** | Assumes balanced tree; ignores deep chains causing stack overflow. | Asks generic questions without connecting to algorithmic constraints. | Proactively checks tree connectivity, disconnected components, and depth differences. | Implements iterative DFS or increases stack reservation to guard against recursion overflow. |
-| **Space/Time Trade-offs** | Fails to quantify memory table size `N * log N`. | Mentions `O(N log N)` but cannot justify why powers of 2 cover all numbers. | Defends `O(N log N)` space table (~7 MB for `N = 10^5`) fitting into L3 cache. | Explains trade-off between Binary Lifting (`O(log N)` online) and Euler Tour RMQ (`O(1)` query). |
-| **Code Cleanliness** | Off-by-one errors in `logN` bounds; index out-of-bounds exceptions. | Working code but repeats lifting logic twice with duplicate code blocks. | Clean, concise helper methods (`LiftNode`, `GetLca`), descriptive variable names. | Flawless idiomatic implementation; zero redundant allocations; robust null guards. |
+To implement Bidirectional BFS cleanly:
+- Maintain two sets: `frontSet = {beginWord}` and `backSet = {endWord}`.
+- Maintain `visited = set()`.
+- At each step: **Always expand the smaller set!**
+  `if (frontSet.Count > backSet.Count) Swap(frontSet, backSet);`
+- By always expanding the smaller frontier, you naturally minimize the branching factor at every single level!
 
 ---
 
-## 💻 Chapter 4: Idiomatic Dual-Language Code
+### 🧠 Pause & Predict Micro-Drills
 
-### Problem 1: Lowest Common Ancestor via Binary Lifting
+> **Drill 1:** What happens in Binary Tree Maximum Path Sum if all node values in the tree are negative, e.g. `[-3, -5, -2]`?
+> *Pause here and think! What must `maxPath` be initialized to?*
+>
+> **Answer:** 
+> If you initialize `maxPath = 0`, your code will return `0` (incorrect, since at least one non-empty node must be chosen).
+> **Initialize `maxPath = int.MinValue`!** The algorithm will correctly pick the single largest negative node (`-2`).
 
-#### C# Primary Implementation (.NET 8/9)
+> **Drill 2:** Why do we take `max(0, leftGain)` when computing child gains?
+> *Pause here and think!*
+>
+> **Answer:**
+> If a child subtree yields a negative sum, including it would decrease our overall path sum. Taking `max(0, gain)` acts as an automatic prune: we simply drop negative branches from the trail!
+
+---
+
+## 🎨 PILLAR 3: PRAGMATIC VISUAL MODELS & DECISION FLOWS
+
+### Modern Hex Flowchart: Bidirectional BFS Frontier Engine
+
+```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
+flowchart TD
+    Start["frontSet = {beginWord}, backSet = {endWord}<br/>wordList = HashSet, level = 1"] --> Check{"Is frontSet or<br/>backSet empty?"}
+    Check -->|Yes: No Path| NoPath["Return 0 (Path does not exist)"]
+    Check -->|No| Balance{"Is frontSet.Count &gt;<br/>backSet.Count?"}
+    Balance -->|Yes: Balance Search| Swap["SWAP(frontSet, backSet)<br/>Always expand smaller frontier!"]
+    Balance -->|No| Expand
+    Swap --> Expand["Generate all 1-letter mutations for words in frontSet"]
+    Expand --> Match{"Does mutation exist<br/>in backSet?"}
+    Match -->|Yes: Frontiers Connected!| Done["Return level + 1<br/>Shortest path found!"]
+    Match -->|No: Valid word in wordList| NextFront["Add mutation to nextFrontier<br/>Remove from wordList (Visited)"]
+    NextFront --> Advance["frontSet = nextFrontier<br/>level++"]
+    Advance --> Check
+
+    style Start fill:#e1f5fe,stroke:#0288d1,color:#01579b
+    style Check fill:#fff3e0,stroke:#ef6c00,color:#e65100
+    style NoPath fill:#ffebee,stroke:#c62828,color:#b71c1c
+    style Balance fill:#fff3e0,stroke:#ef6c00,color:#e65100
+    style Swap fill:#f3e5f5,stroke:#8e24aa,color:#4a148c
+    style Expand fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style Match fill:#fff3e0,stroke:#ef6c00,color:#e65100
+    style Done fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style NextFront fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style Advance fill:#f3e5f5,stroke:#8e24aa,color:#4a148c
+```
+
+---
+
+## 🛑 PILLAR 4: THE ROOKIE TRAP ZONE
+
+### Side-by-Side Comparison: Blunders vs. Senior Architect Patterns
+
+| Dimension | ❌ Rookie Blunder | ✅ Senior Architect Pattern |
+| :--- | :--- | :--- |
+| **Tree Path Return Value** | Returns `node.val + leftGain + rightGain` to the parent caller, illegally creating a 3-way branching path. | Updates global `maxPath` with the 2-child arch sum, but returns strictly `node.val + max(leftGain, rightGain)` upward. |
+| **Negative Node Initialization** | Initializes `maxPath = 0`, failing test cases on trees with all-negative nodes like `[-3]`. | Initializes `maxPath = int.MinValue`, correctly returning the maximum single negative node. |
+| **Word Ladder BFS Traversal** | Uses standard 1-way BFS; queue size explodes to `O(26^D)`, causing Time Limit Exceeded (TLE). | Uses Bidirectional BFS with frontier swapping, bounding state space strictly to `O(2 * B^(D/2))`. |
+| **Mutation Generation** | Compares current word against all `N` words in the dictionary (`O(N * L)` comparisons per node). | Mutates each character position from `'a'` to `'z'` (`26 * L`), looking up candidate in `O(1)` hash set. |
+| **Visited State Memory** | Allocates redundant `visited` hash sets alongside the word list. | Removes visited words directly from `wordList` in-place, eliminating secondary allocation overhead. |
+
+---
+
+## 🎙️ PILLAR 5: 45-MINUTE INTERVIEW TALK TRACK
+
+### The Exact 3-Sentence Verbal Script
+
+Speak these exact three sentences before writing code:
+
+```text
++--------------------------------------------------------------------------------------------------+
+|                              THE SENIOR TREES & GRAPHS TALK TRACK                                |
++--------------------------------------------------------------------------------------------------+
+| 1. The Tree Path Invariant:                                                                      |
+|    "In Maximum Path Sum, we must rigorously decouple the local arch bridge—which can span both   |
+|    subtrees—from the value returned upward, which must form a valid single-branch extension."     |
+|                                                                                                  |
+| 2. The Negative Pruning Invariant:                                                               |
+|    "By clamping child gains to zero with max(0, gain), we prune negative-sum subtrees in O(1)    |
+|    time during our post-order traversal while initializing global state to negative infinity."   |
+|                                                                                                  |
+| 3. The Bidirectional Graph Pitch:                                                                |
+|    "For shortest path graph search, unidirectional BFS suffers exponential queue blowup; by      |
+|    implementing bidirectional BFS and expanding the smaller frontier at each step, we reduce    |
+|    the search tree from O(B^D) to O(2 * B^(D/2))."                                               |
++--------------------------------------------------------------------------------------------------+
+```
+
+---
+
+## ⚡ PILLAR 6: PRODUCTION DUAL-LANGUAGE IMPLEMENTATIONS
+
+### C# Primary Implementation (.NET 8/9): Production Path Sum & Bidirectional BFS
 
 ```csharp
 using System;
 using System.Collections.Generic;
 
-namespace MockInterviews.TreesGraphs;
+namespace AdvancedDataStructures;
 
-public sealed class BinaryLiftingLca
+public sealed class TreeNode
 {
-    private readonly int _n;
-    private readonly int _logN;
-    private readonly int[][] _up;
-    private readonly int[] _depth;
-
-    public BinaryLiftingLca(int n, List<int>[] adj, int root = 1)
+    public int val;
+    public TreeNode? left;
+    public TreeNode? right;
+    public TreeNode(int val = 0, TreeNode? left = null, TreeNode? right = null)
     {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(n);
-        ArgumentNullException.ThrowIfNull(adj);
-
-        _n = n;
-        _logN = Math.Max(1, (int)Math.Ceiling(Math.Log2(n + 1)));
-
-        _depth = new int[n + 1];
-        _up = new int[n + 1][];
-        for (int i = 0; i <= n; i++) _up[i] = new int[_logN + 1];
-
-        // DFS to establish depths and direct parents (up[u][0])
-        Dfs(root, root, 0, adj);
-
-        // Precompute powers-of-two ancestors
-        for (int j = 1; j <= _logN; j++)
-        {
-            for (int i = 1; i <= n; i++)
-            {
-                int intermediate = _up[i][j - 1];
-                _up[i][j] = _up[intermediate][j - 1];
-            }
-        }
-    }
-
-    private void Dfs(int u, int p, int d, List<int>[] adj)
-    {
-        _depth[u] = d;
-        _up[u][0] = p;
-
-        foreach (int v in adj[u])
-        {
-            if (v != p)
-            {
-                Dfs(v, u, d + 1, adj);
-            }
-        }
-    }
-
-    public int GetLca(int u, int v)
-    {
-        if (_depth[u] < _depth[v]) (u, v) = (v, u);
-
-        // 1. Lift u to the same depth as v
-        int depthDiff = _depth[u] - _depth[v];
-        for (int j = _logN; j >= 0; j--)
-        {
-            if ((depthDiff & (1 << j)) != 0)
-            {
-                u = _up[u][j];
-            }
-        }
-
-        if (u == v) return u;
-
-        // 2. Simultaneously lift u and v
-        for (int j = _logN; j >= 0; j--)
-        {
-            if (_up[u][j] != _up[v][j])
-            {
-                u = _up[u][j];
-                v = _up[v][j];
-            }
-        }
-
-        return _up[u][0];
+        this.val = val;
+        this.left = left;
+        this.right = right;
     }
 }
-```
 
-#### Python Secondary Implementation (Python 3.11+)
-
-```python
-import math
-from typing import List
-
-class BinaryLiftingLca:
-    """Precomputed Lowest Common Ancestor engine in O(N log N) time and O(log N) query."""
-    def __init__(self, n: int, adj: List[List[int]], root: int = 1):
-        self.n = n
-        self.log_n = max(1, math.ceil(math.log2(n + 1)))
-        self.depth = [0] * (n + 1)
-        self.up = [[0] * (self.log_n + 1) for _ in range(n + 1)]
-
-        # DFS to compute depths and parent up[u][0]
-        self._dfs(root, root, 0, adj)
-
-        # Precompute power-of-two ancestor table
-        for j in range(1, self.log_n + 1):
-            for i in range(1, n + 1):
-                self.up[i][j] = self.up[self.up[i][j - 1]][j - 1]
-
-    def _dfs(self, u: int, p: int, d: int, adj: List[List[int]]) -> None:
-        self.depth[u] = d
-        self.up[u][0] = p
-        for v in adj[u]:
-            if v != p:
-                self._dfs(v, u, d + 1, adj)
-
-    def get_lca(self, u: int, v: int) -> int:
-        if self.depth[u] < self.depth[v]:
-            u, v = v, u
-
-        # 1. Lift u to match depth of v
-        depth_diff = self.depth[u] - self.depth[v]
-        for j in range(self.log_n, -1, -1):
-            if (depth_diff >> j) & 1:
-                u = self.up[u][j]
-
-        if u == v:
-            return u
-
-        # 2. Lift together
-        for j in range(self.log_n, -1, -1):
-            if self.up[u][j] != self.up[v][j]:
-                u = self.up[u][j]
-                v = self.up[v][j]
-
-        return self.up[u][0]
-```
-
----
-
-### Problem 2: Topological Sorting & Cycle Detection (Alien Dictionary / Course Schedule)
-
-#### C# Primary Implementation (.NET 8/9)
-
-```csharp
-using System;
-using System.Collections.Generic;
-
-namespace MockInterviews.TreesGraphs;
-
-public static class GraphSchedules
+public static class TreesAndGraphsMockSolver
 {
     /// <summary>
-    /// Kahn's Algorithm for Topological Sort with explicit cycle detection.
-    /// Returns true if a valid linear order exists; otherwise false (cycle detected).
+    /// Solves Binary Tree Maximum Path Sum (LeetCode 124) in O(N) time and O(H) stack space.
     /// </summary>
-    public static bool TryTopologicalSort(int numCourses, int[][] prerequisites, out List<int> order)
+    public static int MaxPathSum(TreeNode? root)
     {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(numCourses);
-        ArgumentNullException.ThrowIfNull(prerequisites);
+        int globalMax = int.MinValue;
 
-        var adj = new List<int>[numCourses];
-        for (int i = 0; i < numCourses; i++) adj[i] = new();
-
-        int[] inDegree = new int[numCourses];
-
-        // Build directed graph: prereq[1] -> prereq[0]
-        foreach (var edge in prerequisites)
+        int MaxGain(TreeNode? node)
         {
-            int dest = edge[0];
-            int src = edge[1];
-            adj[src].Add(dest);
-            inDegree[dest]++;
+            if (node == null) return 0;
+
+            // Clamping to 0 prunes negative branch contributions
+            int leftGain = Math.Max(0, MaxGain(node.left));
+            int rightGain = Math.Max(0, MaxGain(node.right));
+
+            // Local arch bridge path can use both children
+            int archPath = node.val + leftGain + rightGain;
+            globalMax = Math.Max(globalMax, archPath);
+
+            // Upward return can only extend ONE branch to parent
+            return node.val + Math.Max(leftGain, rightGain);
         }
 
-        // Initialize queue with all vertices having in-degree 0
-        var queue = new Queue<int>();
-        for (int i = 0; i < numCourses; i++)
+        MaxGain(root);
+        return globalMax;
+    }
+
+    /// <summary>
+    /// Solves Word Ladder (LeetCode 127) using Bidirectional BFS in O(N * L * 26) time.
+    /// </summary>
+    public static int LadderLength(string beginWord, string endWord, IList<string> wordList)
+    {
+        HashSet<string> dict = new(wordList);
+        if (!dict.Contains(endWord)) return 0;
+
+        HashSet<string> frontSet = new() { beginWord };
+        HashSet<string> backSet = new() { endWord };
+        int level = 1;
+
+        while (frontSet.Count > 0 && backSet.Count > 0)
         {
-            if (inDegree[i] == 0) queue.Enqueue(i);
-        }
-
-        order = new List<int>(numCourses);
-
-        while (queue.Count > 0)
-        {
-            int curr = queue.Dequeue();
-            order.Add(curr);
-
-            foreach (int neighbor in adj[curr])
+            // Frontier Swapping: always expand the smaller perimeter!
+            if (frontSet.Count > backSet.Count)
             {
-                inDegree[neighbor]--;
-                if (inDegree[neighbor] == 0)
+                (frontSet, backSet) = (backSet, frontSet);
+            }
+
+            HashSet<string> nextFront = new();
+            foreach (string word in frontSet)
+            {
+                char[] chars = word.ToCharArray();
+                for (int i = 0; i < chars.Length; i++)
                 {
-                    queue.Enqueue(neighbor);
+                    char originalChar = chars[i];
+                    for (char c = 'a'; c <= 'z'; c++)
+                    {
+                        if (c == originalChar) continue;
+                        chars[i] = c;
+                        string neighbor = new(chars);
+
+                        if (backSet.Contains(neighbor))
+                        {
+                            return level + 1; // Frontiers met!
+                        }
+
+                        if (dict.Remove(neighbor)) // In-place visited marking
+                        {
+                            nextFront.Add(neighbor);
+                        }
+                    }
+                    chars[i] = originalChar;
                 }
             }
+
+            frontSet = nextFront;
+            level++;
         }
 
-        // Cycle invariant: if processed count < total vertices, a cycle exists!
-        return order.Count == numCourses;
+        return 0; // No valid transformation sequence
     }
 }
 ```
 
-#### Python Secondary Implementation (Python 3.11+)
+---
+
+### Python Secondary Implementation (Python 3.11+): Complete Trees & Graphs Solvers
 
 ```python
-from collections import deque
-from typing import List, Tuple
+from typing import Optional, List
 
-def topological_sort(num_courses: int, prerequisites: List[List[int]]) -> Tuple[bool, List[int]]:
-    """Kahn's BFS algorithm for Topological Sort with cycle detection in O(V + E) time."""
-    adj: List[List[int]] = [[] for _ in range(num_courses)]
-    in_degree = [0] * num_courses
+class TreeNode:
+    def __init__(self, val: int = 0, left: Optional['TreeNode'] = None, right: Optional['TreeNode'] = None):
+        self.val = val
+        self.left = left
+        self.right = right
 
-    for dest, src in prerequisites:
-        adj[src].append(dest)
-        in_degree[dest] += 1
+class TreesAndGraphsMockSolver:
+    @staticmethod
+    def max_path_sum(root: Optional[TreeNode]) -> int:
+        """Solves Binary Tree Maximum Path Sum in O(N) time and O(H) stack."""
+        global_max = float('-inf')
 
-    queue = deque([i for i in range(num_courses) if in_degree[i] == 0])
-    order: List[int] = []
+        def max_gain(node: Optional[TreeNode]) -> int:
+            nonlocal global_max
+            if not node:
+                return 0
 
-    while queue:
-        curr = queue.popleft()
-        order.append(curr)
+            left_gain = max(0, max_gain(node.left))
+            right_gain = max(0, max_gain(node.right))
 
-        for neighbor in adj[curr]:
-            in_degree[neighbor] -= 1
-            if in_degree[neighbor] == 0:
-                queue.append(neighbor)
+            # Arch path using both children
+            arch_path = node.val + left_gain + right_gain
+            global_max = max(global_max, arch_path)
 
-    is_valid = len(order) == num_courses
-    return is_valid, (order if is_valid else [])
+            # Return single branch upward
+            return node.val + max(left_gain, right_gain)
+
+        max_gain(root)
+        return int(global_max)
+
+    @staticmethod
+    def ladder_length(begin_word: str, end_word: str, word_list: List[str]) -> int:
+        """Solves Word Ladder via Bidirectional BFS."""
+        word_set = set(word_list)
+        if end_word not in word_set:
+            return 0
+
+        front_set = {begin_word}
+        back_set = {end_word}
+        level = 1
+
+        while front_set and back_set:
+            if len(front_set) > len(back_set):
+                front_set, back_set = back_set, front_set
+
+            next_front = set()
+            for word in front_set:
+                word_chars = list(word)
+                for i in range(len(word_chars)):
+                    orig_char = word_chars[i]
+                    for code in range(ord('a'), ord('z') + 1):
+                        c = chr(code)
+                        if c == orig_char:
+                            continue
+                        word_chars[i] = c
+                        neighbor = "".join(word_chars)
+
+                        if neighbor in back_set:
+                            return level + 1
+
+                        if neighbor in word_set:
+                            word_set.remove(neighbor)
+                            next_front.add(neighbor)
+
+                    word_chars[i] = orig_char
+
+            front_set = next_front
+            level += 1
+
+        return 0
 ```
 
 ---
 
-## 🔬 Chapter 5: Explicit Complexity Deconstruction
+## 📊 EXPLICIT COMPLEXITY DECONSTRUCTION
 
-| Metric | Binary Lifting LCA | Kahn's Topological Sort | Hardware Rationale |
+| Problem & Approach | Time Complexity | Auxiliary Space | Frontier Pruning Factor | Senior Evaluation Bar |
+| :--- | :--- | :--- | :--- | :--- |
+| **Max Path Sum (DFS)** | `O(N)` | `O(H)` stack | Linear tree scan | Correct negative clamp + single branch return. |
+| **Word Ladder (1-Way BFS)**| `O(B^D)` | `O(B^D)` queue | Unbounded queue | Developing / Mid-level (L4). |
+| **Word Ladder (Bidirectional)**| **`O(2 * B^(D/2))`** | **`O(2 * B^(D/2))`** | **Frontier swapping** | **Senior Bar (L5/L6 hire decision).** |
+
+---
+
+## 🔍 GRANULAR EDGE-CASE & INVARIANT VERIFICATION TABLE
+
+| Edge Case Scenario | Concrete Input | Expected Behavior | Invariant Verification & Handling |
 | :--- | :--- | :--- | :--- |
-| **Preprocessing Time** | `O(N log N)` | `O(V + E)` graph construction | Memory reads follow contiguous adjacency vectors. |
-| **Query Latency** | `O(log N)` | `O(1)` table lookup / check | Fits in standard CPU register and L1 cache loops. |
-| **Auxiliary Memory** | `O(N log N)` 2D array | `O(V + E)` queue and degrees | ~7 MB for `N = 10^5`, fits inside server L3 cache. |
-| **Recursion Risk** | Guarded DFS / Iterative | `O(1)` recursion (BFS queue) | Queue prevents stack overflow in deep linear chains. |
+| **All Negative Tree Nodes** | `root = [-10, -5, -20]` | Returns `-5` (largest single negative node). | `globalMax = int.MinValue` avoids 0 initialization trap. |
+| **Single Node Tree** | `root = [42]` | Returns `42`. | Base case returns single node value directly. |
+| **EndWord Not in Dictionary** | `wordList` does not contain `endWord` | Returns `0` immediately. | Guard `if (!dict.Contains(endWord)) return 0;`. |
+| **BeginWord Equals EndWord** | `beginWord == endWord` | Handled via frontier collision in 1 step. | Boundary handled cleanly in initial sets. |
+| **Disconnected Graph** | No transformation path exists | Both sets exhaust without meeting; returns `0`. | Clean loop exit condition `while (frontSet.Count > 0)`. |
 
 ---
 
-## 🎙️ Chapter 6: 45-Minute Verbal Script & Step-by-Step Timeline
-
-```
-[00:00 - 05:00] Clarification & Invariant Grounding
-- Clarify whether graph is dynamic or static, 0-indexed or 1-indexed, and max N and Q.
-- State the performance bottleneck: naive path walk takes O(N) per query -> O(Q * N) total.
-
-[05:00 - 15:00] Binary Lifting Mathematical Defense
-- Propose Binary Lifting: "Because every integer can be represented as sum of powers of 2,
-  we can lift any node across any depth in at most log2(N) jumps.
-  Table size is N * ceil(log2(N)), requiring ~7 MB for 100,000 nodes."
-- Derive the recurrence: up[u][k] = up[up[u][k-1]][k-1].
-
-[15:00 - 30:00] Live Defensive Coding
-- Write DFS to populate depths and direct parent pointers.
-- Implement nested loops for power-of-two table generation.
-- Implement GetLca with two-phase lifting: depth equalization followed by simultaneous jumps.
-
-[30:00 - 40:00] Edge-Case Verification & Dry Run
-- Test when u is direct ancestor of v (GetLca returns u immediately after depth equalization).
-- Test when u and v are siblings.
-- Test root queries and skewed trees.
-
-[40:00 - 45:00] Production Systems Translation
-- "In microservices dependency graphs and build pipelines (e.g., Bazel, MSBuild),
-  Kahn's algorithm detects circular build dependencies before compiling."
-```
-
----
-
-## 🔍 Chapter 7: Edge-Case Verification
-
-| Test Case | Scenario | Expected Outcome | Invariant Handling |
-| :--- | :--- | :--- | :--- |
-| **Node is Ancestor of Other** | `u = 1, v = 7` (1 is root) | Returns `1` | Depth equalization lifts `v` to depth 0; `u == v` condition triggers. |
-| **Query Same Node** | `u = 5, v = 5` | Returns `5` | Depth difference is 0; returns immediately without jumping. |
-| **Deep Linear Skew Tree** | Linked list `1-2-3-...-10^5` | Query in `O(log N)` | Binary lifting handles maximum depth of `10^5` in at most 17 jumps. |
-| **Cyclic Dependency in Graph** | Prerequisites `0 -> 1` and `1 -> 0` | Returns `false` | In-degrees never reach 0; processed vertex count `< numCourses`. |
-| **Disconnected Graph** | Multiple independent components | Valid component order | Queue absorbs all in-degree 0 vertices across all components. |
-
----
-
-> 🧭 **Navigation:** [← Previous Day](Week_19_Day_01_Mock_Arrays_Strings_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_19_Day_03_Mock_Dynamic_Programming_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day: Arrays & Strings Mock](Week_19_Day_01_Mock_Arrays_Strings_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Dynamic Programming Mock →](Week_19_Day_03_Mock_Dynamic_Programming_Instructional.md)

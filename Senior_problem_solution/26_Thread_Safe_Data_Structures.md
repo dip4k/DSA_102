@@ -66,7 +66,7 @@ flowchart TD
 
     PutLock --> ExistsKey{"Key Exists?"}:::checkOp
     ExistsKey -->|Yes| UpdateVal["Update Value &<br/>Promote to Head"]:::writeOp
-    ExistsKey -->|No| CapCheck{"Count >= Capacity?"}:::checkOp
+    ExistsKey -->|No| CapCheck{"Count &ge; Capacity?"}:::checkOp
     CapCheck -->|Yes| EvictTail["Detach Tail.Prev &<br/>Remove from<br/>Dictionary"]:::alertOp
     CapCheck -->|No| InsertNode["Allocate New Node"]:::writeOp
     EvictTail --> InsertNode

@@ -1,54 +1,66 @@
-# 📘 Mock Interviews & Final Review
+# 📘 WEEK 19: FAANG MOCK INTERVIEWS & FINAL MASTERY CRUCIBLE
 
 > 🧭 **Navigation:** [← Previous: Week 18](../week_18_probabilistic_ds_systems/README.md) • [🏠 Curriculum Overview](../README.md) • [📘 Complete Syllabus](../COMPLETE_SYLLABUS.md) • [Final Synthesis](../COMPLETE_SYLLABUS.md)
 
 ---
 
-> 💡 **Instructor Guidance Note:**  
-> *Not all sections or topics are mandatory. As a learner, you can adapt your pace freely. If you are preparing on an accelerated interview timeline or already feel confident with specific foundational concepts, feel free to skip or skim optional topics and prioritize high-yield patterns based on your personal interview goals.*
+## 🎯 WEEKLY MISSION & CONCEPTUAL HOOK
 
----
+Welcome to the grand finale: **Week 19: FAANG Mock Interviews & Final Mastery Crucible**!
+You have mastered 18 weeks of foundational and advanced data structures: from two pointers, monotonic stacks, and binary search, to tries, network flow, skip lists, link-cut trees, CHT, and probabilistic systems design.
+Now, all theoretical preparation converges onto the single high-stakes crucible that determines your job offer:
+**Can you deliver production-grade code, articulate governing invariants, and lead a collaborative architectural dialogue under live 45-minute FAANG whiteboard pressure?**
 
-## 🎯 Weekly Mission & Conceptual Focus
-
-Full-spectrum FAANG technical interview simulations: live problem solving, state narration, complexity defense, weakness diagnostics, and offer strategy.
+This week, we simulate the complete multi-round on-site interview loop:
+1. **Mock Round 1 (Arrays & Strings):** Trapping Rain Water (LC 42) via opposing two pointers in `O(1)` space, and Longest Substring (LC 3) via zero-allocation direct-address lookup.
+2. **Mock Round 2 (Trees & Graphs):** Binary Tree Maximum Path Sum (LC 124) with arch-vs-branch decoupling, and Word Ladder (LC 127) via Bidirectional BFS frontier pruning.
+3. **Mock Round 3 (Dynamic Programming):** Burst Balloons (LC 312) via Interval DP ("Think in Reverse"), and Regular Expression Matching (LC 10) with 2D state transitions.
+4. **Mock Round 4 (Mixed Complex Systems):** LRU Cache (LC 146) with sentinel doubly-linked lists, and Median of Two Sorted Arrays (LC 4) in logarithmic time.
+5. **Weakness Diagnosis & Strategy:** The Black Box Flight Recorder diagnostic framework: evaluating yourself across the 4 FAANG Bar Raiser rubric dimensions.
+6. **Final Tips & Rapid-Fire Drills:** The 45-minute delivery timeline clockwork, 10 rapid-fire 30-second pattern classification drills, and executive presence calibration.
 
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
-flowchart TD
-    Start["Week 19 Start"] --> Daily["Daily Invariant<br/>Deep<br/>Dives"]
-    Daily --> Playbook["Consolidated<br/>Playbook &<br/>Visuals"]
-    Playbook --> DualLang["Dual-Language<br/>Practice<br/>(C# & Python)"]
-    DualLang --> Mastery["Pattern Mastery &<br/>Verification"]
+flowchart LR
+    M1["Round 1: Arrays & Strings<br/>(LC 42, LC 3)"] --> M2["Round 2: Trees & Graphs<br/>(LC 124, LC 127)"]
+    M2 --> M3["Round 3: Advanced DP<br/>(LC 312, LC 10)"]
+    M3 --> M4["Round 4: Mixed Systems<br/>(LC 146, LC 4)"]
+    M4 --> M5["Round 5: Diagnostic Rubric<br/>(Black Box Post-Mortem)"]
+    M5 --> M6["Round 6: Final Drills<br/>(45-Min Pacing & Drills)"]
+
+    style M1 fill:#e1f5fe,stroke:#0288d1,color:#01579b
+    style M2 fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style M3 fill:#fff3e0,stroke:#ef6c00,color:#e65100
+    style M4 fill:#f3e5f5,stroke:#8e24aa,color:#4a148c
+    style M5 fill:#ffebee,stroke:#c62828,color:#b71c1c
+    style M6 fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
 ```
 
 ---
 
-## 📅 Day-by-Day Learning Path
+## 📅 DAY-BY-DAY MASTERCLASS MODULES
 
-| Day | Instructional Module | Focus & Core Objective |
-| :--- | :--- | :--- |
-| **Day 01** | [Mock Arrays Strings](Week_19_Day_01_Mock_Arrays_Strings_Instructional.md) | Two-pointer water pooling (LC 42), direct-address sliding window (LC 3), `O(1)` memory proof |
-| **Day 02** | [Mock Trees Graphs](Week_19_Day_02_Mock_Trees_Graphs_Instructional.md) | Binary lifting LCA `O(log N)` (LC 1483), Kahn's topological sort with cycle detection (LC 210) |
-| **Day 03** | [Mock Dynamic Programming](Week_19_Day_03_Mock_Dynamic_Programming_Instructional.md) | Space-compressed Levenshtein edit distance (100 MB -> 20 KB L1 cache), greedy Jump Game II |
-| **Day 04** | [Mock Mixed Complex Rounds](Week_19_Day_04_Mock_Mixed_Complex_Rounds_Instructional.md) | Monotonic deque sliding window maximum (LC 239), production LRU Cache DLL + Sentinel nodes (LC 146) |
-| **Day 05** | [Weakness Diagnosis And Strategy](Week_19_Day_05_Weakness_Diagnosis_And_Strategy_Instructional.md) | Median of Two Sorted Arrays `O(log(min(M, N)))` partition bisection, 6 failure archetypes, offer strategy |
-| **Day 06** | [Interview Tips And Final Drills](Week_19_Day_06_Interview_Tips_And_Final_Drills_Instructional.md) | *(Optional)* Multi-approach trade-off defense (LC 23), 45-min clock pacing, handling interviewer hints, offer leveling |
+| Day | Instructional Module | Core Architecture & Paradigm | Production / Interview Target |
+| :--- | :--- | :--- | :--- |
+| **Day 01** | [Mock Arrays Strings](Week_19_Day_01_Mock_Arrays_Strings_Instructional.md) | Opposing Two Pointers & Direct-Address Window | Trapping Rain Water (LC 42), Longest Substring (LC 3) |
+| **Day 02** | [Mock Trees Graphs](Week_19_Day_02_Mock_Trees_Graphs_Instructional.md) | Arch Path Decoupling & Bidirectional BFS | Max Path Sum (LC 124), Word Ladder (LC 127) |
+| **Day 03** | [Mock Dynamic Programming](Week_19_Day_03_Mock_Dynamic_Programming_Instructional.md) | Interval DP ("Think in Reverse") & 2D Regex Matrix | Burst Balloons (LC 312), Regex Matcher (LC 10) |
+| **Day 04** | [Mock Mixed Complex Rounds](Week_19_Day_04_Mock_Mixed_Complex_Rounds_Instructional.md) | Sentinel DLL + HashMap & Logarithmic Partitioning | LRU Cache (LC 146), Median of Two Sorted Arrays (LC 4) |
+| **Day 05** | [Weakness Diagnosis & Strategy](Week_19_Day_05_Weakness_Diagnosis_And_Strategy_Instructional.md) | 4-Pillar Bar Raiser Rubric & Black Box Post-Mortem | Diagnosing Stalls, Handling Hints, Offer Calibration |
+| **Day 06** | [Interview Tips & Final Drills](Week_19_Day_06_Interview_Tips_And_Final_Drills_Instructional.md) | 45-Min Clockwork Delivery & 10 Fast-Pattern Drills | Pre-Interview 24h Protocol, Executive Presence |
 
 ---
 
-## 📚 Consolidated Playbooks & Reference Guides
+## 📚 CONSOLIDATED PLAYBOOKS & REFERENCE GUIDES
 
-*   📖 **Comprehensive Week Playbook:** [WEEK_19_FULL_PLAYBOOK.md](WEEK_19_FULL_PLAYBOOK.md) — High-density synthesis of all invariants, theorems, and pattern triggers for this week.
-*   📊 **Visual Concepts Playbook (Hybrid):** [Week_19_Visual_Concepts_Playbook_HYBRID.md](Week_19_Visual_Concepts_Playbook_HYBRID.md) — Compact Mermaid diagrams, state transitions, and complexity reference tables.
-*   💻 **Production C# Reference (.NET 8/9):** [Week_19_Extended_CSharp_Complete.md](Week_19_Extended_CSharp_Complete.md) — Idiomatic, zero-allocation memory-aware implementations and problem ladders.
+*   📖 **Comprehensive Week Playbook:** [WEEK_19_FULL_PLAYBOOK.md](WEEK_19_FULL_PLAYBOOK.md) — Synthesis of all invariants, theorems, and pattern triggers.
+*   📊 **Visual Concepts Playbook (Hybrid):** [Week_19_Visual_Concepts_Playbook_HYBRID.md](Week_19_Visual_Concepts_Playbook_HYBRID.md) — Compact Mermaid state diagrams and complexity reference tables.
+*   💻 **Production C# Reference (.NET 8/9):** [Week_19_Extended_CSharp_Complete.md](Week_19_Extended_CSharp_Complete.md) — Zero-allocation, memory-aware implementations and problem ladders.
 *   🐍 **Production Python Reference (Python 3.11+):** [Week_19_Extended_Python_Complete.md](Week_19_Extended_Python_Complete.md) — Clean, pythonic reference implementations for rapid whiteboard prototyping.
 
 ---
 
-## 🛠️ The 5 Core Support Files (`support files/`)
-
-Every week is accompanied by five dedicated support files located in the `support files/` subdirectory:
+## 🛠️ THE 5 CORE SUPPORT FILES (`support files/`)
 
 1.  📋 [Daily Progress Checklist](support%20files/Week_19_Daily_Progress_Checklist.md) — Step-by-step accountability tracker for theory, coding, and variants.
 2.  🧭 [Weekly Guidelines & Mental Models](support%20files/Week_19_Guidelines.md) — Strategic roadmap, common pitfalls, and conceptual anchors.

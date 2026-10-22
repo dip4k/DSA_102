@@ -1,102 +1,320 @@
-# 📘 Week 13 Day 03: Branch and Bound — Engineering Guide
+# 📘 WEEK 13 DAY 3: BRANCH AND BOUND — THE SENIOR INTERVIEW PLAYBOOK
 
-> 🧭 **Navigation:** [← Previous Day](file:///d:/Interview_prep/DSA_102/week_13_backtracking_and_branch_bound/Week_13_Day_02_Backtracking_Problems_Instructional.md) • [🏠 Week Overview](file:///d:/Interview_prep/DSA_102/week_13_backtracking_and_branch_bound/README.md) • [📘 Curriculum Syllabus](file:///d:/Interview_prep/DSA_102/COMPLETE_SYLLABUS.md) • [Next Day →](file:///d:/Interview_prep/DSA_102/week_13_backtracking_and_branch_bound/Week_13_Day_04_Amortized_Analysis_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_13_Day_02_Backtracking_Problems_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Amortized Analysis →](Week_13_Day_04_Amortized_Analysis_Instructional.md)
 > 
-> 💡 **Instructor Note:** *Backtracking searches for feasibility; Branch and Bound searches for optimality. Instead of blind DFS, Branch and Bound uses a heuristic bounding function and a Priority Queue to expand the most promising subproblems first.*
+> 💡 **Instructor Note:** *Backtracking searches for FEASIBILITY (can we satisfy constraints?); Branch and Bound searches for OPTIMALITY (find the global maximum profit or minimum cost). Instead of blind DFS, Branch and Bound uses an admissible mathematical bounding heuristic and a Priority Queue (Best-First Search) to aggressively prune entire subtrees that cannot beat our best known solution.*
 
 ---
 
-## 🎯 Learning Objectives
+## 🎯 LEARNING OBJECTIVES
 
-- ⚖️ **Distinguish** between backtracking (constraint feasibility) and Branch & Bound (discrete optimization).
-- 📐 **Formulate** admissible bounding functions using problem relaxations (e.g., Fractional Knapsack for 0/1 Knapsack).
-- 🚀 **Implement** Best-First Search Branch & Bound in C# (.NET 8/9) using `PriorityQueue<TElement, TPriority>` and Python (3.11+) using `heapq`.
-- 🌲 **Visualize** search trees with explicit upper/lower bound pruning cutoffs.
-- 🎙️ **Articulate** why Branch & Bound succeeds on problems where Dynamic Programming explodes due to large constraint capacities.
+*By the end of this module, you will be able to:*
+
+- ⚖️ **Disambiguate** Backtracking (feasibility via DFS) from Branch and Bound (optimality via Best-First Search and priority queues).
+- 📐 **Formulate** Admissible Bounding Functions using continuous problem relaxations (e.g. Fractional Knapsack as an upper bound for 0/1 Knapsack).
+- 🚀 **Implement** Best-First Search Branch and Bound in modern C# (.NET 8/9 `PriorityQueue<KnapsackNode, double>`) and Python (3.11+ `heapq`).
+- 🎨 **Visualize** state space tree pruning where upper bounds fall below current global maximums.
+- 🛑 **Avoid** the 4 fatal rookie pitfalls: inadmissible bounding heuristics, Priority Queue memory explosions, unsorted ratio arrays, and using B&B when Dynamic Programming is strictly faster.
+- 🎙️ **Deliver** the exact 3-sentence verbal script to pitch Branch and Bound when pseudo-polynomial DP fails due to massive capacities (`W = 10^9`).
 
 ---
 
-## 🧠 Chapter 1: The Branch & Bound Mental Model
+## 🎬 PILLAR 1: THE 60-SECOND HOOK & EVERYDAY ANALOGIES
 
-### Feasibility vs. Optimization
+### The Venture Capitalist & The Gold Mine Metal Detector
 
-```
-BACKTRACKING:                    BRANCH & BOUND:
-Goal: Find valid solutions       Goal: Find globally optimal solution (Min / Max)
-Mechanism: DFS + Constraint prune Mechanism: Best-First Search (PQ) + Mathematical Bounds
-Prune trigger: Invalid state     Prune trigger: Bound cannot beat current best known
-```
+Imagine you are a venture capitalist with **$10,000,000** to invest. You are inspecting 50 startup pitches.
 
-### The Governing Bounding Invariant
-
-For a **Maximization Problem** (e.g., Knapsack):
-- Maintain `best_val`: the highest value of any complete feasible solution discovered so far.
-- For each partial state `u`, calculate an **Upper Bound (`UB(u)`)**: the theoretical maximum value achievable by extending `u`.
-- **Pruning Rule:** If `UB(u) <= best_val`, **PRUNE node `u` immediately**. No child in `u`'s subtree can ever beat `best_val`.
-
-For a **Minimization Problem** (e.g., TSP):
-- Maintain `best_cost`: the lowest cost of any valid tour found so far.
-- Calculate a **Lower Bound (`LB(u)`)**.
-- **Pruning Rule:** If `LB(u) >= best_cost`, **PRUNE node `u` immediately**.
+- **Standard Backtracking:** You sit through all 50 full 3-hour pitch presentations from start to finish before deciding which combination to fund. That's 150 hours of wasted time!
+- **Branch and Bound:** 
+  1. Early in the morning, Pitch #2 proves it can generate **$50,000,000** in guaranteed revenue. That is your current benchmark: `best_profit = $50M`.
+  2. Pitch #3 walks in. Within the first 2 minutes, their financial model shows that even in the most optimistic fantasy world (relaxation), the absolute maximum theoretical market cap they can ever reach is **$30,000,000**.
+  3. What do you do? **You stop the pitch immediately.**
+  4. Why sit through the remaining 2 hours and 58 minutes? Their theoretical ceiling ($30M) cannot beat the cash you already have locked in ($50M). You kick them out of the boardroom!
 
 ```
-                [Partial State Node u]
-                      UB(u) = 85
-                          │
-          Is UB(u) <= BestKnown (90)?
-                /             \
-             YES               NO
-              │                 │
-      [X] PRUNE SUBTREE     Expand children into
-      (Suboptimal bound)    Priority Queue
++---------------------------------------------------------------------------------------+
+|                             THE BRANCH & BOUND INVARIANT                              |
++---------------------------------------------------------------------------------------+
+|  "If the THEORETICAL MAXIMUM CEILING (Upper Bound) of a subtree cannot beat the       |
+|   ACTUAL REALIZED FLOOR (Best Known Solution) already discovered, PRUNE THE ENTIRE    |
+|   SUBTREE IMMEDIATELY. Do not spend a single CPU cycle exploring its children."       |
++---------------------------------------------------------------------------------------+
 ```
 
 ---
 
-## 🌲 Chapter 2: Visualizing Best-First Search & Pruning
+### The Dynamic Programming Catastrophe: Why B&B Saves Production
 
-Consider a 0/1 Knapsack problem with capacity `W = 10`.
+In Week 10, we learned that 0/1 Knapsack can be solved with Dynamic Programming in `O(N * W)` time.
 
-### ASCII Best-First Search Tree with Pruned Branches
+Why not just use DP forever?
+
+Look at this real-world production scenario:
+- Number of items: `N = 40`
+- Knapsack capacity: `W = 1,000,000,000` (1 Billion bytes / bandwidth / dollars)
+
+What happens to Dynamic Programming?
 ```
-                         Root (Level 0, Val: 0, Wt: 0)
-                                   UB = 115
-                        /                           \
-           Take Item 1 (Val: 40, Wt: 4)     Skip Item 1 (Val: 0, Wt: 0)
-                     UB = 115                         UB = 82
-                    /        \                           │
-        Take 2 (Val: 70, Wt: 7) Skip 2 (Val: 40, Wt: 4)  │
-             UB = 110                  UB = 85           │
-            /        \                     │             │
-      Take 3 (Val: 100, Wt: 9) Skip 3      │             │
-        Feasible Leaf         (Val: 70)    │             │
-        Best = 100                         │             │
-              │                            │             │
-        Update Best: 100                   ▼             ▼
-                                      [X] PRUNED    [X] PRUNED
-                                    (UB 85 <= 100) (UB 82 <= 100)
--------------------------------------------------------------------------
-[X] PRUNED: Upper bound cannot beat the current best feasible solution (100).
+DP Memory Required: N * W = 40 * 1,000,000,000 = 40 BILLION integers!
+Memory: 40 GB * 4 bytes = 160 GIGABYTES of RAM!
+Result: OUT OF MEMORY (OOM) CRASH!
+```
+Dynamic Programming is **pseudo-polynomial**; when the capacity `W` is massive, DP chokes and dies.
+
+A standard brute-force search explores `2^40 ≈ 1.09 * 10^12` states, which takes 3 hours.
+
+**Branch and Bound with Fractional Knapsack Bounding**, however, establishes a high `best_profit` within the first 100 iterations. It uses that high watermark to prune 99.99% of the remaining search space, solving the problem in **under 50 milliseconds** using only a few kilobytes of RAM!
+
+---
+
+## 🪜 PILLAR 2: THE SCAFFOLDING LADDER & TOY NAPKIN TRACES
+
+### The Mathematical Rule: Admissibility
+
+For Branch and Bound to guarantee that it finds the **true global optimum**, your bounding function MUST be **Admissible**:
+- For a **Maximization Problem** (Knapsack): `Upper Bound(u) >= TrueOptimal(u)`. It must be an optimistic ceiling. It must NEVER underestimate what is possible.
+- For a **Minimization Problem** (TSP / Shortest Route): `Lower Bound(u) <= TrueOptimal(u)`. It must be an optimistic floor. It must NEVER overestimate the cost.
+
+#### The Magic Relaxation: Fractional Knapsack
+How do we compute an admissible upper bound for discrete 0/1 Knapsack?
+We **relax the 0/1 integer constraint**! We allow ourselves to take fractional slices of items. Because taking continuous fractions of high-density items is provably better than or equal to taking discrete items, `FractionalKnapsackBound >= DiscreteKnapsackOptimal`.
+
+---
+
+### Step 1: Toy Napkin Trace — 0/1 Knapsack with Best-First Search
+
+**Problem:** Knapsack Capacity `W = 10`. Items sorted by Value/Weight ratio descending:
+
+| Item | Value (`v`) | Weight (`w`) | Density (`v / w`) |
+| :--- | :--- | :--- | :--- |
+| **Item 1** | $40 | 4 kg | **10.0 $/kg** |
+| **Item 2** | $70 | 7 kg | **10.0 $/kg** |
+| **Item 3** | $100 | 9 kg | **11.1 $/kg** |
+
+*(Let's sort descending by density: Item 3 (11.1), Item 1 (10.0), Item 2 (10.0))*
+
+Let's trace:
+- Item 0: `v = 100, w = 9` (Ratio = 11.11)
+- Item 1: `v = 40, w = 4` (Ratio = 10.0)
+- Item 2: `v = 70, w = 7` (Ratio = 10.0)
+Capacity `W = 10`.
+
+#### Priority Queue Trace:
+
+```
+[Level 0 - ROOT]: Value = 0, Weight = 0
+Compute Bound:
+- Take Item 0 (9kg, $100). Remaining Capacity: 10 - 9 = 1 kg.
+- Take 1/4 of Item 1 (1kg * 10 $/kg = $10).
+- Bound = 100 + 10 = $110.0.
+Enqueue Root (Bound = 110.0). Global maxProfit = 0.
+
+----------------------------------------------------------------------------------------
+[Iteration 1]: Pop Root (Bound = 110.0). Level = 0 (Examine Item 0: v=100, w=9).
+
+Branch A (INCLUDE Item 0):
+  Weight = 0 + 9 = 9 kg <= 10 kg (Feasible!).
+  Value = 0 + 100 = $100.
+  Update Global maxProfit = max(0, 100) = $100! 🎯 (HIGH WATERMARK ESTABLISHED!)
+  Compute Bound for Node (Include 0):
+    Remaining Capacity = 10 - 9 = 1 kg.
+    Fraction of Item 1 = 1/4 * 40 = $10.
+    Bound = 100 + 10 = $110.0.
+  Since Bound (110.0) > maxProfit (100), Enqueue Node A (Level 1, v=100, w=9, Bound=110.0).
+
+Branch B (EXCLUDE Item 0):
+  Weight = 0 kg, Value = $0.
+  Compute Bound for Node (Exclude 0):
+    Remaining Capacity = 10 kg.
+    Take all of Item 1 (4kg, $40). Remaining: 6 kg.
+    Take 6/7 of Item 2 (6kg * 10 $/kg = $60).
+    Bound = 40 + 60 = $100.0.
+  Since Bound (100.0) <= maxProfit (100), ✂️ PRUNE BRANCH B IMMEDIATELY!
+  (Excluding Item 0 can at best reach $100, which we already matched!)
+
+----------------------------------------------------------------------------------------
+[Iteration 2]: Pop Node A (Bound = 110.0). Level = 1 (Examine Item 1: v=40, w=4).
+
+Branch A1 (INCLUDE Item 1):
+  Weight = 9 + 4 = 13 kg > 10 kg 💥 (INFEASIBLE! Exceeds capacity! Drop!)
+
+Branch A2 (EXCLUDE Item 1):
+  Weight = 9 kg, Value = $100.
+  Compute Bound:
+    Remaining Capacity = 10 - 9 = 1 kg.
+    Fraction of Item 2 = 1/7 * 70 = $10.
+    Bound = 100 + 10 = $110.0.
+  Enqueue Node A2 (Level 2, v=100, w=9, Bound=110.0).
+
+----------------------------------------------------------------------------------------
+[Iteration 3]: Pop Node A2 (Bound = 110.0). Level = 2 (Examine Item 2: v=70, w=7).
+
+Branch A2_1 (INCLUDE Item 2):
+  Weight = 9 + 7 = 16 kg > 10 kg 💥 (INFEASIBLE! Exceeds capacity! Drop!)
+
+Branch A2_2 (EXCLUDE Item 2):
+  Weight = 9 kg, Value = $100.
+  Level = 3 (All items processed! Leaf reached!)
+  Final Feasible Value = $100.
+
+Priority Queue is now EMPTY!
+Final Optimal Value: $100 (Take Item 0 alone).
+```
+
+Look at how many nodes we explored: **ONLY 3 NODES** out of the full binary tree! The entire right half of the tree was pruned at the root.
+
+---
+
+### 🧠 Pause & Predict Micro-Drill
+**Question:** If we are solving a MINIMIZATION problem (like Traveling Salesperson or Vehicle Routing), what is our pruning condition when node `u` has lower bound `LB(u)` and our current best completed tour is `best_cost`?
+*Take 5 seconds to think.*
+-
+-
+-
+**Answer:** We prune node `u` whenever `LB(u) >= best_cost`. If the optimistic minimum cost to finish through node `u` is already greater than or equal to a tour we already completed, exploring `u` is guaranteed to be a waste of time.
+
+---
+
+## 🎨 PILLAR 3: PRAGMATIC VISUAL MODELS
+
+### Best-First Search Branch and Bound Architecture
+
+```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
+flowchart TD
+    Start["🚀 Initialize Max-PriorityQueue<br/>Push Root (Level 0, Bound = RelaxedBound)"] --> PopNode["✂️ Pop Node with HIGHEST Bound"]
+    
+    PopNode --> PruneCheck{"Bound &le; maxProfit?"}
+    PruneCheck -->|Yes| PruneSubtree["🛑 PRUNE SUBTREE<br/>Cannot beat global best"]
+    PruneSubtree --> QueueCheck{"Queue Empty?"}
+    
+    PruneCheck -->|No| LeafCheck{"All items evaluated?<br/>(Level == N)"}
+    LeafCheck -->|Yes| UpdateProfit["🎯 Update maxProfit if Value &gt; maxProfit"]
+    UpdateProfit --> QueueCheck
+    
+    LeafCheck -->|No| Branch["🌿 Branch Two Children:<br/>1. INCLUDE Item (if capacity permits)<br/>2. EXCLUDE Item"]
+    Branch --> CalcBounds["📐 Calculate Admissible Bounds<br/>for both children via Fractional Knapsack"]
+    CalcBounds --> EnqueueChildren["📥 Enqueue Children with Bound &gt; maxProfit"]
+    EnqueueChildren --> QueueCheck
+    
+    QueueCheck -->|No| PopNode
+    QueueCheck -->|Yes| Terminate["👑 Return maxProfit<br/>(Provably Globally Optimal)"]
+
+    classDef default fill:#f8f9fa,stroke:#37474f,stroke-width:2px,color:#263238
+    classDef checkNode fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
+    classDef actionNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef pruneNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
+    classDef winNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+
+    class PruneCheck,LeafCheck,QueueCheck checkNode
+    class PopNode,Branch,CalcBounds,EnqueueChildren actionNode
+    class PruneSubtree pruneNode
+    class UpdateProfit,Terminate winNode
 ```
 
 ---
 
-## ⚙️ Chapter 3: Canonical Problem — 0/1 Knapsack via Best-First B&B
+## 🛑 PILLAR 4: THE ROOKIE TRAP ZONE
 
-### The Admissible Relaxation: Fractional Knapsack
+```
+=============================================================================================
+                                   THE ROOKIE TRAP ZONE
+=============================================================================================
 
-To compute the upper bound `UB` of node `u`:
-1. Greedily add remaining items in descending order of value-to-weight ratio (`val / wt`).
-2. When the next item exceeds remaining capacity, take the **fraction** that fits.
-3. Because the fractional solution is a mathematical relaxation of the discrete 0/1 constraint, `UB(u) >= OptimalValue(u)`.
+❌ ROOKIE TRAP 1: The Inadmissible Bounding Function (Suboptimal Output)
+---------------------------------------------------------------------------------------------
+Problem: Using a naive heuristic that underestimates the upper bound in a maximization problem
+(e.g., ignoring remaining items or truncating floating-point ratios).
+Why it Fails: If `UB(u)` calculates $90 when the true optimal branch through `u` could yield
+$105, and `maxProfit` is $95, the algorithm prunes node `u`! The true optimal solution is
+permanently deleted, and the algorithm returns an incorrect answer.
+Senior Architect Fix: An upper bound must ALWAYS be a true mathematical relaxation.
+Prove that `UB(u) >= TrueOptimal(u)` for every reachable state.
 
-### Node Definition
+❌ ROOKIE TRAP 2: Priority Queue Memory Explosion (Best-First vs Depth-First B&B)
+---------------------------------------------------------------------------------------------
+Problem: Best-First Search stores all active frontier nodes in a Priority Queue. In adversarial
+cases where bounds are loose, the heap can accumulate O(2^N) nodes, triggering Out-Of-Memory.
+Senior Architect Fix: If RAM is strictly constrained, switch to Depth-First Branch and Bound
+(DFBnB). DFBnB uses call-stack recursion with strict O(N) memory while still updating
+`maxProfit` and pruning subtrees whose upper bound falls below `maxProfit`.
 
-Pulled from [`Week_13_Extended_CSharp_Complete.md`](file:///d:/Interview_prep/DSA_102/week_13_backtracking_and_branch_bound/Week_13_Extended_CSharp_Complete.md) and [`Week_13_Extended_Python_Complete.md`](file:///d:/Interview_prep/DSA_102/week_13_backtracking_and_branch_bound/Week_13_Extended_Python_Complete.md):
+❌ ROOKIE TRAP 3: Forgetting to Sort by Ratio Upfront
+---------------------------------------------------------------------------------------------
+Problem: Computing fractional knapsack bounds without sorting items by `value / weight` descending.
+Why it Fails: Fractional knapsack is only optimal when greedily packing the highest density
+items first! If items are unsorted, the bounding function produces garbage values and
+fails to prune the tree effectively.
+Senior Architect Fix: Sort items by `v / w` descending at step 0: `O(N log N)` cost upfront
+saves millions of priority queue operations downstream.
 
-#### C# (.NET 8/9) Implementation
+❌ ROOKIE TRAP 4: Using B&B When Capacity is Small (Over-Engineering)
+---------------------------------------------------------------------------------------------
+Problem: Implementing complex Branch and Bound for 0/1 Knapsack when `W = 500` and `N = 100`.
+Why it Fails: When `W` is small, 1D Dynamic Programming runs in 1 millisecond with zero heap
+overhead. Branch and Bound has object allocation overhead and priority queue operations.
+Senior Architect Fix: Choose DP when `W <= 10^5`. Choose B&B when `W >= 10^7` or `W` is floating-point.
+=============================================================================================
+```
+
+---
+
+## 🎙️ PILLAR 5: 45-MINUTE INTERVIEW TALK TRACK
+
+When pitching Branch and Bound in a senior FAANG systems or algorithmic interview:
+
+```
+[00:00 - 05:00] Identifying the Trade-Off & Pitching B&B
+"Let's evaluate our constraints:
+ We have discrete 0/1 choices where we need to maximize total profit under a capacity bound.
+ If capacity W were small (say W <= 10^4), I would immediately implement a 1D Dynamic Programming
+ table running in O(N * W) time.
+ However, if capacity W is massive (e.g. W = 10^9), DP experiences state space explosion and
+ fails due to memory exhaustion.
+ Pure backtracking is O(2^N), which is intractable for N = 40.
+ Therefore, I will use Branch and Bound with Best-First Search to prune unpromising subtrees."
+
+[05:00 - 10:00] Defining the Admissible Bounding Relaxation
+"To guarantee global optimality, our upper bound must be admissible—meaning it never underestimates
+ the true maximum profit achievable from a partial state.
+ I will formulate the bound using the Fractional Knapsack relaxation: sorting remaining items
+ by value-to-weight ratio and allowing continuous fractional filling of the last item.
+ Because the continuous fractional space strictly contains all discrete 0/1 assignments,
+ this bound is provably an upper bound."
+
+[10:00 - 15:00] Data Structure Architecture
+"We will structure the solution with:
+ 1. An Item record pre-sorted by value-to-weight ratio descending.
+ 2. A KnapsackNode tracking current level, value, weight, and theoretical upper bound.
+ 3. A Max-PriorityQueue keyed by bound to explore the most promising paths first.
+ 4. A global maxProfit benchmark to prune any node whose bound <= maxProfit."
+
+[15:00 - 35:00] Writing Clean, Production Code
+(Implement the priority queue loop with include/exclude branching in C# / Python.)
+
+[35:00 - 40:00] Dry Run & Pruning Demonstration
+(Dry-run with a 3-item napkin trace, showing the exact node where upper bound falls below maxProfit.)
+
+[40:00 - 45:00] Complexity & Memory Bounds
+"Worst-case Time: O(2^N), but average-case is drastically lower due to 90%+ branch pruning.
+ Auxiliary Space: O(2^N) for Best-First Search heap, or O(N) if adapted to Depth-First B&B.
+ This delivers an optimal exact solution where DP is physically impossible."
+```
+
+---
+
+## ⚡ PILLAR 6: PRODUCTION DUAL-LANGUAGE IMPLEMENTATIONS
+
+### Production C# (.NET 8/9 — `PriorityQueue` with Inverted Priority)
+
 ```csharp
-public sealed record Item(int Value, int Weight, double Ratio);
+namespace DsaMastery.Backtracking;
+
+using System;
+using System.Collections.Generic;
+
+public sealed record KnapsackItem(int Value, int Weight, double Ratio);
 
 public sealed class KnapsackNode
 {
@@ -106,86 +324,111 @@ public sealed class KnapsackNode
     public double Bound { get; init; }
 }
 
-public sealed class KnapsackBranchAndBound
+public static class KnapsackBranchAndBound
 {
+    /// <summary>
+    /// Solves discrete 0/1 Knapsack using Best-First Search Branch and Bound.
+    /// Time Complexity: O(2^N) worst-case, heavily pruned in practice.
+    /// Auxiliary Space: O(2^N) heap space.
+    /// </summary>
     public static int SolveKnapsack(int capacity, int[] values, int[] weights)
     {
-        int n = values.Length;
-        var items = new Item[n];
-        for (int i = 0; i < n; i++)
-            items[i] = new Item(values[i], weights[i], (double)values[i] / weights[i]);
+        ArgumentNullException.ThrowIfNull(values);
+        ArgumentNullException.ThrowIfNull(weights);
+        if (values.Length != weights.Length)
+        {
+            throw new ArgumentException("Values and weights must have identical lengths.");
+        }
+        if (capacity <= 0 || values.Length == 0) return 0;
 
-        // Sort descending by ratio
+        int n = values.Length;
+        var items = new KnapsackItem[n];
+        for (int i = 0; i < n; i++)
+        {
+            if (weights[i] <= 0) throw new ArgumentOutOfRangeException(nameof(weights), "Weights must be positive.");
+            items[i] = new KnapsackItem(values[i], weights[i], (double)values[i] / weights[i]);
+        }
+
+        // Step 0: Sort descending by value-to-weight ratio
         Array.Sort(items, (a, b) => b.Ratio.CompareTo(a.Ratio));
 
-        // PriorityQueue tracks max-bound first (using negative priority in .NET)
+        // .NET PriorityQueue is a Min-Heap by default; pass negative bound to create a Max-Heap
         var pq = new PriorityQueue<KnapsackNode, double>();
 
+        double rootBound = CalculateBound(0, 0, 0, capacity, items);
         var root = new KnapsackNode
         {
             Level = 0,
             Value = 0,
             Weight = 0,
-            Bound = CalculateBound(0, 0, 0, capacity, items)
+            Bound = rootBound
         };
 
-        pq.Enqueue(root, -root.Bound);
+        pq.Enqueue(root, -rootBound);
         int maxProfit = 0;
 
         while (pq.Count > 0)
         {
             var curr = pq.Dequeue();
 
-            // Pruning: bound cannot beat best known profit
+            // Pruning Invariant: If node's upper bound cannot beat current best known, PRUNE!
             if (curr.Bound <= maxProfit || curr.Level == n)
+            {
                 continue;
+            }
 
             var item = items[curr.Level];
 
+            // -----------------------------------------------------------------
             // Branch 1: INCLUDE current item (if capacity allows)
+            // -----------------------------------------------------------------
             if (curr.Weight + item.Weight <= capacity)
             {
                 int nextVal = curr.Value + item.Value;
                 int nextWt = curr.Weight + item.Weight;
-                maxProfit = Math.Max(maxProfit, nextVal);
+                maxProfit = Math.Max(maxProfit, nextVal); // Update high watermark
 
                 double includeBound = CalculateBound(curr.Level + 1, nextVal, nextWt, capacity, items);
                 if (includeBound > maxProfit)
                 {
-                    var includeNode = new KnapsackNode
+                    pq.Enqueue(new KnapsackNode
                     {
                         Level = curr.Level + 1,
                         Value = nextVal,
                         Weight = nextWt,
                         Bound = includeBound
-                    };
-                    pq.Enqueue(includeNode, -includeBound);
+                    }, -includeBound);
                 }
             }
 
+            // -----------------------------------------------------------------
             // Branch 2: EXCLUDE current item
+            // -----------------------------------------------------------------
             double excludeBound = CalculateBound(curr.Level + 1, curr.Value, curr.Weight, capacity, items);
             if (excludeBound > maxProfit)
             {
-                var excludeNode = new KnapsackNode
+                pq.Enqueue(new KnapsackNode
                 {
                     Level = curr.Level + 1,
                     Value = curr.Value,
                     Weight = curr.Weight,
                     Bound = excludeBound
-                };
-                pq.Enqueue(excludeNode, -excludeBound);
+                }, -excludeBound);
             }
         }
 
         return maxProfit;
     }
 
-    private static double CalculateBound(int level, int val, int wt, int capacity, Item[] items)
+    /// <summary>
+    /// Computes the admissible upper bound using the continuous Fractional Knapsack relaxation.
+    /// </summary>
+    private static double CalculateBound(int level, int currentVal, int currentWt, int capacity, KnapsackItem[] items)
     {
-        if (wt >= capacity) return 0;
-        double bound = val;
-        int remainingCapacity = capacity - wt;
+        if (currentWt >= capacity) return 0;
+
+        double bound = currentVal;
+        int remainingCapacity = capacity - currentWt;
 
         for (int i = level; i < items.Length; i++)
         {
@@ -196,25 +439,34 @@ public sealed class KnapsackBranchAndBound
             }
             else
             {
+                // Take fraction of the next item to fill the exact remaining capacity
                 bound += items[i].Ratio * remainingCapacity;
                 break;
             }
         }
+
         return bound;
     }
 }
 ```
 
-#### Python (3.11+) Implementation
+---
+
+### Production Python (3.11+ — `dataclasses`, `heapq` with Tie-Breaker ID)
+
 ```python
-import heapq
+from __future__ import annotations
 from dataclasses import dataclass
+import heapq
+from typing import List
+
 
 @dataclass
-class Item:
+class KnapsackItem:
     value: int
     weight: int
     ratio: float
+
 
 @dataclass
 class KnapsackNode:
@@ -223,104 +475,107 @@ class KnapsackNode:
     weight: int
     bound: float
 
-def solve_knapsack_bb(capacity: int, values: list[int], weights: list[int]) -> int:
-    n = len(values)
-    items = [Item(v, w, v / w) for v, w in zip(values, weights)]
-    items.sort(key=lambda x: x.ratio, reverse=True)
 
-    def calculate_bound(level: int, val: int, wt: int) -> float:
-        if wt >= capacity:
-            return 0.0
-        bound = float(val)
-        rem = capacity - wt
-        for i in range(level, n):
-            if items[i].weight <= rem:
-                rem -= items[i].weight
-                bound += items[i].value
-            else:
-                bound += items[i].ratio * rem
-                break
-        return bound
+class KnapsackBranchAndBound:
+    @staticmethod
+    def solve_knapsack(capacity: int, values: List[int], weights: List[int]) -> int:
+        """
+        Solves discrete 0/1 Knapsack using Best-First Search Branch and Bound.
+        Time Complexity: O(2^N) worst-case (empirically fast with pruning).
+        Space Complexity: O(2^N) heap memory.
+        """
+        if not values or not weights or capacity <= 0:
+            return 0
+        if len(values) != len(weights):
+            raise ValueError("Values and weights must have identical lengths.")
 
-    root_bound = calculate_bound(0, 0, 0)
-    root = KnapsackNode(0, 0, 0, root_bound)
+        n = len(values)
+        items = [KnapsackItem(v, w, v / w) for v, w in zip(values, weights)]
+        # Sort descending by ratio
+        items.sort(key=lambda x: x.ratio, reverse=True)
 
-    # Max-heap via negative bound
-    pq: list[tuple[float, int, KnapsackNode]] = [(-root_bound, 0, root)]
-    entry_id = 1
-    max_profit = 0
+        def calculate_bound(level: int, current_val: int, current_wt: int) -> float:
+            if current_wt >= capacity:
+                return 0.0
 
-    while pq:
-        _, _, curr = heapq.heappop(pq)
+            bound = float(current_val)
+            rem = capacity - current_wt
 
-        if curr.bound <= max_profit or curr.level == n:
-            continue
+            for i in range(level, n):
+                if items[i].weight <= rem:
+                    rem -= items[i].weight
+                    bound += items[i].value
+                else:
+                    bound += items[i].ratio * rem
+                    break
 
-        item = items[curr.level]
+            return bound
 
-        # Branch 1: INCLUDE item
-        if curr.weight + item.weight <= capacity:
-            nxt_val = curr.value + item.value
-            nxt_wt = curr.weight + item.weight
-            max_profit = max(max_profit, nxt_val)
-            inc_bound = calculate_bound(curr.level + 1, nxt_val, nxt_wt)
-            if inc_bound > max_profit:
-                inc_node = KnapsackNode(curr.level + 1, nxt_val, nxt_wt, inc_bound)
-                heapq.heappush(pq, (-inc_bound, entry_id, inc_node))
+        root_bound = calculate_bound(0, 0, 0)
+        root = KnapsackNode(level=0, value=0, weight=0, bound=root_bound)
+
+        # Max-heap via negative bound. Use entry_id as secondary comparator for stable tie-breaking.
+        pq: list[tuple[float, int, KnapsackNode]] = [(-root_bound, 0, root)]
+        entry_id = 1
+        max_profit = 0
+
+        while pq:
+            _, _, curr = heapq.heappop(pq)
+
+            # Pruning check
+            if curr.bound <= max_profit or curr.level == n:
+                continue
+
+            item = items[curr.level]
+
+            # -----------------------------------------------------------------
+            # Branch 1: INCLUDE current item
+            # -----------------------------------------------------------------
+            if curr.weight + item.weight <= capacity:
+                next_val = curr.value + item.value
+                next_wt = curr.weight + item.weight
+                max_profit = max(max_profit, next_val)  # Update high watermark
+
+                inc_bound = calculate_bound(curr.level + 1, next_val, next_wt)
+                if inc_bound > max_profit:
+                    inc_node = KnapsackNode(curr.level + 1, next_val, next_wt, inc_bound)
+                    heapq.heappush(pq, (-inc_bound, entry_id, inc_node))
+                    entry_id += 1
+
+            # -----------------------------------------------------------------
+            # Branch 2: EXCLUDE current item
+            # -----------------------------------------------------------------
+            exc_bound = calculate_bound(curr.level + 1, curr.value, curr.weight)
+            if exc_bound > max_profit:
+                exc_node = KnapsackNode(curr.level + 1, curr.value, curr.weight, exc_bound)
+                heapq.heappush(pq, (-exc_bound, entry_id, exc_node))
                 entry_id += 1
 
-        # Branch 2: EXCLUDE item
-        exc_bound = calculate_bound(curr.level + 1, curr.value, curr.weight)
-        if exc_bound > max_profit:
-            exc_node = KnapsackNode(curr.level + 1, curr.value, curr.weight, exc_bound)
-            heapq.heappush(pq, (-exc_bound, entry_id, exc_node))
-            entry_id += 1
-
-    return max_profit
+        return max_profit
 ```
 
 ---
 
-## 📊 Chapter 4: Explicit Complexity Deconstruction
+## 🔬 PERFORMANCE & COMPLEXITY DECONSTRUCTION
 
-| Metric | Branch & Bound (Best-First) | Standard Backtracking | Dynamic Programming (0/1) |
-| :--- | :--- | :--- | :--- |
-| **Worst-Case Time** | `O(2^N)` | `O(2^N)` | `O(N * W)` (Pseudo-polynomial) |
-| **Empirical Time** | Fast (prunes 90%+ of tree) | Slow (prunes only on capacity) | Predictable `O(N * W)` |
-| **Space Complexity** | `O(2^N)` (PQ node storage) | `O(N)` (call stack depth) | `O(W)` (1D array optimization) |
-| **When to Choose** | `W` is massive (`W = 10^9`, `N = 40`) | Need all feasible states | `W` is small (`W <= 10^5`, `N <= 1000`) |
-
-### Key Trade-Off: Stack vs Queue Memory
-- Standard Backtracking uses DFS: max memory is bounded strictly by tree depth `O(N)`.
-- Branch and Bound uses Best-First Search: the Priority Queue may accumulate nodes across multiple active levels simultaneously, with worst-case memory `O(2^N)`. If memory limits are tight, **Depth-First Branch and Bound (DFBnB)** maintains `O(N)` memory while still pruning using the best known objective value.
+| Paradigm | Worst-Case Time | Typical Empirical Time | Memory Complexity | Optimal Use Case |
+| :--- | :--- | :--- | :--- | :--- |
+| **Branch and Bound (Best-First)** | `O(2^N)` | Milliseconds (prunes 90%+) | `O(2^N)` (PriorityQueue) | `W = 10^9`, `N <= 50` |
+| **Depth-First Branch and Bound** | `O(2^N)` | Slightly slower than Best-First | `O(N)` (Call Stack) | Memory-constrained systems |
+| **Dynamic Programming (0/1)** | `O(N * W)` | `O(N * W)` constant | `O(W)` (1D array) | `W <= 10^5`, `N <= 1000` |
+| **Standard Backtracking** | `O(2^N)` | Full exponential tree search | `O(N)` | Finding all feasible solutions |
 
 ---
 
-## 🎙️ Chapter 5: 45-Minute Interview Verbal Script
+## ⚔️ PRACTICE DRILLS & MASTERY PROBLEMS
 
-### Step 1: Identifying Optimization Trade-Offs (00–05 min)
-> *"This is a combinatorial optimization problem with capacity constraints. If capacity `W` were small, Dynamic Programming would run in pseudo-polynomial `O(N * W)` time. But if `W = 10^9`, DP fails due to memory exhaustion. A pure backtracking search runs in `O(2^N)` worst case. I will use Branch & Bound with Best-First Search to prune unpromising subtrees."*
-
-### Step 2: Defining the Bounding Function (05–15 min)
-> *"For Branch & Bound to guarantee global optimality, the upper bound must be admissible—meaning it never underestimates the maximum achievable profit. I will compute the relaxation using Fractional Knapsack by sorting items by `value / weight` ratio. Since any 0/1 assignment is a subset of fractional assignments, `UB` is an upper bound."*
-
-### Step 3: Coding the Priority Queue Loop (15–30 min)
-> *"I maintain a max-priority queue keyed by the upper bound. At each iteration, I pop the node with the highest theoretical bound. If its bound is less than or equal to our `maxProfit` so far, we prune it immediately. Otherwise, we branch into two children: include current item and exclude current item, calculating bounds for each before enqueuing."*
-
-### Step 4: Verification & Edge Cases (30–45 min)
-> *"Edge cases include `capacity = 0`, items heavier than capacity, and identical value-weight ratios. The algorithm terminates as soon as the queue is empty or the top bound falls below `maxProfit`. Average-case execution visits an infinitesimal fraction of the `2^N` state space."*
+| # | Problem | Source | Difficulty | Target Invariant |
+| :--- | :--- | :--- | :--- | :--- |
+| 1 | 0/1 Knapsack via B&B | Classic | Hard | Fractional Knapsack upper bounding |
+| 2 | Traveling Salesperson Problem (TSP) | Classic | Hard | Reduced cost matrix lower bounding |
+| 3 | Job Assignment Problem | Classic | Hard | Hungarian algorithm or row min-reduction bounding |
+| 4 | Partition Equal Subset Sum | LeetCode 416 | Medium | Compare B&B vs Bitset DP |
 
 ---
 
-## ⚡ Quick Self-Check & Drill
-
-1. **What happens if a bounding function is not admissible (underestimates optimal value in a max problem)?**
-   *Answer:* The algorithm might prune the branch containing the true optimal solution, producing a suboptimal answer.
-2. **Why does Best-First Search typically prune more nodes than Depth-First Search in Branch & Bound?**
-   *Answer:* It immediately dives toward the most promising high-value leaves, establishing a high `best_profit` early, which allows aggressive pruning of remaining nodes.
-3. **When is DP strictly superior to Branch & Bound?**
-   *Answer:* When subproblems overlap heavily and the state space `N * W` is small and fits comfortably within memory.
-
----
-
-> 🧭 **Navigation:** [← Previous Day](file:///d:/Interview_prep/DSA_102/week_13_backtracking_and_branch_bound/Week_13_Day_02_Backtracking_Problems_Instructional.md) • [🏠 Week Overview](file:///d:/Interview_prep/DSA_102/week_13_backtracking_and_branch_bound/README.md) • [📘 Curriculum Syllabus](file:///d:/Interview_prep/DSA_102/COMPLETE_SYLLABUS.md) • [Next Day →](file:///d:/Interview_prep/DSA_102/week_13_backtracking_and_branch_bound/Week_13_Day_04_Amortized_Analysis_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day](Week_13_Day_02_Backtracking_Problems_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Amortized Analysis →](Week_13_Day_04_Amortized_Analysis_Instructional.md)

@@ -58,10 +58,10 @@
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    classDef start fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
-    classDef test fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:1.5px;
-    classDef result fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
-    classDef no fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:1.5px;
+    classDef start fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px
+    classDef test fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:1.5px
+    classDef result fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px
+    classDef no fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:1.5px
 
     R["Problem Given"]:::start
     R --> T1{"Overlapping<br/>Subproblems?"}:::test
@@ -84,8 +84,8 @@ flowchart TD
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    classDef naive fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:1.5px;
-    classDef memo fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+    classDef naive fill:#ffebee,stroke:#d32f2f,color:#b71c1c,stroke-width:1.5px
+    classDef memo fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px
 
     subgraph Naive["❌ Naive Recursion: O(2^N) Exponential Redundancy"]
         F5["fib(5)"]:::naive
@@ -98,7 +98,7 @@ flowchart TD
     end
 
     subgraph DP["✅ With Memoization / Tabulation: O(N) Linear Time"]
-        D0["Compute fib(0..1)<br/>= Base<br/>cases"]:::memo
+        D0["Compute fib(0..1)<br/&ge; Base<br/>cases"]:::memo
         D0 --> D2["Compute fib(2) = 1"]:::memo
         D2 --> D3["Compute fib(3) = 2"]:::memo
         D3 --> D4["Compute fib(4) = 3"]:::memo
@@ -336,8 +336,8 @@ Answer: Length = tails.length = 3  |  LIS tail ends with 20
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    classDef top fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
-    classDef bot fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+    classDef top fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px
+    classDef bot fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px
 
     subgraph TopDown["🧠 Top-Down (Memoization)"]
         T1["Direction: Target<br/>State →<br/>Base Cases<br/>(Recursion)"]:::top
@@ -486,8 +486,8 @@ Trade-off Summary:
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    classDef key fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
-    classDef pat fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:1.5px;
+    classDef key fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px
+    classDef pat fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:1.5px
 
     K["🔍 Interview<br/>Problem<br/>Clues & Keywords"]:::key
     K --> P1["🎯 'Min/Max<br/>Cost/Value/Weight'<br/>→<br/>1D/2D Optimization<br/>DP<br/>(Coin Change,<br/>Knapsack)"]:::pat
@@ -535,12 +535,12 @@ flowchart TD
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    classDef real fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
-    classDef arrow fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:1.5px;
-    classDef dppat fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
+    classDef real fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px
+    classDef arrow fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:1.5px
+    classDef dppat fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px
 
-    R1["Business Problem:<br/>Minimum server<br/>costs to<br/>serve R requests"]:::real --> M1["Map to State:<br/>dp[r] = min cost<br/>for r<br/>capacity"]:::arrow --> P1["Formal Pattern:<br/>Coin Change /<br/>Unbounded<br/>Knapsack"]:::dppat
-    R2["Business Problem:<br/>Minimal file<br/>changes in<br/>Git merge"]:::real --> M2["Map to State:<br/>dp[i][j] = common<br/>line<br/>count"]:::arrow --> P2["Formal Pattern:<br/>Longest Common<br/>Subsequence (LCS)"]:::dppat
+    R1["Business Problem:<br/>Minimum server<br/>costs to<br/>serve R requests"]:::real --> M1["Map to State:<br/>dp(r) = min cost<br/>for r<br/>capacity"]:::arrow --> P1["Formal Pattern:<br/>Coin Change /<br/>Unbounded<br/>Knapsack"]:::dppat
+    R2["Business Problem:<br/>Minimal file<br/>changes in<br/>Git merge"]:::real --> M2["Map to State:<br/>dp(i)(j) = common<br/>line<br/>count"]:::arrow --> P2["Formal Pattern:<br/>Longest Common<br/>Subsequence (LCS)"]:::dppat
 ```
 
 

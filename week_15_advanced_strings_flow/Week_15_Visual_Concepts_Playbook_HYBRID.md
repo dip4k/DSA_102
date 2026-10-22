@@ -115,13 +115,13 @@ flowchart TD
     classDef internal fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
     classDef leaf fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
 
-    N0["Root: [0 ... 7]<br/>(Sum=36)"]:::root
-    N1["[0 ... 3] (Sum=10)"]:::internal
-    N2["[4 ... 7] (Sum=26)"]:::internal
-    N3["[0 ... 1]"]:::internal
-    N4["[2 ... 3]"]:::internal
-    N5["[4 ... 5]"]:::internal
-    N6["[6 ... 7]"]:::internal
+    N0["Root: (0 ... 7)<br/>(Sum=36)"]:::root
+    N1["(0 ... 3) (Sum=10)"]:::internal
+    N2["(4 ... 7) (Sum=26)"]:::internal
+    N3["(0 ... 1)"]:::internal
+    N4["(2 ... 3)"]:::internal
+    N5["(4 ... 5)"]:::internal
+    N6["(6 ... 7)"]:::internal
 
     N0 --> N1
     N0 --> N2
@@ -130,14 +130,14 @@ flowchart TD
     N2 --> N5
     N2 --> N6
 
-    L0["[0] (1)"]:::leaf
-    L1["[1] (2)"]:::leaf
-    L2["[2] (3)"]:::leaf
-    L3["[3] (4)"]:::leaf
-    L4["[4] (5)"]:::leaf
-    L5["[5] (6)"]:::leaf
-    L6["[6] (7)"]:::leaf
-    L7["[7] (8)"]:::leaf
+    L0["(0) (1)"]:::leaf
+    L1["(1) (2)"]:::leaf
+    L2["(2) (3)"]:::leaf
+    L3["(3) (4)"]:::leaf
+    L4["(4) (5)"]:::leaf
+    L5["(5) (6)"]:::leaf
+    L6["(6) (7)"]:::leaf
+    L7["(7) (8)"]:::leaf
 
     N3 --> L0
     N3 --> L1

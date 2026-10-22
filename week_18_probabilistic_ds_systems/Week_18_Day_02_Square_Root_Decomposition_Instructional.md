@@ -1,273 +1,274 @@
-# 📘 Week 18, Day 2: Square Root Decomposition & Mo's Algorithm
+# 📘 WEEK 18 DAY 02: SQUARE ROOT DECOMPOSITION & MO'S ALGORITHM
 
-> 🧭 **Navigation:** [← Previous Day](Week_18_Day_01_Meet_In_The_Middle_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_18_Day_03_Heavy_Light_Decomposition_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day: Meet-in-the-Middle](Week_18_Day_01_Meet_In_The_Middle_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Heavy-Light Decomposition →](Week_18_Day_03_Heavy_Light_Decomposition_Instructional.md)
 > 
-> 💡 **Instructor Note:** *Square Root Decomposition provides sub-linear range query capabilities with simpler data invariants than Segment Trees. Focus on the mathematical derivation of optimal block size B = N / sqrt(Q) and Mo's algorithm offline query reordering.*
+> 💡 **Instructor Note:** *Square Root Decomposition is the quintessential pragmatic compromise in algorithm design. When Segment Trees or Fenwick Trees are too rigid (e.g., non-invertible range functions, offline frequency queries, complex subarray distinct-element counts), partitioning data into blocks of size sqrt(N) achieves O(sqrt(N)) query time with unmatched implementation simplicity. Today, we master block decomposition and Mo's Algorithm.*
 
 ---
 
-## 🎯 Learning Objectives
+## 🎯 LEARNING OBJECTIVES
 
-*   **Core Mental Model:** Understand how partitioning contiguous arrays into `sqrt(N)` blocks transforms arbitrary range queries into `O(sqrt(N))` operations while maintaining `O(1)` point updates.
-*   **Mathematical Precision:** Derive the exact pointer movement bounds of Mo's Algorithm: `T(N, Q) = O((N + Q) * sqrt(N))` using optimal block size `B = N / sqrt(Q)` and alternating sort parity.
-*   **Production Invariant:** Connect block decomposition to production storage engines: Apache Parquet row-group statistics, ClickHouse granule chunking (8,192 rows), and cache-line spatial locality.
-*   **Algorithmic Protocol:** Implement zero-allocation range aggregation and Mo's offline distinct-elements query engine in modern C# (.NET 8/9) and Python (3.11+).
+*By the end of this module, you will be able to:*
 
-## ⚖️ FAANG Senior / Lead Interview Calibration
-
-When designing range query engines, senior engineers navigate the trade-off space between tree structures and block chunking:
-
-| Range Query Engine | Update Time | Query Time | Offline vs Online | Non-Mergeable Statistics (Mode, Distinct) | Interview Coding Expectation |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Prefix Sum Array** | `O(N)` | `O(1)` | Online | Invertible operations only (sum, XOR) | Expected in 5 mins; static arrays only. |
-| **Fenwick Tree (BIT)** | `O(log N)` | `O(log N)` | Online | Invertible operations; prefix-dominated | Expected in 15 mins for point update / range sum. |
-| **Segment Tree** | `O(log N)` | `O(log N)` | Online | Associative monoids only (`min`, `max`, `sum`) | Expected in 20-25 mins; high pointer/array overhead. |
-| **SQRT Decomposition** | `O(1)` | `O(sqrt(N))` | Online | Extremely flexible; `O(1)` fast updates | Expected in 15 mins when update throughput dominates queries. |
-| **Mo's Algorithm** | N/A (Offline) | `O((N + Q) * sqrt(N))` total | Offline | **Any state machine with `O(1)` add/remove** | **Tier-1 L5/L6 bar: full offline engine in 25 mins.** |
-
-### The Recognition Pattern: "When to choose SQRT / Mo's over Trees?"
-1. **Black-box non-associative queries:** When range queries ask for the most frequent element (mode), distinct count, or inversion count where subranges cannot be combined in `O(1)` time.
-2. **Asymmetric workload (Update-heavy):** In write-heavy telemetry where updates must be `O(1)` and queries are infrequent or can tolerate `O(sqrt(N))` latency.
-3. **Offline query batches:** All `Q` queries are available upfront, allowing spatial reordering to minimize sliding window pointer hops.
+- 🎬 **Internalize** the Egg Carton mental model: chunking elements into blocks of size `B = sqrt(N)`.
+- 🪜 **Master** the 3-section range query breakdown: Left partial block, Full intermediate blocks, and Right partial block.
+- 🎨 **Visualize** Mo's Algorithm for offline queries: sorting query intervals by `(L / B, R)` to bound pointer movement to `O((N + Q) * sqrt(N))`.
+- 🛑 **Avoid** fatal rookie traps: sorting by `R` without block bucketing, integer division inside inner loops, and missing odd-even zig-zag pointer optimizations.
+- 🎙️ **Deliver** the exact 3-sentence verbal talk track defending Sqrt Decomposition in senior engineering rounds.
+- ⚡ **Implement** production-grade Sqrt Range Query and Mo's Algorithm solvers in C# (.NET 8/9) and Python (3.11+).
 
 ---
 
-## 📖 Chapter 1: Context & Motivation
+## 🎬 PILLAR 1: THE 60-SECOND HOOK & EVERYDAY ANALOGY
 
-### 1. The Engineering Challenge: Trees vs. Blocks
+### The Grocery Store Egg Cartons
 
-Segment Trees and Fenwick Trees achieve `O(log N)` range queries, but they require strict algebraic properties: the operation must be associative and preferably invertible for Fenwick trees.
-What happens when you need to answer offline queries like:
-- **Range Mode:** Find the most frequent element in `[L, R]`.
-- **Range Distinct Elements:** Count distinct items in `[L, R]`.
-- **Range Inversions:** Count pairs `(i, j)` where `i < j` and `A[i] > A[j]`.
+Imagine you manage the inventory at a commercial bakery that uses **10,000 eggs**:
+- If all 10,000 eggs are stored as loose eggs rolling across a table:
+  - Checking how many eggs are in a section from Egg #1,200 to Egg #8,450 requires counting **7,250 individual eggs one by one** (`O(N)` linear scan).
+- If you build a complex automated robotic gantry with laser sensors (a Segment Tree):
+  - It answers queries in `O(log N)` time, but if the rules change (e.g., *"Count how many distinct farm brands have an odd number of eggs"*), the robot breaks down completely!
 
-These functions cannot be merged in `O(1)` time inside a segment tree node without heavy persistent data structures.
+Now, what does the store manager actually do?
+**They pack the eggs into cartons of size `B = sqrt(10,000) = 100 eggs` per carton!**
 
-**Square Root Decomposition (and Mo's Algorithm)** re-orders queries offline into blocks of size `B`. By expanding and contracting two sliding pointers `[cur_L, cur_R]`, we transition from query to query in amortized `O(sqrt(N))` steps per query without any complex tree rebalancing.
-
----
-
-### 2. Physical Layout & Pointer Mechanics
-
-#### Contiguous Block Layout
-```
-Array of N = 16 elements divided into blocks of B = sqrt(16) = 4:
-
-Block 0: [0, 1, 2, 3]    Block 1: [4, 5, 6, 7]    Block 2: [8, 9, 10, 11]   Block 3: [12, 13, 14, 15]
-+---+---+---+---+        +---+---+---+---+        +---+---+---+---+         +---+---+---+---+
-| 3 | 1 | 4 | 1 |        | 5 | 9 | 2 | 6 |        | 5 | 3 | 5 | 8 |         | 9 | 7 | 9 | 3 |
-+---+---+---+---+        +---+---+---+---+        +---+---+---+---+         +---+---+---+---+
-      B_0 = 9                  B_1 = 22                 B_2 = 21                  B_3 = 28
-
-Query Range [L = 2, R = 13]:
-  [2, 3]              [4, 5, 6, 7]        [8, 9, 10, 11]            [12, 13]
-  Left Partial Block  Full Block B_1      Full Block B_2            Right Partial Block
-  (Elements checked   (Direct sum read:   (Direct sum read:         (Elements checked
-   individually)       B_1 = 22)           B_2 = 21)                 individually)
+```text
+Array of 10,000 Eggs:
+[ Carton 0 ] [ Carton 1 ] [ Carton 2 ] ... [ Carton 98 ] [ Carton 99 ]
+(100 eggs)   (100 eggs)   (100 eggs)       (100 eggs)    (100 eggs)
 ```
 
-#### Mo's Algorithm Pointer Sweeping
-```
-Query 1: [L1 = 2, R1 = 12] -> cur_L = 2, cur_R = 12
-Query 2: [L2 = 3, R2 = 14] -> cur_L advances 1 step (cur_L++), cur_R advances 2 steps (cur_R++)
+Now, when a chef orders eggs from index `150` to `850`:
+1. **Left Partial:** Inspect Carton 1 from index `150` to `199` (50 loose eggs).
+2. **Full Interior Cartons:** Instantly grab Cartons 2, 3, 4, 5, 6, 7 (6 full cartons = 600 eggs, counted in 6 operations!).
+3. **Right Partial:** Inspect Carton 8 from index `800` to `850` (51 loose eggs).
+Total operations: `50 + 6 + 51 = 107 operations` instead of 700!
 
-              Left Block k                        Right Pointer Sweep
-   +---------------------------------+  ========================================>
-   |  L1          L2                 |                                R1      R2
-   +---------------------------------+  ========================================>
-   <---- Max B moves within block --->  <---- Right pointer only sweeps forward! ->
+That is **Square Root Decomposition**: balancing point updates and range queries into `O(sqrt(N))` time by grouping contiguous memory into `sqrt(N)` blocks!
+
+---
+
+## 🪜 PILLAR 2: THE SCAFFOLDING LADDER & TOY NAPKIN TRACE
+
+### Step 1: The 3-Section Range Query Anatomy
+
+For any query interval `[L ... R]`:
+- Let block size `B = ceil(sqrt(N))`.
+- Block index for element `i`: `blockIdx = i / B`.
+
+```text
+Array: [  Block 0  ] [  Block 1  ] [  Block 2  ] [  Block 3  ]
+           ... [ L ............................ R ] ...
+                 ^          ^           ^         ^
+           Left Partial  Full Block  Full Block  Right Partial
+```
+
+1. **If `L` and `R` are in the SAME block:**
+   - Scan directly from `L` to `R`. Maximum operations: `B = O(sqrt(N))`.
+2. **If `L` and `R` span DIFFERENT blocks:**
+   - **Section 1 (Left Partial):** Iterate from `L` to the end of block `L / B`. (At most `B` elements).
+   - **Section 2 (Full Blocks):** Loop over block sums from `(L / B) + 1` to `(R / B) - 1`. (At most `sqrt(N)` blocks).
+   - **Section 3 (Right Partial):** Iterate from the start of block `R / B` to `R`. (At most `B` elements).
+   - Total operations: at most `3 * sqrt(N) = O(sqrt(N))`!
+
+---
+
+### Step 2: Mo's Algorithm (Offline Range Query Magic)
+
+What if you have `Q` queries: *"Count how many distinct elements appear in subarray `[L_i ... R_i]`"*, or *"Find the number of elements whose frequency is >= 3"*?
+Segment trees cannot easily maintain frequency mode or distinct count.
+
+**Mo's Algorithm solves this for any offline sequence of `Q` queries in `O((N + Q) * sqrt(N))`:**
+1. Collect all `Q` queries upfront.
+2. Sort the queries by:
+   - Primary key: `L / B` (the block of the left endpoint).
+   - Secondary key: `R` (the right endpoint).
+3. Maintain two pointers `curL = 0, curR = -1` and an active frequency table.
+4. As `curL` and `curR` expand and contract to match each query, update the answer incrementally in `O(1)`:
+   - `Add(index)`: `count[val[index]]++; if (count == 1) distinct++;`
+   - `Remove(index)`: `count[val[index]]--; if (count == 0) distinct--;`
+
+#### Why is Mo's Algorithm so fast?
+- The left pointer `curL` only moves within its block (`O(sqrt(N))`) per query -> across `Q` queries: `O(Q * sqrt(N))`.
+- For each block, the right pointer `curR` advances monotonically from `0` to `N` (`O(N)`) -> across `sqrt(N)` blocks: `O(N * sqrt(N))`.
+- Total pointer movements across all queries: **`O((N + Q) * sqrt(N))`**!
+
+---
+
+### 🧠 Pause & Predict Micro-Drills
+
+> **Drill 1:** What happens if `curR` reaches `N` in block `k`, and then in block `k + 1`, `curR` has to reset all the way back to `0`?
+> *Pause here and think! How can we optimize this?*
+>
+> **Answer:** 
+> **The Odd-Even Zig-Zag Sorting Optimization!**
+> - If `L / B` is **even**: sort `R` ascending (`R_1 <= R_2`).
+> - If `L / B` is **odd**: sort `R` descending (`R_1 >= R_2`).
+> This allows `curR` to sweep smoothly back and forth like a serpentine snake, cutting total `curR` pointer movement in half!
+
+> **Drill 2:** What is the optimal block size `B` for Mo's Algorithm when `N = 100,000` and `Q = 100,000`?
+> *Pause here and calculate!*
+>
+> **Answer:**
+> `B = max(1, (int)(N / Math.Sqrt(Q)))` or simply `ceil(sqrt(N)) approx 316`.
+> For `N = 100,000`, setting `B = 316` minimizes total pointer hops.
+
+---
+
+## 🎨 PILLAR 3: PRAGMATIC VISUAL MODELS & DECISION FLOWS
+
+### Modern Hex Flowchart: Mo's Algorithm Execution Pipeline
+
+```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
+flowchart TD
+    QIn["Collect Q Offline Queries<br/>(L_i, R_i, QueryID)"] --> Sort["Sort Queries by (L / B) Ascending,<br/>then R Ascending/Descending (Zig-Zag)"]
+    Sort --> Init["Initialize curL = 0, curR = -1<br/>State: empty frequency table"]
+    Init --> Loop{"More queries to process?"}
+    Loop -->|Yes| Slide["Expand / Contract Pointers:<br/>while curL &gt; Q.L: Add(--curL)<br/>while curR &lt; Q.R: Add(++curR)<br/>while curL &lt; Q.L: Remove(curL++)<br/>while curR &gt; Q.R: Remove(curR--)"]
+    Slide --> Store["answer(Q.ID) = currentResult"]
+    Store --> Loop
+    Loop -->|No| Ret["Return answer() array"]
+
+    style QIn fill:#e1f5fe,stroke:#0288d1,color:#01579b
+    style Sort fill:#fff3e0,stroke:#ef6c00,color:#e65100
+    style Init fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style Loop fill:#fff3e0,stroke:#ef6c00,color:#e65100
+    style Slide fill:#f3e5f5,stroke:#8e24aa,color:#4a148c
+    style Store fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style Ret fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
 ```
 
 ---
 
-## 🏛️ Chapter 2: Mathematical Formulation & Governing Invariants
+## 🛑 PILLAR 4: THE ROOKIE TRAP ZONE
 
-### 1. Derivation of Optimal Block Size in Mo's Algorithm
-Let `N` be the array size, `Q` be the number of queries, and `B` be the block size.
-Queries are sorted by:
-`Block(L) = floor(L / B)` ascending, then by `R` ascending.
+### Side-by-Side Comparison: Blunders vs. Senior Architect Patterns
 
-1. **Left Pointer Movement (`cur_L`):**
-   - For consecutive queries within the same block, `L` values differ by at most `B`.
-   - Across `Q` queries, total `cur_L` movement is at most:
-     `Movement(L) = Q * B`
-2. **Right Pointer Movement (`cur_R`):**
-   - Within a single block of `L`, queries have monotonically non-decreasing `R` values.
-   - Therefore, `cur_R` moves from `0` to `N` at most once per block: `N` steps.
-   - There are `ceil(N / B)` blocks, so across all blocks:
-     `Movement(R) = (N / B) * N = N^2 / B`
-3. **Total Pointer Movement:**
-   `T(B) = Q * B + N^2 / B`
-4. **Minimizing Total Work:**
-   To find the critical point, differentiate with respect to `B` and set to zero:
-   `d(T) / dB = Q - N^2 / B^2 = 0`
-   `B^2 = N^2 / Q  =>  B = N / sqrt(Q)`
-
-When `Q = N`, the optimal block size is `B = sqrt(N)`.
-Total operations:
-`T(N) = N * sqrt(N) + N^2 / sqrt(N) = 2 * N * sqrt(N) = O((N + Q) * sqrt(N))`
-
-### 2. Alternating Sort Parity Optimization (50% Speedup)
-Standard Mo's sorts `R` ascending for every block. When transitioning from block `k` to block `k+1`, `cur_R` can be at `N-1` and must rewind all the way to the start of the next block, wasting `O(N)` steps.
-
-**Optimization:**
-- If `Block(L)` is **even**: Sort `R` ascending (`R1 < R2`).
-- If `Block(L)` is **odd**: Sort `R` descending (`R1 > R2`).
-This forms a serpentine (snake-like) traversal, eliminating pointer rewinding and halving real-world runtime.
+| Dimension | ❌ Rookie Blunder | ✅ Senior Architect Pattern |
+| :--- | :--- | :--- |
+| **Mo's Query Ordering** | Sorts queries naively by `L` then `R` without block bucketing, causing `curR` to thrash back and forth `Q` times (`O(Q * N)` TLE). | Buckets queries by `L / B` and sorts `R` monotonically, strictly bounding total pointer motion to `O((N + Q) * sqrt(N))`. |
+| **Block Size Selection** | Hardcodes `B = 100` arbitrarily regardless of array length. | Sets `B = max(1, (int)Math.Sqrt(N))` dynamically, achieving the optimal mathematical minimum. |
+| **Integer Division in Inner Loops**| Calls `int b = i / B;` on every single iteration inside query sweeps. | Precomputes block boundaries or computes block indices only once per query boundary. |
+| **Pointer Update Order** | Removes elements before expanding (`Remove` called when window is invalid), causing negative frequency counts. | Expands range first (`Add`), then contracts (`Remove`), maintaining non-negative frequency invariants. |
+| **Answer Array Indexing** | Forgets to store original query indices before sorting, returning answers in scrambled order. | Stores `OriginalIndex` in each query struct; populates `answers[q.OriginalIndex]` directly. |
 
 ---
 
-## 💻 Chapter 3: Idiomatic Dual-Language Implementations
+## 🎙️ PILLAR 5: 45-MINUTE INTERVIEW TALK TRACK
 
-### C# Primary Implementation (.NET 8/9)
+### The Exact 3-Sentence Verbal Script
+
+Speak these exact three sentences before writing code:
+
+```text
++--------------------------------------------------------------------------------------------------+
+|                              THE SENIOR SQRT DECOMPOSITION TALK TRACK                            |
++--------------------------------------------------------------------------------------------------+
+| 1. The Bottleneck & Architecture:                                                                |
+|    "Because this range query involves non-invertible state mutations (such as distinct element   |
+|    frequencies), standard Segment Trees are too complex or cannot combine child intervals in     |
+|    O(1) time."                                                                                   |
+|                                                                                                  |
+| 2. The Sqrt Partition Strategy:                                                                  |
+|    "By partitioning the N elements into blocks of size B = sqrt(N), any arbitrary range query    |
+|    decomposes into at most two partial edge blocks and at most sqrt(N) full interior blocks,     |
+|    resolving in O(sqrt(N)) time."                                                                |
+|                                                                                                  |
+| 3. The Mo's Algorithm Pitch:                                                                     |
+|    "For offline queries, we sort query intervals by (L / B, R) with odd-even zig-zag ordering,   |
+|    bounding the total movement of the two sliding window pointers to O((N + Q) * sqrt(N)) total |
+|    time with O(N) auxiliary space."                                                              |
++--------------------------------------------------------------------------------------------------+
+```
+
+---
+
+## ⚡ PILLAR 6: PRODUCTION DUAL-LANGUAGE IMPLEMENTATIONS
+
+### C# Primary Implementation (.NET 8/9): Production Mo's Algorithm (Distinct Elements)
 
 ```csharp
 using System;
-using System.Buffers;
 
-namespace AdvancedAlgorithms;
+namespace AdvancedDataStructures;
 
 /// <summary>
-/// High-performance Square Root Decomposition and Mo's Algorithm suite.
+/// Production implementation of Mo's Algorithm for offline Range Distinct Element queries.
+/// Binds total runtime to O((N + Q) * sqrt(N)) with zero garbage collection churn.
 /// </summary>
-public static class SqrtEngines
+public sealed class MosAlgorithmSolver
 {
-    // =========================================================================
-    // 1. Classic Sqrt Decomposition for Dynamic Range Sum Queries (O(1) Update, O(sqrt N) Query)
-    // =========================================================================
-    public sealed class SqrtRangeSum
+    public readonly struct Query : IComparable<Query>
     {
-        private readonly long[] _nums;
-        private readonly long[] _blockSums;
-        private readonly int _blockSize;
-        private readonly int _n;
+        public readonly int L;
+        public readonly int R;
+        public readonly int Index;
+        public readonly int Block;
 
-        public SqrtRangeSum(ReadOnlySpan<long> initialData)
+        public Query(int l, int r, int index, int blockSize)
         {
-            _n = initialData.Length;
-            _blockSize = (int)Math.Max(1, Math.Sqrt(_n));
-            int blockCount = (_n + _blockSize - 1) / _blockSize;
-
-            _nums = new long[_n];
-            _blockSums = new long[blockCount];
-
-            for (int i = 0; i < _n; i++)
-            {
-                _nums[i] = initialData[i];
-                _blockSums[i / _blockSize] += initialData[i];
-            }
+            L = l;
+            R = r;
+            Index = index;
+            Block = l / blockSize;
         }
 
-        public void Update(int index, long newValue)
+        public int CompareTo(Query other)
         {
-            ArgumentOutOfRangeException.ThrowIfNegative(index);
-            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, _n);
-
-            long delta = newValue - _nums[index];
-            _nums[index] = newValue;
-            _blockSums[index / _blockSize] += delta;
-        }
-
-        public long Query(int left, int right)
-        {
-            ArgumentOutOfRangeException.ThrowIfNegative(left);
-            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(right, _n);
-            if (left > right) return 0;
-
-            long sum = 0;
-            int startBlock = left / _blockSize;
-            int endBlock = right / _blockSize;
-
-            if (startBlock == endBlock)
-            {
-                // Query lies entirely within a single block
-                for (int i = left; i <= right; i++) sum += _nums[i];
-                return sum;
-            }
-
-            // 1. Left partial block
-            int leftBlockEnd = (startBlock + 1) * _blockSize - 1;
-            for (int i = left; i <= leftBlockEnd; i++) sum += _nums[i];
-
-            // 2. Intermediate full blocks (O(1) per block)
-            for (int b = startBlock + 1; b < endBlock; b++) sum += _blockSums[b];
-
-            // 3. Right partial block
-            int rightBlockStart = endBlock * _blockSize;
-            for (int i = rightBlockStart; i <= right; i++) sum += _nums[i];
-
-            return sum;
+            if (Block != other.Block) return Block.CompareTo(other.Block);
+            // Odd-even zig-zag optimization
+            return (Block & 1) == 0 ? R.CompareTo(other.R) : other.R.CompareTo(R);
         }
     }
 
-    // =========================================================================
-    // 2. Mo's Algorithm for Offline Range Distinct Elements (O((N + Q) * sqrt N))
-    // =========================================================================
-    public readonly record struct Query(int L, int R, int Index, int BlockIndex);
-
-    public static int[] SolveRangeDistinctElements(int[] nums, (int L, int R)[] rawQueries)
+    public static int[] SolveDistinctQueries(int[] nums, (int L, int R)[] rawQueries)
     {
         ArgumentNullException.ThrowIfNull(nums);
         ArgumentNullException.ThrowIfNull(rawQueries);
 
         int n = nums.Length;
         int q = rawQueries.Length;
-        if (q == 0) return [];
+        if (q == 0) return Array.Empty<int>();
 
-        int blockSize = (int)Math.Max(1, n / Math.Sqrt(q));
+        int blockSize = Math.Max(1, (int)Math.Sqrt(n));
         Query[] queries = new Query[q];
-
         for (int i = 0; i < q; i++)
         {
-            queries[i] = new Query(
-                rawQueries[i].L,
-                rawQueries[i].R,
-                i,
-                rawQueries[i].L / blockSize
-            );
+            queries[i] = new Query(rawQueries[i].L, rawQueries[i].R, i, blockSize);
         }
 
-        // Alternating block sort optimization (Hilbert-like serpentine order)
-        Array.Sort(queries, (a, b) =>
-        {
-            if (a.BlockIndex != b.BlockIndex) return a.BlockIndex.CompareTo(b.BlockIndex);
-            // If block index is odd, sort R descending; if even, sort R ascending
-            return (a.BlockIndex & 1) == 1 ? b.R.CompareTo(a.R) : a.R.CompareTo(b.R);
-        });
+        Array.Sort(queries);
 
-        // Find max element for frequency array allocation (or coordinate compress)
-        int maxVal = 0;
-        foreach (int val in nums) if (val > maxVal) maxVal = val;
-
-        int[] freq = new int[maxVal + 1];
-        int distinctCount = 0;
         int[] answers = new int[q];
+        int[] freq = new int[1000001]; // Assuming values <= 10^6
+        int distinctCount = 0;
 
         int curL = 0;
         int curR = -1;
 
-        void Add(int val)
+        void Add(int idx)
         {
+            int val = nums[idx];
             if (freq[val] == 0) distinctCount++;
             freq[val]++;
         }
 
-        void Remove(int val)
+        void Remove(int idx)
         {
+            int val = nums[idx];
             freq[val]--;
             if (freq[val] == 0) distinctCount--;
         }
 
-        foreach (var query in queries)
+        for (int i = 0; i < q; i++)
         {
-            // Expand or shrink curR to query.R
-            while (curR < query.R) Add(nums[++curR]);
-            while (curR > query.R) Remove(nums[curR--]);
+            ref readonly Query query = ref queries[i];
 
-            // Expand or shrink curL to query.L
-            while (curL < query.L) Remove(nums[curL++]);
-            while (curL > query.L) Add(nums[--curL]);
+            while (curL > query.L) Add(--curL);
+            while (curR < query.R) Add(++curR);
+            while (curL < query.L) Remove(curL++);
+            while (curR > query.R) Remove(curR--);
 
             answers[query.Index] = distinctCount;
         }
@@ -279,175 +280,104 @@ public static class SqrtEngines
 
 ---
 
-### Python Secondary Implementation (Python 3.11+)
+### Python Secondary Implementation (Python 3.11+): Complete Mo's Algorithm
 
 ```python
 import math
-from typing import Sequence, Tuple, List
+from typing import List, Tuple
 
-class SqrtRangeSum:
-    """Classic Square Root Decomposition for dynamic prefix/range sums."""
-    def __init__(self, nums: Sequence[int]):
-        self.n = len(nums)
-        self.nums = list(nums)
-        self.block_size = max(1, int(math.isqrt(self.n)))
-        num_blocks = (self.n + self.block_size - 1) // self.block_size
-        self.block_sums = [0] * num_blocks
+class MosAlgorithmSolver:
+    """
+    Production-grade Mo's Algorithm solver in Python.
+    Answers offline Range Distinct Count queries in O((N + Q) * sqrt(N)).
+    """
+    @staticmethod
+    def solve_distinct_queries(nums: List[int], queries: List[Tuple[int, int]]) -> List[int]:
+        n = len(nums)
+        q = len(queries)
+        if q == 0:
+            return []
 
-        for i, val in enumerate(self.nums):
-            self.block_sums[i // self.block_size] += val
+        block_size = max(1, int(math.isqrt(n)))
 
-    def update(self, index: int, new_val: int) -> None:
-        delta = new_val - self.nums[index]
-        self.nums[index] = new_val
-        self.block_sums[index // self.block_size] += delta
+        # Pack queries with original index and block: (L, R, original_idx, block)
+        indexed_queries = [
+            (q_l, q_r, i, q_l // block_size)
+            for i, (q_l, q_r) in enumerate(queries)
+        ]
 
-    def query(self, left: int, right: int) -> int:
-        if left > right:
-            return 0
-        b_left = left // self.block_size
-        b_right = right // self.block_size
+        # Sort using odd-even serpentine ordering
+        def query_sort_key(item):
+            l, r, _, block = item
+            # If block is odd, sort r descending
+            r_key = -r if (block & 1) else r
+            return (block, r_key)
 
-        if b_left == b_right:
-            return sum(self.nums[left : right + 1])
+        indexed_queries.sort(key=query_sort_key)
 
-        total = 0
-        # 1. Left partial block
-        left_end = (b_left + 1) * self.block_size
-        total += sum(self.nums[left : left_end])
+        answers = [0] * q
+        freq = [0] * 1000001
+        distinct_count = 0
 
-        # 2. Intermediate full blocks
-        for b in range(b_left + 1, b_right):
-            total += self.block_sums[b]
+        cur_l = 0
+        cur_r = -1
 
-        # 3. Right partial block
-        right_start = b_right * self.block_size
-        total += sum(self.nums[right_start : right + 1])
+        def add(idx: int):
+            nonlocal distinct_count
+            val = nums[idx]
+            if freq[val] == 0:
+                distinct_count += 1
+            freq[val] += 1
 
-        return total
+        def remove(idx: int):
+            nonlocal distinct_count
+            val = nums[idx]
+            freq[val] -= 1
+            if freq[val] == 0:
+                distinct_count -= 1
 
+        for q_l, q_r, orig_idx, _ in indexed_queries:
+            while cur_l > q_l:
+                cur_l -= 1
+                add(cur_l)
+            while cur_r < q_r:
+                cur_r += 1
+                add(cur_r)
+            while cur_l < q_l:
+                remove(cur_l)
+                cur_l += 1
+            while cur_r > q_r:
+                remove(cur_r)
+                cur_r -= 1
 
-def solve_mos_distinct_elements(nums: List[int], raw_queries: List[Tuple[int, int]]) -> List[int]:
-    """Mo's Algorithm for offline Distinct Elements range queries in O((N + Q) * sqrt(N))."""
-    n = len(nums)
-    q = len(raw_queries)
-    if q == 0:
-        return []
+            answers[orig_idx] = distinct_count
 
-    block_size = max(1, int(n / math.sqrt(q)))
-
-    # Structure queries: (L, R, original_idx, block_idx)
-    queries = [
-        (l, r, idx, l // block_size)
-        for idx, (l, r) in enumerate(raw_queries)
-    ]
-
-    # Serpentine alternating sort: odd blocks reverse R order
-    queries.sort(key=lambda item: (item[3], -item[1] if (item[3] & 1) else item[1]))
-
-    max_val = max(nums, default=0)
-    freq = [0] * (max_val + 1)
-    distinct_count = 0
-    ans = [0] * q
-
-    cur_l = 0
-    cur_r = -1
-
-    def add(idx: int) -> None:
-        nonlocal distinct_count
-        val = nums[idx]
-        if freq[val] == 0:
-            distinct_count += 1
-        freq[val] += 1
-
-    def remove(idx: int) -> None:
-        nonlocal distinct_count
-        val = nums[idx]
-        freq[val] -= 1
-        if freq[val] == 0:
-            distinct_count -= 1
-
-    for l, r, original_idx, _ in queries:
-        while cur_r < r:
-            cur_r += 1
-            add(cur_r)
-        while cur_r > r:
-            remove(cur_r)
-            cur_r -= 1
-        while cur_l < l:
-            remove(cur_l)
-            cur_l += 1
-        while cur_l > l:
-            cur_l -= 1
-            add(cur_l)
-
-        ans[original_idx] = distinct_count
-
-    return ans
+        return answers
 ```
 
 ---
 
-## 🔬 Chapter 4: Explicit Complexity Deconstruction
+## 📊 EXPLICIT COMPLEXITY DECONSTRUCTION
 
-| Metric | Classic Sqrt Decomp | Mo's Algorithm | Production Relevance |
+| Paradigm | Query Mode | Point Update | Range Query | Total Time (`Q` queries) | Auxiliary Space |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Naive Array Scan** | Online / Offline | `O(1)` | `O(N)` | `O(Q * N)` | `O(1)` |
+| **Sqrt Decomposition** | Online | `O(1)` | `O(sqrt(N))` | `O(Q * sqrt(N))` | `O(N)` block sums |
+| **Mo's Algorithm** | Offline Only | N/A (Static) | Amortized | **`O((N + Q) * sqrt(N))`** | `O(N + Q)` tables |
+| **Segment Tree** | Online | `O(log N)` | `O(log N)` | `O(Q log N)` | `O(4N)` tree nodes |
+
+---
+
+## 🔍 GRANULAR EDGE-CASE & INVARIANT VERIFICATION TABLE
+
+| Edge Case Scenario | Concrete Input | Expected Behavior | Invariant Verification & Handling |
 | :--- | :--- | :--- | :--- |
-| **Preprocessing Time** | `O(N)` | `O(Q * log Q)` | Sorting queries offline in Mo's dominates setup. |
-| **Point Update Time** | `O(1)` | N/A (Offline only) | Sqrt Decomp gives instant `O(1)` buffer writes. |
-| **Range Query Time** | `O(sqrt N)` | Amortized `O(sqrt N)` | Sub-linear queries without deep tree balancing. |
-| **Total Query Movement** | `O(Q * sqrt N)` | `O((N + Q) * sqrt N)` | Provably optimal when `B = N / sqrt(Q)`. |
-| **Auxiliary Memory** | `O(sqrt N)` block array | `O(N + Q)` frequency buffer | Fits effortlessly in L2/L3 cache without heap fragmentation. |
-| **Cache Behavior** | Contiguous partial blocks | Dense pointer sweeps | CPU prefetcher streams consecutive indices during pointer sweeps. |
+| **Query within Single Block** | `L = 2, R = 4` in block of size 10 | Evaluates in `O(R - L + 1)` time. | Sliding pointers handle small intervals seamlessly. |
+| **Query Full Array** | `L = 0, R = N - 1` | `curL = 0, curR = N - 1`, returns total distinct elements. | Full window expansion holds without boundary errors. |
+| **Duplicate Queries** | Same interval `[5, 10]` repeated 3 times | Identical answer populated across all indices. | Query pointer movement is 0 after first lookup. |
+| **Single Element Query** | `L = 7, R = 7` | Returns `1`. | `Add(7)` runs; window length is exactly 1. |
+| **Zero Query Count** | `queries = []` | Returns empty array `[]`. | Guard clause `q == 0` returns immediately in `O(1)`. |
 
 ---
 
-## 🎙️ Chapter 5: 45-Minute Verbal Script & Interview Playbook
-
-```
-[00:00 - 05:00] Problem Qualification & Strategy Selection
-"The problem requires answering Q offline range queries counting distinct elements in range [L, R].
-Because 'distinct count' does not permit O(1) interval merging, a standard Segment Tree requires
-heavy persistent structures with high constant factor overhead.
-Since all queries are provided upfront, I will apply Mo's Algorithm with Square Root Decomposition."
-
-[05:00 - 15:00] Mathematical Bound Derivation
-"Let block size be B. We partition query L coordinates into blocks of size B.
-- Within each block, the left pointer moves at most B steps per query: Q * B moves.
-- The right pointer sweeps monotonically from left to right across the array once per block: (N / B) * N moves.
-Total moves = Q * B + N^2 / B.
-To minimize total moves, d/dB (Q * B + N^2 / B) = 0 => B = N / sqrt(Q).
-When N = Q = 100,000, setting B = sqrt(100,000) approx 316 yields total pointer moves of
-2 * 100,000 * 316 approx 6.3 * 10^7, which executes in ~120ms.
-I will also implement alternating sort parity: odd blocks sort R descending to halve pointer rewinds."
-
-[15:00 - 32:00] Live Defensive Implementation
-- Define query data structure with original index and block index.
-- Implement the custom serpentine sorting comparator.
-- Maintain `cur_L = 0` and `cur_R = -1` with `add` and `remove` helper functions.
-- Run pointer sweeps carefully ordered to avoid out-of-bounds array indices.
-
-[32:00 - 40:00] Edge Cases & Memory Verification
-- Single element range `[i, i]`, overlapping ranges, identical ranges, and empty query list.
-- Verify coordinate compression if values exceed `10^6` to bound the frequency table.
-
-[40:00 - 45:00] Production Systems Translation
-"In analytical columnar databases like ClickHouse and Apache Parquet, this exact block decomposition
-is used for physical data skipping: data is chunked into 8,192 row granules with min/max/distinct statistics
-stored in block headers to avoid scanning millions of unneeded disk blocks."
-```
-
----
-
-## 🔍 Chapter 6: Edge-Case Verification
-
-| Test Case | Scenario | Expected Outcome | Invariant Handling |
-| :--- | :--- | :--- | :--- |
-| **Single Element Query** | `L = 5, R = 5` | Distinct count = 1 | `cur_L` and `cur_R` contract to index 5; `add` called once. |
-| **Full Range Query** | `L = 0, R = N - 1` | Correct global distinct count | Pointers expand to encompass entire array bounds without overflow. |
-| **Identical Consecutive Queries** | `Q1 = [2, 7], Q2 = [2, 7]` | Identical answer | Zero pointer movement occurs between queries; answered in `O(1)`. |
-| **Disjoint Ranges** | `Q1 = [0, 1], Q2 = [N-2, N-1]` | Correct distinct counts | Pointer moves monotonically within sorted blocks; state resets correctly. |
-| **Q >> N (Massive Queries)** | `N = 10^3, Q = 10^5` | `B = N / sqrt(Q) = 3` | Dynamically calculated block size prevents right pointer oscillation. |
-
----
-
-> 🧭 **Navigation:** [← Previous Day](Week_18_Day_01_Meet_In_The_Middle_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_18_Day_03_Heavy_Light_Decomposition_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day: Meet-in-the-Middle](Week_18_Day_01_Meet_In_The_Middle_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Heavy-Light Decomposition →](Week_18_Day_03_Heavy_Light_Decomposition_Instructional.md)

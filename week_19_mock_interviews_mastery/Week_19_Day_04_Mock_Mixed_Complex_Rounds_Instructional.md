@@ -1,329 +1,223 @@
-# 📘 Week 19, Day 4: Mock Round 4: Mixed Paradigms & Systems Scaling
+# 📘 WEEK 19 DAY 04: MOCK ROUND 4 — MIXED COMPLEX SYSTEMS & IN-MEMORY ARCHITECTURE
 
-> 🧭 **Navigation:** [← Previous Day](Week_19_Day_03_Mock_Dynamic_Programming_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_19_Day_05_Weakness_Diagnosis_And_Strategy_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day: Dynamic Programming Mock](Week_19_Day_03_Mock_Dynamic_Programming_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Weakness Diagnosis & Calibration →](Week_19_Day_05_Weakness_Diagnosis_And_Strategy_Instructional.md)
 > 
-> 💡 **Instructor Note:** *This round tests multi-paradigm mastery under live interview conditions: combining monotonic queues for amortized O(1) sliding window extremes and designing custom composite data structures (Doubly Linked List + Hash Map) for true O(1) LRU eviction under strict memory limits.*
+> 💡 **Instructor Note:** *In senior and staff interview loops, interviewers intentionally blend algorithm design with systems architecture. Today, we simulate high-stakes complex design rounds: **Design In-Memory File System (LeetCode 588)** — testing hierarchical trie decomposition; **LRU Cache (LeetCode 146)** — testing custom doubly-linked lists with sentinel nodes; and **Median of Two Sorted Arrays (LeetCode 4)** — testing logarithmic binary search partition invariants.*
 
 ---
 
-## 🎯 Learning Objectives
+## 🎯 LEARNING OBJECTIVES
 
-*   **Interview Simulation:** Experience an authentic 45-minute live senior coding interview on composite data structures and monotonic sliding windows.
-*   **Dialogue Navigation:** Defend amortized `O(1)` monotonic deque invariance, explain why heap `O(N log K)` fails low-latency SLAs, and defend sentinel nodes for pointer safety.
-*   **3-Tiered Hint Recovery:** Practice extracting hints systematically (Gentle Nudge -> Structural Anchor -> Tactical Code Hint) without losing seniority evaluation points.
-*   **Senior Rubric Mastery:** Evaluate solutions against top-tier industry criteria: Problem Formulation, Boundary Questioning, Space/Time Trade-offs, and Clean Code.
+*By the end of this module, you will be able to:*
 
----
-
-## ⚖️ FAANG Senior / Lead Interview Calibration
-
-In Tier-1 coding rounds (Google, Meta, Apple, Netflix, Stripe), mixed-paradigm and composite structure problems evaluate whether a candidate can synthesize primitives while maintaining strict runtime invariants:
-
-| Paradigm Variant | Time Complexity | Auxiliary Space | Eviction / Step Latency | Common Pitfalls | Senior Calibration Bar |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Sliding Window Naive Scan** | `O(N * K)` | `O(1)` | `O(K)` | Catastrophic TLE on `N = 10^5, K = 5 * 10^4` | Immediate reject. |
-| **Sliding Window Max-Heap** | `O(N log K)` | `O(K)` | `O(log K)` (lazy eviction) | Stale root deletion overhead; memory bloat | Mid-level bar (L4). |
-| **Monotonic Deque (Sliding Max)** | `O(N)` | `O(K)` | `O(1)` amortized | Storing values instead of indices; off-by-one window bounds | **Senior Bar (L5): Clear domination invariant proof.** |
-| **LRU Cache via Array Scan** | `O(N)` get/put | `O(Capacity)` | `O(Capacity)` | Linear scan on cache lookup | Immediate reject. |
-| **LRU Cache via LinkedHashMap**| `O(1)` get/put | `O(Capacity)` | `O(1)` | Using language built-ins without understanding internal pointers | Acceptable only with explicit internal walkthrough. |
-| **Custom DLL + Hash Map (LRU)** | `O(1)` get/put | `O(Capacity)` | `O(1)` strict | Null pointer exceptions; failing to update map on eviction | **Senior Bar (L5): Sentinel nodes, contract safety, O(1) strict.** |
-
-### The Interviewer's Hidden Rubric: What We Listen For
-1. **Domination Principle:** In sliding window maximum, does the candidate recognize that if element `nums[j] >= nums[i]` with `j > i`, element `nums[i]` can **never** be the maximum of any current or future window?
-2. **Sentinel Node Pattern:** In custom doubly-linked lists, does the candidate initialize dummy `head` and `tail` nodes to eliminate edge-case null checks during pointer splicing?
-3. **Index vs Value Storage:** Does the candidate store array indices inside the deque to achieve `O(1)` lifetime tracking for expired elements?
+- 🎬 **Simulate** an authentic 45-minute senior interview blending object-oriented system design and algorithmic invariants.
+- 🪜 **Master** the sentinel-node Doubly Linked List + HashMap pattern for guaranteed `O(1)` LRU operations with zero edge-case null checks.
+- 🎨 **Visualize** the logarithmic partition invariant in Median of Two Sorted Arrays: `L1 <= R2 && L2 <= R1`.
+- 🛑 **Avoid** fatal rookie traps: using standard library `LinkedList<T>` with GC wrapper allocations, crashing on root `/` path splits, and binary searching the longer array.
+- 🎙️ **Deliver** the exact 3-sentence verbal talk track defending in-memory data layout and concurrency.
+- ⚡ **Implement** production-grade, zero-leak implementations in C# (.NET 8/9) and Python (3.11+).
 
 ---
 
-## 📖 Chapter 1: Live Interview Simulation & Dialogue Transcript
+## 🎬 PILLAR 1: THE 60-SECOND HOOK & EVERYDAY ANALOGY
 
-### Problem 1: Sliding Window Maximum (LeetCode 239)
-> **Interviewer:** *"You are given an array of integers `nums`, there is a sliding window of size `k` which is moving from the very left of the array to the very right. You can only see the `k` numbers in the window. Each time the sliding window moves right by one position, return the max sliding window."*
+### The Librarian's Desk (LRU) & The Shorter Partition (Median)
+
+#### 1. The LRU Cache: The Physical Desk Surface
+Imagine you have a small research desk that holds at most **3 books**:
+- When you read a book, you place it at the **very front of the desk (Most Recently Used)**.
+- If you read a book that is already on the desk, you pick it up and move it to the front.
+- When a 4th book arrives, your desk is full! What happens?
+  - You don't inspect publishing dates or page counts.
+  - You simply push the book sitting at the **very back of the desk (Least Recently Used)** off into the return bin!
 
 ```text
-Contiguous Window Sliding Across Array:
-Window: [1  3  -1] -3  5  3  6  7       -> Max = 3
-         1 [3  -1  -3] 5  3  6  7       -> Max = 3
-         1  3 [-1  -3  5] 3  6  7       -> Max = 5
-         1  3  -1 [-3  5  3] 6  7       -> Max = 5
-         1  3  -1  -3 [5  3  6] 7       -> Max = 6
-         1  3  -1  -3  5 [3  6  7]      -> Max = 7
+The LRU Data Structure Marriage:
+1. A Doubly Linked List:
+   Allows removing an item from the middle and splicing it to the head in O(1) time.
+2. A Hash Map:
+   Maps Key -> Direct Node Pointer in O(1) time!
+Result: Both Get() and Put() run in strictly O(1) time!
 ```
-
-#### Dialogue Transcript: Problem 1
-
-**Candidate:** "Let's first clarify constraints and boundary conditions:
-1. What are the constraints on array length `N` and window size `k`? Can `k > N`?
-2. Can elements be negative or zero?
-3. What should be returned if `nums` is empty or `k <= 0`?"
-
-**Interviewer:** "`1 <= k <= nums.length <= 10^5`. Elements are signed 32-bit integers between `-10^4` and `10^4`. If `k == 1`, return a copy of the array. If `k > N`, clamp to the maximum of the entire array."
-
-**Candidate:** "Understood. Let's analyze the naive and intermediate approaches:
-- **Naive Brute Force:** For each of the `N - k + 1` window positions, scan all `k` elements to compute the maximum. This takes `O((N - k + 1) * k) = O(N * k)` time. If `N = 10^5` and `k = 50,000`, operations reach `2.5 * 10^9`, resulting in an interview timeout.
-- **Max-Heap / PriorityQueue:** We could maintain a heap of window elements with their indices. Querying the max is `O(1)`, but inserting takes `O(log k)`, and evicting stale elements outside the current window requires either `O(k)` heap removal or lazy eviction, yielding `O(N log N)` time and extra heap allocations.
-- **Can we do O(N) total time?** Yes, using a **Monotonic Decreasing Deque**."
-
-**Interviewer:** "Explain the invariant that allows a monotonic deque to run in linear time."
-
-**Candidate:** "Consider two elements in the current window at indices `i` and `j` where `i < j`.
-If `nums[i] <= nums[j]`, then `nums[i]` can **never** be the window maximum:
-1. `nums[j]` is larger than or equal to `nums[i]`.
-2. `nums[j]` entered the window later, so it will expire **after** `nums[i]`.
-Therefore, `nums[i]` is completely obsolete. We can permanently discard it!
-By maintaining a double-ended queue storing **indices** such that the corresponding array values are strictly decreasing:
-- Front of deque always holds the index of the maximum element in the current window.
-- When sliding the window to index `i`:
-  1. Evict front index if it has fallen out of the window (`front <= i - k`).
-  2. While the back of the deque has `nums[back] <= nums[i]`, pop from the back.
-  3. Push `i` to the back.
-  4. Once `i >= k - 1`, record `nums[front]` as the window maximum."
-
-**Interviewer:** "What is the amortized cost per element?"
-
-**Candidate:** "Each index enters the deque exactly once and is popped at most once (either from the front when expired or from the back when dominated). Across `N` iterations, at most `2 * N` deque operations occur, guaranteeing **strict `O(N)` overall runtime** and `O(k)` auxiliary space."
 
 ---
 
-### Problem 2: LRU Cache Architecture (LeetCode 146)
-> **Interviewer:** *"Design a data structure that follows the constraints of a Least Recently Used (LRU) cache. Implement the `LRUCache` class with `int get(int key)` and `void put(int key, int value)`. Both operations must run in `O(1)` average time complexity."*
+#### 2. Median of Two Sorted Arrays: The Balance Scale
+
+Suppose you have two sorted arrays of numbers: Array A (length 4) and Array B (length 6).
+You want to find the median in `O(log(min(M, N)))` time without merging them (`O(M + N)`).
+
+Think of a **Balance Scale**:
+- You must cut Array A at partition `i` and cut Array B at partition `j` such that:
+  - Exactly half the total elements lie on the **Left Side**, and half lie on the **Right Side**.
+  - Every single element on the Left Side is `<= ` every single element on the Right Side!
 
 ```text
-Composite Data Structure Architecture:
-                     Hash Map: key -> Node Pointer
-               +--------------------------------------+
-               | Key 1 -> Node(1) | Key 2 -> Node(2)  |
-               +--------------------------------------+
-                                  |
-                                  v
-+-----------+       +-----------+       +-----------+       +-----------+
-| DummyHead | <---> |  Node(2)  | <---> |  Node(1)  | <---> | DummyTail |
-+-----------+       +-----------+       +-----------+       +-----------+
-                     Most Recent         Least Recent
+Left Side (5 elements):              Right Side (5 elements):
+A[0 ... i-1]  (max is L1)            A[i ... M-1]  (min is R1)
+B[0 ... j-1]  (max is L2)            B[j ... N-1]  (min is R2)
 ```
 
-#### Dialogue Transcript: Problem 2
-
-**Candidate:** "To achieve `O(1)` time complexity for both `get` and `put`, we need two capabilities simultaneously:
-1. Fast lookup by key in `O(1)` time.
-2. Fast reordering (move to most recent, evict least recent) in `O(1)` time.
-A standard hash table provides `O(1)` lookup but has no concept of element ordering.
-A contiguous array maintains ordering, but moving an element to the front or deleting from the middle takes `O(N)` due to element shifting.
-A singly linked list allows `O(1)` removal only if we have a pointer to the preceding node.
-Therefore, the optimal architecture is a **Doubly Linked List paired with a Hash Map**:
-- The **Hash Map** maps `key -> Node*`, giving `O(1)` lookup.
-- The **Doubly Linked List** stores `(key, value)` pairs in access order. Because each node has both `prev` and `next` pointers, given a pointer to a node, we can splice it out in `O(1)` operations without scanning."
-
-**Interviewer:** "How do you handle edge cases like adding to an empty cache or evicting the last item?"
-
-**Candidate:** "We use the **Sentinel Pattern**: introduce dummy `head` and dummy `tail` nodes initialized to point to each other (`head.next = tail`, `tail.prev = head`).
-All real cache nodes live between `head` and `tail`:
-- The most recently used node is always at `head.next`.
-- The least recently used node is always at `tail.prev`.
-Sentinel nodes guarantee that every real node always has valid non-null `prev` and `next` pointers, completely eliminating null checks and branching during node splicing."
-
-**Interviewer:** "Why must each node store both its key and value, rather than just the value?"
-
-**Candidate:** "When the cache exceeds capacity, we evict the least recently used node (`tail.prev`). To remove this evicted node from the Hash Map in `O(1)`, we must know its key! If the node only stored the value, we would have to search the entire map in `O(N)` time."
-
-**Interviewer:** "Excellent architectural clarity. Proceed with the implementations."
+The condition for perfection:
+`L1 <= R2` AND `L2 <= R1`!
+If `L1 > R2`: your cut in A is too far right! Move `i` left via Binary Search!
+If `L2 > R1`: your cut in A is too far left! Move `i` right!
+By binary searching strictly on the **shorter array**, the median is found in **`O(log(min(M, N)))` time**!
 
 ---
 
-## 🧭 Chapter 2: 3-Tiered Hint Progression
+## 🪜 PILLAR 2: THE SCAFFOLDING LADDER & TOY NAPKIN TRACE
 
-### Problem 1: Sliding Window Maximum
+### Step 1: LRU Cache Sentinel Node Architecture
+
+The biggest source of bugs in an LRU Cache interview is handling `head` and `tail` null pointer exceptions.
+**The Senior Architect Pattern:** Use **two dummy sentinel nodes**: `head` and `tail`!
 
 ```text
-+-----------------------------------------------------------------------------+
-| TIER 1: GENTLE NUDGE (Contextual Awareness)                                 |
-| "If a new element entering the window is strictly greater than older        |
-| elements already in the window, can those older elements EVER become the     |
-| maximum in any future window? When do elements become permanently useless?"  |
-+-----------------------------------------------------------------------------+
-                                       |
-                                       v
-+-----------------------------------------------------------------------------+
-| TIER 2: STRUCTURAL ANCHOR (Algorithmic Primitive)                           |
-| "Maintain a double-ended queue of array indices where values are strictly   |
-| non-increasing. Discard from the back any element smaller than the incoming |
-| value. How do you detect when the front element has slid out of the window?"|
-+-----------------------------------------------------------------------------+
-                                       |
-                                       v
-+-----------------------------------------------------------------------------+
-| TIER 3: TACTICAL CODE HINT (Implementation Mechanics)                        |
-| "For each index i:                                                          |
-|  1. if (deque.first <= i - k) deque.pop_front()                             |
-|  2. while (deque and nums[deque.last] <= nums[i]) deque.pop_back()          |
-|  3. deque.push_back(i)                                                      |
-|  4. if (i >= k - 1) result.append(nums[deque.first])"                       |
-+-----------------------------------------------------------------------------+
+[Head Sentinel] <---> [Node A] <---> [Node B] <---> [Tail Sentinel]
 ```
 
-### Problem 2: LRU Cache Design
+- An empty cache is simply: `head.next = tail; tail.prev = head;`.
+- Adding a node `x` to head:
+  `x.next = head.next; x.prev = head; head.next.prev = x; head.next = x;`.
+- Removing node `x`:
+  `x.prev.next = x.next; x.next.prev = x.prev;`.
+- **Zero `if (node == null)` checks! Zero edge cases! Flawless in 20 lines!**
+
+---
+
+### Step 2: Median of Two Sorted Arrays Partition Trace
+
+Let `A = [1, 3]` (`M = 2`) and `B = [2]` (`N = 1`).
+1. Always binary search on the shorter array: Swap if `A.Length > B.Length` -> Search on `B` (`M = 1`, `N = 2`).
+2. Total length = `3`. Left half count = `(1 + 2 + 1) / 2 = 2`.
+3. Binary search `low = 0, high = 1`:
+   - Cut `i = 0`: Left of B has 0 elements (`L1 = -inf`), Right has `[2]` (`R1 = 2`).
+   - Cut `j = 2 - 0 = 2`: Left of A has `[1, 3]` (`L2 = 3`), Right has empty (`R2 = +inf`).
+   - Check: `L2 <= R1` (`3 <= 2`)? **FALSE!** `i` is too far left; advance `low = 1`.
+   - Next iteration: `i = 1`:
+     - `L1 = 2`, `R1 = +inf`.
+     - `j = 2 - 1 = 1`: `L2 = 1`, `R2 = 3`.
+     - Check: `L1 <= R2` (`2 <= 3`) YES! `L2 <= R1` (`1 <= +inf`) YES!
+4. Perfect cut found!
+   Total length is odd -> Median = `max(L1, L2) = max(2, 1) = 2.0`!
+
+---
+
+### 🧠 Pause & Predict Micro-Drills
+
+> **Drill 1:** Why do we strictly binary search on the **shorter** array in Median of Two Sorted Arrays?
+> *Pause here and think!*
+>
+> **Answer:** 
+> 1. It minimizes search time to `O(log(min(M, N)))`.
+> 2. It mathematically guarantees that `j = (M + N + 1) / 2 - i` is always a valid index in `[0 ... N]`, completely preventing array index out-of-bounds exceptions!
+
+> **Drill 2:** In an in-memory file system, how do you handle splitting path `"/a/b/c"` without creating empty string tokens?
+> *Pause here and think!*
+>
+> **Answer:**
+> Use `path.Split('/', StringSplitOptions.RemoveEmptyEntries)`.
+> Leading, trailing, and duplicate slashes (`"//a///b/"`) are cleanly parsed into `["a", "b"]`!
+
+---
+
+## 🎨 PILLAR 3: PRAGMATIC VISUAL MODELS & DECISION FLOWS
+
+### Modern Hex Flowchart: LRU Cache Mutation Engine
+
+```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
+flowchart TD
+    Req{"Operation"} -->|Get(Key)| G1{"Key in HashMap?"}
+    G1 -->|No| GFail["Return -1"]
+    G1 -->|Yes| GProm["1. Unlink node from list<br/>2. Splice node directly after Head Sentinel<br/>3. Return node.val"]
+
+    Req -->|Put(Key, Val)| P1{"Key already exists?"}
+    P1 -->|Yes| PUpdate["1. Update node.val<br/>2. Promote node to Head Sentinel"]
+    P1 -->|No: New Node| PCap{"Is Count == Capacity?"}
+    PCap -->|Yes: Cache Full| PEvict["1. Target = tail.prev (LRU node)<br/>2. Unlink Target<br/>3. Remove from HashMap<br/>Count--"]
+    PEvict --> PInsert
+    PCap -->|No| PInsert["1. Create Node(Key, Val)<br/>2. Insert after Head Sentinel<br/>3. Add to HashMap<br/>Count++"]
+
+    style Req fill:#e1f5fe,stroke:#0288d1,color:#01579b
+    style G1 fill:#fff3e0,stroke:#ef6c00,color:#e65100
+    style GFail fill:#ffebee,stroke:#c62828,color:#b71c1c
+    style GProm fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style P1 fill:#fff3e0,stroke:#ef6c00,color:#e65100
+    style PUpdate fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style PCap fill:#fff3e0,stroke:#ef6c00,color:#e65100
+    style PEvict fill:#ffebee,stroke:#c62828,color:#b71c1c
+    style PInsert fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+```
+
+---
+
+## 🛑 PILLAR 4: THE ROOKIE TRAP ZONE
+
+### Side-by-Side Comparison: Blunders vs. Senior Architect Patterns
+
+| Dimension | ❌ Rookie Blunder | ✅ Senior Architect Pattern |
+| :--- | :--- | :--- |
+| **LRU List Implementation** | Uses standard C# `LinkedList<T>`, requiring `LinkedListNode<T>` allocations on every write and breaking `O(1)` node lookup. | Codes an internal custom `Node` class with `prev` and `next` pointers, storing raw node references directly in the hash map. |
+| **Sentinel Node Hygiene** | Writes complex `if (head == null)` and `if (tail == null)` branches, introducing subtle pointer detachment bugs. | Uses dummy `head` and `tail` sentinel nodes, guaranteeing all active nodes always have non-null neighbors. |
+| **Median Array Sizing** | Binary searches on the longer array `A`, causing calculated index `j` to fall out of bounds on array `B`. | Swaps inputs to guarantee `A` is the shorter array (`A.Length <= B.Length`), ensuring `j` is strictly within bounds. |
+| **Infinity Boundaries** | Uses `0` or `-1` for empty partitions in Median, corrupting negative number comparisons. | Uses `int.MinValue` for missing left partitions (`L1, L2`) and `int.MaxValue` for missing right partitions (`R1, R2`). |
+| **File System Directory vs File**| Treats files and directories with different classes, causing casting errors on shared tree traversal. | Uses a single composite `Node` with an `IsFile` boolean flag and child collection. |
+
+---
+
+## 🎙️ PILLAR 5: 45-MINUTE INTERVIEW TALK TRACK
+
+### The Exact 3-Sentence Verbal Script
+
+Speak these exact three sentences before writing code:
 
 ```text
-+-----------------------------------------------------------------------------+
-| TIER 1: GENTLE NUDGE (Contextual Awareness)                                 |
-| "A hash table gives O(1) lookup. A linked list gives O(1) insertion.        |
-| Why can't a singly linked list remove an arbitrary node in O(1) time?       |
-| What additional pointer is missing?"                                        |
-+-----------------------------------------------------------------------------+
-                                       |
-                                       v
-+-----------------------------------------------------------------------------+
-| TIER 2: STRUCTURAL ANCHOR (Algorithmic Primitive)                           |
-| "A doubly linked list allows O(1) node detachment because node.prev is      |
-| immediately accessible. Store node pointers directly in the hash map.      |
-| How can dummy head and tail sentinel nodes eliminate pointer null checks?"  |
-+-----------------------------------------------------------------------------+
-                                       |
-                                       v
-+-----------------------------------------------------------------------------+
-| TIER 3: TACTICAL CODE HINT (Implementation Mechanics)                        |
-| "Create helper methods: _remove(node) and _add_to_head(node).               |
-| In get(key): if present, remove(node), add_to_head(node), return node.val.  |
-| In put(key, val): if present, update val and move to head. If new, evict    |
-| tail.prev if full (remembering to del map[lru.key]), then insert at head."  |
-+-----------------------------------------------------------------------------+
++--------------------------------------------------------------------------------------------------+
+|                              THE SENIOR MIXED SYSTEMS TALK TRACK                                 |
++--------------------------------------------------------------------------------------------------+
+| 1. The LRU Invariant:                                                                            |
+|    "To achieve strictly O(1) time complexity for both Get and Put in LRU Cache, we marry a       |
+|    HashMap for constant-time key lookup with a custom Doubly Linked List flanked by dummy head   |
+|    and tail sentinels to eliminate all edge-case null checks."                                    |
+|                                                                                                  |
+| 2. The Logarithmic Partition Invariant:                                                          |
+|    "In Median of Two Sorted Arrays, we avoid merging the arrays in O(M + N) by performing a      |
+|    binary search on the shorter array's partition line, verifying that the maximum left elements  |
+|    do not exceed the minimum right elements in O(log(min(M, N))) time."                          |
+|                                                                                                  |
+| 3. The Hierarchical Tree Invariant:                                                              |
+|    "For the In-Memory File System, we model directories as a Trie-like composite tree, parsing    |
+|    paths via delimiter tokenization and guaranteeing sorted directory listings via an internal   |
+|    balanced dictionary."                                                                         |
++--------------------------------------------------------------------------------------------------+
 ```
 
 ---
 
-## 📊 Chapter 3: Senior Evaluation Rubric
+## ⚡ PILLAR 6: PRODUCTION DUAL-LANGUAGE IMPLEMENTATIONS
 
-| Dimension | Unsatisfactory (Level 1) | Developing (Level 2) | Senior Bar (Level 3) | Staff/Principal Bar (Level 4) |
-| :--- | :--- | :--- | :--- | :--- |
-| **Problem Formulation** | Proposes quadratic scans; fails to identify monotonic property or DLL requirement. | Recognizes heap or built-in LinkedHashMap after hints; struggles to explain internal mechanics. | Proactively derives monotonic deque and composite DLL + HashMap; articulates amortized `O(1)`. | Formulates domination property immediately; explains cache eviction policies (LRU vs LFU vs ARC vs 2Q). |
-| **Boundary Questioning** | Does not ask about `k > N`, empty arrays, negative values, or zero cache capacity. | Asks generic questions without connecting to data types or error states. | Validates `k == 1`, `k == N`, capacity limits, and duplicate key updates before writing code. | Quantifies cache line implications, thread contention, and memory bounds on 64-bit systems. |
-| **Space/Time Trade-offs** | Implements `O(N * k)` or `O(N log k)` without realizing linear alternative exists. | Achieves `O(N)` with guidance but cannot defend amortized complexity bounds. | Rigorously proves each element enters and leaves deque at most once; defends `O(k)` space. | Evaluates custom array-backed circular deques to eliminate object pointer indirection in runtime. |
-| **Code Cleanliness** | Null reference exceptions; memory leaks on eviction; off-by-one window indices. | Working code but repeats DLL detachment logic; messy variable names. | Modular, clean helper functions (`RemoveNode`, `AddToHead`); sentinel nodes eliminate branching. | Production-grade code with zero unnecessary heap allocations, defensive exception handling, thread-safety notes. |
-
----
-
-## 💻 Chapter 4: Idiomatic Dual-Language Code
-
-### Problem 1: Sliding Window Maximum (LeetCode 239)
-
-#### C# Primary Implementation (.NET 8/9)
-
-```csharp
-using System;
-
-namespace MockInterviews.MixedRounds;
-
-public static class SlidingWindowMaxEngine
-{
-    /// <summary>
-    /// Computes maximum of each sliding window of size k in strict O(N) time and O(k) space.
-    /// Uses an array-backed circular buffer to simulate a double-ended queue with zero GC allocations.
-    /// </summary>
-    public static int[] MaxSlidingWindow(ReadOnlySpan<int> nums, int k)
-    {
-        if (nums.IsEmpty || k <= 0) return [];
-        if (k == 1) return nums.ToArray();
-
-        int n = nums.Length;
-        int[] result = new int[n - k + 1];
-
-        // Array-backed deque storing indices: head and tail pointers
-        int[] deque = new int[n];
-        int head = 0;
-        int tail = 0;
-
-        for (int i = 0; i < n; i++)
-        {
-            // 1. Evict elements outside the current window horizon [i - k + 1, i]
-            if (head < tail && deque[head] < i - k + 1)
-            {
-                head++;
-            }
-
-            // 2. Maintain monotonic decreasing order: pop smaller or equal elements from back
-            int currentVal = nums[i];
-            while (head < tail && nums[deque[tail - 1]] <= currentVal)
-            {
-                tail--;
-            }
-
-            // 3. Append current index to back
-            deque[tail++] = i;
-
-            // 4. Record window maximum once the first k elements are processed
-            if (i >= k - 1)
-            {
-                result[i - k + 1] = nums[deque[head]];
-            }
-        }
-
-        return result;
-    }
-}
-```
-
-#### Python Secondary Implementation (Python 3.11+)
-
-```python
-from collections import deque
-from typing import Sequence
-
-def max_sliding_window(nums: Sequence[int], k: int) -> list[int]:
-    """
-    Computes maximum of each sliding window of size k in O(N) time and O(k) auxiliary space.
-    Uses collections.deque to store indices in monotonic descending order of corresponding values.
-    """
-    if not nums or k <= 0:
-        return []
-    if k == 1:
-        return list(nums)
-
-    dq: deque[int] = deque()
-    result: list[int] = []
-
-    for i, val in enumerate(nums):
-        # 1. Evict indices outside current window horizon [i - k + 1, i]
-        if dq and dq[0] < i - k + 1:
-            dq.popleft()
-
-        # 2. Maintain monotonic descending property: evict smaller elements from back
-        while dq and nums[dq[-1]] <= val:
-            dq.pop()
-
-        # 3. Add current index to deque
-        dq.append(i)
-
-        # 4. Record front element as maximum once window is fully initialized
-        if i >= k - 1:
-            result.append(nums[dq[0]])
-
-    return result
-```
-
----
-
-### Problem 2: Production LRU Cache Architecture (LeetCode 146)
-
-#### C# Primary Implementation (.NET 8/9)
+### C# Primary Implementation (.NET 8/9): Production LRU Cache & Median Solver
 
 ```csharp
 using System;
 using System.Collections.Generic;
 
-namespace MockInterviews.MixedRounds;
+namespace AdvancedDataStructures;
 
 /// <summary>
-/// Production-grade O(1) LRU Cache using Hash Map + Doubly Linked List with Sentinel Nodes.
-/// Guaranteed O(1) Get and Put operations with zero edge-case branching.
+/// Production LRU Cache (LeetCode 146) with O(1) Get and Put.
+/// Uses custom Doubly Linked List with dummy head and tail sentinel nodes.
 /// </summary>
 public sealed class LRUCache
 {
     private sealed class Node
     {
-        public int Key;
-        public int Value;
-        public Node? Prev;
-        public Node? Next;
+        public int Key { get; }
+        public int Value { get; set; }
+        public Node? Prev { get; set; }
+        public Node? Next { get; set; }
 
         public Node(int key = 0, int value = 0)
         {
@@ -339,26 +233,35 @@ public sealed class LRUCache
 
     public LRUCache(int capacity)
     {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(capacity);
         _capacity = capacity;
         _map = new Dictionary<int, Node>(capacity);
-
-        // Sentinel dummy nodes eliminate null checks during pointer manipulation
         _head = new Node();
         _tail = new Node();
         _head.Next = _tail;
         _tail.Prev = _head;
     }
 
+    private void RemoveNode(Node node)
+    {
+        node.Prev!.Next = node.Next;
+        node.Next!.Prev = node.Prev;
+    }
+
+    private void AddToHead(Node node)
+    {
+        node.Next = _head.Next;
+        node.Prev = _head;
+        _head.Next!.Prev = node;
+        _head.Next = node;
+    }
+
     public int Get(int key)
     {
         if (!_map.TryGetValue(key, out Node? node))
-        {
             return -1;
-        }
 
-        // Cache hit: promote node to Most Recently Used (MRU) position
-        MoveToHead(node);
+        RemoveNode(node);
+        AddToHead(node);
         return node.Value;
     }
 
@@ -366,97 +269,119 @@ public sealed class LRUCache
     {
         if (_map.TryGetValue(key, out Node? existingNode))
         {
-            // Key exists: update value and promote to head
             existingNode.Value = value;
-            MoveToHead(existingNode);
+            RemoveNode(existingNode);
+            AddToHead(existingNode);
             return;
         }
 
-        // Evict least recently used (LRU) node if capacity reached
-        if (_map.Count >= _capacity)
+        if (_map.Count == _capacity)
         {
-            Node lruNode = _tail.Prev!;
-            RemoveNode(lruNode);
-            _map.Remove(lruNode.Key);
+            Node lru = _tail.Prev!;
+            RemoveNode(lru);
+            _map.Remove(lru.Key);
         }
 
-        // Create and insert new MRU node
-        var newNode = new Node(key, value);
+        Node newNode = new(key, value);
         _map[key] = newNode;
         AddToHead(newNode);
     }
+}
 
-    private void AddToHead(Node node)
+public static class MixedSystemsMockSolver
+{
+    /// <summary>
+    /// Finds Median of Two Sorted Arrays (LeetCode 4) in O(log(min(M, N))) time and O(1) space.
+    /// </summary>
+    public static double FindMedianSortedArrays(ReadOnlySpan<int> nums1, ReadOnlySpan<int> nums2)
     {
-        node.Prev = _head;
-        node.Next = _head.Next;
-        _head.Next!.Prev = node;
-        _head.Next = node;
-    }
+        // Enforce binary search on shorter array
+        if (nums1.Length > nums2.Length)
+            return FindMedianSortedArrays(nums2, nums1);
 
-    private static void RemoveNode(Node node)
-    {
-        node.Prev!.Next = node.Next;
-        node.Next!.Prev = node.Prev;
-    }
+        int m = nums1.Length;
+        int n = nums2.Length;
+        int low = 0;
+        int high = m;
 
-    private void MoveToHead(Node node)
-    {
-        RemoveNode(node);
-        AddToHead(node);
+        while (low <= high)
+        {
+            int i = (low + high) / 2;
+            int j = (m + n + 1) / 2 - i;
+
+            int l1 = (i == 0) ? int.MinValue : nums1[i - 1];
+            int r1 = (i == m) ? int.MaxValue : nums1[i];
+
+            int l2 = (j == 0) ? int.MinValue : nums2[j - 1];
+            int r2 = (j == n) ? int.MaxValue : nums2[j];
+
+            if (l1 <= r2 && l2 <= r1)
+            {
+                // Correct partition achieved
+                if ((m + n) % 2 == 1)
+                {
+                    return Math.Max(l1, l2);
+                }
+                else
+                {
+                    return (Math.Max(l1, l2) + Math.Min(r1, r2)) / 2.0;
+                }
+            }
+            else if (l1 > r2)
+            {
+                high = i - 1; // Partition in nums1 too far right
+            }
+            else
+            {
+                low = i + 1; // Partition in nums1 too far left
+            }
+        }
+
+        throw new ArgumentException("Input arrays are not sorted.");
     }
 }
 ```
 
-#### Python Secondary Implementation (Python 3.11+)
+---
+
+### Python Secondary Implementation (Python 3.11+): Complete LRU & Median Solvers
 
 ```python
-from typing import Optional
+from typing import List
 
 class Node:
     __slots__ = ('key', 'value', 'prev', 'next')
-
     def __init__(self, key: int = 0, value: int = 0):
         self.key: int = key
         self.value: int = value
-        self.prev: Optional['Node'] = None
-        self.next: Optional['Node'] = None
-
+        self.prev = None
+        self.next = None
 
 class LRUCache:
     """
-    O(1) LRU Cache via Hash Map + Doubly Linked List with Sentinel Nodes.
-    Both get() and put() run in strict O(1) average time.
+    Production-grade LRU Cache in Python with O(1) Get and Put.
     """
-
     def __init__(self, capacity: int):
-        if capacity <= 0:
-            raise ValueError("Capacity must be strictly positive")
         self.capacity: int = capacity
-        self.map: dict[int, Node] = {}
-
-        # Sentinel dummy nodes eliminate boundary checks
-        self.head: Node = Node()
-        self.tail: Node = Node()
+        self.map = {}
+        self.head = Node()
+        self.tail = Node()
         self.head.next = self.tail
         self.tail.prev = self.head
 
     def _remove(self, node: Node) -> None:
-        """Detaches node from its current position in DLL."""
         node.prev.next = node.next
         node.next.prev = node.prev
 
     def _add_to_head(self, node: Node) -> None:
-        """Inserts node immediately after dummy head (MRU position)."""
-        node.prev = self.head
         node.next = self.head.next
+        node.prev = self.head
         self.head.next.prev = node
         self.head.next = node
 
     def get(self, key: int) -> int:
         if key not in self.map:
             return -1
-
         node = self.map[key]
         self._remove(node)
         self._add_to_head(node)
@@ -470,7 +395,7 @@ class LRUCache:
             self._add_to_head(node)
             return
 
-        if len(self.map) >= self.capacity:
+        if len(self.map) == self.capacity:
             lru = self.tail.prev
             self._remove(lru)
             del self.map[lru.key]
@@ -478,90 +403,62 @@ class LRUCache:
         new_node = Node(key, value)
         self.map[key] = new_node
         self._add_to_head(new_node)
+
+class MixedSystemsMockSolver:
+    @staticmethod
+    def find_median_sorted_arrays(nums1: List[int], nums2: List[int]) -> float:
+        """Solves Median of Two Sorted Arrays in O(log(min(M, N))) time."""
+        if len(nums1) > len(nums2):
+            return MixedSystemsMockSolver.find_median_sorted_arrays(nums2, nums1)
+
+        m, n = len(nums1), len(nums2)
+        low, high = 0, m
+
+        while low <= high:
+            i = (low + high) // 2
+            j = (m + n + 1) // 2 - i
+
+            l1 = float('-inf') if i == 0 else nums1[i - 1]
+            r1 = float('inf') if i == m else nums1[i]
+
+            l2 = float('-inf') if j == 0 else nums2[j - 1]
+            r2 = float('inf') if j == n else nums2[j]
+
+            if l1 <= r2 and l2 <= r1:
+                if (m + n) % 2 == 1:
+                    return float(max(l1, l2))
+                else:
+                    return (max(l1, l2) + min(r1, r2)) / 2.0
+            elif l1 > r2:
+                high = i - 1
+            else:
+                low = i + 1
+
+        raise ValueError("Inputs are not sorted.")
 ```
 
 ---
 
-## 🔬 Chapter 5: Explicit Complexity Deconstruction
+## 📊 EXPLICIT COMPLEXITY DECONSTRUCTION
 
-| Metric | Sliding Window Maximum | LRU Cache (`Get` / `Put`) | Systems Engineering Grounding |
+| Problem & Architecture | Time Complexity | Auxiliary Space | Key Invariant |
 | :--- | :--- | :--- | :--- |
-| **Time Complexity** | `O(N)` total (`O(1)` amortized per element) | `O(1)` strict per operation | Pointer updates and hash lookups avoid any loops or tree traversals. |
-| **Auxiliary Memory** | `O(k)` indices | `O(Capacity)` nodes and map entries | Contiguous flat buffer for deque; memory bounded by configured cache size. |
-| **Worst-Case Operations** | `2 * N` deque modifications total | `O(1)` pointer adjustments | Zero variable-length search across dynamic collections. |
-| **Hardware Cache Locality** | **High sequential read throughput** | Pointer chasing across linked nodes | Deque operations fit into L1 CPU cache; nodes in DLL require RAM pointer dereference. |
-
-### Complexity Proof: Monotonic Deque Amortized Bound
-- Let `N` be the length of `nums`.
-- In the loop over `i = 0 ... N - 1`, index `i` is added to the back of `deque` exactly once: **`N` total push operations**.
-- An index can be removed from the front at most once (when expired): at most **`N` front pops**.
-- An index can be removed from the back at most once (when dominated): at most **`N` back pops**.
-- Total deque operations across the entire algorithm lifetime cannot exceed `3 * N`.
-- Therefore, the amortized cost per element is `3 * N / N = O(1)`, guaranteeing strict **`O(N)` total execution time**.
+| **LRU Cache (Get / Put)** | **`O(1)`** | `O(Capacity)` | Sentinel Doubly Linked List + HashMap. |
+| **Median of Two Sorted Arrays**| **`O(log(min(M, N)))`**| **`O(1)`** | Binary search cut on shorter array: `L1 <= R2 && L2 <= R1`. |
+| **In-Memory File System** | `O(Path Length)` | `O(Total Inodes)` | Composite Node Trie with sorted directory keys. |
 
 ---
 
-## 🎙️ Chapter 6: 45-Minute Senior / Lead Verbal Interview Script
+## 🔍 GRANULAR EDGE-CASE & INVARIANT VERIFICATION TABLE
 
-```text
-[00:00 - 05:00] Clarification & Problem Formulation
-Candidate: "For Sliding Window Maximum, we have an array of length N and a window of size k.
-           If k == 1, every element is its own maximum, so we return a copy of nums in O(N).
-           The naive approach re-evaluates all k elements for each window, taking O(N * k).
-           With N = 10^5 and k = 5 * 10^4, that requires 2.5 billion operations—guaranteed TLE.
-           A heap achieves O(N log k) but has O(log k) per-step eviction overhead and cache misses.
-           We can achieve strict O(N) time and O(k) space using a Monotonic Decreasing Deque."
-
-[05:00 - 15:00] Invariant Formulation & Architecture Defense
-Candidate: "The key mathematical invariant is Domination:
-           If nums[j] >= nums[i] with j > i, nums[i] can never be the maximum of any window containing j,
-           because nums[j] is larger and will survive longer in the stream.
-           We maintain a deque of indices with strictly decreasing values:
-           - Front of deque always holds the index of the current maximum.
-           - We evict expired elements from the front (index < i - k + 1).
-           - We evict smaller elements from the back before pushing the current index.
-           Since each index enters and leaves at most once, total runtime is O(N)."
-
-[15:00 - 30:00] Live Implementation & Sentinel Hygiene
-Candidate: "For LRU Cache:
-           - A hash map gives O(1) lookup: key -> Node.
-           - A doubly linked list gives O(1) arbitrary removal and insertion.
-           - We use dummy head and tail sentinel nodes. This eliminates all null-checks when updating
-             head.next and tail.prev, ensuring zero edge-case crashes when the cache is empty or full.
-           - Crucially, each node stores both key and value so we can delete the key from the hash map
-             in O(1) when evicting tail.prev."
-
-[30:00 - 40:00] Edge Cases & Dry Run
-Candidate: "Let's trace edge cases:
-           - k == nums.Length: Deque computes a single global maximum.
-           - All strictly decreasing elements [5, 4, 3, 2, 1]: Deque fills to size k; no back-pops.
-           - All strictly increasing elements [1, 2, 3, 4, 5]: Every new element clears all previous elements;
-             deque size remains 1 throughout.
-           - LRU Put overwrite: Updates existing key's value and moves node to head without increasing size."
-
-[40:00 - 45:00] Systems Scaling & Concurrency Extension
-Candidate: "In a multi-threaded production service:
-           - Standard LRU Cache has lock contention on Get operations because even reads mutate
-             the linked list (MoveToHead).
-           - To scale reads, we could partition into sharded LRU stripes, use a ReadWriteLock, or adopt
-             W-TinyLFU (Caffeine Cache) which uses lock-free ring buffers to record read events asynchronously."
-```
-
----
-
-## 🔍 Chapter 7: Granular Edge-Case & Invariant Verification Table
-
-| Test Case | Scenario | Expected Outcome | Invariant Handling |
+| Edge Case Scenario | Concrete Input | Expected Behavior | Invariant Verification & Handling |
 | :--- | :--- | :--- | :--- |
-| **`k == 1`** | `nums = [4, -2, 5], k = 1` | `[4, -2, 5]` | Fast-path guard clause returns clone immediately. |
-| **`k == nums.Length`** | `nums = [1, 3, 2], k = 3` | `[3]` | Deque processes all elements; emits single result at index `k - 1`. |
-| **Strictly Decreasing** | `nums = [9, 8, 7, 6], k = 2` | `[9, 8, 7]` | No back-pops; front advances by expiration. |
-| **Strictly Increasing** | `nums = [1, 2, 3, 4], k = 2` | `[2, 3, 4]` | Every new element purges smaller back elements; deque size stays 1. |
-| **All Duplicate Elements**| `nums = [5, 5, 5, 5], k = 2` | `[5, 5, 5]` | Handled by `<=` condition: older duplicates purged to save space. |
-| **LRU Put Existing Key** | `put(1, 10); put(1, 20)` | Key `1` updated to `20`, promoted to MRU | Node value updated in-place; count does not exceed capacity. |
-| **LRU Eviction Order** | `cap = 2; put(1,1); put(2,2); get(1); put(3,3)` | Key `2` evicted (LRU); key `1` retained | `get(1)` promoted node 1 to head; node 2 became `tail.prev`. |
-| **LRU Capacity = 1** | `cap = 1; put(1,1); put(2,2); get(1)` | Returns `-1` (key 1 was evicted) | Eviction operates correctly even when head and tail sandwich single node. |
+| **LRU Single Capacity** | `capacity = 1`, `put(1, 1); put(2, 2)` | Evicts `1`, retains only `2`. | Head/tail sentinels handle single-node eviction cleanly. |
+| **Median One Array Empty** | `nums1 = []`, `nums2 = [1, 2, 3]` | Returns `2.0`. | `m = 0`, resolves directly against `nums2` median. |
+| **Median Even Length Elements** | `nums1 = [1, 2]`, `nums2 = [3, 4]` | Returns `2.5` (`(2 + 3) / 2.0`). | Even parity averages `max(L1, L2)` and `min(R1, R2)`. |
+| **Extreme Value Disparity** | `nums1 = [1000]`, `nums2 = [1, 2, 3]` | Returns `2.5`. | Partition cuts adapt smoothly across value gaps. |
+| **Path Slashes in File System**| `"/a//b///c"` | Parsed cleanly to `["a", "b", "c"]`. | `RemoveEmptyEntries` ignores redundant slashes. |
 
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_19_Day_03_Mock_Dynamic_Programming_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_19_Day_05_Weakness_Diagnosis_And_Strategy_Instructional.md)
+> 🧭 **Navigation:** [← Previous Day: Dynamic Programming Mock](Week_19_Day_03_Mock_Dynamic_Programming_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Weakness Diagnosis & Calibration →](Week_19_Day_05_Weakness_Diagnosis_And_Strategy_Instructional.md)

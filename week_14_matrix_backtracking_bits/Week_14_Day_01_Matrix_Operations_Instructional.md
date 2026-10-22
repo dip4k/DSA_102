@@ -1,477 +1,631 @@
-# 📅 Week 14, Day 1: Coordinate Transformations, Spiral Traversal & Matrix Operations
+# 📘 WEEK 14 DAY 1: MATRIX OPERATIONS & COORDINATE TRANSFORMATIONS — THE SENIOR PLAYBOOK
 
-
-
-
-> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_14_Day_02_Bitwise_Operations_Instructional.md)
+> 🧭 **Navigation:** [← Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Bitwise Operations →](Week_14_Day_02_Bitwise_Operations_Instructional.md)
 > 
-> 💡 **Instructor Note:** *Not all sections or topics are mandatory. Feel free to adapt your pace and skim or skip sections based on your current focus and interview timeline.*
+> 💡 **Instructor Note:** *Matrix problems are beloved by FAANG interviewers because they test whether you understand how multi-dimensional abstractions map to physical 1D cache lines. In this module, we master zero-allocation in-place rotations, boundary-guarded spiral walks, and staircase directional pruning.*
 
 ---
 
-Welcome to Day 1. Today, we build a solid understanding of how coordinates are shuffled and traversed dynamically in multi-dimensional space, and how these transformations map to physical memory.
+## 🎯 LEARNING OBJECTIVES
+
+*By the end of this module, you will be able to:*
+
+- 🎬 **Deconstruct** 2D row-major memory mapping (`Address = Base + (r * W + c) * sizeof(T)`) to explain why column traversals thrash CPU L1 cache lines.
+- 🔄 **Rotate** an $N \times N$ matrix 90 degrees clockwise in-place with zero auxiliary memory using the **Transpose + Reverse Rows** decomposition.
+- 🌀 **Implement** the **Concentric Boundary Spiral Scan** (LC 54) with ironclad boundary guards preventing duplicate row/column double-counting.
+- 🪜 **Execute** the **Staircase Search** (LC 240) in row-and-column-sorted matrices in $O(M + N)$ time starting from the top-right saddle point.
+- 💾 **Optimize** Set Matrix Zeroes (LC 73) from $O(M + N)$ auxiliary memory to strict $O(1)$ by repurposing row 0 and column 0 as in-place bit-flags.
+- 🛑 **Eliminate** the 4 classic rookie blunders: double-swapping transpose cells, non-square spiral boundary overruns, premature zero-marker corruption, and cache-unfriendly column iterations.
+- 🎙️ **Deliver** the exact 3-sentence verbal talk track to explain in-place coordinate reflections in a FAANG interview.
+- ⚡ **Ship** production-grade C# (.NET 8/9 with zero allocation) and Python (3.11+) implementations.
 
 ---
 
-## 🎯 Learning Objectives
-*   Master in-place transpose and 90-degree clockwise/counter-clockwise grid rotations.
-*   Implement robust boundary-pointer spiral scans that eliminate index drift.
-*   Understand the algebraic foundations of Matrix Chain Multiplication (DP) and fast Strassen multiplication.
-*   Solve systems of equations using Gaussian elimination to find matrix determinants and inverses.
+## 🎬 PILLAR 1: THE 60-SECOND HOOK & EVERYDAY ANALOGIES
+
+### Analogy 1: The Smartphone Photo Rotation & The 1D Memory Tape
+
+Imagine holding your smartphone in portrait orientation. You snap a photo and click "Rotate 90° Clockwise".
+
+In human eyes, the 2D image smoothly turns on its axis.
+
+```
+HUMAN PERSPECTIVE (2D Grid):          HARDWARE PERSPECTIVE (1D Memory Bus):
+[ A | B | C ]                         [ A | B | C | D | E | F | G | H | I ]
+[ D | E | F ]                         └── Row 0 ──┘└── Row 1 ──┘└── Row 2 ──┘
+[ G | H | I ]                         Contiguous 64-byte CPU Cache Line!
+```
+
+In physical RAM, there is no such thing as a "2D grid"! Hardware memory is a single, flat, continuous strip of byte addresses. To find cell `(r, c)` in a matrix of width `W`:
+
+$$\text{Address}(r, c) = \text{Base} + (r \times W + c) \times \text{ElementSize}$$
+
+When you iterate **across a row** (`col = 0 .. W - 1`), the CPU prefetcher pulls 64 consecutive bytes into L1 cache in a single memory clock cycle. Every lookup is an instant **Cache Hit** (~1 nanosecond)!
+
+When you iterate **down a column** (`row = 0 .. H - 1`), every step jumps `W * ElementSize` bytes across memory, causing repetitive **Cache Misses** and pipeline stalls!
 
 ---
 
-## 📘 Chapter 1: Context and Motivation
+### Analogy 2: Rotating a Rubik's Cube Face Without an Extra Table
 
-### 1. The Core Engineering Challenge
-In standard computer systems, hardware memory is a flat, 1D sequential span of byte addresses. Multi-dimensional tables are a high-level language abstraction. To access a cell at coordinates `[row][col]`, compilers must perform address arithmetic:
-`Address(r, c) = Base_Address + (r * Width + c) * Element_Size`
-This layout means that accessing adjacent cells inside a `row` is extremely fast (thanks to contiguous sequential cache-line prefetching), whereas jumping vertically down adjacent values within a `column` triggers repetitive cache misses. 
-When we perform complex rotations, transpositions, and traversals:
-*   We risk triggering high constant-factor penalties because of poor cache access patterns.
-*   We face indexing bugs or boundary tracking failures under pressure.
-
-### 2. Naive Pitfalls
-The standard way to rotate a grid is to allocate a secondary matrix of identical dimensions and project each item:
-`destination[c][N - 1 - r] = source[r][c]`
-While safe, this naive approach requires `O(N^2)` extra memory. For large matrices used in graphics pipelines, real-time image processing, and numerical physics simulations, this allocation causes heavy garbage collection stalls and excessive memory usage.
-
-### 3. Real-world Anchor: Image Filters
-In digital engines, a bitmap or raw image is a grid of color values. Performing high-frequency operations, like rotating a landscape photo to portrait or rendering frame buffers in graphics engines, requires optimizing these data movements to run directly in CPU caches with zero auxiliary allocations.
-
----
-
-## 📘 Chapter 2: Mental Model
-
-### 1. Loop-Free Geometric Reflections
-Instead of tracking multi-variable coordinate projections, think of 2D grid operations as a series of simple reflection steps. Complex rotations can be decomposed into sequence compositions of two in-place swaps:
-*   **A Diagonal Reflection (Transpose)**: Reflections over the primary diagonal (y = x) swap row and column coordinates:
-    `M[i][j] <-> M[j][i]`
-*   **A Horizontal/Vertical Reflection (Flips)**: Reversing rows or columns mirrors the values across a central axis.
+Suppose you want to rotate a 3x3 Rubik's cube face 90 degrees clockwise:
+- **The Junior Approach (Auxiliary Buffer):** Buy a second Rubik's cube, copy the stickers into their new rotated slots (`dest[c][N - 1 - r] = src[r][c]`), and throw the first cube in the trash.
+  - Memory: $O(N^2)$ auxiliary allocation! For a 4K image, this allocates 33 Megabytes and triggers garbage collector pauses.
+- **The Senior Architect (Geometric Decomposition):** You don't need a second cube! You decompose the 90° clockwise rotation into two simple in-place reflections:
+  1. **Diagonal Reflection (Transpose):** Swap elements across the main diagonal ($M[i][j] \leftrightarrow M[j][i]$).
+  2. **Horizontal Reflection (Reverse Each Row):** Reverse the elements of each row horizontally!
 
 ```text
-  INPUT GRID              1. DIAGONAL TRANSPOSE        2. HORIZONTAL COLUMN FLIP
+  INPUT GRID              1. DIAGONAL TRANSPOSE        2. REVERSE EACH ROW
   [ A | B | C ]               [ A | D | G ]              [ G | D | A ]
   [ D | E | F ]     ===>      [ B | E | H ]     ===>     [ H | E | B ]
   [ G | H | I ]               [ C | F | I ]              [ I | F | C ]
+                              (Swap j > i)               (Reverse Row)
+                                                         ==> 90° CLOCKWISE!
 ```
 
-### 2. The Concentric Castle Walls
-To traverse a grid in spiral order, think of the matrix as a series of concentric rectangular rings. We can traverse these rings individually by tracking four boundaries: `top`, `bottom`, `left`, and `right`.
-By advancing our pointers layer by layer, we shrink our search space safely inward until the boundaries cross.
-
-#### 📊 Matrix Transformation Taxonomy
-| Operation | Algebraic Index Mapping | Sequential Composition Method | Space Complexity | Best-use Case |
-| :--- | :--- | :--- | :--- | :--- |
-| **Transpose** | `M[i][j] <-> M[j][i]` | Symmetrical swap strictly above the diagonal (j > i) | O(1) | Symmetrical coordinate swap |
-| **Rotate Clockwise 90°** | `M[i][j] -> M[j][N - 1 - i]` | Transpose -> Reverse Rows | O(1) | Rotate color channels / grids |
-| **Rotate Counter-Clockwise 90°** | `M[i][j] -> M[N - 1 - j][i]` | Reverse Rows -> Transpose | O(1) | Counter-rotation algorithms |
-| **Spiral Walk** | Layer/Boundary step tracing | Step-by-step bounds shrinkage (T, B, L, R) | O(1) | Ordered sequence scans |
+Zero extra memory allocated! Strict $O(1)$ auxiliary space!
 
 ---
 
-## 📘 Chapter 3: Mechanics
+## 🪜 PILLAR 2: THE SCAFFOLDING LADDER & TOY NAPKIN TRACES
 
-### 1. Transpose and Rotation Mechanics
-To transpose a matrix in-place, read and swap elements across the main diagonal. Only loop through cells where j > i to avoid swapping elements back to their original position.
+Let's master the 4 canonical matrix operations asked in FAANG interviews:
 
-```text
-  Loop bounds: Only swap where j > i
-  [ x | S | S ]    S : Cells swapped
-  [ x | x | S ]    x : Cells preserved (on or below main diagonal)
-  [ x | x | x ]
 ```
-
-Once transposed, reversing each horizontal row individually rotates the entire square grid clockwise 90 degrees in-place.
-
-```csharp
-// Transpose an N x N matrix in-place
-public static void Transpose(int[][] matrix) {
-    int n = matrix.Length;
-    for (int i = 0; i < n; i++) {
-        for (int j = i + 1; j < n; j++) {
-            int temp = matrix[i][j];
-            matrix[i][j] = matrix[j][i];
-            matrix[j][i] = temp;
-        }
-    }
-}
+                  [THE 4 CANONICAL MATRIX PATTERNS]
+                                  │
+         ┌────────────────────────┼────────────────────────┐
+         ▼                        ▼                        ▼
+  [1. ROTATE IMAGE]       [2. SPIRAL MATRIX]      [3. STAIRCASE SEARCH]
+  (Transpose + Reverse)   (4 Shrinking Bounds)    (Saddle Point O(M+N))
+  LeetCode 48             LeetCode 54             LeetCode 240
 ```
 
 ---
 
-### 2. Spiral Walk State Mechanics
-Maintain four boundary pointers: `top` (row boundary), `bottom` (row boundary), `left` (column boundary), and `right` (column boundary). Traverse coordinates sequentially along these boundaries and shrink the coordinates inward. You must check that the boundary conditions are still valid before starting each horizontal or vertical traversal to prevent duplicate processing.
+### Scaffold Level 1: Rotate Image (LeetCode 48)
 
-```csharp
-public static List<int> SpiralOrder(int[][] matrix) {
-    var result = new List<int>();
-    if (matrix == null || matrix.Length == 0 || matrix[0].Length == 0) return result;
+**Problem:** Given an $N \times N$ 2D matrix representing an image, rotate the image by 90 degrees (clockwise) **in-place**.
+
+#### Mathematical Invariant:
+- To rotate 90° Clockwise: **Transpose**, then **Reverse each row**.
+- To rotate 90° Counter-Clockwise: **Reverse each row**, then **Transpose** (or Transpose, then Reverse each column).
+
+#### Toy Napkin Trace: $N = 3$
+
+```
+Initial Matrix:
+[ 1, 2, 3 ]
+[ 4, 5, 6 ]
+[ 7, 8, 9 ]
+
+Step 1: Transpose across main diagonal (swap M[i][j] with M[j][i] ONLY when j > i):
+- i = 0: swap (0, 1) and (1, 0) -> swap 2 and 4
+         swap (0, 2) and (2, 0) -> swap 3 and 7
+- i = 1: swap (1, 2) and (2, 1) -> swap 6 and 8
+Matrix after Transpose:
+[ 1, 4, 7 ]
+[ 2, 5, 8 ]
+[ 3, 6, 9 ]
+
+Step 2: Reverse each row horizontally:
+- Row 0: [ 1, 4, 7 ] -> [ 7, 4, 1 ]
+- Row 1: [ 2, 5, 8 ] -> [ 8, 5, 2 ]
+- Row 2: [ 3, 6, 9 ] -> [ 9, 6, 3 ]
+
+Final Rotated Matrix:
+[ 7, 4, 1 ]
+[ 8, 5, 2 ]
+[ 9, 6, 3 ]
+Provably identical to 90° clockwise rotation in O(N^2) time and O(1) memory!
+```
+
+---
+
+### Scaffold Level 2: Spiral Matrix (LeetCode 54)
+
+**Problem:** Given an $M \times N$ matrix, return all elements of the matrix in spiral order.
+
+#### Core Invariant: The 4 Shrinking Castle Walls
+We maintain 4 boundary pointers: `top = 0`, `bottom = M - 1`, `left = 0`, `right = N - 1`.
+At each iteration:
+1. Walk **Left $\to$ Right** across row `top`, then increment `top++`.
+2. Walk **Top $\to$ Bottom** down column `right`, then decrement `right--`.
+3. Walk **Right $\to$ Left** across row `bottom` (GUARD: `if (top <= bottom)`), then decrement `bottom--`.
+4. Walk **Bottom $\to$ Top** up column `left` (GUARD: `if (left <= right)`), then increment `left++`.
+
+```
+Napkin Trace: Matrix 3 x 3
+[ 1, 2, 3 ]
+[ 4, 5, 6 ]
+[ 7, 8, 9 ]
+
+Boundaries: top=0, bottom=2, left=0, right=2
+
+Round 1:
+1. Walk Left->Right (row top=0, col 0..2): Emit 1, 2, 3. Shrink top -> top=1.
+2. Walk Top->Bottom (col right=2, row 1..2): Emit 6, 9. Shrink right -> right=1.
+3. Check top <= bottom (1 <= 2: Yes):
+   Walk Right->Left (row bottom=2, col 1..0): Emit 8, 7. Shrink bottom -> bottom=1.
+4. Check left <= right (0 <= 1: Yes):
+   Walk Bottom->Top (col left=0, row 1..1): Emit 4. Shrink left -> left=1.
+
+Round 2: Boundaries: top=1, bottom=1, left=1, right=1
+1. Walk Left->Right (row top=1, col 1..1): Emit 5. Shrink top -> top=2.
+2. top (2) > bottom (1) -> Loop terminates!
+
+Output: [ 1, 2, 3, 6, 9, 8, 7, 4, 5 ]
+```
+
+---
+
+### Scaffold Level 3: Search a 2D Matrix II (LeetCode 240) — Staircase Pruning
+
+**Problem:** Integers in each row are sorted in ascending from left to right. Integers in each column are sorted in ascending from top to bottom. Search for `target` in $O(M + N)$ time.
+
+#### The Saddle-Point Intuition:
+If you start at `(0, 0)`, moving right increases the value, and moving down *also* increases the value. You cannot make a binary decision!
+Instead, start at the **Top-Right Corner `(0, N - 1)`**:
+- Moving **Left** strictly **decreases** values.
+- Moving **Down** strictly **increases** values.
+
+```
+At cell (r, c):
+- If matrix[r][c] == target -> 🎯 FOUND!
+- If matrix[r][c] > target  -> Target CANNOT be in column c! Move LEFT: col--.
+- If matrix[r][c] < target  -> Target CANNOT be in row r! Move DOWN: row++.
+
+At every step, you eliminate an ENTIRE row or an ENTIRE column!
+Total Steps <= M + N. Time: O(M + N). Space: O(1).
+```
+
+---
+
+### 🧠 Pause & Predict Micro-Drill
+**Question:** In Spiral Matrix on a non-square matrix of size $1 \times 5$: `[[1, 2, 3, 4, 5]]`, what happens if you omit the `if (top <= bottom)` guard before the Right $\to$ Left walk?
+*Take 5 seconds to think.*
+-
+-
+-
+**Answer:** Without the guard, after step 1 emits `1, 2, 3, 4, 5` and increments `top = 1` (so `top > bottom`), step 3 would walk backward across row 0 and emit `4, 3, 2, 1` again! The output would contain duplicate elements. The boundary guard is strictly required.
+
+---
+
+## 🎨 PILLAR 3: PRAGMATIC VISUAL MODELS
+
+### Spiral Matrix 4-Boundary Shrinkage Pipeline
+
+```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
+flowchart TD
+    Start["🚀 Enter Spiral Loop<br/>while (top &le; bottom &amp;&amp; left &le; right)"] --> Step1["➡️ 1. Walk Left -&gt; Right<br/>for c = left .. right: emit matrix(top)(c)<br/>top++"]
     
-    int top = 0;
-    int bottom = matrix.Length - 1;
-    int left = 0;
-    int right = matrix[0].Length - 1;
+    Step1 --> Step2["⬇️ 2. Walk Top -&gt; Bottom<br/>for r = top .. bottom: emit matrix(r)(right)<br/>right--"]
     
-    while (top <= bottom && left <= right) {
-        // Step 1: Traverse Left to Right across top boundary
-        for (int i = left; i <= right; i++) {
-            result.Add(matrix[top][i]);
-        }
-        top++; // Shrink top boundary
-        
-        // Step 2: Traverse Top to Bottom along right boundary
-        for (int i = top; i <= bottom; i++) {
-            result.Add(matrix[i][right]);
-        }
-        right--; // Shrink right boundary
-        
-        // Step 3: Traverse Right to Left along bottom boundary (if top and bottom haven't crossed)
-        if (top <= bottom) {
-            for (int i = right; i >= left; i--) {
-                result.Add(matrix[bottom][i]);
-            }
-            bottom--; // Shrink bottom boundary
-        }
-        
-        // Step 4: Traverse Bottom to Top along left boundary (if left and right haven't crossed)
-        if (left <= right) {
-            for (int i = bottom; i >= top; i--) {
-                result.Add(matrix[i][left]);
-            }
-            left++; // Shrink left boundary
-        }
-    }
-    return result;
-}
+    Step2 --> CheckRow{"🛑 Guard:<br/>top &le; bottom?"}
+    CheckRow -->|Yes| Step3["⬅️ 3. Walk Right -&gt; Left<br/>for c = right .. left: emit matrix(bottom)(c)<br/>bottom--"]
+    CheckRow -->|No| Terminate["🏁 Return Spiral Sequence"]
+    
+    Step3 --> CheckCol{"🛑 Guard:<br/>left &le; right?"}
+    CheckCol -->|Yes| Step4["⬆️ 4. Walk Bottom -&gt; Top<br/>for r = bottom .. top: emit matrix(r)(left)<br/>left++"]
+    CheckCol -->|No| Terminate
+    
+    Step4 --> Start
+
+    classDef default fill:#f8f9fa,stroke:#37474f,stroke-width:2px,color:#263238
+    classDef checkNode fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#bf360c
+    classDef actionNode fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#01579b
+    classDef winNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+
+    class CheckRow,CheckCol checkNode
+    class Step1,Step2,Step3,Step4 actionNode
+    class Terminate winNode
 ```
 
 ---
 
-### 3. Strassen & Optimization Algorithms
-*   **Classic Matrix Multiplication**: Multiplies matrix A (P x Q) by matrix B (Q x R) to yield matrix C (P x R) in O(P * Q * R) operations using standard triple-nested loop iterations.
-*   **Strassen's Algorithm**: Discovers that standard 2 x 2 matrix multiplication can be calculated using only 7 multiplications instead of 8 by applying algebraic subdivisions recursively. This reduces the asymptotic time complexity from `O(N^3)` to `O(N^(log2 7))` approx. `O(N^2.81)`.
-*   **Gaussian Elimination**: Converted a systems matrix to an Upper Triangular form by scaling rows and subtracting matching offsets sequentially. Determinants can then be calculated in O(N^3) time by multiplying the resulting diagonal pivot coordinates, while inverses are found using augmented identity arrays [M | I].
+## 🛑 PILLAR 4: THE ROOKIE TRAP ZONE
+
+```
+=============================================================================================
+                                   THE ROOKIE TRAP ZONE
+=============================================================================================
+
+❌ ROOKIE TRAP 1: The Transpose Double-Swap Reversion
+---------------------------------------------------------------------------------------------
+Problem: Writing the transpose loop as:
+`for (int i = 0; i < n; i++) for (int j = 0; j < n; j++) Swap(matrix[i][j], matrix[j][i]);`
+Why it Fails: At (i=0, j=1), you swap (0,1) with (1,0). Later, at (i=1, j=0), you swap them
+back again! The matrix returns to its original un-transposed state!
+Senior Architect Fix: Only iterate strictly above the diagonal: `for (int j = i + 1; j < n; j++)`.
+
+❌ ROOKIE TRAP 2: Omitting Boundary Guards in Spiral Matrix
+---------------------------------------------------------------------------------------------
+Problem: Assuming that `top <= bottom && left <= right` at the top of the while-loop is sufficient
+for all 4 directional walks.
+Why it Fails: Steps 1 and 2 modify `top` and `right`. In single-row or single-column matrices
+(e.g., 1 x 4 or 4 x 1), `top` will exceed `bottom` midway through the loop, causing steps 3
+and 4 to re-traverse already emitted elements in reverse.
+Senior Architect Fix: Always guard Step 3 with `if (top <= bottom)` and Step 4 with `if (left <= right)`.
+
+❌ ROOKIE TRAP 3: Overwriting First Row/Col in Set Matrix Zeroes
+---------------------------------------------------------------------------------------------
+Problem: Scanning cells and writing zeros into `matrix[0][j]` and `matrix[i][0]` immediately,
+without saving whether row 0 and column 0 originally contained zeros.
+Why it Fails: The original zero flags get hopelessly mixed up with newly marked zeros,
+causing the entire matrix to wipe to all zeros!
+Senior Architect Fix: Check row 0 and col 0 first using two booleans `firstRowHasZero` and
+`firstColHasZero`. Then use row 0 and col 0 to store interior markers, and update the edges last.
+
+❌ ROOKIE TRAP 4: Allocating an Auxiliary Matrix in In-Place Constraints
+---------------------------------------------------------------------------------------------
+Problem: Allocating `int[][] copy = new int[n][n]` in LeetCode 48 Rotate Image.
+Why it Fails: The problem explicitly states: "You have to rotate the image in-place. Do not
+allocate another 2D matrix." The interviewer will fail you immediately.
+Senior Architect Fix: Transpose + Reverse achieves true in-place transformation with zero bytes.
+=============================================================================================
+```
 
 ---
 
-### 4. Code Walkthroughs (Staircase Search and Zero Markers)
+## 🎙️ PILLAR 5: 45-MINUTE INTERVIEW TALK TRACK
 
-#### A. C# Production-Grade Implementations
+When solving matrix problems in a FAANG technical interview:
+
+```
+[00:00 - 05:00] Clarifying Matrix Dimensions & In-Place Constraints
+"Let's clarify the problem constraints:
+ 1. Is the matrix guaranteed to be square (N x N) or rectangular (M x N)?
+ 2. Are we required to mutate the matrix in-place with O(1) auxiliary space, or can we return
+    a new collection?
+ 3. For Rotate Image, N is square and in-place is mandatory.
+ 4. For Search in 2D Matrix II, both rows and columns are sorted independently."
+
+[05:00 - 10:00] Explaining Geometric Reflection (Rotate Image)
+"Instead of attempting a four-way corner index rotation which is error-prone, I will decompose
+ the 90° clockwise rotation into two simple in-place transformations:
+ 1. Transpose: Reflect elements across the main diagonal (swap matrix[i][j] with matrix[j][i]
+    for j > i).
+ 2. Horizontal Flip: Reverse each row horizontally using two pointers.
+ This is provably equivalent to a 90° clockwise rotation and guarantees zero heap allocations."
+
+[10:00 - 15:00] Explaining Staircase Elimination (Search 2D Matrix II)
+"To search in O(M + N) rather than O(M * N) or O(M log N):
+ We start at the top-right corner (0, N - 1). This is a saddle point:
+ Moving left decreases values; moving down increases values.
+ At each step, if the value is greater than target, the entire column can be eliminated (col--).
+ If less than target, the entire row can be eliminated (row++).
+ We prune one row or column per step, completing in at most M + N steps."
+
+[15:00 - 35:00] Writing Clean, Modular Code
+(Write production C# / Python using guard clauses and clean boundaries.)
+
+[35:00 - 40:00] Dry Run on Asymmetric Input
+(Trace a 2x3 matrix or 3x3 matrix showing pointer movements.)
+
+[40:00 - 45:00] Complexity Deconstruction
+"Rotate Image: O(N^2) time, O(1) space.
+ Spiral Matrix: O(M * N) time, O(1) auxiliary space.
+ Search 2D Matrix II: O(M + N) time, O(1) space.
+ Memory is optimal and zero garbage collection pressure is produced."
+```
+
+---
+
+## ⚡ PILLAR 6: PRODUCTION DUAL-LANGUAGE IMPLEMENTATIONS
+
+### Production C# (.NET 8/9 — Zero Allocation & In-Place Transformations)
+
 ```csharp
-public static class GridSolvers {
-    /// <summary>
-    /// Searches for target element in a row-and-column-sorted matrix.
-    /// Time Complexity: O(R + C) | Space Complexity: O(1)
-    /// </summary>
-    public static bool StaircaseSearch(int[][] matrix, int target) {
-        if (matrix == null || matrix.Length == 0 || matrix[0].Length == 0) return false;
-        int row = 0;
-        int col = matrix[0].Length - 1; // Start top-right
+namespace DsaMastery.MatrixOperations;
 
-        while (row < matrix.Length && col >= 0) {
-            int current = matrix[row][col];
-            if (current == target) {
-                return true;
-            }
-            if (current > target) {
-                col--; // Sift left
-            } else {
-                row++; // Sift down
-            }
-        }
-        return false;
-    }
+using System;
+using System.Collections.Generic;
 
-    /// <summary>
-    /// Sets an entire row and column to zero in-place if an element is zero.
-    /// Uses row-0 and col-0 as markers to achieve O(1) auxiliary space.
-    /// Time Complexity: O(R * C) | Space Complexity: O(1)
-    /// </summary>
-    public static void SetZeroes(int[][] matrix) {
-        if (matrix == null || matrix.Length == 0) return;
-        int r = matrix.Length;
-        int c = matrix[0].Length;
-        bool isZeroCol = false;
-        bool isZeroRow = false;
-
-        // Determine if first column needs zeroing
-        for (int i = 0; i < r; i++) {
-            if (matrix[i][0] == 0) isZeroCol = true;
-        }
-
-        // Determine if first row needs zeroing
-        for (int j = 0; j < c; j++) {
-            if (matrix[0][j] == 0) isZeroRow = true;
-        }
-
-        // Use first row and column as markers for internal cells
-        for (int i = 1; i < r; i++) {
-            for (int j = 1; j < c; j++) {
-                if (matrix[i][j] == 0) {
-                    matrix[i][0] = 0;
-                    matrix[0][j] = 0;
-                }
-            }
-        }
-
-        // Zero cells based on markers
-        for (int i = 1; i < r; i++) {
-            for (int j = 1; j < c; j++) {
-                if (matrix[i][0] == 0 || matrix[0][j] == 0) {
-                    matrix[i][j] = 0;
-                }
-            }
-        }
-
-        // Zero first row if marker was set
-        if (isZeroRow) {
-            for (int j = 0; j < c; j++) matrix[0][j] = 0;
-        }
-
-        // Zero first column if marker was set
-        if (isZeroCol) {
-            for (int i = 0; i < r; i++) matrix[i][0] = 0;
-        }
-    }
-
-    /// <summary>
-    /// Rotates an N x N matrix 90 degrees clockwise in-place.
-    /// Invariant: Transpose matrix[i][j] <-> matrix[j][i], then reverse each row horizontally.
-    /// Time Complexity: O(N^2) | Space Complexity: O(1)
-    /// </summary>
-    public static void Rotate(int[][] matrix) {
-        if (matrix == null || matrix.Length <= 1) return;
+public static class MatrixSolvers
+{
+    // =========================================================================
+    // 1. ROTATE IMAGE 90° CLOCKWISE (LeetCode 48)
+    // Time: O(N^2) | Space: O(1) In-Place
+    // =========================================================================
+    public static void Rotate(int[][] matrix)
+    {
+        ArgumentNullException.ThrowIfNull(matrix);
         int n = matrix.Length;
+        if (n <= 1) return;
 
-        // Step 1: Transpose matrix across main diagonal
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
+        // Step 1: Transpose across main diagonal (only swap where j > i)
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = i + 1; j < n; j++)
+            {
                 (matrix[i][j], matrix[j][i]) = (matrix[j][i], matrix[i][j]);
             }
         }
 
         // Step 2: Reverse each row horizontally
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++)
+        {
             int left = 0, right = n - 1;
-            while (left < right) {
+            while (left < right)
+            {
                 (matrix[i][left], matrix[i][right]) = (matrix[i][right], matrix[i][left]);
                 left++;
                 right--;
             }
         }
     }
+
+    // =========================================================================
+    // 2. SPIRAL MATRIX (LeetCode 54)
+    // Time: O(M * N) | Space: O(1) Auxiliary Memory
+    // =========================================================================
+    public static IList<int> SpiralOrder(int[][] matrix)
+    {
+        ArgumentNullException.ThrowIfNull(matrix);
+        if (matrix.Length == 0 || matrix[0].Length == 0) return [];
+
+        int m = matrix.Length, n = matrix[0].Length;
+        var result = new List<int>(m * n);
+
+        int top = 0, bottom = m - 1;
+        int left = 0, right = n - 1;
+
+        while (top <= bottom && left <= right)
+        {
+            // 1. Walk Left to Right along top boundary
+            for (int c = left; c <= right; c++)
+            {
+                result.Add(matrix[top][c]);
+            }
+            top++;
+
+            // 2. Walk Top to Bottom along right boundary
+            for (int r = top; r <= bottom; r++)
+            {
+                result.Add(matrix[r][right]);
+            }
+            right--;
+
+            // 3. Walk Right to Left along bottom boundary (guarded)
+            if (top <= bottom)
+            {
+                for (int c = right; c >= left; c--)
+                {
+                    result.Add(matrix[bottom][c]);
+                }
+                bottom--;
+            }
+
+            // 4. Walk Bottom to Top along left boundary (guarded)
+            if (left <= right)
+            {
+                for (int r = bottom; r >= top; r--)
+                {
+                    result.Add(matrix[r][left]);
+                }
+                left++;
+            }
+        }
+
+        return result;
+    }
+
+    // =========================================================================
+    // 3. SEARCH A 2D MATRIX II (LeetCode 240) — Staircase Pruning
+    // Time: O(M + N) | Space: O(1)
+    // =========================================================================
+    public static bool SearchMatrix(int[][] matrix, int target)
+    {
+        ArgumentNullException.ThrowIfNull(matrix);
+        if (matrix.Length == 0 || matrix[0].Length == 0) return false;
+
+        int row = 0;
+        int col = matrix[0].Length - 1; // Start at top-right saddle point
+
+        while (row < matrix.Length && col >= 0)
+        {
+            int current = matrix[row][col];
+            if (current == target)
+            {
+                return true; // Target found
+            }
+
+            if (current > target)
+            {
+                col--; // Target cannot be in this column; move Left
+            }
+            else
+            {
+                row++; // Target cannot be in this row; move Down
+            }
+        }
+
+        return false;
+    }
+
+    // =========================================================================
+    // 4. SET MATRIX ZEROES (LeetCode 73) — In-Place Markers
+    // Time: O(M * N) | Space: O(1) In-Place
+    // =========================================================================
+    public static void SetZeroes(int[][] matrix)
+    {
+        ArgumentNullException.ThrowIfNull(matrix);
+        int m = matrix.Length, n = matrix[0].Length;
+        if (m == 0 || n == 0) return;
+
+        bool firstRowHasZero = false;
+        bool firstColHasZero = false;
+
+        // Check if first row contains zero
+        for (int c = 0; c < n; c++)
+        {
+            if (matrix[0][c] == 0) { firstRowHasZero = true; break; }
+        }
+
+        // Check if first column contains zero
+        for (int r = 0; r < m; r++)
+        {
+            if (matrix[r][0] == 0) { firstColHasZero = true; break; }
+        }
+
+        // Use row 0 and col 0 to store interior zero markers
+        for (int r = 1; r < m; r++)
+        {
+            for (int c = 1; c < n; c++)
+            {
+                if (matrix[r][c] == 0)
+                {
+                    matrix[r][0] = 0;
+                    matrix[0][c] = 0;
+                }
+            }
+        }
+
+        // Zero out interior cells based on markers
+        for (int r = 1; r < m; r++)
+        {
+            for (int c = 1; c < n; c++)
+            {
+                if (matrix[r][0] == 0 || matrix[0][c] == 0)
+                {
+                    matrix[r][c] = 0;
+                }
+            }
+        }
+
+        // Zero first row if needed
+        if (firstRowHasZero)
+        {
+            for (int c = 0; c < n; c++) matrix[0][c] = 0;
+        }
+
+        // Zero first col if needed
+        if (firstColHasZero)
+        {
+            for (int r = 0; r < m; r++) matrix[r][0] = 0;
+        }
+    }
 }
 ```
 
-#### B. Python Clarity-First Implementations
+---
+
+### Production Python (3.11+ — Clean, Idiomatic Matrix Operations)
+
 ```python
-def rotate(matrix: list[list[int]]) -> None:
-    """Rotates an N x N matrix 90 degrees clockwise in-place via Transpose + Reflection.
-    
-    Time Complexity: O(N^2) | Space Complexity: O(1)
-    """
-    if not matrix or len(matrix) <= 1:
-        return
-    n = len(matrix)
-    # Step 1: Transpose across main diagonal
-    for i in range(n):
-        for j in range(i + 1, n):
-            matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]
-    # Step 2: Reverse each row horizontally
-    for row in matrix:
-        row.reverse()
+from __future__ import annotations
+from typing import List
 
-def staircase_search(matrix: list[list[int]], target: int) -> bool:
-    """Searches a sorted row/col matrix for target in linear time.
-    
-    Time Complexity: O(R + C) | Space Complexity: O(1)
-    """
-    if not matrix or not matrix[0]:
+
+class MatrixSolvers:
+    # =========================================================================
+    # 1. ROTATE IMAGE 90° CLOCKWISE (LeetCode 48)
+    # Time: O(N^2) | Space: O(1) In-Place
+    # =========================================================================
+    @staticmethod
+    def rotate(matrix: List[List[int]]) -> None:
+        if not matrix or len(matrix) <= 1:
+            return
+
+        n = len(matrix)
+
+        # Step 1: Transpose across main diagonal
+        for i in range(n):
+            for j in range(i + 1, n):
+                matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]
+
+        # Step 2: Reverse each row horizontally
+        for i in range(n):
+            matrix[i].reverse()
+
+    # =========================================================================
+    # 2. SPIRAL MATRIX (LeetCode 54)
+    # Time: O(M * N) | Space: O(1) Auxiliary
+    # =========================================================================
+    @staticmethod
+    def spiral_order(matrix: List[List[int]]) -> List[int]:
+        if not matrix or not matrix[0]:
+            return []
+
+        result: List[int] = []
+        top, bottom = 0, len(matrix) - 1
+        left, right = 0, len(matrix[0]) - 1
+
+        while top <= bottom and left <= right:
+            # 1. Left to Right
+            for c in range(left, right + 1):
+                result.append(matrix[top][c])
+            top += 1
+
+            # 2. Top to Bottom
+            for r in range(top, bottom + 1):
+                result.append(matrix[r][right])
+            right -= 1
+
+            # 3. Right to Left (guarded)
+            if top <= bottom:
+                for c in range(right, left - 1, -1):
+                    result.append(matrix[bottom][c])
+                bottom -= 1
+
+            # 4. Bottom to Top (guarded)
+            if left <= right:
+                for r in range(bottom, top - 1, -1):
+                    result.append(matrix[r][left])
+                left += 1
+
+        return result
+
+    # =========================================================================
+    # 3. SEARCH A 2D MATRIX II (LeetCode 240) — Staircase Pruning
+    # Time: O(M + N) | Space: O(1)
+    # =========================================================================
+    @staticmethod
+    def search_matrix(matrix: List[List[int]], target: int) -> bool:
+        if not matrix or not matrix[0]:
+            return False
+
+        row = 0
+        col = len(matrix[0]) - 1  # Top-right corner
+
+        while row < len(matrix) and col >= 0:
+            current = matrix[row][col]
+            if current == target:
+                return True
+            if current > target:
+                col -= 1  # Move Left
+            else:
+                row += 1  # Move Down
+
         return False
-    row, col = 0, len(matrix[0]) - 1 # Start top-right
-
-    while row < len(matrix) and col >= 0:
-        val = matrix[row][col]
-        if val == target:
-            return True
-        if val > target:
-            col -= 1 # Sift left
-        else:
-            row += 1 # Sift down
-    return False
-
-
-def set_zeroes(matrix: list[list[int]]) -> None:
-    """Sets complete row/column to zero if any cell inside contains a zero.
-    
-    Achieves O(1) space complexity by using first row/col as markers.
-    """
-    if not matrix:
-        return
-    r, c = len(matrix), len(matrix[0])
-    first_row_zero = any(matrix[0][j] == 0 for j in range(c))
-    first_col_zero = any(matrix[i][0] == 0 for i in range(r))
-
-    # Mark rows and cols with zero cells using first row/col as markers
-    for i in range(1, r):
-        for j in range(1, c):
-            if matrix[i][j] == 0:
-                matrix[i][0] = 0
-                matrix[0][j] = 0
-
-    # Zero cells based on markers
-    for i in range(1, r):
-        for j in range(1, c):
-            if matrix[i][0] == 0 or matrix[0][j] == 0:
-                matrix[i][j] = 0
-
-    # Zero first row and col if appropriate
-    if first_row_zero:
-        for j in range(c):
-            matrix[0][j] = 0
-    if first_col_zero:
-        for i in range(r):
-            matrix[i][0] = 0
 ```
 
 ---
 
-## 📘 Chapter 4: Performance, Invariants & Systems Architecture
+## 🔬 PERFORMANCE & COMPLEXITY DECONSTRUCTION
 
-### 1. Exact Governing Invariants
-
-*   **Matrix Transpose Invariant**: For every coordinate pair `(i, j)` where `0 <= i < j < N`, exchanging `matrix[i][j]` with `matrix[j][i]` visits every off-diagonal element exactly once. The diagonal elements `matrix[i][i]` remain stationary. The transformation guarantees:
-    `A^T[j][i] = A[i][j]`
-*   **90-Degree Clockwise Rotation Invariant**: A 90-degree clockwise rotation maps coordinate `(r, c)` to `(c, N - 1 - r)`. We decompose this into two orthogonal reflections:
-    1. Transpose: `(r, c) -> (c, r)`
-    2. Horizontal Row Reversal: `(c, r) -> (c, N - 1 - r)`
-    Because both operations are self-inverting reflections, the composition achieves strict rotation with `O(1)` auxiliary space and zero indexing drift.
-*   **Concentric Spiral Scan Invariant**: The matrix is decomposed into concentric rectangular perimeters bounded by four pointers: `top`, `bottom`, `left`, `right`. At each layer:
-    1. Traverse `left -> right` along `top`, then increment `top`.
-    2. Traverse `top -> bottom` along `right`, then decrement `right`.
-    3. If `top <= bottom`, traverse `right -> left` along `bottom`, then decrement `bottom`.
-    4. If `left <= right`, traverse `bottom -> top` along `left`, then increment `left`.
-    The boundary checks before steps 3 and 4 guarantee that single-row or single-column submatrices are never traversed twice.
-*   **Staircase Search Invariant**: Starting at the top-right corner `(0, C - 1)`:
-    - If `matrix[r][c] == target`, terminate with true.
-    - If `matrix[r][c] > target`, all elements in column `c` below row `r` are strictly greater than `target`; decrement `c` to eliminate column `c`.
-    - If `matrix[r][c] < target`, all elements in row `r` to the left of column `c` are strictly smaller than `target`; increment `r` to eliminate row `r`.
-    Each comparison eliminates at least one entire row or column.
-*   **In-Place Zero Marker Invariant**: Row 0 and Column 0 serve as sentinel bit arrays. For all `i >= 1` and `j >= 1`, `matrix[i][j] == 0` sets markers `matrix[i][0] = 0` and `matrix[0][j] = 0`. Evaluating internal cells before clearing sentinel lines prevents cascading zero corruption.
-
----
-
-### 2. Explicit Complexity Deconstruction
-
-| Operation | Time (Best / Avg / Worst) | Auxiliary Space | Output Space | Mathematical Derivation |
+| Problem | Time Complexity | Auxiliary Space | Memory Access Pattern | Key Architectural Invariant |
 | :--- | :--- | :--- | :--- | :--- |
-| **Transpose (N x N)** | `O(N^2)` / `O(N^2)` / `O(N^2)` | `O(1)` | `O(1)` (In-place) | Exactly `N * (N - 1) / 2` swaps across the diagonal. |
-| **Rotate 90° Clockwise** | `O(N^2)` / `O(N^2)` / `O(N^2)` | `O(1)` | `O(1)` (In-place) | Transpose (`N * (N - 1) / 2` swaps) + Row Reversal (`N * floor(N / 2)` swaps). |
-| **Spiral Traversal (R x C)** | `O(R * C)` / `O(R * C)` / `O(R * C)` | `O(1)` | `O(R * C)` | Every cell is visited exactly once via boundary contractions. |
-| **Staircase Search** | `O(1)` / `O(R + C)` / `O(R + C)` | `O(1)` | `O(1)` | Best: target at `(0, C - 1)`. Worst: path traverses `R` rows and `C` columns. |
-| **Set Matrix Zeroes** | `O(R * C)` / `O(R * C)` / `O(R * C)` | `O(1)` | `O(1)` (In-place) | Two sequential full-grid scans; auxiliary memory limited to two boolean flags. |
+| **Rotate Image (LC 48)** | `O(N^2)` | `O(1)` In-Place | Sequential row writes after transpose | Transpose + Horizontal Flip = 90° Clockwise |
+| **Spiral Matrix (LC 54)** | `O(M * N)` | `O(1)` | Boundary sweeps | 4 shrinking walls with mid-loop guards |
+| **Search 2D Matrix II (LC 240)**| `O(M + N)` | `O(1)` | Top-right saddle walk | Saddle-point binary decision (Left vs Down) |
+| **Set Matrix Zeroes (LC 73)** | `O(M * N)` | `O(1)` In-Place | Two-pass boundary markers | Reuse row 0 and col 0 as scratch storage |
 
 ---
 
-### 3. Senior Interview Context: Hardware, Memory & Concurrency
+## ⚔️ PRACTICE DRILLS & MASTERY PROBLEMS
 
-*   **Cache Line Prefetching & Spatial Locality**: Modern CPUs fetch RAM in 64-byte cache lines (16 contiguous 32-bit integers). In C# and C/C++, matrices are laid out in **Row-Major** format:
-    `Offset(r, c) = r * Width + c`
-    Traversing rows sequentially (`for r ... for c ... matrix[r][c]`) triggers hardware prefetching with near-zero cache miss stalls. Traversing columns vertically (`for c ... for r ... matrix[r][c]`) forces strided memory jumps of size `Width * 4` bytes. On grids with `Width >= 1024`, strided access causes L1/L2 cache thrashing, degrading throughput by 5x to 10x.
-*   **Jagged Arrays (`int[][]`) vs Flat Spans (`Span<int>`)**: In .NET, `int[][]` is an array of object pointers, where each row is a distinct heap allocation scattered across RAM. In latency-sensitive systems (high-frequency trading, game rendering), allocate a single flat buffer `int[R * C]` and wrap it in a `Span<int>` or `ReadOnlySpan<int>` to eliminate pointer indirection and GC heap fragmentation.
-*   **In-Place Mutation vs Idempotency**: In-place algorithms (`SetZeroes`, `Rotate`) eliminate allocation overhead, which is ideal in memory-constrained environments. However, in distributed microservices or concurrent actor models, mutating input matrices invalidates caller caches and violates idempotency. Always clarify whether the caller permits in-place mutation or requires an immutable pure function.
-
----
-
-## 🎙️ Senior 45-Minute Verbal Talk Track
-
-When presenting matrix transformations in a senior technical screen, follow this calibrated 5-phase talk track:
-
-```text
-+-------------------------------------------------------------------------------+
-| PHASE 1: Scope & Scale Constraints       (Minutes 00 - 05)                   |
-| - Clarify dimension limits (R, C <= 10^3), element ranges, and memory rules.  |
-| - Confirm if in-place mutation is allowed or if inputs must remain immutable. |
-+-------------------------------------------------------------------------------+
-                                      │
-                                      ▼
-+-------------------------------------------------------------------------------+
-| PHASE 2: Naive Solution & Bottleneck     (Minutes 05 - 10)                   |
-| - State naive O(R * C) out-of-place allocation (extra R x C matrix).          |
-| - Articulate the GC overhead, memory footprint, and L3 cache thrashing.       |
-+-------------------------------------------------------------------------------+
-                                      │
-                                      ▼
-+-------------------------------------------------------------------------------+
-| PHASE 3: Mathematical Invariants         (Minutes 10 - 20)                   |
-| - Derive geometric decomposition: Rotate90 = ReverseRows(Transpose(M)).       |
-| - Prove that Transpose + Row Reverse eliminates complex 4-way cyclic shifts.  |
-| - State the boundary contraction invariant for spiral traversal.              |
-+-------------------------------------------------------------------------------+
-                                      │
-                                      ▼
-+-------------------------------------------------------------------------------+
-| PHASE 4: Clean Production Implementation (Minutes 20 - 35)                   |
-| - Write clean, idiomatic code with zero auxiliary allocations.               |
-| - Enforce defensive guards: null checks, empty bounds, single-cell grids.    |
-| - Maintain strict row-major access patterns for CPU cache prefetchers.        |
-+-------------------------------------------------------------------------------+
-                                      │
-                                      ▼
-+-------------------------------------------------------------------------------+
-| PHASE 5: Complexity & Edge Verification  (Minutes 35 - 45)                   |
-| - Deconstruct Time: O(N^2), Auxiliary Space: O(1), Output Space: O(1).        |
-| - Step through tricky edges: 1x1 grid, 1xN strip, N x 1 tall matrix.         |
-| - Address follow-ups: rectangular in-place cycles, SIMD vectorization.        |
-+-------------------------------------------------------------------------------+
-```
-
-### Verbal Script Excerpts
-
-*   **Opening (Minutes 00-05)**: *"Before writing code, let me clarify the constraints. Are we guaranteed a square matrix, or can it be rectangular? Is in-place mutation permitted, or is the caller expecting an immutable result? If in-place mutation is expected, our target is `O(N^2)` time with strict `O(1)` auxiliary space."*
-*   **Invariant Articulation (Minutes 10-20)**: *"A direct 4-way coordinate rotation requires tracking `(r, c) -> (c, N - 1 - r) -> (N - 1 - r, N - 1 - c) -> (N - 1 - c, r)`. That introduces high cognitive load and off-by-one risks. Instead, I decompose this into two linear algebra reflections: first, a diagonal transpose `M[i][j] <-> M[j][i]`, which reflects across `y = x`; second, a horizontal reversal of each row, which reflects across the vertical centerline. Mathematically, `(r, c) -> (c, r) -> (c, N - 1 - r)`. This guarantees exact rotation in `O(N^2)` time with zero auxiliary memory."*
-*   **Hardware Defense (Minutes 35-45)**: *"Notice the inner loop order in our row reversal: we iterate sequentially across contiguous columns within the same row. This matches the CPU L1 data cache line prefetcher, maximizing spatial locality and avoiding the strided cache miss penalties that column-major iterations would suffer."*
+| # | Problem | Source | Difficulty | Target Invariant |
+| :--- | :--- | :--- | :--- | :--- |
+| 1 | Rotate Image | LeetCode 48 | Medium | Transpose + Reverse row |
+| 2 | Spiral Matrix | LeetCode 54 | Medium | 4 boundary shrinking pointers |
+| 3 | Spiral Matrix II | LeetCode 59 | Medium | Generate grid using boundary spiral |
+| 4 | Search a 2D Matrix II | LeetCode 240 | Medium | Top-right staircase elimination |
+| 5 | Set Matrix Zeroes | LeetCode 73 | Medium | First row & col in-place markers |
+| 6 | Valid Sudoku | LeetCode 36 | Medium | 3 subgrid index math verification |
 
 ---
 
-## 📘 Chapter 5: Integration and Mastery
-
-### 1. Advanced Grid DP: Dungeon Game & Cherry Pickup
-*   **Dungeon Game (Backward Grid DP)**:
-    *   *The Problem*: Find the minimum health needed at the start to survive a grid path where cells can contain power-ups or traps.
-    *   *The Trick*: Moving forward is impossible because the health needed at any cell depends on the path ahead. We must solve this using **Backward DP**, starting from the bottom-right corner and calculating the minimum health needed to survive the step:
-        `DP[i][j] = max(1, min(DP[i+1][j], DP[i][j+1]) - M[i][j])`
-*   **Cherry Pickup (Dual Lockstep DP)**:
-    *   *The Problem*: Maximize the cherries collected on a round-trip from top-left to bottom-right and back.
-    *   *The Trick*: Instead of simulating two separate paths sequentially, simulate two players moving simultaneously from the top-left corner in lockstep. Since both paths complete in the same number of steps (`r1 + c1 == r2 + c2 == t`), we define our state as `DP[t][r1][r2]` and solve the overlapping paths in polynomial time `O(N^3)`.
-
-### 2. Pattern Selection Rules
-*   *Use Transpose + Row Reverse when*: You need to rotate a square grid 90 degrees with zero allocation constraints.
-*   *Use Four Boundary Pointers when*: You need to traverse a matrix spirally or step-by-step along concentric boundaries.
-*   *Use Staircase Search when*: The matrix is sorted both row-wise and column-wise, allowing linear `O(R + C)` search from `(0, C - 1)`.
-
-### 3. Follow-Up Variants
-*   **Rotate Image II (Rectangular Matrix)**: Rotate an `M x N` rectangular matrix. Transposition changes dimensions from `M x N -> N x M`. Doing this in-place requires cycle leader algorithms on 1D memory indices; in practice, an `O(M * N)` auxiliary buffer is standard in production.
-*   **Diagonal Traverse**: Traverse a matrix diagonally. Track the current diagonal index (`row + col == diagonal_index`) and reverse directions dynamically on alternating cycles.
-
----
-
-## 🛠️ Supplementary Material
-
-### Practice Problems
-1.  **Rotate Image** ([LeetCode 48](https://leetcode.com/problems/rotate-image/)): Rotate a square matrix 90 degrees clockwise in-place.
-2.  **Spiral Matrix** ([LeetCode 54](https://leetcode.com/problems/spiral-matrix/)): Return elements of an M x N matrix in spiral order.
-3.  **Set Matrix Zeroes** ([LeetCode 73](https://leetcode.com/problems/set-matrix-zeroes/)): Set entire rows/cols to zero using first row/col as markers in-place.
-4.  **Dungeon Game** ([LeetCode 174](https://leetcode.com/problems/dungeon-game/)): Find survival path thresholds using backward matrix DP.
-5.  **Cherry Pickup** ([LeetCode 741](https://leetcode.com/problems/cherry-pickup/)): Maximize paths in lockstep using combined index-grid states in 3D DP.
-
-### Misconceptions and Corrections
-*   *Incorrect Idea*: Assuming you can transpose a rectangular matrix in-place inside an active rectangular grid buffer without reallocating.
-    *   *Correction*: Transposing a rectangular matrix changes boundary dimensions (e.g. `3 x 4 -> 4 x 3`), which shifts coordinate positions in memory. Doing this in-place requires complex cyclic-shift swaps; out-of-place allocation is standard.
-*   *Incorrect Idea*: Using `matrix[row][col] == 0` check during second pass before preserving sentinel flags in Set Matrix Zeroes.
-    *   *Correction*: If row 0 or col 0 are modified before interior cells are evaluated, the zero markers cascade and mistakenly wipe out the entire grid. Always update the inner grid `[1...R-1, 1...C-1]` first, then apply the sentinel row/col updates last.
-
----
-
-> 🧭 **Navigation:** [← Week Overview](README.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day →](Week_14_Day_02_Bitwise_Operations_Instructional.md)
+> 🧭 **Navigation:** [← Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Next Day: Bitwise Operations →](Week_14_Day_02_Bitwise_Operations_Instructional.md)

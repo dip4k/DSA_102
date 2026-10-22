@@ -598,7 +598,7 @@ Token ']'    : k = countStack.Pop(); prev = stringStack.Pop();
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     CharInput{"Character c"} -->|isDigit| G1["currK = currK * 10 + (c - '0')"]
-    CharInput -->|"is '['"| G2["Push currK to<br/>countStack<br/>Push currStr to<br/>strStack<br/>currK = 0; currStr<br/>=<br/>empty"]
+    CharInput -->|"is '['"| G2["Push currK to<br/>countStack<br/>Push currStr to<br/>strStack<br/>currK = 0; currStr<br/&ge;<br/>empty"]
     CharInput -->|isLetter| G3["currStr.Append(c)"]
     CharInput -->|"is ']'"| G4["k =<br/>countStack.Pop()<br/>prevStr =<br/>strStack.Pop()<br/>prevStr.Append(currStr<br/>*<br/>k)<br/>currStr = prevStr"]
 ```

@@ -29,12 +29,12 @@ flowchart TD
     classDef test fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#4a148c
     classDef scale fill:#eceff1,stroke:#455a64,stroke-width:2px,color:#263238
 
-    P1["Phase 1: Clarify &<br/>Constraints<br/>[00:00 - 05:00]<br/>Inputs, Bounds,<br/>Duplicates, Scale"]:::clarify
-    P2["Phase 2: Naive -><br/>Bottleneck -><br/>Pitch<br/>[05:00 - 10:00]<br/>Brute force<br/>baseline &<br/>core invariant"]:::design
-    P3["Phase 3: Visual<br/>Trace &<br/>Buy-in<br/>[10:00 - 15:00]<br/>Dry run on small<br/>input<br/>with interviewer"]:::design
-    P4["Phase 4:<br/>Production<br/>Implementation<br/>[15:00 - 30:00]<br/>Clean C# / Python,<br/>guard<br/>clauses"]:::code
-    P5["Phase 5: Manual<br/>Dry Run &<br/>Edge Verification<br/>[30:00 - 38:00]<br/>Trace empty,<br/>single,<br/>duplicates, bounds"]:::test
-    P6["Phase 6: Scaled<br/>Extensions &<br/>Follow-ups<br/>[38:00 - 45:00]<br/>Thread safety,<br/>streaming,<br/>memory bounds"]:::scale
+    P1["Phase 1: Clarify &<br/>Constraints<br/>(00:00 - 05:00)<br/>Inputs, Bounds,<br/>Duplicates, Scale"]:::clarify
+    P2["Phase 2: Naive -&gt;<br/>Bottleneck -&gt;<br/>Pitch<br/>(05:00 - 10:00)<br/>Brute force<br/>baseline &<br/>core invariant"]:::design
+    P3["Phase 3: Visual<br/>Trace &<br/>Buy-in<br/>(10:00 - 15:00)<br/>Dry run on small<br/>input<br/>with interviewer"]:::design
+    P4["Phase 4:<br/>Production<br/>Implementation<br/>(15:00 - 30:00)<br/>Clean C# / Python,<br/>guard<br/>clauses"]:::code
+    P5["Phase 5: Manual<br/>Dry Run &<br/>Edge Verification<br/>(30:00 - 38:00)<br/>Trace empty,<br/>single,<br/>duplicates, bounds"]:::test
+    P6["Phase 6: Scaled<br/>Extensions &<br/>Follow-ups<br/>(38:00 - 45:00)<br/>Thread safety,<br/>streaming,<br/>memory bounds"]:::scale
 
     P1 --> P2 --> P3 --> P4 --> P5 --> P6
 ```

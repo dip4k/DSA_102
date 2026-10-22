@@ -46,7 +46,7 @@ flowchart TD
     classDef milestone fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
 
     M0["Min 00–05: Clarify<br/>Bounds, Contracts<br/>& Edge<br/>Cases"]:::phase
-    M1["Min 05–12: Naive<br/>Baseline<br/>-> Invariant &<br/>Approach<br/>Alignment"]:::phase
+    M1["Min 05–12: Naive<br/>Baseline<br/>-&gt; Invariant &<br/>Approach<br/>Alignment"]:::phase
     M2["Min 12–28: Live<br/>Implementation<br/>(Zero-Defect<br/>Coding)"]:::phase
     M3["Min 28–38:<br/>Concrete<br/>Dry-Run with<br/>Structured<br/>Trace Table"]:::phase
     M4["Min 38–43:<br/>Explicit<br/>Complexity &<br/>Scaled<br/>Architecture<br/>Discussion"]:::phase

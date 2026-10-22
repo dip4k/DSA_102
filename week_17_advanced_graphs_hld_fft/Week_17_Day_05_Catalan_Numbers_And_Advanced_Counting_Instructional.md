@@ -1,286 +1,366 @@
-# 📘 Week 17, Day 5: Catalan Numbers & Advanced Recurrence Systems
+# 📘 WEEK 17 DAY 05: CATALAN NUMBERS & ADVANCED COUNTING
 
-> 🧭 **Navigation:** [← Previous Day](Week_17_Day_04_Combinatorics_And_Counting_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_17_FULL_PLAYBOOK.md)
+> 🧭 **Navigation:** [← Previous Day: Combinatorics & Counting](Week_17_Day_04_Combinatorics_And_Counting_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_17_FULL_PLAYBOOK.md)
 > 
-> 💡 **Instructor Note:** *Catalan numbers are the single most frequently recurring counting pattern in FAANG interviews (appearing in disguise across LeetCode 96, LeetCode 22, and polygon triangulation). A Senior candidate does not merely write an O(N^2) convolution DP; they immediately identify the Catalan signature (1, 1, 2, 5, 14, 42...), explain André's Reflection Principle, and implement the O(N) direct multiplicative formula.*
+> 💡 **Instructor Note:** *Catalan numbers are the Swiss Army knife of algorithmic counting. In FAANG Senior/Staff coding interviews, interviewers frequently disguise Catalan numbers behind elaborate problem statements: Unique Binary Search Trees (LeetCode 96), Generate Parentheses (LeetCode 22), Polygon Triangulations, Mountain Ranges, and Handshakes across a table. Recognizing the Catalan signature allows you to replace a 50-line backtracking DFS with an O(N) or O(1) closed-form calculation.*
 
 ---
 
-## 🎯 Learning Objectives
+## 🎯 LEARNING OBJECTIVES
 
-*   **Pattern Recognition:** Instantly recognize problems isomorphic to Catalan numbers: balanced parentheses, binary search trees, non-crossing chords, and polygon triangulation.
-*   **Segner's Convolution Recurrence:** Formulate the recursive partition `C_n = Sum_{i=0}^{n-1} C_i * C_{n-1-i}` rooted in subproblem decomposition.
-*   **André's Reflection Principle:** Prove the closed-form formula `C_n = (1 / (n + 1)) * (2n choose n)` geometrically by reflecting invalid lattice paths across the barrier line.
-*   **Optimal Evaluation:** Replace `O(N^2)` DP convolution with `O(N)` modular arithmetic evaluation via prime-field inversions.
-*   **Dual-Language Fluency:** Deliver production-ready implementations in modern C# (.NET 8/9) and idiomatic Python (3.11+).
+*By the end of this module, you will be able to:*
 
----
-
-## ⚖️ FAANG Senior / Lead Interview Calibration
-
-When an interviewer asks a question whose underlying answer is a Catalan number, candidate performance is calibrated against clear seniority bars:
-
-| Dimension | Mid-Level (L4 / SDE II) | Senior / Lead (L5 / L6 / Staff) |
-| :--- | :--- | :--- |
-| **Problem Recognition** | Discovers recurrence after 20 minutes of small examples. | Recognizes Catalan signature within 2 minutes of writing small cases `(1, 1, 2, 5, 14)`. |
-| **Mathematical Derivation** | Writes `O(N^2)` convolution DP; cannot explain closed-form. | Proves `C_n = (2n choose n) - (2n choose n - 1)` using André's Reflection Principle on a whiteboard. |
-| **Code Implementation** | Writes nested loop DP in `O(N^2)`. | Implements both `O(N^2)` convolution DP and `O(N)` direct formula using modular inverse factorials. |
-| **Edge Cases & Bounds** | Struggles with 32-bit integer overflow at `N >= 35`. | Uses modular arithmetic (`10^9 + 7`) or `BigInteger` for arbitrary-precision counting. |
-
-### The 5 Classic Catalan Manifestations
-1. **Balanced Parentheses:** Count of valid strings of `n` pairs of `(` and `)` (LeetCode 22).
-2. **Unique Binary Search Trees:** Count of distinct BST topologies formed by keys `1 ... n` (LeetCode 96).
-3. **Polygon Triangulation:** Number of ways to partition a convex polygon with `n + 2` vertices into triangles.
-4. **Non-Crossing Chords:** Number of ways to connect `2n` points on a circle with `n` non-intersecting chords.
-5. **Dyck Paths (Mountain Ranges):** Lattice paths from `(0, 0)` to `(2n, 0)` using up steps `(1, 1)` and down steps `(1, -1)` that never drop below the x-axis.
+- 🎬 **Internalize** the Mountain Range and Stock Chart mental models without academic jargon.
+- 🪜 **Master** the 5 Classic Faces of Catalan: Parentheses, Unique BSTs, Dyck Paths, Polygon Triangulations, and Non-Intersecting Chords.
+- 🎨 **Visualize** André's Reflection Principle: proving `C_n = C(2n, n) - C(2n, n - 1)` via path reflections across the diagonal barrier.
+- 🛑 **Avoid** fatal rookie traps: off-by-one vertex-vs-triangle counting in polygons, naive backtracking when only count is required, and modular division errors.
+- 🎙️ **Deliver** the exact 3-sentence verbal talk track identifying Catalan patterns in under 30 seconds.
+- ⚡ **Implement** production-grade modular Catalan solvers in C# (.NET 8/9) and Python (3.11+).
 
 ---
 
-## 📖 Chapter 1: Context & Physical Mental Models
+## 🎬 PILLAR 1: THE 60-SECOND HOOK & EVERYDAY ANALOGY
 
-### 1. André's Reflection Principle (Visual Proof)
+### The Mountain Range & The Sea Level Rule
 
-Consider Dyck paths on a grid from `(0, 0)` to `(2n, 0)`:
-*   Total paths made of `n` up-steps and `n` down-steps: `Total = (2n choose n)`.
-*   A path is **invalid** if it dips below the x-axis, meaning it touches the barrier line `y = -1`.
+Imagine you are drawing a mountain skyline using diagonal strokes:
+- An **Up-stroke (`/`)** climbs `+1` in altitude.
+- A **Down-stroke (`\`)** descends `-1` in altitude.
+- You must draw exactly `n` up-strokes and `n` down-strokes so you end back at sea level (total `2n` strokes).
+- **The Sacred Rule:** Your mountain path **must never dip below sea level (`y < 0`)** at any point!
 
 ```text
- y ^
- 2 |         /\
- 1 |   /\   /  \
- 0 +--/--\-/----\---> x  (Target: 2n, 0)
--1 |======*===========   (Barrier: y = -1. First touch at *)
--2 |       \  /\
--3 |        \/  \        <-- Reflected path reaches (2n, -2)!
+A Valid Mountain Range for n = 3:
+      /\
+     /  \  /\
+    /    \/  \
+   +-----------+  (Sea Level y = 0)
+   Stroke sequence: / / \ \ / \   (Valid Dyck Path)
 ```
 
-*   **The Reflection Trick:**
-    1. Find the **first point** where the path touches the line `y = -1`.
-    2. Reflect the entire remainder of the path across `y = -1`.
-    3. The original remainder had `k` up-steps and `m` down-steps. After reflection, it has `m` up-steps and `k` down-steps.
-    4. The reflected path now terminates at `(2n, -2)`!
-*   **Counting Invalid Paths:**
-    Every invalid path maps bijectively to a path from `(0, 0)` to `(2n, -2)`.
-    To reach `(2n, -2)`, a path must take `n - 1` up-steps and `n + 1` down-steps.
-    `Invalid Paths = (2n choose n - 1) = (2n choose n + 1)`.
-*   **The Catalan Formula:**
-    `C_n = Total Paths - Invalid Paths = (2n choose n) - (2n choose n - 1)`
-    `    = (2n)! / (n! * n!) - (2n)! / ((n - 1)! * (n + 1)!)`
-    `    = (1 / (n + 1)) * (2n choose n)`.
+Now, replace each `/` with an open parenthesis `(` and each `\` with a close parenthesis `)`:
+`(( )) ( )` -> **A valid, balanced string of parentheses!**
+
+Now, look at the number of valid mountain ranges for different `n`:
+- `n = 0`: 1 way (empty mountain)
+- `n = 1`: 1 way `(/\)`
+- `n = 2`: 2 ways `(/\/\)` and `(/ \)`
+- `n = 3`: 5 ways
+- `n = 4`: 14 ways
+- `n = 5`: 42 ways
+
+The sequence `1, 1, 2, 5, 14, 42, 132, 429, 1430, 4862 ...` is the legendary **Catalan Number Sequence (`C_n`)**!
 
 ---
 
-## 🏛️ Chapter 2: The Governing Invariants & Algorithmic Mechanics
+## 🪜 PILLAR 2: THE SCAFFOLDING LADDER & TOY NAPKIN TRACE
 
-### 1. Mathematical Invariants
+### Step 1: The 5 Classic Faces of Catalan Numbers
 
-1. **Segner's Convolution Recurrence:**
-   `C_0 = 1`, and for `n >= 1`:
-   `C_n = Sum_{i=0}^{n-1} C_i * C_{n-1-i}`.
-   *Physical Meaning (BSTs):* Pick root key `i + 1`. The left subtree contains `i` keys (formed in `C_i` ways), and the right subtree contains `n - 1 - i` keys (formed in `C_{n-1-i}` ways). Summing over all possible roots `0 <= i < n` yields `C_n`.
-2. **Multiplicative Ratio Recurrence:**
-   `C_n = ((4n - 2) / (n + 1)) * C_{n-1}` with `C_0 = 1`.
-   Enables sequential evaluation in `O(N)` time and `O(1)` memory.
-3. **Modular Inversion Closed Form:**
-   Under prime modulus `MOD = 10^9 + 7`:
-   `C_n = fact[2n] * invFact[n] % MOD * invFact[n] % MOD * inv(n + 1) % MOD`.
+Whenever an interview problem asks for the number of ways to assemble one of the following structures of size `n`, the answer is **`C_n`**:
+
+```text
++--------------------------------------------------------------------------------------------------+
+|                              THE 5 FACES OF CATALAN NUMBERS                                      |
++--------------------------------------------------------------------------------------------------+
+| 1. Balanced Parentheses:                                                                         |
+|    Number of valid strings with n pairs of '(' and ')' (LeetCode 22: Generate Parentheses).      |
+|                                                                                                  |
+| 2. Structurally Unique Binary Trees:                                                             |
+|    Number of distinct binary search trees with n distinct keys (LeetCode 96: Unique BSTs).       |
+|                                                                                                  |
+| 3. Dyck Paths on a Grid:                                                                         |
+|    Monotonic paths on an n x n grid from (0,0) to (n,n) that stay on or below the diagonal y = x.|
+|                                                                                                  |
+| 4. Convex Polygon Triangulation:                                                                 |
+|    Number of ways to triangulate a convex polygon with n + 2 vertices into non-overlapping       |
+|    triangles using diagonals.                                                                    |
+|                                                                                                  |
+| 5. Non-Intersecting Chords:                                                                      |
+|    Number of ways to pair 2n points on a circle with n non-intersecting chords (or handshakes    |
+|    across a round table).                                                                        |
++--------------------------------------------------------------------------------------------------+
+```
 
 ---
 
-## 💻 Chapter 3: Idiomatic Dual-Language Code
+### Step 2: André's Reflection Principle (Visual Proof)
 
-### C# Primary Implementation (.NET 8/9)
+Why is `C_n = C(2n, n) - C(2n, n - 1)`?
+
+Consider all paths of length `2n` on a coordinate grid from `(0, 0)` to `(n, n)`:
+- Total unrestricted paths choosing `n` right-steps and `n` up-steps = `C(2n, n)`.
+- But some paths are **illegal**: they cross the barrier line `y = x + 1`!
+
+```text
+André's Reflection Insight:
+Take any illegal path. Look at the VERY FIRST POINT where it touches the line y = x + 1.
+Reflect the remainder of the path across the line y = x + 1!
+- The original path ended at (n, n).
+- The reflected path now ends at (n - 1, n + 1)!
+
+Every single illegal path maps to exactly one path ending at (n - 1, n + 1)!
+Number of illegal paths = C(2n, n - 1).
+
+Valid Paths = Total Paths - Illegal Paths
+C_n         = C(2n, n) - C(2n, n - 1)
+            = (1 / (n + 1)) * C(2n, n)!
+```
+
+---
+
+### Step 3: Computational Formulas
+
+1. **Closed-Form Binomial Formula:**
+   `C_n = (1 / (n + 1)) * C(2n, n) = (2n)! / ((n + 1)! * n!)`.
+2. **Convolution Recurrence (Subtree Split):**
+   `C_n = Sum_{i = 0}^{n - 1} C_i * C_{n - 1 - i}` with `C_0 = 1`.
+   *(This reflects: choosing node `i` as BST root leaves `i` nodes on left and `n - 1 - i` nodes on right).*
+3. **Linear Step Recurrence:**
+   `C_n = ((4n - 2) / (n + 1)) * C_{n - 1}`.
+   Allows computing `C_n` in `O(N)` time and `O(1)` space without full factorials!
+
+---
+
+### 🧠 Pause & Predict Micro-Drills
+
+> **Drill 1:** How many structurally unique Binary Search Trees can you form with `n = 4` keys `[1, 2, 3, 4]`?
+> *Pause here and calculate!*
+>
+> **Answer:** 
+> `C_4 = (1 / 5) * C(8, 4) = (1 / 5) * 70 = 14 BSTs!` (LeetCode 96).
+
+> **Drill 2:** In a circle of 8 people, how many ways can they pair up to shake hands simultaneously across the circle without their arms crossing?
+> *Pause here and think!*
+>
+> **Answer:**
+> 8 people = `2n = 8` points -> `n = 4` pairs.
+> Number of non-intersecting handshakes = `C_4 = 14 ways!`
+
+---
+
+## 🎨 PILLAR 3: PRAGMATIC VISUAL MODELS & DECISION FLOWS
+
+### Modern Hex Flowchart: Catalan Pattern Trigger Detector
+
+```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
+flowchart TD
+    Prob{"🎯 Counting Problem"} --> Check{"Does it match a Catalan signature?"}
+    Check -->|Balanced '(' and ')'| Yes["Formula: C_n = (1 / (n+1)) * C(2n, n)"]
+    Check -->|Distinct Binary Trees with n nodes| Yes
+    Check -->|Triangulate (n + 2)-gon| Yes
+    Check -->|Monotonic path never crossing diagonal| Yes
+    Check -->|2n people handshakes without crossing| Yes
+    Check -->|None of the above| No["Standard DP / Combinatorics"]
+
+    Yes --> Comp{"Modulus required?"}
+    Comp -->|Yes: Modulo P| ModC["Use Modular Inverse on Factorials<br/>C_n = fact(2n) * invFact(n+1) % P * invFact(n) % P"]
+    Comp -->|No: Standard BigInteger| LinC["Use Linear Step Recurrence<br/>C_n = ((4n - 2) / (n + 1)) * C_{n-1}"]
+
+    style Prob fill:#e1f5fe,stroke:#0288d1,color:#01579b
+    style Check fill:#fff3e0,stroke:#ef6c00,color:#e65100
+    style Yes fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style No fill:#ffebee,stroke:#c62828,color:#b71c1c
+    style Comp fill:#fff3e0,stroke:#ef6c00,color:#e65100
+    style ModC fill:#f3e5f5,stroke:#8e24aa,color:#4a148c
+    style LinC fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+```
+
+---
+
+## 🛑 PILLAR 4: THE ROOKIE TRAP ZONE
+
+### Side-by-Side Comparison: Blunders vs. Senior Architect Patterns
+
+| Dimension | ❌ Rookie Blunder | ✅ Senior Architect Pattern |
+| :--- | :--- | :--- |
+| **Polygon Triangulation Off-by-One**| Calculates `C_n` for a polygon with `n` vertices, returning the wrong answer. | Uses `C_{n - 2}` for an `n`-gon (e.g., triangle `n = 3` has `C_1 = 1` way; hexagon `n = 6` has `C_4 = 14` ways). |
+| **Generation vs Counting** | Runs full backtracking recursion `O(4^N / sqrt(N))` when the interviewer only asked for the **number** of valid strings. | Immediately uses Catalan closed-form formula in `O(N)` or `O(1)` time. |
+| **Modular Division** | Calculates `C(2n, n) / (n + 1) % P` using regular integer division, getting incorrect modulo residues. | Multiplies by modular inverse: `C(2n, n) * ModInverse(n + 1, P) % P`. |
+| **Integer Overflow** | Uses 32-bit `int` for `C_n`; overflows at `n = 20` (`C_20 = 6,564,120,420 > 2^31 - 1`). | Uses 64-bit `long` up to `n = 33`, or `BigInteger` / modulo for larger `n`. |
+| **Convolution DP Overhead** | Uses `O(N^2)` convolution recurrence `Sum C_i * C_{n-1-i}` when closed-form `O(N)` linear step is available. | Uses linear step recurrence `C_n = ((4n - 2) / (n + 1)) * C_{n-1}` in `O(N)` time. |
+
+---
+
+## 🎙️ PILLAR 5: 45-MINUTE INTERVIEW TALK TRACK
+
+### The Exact 3-Sentence Verbal Script
+
+Speak these exact three sentences before writing code:
+
+```text
++--------------------------------------------------------------------------------------------------+
+|                              THE SENIOR CATALAN TALK TRACK SCRIPT                                |
++--------------------------------------------------------------------------------------------------+
+| 1. The Isomorphic Recognition:                                                                   |
+|    "This problem requires counting valid monotonic structures under non-crossing constraints,    |
+|    which is structurally isomorphic to a Dyck Path of length 2n that never dips below the        |
+|    diagonal."                                                                                    |
+|                                                                                                  |
+| 2. The Catalan Derivation:                                                                       |
+|    "By André's Reflection Principle, the total number of valid configurations equals the n-th    |
+|    Catalan number C_n = C(2n, n) - C(2n, n - 1) = (1 / (n + 1)) * C(2n, n)."                    |
+|                                                                                                  |
+| 3. The Computational Pitch:                                                                      |
+|    "Instead of executing an exponential O(4^N / sqrt(N)) backtracking traversal, we can evaluate  |
+|    the closed-form result in O(N) time and O(1) space using modular arithmetic and precomputed   |
+|    factorials."                                                                                  |
++--------------------------------------------------------------------------------------------------+
+```
+
+---
+
+## ⚡ PILLAR 6: PRODUCTION DUAL-LANGUAGE IMPLEMENTATIONS
+
+### C# Primary Implementation (.NET 8/9): Production Catalan Calculator
 
 ```csharp
 using System;
+using System.Numerics;
 
 namespace AdvancedDataStructures;
 
 /// <summary>
-/// Computes Catalan numbers using both O(N^2) convolution DP and O(N) direct modular arithmetic.
+/// Production Catalan Number solver.
+/// Supports exact BigInteger evaluations, O(N) linear recurrences, and modular arithmetic.
 /// </summary>
-public static class CatalanNumbers
+public static class CatalanSolver
 {
-    public const int Mod = 1_000_000_007;
-
     /// <summary>
-    /// Computes the n-th Catalan number modulo 10^9 + 7 using DP convolution in O(N^2) time.
-    /// Recurrence: C(n) = Sum(C(i) * C(n - 1 - i)) for i in [0 ... n - 1].
+    /// Computes the n-th Catalan number exactly using BigInteger in O(N) time.
+    /// Recurrence: C_0 = 1, C_i = ((4*i - 2) * C_{i-1}) / (i + 1).
     /// </summary>
-    public static long GetCatalanDP(int n)
+    public static BigInteger GetCatalanExact(int n)
     {
+        if (n < 0) throw new ArgumentOutOfRangeException(nameof(n), "n must be non-negative.");
         if (n <= 1) return 1;
 
-        long[] c = new long[n + 1];
-        c[0] = 1;
-        c[1] = 1;
-
+        BigInteger c = 1;
         for (int i = 2; i <= n; i++)
         {
-            for (int j = 0; j < i; j++)
-            {
-                c[i] = (c[i] + (c[j] * c[i - 1 - j]) % Mod) % Mod;
-            }
+            c = (c * (4 * i - 2)) / (i + 1);
         }
-
-        return c[n];
-    }
-
-    /// <summary>
-    /// Computes the n-th Catalan number in O(N) time using the closed-form formula:
-    /// C(n) = (1 / (n + 1)) * (2n choose n) % Mod.
-    /// </summary>
-    public static long GetCatalanDirect(int n)
-    {
-        if (n <= 1) return 1;
-
-        var comb = new ModularCombinatorics(2 * n);
-        long choose = comb.NCr(2 * n, n);
-        long invN1 = ModularCombinatorics.ModPow(n + 1, Mod - 2, Mod);
-
-        return (choose * invN1) % Mod;
-    }
-
-    /// <summary>
-    /// Computes exact Catalan number using BigInteger (arbitrary precision) without modulo.
-    /// Uses ratio recurrence: C(n) = ((4n - 2) / (n + 1)) * C(n - 1).
-    /// </summary>
-    public static System.Numerics.BigInteger GetCatalanExact(int n)
-    {
-        if (n <= 1) return 1;
-
-        var c = System.Numerics.BigInteger.One;
-        for (int i = 1; i <= n; i++)
-        {
-            c = c * (4 * i - 2) / (i + 1);
-        }
-
         return c;
+    }
+
+    /// <summary>
+    /// Computes C_n % mod for large n in O(N) time using precomputed factorials.
+    /// Formula: C_n = (2n)! * invFact[n+1] * invFact[n] % mod.
+    /// </summary>
+    public static long GetCatalanModulo(int n, long mod)
+    {
+        if (n < 0) return 0;
+        if (n <= 1) return 1;
+
+        int maxFact = 2 * n;
+        long[] fact = new long[maxFact + 1];
+        fact[0] = 1;
+
+        for (int i = 1; i <= maxFact; i++)
+        {
+            fact[i] = (fact[i - 1] * i) % mod;
+        }
+
+        long invFactN = ModInverse(fact[n], mod);
+        long invFactNPlus1 = ModInverse(fact[n + 1], mod);
+
+        return fact[2 * n] * invFactN % mod * invFactNPlus1 % mod;
+    }
+
+    private static long ModInverse(long a, long mod)
+    {
+        return ModPow(a, mod - 2, mod);
+    }
+
+    private static long ModPow(long baseVal, long exp, long mod)
+    {
+        long res = 1;
+        baseVal %= mod;
+        while (exp > 0)
+        {
+            if ((exp & 1) == 1) res = (res * baseVal) % mod;
+            baseVal = (baseVal * baseVal) % mod;
+            exp >>= 1;
+        }
+        return res;
     }
 }
 ```
 
-### Python Secondary Implementation (Python 3.11+)
+---
+
+### Python Secondary Implementation (Python 3.11+): Complete Catalan Solver
 
 ```python
-def get_catalan_dp(n: int, mod: int = 1_000_000_007) -> int:
+import math
+
+class CatalanSolver:
     """
-    Computes n-th Catalan number via DP convolution in O(N^2) time and O(N) space.
-    C(n) counts distinct BSTs, balanced parentheses sequences, and Dyck paths.
+    Production Catalan Number solver in Python.
+    Supports exact arbitrary-precision integers and modular arithmetic.
     """
-    if n <= 1:
-        return 1
+    @staticmethod
+    def get_catalan_exact(n: int) -> int:
+        """
+        Computes the n-th Catalan number exactly in O(N) time.
+        Uses Python's arbitrary-precision integer arithmetic.
+        """
+        if n < 0:
+            raise ValueError("n must be non-negative.")
+        if n <= 1:
+            return 1
 
-    c = [0] * (n + 1)
-    c[0] = 1
-    c[1] = 1
+        c = 1
+        for i in range(2, n + 1):
+            c = (c * (4 * i - 2)) // (i + 1)
+        return c
 
-    for i in range(2, n + 1):
-        for j in range(i):
-            c[i] = (c[i] + c[j] * c[i - 1 - j]) % mod
+    @staticmethod
+    def get_catalan_modulo(n: int, mod: int) -> int:
+        """
+        Computes C_n % mod using Fermat's Little Theorem for prime mod.
+        Formula: C_n = (2n)! * inv((n+1)!) * inv(n!) % mod
+        """
+        if n < 0:
+            return 0
+        if n <= 1:
+            return 1
 
-    return c[n]
+        # Compute factorials up to 2n
+        fact = [1] * (2 * n + 1)
+        for i in range(1, 2 * n + 1):
+            fact[i] = (fact[i - 1] * i) % mod
 
-def get_catalan_direct(n: int, mod: int = 1_000_000_007) -> int:
-    """
-    Computes n-th Catalan number in O(N) time using:
-    C(n) = (2n choose n) / (n + 1) mod 10^9 + 7
-    """
-    if n <= 1:
-        return 1
+        inv_fact_n = pow(fact[n], mod - 2, mod)
+        inv_fact_n_plus_1 = pow(fact[n + 1], mod - 2, mod)
 
-    def ncr(n_val: int, r_val: int) -> int:
-        num, den = 1, 1
-        for i in range(1, r_val + 1):
-            num = (num * (n_val - i + 1)) % mod
-            den = (den * i) % mod
-        return num * pow(den, mod - 2, mod) % mod
-
-    choose = ncr(2 * n, n)
-    return (choose * pow(n + 1, mod - 2, mod)) % mod
-
-def get_catalan_exact(n: int) -> int:
-    """Computes exact n-th Catalan number using Python's native arbitrary-precision integers."""
-    if n <= 1:
-        return 1
-
-    c = 1
-    for i in range(1, n + 1):
-        c = c * (4 * i - 2) // (i + 1)
-    return c
+        return (fact[2 * n] * inv_fact_n % mod * inv_fact_n_plus_1) % mod
 ```
 
 ---
 
-## 📊 Chapter 4: Explicit Complexity Deconstruction
+## 📊 EXPLICIT COMPLEXITY DECONSTRUCTION
 
-| Method | Time Complexity | Auxiliary Space | Precision / Modulo | Recommended Use Case |
+| Paradigm | Time Complexity | Auxiliary Space | Precision Support | Optimal Range |
 | :--- | :--- | :--- | :--- | :--- |
-| **Convolution DP** | `O(N^2)` | `O(N)` | Modulo `10^9 + 7` | Small `N <= 1000` or custom partitioned constraints. |
-| **Direct Modular Formula** | `O(N)` | `O(1)` | Modulo `10^9 + 7` | Large `N <= 10^6` in competitive / FAANG interviews. |
-| **BigInteger Multiplicative** | `O(N)` arithmetic | `O(1)` | Arbitrary exact | Small `N <= 100` where exact value is required (no modulo). |
-
-### Comparison of the First 10 Catalan Numbers
-```text
-n:    0   1   2   3   4    5    6     7      8       9
-C_n:  1   1   2   5   14   42   132   429   1430    4862
-```
+| **Linear Step Recurrence** | **`O(N)`** | **`O(1)`** | Arbitrary (`BigInteger`) | Exact values for `N <= 10^4`. |
+| **Factorial Table Modulo** | **`O(N)`** | **`O(N)`** | Modulo prime `P` | `N <= 10^6` with `O(1)` queries. |
+| **Convolution Recurrence DP** | `O(N^2)` | `O(N)` | `BigInteger` / Modulo | Teaching and subtree decomposition. |
+| **Backtracking Enumeration** | `O(4^N / sqrt(N))` | `O(N)` stack | String lists | Generation problems (LeetCode 22). |
 
 ---
 
-## 🎙️ Chapter 5: 45-Minute Senior / Lead Verbal Interview Script
-
-```text
-[00:00 - 05:00] Clarify & Problem Modeling
-Candidate: "We are asked to count the number of structurally unique Binary Search Trees formed by keys 1 to n. 
-           Let's trace small examples:
-           - For n = 0: 1 empty tree.
-           - For n = 1: 1 tree.
-           - For n = 2: 2 trees (root 1 with right 2, or root 2 with left 1).
-           - For n = 3: 5 trees.
-           The sequence is 1, 1, 2, 5, 14, 42... which is the signature sequence of Catalan numbers C_n."
-
-[05:00 - 15:00] Invariants & Trade-offs
-Candidate: "We can formulate this via Segner's recurrence:
-           Any key k in [1, n] can act as the root. 
-           Then the left subtree must contain the k - 1 keys strictly smaller than k, 
-           and the right subtree contains the remaining n - k keys.
-           Because subtrees are independent, the number of trees with root k is C(k - 1) * C(n - k).
-           Summing over all roots gives C(n) = Sum_{i=0}^{n-1} C(i) * C(n - 1 - i).
-           While this gives an O(N^2) DP, we can evaluate Catalan numbers in O(N) using André's Reflection Principle:
-           C_n = (2n choose n) - (2n choose n - 1) = (1 / (n + 1)) * (2n choose n).
-           I will implement both the DP convolution and the O(N) modular formula."
-
-[15:00 - 35:00] Implementation Protocol
-Candidate: "First, the DP convolution:
-           - Handle base cases n <= 1 returning 1.
-           - Array of size n + 1. Outer loop i from 2 to n; inner loop j from 0 to i - 1.
-           - Accumulate c[j] * c[i - 1 - j] modulo 10^9 + 7.
-           Next, the O(N) direct approach:
-           - Calculate (2n choose n) using modular inverse factorials.
-           - Multiply by the modular inverse of (n + 1)."
-
-[35:00 - 45:00] Complexity Deconstruction & Edge Cases
-Candidate: "The direct formula runs in O(N) time with O(1) auxiliary space, scaling to N = 10^6.
-           Edge cases:
-           - n = 0: returns 1 (empty tree / empty paren sequence).
-           - n = 1: returns 1.
-           - If n is large and un-modded, C_n grows exponentially as 4^n / (n^(3/2) * sqrt(pi)), 
-             exceeding 64-bit integer limits around n = 35. For exact large values, BigInteger is required."
-```
-
----
-
-## 🔍 Chapter 6: Granular Edge-Case & Invariant Verification Table
+## 🔍 GRANULAR EDGE-CASE & INVARIANT VERIFICATION TABLE
 
 | Edge Case Scenario | Concrete Input | Expected Behavior | Invariant Verification & Handling |
 | :--- | :--- | :--- | :--- |
-| **Zero Keys / Empty Set** | `n = 0` | Returns `1`. | Handled directly by `if (n <= 1) return 1;`. |
-| **Single Key** | `n = 1` | Returns `1`. | Single node tree satisfies base condition. |
-| **`n = 3` (Classic LeetCode 96)** | `n = 3` | Returns `5`. | Convolution `c[0]*c[2] + c[1]*c[1] + c[2]*c[0] = 2 + 1 + 2 = 5`. |
-| **`n = 35` (64-Bit Integer Overflow)** | `n = 35` un-modded | `C_35 > 2^63 - 1`; requires `BigInteger`. | `GetCatalanExact` prevents silent signed register overflow. |
-| **Large `n = 10^5` with Modulo** | `n = 100,000, mod = 10^9 + 7` | Resolves in `O(N)` via modular inverse. | `GetCatalanDirect` avoids `O(N^2)` memory/time timeout. |
+| **Zero Pairs** | `GetCatalanExact(0)` | Returns `1` (1 valid empty string). | Base condition `n <= 1` returns 1. |
+| **Single Pair** | `GetCatalanExact(1)` | Returns `1` `("()")`. | Closed form evaluates to 1. |
+| **Triangle Triangulation** | `PolygonTriangulation(3)` | Returns `C_1 = 1` (a triangle is already triangulated). | Formula applies `n - 2 = 3 - 2 = 1`. |
+| **Circle Handshakes (Odd People)**| 7 people at a round table | Returns `0` (impossible to pair odd numbers). | Handshake validation guards `total % 2 == 0`. |
+| **Modulo Division Invariant** | Modulo prime `P = 10^9 + 7` | Zero division avoided via modular inverse. | Multiplicative inverse guaranteed by Fermat's Little Theorem. |
 
 ---
 
-> 🧭 **Navigation:** [← Previous Day](Week_17_Day_04_Combinatorics_And_Counting_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_17_FULL_PLAYBOOK.md)
+> 🧭 **Navigation:** [← Previous Day: Combinatorics & Counting](Week_17_Day_04_Combinatorics_And_Counting_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_17_FULL_PLAYBOOK.md)

@@ -47,12 +47,12 @@ Dynamic Programming is simply **Backtracking with Memoization**:
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    classDef foundation fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
-    classDef core fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px;
-    classDef bridge fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px;
-    classDef dp fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:2px;
-    classDef graphTopic fill:#ede7f6,stroke:#5e35b1,color:#311b92,stroke-width:2px;
-    classDef elective fill:#f5f5f5,stroke:#9e9e9e,color:#616161,stroke-width:1.5px,stroke-dasharray: 5 5;
+    classDef foundation fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px
+    classDef core fill:#e8f5e9,stroke:#388e3c,color:#1b5e20,stroke-width:2px
+    classDef bridge fill:#fff3e0,stroke:#f57c00,color:#e65100,stroke-width:2px
+    classDef dp fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:2px
+    classDef graphTopic fill:#ede7f6,stroke:#5e35b1,color:#311b92,stroke-width:2px
+    classDef elective fill:#f5f5f5,stroke:#9e9e9e,color:#616161,stroke-width:1.5px,stroke-dasharray: 5 5
 
     subgraph Tier1["⭐ FAANG Core Curriculum (Weeks 1–14 & 19)"]
         F["1️⃣ Foundations &<br/>Memory<br/>(W1–3)<br/>RAM Model,<br/>Pointers,<br/>Arrays, Stacks,<br/>Queues"]:::foundation

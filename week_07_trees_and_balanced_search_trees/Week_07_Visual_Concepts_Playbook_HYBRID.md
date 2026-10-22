@@ -46,8 +46,8 @@
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    classDef week fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px;
-    classDef day fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:1.5px;
+    classDef week fill:#e1f5fe,stroke:#0288d1,color:#01579b,stroke-width:2px
+    classDef day fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c,stroke-width:1.5px
 
     W["🌳 Week 7:<br/>Trees &<br/>Balanced Search<br/>Trees"]:::week
     W --> D1["📅 Day 1:<br/>Anatomy &<br/>Traversals<br/>(Pre/In/Post &<br/>Level-Order BFS)"]:::day
@@ -121,9 +121,9 @@ flowchart TD
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
     T["Binary Tree<br/>Traversals"]:::rootNode
-    T --> Pre["Preorder (Root -><br/>Left -><br/>Right)<br/>Parent First: Copy & Serialize"]:::preNode
-    T --> In["Inorder (Left -><br/>Root -><br/>Right)<br/>Sorted Order on<br/>BST"]:::inNode
-    T --> Post["Postorder (Left -><br/>Right<br/>-> Root)<br/>Bottom-Up:<br/>Deletions &<br/>Subtree DP"]:::postNode
+    T --> Pre["Preorder (Root -&gt;<br/>Left -&gt;<br/>Right)<br/>Parent First: Copy & Serialize"]:::preNode
+    T --> In["Inorder (Left -&gt;<br/>Root -&gt;<br/>Right)<br/>Sorted Order on<br/>BST"]:::inNode
+    T --> Post["Postorder (Left -&gt;<br/>Right<br/>-&gt; Root)<br/>Bottom-Up:<br/>Deletions &<br/>Subtree DP"]:::postNode
     T --> Lvl["Level-Order<br/>(BFS by<br/>Level)<br/>Layer-by-Layer via<br/>Queue"]:::lvlNode
 
     classDef rootNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
@@ -228,9 +228,9 @@ Searching for target key `6`:
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    S5["1️⃣ Root 5<br/>(6 > 5 -> Go<br/>Right)"]:::searchStep --> S7["2️⃣ Node 7<br/>(6 &lt; 7 -><br/>Go Left)"]:::searchStep
+    S5["1️⃣ Root 5<br/>(6 &gt; 5 -&gt; Go<br/>Right)"]:::searchStep --> S7["2️⃣ Node 7<br/>(6 &lt; 7 -&gt;<br/>Go Left)"]:::searchStep
     S5 -.-> S3["Node 3"]
-    S7 --> SNull["3️⃣ Left is null<br/>-> NOT<br/>FOUND ❌"]:::nullStep
+    S7 --> SNull["3️⃣ Left is null<br/>-&gt; NOT<br/>FOUND ❌"]:::nullStep
     S7 -.-> S9["Node 9"]
 
     classDef searchStep fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
@@ -338,7 +338,7 @@ flowchart TD
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    subgraph Degenerate["❌ Adversarial Sorted Input: [1, 2, 3, 4, 5]"]
+    subgraph Degenerate["❌ Adversarial Sorted Input: (1, 2, 3, 4, 5)"]
         direction TB
         D1["1"] --> D2["2"]
         D2 --> D3["3"]
@@ -346,7 +346,7 @@ flowchart TD
         D4 --> D5["5"]
     end
 
-    subgraph Balanced["✅ Balanced Self-Structuring: [3, 2, 4, 1, 5]"]
+    subgraph Balanced["✅ Balanced Self-Structuring: (3, 2, 4, 1, 5)"]
         direction TB
         B3["3"] --> B2["2"]
         B3 --> B4["4"]
@@ -392,7 +392,7 @@ flowchart TD
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    subgraph LL["Case 1: LL Imbalance -> Single Right Rotate"]
+    subgraph LL["Case 1: LL Imbalance -&gt; Single Right Rotate"]
         LL_B1["1 (BF: +2)"] --> LL_B2["2 (BF: +1)"]
         LL_B2 --> LL_B3["3 (BF: 0)"]
         LL_B1 -.->|"Rotate Right(1)"| LL_A2["2 (BF: 0)"]
@@ -400,7 +400,7 @@ flowchart TD
         LL_A2 --> LL_A1["1"]
     end
 
-    subgraph RR["Case 2: RR Imbalance -> Single Left Rotate"]
+    subgraph RR["Case 2: RR Imbalance -&gt; Single Left Rotate"]
         RR_B5["5 (BF: -2)"] --> RR_B4["4 (BF: -1)"]
         RR_B4 --> RR_B3["3 (BF: 0)"]
         RR_B5 -.->|"Rotate Left(5)"| RR_A4["4 (BF: 0)"]
@@ -408,7 +408,7 @@ flowchart TD
         RR_A4 --> RR_A3["3"]
     end
 
-    subgraph LR["Case 3: LR Imbalance -> Double Rotate"]
+    subgraph LR["Case 3: LR Imbalance -&gt; Double Rotate"]
         LR_B1["1 (BF: +2)"] --> LR_B3["3 (BF: -1)"]
         LR_B3 --> LR_B2["2 (BF: 0)"]
         LR_B1 -.->|"1. Left(3)<br/>2. Right(1)"| LR_A2["2 (BF: 0)"]
@@ -416,7 +416,7 @@ flowchart TD
         LR_A2 --> LR_A1["1"]
     end
 
-    subgraph RL["Case 4: RL Imbalance -> Double Rotate"]
+    subgraph RL["Case 4: RL Imbalance -&gt; Double Rotate"]
         RL_B5["5 (BF: -2)"] --> RL_B3["3 (BF: +1)"]
         RL_B3 --> RL_B4["4 (BF: 0)"]
         RL_B5 -.->|"1. Right(3)<br/>2. Left(5)"| RL_A4["4 (BF: 0)"]
@@ -654,8 +654,8 @@ Find `3`-rd smallest element (`k = 3`) in augmented tree:
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    Q5["1️⃣ Root 5<br/>(size: 7)<br/>leftSize(3) = 3 >=<br/>k(3)<br/>-> Go Left"]:::stepNode --> Q3["2️⃣ Node 3<br/>(size: 3)<br/>leftSize(1) = 1<br/>&lt; k(3)<br/>-> Go Right with<br/>k'=3-1-1=1"]:::stepNode
-    Q3 --> Q4["3️⃣ Node 4<br/>(size: 1)<br/>leftSize(0) + 1 ==<br/>k'(1)<br/>-> Found! ✅"]:::foundNode
+    Q5["1️⃣ Root 5<br/>(size: 7)<br/>leftSize(3) = 3 &ge;<br/>k(3)<br/>-&gt; Go Left"]:::stepNode --> Q3["2️⃣ Node 3<br/>(size: 3)<br/>leftSize(1) = 1<br/>&lt; k(3)<br/>-&gt; Go Right with<br/>k'=3-1-1=1"]:::stepNode
+    Q3 --> Q4["3️⃣ Node 4<br/>(size: 1)<br/>leftSize(0) + 1 ==<br/>k'(1)<br/>-&gt; Found! ✅"]:::foundNode
     Q3 -.-> Q1["Node 1 (size: 1)"]
 
     classDef stepNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
@@ -672,8 +672,8 @@ Find the rank of `6` (count of keys `<= 6`):
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    R5["1️⃣ Node 5: 6 > 5<br/>-> Go<br/>Right<br/>Accumulate<br/>leftSize + 1 =<br/>3 + 1 = 4"]:::accNode --> R8["2️⃣ Node 8: 6 &lt;<br/>8 -><br/>Go Left<br/>No accumulation"]:::stepNode
-    R8 --> R7["3️⃣ Node 7: 6 &lt;<br/>7 -><br/>Go Left<br/>Left is null -><br/>Terminate"]:::stepNode
+    R5["1️⃣ Node 5: 6 &gt; 5<br/>-&gt; Go<br/>Right<br/>Accumulate<br/>leftSize + 1 =<br/>3 + 1 = 4"]:::accNode --> R8["2️⃣ Node 8: 6 &lt;<br/>8 -&gt;<br/>Go Left<br/>No accumulation"]:::stepNode
+    R8 --> R7["3️⃣ Node 7: 6 &lt;<br/>7 -&gt;<br/>Go Left<br/>Left is null -&gt;<br/>Terminate"]:::stepNode
 
     classDef accNode fill:#1b5e20,stroke:#81c784,stroke-width:2px,color:#ffffff
     classDef stepNode fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff
@@ -743,14 +743,14 @@ flowchart TD
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    subgraph RandomOrder["Random Input: [1, 5, 3, 8, 2] (Naturally Balanced)"]
+    subgraph RandomOrder["Random Input: (1, 5, 3, 8, 2) (Naturally Balanced)"]
         R5["5"] --> R3["3"]
         R5 --> R8["8"]
         R3 --> R1["1"]
         R1 --> R2["2"]
     end
 
-    subgraph SortedOrder["Sorted Input: [1, 2, 3, 4, 5] (Balanced via Rotations)"]
+    subgraph SortedOrder["Sorted Input: (1, 2, 3, 4, 5) (Balanced via Rotations)"]
         S3["3"] --> S2["2"]
         S3 --> S4["4"]
         S2 --> S1["1"]

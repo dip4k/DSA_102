@@ -1,369 +1,265 @@
-# 📘 Week 19, Day 6: Interview Tips, Multi-Approach Trade-offs & Final Drills (Optional)
+# 📘 WEEK 19 DAY 06: FINAL INTERVIEW TIPS & RAPID-FIRE PATTERN DRILLS
 
-> 🧭 **Navigation:** [← Previous Day](Week_19_Day_05_Weakness_Diagnosis_And_Strategy_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_19_FULL_PLAYBOOK.md)
+> 🧭 **Navigation:** [← Previous Day: Weakness Diagnosis](Week_19_Day_05_Weakness_Diagnosis_And_Strategy_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_19_FULL_PLAYBOOK.md)
 > 
-> 💡 **Instructor Note:** *This capstone optional module crystallizes the meta-skills of senior technical interviewing: 45-minute live clock management, active interviewer alignment, handling hints gracefully, and defending multi-approach algorithmic trade-offs under pressure.*
+> 💡 **Instructor Note:** *Congratulations! You have arrived at the final day of the FAANG Senior & Staff algorithmic curriculum. Today is your ultimate dress rehearsal. We lock in the strict 45-minute delivery timeline, execute 10 rapid-fire 30-second pattern classification drills, and calibrate the exact mental posture that turns interviews into peer architectural collaborations.*
 
 ---
 
-## 🎯 Learning Objectives
+## 🎯 LEARNING OBJECTIVES
 
-*   **The 45-Minute Clock Discipline:** Master the strict time-budget allocations (5m clarify -> 5m trade-off alignment -> 20m clean coding -> 10m edge dry run -> 5m follow-ups).
-*   **Multi-Approach Defense:** Articulate 3 to 4 distinct algorithmic strategies for a single problem, defending time/space trade-offs before touching the keyboard.
-*   **The Senior Hint Protocol:** Transform interviewer questions and nudges into proactive signals without losing Senior (L5) / Staff (L6) hiring signals.
-*   **Capstone Implementation:** Deliver optimal, zero-allocation C# (.NET 8/9) and Python (3.11+) implementations of **Merge K Sorted Lists** (LeetCode 23) comparing Divide-and-Conquer versus Priority Queue min-heaps.
+*By the end of this module, you will be able to:*
+
+- 🎬 **Internalize** the Olympic Sprinter Pre-Race Visualization mental model.
+- 🪜 **Execute** the strict 5-phase 45-minute interview delivery clockwork: Clarify (5m) -> Invariant & Talk Track (7m) -> Production Code (18m) -> Dry Run (8m) -> Scaled Defense (7m).
+- 🎨 **Classify** 10 Tier-1 problem archetypes to their governing invariants in under 30 seconds each.
+- 🛑 **Avoid** fatal pre-interview traps: cramming novel algorithms on interview day, running dry runs with trivial inputs, and jumping into code before agreeing on complexity.
+- 🎙️ **Deliver** the closing reverse-interview talk track: asking high-leverage architectural questions that impress Senior and Staff interviewers.
+- ⚡ **Verify** full-curriculum test passes across all 164 C# and 74 Python tests.
 
 ---
 
-## ⚖️ FAANG Senior / Lead Interview Calibration
+## 🎬 PILLAR 1: THE 60-SECOND HOOK & EVERYDAY ANALOGY
 
-In senior interviews, the interviewer is evaluating not just whether your code compiles and passes test cases, but how you navigate ambiguity, communicate design decisions, and handle trade-offs under real-time constraints.
+### The Olympic Sprinter & The Starting Blocks
 
-### The 45-Minute Time Allocation Protocol
+Imagine watching an Olympic 100-meter sprinter in the moments before the starting gun fires:
+- Do they start running around the track frantically trying to learn a new running style?
+- Do they read a textbook on muscle physiology?
+- **NO!** They close their eyes. They breathe deeply. They **visualize every single stride of the race in advance**:
+  - The explosive start from the blocks.
+  - The smooth transition to upright posture at 30 meters.
+  - The maximum velocity sprint at 60 meters.
+  - The chest lean across the finish line.
 
 ```text
-+---------+------------------------------+-------------------------------------------------------+
-| TIME    | INTERVIEW PHASE              | SENIOR BEHAVIORAL GOAL                                |
-+---------+------------------------------+-------------------------------------------------------+
-| 00 - 05m| 1. Clarify & Boundary Probing| State input types, constraints (N, K), null/empty     |
-|         |                              | rules, duplicate semantics, memory limits.            |
-+---------+------------------------------+-------------------------------------------------------+
-| 05 - 10m| 2. Approach & Trade-off Pitch| Present brute force baseline, then pitch 2-3 optimal  |
-|         |                              | designs. Get verbal buy-in BEFORE writing code.       |
-+---------+------------------------------+-------------------------------------------------------+
-| 10 - 30m| 3. Modular Idiomatic Coding  | Write clean, structured code with guard clauses.      |
-|         |                              | Verbalize thought process continuously while typing.  |
-+---------+------------------------------+-------------------------------------------------------+
-| 30 - 40m| 4. Dry Run & Edge Verification| Walk through non-trivial input line-by-line with an    |
-|         |                              | execution trace table. Catch bugs before being asked. |
-+---------+------------------------------+-------------------------------------------------------+
-| 40 - 45m| 5. Production & Scale Ext.   | Discuss concurrent scaling, streaming, cache lines,   |
-|         |                              | and distributed extensions (e.g. external merge sort).|
-+---------+------------------------------+-------------------------------------------------------+
+The Senior Interviewer Posture:
+You are not walking into an examination to be judged.
+You are walking into a meeting room as an external technical consultant
+collaborating with a peer engineer on an urgent technical problem!
+```
+
+When you treat the interviewer as a **peer engineering colleague** rather than an examiner, your tone transforms from nervous student to authoritative Senior / Staff Architect. You lead the timeline, define the invariants, and write clean, production-grade code with confidence!
+
+---
+
+## 🪜 PILLAR 2: THE SCAFFOLDING LADDER & TOY NAPKIN TRACE
+
+### Step 1: The Strict 45-Minute Interview Timeline Clockwork
+
+Every minute of a 45-minute technical interview has an exact purpose:
+
+```text
++--------------------------------------------------------------------------------------------------+
+|                              THE 45-MINUTE INTERVIEW CLOCKWORK                                   |
++--------------------------------------------------------------------------------------------------+
+| [00:00 - 05:00] PHASE 1: CLARIFY INPUTS & BOUNDS                                                  |
+| - Clarify constraints: N, value range, nullability, duplicates, sortedness, concurrency.         |
+| - State the naive brute-force baseline to anchor the complexity discussion immediately.          |
+|                                                                                                  |
+| [05:00 - 12:00] PHASE 2: INVARIANT DERIVATION & TALK TRACK                                       |
+| - Spot the computational bottleneck in the brute force.                                          |
+| - Introduce the physical mental model (shorter wall, sliding window, express lane).              |
+| - Speak the 3-Sentence Talk Track: agree on optimal time and space BEFORE touching code!         |
+|                                                                                                  |
+| [12:00 - 30:00] PHASE 3: PRODUCTION CODE IMPLEMENTATION                                         |
+| - Code fluently in C# or Python with guard clauses and zero warnings.                           |
+| - Use clean modular naming; narrate intent aloud as you type.                                    |
+| - Finished by minute 28-30.                                                                      |
+|                                                                                                  |
+| [30:00 - 38:00] PHASE 4: CONCRETE EDGE-CASE DRY RUN                                              |
+| - NEVER say: "I'm done." Instead say: "Let me trace this through a concrete edge-case input."    |
+| - Trace with real numbers in a table; verify off-by-one pointer boundaries and empty sets.       |
+|                                                                                                  |
+| [38:00 - 45:00] PHASE 5: COMPLEXITY DECONSTRUCTION & SYSTEMS EXTENSION                           |
+| - State Time, Auxiliary Space, and Output Space.                                                 |
+| - Discuss hardware cache locality, thread-safety, and production extensions (e.g., Redis ZSET).  |
++--------------------------------------------------------------------------------------------------+
 ```
 
 ---
 
-## 🧭 The Senior Hint Recovery & Verbal Alignment Protocol
+### Step 2: The 10 Rapid-Fire Pattern Recognition Drills
 
-When an interviewer interrupts or asks a probing question, novice candidates panic or assume they are failing. Senior candidates treat questions as collaborative alignment cues.
+*Test your instantaneous pattern reflex. Read the problem prompt, pause for 10 seconds, and state the governing invariant:*
+
+1. **Prompt 1:** *"Find the maximum sum subarray of size K."*
+   - **Pattern:** Fixed-Size Sliding Window.
+   - **Invariant:** Slide window right by adding `nums[i]` and subtracting `nums[i - K]`. `O(N)` time, `O(1)` space.
+2. **Prompt 2:** *"Find the next greater element for every index in an array."*
+   - **Pattern:** Monotonic Decreasing Stack.
+   - **Invariant:** Elements waiting for their greater element sit in decreasing order. Popped when a larger element arrives. `O(N)`.
+3. **Prompt 3:** *"Merge K sorted linked lists of total size N."*
+   - **Pattern:** Min-Heap / Priority Queue (or Divide-and-Conquer).
+   - **Invariant:** Heap of size `K` always contains the current minimum heads. `O(N log K)` time.
+4. **Prompt 4:** *"Find the shortest path in an unweighted grid with obstacle eliminations."*
+   - **Pattern:** 3D State BFS (`[row, col, remaining_eliminations]`).
+   - **Invariant:** Queue explores states in non-decreasing order of steps. `O(M * N * K)`.
+5. **Prompt 5:** *"Find the median of a dynamically growing number stream."*
+   - **Pattern:** Dual Balanced Heaps (Max-Heap `Left` + Min-Heap `Right`).
+   - **Invariant:** Size difference `<= 1`; `Left.Top() <= Right.Top()`. `O(log N)` insert, `O(1)` median.
+6. **Prompt 6:** *"Detect whether a directed graph has a cycle and return topological order."*
+   - **Pattern:** Kahn's Algorithm (BFS with in-degrees) or 3-Color DFS.
+   - **Invariant:** Nodes with in-degree 0 have all prerequisites satisfied. `O(V + E)`.
+7. **Prompt 7:** *"Find the minimum coins to make change for amount W using arbitrary coin denominations."*
+   - **Pattern:** 1D Unbounded Knapsack Dynamic Programming.
+   - **Invariant:** `dp[w] = 1 + min(dp[w - coin])`. `O(W * C)` time, `O(W)` space.
+8. **Prompt 8:** *"Check if an array of N numbers contains a pair summing to Target where N = 40 and Target = 10^14."*
+   - **Pattern:** Meet-in-the-Middle.
+   - **Invariant:** Split into two halves of 20, generate `2^20` sums, sort and reconcile via two pointers. `O(N * 2^(N/2))`.
+9. **Prompt 9:** *"Maintain a dynamic forest with edge additions, deletions, and path queries online."*
+   - **Pattern:** Link-Cut Tree (LCT).
+   - **Invariant:** Represented tree decomposed into preferred paths inside auxiliary Splay trees. Amortized `O(log N)`.
+10. **Prompt 10:** *"Count the number of structurally unique Binary Search Trees with N keys."*
+    - **Pattern:** Catalan Number (`C_N`).
+    - **Invariant:** `C_N = (1 / (N + 1)) * C(2N, N)`. Resolves in `O(N)` or `O(1)` time.
+
+---
+
+### 🧠 Pause & Predict Micro-Drills
+
+> **Drill 1:** What are the three best questions to ask your interviewer in the final 5 minutes?
+> *Pause here and think!*
+>
+> **Answer:** 
+> 1. *"What is the most challenging architectural bottleneck your team solved in the last quarter?"*
+> 2. *"How does the team navigate engineering trade-offs between delivery velocity and technical debt at your scale?"*
+> 3. *"What does a Staff / Lead engineer in this group do during their first 90 days to deliver the highest impact?"*
+
+---
+
+## 🎨 PILLAR 3: PRAGMATIC VISUAL MODELS & DECISION FLOWS
+
+### Modern Hex Flowchart: The 45-Minute Interview Timeline
 
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
-flowchart TD
-    InterviewerCue["🎙️<br/>Interviewer<br/>gives a<br/>hint or asks:<br/>'Could we<br/>do better in<br/>space?'"]
-    Acknowledge["1. Active<br/>Validation:<br/>'That is a great<br/>observation. Let<br/>us<br/>analyze our<br/>auxiliary<br/>space.'"]
-    Deconstruct["2. Trace the Work:<br/>'Currently we use<br/>O(K)<br/>space for the<br/>heap. Can<br/>we eliminate the<br/>heap?'"]
-    Synthesize["3. Propose<br/>Invariant:<br/>'Yes! Pairwise<br/>Divide &<br/>Conquer reuses<br/>existing<br/>node pointers in<br/>O(1)<br/>space.'"]
-    Confirm["4. Seek Agreement:<br/>'Would<br/>you like me to<br/>pivot to<br/>the Divide &<br/>Conquer<br/>approach?'"]
+flowchart LR
+    P1["00-05m: Clarify<br/>Inputs & Bounds"] --> P2["05-12m: Invariant<br/>& Talk Track"]
+    P2 --> P3["12-30m: Production<br/>Clean Code"]
+    P3 --> P4["30-38m: Concrete<br/>Dry Run"]
+    P4 --> P5["38-45m: Complexity<br/>& Systems"]
 
-    InterviewerCue --> Acknowledge --> Deconstruct --> Synthesize --> Confirm
+    style P1 fill:#e1f5fe,stroke:#0288d1,color:#01579b
+    style P2 fill:#fff3e0,stroke:#ef6c00,color:#e65100
+    style P3 fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style P4 fill:#f3e5f5,stroke:#8e24aa,color:#4a148c
+    style P5 fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
 ```
-
-### The 3 Rules of Hint Handling
-1. **Never Defend a Suboptimal Flaw:** If the interviewer spots an off-by-one or an edge case, immediately say: *"Good catch. Let's trace that branch,"* and fix it cleanly.
-2. **Think Out Loud Before Modifying Code:** Never silently delete 10 lines of code. Explain your reasoning: *"To handle an empty list inside the array, let's add an explicit null guard before advancing the pointer."*
-3. **Ask Directed Verification Questions:** Instead of asking *"What should I do now?"*, ask *"Given that K can be up to 10^4, should we optimize for auxiliary memory or raw CPU cache locality?"*
 
 ---
 
-## 📖 Chapter 1: Live Simulation & Multi-Approach Defense Transcript
+## 🛑 PILLAR 4: THE ROOKIE TRAP ZONE
 
-### Problem: Merge K Sorted Lists (LeetCode 23)
+### Side-by-Side Comparison: Blunders vs. Senior Architect Patterns
 
-> **Interviewer:** *"You are given an array of `k` linked-lists `lists`, each linked-list is sorted in ascending order. Merge all the linked-lists into one sorted linked-list and return it."*
+| Dimension | ❌ Rookie Blunder | ✅ Senior Architect Pattern |
+| :--- | :--- | :--- |
+| **Interview Day Preparation** | Crams 30 unfamiliar Hard problems the night before, showing up exhausted with cognitive fatigue. | Rests mind 24h prior; reviews only 1-page invariant cheat sheets and 45-min talk tracks. |
+| **Whiteboard Coding Posture** | Begins typing immediately in silence without confirming input constraints or agreeing on complexity. | Clarifies inputs, states naive baseline, derives invariant, and delivers 3-sentence script before typing. |
+| **Finishing Code** | Types the last bracket and declares: "I think my code works, I'm done." | Proactively initiates dry run: *"Let me trace this through an edge case with a single-element input to verify pointer bounds."* |
+| **Error Handling** | Ignores boundary conditions (e.g. `null`, empty array, negative numbers, extreme `10^18`). | Places defensive guard clauses at top of function; uses 64-bit `long` to prevent overflow. |
+| **Reverse Q&A** | Says: *"No, I don't have any questions for you."* | Asks thoughtful, high-level architectural questions about team scaling, latency SLA bottlenecks, and technical trade-offs. |
+
+---
+
+## 🎙️ PILLAR 5: 45-MINUTE INTERVIEW TALK TRACK
+
+### The Master Closing Statement Template
+
+Deliver this concise wrap-up at minute 40:
 
 ```text
-Visual Representation:
-List 0: 1 -> 4 -> 5
-List 1: 1 -> 3 -> 4
-List 2: 2 -> 6
-
-Merged Output:
-1 -> 1 -> 2 -> 3 -> 4 -> 4 -> 5 -> 6
++--------------------------------------------------------------------------------------------------+
+|                              THE SENIOR CLOSING TALK TRACK                                       |
++--------------------------------------------------------------------------------------------------+
+| "To summarize our solution:                                                                      |
+| 1. Correctness & Invariants: We've established that the governing invariant [e.g. shorter wall / |
+|    bisection / lower envelope] guarantees that each element is processed in amortized O(1) time.  |
+| 2. Complexity: Time complexity is strictly O(N), with O(1) auxiliary working memory, completely  |
+|    avoiding heap allocation churn during high-throughput execution.                              |
+| 3. Production Robustness: In a scaled production deployment, we've guarded against 64-bit        |
+|    arithmetic overflow, validated empty input boundaries, and maintained CPU L1/L2 cache         |
+|    locality with contiguous memory layout."                                                      |
++--------------------------------------------------------------------------------------------------+
 ```
 
 ---
 
-### Authentic Senior Dialogue Transcript
+## ⚡ PILLAR 6: PRODUCTION DUAL-LANGUAGE IMPLEMENTATIONS
 
-**Candidate:** "Let's first clarify the inputs and operational constraints:
-1. What is the range of `k` (the number of lists) and `N` (the total number of nodes across all lists)?
-2. Can `lists` itself be null or empty? Can individual linked lists inside `lists` be null?
-3. Can node values be negative, and are duplicate values allowed?
-4. Are we expected to splice existing nodes in-place, or should we allocate fresh node objects?"
-
-**Interviewer:** "`0 <= k <= 10^4`, total nodes `0 <= N <= 10^5`. Individual lists can be null or empty. Values are signed 32-bit integers (`-10^4 <= Val <= 10^4`). Duplicates are allowed. You should splice existing nodes in-place to avoid unnecessary object allocation."
-
-**Candidate:** "Excellent. That gives us a complete contract. Let's analyze the algorithmic solution space and compare the trade-offs across four distinct approaches:
-
-*   **Approach 1: Brute Force Array Collection & Sort**
-    *   *Idea:* Traverse all `N` nodes, collect values into a dynamic array, sort the array in `O(N log N)`, and construct a new linked list.
-    *   *Trade-off:* Time is `O(N log N)`, space is `O(N)`. It wastes the precondition that all `k` lists are already sorted individually.
-*   **Approach 2: Sequential Pairwise Merging**
-    *   *Idea:* Maintain a single running list. Iteratively merge list 0 with list 1, then the result with list 2, up to list `k - 1`.
-    *   *Trade-off:* Merging the `i`-th list takes `O(i * (N / k))` work. Total time is `O(k * N)`. For `k = 10^4` and `N = 10^5`, `k * N` reaches `10^9` operations, which will cause Time Limit Exceeded (TLE).
-*   **Approach 3: Priority Queue (Min-Heap) on `k` Pointers**
-    *   *Idea:* Maintain a min-heap containing the current head of each of the `k` lists. Repeatedly extract the minimum node, append it to the merged tail, and push its next pointer into the heap.
-    *   *Trade-off:* Each extraction and insertion takes `O(log k)`. For `N` total nodes, total time is `O(N log k)`. Auxiliary space is `O(k)` for the heap buffer.
-*   **Approach 4: Divide and Conquer (Pairwise Reduction)**
-    *   *Idea:* Pair up the `k` lists and merge each pair in `O(N / k)` time. After the first round, `k / 2` lists remain. Repeat for `log2(k)` rounds.
-    *   *Trade-off:* Total time is identical at `O(N log k)`. Crucially, because we merge linked lists in-place by rewiring pointers, the auxiliary space is strictly `O(1)` (or `O(log k)` stack space if implemented recursively, `O(1)` iteratively)."
-
-**Interviewer:** "That is a thorough breakdown. Which approach would you select for a latency-sensitive production service?"
-
-**Candidate:** "In production, Approach 4 (Iterative Divide and Conquer) is superior because:
-1. It achieves the optimal `O(N log k)` runtime without allocating a heap data structure.
-2. It operates in strictly `O(1)` auxiliary heap memory, eliminating garbage collection pressure.
-3. However, Approach 3 (Min-Heap) has the advantage when lists arrive in a streaming fashion where all `k` lists are not available up-front.
-Since we have the full array in memory, I will implement **Approach 4 (Divide and Conquer)** iteratively with `O(1)` auxiliary space, and I can also demonstrate Approach 3 if you would like to compare."
-
-**Interviewer:** "Proceed with the iterative Divide and Conquer approach."
-
----
-
-## 🏛️ Chapter 2: The 4-Way Architectural Trade-off Matrix
-
-```text
-+-------------------------+-------------+-----------------+-----------------------+------------------------------------+
-| APPROACH                | TIME        | AUX SPACE       | CACHE & GC FOOTPRINT  | PRODUCTION VERDICT                 |
-+-------------------------+-------------+-----------------+-----------------------+------------------------------------+
-| 1. Brute Force Sort     | O(N log N)  | O(N)            | High GC allocs; O(N)  | ❌ Unacceptable: ignores order     |
-| 2. Sequential Merging   | O(k * N)    | O(1)            | Pointer rewiring      | ❌ Unacceptable: TLE at k=10^4     |
-| 3. Min-Heap (PriorityQ) | O(N log k)  | O(k)            | Node wrapper heap     | ✅ Excellent for streaming inputs  |
-| 4. Divide & Conquer     | O(N log k)  | O(1) in-place   | Zero heap allocs      | 🏆 Gold Standard for in-memory     |
-+-------------------------+-------------+-----------------+-----------------------+------------------------------------+
-```
-
-### Visual Trace: Divide and Conquer Reduction Tree
-
-```text
-Initial lists (k = 8):
-Round 0: [L0]  [L1]    [L2]  [L3]    [L4]  [L5]    [L6]  [L7]
-           \    /        \    /        \    /        \    /
-Round 1:   [L0,1]        [L2,3]        [L4,5]        [L6,7]      (4 lists, work = N)
-              \            /              \            /
-Round 2:        [L0..3]                      [L4..7]                 (2 lists, work = N)
-                   \                            /
-Round 3:                      [L0..7]                                (1 list, work = N)
-
-Total Rounds = ceil(log2(k))
-Work per Round = O(N)
-Total Time = O(N log k)
-Auxiliary Memory = O(1) (In-place pointer rewiring)
-```
-
----
-
-## 💻 Chapter 3: Production-Grade Dual-Language Implementations
-
-### C# Modern Implementation (.NET 8/9)
+### C# Primary Implementation (.NET 8/9): Rapid Pattern Recognition Verification Harness
 
 ```csharp
 using System;
 
-public sealed class ListNode
+namespace AdvancedDataStructures;
+
+public static class FinalInterviewHarness
 {
-    public int val;
-    public ListNode? next;
-
-    public ListNode(int val = 0, ListNode? next = null)
+    public static string ClassifyProblem(string archetype)
     {
-        this.val = val;
-        this.next = next;
-    }
-}
-
-public static class KWayListMerger
-{
-    /// <summary>
-    /// Merges k sorted linked lists using iterative Divide and Conquer.
-    /// Time Complexity: O(N log k) where N is total nodes, k is number of lists.
-    /// Auxiliary Space: O(1) in-place pointer manipulation.
-    /// </summary>
-    public static ListNode? MergeKListsDivideAndConquer(ListNode?[]? lists)
-    {
-        // Guard clause: handle null or empty input collection
-        if (lists == null || lists.Length == 0)
+        return archetype.ToLowerInvariant() switch
         {
-            return null;
-        }
-
-        int interval = 1;
-        int length = lists.Length;
-
-        // Bottom-up pairwise merging (simulating merge sort reduction)
-        while (interval < length)
-        {
-            for (int i = 0; i + interval < length; i += interval * 2)
-            {
-                lists[i] = MergeTwoSortedLists(lists[i], lists[i + interval]);
-            }
-
-            interval *= 2;
-        }
-
-        return lists[0];
-    }
-
-    /// <summary>
-    /// Merges two sorted linked lists using sentinel head pointer.
-    /// Time Complexity: O(len1 + len2).
-    /// Auxiliary Space: O(1).
-    /// </summary>
-    public static ListNode? MergeTwoSortedLists(ListNode? l1, ListNode? l2)
-    {
-        // Sentinel dummy node simplifies head management
-        ListNode dummy = new ListNode(-1);
-        ListNode current = dummy;
-
-        while (l1 != null && l2 != null)
-        {
-            if (l1.val <= l2.val)
-            {
-                current.next = l1;
-                l1 = l1.next;
-            }
-            else
-            {
-                current.next = l2;
-                l2 = l2.next;
-            }
-
-            current = current.next;
-        }
-
-        // Splice remaining tail in O(1) without looping
-        current.next = l1 ?? l2;
-
-        return dummy.next;
+            "contiguous range max" => "Sliding Window / Monotonic Deque (O(N))",
+            "next greater element" => "Monotonic Stack (O(N))",
+            "k sorted streams" => "PriorityQueue / Min-Heap (O(N log K))",
+            "tree path mutation" => "Heavy-Light Decomposition or Link-Cut Tree (O(log^2 N) / O(log N))",
+            "massive subset sum n=40" => "Meet-in-the-Middle (O(N * 2^(N/2)))",
+            "unique bst count" => "Catalan Numbers C_n = (1/(n+1)) * C(2n, n) (O(N))",
+            "offline range distinct" => "Square Root Decomposition / Mo's Algorithm (O((N + Q) * sqrt(N)))",
+            "billion unique visitors" => "HyperLogLog 12 KB probabilistic cardinality",
+            _ => "Standard Divide-and-Conquer or Dynamic Programming"
+        };
     }
 }
 ```
 
 ---
 
-### Python Modern Implementation (Python 3.11+)
+### Python Secondary Implementation (Python 3.11+): Complete Pattern Classifier
 
 ```python
-from typing import List, Optional
-
-class ListNode:
-    def __init__(self, val: int = 0, next: Optional['ListNode'] = None):
-        self.val = val
-        self.next = next
-
-class KWayListMerger:
+class FinalInterviewHarness:
     @staticmethod
-    def merge_k_lists_divide_and_conquer(lists: Optional[List[Optional[ListNode]]]) -> Optional[ListNode]:
-        """
-        Merges k sorted linked lists using bottom-up iterative divide-and-conquer.
-        Time Complexity: O(N log k)
-        Auxiliary Space: O(1) in-place pointer rewiring
-        """
-        if not lists:
-            return None
-
-        interval = 1
-        n = len(lists)
-
-        # Pairwise merge in rounds
-        while interval < n:
-            for i in range(0, n - interval, interval * 2):
-                lists[i] = KWayListMerger._merge_two_lists(lists[i], lists[i + interval])
-            interval *= 2
-
-        return lists[0]
-
-    @staticmethod
-    def _merge_two_lists(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
-        """
-        Merges two sorted lists in-place using a sentinel dummy node.
-        Time Complexity: O(L1 + L2)
-        Auxiliary Space: O(1)
-        """
-        dummy = ListNode(-1)
-        current = dummy
-
-        while l1 and l2:
-            if l1.val <= l2.val:
-                current.next = l1
-                l1 = l1.next
-            else:
-                current.next = l2
-                l2 = l2.next
-            current = current.next
-
-        # Attach the remaining tail directly
-        current.next = l1 if l1 else l2
-
-        return dummy.next
+    def classify_problem(archetype: str) -> str:
+        key = archetype.strip().lower()
+        patterns = {
+            "contiguous range max": "Sliding Window / Monotonic Deque (O(N))",
+            "next greater element": "Monotonic Stack (O(N))",
+            "k sorted streams": "PriorityQueue / Min-Heap (O(N log K))",
+            "tree path mutation": "Heavy-Light Decomposition or Link-Cut Tree (O(log^2 N) / O(log N))",
+            "massive subset sum n=40": "Meet-in-the-Middle (O(N * 2^(N/2)))",
+            "unique bst count": "Catalan Numbers C_n = (1/(n+1)) * C(2n, n) (O(N))",
+            "offline range distinct": "Square Root Decomposition / Mo's Algorithm (O((N + Q) * sqrt(N)))",
+            "billion unique visitors": "HyperLogLog 12 KB probabilistic cardinality"
+        }
+        return patterns.get(key, "Standard Divide-and-Conquer or Dynamic Programming")
 ```
 
 ---
 
-## 🔬 Chapter 4: Explicit Complexity Deconstruction
+## 📊 EXPLICIT COMPLEXITY DECONSTRUCTION
 
-### 1. Time Complexity
-*   **Pairwise Merging per Round:** In round 1, we merge `k / 2` pairs. Total nodes traversed across all pairs is `N`.
-*   **Number of Rounds:** The interval doubles each round: `1, 2, 4, 8, ...` until `interval >= k`. Total rounds = `ceil(log2(k))`.
-*   **Total Work:** `O(N) * ceil(log2(k)) = O(N log k)`.
-*   **Worst-Case Bound:** When `k = 10^4` and `N = 10^5`, `log2(10^4) ≈ 14`. Total operations ≈ `1.4 * 10^6`, executing in under 5 milliseconds.
-
-### 2. Auxiliary Memory Space
-*   **Heap Allocations:** Exactly `0`. We mutate the existing `.next` pointer links of existing node instances.
-*   **Call Stack Memory:** Exactly `O(1)`. The bottom-up loop is purely iterative; no recursive stack frames are generated.
-*   **Total Auxiliary Space:** `O(1)`.
-
-### 3. Output Space
-*   We return the head of the existing spliced list (`lists[0]`), requiring `O(1)` output references.
-
----
-
-## 🎙️ Chapter 5: 45-Minute Senior / Lead Verbal Interview Script
-
-```text
-+-----------------------+------------------------------------------------------------------------------------------+
-| INTERVIEW STEP        | SPOKEN SCRIPT (WHAT YOU SAY ALOUD TO THE INTERVIEWER)                                    |
-+-----------------------+------------------------------------------------------------------------------------------+
-| 1. Contract & Bounds  | "I have verified that lists can be empty, k is up to 10^4, and total nodes N is 10^5.    |
-|                       | Because we need to preserve existing node references and run in sub-millisecond latency, |
-|                       | our goal is O(N log k) time with O(1) auxiliary space."                                  |
-+-----------------------+------------------------------------------------------------------------------------------+
-| 2. Approach Selection | "Sequential merging would degrade to O(k * N), which TLEs at 10^9 operations.            |
-|                       | While a Min-Heap gives O(N log k), it incurs O(k) memory overhead.                       |
-|                       | Therefore, I will use an iterative Divide and Conquer reduction tree to achieve          |
-|                       | O(N log k) runtime with strictly O(1) heap allocations."                                 |
-+-----------------------+------------------------------------------------------------------------------------------+
-| 3. Invariant Derivation| "The invariant is that after each doubling of the stride interval, lists[i] contains    |
-|                       | the fully sorted merge of all lists in the range [i, i + 2*interval - 1]."               |
-+-----------------------+------------------------------------------------------------------------------------------+
-| 4. Dry Run & Verif.   | "Let's test an asymmetric case: lists = [[], [1], [0, 2]]. On round 1, index 0 merges   |
-|                       | [] and [1], yielding [1]. Then index 0 merges [1] with [0, 2], yielding [0, 1, 2].       |
-|                       | All sentinel references and pointer tails spliced cleanly."                              |
-+-----------------------+------------------------------------------------------------------------------------------+
-```
-
----
-
-## 🔍 Chapter 6: Granular Edge-Case & Invariant Verification Matrix
-
-| Edge Case Test Scenario | Input Description | Expected Output | Invariant Guardrail |
+| Phase | Duration | Core Deliverable | Success Criteria |
 | :--- | :--- | :--- | :--- |
-| **Null Array Input** | `lists = null` | `null` | Immediate return via top guard clause `if (lists == null)`. |
-| **Empty Array Input** | `lists = []` | `null` | Immediate return via `lists.Length == 0`. |
-| **All Lists Empty** | `lists = [[], [], []]` | `null` | `MergeTwoSortedLists` returns `null` when both inputs are null. |
-| **Single List Only** | `lists = [[1, 2, 3]]` | `1 -> 2 -> 3` | While loop `interval < length` terminates immediately (interval 1 not < length 1). Returns `lists[0]`. |
-| **Unequal List Lengths**| `lists = [[1, 100], [2], [3, 4, 5, 6]]` | `1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 100` | `current.next = l1 ?? l2` immediately splices remainder in `O(1)`. |
-| **Duplicate Values** | `lists = [[1, 1], [1], [1, 1]]` | `1 -> 1 -> 1 -> 1 -> 1` | Invariant `l1.val <= l2.val` preserves stable sequence ordering. |
+| **Phase 1: Clarify** | 5 Minutes | Boundary conditions & Naive baseline | Locks in constraints; avoids unhandled edge cases. |
+| **Phase 2: Invariant** | 7 Minutes | Talk track & Invariant proof | Secures interviewer alignment BEFORE writing code. |
+| **Phase 3: Code** | 18 Minutes | Idiomatic C# / Python implementation | Zero-allocation, guard clauses, modular clean code. |
+| **Phase 4: Dry Run** | 8 Minutes | Step-by-step trace table | Self-discovers and fixes any off-by-one errors. |
+| **Phase 5: Defense** | 7 Minutes | Complexity & Systems follow-up | Proves Senior / Staff systems maturity. |
 
 ---
 
-## 🎓 Curriculum Capstone & Graduation Protocol
+## 🔍 GRANULAR EDGE-CASE & INVARIANT VERIFICATION TABLE
 
-With this module completed, you have covered:
-1. **Phases A–E (Weeks 1–15):** The complete core computational fundamentals, patterns, trees, graphs, DP, backtracking, and network flow.
-2. **Phase F (Weeks 16–18):** Advanced competitive algorithms, CHT, Slope Trick, HLD, and distributed probabilistic data structures.
-3. **Phase G (Week 19):** Full-spectrum mock rounds, weakness diagnosis, offer leveling, and verbal interview defense.
+| Interview Scenario | Recommended Verbal Response | Invariant Action |
+| :--- | :--- | :--- |
+| **Interviewer asks for O(1) space** | *"Notice that water height depends strictly on the shorter boundary wall..."* | Switch from prefix arrays to opposing two pointers. |
+| **Interviewer asks about large N** | *"At N = 10^5, quadratic checking times out; we'll employ a Monotonic Deque..."* | Eliminate nested loops with single-pass stack/deque. |
+| **Interviewer asks about scale** | *"In a distributed deployment, modulo sharding causes cache stampedes..."* | Recommend Consistent Hashing with virtual nodes. |
+| **Interviewer asks about multi-core** | *"To avoid lock contention, we use lock-free forward pointer CAS in Skip Lists..."* | Recommend concurrent skip lists or partitioned buckets. |
 
-You are now fully prepared to lead and pass Senior (L5) and Staff (L6) technical interviews at FAANG and Tier-1 product companies.
+---
+
+> 🧭 **Navigation:** [← Previous Day: Weakness Diagnosis](Week_19_Day_05_Weakness_Diagnosis_And_Strategy_Instructional.md) • [🏠 Week Overview](README.md) • [📘 Curriculum Syllabus](../COMPLETE_SYLLABUS.md) • [Week Playbook →](WEEK_19_FULL_PLAYBOOK.md)
