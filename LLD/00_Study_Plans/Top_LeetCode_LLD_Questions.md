@@ -5,7 +5,7 @@ This guide brings together the **most frequently asked Low-Level Design (LLD), O
 * 🏢 **For complete company-by-company breakdown**, see the **[Top 30 Product Companies LLD Interview Directory & Prep Guide](./Top_30_Product_Companies_LLD_Interview_Guide.md)**.
 * 🧠 **For interview pacing, checklists, and latency numbers**, see **[10. Interview Quick Reference, Decision Trees & Checklists](../00_Core_Concepts/10_Interview_Quick_Reference_and_Checklists.md)**.
 
-These questions are **strictly language-agnostic** in architectural principle and implemented with production-grade **C# 12 / .NET 8**, balancing **clean SOLID abstractions** with **optimal data structures ($O(1)$ / $O(\log N)$)** under interview pressure.
+These questions are **strictly language-agnostic** in architectural principle and implemented with production-grade **C# 12 / .NET 8**, balancing **clean SOLID abstractions** with **optimal data structures (`O(1)` / `O(log N)`)** under interview pressure.
 
 ---
 
@@ -108,7 +108,7 @@ These comprehensive 90-minute design challenges are standard at **Flipkart, Swig
 5. **[Snake and Ladder Game (Flipkart / Amazon / Swiggy)](../02_Tier2_Classic_LLD/23_Snake_and_Ladder.md)**
    * *Key Entities:* `Board`, `Cell`, `Player`, `Dice`, `IDiceStrategy`, `ISpecialCell`, `Snake`, `Ladder`.
    * *Patterns:* **Strategy** (Normal vs Crooked dice), **Cycle Detection** (3-color DFS to prevent infinite game loops), **Observer** (Leaderboard / rank alerts).
-   * *Interview Focus:* Clean OOP separation, extensible board size $N \times N$, boundary overshoot rules.
+   * *Interview Focus:* Clean OOP separation, extensible board size `N x N`, boundary overshoot rules.
 6. **[Cricbuzz / Live Cricket Scoreboard & Commentary Engine](../02_Tier2_Classic_LLD/24_Cricbuzz_Cricket_Scoreboard.md)**
    * *Key Entities:* `Match`, `Innings`, `Over`, `Ball`, `BallType`, `Player` (`BatsmanStats`, `BowlerStats`), `Team`.
    * *Patterns:* **Domain Service** (`StrikeRotator`), **Observer Pattern** (Commentary, Push notifications, UI scorecards).
@@ -144,19 +144,15 @@ These comprehensive 90-minute design challenges are standard at **Flipkart, Swig
 
 ---
 
-## 📚 Section 3: Curated External Resources & Repositories
+## 🏛️ Section 3: Senior LLD Execution Checklist
 
-Use these trusted community repositories and courses to practice implementations across languages:
+When tackling any of these problems in a 45-minute live technical interview, follow the repository's standardized **6-Phase Architectural Arc**:
 
-### ⭐ Must-Bookmark GitHub Repositories
-* 🌟 **[ashishps1/awesome-low-level-design](https://github.com/ashishps1/awesome-low-level-design)** — Comprehensive repository with OOP fundamentals, design patterns, UML diagrams, and end-to-end problem solutions in Java/C++.
-* 🌟 **[kumaransg/LLD](https://github.com/kumaransg/LLD)** — Curated machine coding problems and design templates asked in top product tech interviews.
-* 🌟 **[kush1912/Machine-Coding](https://github.com/kush1912/Machine-Coding)** — High quality object-oriented implementations of Splitwise, Parking Lot, Snake & Ladder, and Booking systems.
-* 🌟 **[donnemartin/system-design-primer](https://github.com/donnemartin/system-design-primer)** — The gold standard for system design; includes dedicated section on Object-Oriented Design problems.
-* 🌟 **[workattech/machinecoding](https://github.com/workattech/machinecoding)** — Guidelines, problem statements, and best practices specifically for 90-minute machine coding rounds.
-
-### 🎥 Top Video Playlists & Learning Platforms
-* **[Gaurav Sen (System Design / LLD)](https://www.youtube.com/@gkcs)**: Exceptional breakdown of foundational LLD concepts, rate limiters, and game engines.
-* **[Shreyansh Jain (LLD Playlist)](https://www.youtube.com/@shrayansh_jain)**: In-depth implementations of Parking Lot, Cricbuzz, Elevator, and design patterns in Java/C++.
-* **[Refactoring.guru Design Patterns](https://refactoring.guru/design-patterns)**: The most intuitive visual guide for Creational, Structural, and Behavioral patterns with multi-language code snippets.
-* **[Work@Tech LLD & Machine Coding Practice](https://workat.tech/machine-coding/practice)**: Practice questions with time constraints simulating real interviews.
+| Phase | Time Allotment | Key Deliverables | Common Pitfall to Avoid |
+| :--- | :--- | :--- | :--- |
+| **1. Scope & NFRs** | 5–7 min | Clarify 3–5 core use cases, QPS, latency SLAs, concurrency model. | Jumping straight into classes before locking requirements. |
+| **2. Domain Contracts** | 5–8 min | Define core entities, immutable value objects, thin interfaces (`SOLID 'I'`). | Monolithic God-interfaces with 15 methods. |
+| **3. Class & State Modeling** | 8–10 min | Mermaid `classDiagram` relationships and `stateDiagram-v2` for state machines. | Neglecting to model entity lifecycle transitions. |
+| **4. Patterns & Concurrency** | 5–7 min | Justify GoF design patterns; establish thread-safety and lock ordering hierarchy. | Claiming "thread-safe" without specifying lock granularity. |
+| **5. Idiomatic Code** | 15–20 min | Production C# (.NET 8/9) with DI/cancellation; clean Python (3.11+) with type hints. | Partial pseudo-code without error handling or guard clauses. |
+| **6. Extensibility Drill** | 5 min | Address architectural curveballs (e.g. distributed scale, plugin rules) via OCP. | Hardcoding business logic that breaks on requirement shifts. |

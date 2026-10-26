@@ -1,145 +1,450 @@
-# 03. DDD Order Management (DDD + CQRS)
+# 03. DDD Order Management (Family 3: Stateful Workflow & Invariants)
 
-## 📌 Context
-Domain-Driven Design (DDD) combined with Command Query Responsibility Segregation (CQRS) is the gold standard for complex .NET backend services.
-This problem tests whether you can encapsulate business logic in the Domain model (rich domain) instead of writing "anemic domain models" with logic bleeding into services.
+Domain-Driven Design (DDD) combined with Command Query Responsibility Segregation (CQRS) is the gold standard for high-scale enterprise e-commerce systems (Stripe, Amazon, Shopify, Flipkart). In Senior and Staff interviews, this problem tests whether you can protect critical business invariants inside a **Rich Aggregate Root** rather than writing anemic procedural data bags.
 
 ---
 
-## 1. Domain Layer: Value Objects & Aggregates
+## 🏛️ The 6-Phase Architectural Arc
 
-**Rule:** State changes should only happen via methods on the Aggregate Root. Setters should be private.
+```mermaid
+%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
+flowchart LR
+    P1["1. Scope & NFRs"] --> P2["2. Core Domain Contracts"]
+    P2 --> P3["3. Class & State Modeling"]
+    P3 --> P4["4. Patterns & Concurrency"]
+    P4 --> P5["5. Idiomatic Code (C# & Python)"]
+    P5 --> P6["6. Extensibility Drill"]
+```
+
+---
+
+## Phase 1: Scope & Non-Functional Requirements (NFRs)
+
+### Functional Requirements (In-Scope)
+1. **Order Creation & Item Management:** Customers can create an order and add/remove line items only while in `Draft` state.
+2. **Invariant Protection:**
+   - Order total is calculated dynamically from line items with explicit currency verification.
+   - Modifying items in non-draft states (e.g. `Submitted`, `Paid`, `Shipped`) is strictly forbidden.
+3. **Order Submission:** Submitting an order transitions status to `Submitted` and stages an `OrderSubmittedDomainEvent`. Empty orders cannot be submitted.
+4. **Order Payment & Fulfillment:** Marking as `Paid` verifies that the payment matches the order total.
+
+### Non-Functional Requirements (NFRs)
+- **Zero Anemic Models:** Entities must have `private` setters. State transitions only occur via explicit domain methods.
+- **CQRS Segregation:** Write side (Commands) validates domain invariants through EF Core; read side (Queries) uses fast, flat DTO projections.
+- **The Dual-Write Defense:** Domain events are staged internally and dispatched only *after* the local database transaction successfully commits.
+
+---
+
+## Phase 2: Core Domain Model & Interface Contracts
+
+### Domain Entities & Value Objects
+- **`Money` (Value Object):** Immutable currency and decimal amount with validated arithmetic.
+- **`OrderItem` (Internal Entity):** Encapsulated within `Order`. Holds `ProductId`, `UnitPrice`, and `Quantity`.
+- **`Order` (Aggregate Root):** The sole transactional gateway. Manages order status, protects item collection, and tracks staged domain events.
+
+### Interface Contracts
 
 ```csharp
-// Value Object
-public record Money(decimal Amount, string Currency)
+public interface IOrderRepository
 {
-    public static Money Zero(string currency = "USD") => new(0, currency);
-    
+    Task<Order?> GetByIdAsync(Guid orderId, CancellationToken ct = default);
+    Task SaveAsync(Order order, CancellationToken ct = default);
+}
+
+public interface IOrderQueryService
+{
+    Task<OrderSummaryDto?> GetOrderSummaryAsync(Guid orderId, CancellationToken ct = default);
+}
+```
+
+---
+
+## Phase 3: Class & State Modeling
+
+### Class Diagram
+
+```mermaid
+classDiagram
+    class AggregateRoot {
+        <<abstract>>
+        -List~IDomainEvent~ _domainEvents
+        +IReadOnlyCollection~IDomainEvent~ DomainEvents
+        #RaiseDomainEvent(evt) void
+        +ClearDomainEvents() void
+    }
+
+    class Order {
+        +Guid Id
+        +Guid CustomerId
+        +OrderStatus Status
+        -List~OrderItem~ _items
+        +IReadOnlyCollection~OrderItem~ Items
+        +AddItem(productId, price, qty) void
+        +Submit() void
+        +MarkPaid(paidAmount) void
+        +CalculateTotal() Money
+    }
+
+    class OrderItem {
+        +Guid ProductId
+        +Money UnitPrice
+        +int Quantity
+        +TotalPrice Money
+    }
+
+    class Money {
+        <<record>>
+        +decimal Amount
+        +string Currency
+        +Add(other) Money
+    }
+
+    class OrderStatus {
+        <<enum>>
+        Draft
+        Submitted
+        Paid
+        Shipped
+        Cancelled
+    }
+
+    AggregateRoot <|-- Order
+    Order "1" *-- "1..*" OrderItem : strictly owns
+    OrderItem "1" *-- "1" Money : contains
+    Order --> OrderStatus : tracks state
+```
+
+### Order Lifecycle State Machine
+
+```mermaid
+stateDiagram-v2
+    [*] --> Draft : CreateOrder()
+    Draft --> Draft : AddItem() / RemoveItem()
+    Draft --> Submitted : Submit() [Items.Count > 0]
+    Draft --> Cancelled : Cancel()
+    Submitted --> Paid : MarkPaid() [Amount == Total]
+    Submitted --> Cancelled : Cancel()
+    Paid --> Shipped : Ship()
+    Shipped --> [*]
+    Cancelled --> [*]
+```
+
+---
+
+## Phase 4: Patterns & Concurrency Strategy
+
+### 1. The Aggregate Root Pattern
+- Callers never query or save `OrderItem` directly. There is only `IOrderRepository`.
+- All modifications to items pass through `Order.AddItem()`.
+- Item collections are exposed as `IReadOnlyCollection<OrderItem>` to prevent backdoor mutations.
+
+### 2. Staged Domain Events (No Dual-Write Hazard)
+- Publishing events immediately to a message bus inside `order.Submit()` causes ghost events if the subsequent database commit fails.
+- Events are staged in `_domainEvents` and dispatched by an EF Core interceptor only upon transaction commit.
+
+---
+
+## Phase 5: Idiomatic Production Code
+
+### C# (.NET 8/9 Implementation)
+
+```csharp
+namespace DDDOrderManagement;
+
+// 1. Immutable Value Object: Money
+public record Money
+{
+    public decimal Amount { get; }
+    public string Currency { get; }
+
+    public Money(decimal amount, string currency = "USD")
+    {
+        if (amount < 0) throw new ArgumentOutOfRangeException(nameof(amount), "Amount cannot be negative.");
+        if (string.IsNullOrWhiteSpace(currency) || currency.Length != 3)
+            throw new ArgumentException("Currency must be a 3-letter ISO code.", nameof(currency));
+
+        Amount = amount;
+        Currency = currency.ToUpperInvariant();
+    }
+
     public Money Add(Money other)
     {
-        if (Currency != other.Currency) throw new InvalidOperationException("Currency mismatch");
+        ArgumentNullException.ThrowIfNull(other);
+        if (Currency != other.Currency)
+            throw new InvalidOperationException($"Currency mismatch: {Currency} vs {other.Currency}.");
+
         return new Money(Amount + other.Amount, Currency);
     }
 }
 
-// Entity / Aggregate Root
-public class Order
+// 2. Domain Events Infrastructure
+public interface IDomainEvent
 {
-    public Guid Id { get; private set; }
-    public string CustomerId { get; private set; }
-    public OrderStatus Status { get; private set; }
-    
-    private readonly List<OrderItem> _items = new();
-    public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
-    
-    // Domain Events list (Dispatched during EF Core SaveChanges)
+    DateTimeOffset OccurredOn { get; }
+}
+
+public record OrderSubmittedDomainEvent(Guid OrderId, Guid CustomerId, decimal TotalAmount) : IDomainEvent
+{
+    public DateTimeOffset OccurredOn { get; } = DateTimeOffset.UtcNow;
+}
+
+public abstract class AggregateRoot
+{
     private readonly List<IDomainEvent> _domainEvents = new();
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
-    public Order(string customerId)
+    protected void RaiseDomainEvent(IDomainEvent domainEvent) => _domainEvents.Add(domainEvent);
+    public void ClearDomainEvents() => _domainEvents.Clear();
+}
+
+// 3. Aggregate Root: Order
+public enum OrderStatus { Draft, Submitted, Paid, Shipped, Cancelled }
+
+public class OrderItem
+{
+    public Guid ProductId { get; }
+    public Money UnitPrice { get; }
+    public int Quantity { get; private set; }
+
+    internal OrderItem(Guid productId, Money unitPrice, int quantity)
+    {
+        ProductId = productId;
+        UnitPrice = unitPrice;
+        Quantity = quantity;
+    }
+
+    internal void AddQuantity(int count) => Quantity += count;
+    public Money TotalPrice => new(UnitPrice.Amount * Quantity, UnitPrice.Currency);
+}
+
+public class Order : AggregateRoot
+{
+    private readonly List<OrderItem> _items = new();
+
+    public Guid Id { get; }
+    public Guid CustomerId { get; }
+    public OrderStatus Status { get; private set; }
+    public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
+
+    public Order(Guid customerId)
     {
         Id = Guid.NewGuid();
         CustomerId = customerId;
-        Status = OrderStatus.Draft;
+        Status = OrderStatusStatusDraft();
     }
 
-    public void AddItem(string productId, string name, int quantity, Money price)
+    private static OrderStatus OrderStatusStatusDraft() => OrderStatus.Draft;
+
+    public void AddItem(Guid productId, Money unitPrice, int quantity)
     {
         if (Status != OrderStatus.Draft)
-            throw new InvalidOperationException("Can only add items to draft orders.");
+            throw new InvalidOperationException($"Cannot add items to order in {Status} state.");
+        if (quantity <= 0)
+            throw new ArgumentOutOfRangeException(nameof(quantity), "Quantity must be positive.");
 
-        _items.Add(new OrderItem(Id, productId, name, quantity, price));
+        var existing = _items.FirstOrDefault(i => i.ProductId == productId);
+        if (existing is not null)
+        {
+            existing.AddQuantity(quantity);
+        }
+        else
+        {
+            _items.Add(new OrderItem(productId, unitPrice, quantity));
+        }
+    }
+
+    public Money CalculateTotal()
+    {
+        if (!_items.Any()) return new Money(0, "USD");
+        string currency = _items[0].UnitPrice.Currency;
+        decimal total = _items.Sum(i => i.TotalPrice.Amount);
+        return new Money(total, currency);
     }
 
     public void Submit()
     {
+        if (Status != OrderStatus.Draft)
+            throw new InvalidOperationException($"Cannot submit order in status: {Status}.");
         if (!_items.Any())
-            throw new InvalidOperationException("Cannot submit empty order.");
-            
+            throw new InvalidOperationException("Cannot submit an empty order.");
+
         Status = OrderStatus.Submitted;
-        
-        // Register Domain Event
-        _domainEvents.Add(new OrderSubmittedDomainEvent(Id, CustomerId));
+        RaiseDomainEvent(new OrderSubmittedDomainEvent(Id, CustomerId, CalculateTotal().Amount));
     }
-    
-    public void ClearDomainEvents() => _domainEvents.Clear();
+
+    public void MarkPaid(Money paidAmount)
+    {
+        ArgumentNullException.ThrowIfNull(paidAmount);
+        if (Status != OrderStatus.Submitted)
+            throw new InvalidOperationException($"Cannot pay order in status {Status}.");
+
+        var total = CalculateTotal();
+        if (paidAmount.Currency != total.Currency || paidAmount.Amount < total.Amount)
+            throw new InvalidOperationException("Insufficient payment amount.");
+
+        Status = OrderStatus.Paid;
+    }
 }
 
-public enum OrderStatus { Draft, Submitted, Shipped, Cancelled }
+// 4. CQRS: Command Handler (Write Model)
+public record SubmitOrderCommand(Guid OrderId);
+
+public class SubmitOrderCommandHandler
+{
+    private readonly IOrderRepository _repository;
+
+    public SubmitOrderCommandHandler(IOrderRepository repository)
+    {
+        _repository = repository;
+    }
+
+    public async Task HandleAsync(SubmitOrderCommand command, CancellationToken ct = default)
+    {
+        var order = await _repository.GetByIdAsync(command.OrderId, ct);
+        if (order == null) throw new KeyNotFoundException($"Order {command.OrderId} not found.");
+
+        order.Submit(); // Enforces invariant inside Aggregate Root!
+
+        await _repository.SaveAsync(order, ct);
+    }
+}
 ```
 
 ---
 
-## 2. Application Layer: CQRS with MediatR
+### Python (3.11+ Implementation)
 
-Use the `MediatR` library to decouple the "what to do" from the "how to do it".
+```python
+from dataclasses import dataclass
+import datetime
+from enum import Enum
+from typing import Dict, List, Optional, Sequence
+import uuid
 
-### The Command
-```csharp
-public record SubmitOrderCommand(Guid OrderId) : IRequest<Result>;
+# 1. Value Object: Money
+@dataclass(frozen=True)
+class Money:
+    amount: float
+    currency: str = "USD"
 
-public class SubmitOrderCommandHandler : IRequestHandler<SubmitOrderCommand, Result>
-{
-    private readonly ApplicationDbContext _dbContext;
+    def __post_init__(self):
+        if self.amount < 0:
+            raise ValueError("Amount cannot be negative.")
+        if len(self.currency) != 3:
+            raise ValueError("Currency must be 3-letter code.")
+        object.__setattr__(self, "currency", self.currency.upper())
 
-    public SubmitOrderCommandHandler(ApplicationDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
+    def add(self, other: "Money") -> "Money":
+        if self.currency != other.currency:
+            raise ValueError(f"Currency mismatch: {self.currency} vs {other.currency}")
+        return Money(self.amount + other.amount, self.currency)
 
-    public async Task<Result> Handle(SubmitOrderCommand request, CancellationToken ct)
-    {
-        var order = await _dbContext.Orders
-            .Include(o => o.Items)
-            .FirstOrDefaultAsync(o => o.Id == request.OrderId, ct);
+# 2. Domain Events Base
+class DomainEvent:
+    occurred_on: datetime.datetime
 
-        if (order == null) return Result.Fail("Order not found.");
+@dataclass(frozen=True)
+class OrderSubmittedDomainEvent(DomainEvent):
+    order_id: str
+    customer_id: str
+    total_amount: float
+    occurred_on: datetime.datetime = datetime.datetime.now(datetime.timezone.utc)
 
-        // The business logic is inside the domain!
-        order.Submit();
+class AggregateRoot:
+    def __init__(self):
+        self._domain_events: List[DomainEvent] = []
 
-        // EF Core will save changes. 
-        // Note: A custom Interceptor handles DomainEvents before committing.
-        await _dbContext.SaveChangesAsync(ct);
+    @property
+    def domain_events(self) -> Sequence[DomainEvent]:
+        return tuple(self._domain_events)
 
-        return Result.Ok();
-    }
-}
+    def raise_domain_event(self, event: DomainEvent) -> None:
+        self._domain_events.append(event)
+
+    def clear_domain_events(self) -> None:
+        self._domain_events.clear()
+
+# 3. Order Aggregate Root
+class OrderStatus(Enum):
+    DRAFT = "DRAFT"
+    SUBMITTED = "SUBMITTED"
+    PAID = "PAID"
+    SHIPPED = "SHIPPED"
+    CANCELLED = "CANCELLED"
+
+class OrderItem:
+    def __init__(self, product_id: str, unit_price: Money, quantity: int):
+        self.product_id = product_id
+        self.unit_price = unit_price
+        self.quantity = quantity
+
+    def add_quantity(self, count: int) -> None:
+        self.quantity += count
+
+    @property
+    def total_price(self) -> Money:
+        return Money(self.unit_price.amount * self.quantity, self.unit_price.currency)
+
+class Order(AggregateRoot):
+    def __init__(self, customer_id: str):
+        super().__init__()
+        self.id = str(uuid.uuid4())
+        self.customer_id = customer_id
+        self.status = OrderStatus.DRAFT
+        self._items: List[OrderItem] = []
+
+    @property
+    def items(self) -> Sequence[OrderItem]:
+        return tuple(self._items)
+
+    def add_item(self, product_id: str, unit_price: Money, quantity: int) -> None:
+        if self.status != OrderStatus.DRAFT:
+            raise RuntimeError(f"Cannot modify order in {self.status.value} state.")
+        if quantity <= 0:
+            raise ValueError("Quantity must be positive.")
+
+        for item in self._items:
+            if item.product_id == product_id:
+                item.add_quantity(quantity)
+                return
+
+        self._items.append(OrderItem(product_id, unit_price, quantity))
+
+    def calculate_total(self) -> Money:
+        if not self._items:
+            return Money(0.0, "USD")
+        currency = self._items[0].unit_price.currency
+        total_val = sum(i.total_price.amount for i in self._items)
+        return Money(total_val, currency)
+
+    def submit(self) -> None:
+        if self.status != OrderStatus.DRAFT:
+            raise RuntimeError(f"Cannot submit order in status {self.status.value}")
+        if not self._items:
+            raise RuntimeError("Cannot submit empty order.")
+
+        self.status = OrderStatus.SUBMITTED
+        total = self.calculate_total()
+        self.raise_domain_event(OrderSubmittedDomainEvent(self.id, self.customer_id, total.amount))
+
+    def mark_paid(self, paid_amount: Money) -> None:
+        if self.status != OrderStatus.SUBMITTED:
+            raise RuntimeError(f"Cannot pay order in status {self.status.value}")
+        total = self.calculate_total()
+        if paid_amount.currency != total.currency or paid_amount.amount < total.amount:
+            raise ValueError("Insufficient payment amount.")
+
+        self.status = OrderStatus.PAID
 ```
 
-### The Query
-Queries completely bypass the Domain model. They use lightweight DTOs and often raw SQL (e.g., Dapper) for performance.
-
-```csharp
-public record GetOrderSummaryQuery(Guid OrderId) : IRequest<OrderSummaryDto>;
-
-public class GetOrderSummaryQueryHandler : IRequestHandler<GetOrderSummaryQuery, OrderSummaryDto>
-{
-    private readonly IDbConnection _dbConnection;
-
-    public GetOrderSummaryQueryHandler(IDbConnection dbConnection)
-    {
-        _dbConnection = dbConnection;
-    }
-
-    public async Task<OrderSummaryDto> Handle(GetOrderSummaryQuery request, CancellationToken ct)
-    {
-        // Use Dapper for fast, read-only queries
-        const string sql = "SELECT Id, Status, CustomerId FROM Orders WHERE Id = @Id";
-        return await _dbConnection.QueryFirstOrDefaultAsync<OrderSummaryDto>(sql, new { Id = request.OrderId });
-    }
-}
-```
 ---
 
-## 🗣️ Interviewer Discussion & Tradeoffs
+## Phase 6: Extensibility Drill & Interview Defense
 
-**Interviewer:** *"Why did you make `Items` an `IReadOnlyCollection` and the `Order` setters `private`? Why not just use public properties with `{ get; set; }`?"*
-**You:** "This prevents an **Anemic Domain Model**. If I use public setters, any service anywhere in the code can change the order status to `Shipped` without ensuring that payment was collected. By keeping state mutations inside the `Order` entity (e.g., via the `Submit()` method), the `Order` acts as an **Aggregate Root** that strictly enforces its own business rules and invariants."
+### Staff Curveball 1: "Why use CQRS instead of querying the Order entity directly for the UI?"
+- **The Trade-Off:** The write model (`Order`) requires loading all internal `OrderItem` records into the EF Core change tracker to guarantee invariants. Read queries (e.g. order history list) do not need change tracking, validation, or private encapsulation. Querying flat DTOs directly with Dapper or `AsNoTracking()` avoids entity graph instantiation and drops query latency by 80%.
 
-**Interviewer:** *"Why do you add `DomainEvents` to a list inside the entity instead of just publishing them immediately to MediatR inside the `Submit()` method?"*
-**You:** "Because of the **Dual Write / Consistency Problem**. If I publish the event immediately, handlers might send an email or charge a credit card. But what if the subsequent `_dbContext.SaveChangesAsync()` fails due to a database outage? The email was sent, but the order wasn't saved! By storing the events in the entity, an EF Core Interceptor can grab them and publish them *only* as part of a successful database transaction."
-
-**Interviewer:** *"Why split `SubmitOrderCommand` and `GetOrderSummaryQuery` into separate classes? (CQRS)"*
-**You:** "Because reads and writes have different scaling and modeling needs. The write side (Command) needs the heavy Entity Framework Domain Model to validate business rules. The read side (Query) just needs to blast data to the UI as fast as possible. Splitting them lets me use EF Core for writes, and a micro-ORM like Dapper for ultra-fast, lock-free reads, completely bypassing the domain model overhead."
+### Staff Curveball 2: "What if two requests submit the same order concurrently?"
+- **Concurrency Defense:**
+  - In C# / EF Core, configure a concurrency token on `Order`: `builder.Property(o => o.RowVersion).IsRowVersion()`.
+  - When the second thread attempts to update status from `Draft` to `Submitted`, the database `UPDATE ... WHERE Version = @expected` returns zero affected rows and throws `DbUpdateConcurrencyException`, cleanly rejecting the duplicate submission.

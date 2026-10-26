@@ -99,7 +99,7 @@ Study it as: `Topic → understand the design pressure → implement a small exa
   * *Design Pressure:* "Build an in-memory cache that expires items and supports high concurrent reads/writes."
   * *Action:* Use `ConcurrentDictionary`, `ReaderWriterLockSlim`, and background expiration threads.
 * 💻 **[LRU & LFU Cache Mastery (LeetCode 146 & 460)](../03_Tier3_DSA_Screening/26_LRU_and_LFU_Cache.md)**
-  * *Design Pressure:* "Strict $O(1)$ `Get` and `Put` with dynamic frequency buckets and LRU tie-breaking."
+  * *Design Pressure:* "Strict O(1) `Get` and `Put` with dynamic frequency buckets and LRU tie-breaking."
   * *Action:* Implement two HashMaps + frequency-ordered Doubly Linked Lists tracking `_minFrequency`.
 * 💻 **[Search Autocomplete System](../03_Tier3_DSA_Screening/29_Search_Autocomplete_System.md)**
   * *Design Pressure:* "Real-time prefix typing with top-3 query completions and thread-safe dynamic frequency increments."

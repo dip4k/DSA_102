@@ -1,4 +1,4 @@
-﻿# LLD Problem #24: Cricbuzz / Live Cricket Scoreboard & Commentary System
+# LLD Problem #24: Cricbuzz / Live Cricket Scoreboard & Commentary System
 
 **Tier:** 🟡 Tier 2 (Classic LLD — State & Strategy Mastery)  
 **Problem Family:** 🟡 Family 3 — Stateful Workflow Engine / 🟣 Family 5 — Real-Time Pub-Sub & Observability  
@@ -11,9 +11,9 @@
 ## 📌 Problem Context & Motivation
 
 Live sports engines like **Cricbuzz, ESPNcricinfo, and Disney+ Hotstar** are stateful real-time distributed systems. Unlike a simple counter, cricket scoring involves intricate domain rules:
-1. **Asymmetric Delivery Accounting**: Only legal deliveries increment the over count ($6$ legal balls per over). Wides and No-balls add penalty runs and do **not** consume a ball.
-2. **Strike Rotation Invariant**: Strike rotates on odd runs ($1, 3, 5$), at the completion of an over ($6^{\text{th}}$ legal ball), but **not** on even boundaries ($0, 2, 4, 6$) unless an over completes.
-3. **High Read-to-Write Fan-Out**: While a single certified scorer produces $\approx 1$ ball event every 30 seconds, millions of concurrent clients consume the live scoreboard, ball-by-ball commentary, and push notifications simultaneously.
+1. **Asymmetric Delivery Accounting**: Only legal deliveries increment the over count (6 legal balls per over). Wides and No-balls add penalty runs and do **not** consume a ball.
+2. **Strike Rotation Invariant**: Strike rotates on odd runs (1, 3, 5), at the completion of an over (6th legal ball), but **not** on even boundaries (0, 2, 4, 6) unless an over completes.
+3. **High Read-to-Write Fan-Out**: While a single certified scorer produces ~1 ball event every 30 seconds, millions of concurrent clients consume the live scoreboard, ball-by-ball commentary, and push notifications simultaneously.
 4. **Resilience to Third-Umpire DRS Overturns**: The system must support replaying or rewinding match events when an umpire's decision is reversed.
 
 ---
@@ -822,12 +822,231 @@ public static class Program
 
 ---
 
+## 🐍 Production-Ready Python (3.11+) Secondary Implementation
+
+```python
+from __future__ import annotations
+from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Dict, List, Optional
+
+class BallType(Enum):
+    NORMAL = "NORMAL"
+    WIDE = "WIDE"
+    NO_BALL = "NO_BALL"
+    BYE = "BYE"
+    LEG_BYE = "LEG_BYE"
+
+class DismissalType(Enum):
+    BOWLED = "BOWLED"
+    CAUGHT = "CAUGHT"
+    RUN_OUT = "RUN_OUT"
+    LBW = "LBW"
+    STUMPED = "STUMPED"
+    HIT_WICKET = "HIT_WICKET"
+
+class MatchStatus(Enum):
+    SCHEDULED = "SCHEDULED"
+    FIRST_INNINGS_IN_PROGRESS = "FIRST_INNINGS_IN_PROGRESS"
+    INNINGS_BREAK = "INNINGS_BREAK"
+    SECOND_INNINGS_IN_PROGRESS = "SECOND_INNINGS_IN_PROGRESS"
+    COMPLETED = "COMPLETED"
+    TIED = "TIED"
+
+@dataclass(frozen=True)
+class Player:
+    id: str
+    name: str
+
+@dataclass
+class Team:
+    code: str
+    name: str
+    players: List[Player]
+
+@dataclass
+class DeliveryInput:
+    ball_type: BallType
+    runs_off_bat: int = 0
+    extra_runs: int = 0
+    is_wicket: bool = False
+    dismissal: Optional[DismissalType] = None
+    fielder: Optional[Player] = None
+
+# -------------------- Observer Pattern --------------------
+class MatchObserver(ABC):
+    @abstractmethod
+    def on_ball_bowled(self, match: Match, ball_details: str) -> None:
+        pass
+
+    @abstractmethod
+    def on_over_completed(self, match: Match, over_number: int) -> None:
+        pass
+
+    @abstractmethod
+    def on_wicket_fallen(self, match: Match, dismissed_player: Player, how_out: str) -> None:
+        pass
+
+    @abstractmethod
+    def on_match_completed(self, match: Match, result_summary: str) -> None:
+        pass
+
+class ConsoleScoreboardObserver(MatchObserver):
+    def on_ball_bowled(self, match: Match, ball_details: str) -> None:
+        inn = match.active_innings
+        assert inn is not None
+        ov = inn.total_legal_balls // 6
+        b = inn.total_legal_balls % 6
+        print(f"[{inn.batting_team.code} {inn.total_runs}/{inn.total_wickets}] ({ov}.{b} ov) | {ball_details}")
+
+    def on_over_completed(self, match: Match, over_number: int) -> None:
+        print(f"--- End of Over {over_number} ---")
+
+    def on_wicket_fallen(self, match: Match, dismissed_player: Player, how_out: str) -> None:
+        print(f"🔴 WICKET! {dismissed_player.name} out ({how_out})")
+
+    def on_match_completed(self, match: Match, result_summary: str) -> None:
+        print(f"🏆 {result_summary}")
+
+# -------------------- Innings Aggregate --------------------
+class Innings:
+    def __init__(self, innings_number: int, batting_team: Team, bowling_team: Team, max_overs: int, target_runs: Optional[int] = None):
+        self.innings_number = innings_number
+        self.batting_team = batting_team
+        self.bowling_team = bowling_team
+        self.max_overs = max_overs
+        self.target_runs = target_runs
+        self.max_legal_balls = max_overs * 6
+
+        self.total_runs = 0
+        self.total_wickets = 0
+        self.total_legal_balls = 0
+
+        self.striker: Player = batting_team.players[0]
+        self.non_striker: Player = batting_team.players[1]
+        self.next_batting_index = 2
+        self.current_bowler: Optional[Player] = None
+
+    @property
+    def is_completed(self) -> bool:
+        if self.total_wickets >= len(self.batting_team.players) - 1:
+            return True
+        if self.total_legal_balls >= self.max_legal_balls:
+            return True
+        if self.target_runs and self.total_runs >= self.target_runs:
+            return True
+        return False
+
+    def record_delivery(self, delivery: DeliveryInput) -> str:
+        is_legal = delivery.ball_type in (BallType.NORMAL, BallType.BYE, BallType.LEG_BYE)
+        runs_scored = delivery.runs_off_bat + delivery.extra_runs
+        self.total_runs += runs_scored
+
+        if is_legal:
+            self.total_legal_balls += 1
+
+        details = f"{self.striker.name} - {runs_scored} runs ({delivery.ball_type.name})"
+
+        if delivery.is_wicket:
+            self.total_wickets += 1
+            details = f"WICKET! {self.striker.name} dismissed."
+            if self.next_batting_index < len(self.batting_team.players):
+                self.striker = self.batting_team.players[self.next_batting_index]
+                self.next_batting_index += 1
+        else:
+            # Strike rotation on odd runs off the bat
+            if delivery.runs_off_bat % 2 == 1:
+                self.striker, self.non_striker = self.non_striker, self.striker
+
+        # End of over strike rotation
+        if is_legal and self.total_legal_balls % 6 == 0 and self.total_legal_balls > 0:
+            self.striker, self.non_striker = self.non_striker, self.striker
+
+        return details
+
+# -------------------- Match Aggregate Root --------------------
+class Match:
+    def __init__(self, match_id: str, team1: Team, team2: Team, max_overs: int):
+        self.match_id = match_id
+        self.team1 = team1
+        self.team2 = team2
+        self.max_overs = max_overs
+        self.status = MatchStatus.SCHEDULED
+        self.innings1: Optional[Innings] = None
+        self.innings2: Optional[Innings] = None
+        self._observers: List[MatchObserver] = []
+
+    def register_observer(self, obs: MatchObserver) -> None:
+        self._observers.append(obs)
+
+    @property
+    def active_innings(self) -> Optional[Innings]:
+        if self.status == MatchStatus.FIRST_INNINGS_IN_PROGRESS:
+            return self.innings1
+        if self.status == MatchStatus.SECOND_INNINGS_IN_PROGRESS:
+            return self.innings2
+        return None
+
+    def start_match(self, batting_first: Team, opening_bowler: Player) -> None:
+        bowling_first = self.team2 if batting_first.code == self.team1.code else self.team1
+        self.innings1 = Innings(1, batting_first, bowling_first, self.max_overs)
+        self.innings1.current_bowler = opening_bowler
+        self.status = MatchStatus.FIRST_INNINGS_IN_PROGRESS
+
+    def start_second_innings(self, opening_bowler: Player) -> None:
+        assert self.innings1 is not None
+        target = self.innings1.total_runs + 1
+        self.innings2 = Innings(2, self.innings1.bowling_team, self.innings1.batting_team, self.max_overs, target_runs=target)
+        self.innings2.current_bowler = opening_bowler
+        self.status = MatchStatus.SECOND_INNINGS_IN_PROGRESS
+
+    def record_ball(self, delivery: DeliveryInput) -> None:
+        inn = self.active_innings
+        if not inn:
+            raise ValueError("No active innings.")
+
+        legal_before = inn.total_legal_balls
+        details = inn.record_delivery(delivery)
+
+        for obs in self._observers:
+            obs.on_ball_bowled(self, details)
+
+        if inn.total_legal_balls > legal_before and inn.total_legal_balls % 6 == 0:
+            for obs in self._observers:
+                obs.on_over_completed(self, inn.total_legal_balls // 6)
+
+        if inn.is_completed:
+            self._handle_innings_completion()
+
+    def _handle_innings_completion(self) -> None:
+        if self.status == MatchStatus.FIRST_INNINGS_IN_PROGRESS:
+            self.status = MatchStatus.INNINGS_BREAK
+        elif self.status == MatchStatus.SECOND_INNINGS_IN_PROGRESS:
+            self.status = MatchStatus.COMPLETED
+            assert self.innings1 and self.innings2
+            if self.innings2.total_runs >= (self.innings2.target_runs or 0):
+                wickets_remaining = len(self.innings2.batting_team.players) - 1 - self.innings2.total_wickets
+                res = f"{self.innings2.batting_team.name} won by {wickets_remaining} wickets!"
+            elif self.innings2.total_runs < self.innings1.total_runs:
+                diff = self.innings1.total_runs - self.innings2.total_runs
+                res = f"{self.innings1.batting_team.name} won by {diff} runs!"
+            else:
+                self.status = MatchStatus.TIED
+                res = "Match TIED! Super Over needed!"
+
+            for obs in self._observers:
+                obs.on_match_completed(self, res)
+```
+
+---
+
 ## 🗣️ Senior Interviewer Discussion & Trade-offs (Staff Level)
 
 | Question / Follow-up | Senior / Staff Engineering Defense |
 | :--- | :--- |
 | **"How do you handle high-throughput live delivery broadcasts to 50M+ concurrent users?"** | The scoring engine acts as a single-writer event stream. When `RecordBall` succeeds, it publishes an immutable `BallBowledEvent` to an **Apache Kafka topic** partitioned by `MatchId`. A fleet of stateless WebSocket edge gateways (Node.js/Go/ASP.NET SignalR) consume from Kafka/Redis Pub-Sub and fan out updates over persistent WebSocket/SSE connections to mobile clients. The relational database is never in the live read path; the scoreboard state is cached in Redis with sub-millisecond TTL. |
-| **"Why is Event Sourcing the ideal paradigm for a cricket scoring engine?"** | Cricket rules frequently require rollbacks (e.g. Third Umpire review confirms No-Ball after a batsman walked off for caught-behind; or DRS overturns LBW). In traditional CRUD mutation, undoing requires complex reverse-mutation logic. With **Event Sourcing**, every ball is an immutable event in an `Events` append-only log. To overturn a decision, we mark the event void or append a `DecisionOverturnedEvent`, and replay the over's events from the start of the over in $< 5\text{ms}$. |
+| **"Why is Event Sourcing the ideal paradigm for a cricket scoring engine?"** | Cricket rules frequently require rollbacks (e.g. Third Umpire review confirms No-Ball after a batsman walked off for caught-behind; or DRS overturns LBW). In traditional CRUD mutation, undoing requires complex reverse-mutation logic. With **Event Sourcing**, every ball is an immutable event in an `Events` append-only log. To overturn a decision, we mark the event void or append a `DecisionOverturnedEvent`, and replay the over's events from the start of the over in `< 5ms`. |
 | **"How does the system ensure strike rotation accuracy on short-runs or penalty runs?"** | In international cricket, short-runs (where a batsman does not cross the crease line) are deducted post-delivery by the umpire. Our `StrikeRotator` accepts an explicit compensation command `AdjustStrike(Innings)` if the umpire signals short-run, ensuring the scoreboard matches on-field match referee sheets. |
 | **"How do you prevent duplicate deliveries if the scorer's tablet loses internet connection?"** | Every delivery submission includes a monotonic `BallSequenceId` (e.g. `M1_INN1_O1_B3`). The scoring service validates that incoming balls arrive in strict monotonically increasing sequence. Duplicate submissions with an already committed `BallSequenceId` return HTTP 200 with the existing cached state (Idempotent API design). |
 | **"How would you model Duckworth-Lewis-Stern (DLS) rain interruption targets?"** | We extract target calculation into a `ITargetCalculationStrategy` (Standard Target, DLS Strategy, VJD Method). When rain reduces available overs, the `DlsStrategy` consumes resource percentage tables based on wickets in hand and overs remaining to dynamically recalibrate `Innings.TargetRuns`. |

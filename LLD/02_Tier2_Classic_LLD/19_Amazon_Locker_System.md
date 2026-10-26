@@ -1,45 +1,145 @@
-﻿# 19. Amazon Locker Management System (Allocation, State Machine, Concurrency)
+# 19. Amazon Locker Management System: Best-Fit Allocation, State Machine & TTL Sweep
 
-## 📌 Problem Context & Motivation
-The **Amazon Hub Locker** (or Smart Delivery Kiosk) is a quintessential Tier-1 (Amazon, Flipkart, Google) Low-Level Design question. It evaluates:
-1. **Geometric/Size Matching (Strategy Pattern)**: Fitting packages into smallest compatible locker compartments to maximize capacity.
-2. **Lifecycle State Machine (State Pattern)**: Transitioning lockers through `Available` $\rightarrow$ `Reserved` $\rightarrow$ `Occupied` $\rightarrow$ `PickedUp` / `Expired`.
-3. **Authentication & Security (Value Objects)**: Secure, time-bound 6-digit OTP verification codes without plain-text security leaks.
-4. **Thread Safety & Race Conditions**: Guaranteeing that concurrent courier drop-offs never double-assign the same compartment.
+> **Problem Scope:** Design an automated Amazon Hub Locker / Smart Delivery Kiosk supporting geometric compartment matching (Best-Fit Strategy), lifecycle state transitions (`Available -> Reserved -> Occupied -> Expired`), time-bound cryptographic 6-digit OTP codes, and compartment-level concurrency locks.
 
 ---
 
-## 🎯 CrackingWalnuts 6-Step Methodology Applied
+## 🏛️ Phase 1: Requirements & Non-Functional Requirements (NFRs)
 
-```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
-flowchart TD
-    A["1. Requirement<br/>Mining<br/>• 4 Locker Sizes<br/>• 72h Pickup TTL<br/>• No<br/>Double-Booking"] --> B["2. Class Discovery<br/>• Locker (Entity)<br/>• LockerCode<br/>(Value Object)<br/>• Package (Value<br/>Object)"]
-    B --> C["3. Relationships<br/>• LockerLocation<br/>(1:N) Lockers<br/>• Locker (1:1)<br/>Package"]
-    C --> D["4. Patterns<br/>• Strategy<br/>(Allocation)<br/>• State Machine<br/>(Lifecycle)<br/>• Observer<br/>(Notification)"]
-    D --> E["5. V1 → V4<br/>Evolution<br/>• Flat List → Size<br/>Index<br/>→ Concurrency<br/>Hardened"]
-    E --> F["6. Family<br/>Archetype<br/>Family 1:<br/>Allocation &<br/>Concurrency"]
+### Functional Requirements
+1. **Locker Compartment Sizes:** Lockers come in standardized sizes: `Small`, `Medium`, `Large`, `ExtraLarge`.
+2. **Best-Fit Allocation (Strategy Pattern):** Allocate the smallest available locker compartment that accommodates the package's 3D bounding dimensions (`Width`, `Height`, `Depth`) to preserve larger compartments for oversized packages.
+3. **Cryptographic OTP Generation:** Generate a time-bound, secure 6-digit numeric pickup code. Codes expire after a configurable TTL (e.g., 72 hours).
+4. **Pickup Verification:** When a customer inputs the locker ID and OTP, verify validity, unlatch the compartment door, and transition locker back to `Available`.
+5. **Expiration Sweep Worker:** Background task scans for packages exceeding the 72-hour pickup window, marks compartments as `Expired`, and notifies return logistics.
+
+### Non-Functional Requirements
+1. **Compartment Lock Striping:** Couriers dropping off packages and customers picking up orders at adjacent lockers must run concurrently without blocking the entire kiosk.
+2. **Edge Hardware / Offline Tolerance:** Pickup verification should support deterministic HMAC-based offline validation on edge kiosks without cloud network dependency.
+3. **Sensor Verification:** Atomic transitions require sensor confirmation (door closed and optical beam clear).
+
+---
+
+## 🏛️ Phase 2: Core Domain Contracts
+
+```csharp
+public enum LockerSize { Small = 1, Medium = 2, Large = 3, ExtraLarge = 4 }
+public enum LockerState { Available, Reserved, Occupied, Expired, UnderMaintenance }
+
+public readonly record struct Dimensions(double WidthCm, double HeightCm, double DepthCm);
+
+public interface ILockerAllocationStrategy
+{
+    Locker? SelectLocker(IEnumerable<Locker> candidateLockers, Package package);
+}
+
+public interface INotificationService
+{
+    Task SendPickupCodeAsync(string email, string lockerId, PickupCode code);
+    Task SendExpiredNoticeAsync(string email, string packageId);
+}
 ```
 
 ---
 
-## 🏗️ Architectural Class & State Diagram
+## 🏛️ Phase 3: Class & State Modeling
 
+### Compartment Lifecycle State Machine
 ```mermaid
 stateDiagram-v2
-    [*] --> Available: Initialize / Free
+    [*] --> Available: Initialize / Restocked
     Available --> Reserved: Courier reserves spot
-    Reserved --> Occupied: Package deposited & door shut
-    Reserved --> Available: Courier timeout (15m)
-    Occupied --> PickedUp: Valid OTP entered by customer
+    Reserved --> Occupied: Package deposited & door locked
+    Reserved --> Available: Courier reservation timeout (15m)
+    Occupied --> Available: Valid OTP entered & door shut
     Occupied --> Expired: 72h pickup window elapsed
-    Expired --> Available: Courier removes package for return
-    PickedUp --> Available: Door shut & sensor verified
+    Expired --> Available: Courier collects return package
+```
+
+### Domain Class Diagram
+```mermaid
+classDiagram
+    direction TB
+
+    class Dimensions {
+        <<struct>>
+        +double WidthCm
+        +double HeightCm
+        +double DepthCm
+        +FitsWithin(Dimensions other) bool
+    }
+
+    class Package {
+        +string PackageId
+        +Dimensions Dimensions
+        +string CustomerEmail
+    }
+
+    class PickupCode {
+        +string Code
+        +DateTime ExpiresAtUtc
+        +IsValid(string input) bool
+    }
+
+    class Locker {
+        +string Id
+        +LockerSize Size
+        +Dimensions Dimensions
+        +LockerState State
+        +Package CurrentPackage
+        +PickupCode CurrentPickupCode
+        +SemaphoreSlim GateLock
+        +Reserve() bool
+        +Deposit(Package, PickupCode)
+        +VerifyAndPickup(string code) bool
+        +MarkExpired()
+    }
+
+    class ILockerAllocationStrategy {
+        <<interface>>
+        +SelectLocker(IEnumerable~Locker~, Package) Locker
+    }
+
+    class BestFitAllocationStrategy {
+        +SelectLocker(IEnumerable~Locker~, Package) Locker
+    }
+
+    class AmazonLockerKioskService {
+        -ConcurrentDictionary~string, Locker~ _lockers
+        -ILockerAllocationStrategy _allocationStrategy
+        -INotificationService _notificationService
+        -SemaphoreSlim _allocationMutex
+        +DepositPackageAsync(Package, TimeSpan) Task~string~
+        +PickupPackageAsync(string, string) Task~bool~
+        +SweepExpiredPackagesAsync() Task
+    }
+
+    Locker o-- Dimensions
+    Locker o-- Package
+    Locker o-- PickupCode
+    Package o-- Dimensions
+    ILockerAllocationStrategy <|.. BestFitAllocationStrategy
+    AmazonLockerKioskService o-- Locker
+    AmazonLockerKioskService o-- ILockerAllocationStrategy
 ```
 
 ---
 
-## 💻 Production-Ready C# Implementation (.NET 8)
+## 🏛️ Phase 4: Patterns & Concurrency Architecture
+
+1. **Strategy Pattern (`ILockerAllocationStrategy`):**
+   - Decouples locker placement heuristics (`BestFit`, `ProximityToFloorLevel`, `EnergyEfficientZone`).
+   - `BestFitAllocationStrategy` filters available lockers that satisfy 3D bounding constraints and orders by smallest volume.
+2. **Two-Tier Synchronization:**
+   - **Tier 1 (Allocation Mutex):** Brief critical section protecting candidate selection and reservation (`LockerState.Available -> Reserved`).
+   - **Tier 2 (Gate Lock Striping):** Each `Locker` possesses an independent `SemaphoreSlim(1, 1)`. Courier package insertion and customer pickup hold only that compartment's gate lock, allowing multiple compartments to open simultaneously.
+3. **Background Expiration Sweep:** Periodic audit scans expired items without blocking user interactions.
+
+---
+
+## 🏛️ Phase 5: Production-Ready Idiomatic Implementations
+
+### C# (.NET 8 / 9) Primary Implementation
 
 ```csharp
 using System;
@@ -50,97 +150,63 @@ using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AmazonLocker.Design;
+namespace AmazonLockerEngine;
 
-// ==========================================
-// 1. DOMAIN ENUMS & VALUE OBJECTS
-// ==========================================
+public enum LockerSize { Small = 1, Medium = 2, Large = 3, ExtraLarge = 4 }
+public enum LockerState { Available, Reserved, Occupied, Expired, UnderMaintenance }
 
-public enum LockerSize
-{
-    Small = 1,
-    Medium = 2,
-    Large = 3,
-    ExtraLarge = 4
-}
-
-public enum LockerState
-{
-    Available,
-    Reserved,      // Courier is en route or at kiosk loading package
-    Occupied,      // Package inside, waiting for customer pickup
-    Expired,       // 72h window passed; awaiting return courier
-    UnderMaintenance
-}
-
-/// <summary>
-/// Dimensions Value Object (Immutable)
-/// </summary>
 public readonly record struct Dimensions(double WidthCm, double HeightCm, double DepthCm)
 {
     public double VolumeCm3 => WidthCm * HeightCm * DepthCm;
 
-    public bool FitsWithin(Dimensions other) =>
-        WidthCm <= other.WidthCm && HeightCm <= other.HeightCm && DepthCm <= other.DepthCm;
+    public bool FitsWithin(Dimensions container) =>
+        WidthCm <= container.WidthCm && HeightCm <= container.HeightCm && DepthCm <= container.DepthCm;
 }
 
-/// <summary>
-/// Package Value Object
-/// </summary>
 public record Package(string PackageId, Dimensions Dimensions, string CustomerEmail);
 
-/// <summary>
-/// Cryptographically secure time-bound pickup code
-/// </summary>
 public sealed record PickupCode
 {
     public string Code { get; }
-    public DateTime ExpiresAt { get; }
+    public DateTime ExpiresAtUtc { get; }
 
-    public PickupCode(string code, DateTime expiresAt)
+    public PickupCode(string code, DateTime expiresAtUtc)
     {
         Code = code;
-        ExpiresAt = expiresAt;
+        ExpiresAtUtc = expiresAtUtc;
     }
 
     public static PickupCode Generate(TimeSpan validity)
     {
-        // Generate a cryptographically secure 6-digit numeric OTP
-        int num = RandomNumberGenerator.GetInt32(100_000, 1_000_000);
+        var num = RandomNumberGenerator.GetInt32(100_000, 1_000_000);
         return new PickupCode(num.ToString(), DateTime.UtcNow.Add(validity));
     }
 
     public bool IsValid(string inputCode) =>
-        DateTime.UtcNow <= ExpiresAt && string.Equals(Code, inputCode, StringComparison.Ordinal);
+        DateTime.UtcNow <= ExpiresAtUtc && string.Equals(Code, inputCode, StringComparison.Ordinal);
 }
 
-// ==========================================
-// 2. DOMAIN ENTITY (Locker Compartment)
-// ==========================================
-
+// -------------------- Domain Entity: Locker --------------------
 public sealed class Locker
 {
     public string Id { get; }
     public LockerSize Size { get; }
     public Dimensions Dimensions { get; }
-    public LockerState State { get; private set; }
+    public LockerState State { get; private set; } = LockerState.Available;
     public Package? CurrentPackage { get; private set; }
     public PickupCode? CurrentPickupCode { get; private set; }
-    public DateTime? DepositedAt { get; private set; }
+    public DateTime? DepositedAtUtc { get; private set; }
 
-    // Compartment-level lock for fine-grained concurrency
     public SemaphoreSlim GateLock { get; } = new(1, 1);
 
     public Locker(string id, LockerSize size, Dimensions dimensions)
     {
-        Id = id;
+        Id = id ?? throw new ArgumentNullException(nameof(id));
         Size = size;
         Dimensions = dimensions;
-        State = LockerState.Available;
     }
 
-    public bool CanFit(Dimensions packageDimensions) =>
-        packageDimensions.FitsWithin(Dimensions);
+    public bool CanFit(Dimensions packageDimensions) => packageDimensions.FitsWithin(Dimensions);
 
     public bool Reserve()
     {
@@ -156,7 +222,7 @@ public sealed class Locker
 
         CurrentPackage = package;
         CurrentPickupCode = code;
-        DepositedAt = DateTime.UtcNow;
+        DepositedAtUtc = DateTime.UtcNow;
         State = LockerState.Occupied;
     }
 
@@ -168,10 +234,9 @@ public sealed class Locker
         if (!CurrentPickupCode.IsValid(code))
             return false;
 
-        // Unlock compartment & release
         CurrentPackage = null;
         CurrentPickupCode = null;
-        DepositedAt = null;
+        DepositedAtUtc = null;
         State = LockerState.Available;
         return true;
     }
@@ -179,36 +244,16 @@ public sealed class Locker
     public void MarkExpired()
     {
         if (State == LockerState.Occupied)
-        {
             State = LockerState.Expired;
-        }
-    }
-
-    public Package? ClearForReturn()
-    {
-        if (State != LockerState.Expired) return null;
-
-        var pkg = CurrentPackage;
-        CurrentPackage = null;
-        CurrentPickupCode = null;
-        DepositedAt = null;
-        State = LockerState.Available;
-        return pkg;
     }
 }
 
-// ==========================================
-// 3. ALLOCATION STRATEGY (Strategy Pattern)
-// ==========================================
-
+// -------------------- Strategy Pattern --------------------
 public interface ILockerAllocationStrategy
 {
     Locker? SelectLocker(IEnumerable<Locker> candidateLockers, Package package);
 }
 
-/// <summary>
-/// Best-Fit Strategy: Chooses the smallest available locker that fits the package
-/// </summary>
 public sealed class BestFitAllocationStrategy : ILockerAllocationStrategy
 {
     public Locker? SelectLocker(IEnumerable<Locker> candidateLockers, Package package)
@@ -221,10 +266,7 @@ public sealed class BestFitAllocationStrategy : ILockerAllocationStrategy
     }
 }
 
-// ==========================================
-// 4. NOTIFICATION OBSERVER (Observer Pattern)
-// ==========================================
-
+// -------------------- Notification Service --------------------
 public interface INotificationService
 {
     Task SendPickupCodeAsync(string email, string lockerId, PickupCode code);
@@ -235,21 +277,18 @@ public sealed class ConsoleNotificationService : INotificationService
 {
     public Task SendPickupCodeAsync(string email, string lockerId, PickupCode code)
     {
-        Console.WriteLine($"📧 [EMAIL to {email}]: Your package is at Locker '{lockerId}'. Pickup Code: {code.Code} (Expires in 72h)");
+        Console.WriteLine($"[EMAIL -> {email}]: Locker {lockerId} assigned. Code: {code.Code} (Valid 72h)");
         return Task.CompletedTask;
     }
 
     public Task SendExpiredNoticeAsync(string email, string packageId)
     {
-        Console.WriteLine($"⚠️ [EMAIL to {email}]: Package {packageId} was not picked up and has been marked for return.");
+        Console.WriteLine($"[EMAIL -> {email}]: Package {packageId} pickup window expired. Marked for return.");
         return Task.CompletedTask;
     }
 }
 
-// ==========================================
-// 5. LOCKER SERVICE (Orchestration & Concurrency)
-// ==========================================
-
+// -------------------- Kiosk Orchestration Service --------------------
 public sealed class AmazonLockerKioskService
 {
     private readonly ConcurrentDictionary<string, Locker> _lockers = new();
@@ -270,22 +309,15 @@ public sealed class AmazonLockerKioskService
         }
     }
 
-    /// <summary>
-    /// Thread-safe deposit with Best-Fit allocation
-    /// </summary>
     public async Task<string?> DepositPackageAsync(Package package, TimeSpan validity)
     {
         Locker? selectedLocker = null;
 
-        // Prevent race condition during allocation scan
         await _allocationMutex.WaitAsync();
         try
         {
             selectedLocker = _allocationStrategy.SelectLocker(_lockers.Values, package);
-            if (selectedLocker == null)
-            {
-                return null; // All suitable lockers occupied
-            }
+            if (selectedLocker == null) return null; // No suitable locker available
             selectedLocker.Reserve();
         }
         finally
@@ -293,7 +325,6 @@ public sealed class AmazonLockerKioskService
             _allocationMutex.Release();
         }
 
-        // Lock specific compartment to finalize deposit
         await selectedLocker.GateLock.WaitAsync();
         try
         {
@@ -308,9 +339,6 @@ public sealed class AmazonLockerKioskService
         }
     }
 
-    /// <summary>
-    /// Customer collects package via 6-digit OTP
-    /// </summary>
     public async Task<bool> PickupPackageAsync(string lockerId, string pickupCode)
     {
         if (!_lockers.TryGetValue(lockerId, out var locker))
@@ -327,16 +355,13 @@ public sealed class AmazonLockerKioskService
         }
     }
 
-    /// <summary>
-    /// Background audit task to sweep expired packages (TTL = 72 hrs)
-    /// </summary>
     public async Task SweepExpiredPackagesAsync()
     {
         foreach (var locker in _lockers.Values)
         {
             if (locker.State == LockerState.Occupied && locker.CurrentPickupCode != null)
             {
-                if (DateTime.UtcNow > locker.CurrentPickupCode.ExpiresAt)
+                if (DateTime.UtcNow > locker.CurrentPickupCode.ExpiresAtUtc)
                 {
                     await locker.GateLock.WaitAsync();
                     try
@@ -357,69 +382,180 @@ public sealed class AmazonLockerKioskService
         }
     }
 }
-
-// ==========================================
-// 6. VERIFICATION DRIVER (Program.cs)
-// ==========================================
-
-public static class Program
-{
-    public static async Task Main()
-    {
-        Console.WriteLine("=== 📦 AMAZON HUB LOCKER KIOSK SYSTEM ===\n");
-
-        var lockerList = new List<Locker>
-        {
-            new("L-S1", LockerSize.Small, new Dimensions(20, 20, 30)),
-            new("L-M1", LockerSize.Medium, new Dimensions(30, 30, 40)),
-            new("L-L1", LockerSize.Large, new Dimensions(50, 50, 60)),
-            new("L-XL1", LockerSize.ExtraLarge, new Dimensions(80, 80, 100))
-        };
-
-        var notificationService = new ConsoleNotificationService();
-        var kiosk = new AmazonLockerKioskService(lockerList, new BestFitAllocationStrategy(), notificationService);
-
-        // 1. Courier Deposits Package (Happy Path)
-        var packageA = new Package("PKG-1001", new Dimensions(15, 15, 20), "alex@example.com");
-        Console.WriteLine("Courier depositing small book (PKG-1001)...");
-        var lockerId = await kiosk.DepositPackageAsync(packageA, TimeSpan.FromHours(72));
-        Console.WriteLine($"Assigned Locker: {lockerId} (Best-Fit Small)\n");
-
-        // 2. Large Package Allocation
-        var packageB = new Package("PKG-1002", new Dimensions(45, 40, 55), "taylor@example.com");
-        Console.WriteLine("Courier depositing large monitor (PKG-1002)...");
-        var lockerIdB = await kiosk.DepositPackageAsync(packageB, TimeSpan.FromHours(72));
-        Console.WriteLine($"Assigned Locker: {lockerIdB} (Best-Fit Large)\n");
-
-        // 3. Pickup with wrong code vs correct code
-        Console.WriteLine("Customer trying invalid pickup code '000000'...");
-        bool failedPickup = await kiosk.PickupPackageAsync(lockerId!, "000000");
-        Console.WriteLine($"Pickup successful: {failedPickup} (Expected: False)");
-
-        // 4. Concurrency Test: Multiple Couriers Requesting Simultaneously
-        Console.WriteLine("\n--- ⚡ Concurrency Stress Test: 3 Couriers Racing for Lockers ---");
-        var tasks = Enumerable.Range(1, 3).Select(async i =>
-        {
-            var pkg = new Package($"PKG-RACE-{i}", new Dimensions(25, 25, 30), $"runner{i}@example.com");
-            var assigned = await kiosk.DepositPackageAsync(pkg, TimeSpan.FromHours(72));
-            Console.WriteLine($"[Courier {i}] Got Locker: {assigned ?? "FULL"}");
-        });
-
-        await Task.WhenAll(tasks);
-
-        Console.WriteLine("\n=== System executed successfully without deadlocks or race conditions ===");
-    }
-}
 ```
 
 ---
 
-## 🗣️ Interviewer Discussion & Trade-offs (Staff Level)
+### Python (3.11+) Secondary Implementation
 
-| Question / Follow-up | Senior / Staff Engineering Defense |
-| :--- | :--- |
-| **"Why not lock the entire Kiosk instead of individual compartments?"** | Locking the entire kiosk would turn every concurrent courier deposit and customer pickup into a serial bottleneck. We use a short mutex only to **reserve** the locker ID, and then release it immediately while holding only the specific compartment's `GateLock` for physical I/O and sensor validation. |
-| **"How do you handle a package that is physically larger than declared by the merchant?"** | Kiosks are equipped with optical infrared sensors inside each compartment. If the door closes and the sensor detects door-closure obstruction, the transaction aborts, the locker reverts to `Available`, and the courier is instructed to select an override size. |
-| **"What happens if the kiosk loses internet connectivity?"** | The kiosk stores the cryptographic HMAC secret of the day. Customer pickup codes are generated via HMAC-SHA256 of `(PackageId + TimestampSecret)`. The kiosk verifies the code completely **offline** on edge hardware without needing a real-time internet connection to AWS. |
-| **"How do you optimize locker size distribution?"** | We monitor historical order metrics per neighborhood (e.g., residential areas order more small books/toiletries; commercial areas order larger monitors). Lockers are modular and can be physically reconfigured with different bay grids based on telemetry. |
+```python
+from __future__ import annotations
+from abc import ABC, abstractmethod
+import asyncio
+from dataclasses import dataclass
+from datetime import datetime, timezone, timedelta
+from enum import Enum
+import secrets
+import threading
+from typing import Dict, List, Optional
 
+class LockerSize(Enum):
+    SMALL = 1
+    MEDIUM = 2
+    LARGE = 3
+    EXTRA_LARGE = 4
+
+class LockerState(Enum):
+    AVAILABLE = "AVAILABLE"
+    RESERVED = "RESERVED"
+    OCCUPIED = "OCCUPIED"
+    EXPIRED = "EXPIRED"
+    UNDER_MAINTENANCE = "UNDER_MAINTENANCE"
+
+@dataclass(frozen=True)
+class Dimensions:
+    width_cm: float
+    height_cm: float
+    depth_cm: float
+
+    @property
+    def volume_cm3(self) -> float:
+        return self.width_cm * self.height_cm * self.depth_cm
+
+    def fits_within(self, container: Dimensions) -> bool:
+        return (
+            self.width_cm <= container.width_cm and
+            self.height_cm <= container.height_cm and
+            self.depth_cm <= container.depth_cm
+        )
+
+@dataclass(frozen=True)
+class Package:
+    package_id: str
+    dimensions: Dimensions
+    customer_email: str
+
+@dataclass(frozen=True)
+class PickupCode:
+    code: str
+    expires_at_utc: datetime
+
+    @classmethod
+    def generate(cls, validity: timedelta) -> PickupCode:
+        code_int = secrets.randbelow(900000) + 100000
+        return cls(code=str(code_int), expires_at_utc=datetime.now(timezone.utc) + validity)
+
+    def is_valid(self, input_code: str) -> bool:
+        return datetime.now(timezone.utc) <= self.expires_at_utc and secrets.compare_digest(self.code, input_code)
+
+# -------------------- Domain Entity: Locker --------------------
+class Locker:
+    def __init__(self, locker_id: str, size: LockerSize, dimensions: Dimensions):
+        self.id = locker_id
+        self.size = size
+        self.dimensions = dimensions
+        self.state = LockerState.AVAILABLE
+        self.current_package: Optional[Package] = None
+        self.current_pickup_code: Optional[PickupCode] = None
+        self.deposited_at_utc: Optional[datetime] = None
+        self.gate_lock = asyncio.Lock()
+
+    def can_fit(self, pkg_dim: Dimensions) -> bool:
+        return pkg_dim.fits_within(self.dimensions)
+
+    def reserve(self) -> bool:
+        if self.state != LockerState.AVAILABLE:
+            return False
+        self.state = LockerState.RESERVED
+        return True
+
+    def deposit(self, package: Package, code: PickupCode) -> None:
+        if self.state not in (LockerState.RESERVED, LockerState.AVAILABLE):
+            raise ValueError(f"Cannot deposit in locker {self.id} with state {self.state}")
+        self.current_package = package
+        self.current_pickup_code = code
+        self.deposited_at_utc = datetime.now(timezone.utc)
+        self.state = LockerState.OCCUPIED
+
+    def verify_and_pickup(self, input_code: str) -> bool:
+        if self.state != LockerState.OCCUPIED or not self.current_pickup_code:
+            return False
+        if not self.current_pickup_code.is_valid(input_code):
+            return False
+
+        self.current_package = None
+        self.current_pickup_code = None
+        self.deposited_at_utc = None
+        self.state = LockerState.AVAILABLE
+        return True
+
+    def mark_expired(self) -> None:
+        if self.state == LockerState.OCCUPIED:
+            self.state = LockerState.EXPIRED
+
+# -------------------- Strategy Pattern --------------------
+class LockerAllocationStrategy(ABC):
+    @abstractmethod
+    def select_locker(self, candidates: List[Locker], package: Package) -> Optional[Locker]:
+        pass
+
+class BestFitAllocationStrategy(LockerAllocationStrategy):
+    def select_locker(self, candidates: List[Locker], package: Package) -> Optional[Locker]:
+        available_fitting = [
+            l for l in candidates
+            if l.state == LockerState.AVAILABLE and l.can_fit(package.dimensions)
+        ]
+        if not available_fitting:
+            return None
+        return min(available_fitting, key=lambda l: (l.size.value, l.dimensions.volume_cm3))
+
+# -------------------- Service Orchestrator --------------------
+class AmazonLockerKioskService:
+    def __init__(self, initial_lockers: List[Locker], allocation_strategy: LockerAllocationStrategy):
+        self._lockers: Dict[str, Locker] = {l.id: l for l in initial_lockers}
+        self._strategy = allocation_strategy
+        self._allocation_mutex = asyncio.Lock()
+
+    async def deposit_package(self, package: Package, validity: timedelta) -> Optional[str]:
+        async with self._allocation_mutex:
+            selected = self._strategy.select_locker(list(self._lockers.values()), package)
+            if not selected:
+                return None
+            selected.reserve()
+
+        async with selected.gate_lock:
+            code = PickupCode.generate(validity)
+            selected.deposit(package, code)
+            return selected.id
+
+    async def pickup_package(self, locker_id: str, code: str) -> bool:
+        locker = self._lockers.get(locker_id)
+        if not locker:
+            return False
+
+        async with locker.gate_lock:
+            return locker.verify_and_pickup(code)
+
+    async def sweep_expired_packages(self) -> List[str]:
+        expired_ids = []
+        now = datetime.now(timezone.utc)
+        for locker in self._lockers.values():
+            if locker.state == LockerState.OCCUPIED and locker.current_pickup_code:
+                if now > locker.current_pickup_code.expires_at_utc:
+                    async with locker.gate_lock:
+                        locker.mark_expired()
+                        expired_ids.append(locker.id)
+        return expired_ids
+```
+
+---
+
+## 🏛️ Phase 6: Extensibility Drill & Edge Cases
+
+| Edge Case | Failure Mode / Trap | Production Solution |
+| :--- | :--- | :--- |
+| **All Compatible Lockers Full** | Package cannot fit anywhere; exception thrown. | Return `null` gracefully; route package to alternate neighborhood locker or home delivery. |
+| **Package Exceeds Declared Size** | Courier attempts to shove monitor into Small compartment. | Optical sensors detect door obstruction; abort deposit and prompt courier to select next size up. |
+| **Offline Kiosk Operation** | Internet connectivity down at kiosk location. | OTP verified via symmetric HMAC token `HMAC-SHA256(PackageId + DailySecret)` stored securely in kiosk edge hardware. |
+| **Tampered / Guessed OTP** | Attacker brute-forces 6-digit codes. | Enforce rate limiting: 3 failed attempts locks compartment for 15 minutes and alerts security. |
+| **Door Left Ajar After Pickup** | Customer takes package but doesn't shut the locker door. | Sensor alarm rings after 30 seconds; compartment marked `UnderMaintenance` until door closed sensor fires. |

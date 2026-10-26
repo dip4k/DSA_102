@@ -1,4 +1,4 @@
-﻿# 🏢 Top 30 Product Companies LLD & Machine Coding Interview Master Guide
+# 🏢 Top 30 Product Companies LLD & Machine Coding Interview Master Guide
 
 Welcome to the definitive interview preparation directory for **Low-Level Design (LLD)**, **Object-Oriented Design (OOD)**, and **Machine Coding Rounds** across the top 30 product companies worldwide.
 
@@ -36,7 +36,7 @@ flowchart TD
 
 ### 1. 🔍 Google
 * **Format:** 45-Minute OOD / Algorithmic Design Screening
-* **Evaluation Focus:** Extreme algorithmic efficiency ($O(1)$ / $O(\log N)$) fused with clean class design. Interviewers care about memory footprint, cache locality, and data structure selection.
+* **Evaluation Focus:** Extreme algorithmic efficiency (O(1) / O(log N)) fused with clean class design. Interviewers care about memory footprint, cache locality, and data structure selection.
 * **Top LLD Questions Asked:**
   * [Search Autocomplete / Typeahead System (LC 642)](../03_Tier3_DSA_Screening/29_Search_Autocomplete_System.md) *(Trie + PriorityQueue)*
   * [In-Memory File System (LC 588)](../02_Tier2_Classic_LLD/17_In_Memory_File_System.md) *(Composite + Trie)*
@@ -44,8 +44,8 @@ flowchart TD
   * [URL Shortener (TinyURL)](../04_Tier4_Senior_Backend/37_URL_Shortener.md) *(Base62 + Token Allocation)*
   * [LRU & LFU Cache (LC 146 & 460)](../03_Tier3_DSA_Screening/26_LRU_and_LFU_Cache.md) *(Doubly Linked List + HashMaps)*
 * **Senior Follow-Up Traps:**
-  * *"What if your Autocomplete Trie contains 100M sentences and exceeds memory on a single machine?"* $\rightarrow$ Partition by prefix (`a-c`, `d-f`) or store top-K cached arrays only on leaf/warm nodes.
-  * *"Can `GetNewsFeed` or `Get` operations starve writers if using standard locks?"* $\rightarrow$ Explain `ReaderWriterLockSlim` or lock-free atomic pointers.
+  * *"What if your Autocomplete Trie contains 100M sentences and exceeds memory on a single machine?"* -> Partition by prefix (`a-c`, `d-f`) or store top-K cached arrays only on leaf/warm nodes.
+  * *"Can `GetNewsFeed` or `Get` operations starve writers if using standard locks?"* -> Explain `ReaderWriterLockSlim` or lock-free atomic pointers.
 
 ---
 
@@ -59,8 +59,8 @@ flowchart TD
   * [Generic Message Processor with Azure Service Bus](../01_Tier1_Highest_Priority/02_Generic_Message_Processor.md) *(Generics + DI)*
   * [Parking Lot](../01_Tier1_Highest_Priority/06_Parking_Lot.md) *(Composition over Inheritance)*
 * **Senior Follow-Up Traps:**
-  * *"How do you prevent elevator request starvation when floors above continuously request service?"* $\rightarrow$ Implement look-ahead SCAN / LOOK disk-scheduling elevator dispatch.
-  * *"How does the ATM recover state if power cuts off between cash dispensing and balance deduction?"* $\rightarrow$ Two-phase commit / saga with ledger compensation.
+  * *"How do you prevent elevator request starvation when floors above continuously request service?"* -> Implement look-ahead SCAN / LOOK disk-scheduling elevator dispatch.
+  * *"How does the ATM recover state if power cuts off between cash dispensing and balance deduction?"* -> Two-phase commit / saga with ledger compensation.
 
 ---
 
@@ -74,8 +74,8 @@ flowchart TD
   * [Library Management System](../02_Tier2_Classic_LLD/20_Library_Management_System.md) *(Catalog search + Fines)*
   * [Coupon & Discount Rule Engine](../02_Tier2_Classic_LLD/25_Coupon_and_Discount_Engine.md) *(Composite + Rule Chain)*
 * **Senior Follow-Up Traps:**
-  * *"What happens if a customer drops a large package in a small locker, or fails to pick it up within 3 days?"* $\rightarrow$ State transition to `Expired`, background cleanup cron, and refund/restock trigger.
-  * *"How do you test your pricing strategy without deploying to production?"* $\rightarrow$ Mock strategy injection via DI container.
+  * *"What happens if a customer drops a large package in a small locker, or fails to pick it up within 3 days?"* -> State transition to `Expired`, background cleanup cron, and refund/restock trigger.
+  * *"How do you test your pricing strategy without deploying to production?"* -> Mock strategy injection via DI container.
 
 ---
 
@@ -88,7 +88,7 @@ flowchart TD
   * [Pub/Sub Message Broker](../04_Tier4_Senior_Backend/32_Pub_Sub.md) *(Async Channels, Fan-out)*
   * [LRU & LFU Cache](../03_Tier3_DSA_Screening/26_LRU_and_LFU_Cache.md) *(Eviction + Concurrency)*
 * **Senior Follow-Up Traps:**
-  * *"When Cristiano Ronaldo (100M followers) posts a photo, how do you prevent fanout-on-write from blowing up memory?"* $\rightarrow$ Hybrid fanout: regular users use push; celebrities use pull on client read.
+  * *"When Cristiano Ronaldo (100M followers) posts a photo, how do you prevent fanout-on-write from blowing up memory?"* -> Hybrid fanout: regular users use push; celebrities use pull on client read.
 
 ---
 
@@ -101,7 +101,7 @@ flowchart TD
   * [Logging Framework (Logger)](../02_Tier2_Classic_LLD/13_Logger.md) *(Chain of Responsibility + Buffering)*
   * [Board Game Engine (Chess / Tic-Tac-Toe)](../02_Tier2_Classic_LLD/18_Board_Game_Engine.md) *(Command + Undo/Redo)*
 * **Senior Follow-Up Traps:**
-  * *"Why use `ReaderWriterLockSlim` instead of simple `lock` or `Monitor`?"* $\rightarrow$ Reads vastly outnumber writes; concurrent readers run without blocking each other.
+  * *"Why use `ReaderWriterLockSlim` instead of simple `lock` or `Monitor`?"* -> Reads vastly outnumber writes; concurrent readers run without blocking each other.
 
 ---
 
@@ -113,7 +113,7 @@ flowchart TD
   * [Rate Limiter](../04_Tier4_Senior_Backend/31_Rate_Limiter.md) *(Token Bucket + Sliding Window)*
   * [Custom Cache with LRU & TTL](../01_Tier1_Highest_Priority/07_Custom_Cache.md) *(Eviction under heavy loads)*
 * **Senior Follow-Up Traps:**
-  * *"If the Recommendation microservice times out, does the entire home page fail?"* $\rightarrow$ Graceful degradation: catch timeout, fall back to cached trending titles.
+  * *"If the Recommendation microservice times out, does the entire home page fail?"* -> Graceful degradation: catch timeout, fall back to cached trending titles.
 
 ---
 
@@ -125,7 +125,7 @@ flowchart TD
   * [In-Memory Transactional Key-Value Store](../04_Tier4_Senior_Backend/33_Transactional_Key_Value_Store.md) *(Stack of HashMaps)*
   * [Rate Limiter](../04_Tier4_Senior_Backend/31_Rate_Limiter.md) *(Per-client token bucket)*
 * **Senior Follow-Up Traps:**
-  * *"Two drivers click 'Accept' on the exact same ride request simultaneously. How do you prevent both getting it?"* $\rightarrow$ Atomic state transition (`Interlocked.CompareExchange` or optimistic DB `RowVersion`).
+  * *"Two drivers click 'Accept' on the exact same ride request simultaneously. How do you prevent both getting it?"* -> Atomic state transition (`Interlocked.CompareExchange` or optimistic DB `RowVersion`).
 
 ---
 
@@ -137,7 +137,7 @@ flowchart TD
   * [Rate Limiter](../04_Tier4_Senior_Backend/31_Rate_Limiter.md) *(Sliding window log)*
   * [Invalid Transactions Detector](../03_Tier3_DSA_Screening/28_Invalid_Transactions.md) *(Sliding window validation)*
 * **Senior Follow-Up Traps:**
-  * *"What if a network glitch causes the user to submit payment 3 times in 2 seconds?"* $\rightarrow$ Client passes `Idempotency-Key`; backend locks key in cache/DB and returns cached result on replay.
+  * *"What if a network glitch causes the user to submit payment 3 times in 2 seconds?"* -> Client passes `Idempotency-Key`; backend locks key in cache/DB and returns cached result on replay.
 
 ---
 
@@ -149,7 +149,7 @@ flowchart TD
   * [Rate Limiter](../04_Tier4_Senior_Backend/31_Rate_Limiter.md) *(Token Bucket with Interlocked)*
   * [In-Memory File System](../02_Tier2_Classic_LLD/17_In_Memory_File_System.md) *(Directory tree)*
 * **Senior Follow-Up Traps:**
-  * *"How do you implement Undo and Redo for task status edits?"* $\rightarrow$ Use Command Pattern with two stacks: `_undoStack` and `_redoStack`.
+  * *"How do you implement Undo and Redo for task status edits?"* -> Use Command Pattern with two stacks: `_undoStack` and `_redoStack`.
 
 ---
 
@@ -171,7 +171,7 @@ flowchart TD
   * [LRU & LFU Cache](../03_Tier3_DSA_Screening/26_LRU_and_LFU_Cache.md) *(Fast O(1) Lookups)*
   * [Underground Metro System (LC 1396)](../00_Study_Plans/Top_LeetCode_LLD_Questions.md) *(HashMaps + Station averages)*
 * **Senior Follow-Up Traps:**
-  * *"Why use `SortedSet<Order>` over a simple `List` with `Sort()`?"* $\rightarrow$ Inserting and matching orders happens continuously; $O(\log N)$ tree insertion keeps the order book live without full re-sorts.
+  * *"Why use `SortedSet<Order>` over a simple `List` with `Sort()`?"* -> Inserting and matching orders happens continuously; O(log N) tree insertion keeps the order book live without full re-sorts.
 
 ---
 
@@ -225,7 +225,7 @@ flowchart TD
   * [Coupon & Discount Rule Engine](../02_Tier2_Classic_LLD/25_Coupon_and_Discount_Engine.md) *(Composite + Rule Chain)*
   * [Movie Ticket Booking (BookMyShow)](../02_Tier2_Classic_LLD/09_Movie_Booking.md) *(Seat locking TTL)*
 * **Senior Follow-Up Traps:**
-  * *"Add a crooked dice rule or dynamic snake movement in 5 minutes without changing existing classes."* $\rightarrow$ Strategy Pattern ensures new dice type implements `IDiceStrategy` without modifying `GameController`.
+  * *"Add a crooked dice rule or dynamic snake movement in 5 minutes without changing existing classes."* -> Strategy Pattern ensures new dice type implements `IDiceStrategy` without modifying `GameController`.
 
 ---
 
@@ -259,7 +259,7 @@ flowchart TD
   * [Cricbuzz / Live Scoreboard](../02_Tier2_Classic_LLD/24_Cricbuzz_Cricket_Scoreboard.md) *(Event broadcasting)*
   * [Splitwise](../02_Tier2_Classic_LLD/11_Splitwise.md) *(Money splits)*
 * **Senior Follow-Up Traps:**
-  * *"If Account A sends money to Account B while Account B sends money to Account A, how do you prevent circular deadlock?"* $\rightarrow$ Deterministic Lock Ordering: always acquire locks in sorted order of Account GUIDs.
+  * *"If Account A sends money to Account B while Account B sends money to Account A, how do you prevent circular deadlock?"* -> Deterministic Lock Ordering: always acquire locks in sorted order of Account GUIDs.
 
 ---
 

@@ -1,4 +1,4 @@
-﻿# LLD Problem #23: Snake and Ladder Game (Extensible Board Game Engine)
+# LLD Problem #23: Snake and Ladder Game (Extensible Board Game Engine)
 
 **Tier:** 🟡 Tier 2 (Classic LLD — State & Strategy Mastery)  
 **Problem Family:** 🟡 Family 3 — Stateful Workflow Engine / 🟢 Family 2 — Strategy & Extensible Rules  
@@ -29,24 +29,24 @@ Design a modular, extensible, and thread-safe **Snake and Ladder Game** supporti
 
 ### Core Requirements
 1. **Dynamic Board Dimension**:
-   - Configurable grid of size $N \times N$ (default $10 \times 10 = 100$ cells, indices from $1$ to $N^2$).
-   - Players start at position $0$ (outside the board) and must reach exactly cell $N^2$ to win.
+   - Configurable grid of size `N x N` (default `10 x 10 = 100` cells, indices from `1` to `N^2`).
+   - Players start at position `0` (outside the board) and must reach exactly cell `N^2` to win.
 2. **Special Cells (Obstacles & Boosters)**:
-   - **Snakes**: Head at cell $H$, Tail at cell $T$ ($H > T$). Bitten player slides down to $T$.
-   - **Ladders**: Foot at cell $F$, Top at cell $E$ ($F < E$). Player climbs to $E$.
+   - **Snakes**: Head at cell `H`, Tail at cell `T` (`H > T`). Bitten player slides down to `T`.
+   - **Ladders**: Foot at cell `F`, Top at cell `E` (`F < E`). Player climbs to `E`.
    - **Elevators / Portals**: Super ladders that boost players across multiple tiers.
    - **Mines / Traps**: Fixed penalty steps or frozen turn on detonation.
    - **No Cascading / Cycle Prevention**: Cells must not create infinite loops or conflicting multiple special effects on the same cell.
 3. **Pluggable Dice Strategies**:
-   - **Standard Fair Die**: Uniform random roll in $[1, 6]$ (or $[1, D]$).
-   - **Crooked / Biased Die**: Produces only even numbers $\{2, 4, 6\}$ or weighted values.
-   - **Multi-Dice**: Support for $K$ dice rolled together with sum or custom combination.
+   - **Standard Fair Die**: Uniform random roll in `[1, 6]` (or `[1, D]`).
+   - **Crooked / Biased Die**: Produces only even numbers `{2, 4, 6}` or weighted values.
+   - **Multi-Dice**: Support for `K` dice rolled together with sum or custom combination.
 4. **Turn Execution & Winning Rules**:
-   - Round-robin queue for $P$ players ($P \ge 2$).
-   - **Exact Landing Rule**: If current position + roll $> N^2$, the move is skipped (player stays in place).
+   - Round-robin queue for `P` players (`P >= 2`).
+   - **Exact Landing Rule**: If current position + roll `> N^2`, the move is skipped (player stays in place).
    - **Bonus Turn Rule**: Rolling a 6 grants a consecutive bonus roll.
    - **Three Consecutive Sixes Rule**: Rolling three 6s in a row invalidates all rolls of that turn (anti-spam penalty).
-   - **Leaderboard / Finish Podiums**: When a player reaches $N^2$, they are awarded 1st, 2nd, 3rd place; game continues until only 1 player remains.
+   - **Leaderboard / Finish Podiums**: When a player reaches `N^2`, they are awarded 1st, 2nd, 3rd place; game continues until only 1 player remains.
 
 ---
 
@@ -775,12 +775,265 @@ public static class Program
 
 ---
 
+## 🐍 Production-Ready Python (3.11+) Secondary Implementation
+
+```python
+from __future__ import annotations
+from abc import ABC, abstractmethod
+from collections import deque
+from dataclasses import dataclass, field
+import random
+from typing import Dict, List, Optional, Sequence
+
+# -------------------- Special Cell Abstraction --------------------
+class SpecialCell(ABC):
+    @property
+    @abstractmethod
+    def start_cell(self) -> int:
+        pass
+
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        pass
+
+    @abstractmethod
+    def apply(self, current_pos: int) -> tuple[int, str]:
+        pass
+
+class Snake(SpecialCell):
+    def __init__(self, head: int, tail: int):
+        if head <= tail:
+            raise ValueError(f"Snake head ({head}) must be strictly higher than tail ({tail}).")
+        self._head = head
+        self._tail = tail
+
+    @property
+    def start_cell(self) -> int:
+        return self._head
+
+    @property
+    def name(self) -> str:
+        return f"Snake [{self._head} -> {self._tail}]"
+
+    def apply(self, current_pos: int) -> tuple[int, str]:
+        return self._tail, f"Bitten by Snake! Sliding down to {self._tail}."
+
+class Ladder(SpecialCell):
+    def __init__(self, foot: int, top: int):
+        if foot >= top:
+            raise ValueError(f"Ladder foot ({foot}) must be strictly lower than top ({top}).")
+        self._foot = foot
+        self._top = top
+
+    @property
+    def start_cell(self) -> int:
+        return self._foot
+
+    @property
+    def name(self) -> str:
+        return f"Ladder [{self._foot} -> {self._top}]"
+
+    def apply(self, current_pos: int) -> tuple[int, str]:
+        return self._top, f"Climbing Ladder up to {self._top}!"
+
+class Elevator(SpecialCell):
+    def __init__(self, start: int, destination: int):
+        self._start = start
+        self._dest = destination
+
+    @property
+    def start_cell(self) -> int:
+        return self._start
+
+    @property
+    def name(self) -> str:
+        return f"Elevator [{self._start} -> {self._dest}]"
+
+    def apply(self, current_pos: int) -> tuple[int, str]:
+        return self._dest, f"Riding Elevator to {self._dest}!"
+
+class Mine(SpecialCell):
+    def __init__(self, location: int, penalty: int = 10):
+        self._location = location
+        self._penalty = penalty
+
+    @property
+    def start_cell(self) -> int:
+        return self._location
+
+    @property
+    def name(self) -> str:
+        return f"Landmine [{self._location} penalty -{self._penalty}]"
+
+    def apply(self, current_pos: int) -> tuple[int, str]:
+        new_pos = max(1, current_pos - self._penalty)
+        return new_pos, f"Mine detonated! Blasted back to {new_pos}."
+
+# -------------------- Board & Cycle Detection --------------------
+class Board:
+    def __init__(self, size: int = 10):
+        if size < 3:
+            raise ValueError("Board size must be at least 3x3.")
+        self.size = size
+        self.total_cells = size * size
+        self.special_cells: Dict[int, SpecialCell] = {}
+
+    def add_special_cell(self, special: SpecialCell) -> None:
+        start = special.start_cell
+        if start <= 1 or start >= self.total_cells:
+            raise ValueError(f"Special cell cannot start at cell 1 or win cell {self.total_cells}.")
+        if start in self.special_cells:
+            raise ValueError(f"Cell {start} already has a special obstacle.")
+
+        self.special_cells[start] = special
+        self._validate_no_cycles()
+
+    def get_destination(self, pos: int) -> tuple[int, List[str]]:
+        logs: List[str] = []
+        curr = pos
+        visited = set()
+
+        while curr in self.special_cells:
+            if curr in visited:
+                break
+            visited.add(curr)
+            special = self.special_cells[curr]
+            next_pos, msg = special.apply(curr)
+            logs.append(f"{special.name}: {msg}")
+            curr = next_pos
+
+        return curr, logs
+
+    def _validate_no_cycles(self) -> None:
+        # DFS Cycle Check
+        visiting = set()
+        visited = set()
+
+        def dfs(node: int) -> bool:
+            visiting.add(node)
+            if node in self.special_cells:
+                nxt, _ = self.special_cells[node].apply(node)
+                if nxt in visiting:
+                    return True  # Cycle detected!
+                if nxt not in visited and dfs(nxt):
+                    return True
+            visiting.remove(node)
+            visited.add(node)
+            return False
+
+        for cell in self.special_cells:
+            if cell not in visited and dfs(cell):
+                del self.special_cells[cell]
+                raise ValueError("Adding this special cell creates an infinite loop cycle!")
+
+# -------------------- Dice Strategy Pattern --------------------
+class DiceStrategy(ABC):
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        pass
+
+    @abstractmethod
+    def roll(self) -> int:
+        pass
+
+class StandardFairDice(DiceStrategy):
+    def __init__(self, sides: int = 6):
+        self.sides = sides
+
+    @property
+    def name(self) -> str:
+        return f"Fair {self.sides}-Sided Dice"
+
+    def roll(self) -> int:
+        return random.randint(1, self.sides)
+
+class DeterministicTestDice(DiceStrategy):
+    def __init__(self, sequence: Sequence[int]):
+        self._seq = deque(sequence)
+
+    @property
+    def name(self) -> str:
+        return "Deterministic Test Dice"
+
+    def roll(self) -> int:
+        return self._seq.popleft() if self._seq else 1
+
+# -------------------- Player & Game Controller --------------------
+class Player:
+    def __init__(self, player_id: str, name: str):
+        self.id = player_id
+        self.name = name
+        self.position = 0
+        self.has_won = False
+        self.rank = 0
+
+class SnakeLadderGameController:
+    def __init__(self, board: Board, players: List[Player], dice: DiceStrategy):
+        self.board = board
+        self.players_queue: deque[Player] = deque(players)
+        self.dice = dice
+        self.leaderboard: List[Player] = []
+
+    @property
+    def is_game_over(self) -> bool:
+        return len(self.players_queue) <= 1
+
+    def play_next_turn(self) -> Optional[Player]:
+        if self.is_game_over:
+            return None
+
+        player = self.players_queue.popleft()
+        rolls: List[int] = []
+
+        while True:
+            roll = self.dice.roll()
+            rolls.append(roll)
+            print(f"[{player.name}] Rolled: {roll}")
+
+            if len(rolls) == 3 and all(r == 6 for r in rolls):
+                print(f"[{player.name}] 3 consecutive sixes! Turn invalidated.")
+                self.players_queue.append(player)
+                return player
+
+            if roll != 6 or len(rolls) == 3:
+                break
+
+        total_move = sum(rolls)
+        target = player.position + total_move
+
+        if target > self.board.total_cells:
+            print(f"[{player.name}] Overshot! Needed {self.board.total_cells - player.position}, rolled {total_move}. Turn skipped.")
+            self.players_queue.append(player)
+            return player
+
+        final_pos, logs = self.board.get_destination(target)
+        for log in logs:
+            print(f"  {log}")
+
+        player.position = final_pos
+        print(f"[{player.name}] Position updated: {player.position}/{self.board.total_cells}")
+
+        if player.position == self.board.total_cells:
+            player.has_won = True
+            player.rank = len(self.leaderboard) + 1
+            self.leaderboard.append(player)
+            print(f"🎉 [{player.name}] FINISHED! Rank: #{player.rank}")
+        else:
+            self.players_queue.append(player)
+
+        return player
+```
+
+---
+
 ## 🗣️ Senior Interviewer Discussion & Trade-offs (Staff Level)
 
 | Question / Follow-up | Senior / Staff Engineering Defense |
 | :--- | :--- |
-| **"How do you mathematically guarantee that snakes and ladders do not form an infinite loop?"** | We model the board as a Directed Graph $G = (V, E)$. During board initialization, we execute a **Tarjan's or DFS 3-Color Cycle Detection algorithm** ($O(V + E)$ time and space). If a back-edge into the recursion stack is encountered (e.g. Snake $50 \rightarrow 20$ and Ladder $20 \rightarrow 50$), initialization throws an `InvalidOperationException`. We also enforce that cell $N^2$ cannot have any obstacle, and no two special cells share the same source cell. |
+| **"How do you mathematically guarantee that snakes and ladders do not form an infinite loop?"** | We model the board as a Directed Graph `G = (V, E)`. During board initialization, we execute a **Tarjan's or DFS 3-Color Cycle Detection algorithm** (`O(V + E)` time and space). If a back-edge into the recursion stack is encountered (e.g. Snake `50 -> 20` and Ladder `20 -> 50`), initialization throws an `InvalidOperationException`. We also enforce that cell `N^2` cannot have any obstacle, and no two special cells share the same source cell. |
 | **"How would you scale this to a multiplayer online game with 100,000 concurrent rooms?"** | In an online service (e.g. Swiggy/Zepto gamification campaigns), each game session is an **Actor** (e.g. Microsoft Orleans Grain or Akka.NET actor). Turn messages are strictly serialized within the single-threaded actor mailbox, completely eliminating database locks. State can be stored in **Redis with optimistic concurrency (`WATCH` / Lua scripts)**. |
 | **"How do you handle idempotency if a player's client double-submits a roll request?"** | Every turn request from the mobile client includes a monotonic `TurnId` / `MoveSequenceNumber`. If the server has already processed `TurnId: 42`, subsequent duplicate requests return the cached `TurnResult` without re-rolling the dice. |
-| **"How does the exact landing overshoot rule prevent deadlock at cell 99?"** | If a player is at cell 99, only a roll of $1$ allows them to finish. With an $N$-sided die, the probability of rolling $1$ on each turn is $p = 1/6$. The number of turns required follows a geometric distribution with expected value $E[T] = 1/p = 6$ turns. It is mathematically guaranteed to terminate almost surely ($P(\text{termination}) = 1$). |
+| **"How does the exact landing overshoot rule prevent deadlock at cell 99?"** | If a player is at cell 99, only a roll of `1` allows them to finish. With an `N`-sided die, the probability of rolling `1` on each turn is `p = 1/6`. The number of turns required follows a geometric distribution with expected value `E[T] = 1/p = 6` turns. It is mathematically guaranteed to terminate almost surely (`P(termination) = 1`). |
 | **"How would you support moving obstacles (e.g. snakes that change positions every 5 turns)?"** | Because our `Board` accesses obstacles through `_cells[pos].SpecialEffect`, we can introduce a `BoardModifierService` or `ObstacleRelocationEvent`. Since the game engine queries cell polymorphism dynamically per turn rather than pre-calculating path tables, dynamic obstacle updates are immediately respected without altering the core game loop. |

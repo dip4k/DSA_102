@@ -1,17 +1,17 @@
-﻿# 29. Search Autocomplete & Typeahead System (LeetCode 642)
+# 29. Search Autocomplete & Typeahead System (LeetCode 642)
 
 ## 📌 Problem Context & Motivation
 The **Search Autocomplete / Typeahead Suggestion System** is one of the most frequently asked System Design & Advanced LLD interview questions at **Google, Amazon, Meta, and Microsoft**. 
 
-When a user types characters into a search bar (e.g., Google Search, Amazon Product Search, or Netflix), the system must return the **Top-K most relevant / frequent query completions in real-time** (typically latency $< 20\text{ ms}$).
+When a user types characters into a search bar (e.g., Google Search, Amazon Product Search, or Netflix), the system must return the **Top-K most relevant / frequent query completions in real-time** (typically latency under 20 ms).
 
 ### Architectural & Algorithmic Challenges
-1. **Low Latency & High Read QPS**: Prefix lookups occur on every single keystroke. Traversing a subtree of millions of words and sorting them dynamically on every character typed is computationally intractable ($O(N \log N)$).
+1. **Low Latency & High Read QPS**: Prefix lookups occur on every single keystroke. Traversing a subtree of millions of words and sorting them dynamically on every character typed is computationally intractable (`O(N log N)`).
 2. **Top-K Ranking with Tie-Breaking**: Historical queries have frequencies. Suggestions must be returned ranked by:
    - Highest frequency first.
    - If frequencies are equal, lexicographical (ASCII) order as the tie-breaker.
 3. **Dynamic Online Updates**: When the user finishes a query (indicated by `#`), the query's frequency is dynamically incremented, and new queries are added to the search index on the fly.
-4. **Cold vs. Hot Cache Trade-off**: Storing the top-K suggestions directly at every Trie node achieves $O(1)$ prefix lookups at the expense of memory footprint and update complexity during writes.
+4. **Cold vs. Hot Cache Trade-off**: Storing the top-K suggestions directly at every Trie node achieves `O(1)` prefix lookups at the expense of memory footprint and update complexity during writes.
 5. **Thread Safety & Multi-Tenant Concurrency**: Production autocomplete engines serve thousands of concurrent reader threads while background or foreground writers update sentence weights without data corruption or deadlocks.
 
 ---
@@ -553,15 +553,111 @@ public static class Program
 
 ---
 
+## 🐍 Production-Ready Python (3.11+) Secondary Implementation
+
+```python
+from __future__ import annotations
+from dataclasses import dataclass, field
+import heapq
+import threading
+from typing import Dict, List, Optional
+
+@dataclass
+class SentenceRecord:
+    sentence: str
+    count: int
+
+    # In Python heapq, to get highest count first, compare with reversed counts, or tie-break alphabetically
+    def __lt__(self, other: SentenceRecord) -> bool:
+        if self.count != other.count:
+            return self.count < other.count  # Min-heap by count
+        return self.sentence > other.sentence # Alphabetical tie-breaker: larger string evicted first
+
+class TrieNode:
+    def __init__(self):
+        self.children: Dict[str, TrieNode] = {}
+        # Stores map of sentence -> count for all sentences passing through this prefix
+        self.sentences: Dict[str, int] = {}
+        # Cached top 3 suggestions
+        self.cached_top_k: List[str] = []
+
+    def update_sentence(self, sentence: str, count: int, k: int = 3) -> None:
+        self.sentences[sentence] = count
+
+        # Use Min-Heap of size K to find top-K sentences
+        # Priority: lowest count evicted first; if count tie, lexicographically larger string evicted
+        min_heap: List[SentenceRecord] = []
+
+        for s, c in self.sentences.items():
+            record = SentenceRecord(s, c)
+            if len(min_heap) < k:
+                heapq.heappush(min_heap, record)
+            else:
+                if record > min_heap[0]:
+                    heapq.heapreplace(min_heap, record)
+
+        # Sort descending by count, then ascending by ASCII
+        sorted_records = sorted(min_heap, key=lambda r: (-r.count, r.sentence))
+        self.cached_top_k = [r.sentence for r in sorted_records]
+
+class AutocompleteSystem:
+    def __init__(self, sentences: List[str], times: List[int]):
+        self.root = TrieNode()
+        self.global_counts: Dict[str, int] = {}
+        self.current_prefix: List[str] = []
+        self.current_node: Optional[TrieNode] = self.root
+        self._lock = threading.RLock()
+
+        for s, t in zip(sentences, times):
+            self.global_counts[s] = t
+            self._insert_into_trie(s, t)
+
+    def _insert_into_trie(self, sentence: str, count: int) -> None:
+        curr = self.root
+        curr.update_sentence(sentence, count)
+
+        for ch in sentence:
+            if ch not in curr.children:
+                curr.children[ch] = TrieNode()
+            curr = curr.children[ch]
+            curr.update_sentence(sentence, count)
+
+    def input(self, c: str) -> List[str]:
+        with self._lock:
+            if c == '#':
+                # End of query: increment global count and persist
+                query = "".join(self.current_prefix)
+                new_count = self.global_counts.get(query, 0) + 1
+                self.global_counts[query] = new_count
+                self._insert_into_trie(query, new_count)
+
+                # Reset state for next search
+                self.current_prefix.clear()
+                self.current_node = self.root
+                return []
+
+            self.current_prefix.append(c)
+
+            if self.current_node is not None:
+                self.current_node = self.current_node.children.get(c)
+
+            if self.current_node is not None:
+                return list(self.current_node.cached_top_k)
+
+            return []
+```
+
+---
+
 ## 🗣️ Senior Interviewer Discussion & Trade-offs (Staff Level)
 
 | Architectural Axis / Question | Senior / Staff Engineering Defense |
 | :--- | :--- |
-| **"What is the memory footprint of caching Top-K at every TrieNode vs computing on-the-fly?"** | **Trade-off: Space vs Latency.**<br>• *On-the-fly*: Storing queries only at leaf nodes saves $\approx 80\%$ RAM, but a prefix query requires traversing the entire subtree of size $S$ and maintaining a heap of size $K$ ($O(S \log K)$), causing unacceptable CPU spikes and $50\text{--}200\text{ ms}$ latency.<br>• *Cached Top-K*: Consumes $O(L \cdot K)$ pointers where $L$ is word length and $K=3\text{--}10$. Storing 10 million queries takes $\approx 2\text{--}4\text{ GB}$ of memory—entirely acceptable for modern RAM. In production, we cache Top-K only up to depth $D=5$; beyond depth 5, the subtree is small enough ($<100$ nodes) to compute on the fly. |
-| **"How do you handle Distributed Prefix Partitioning across a cluster?"** | We cannot use simple consistent hashing on the *entire* sentence, because prefix queries only know the leading characters. Instead, we partition by **Prefix Ranges** (e.g., Server 1 hosts `a-c`, Server 2 hosts `d-f`). To prevent hot-shard skew (e.g., prefix `s` having $10\times$ more queries than `x`), we use a two-level routing table: short prefixes ($1\text{--}2$ chars) are replicated across **all** machines or served from an Edge CDN layer, while deeper prefixes ($3+$ chars) are partitioned by consistent hash of the first 3 characters. |
+| **"What is the memory footprint of caching Top-K at every TrieNode vs computing on-the-fly?"** | **Trade-off: Space vs Latency.**<br>• *On-the-fly*: Storing queries only at leaf nodes saves ~80% RAM, but a prefix query requires traversing the entire subtree of size `S` and maintaining a heap of size `K` (`O(S log K)`), causing unacceptable CPU spikes and 50–200 ms latency.<br>• *Cached Top-K*: Consumes `O(L * K)` pointers where `L` is word length and `K = 3 to 10`. Storing 10 million queries takes ~2 to 4 GB of memory—entirely acceptable for modern RAM. In production, we cache Top-K only up to depth `D = 5`; beyond depth 5, the subtree is small enough (< 100 nodes) to compute on the fly. |
+| **"How do you handle Distributed Prefix Partitioning across a cluster?"** | We cannot use simple consistent hashing on the *entire* sentence, because prefix queries only know the leading characters. Instead, we partition by **Prefix Ranges** (e.g., Server 1 hosts `a-c`, Server 2 hosts `d-f`). To prevent hot-shard skew (e.g., prefix `s` having 10x more queries than `x`), we use a two-level routing table: short prefixes (1–2 chars) are replicated across **all** machines or served from an Edge CDN layer, while deeper prefixes (3+ chars) are partitioned by consistent hash of the first 3 characters. |
 | **"Should client keystrokes update the Trie synchronously in production?"** | **Absolutely not.** Synchronous write-locking on every `#` creates write-contention bottlenecks at high scale (50,000 queries/sec). Instead, keystrokes and search queries are streamed asynchronously to an append-only log (Apache Kafka). Stream processing engines (Apache Flink / Spark Streaming) aggregate search counts in sliding windows (e.g., 5-minute batches) and periodically produce an updated Trie snapshot (Double-Buffering / Copy-on-Write) swapped via atomic pointer exchange. |
-| **"How do you handle trending searches and seasonal query decay?"** | A query like "World Cup 2022" should not stay at the top forever. We apply an **Exponential Time-Decay Scoring Function**:<br>$$S(t) = \sum \text{Count} \times e^{-\lambda (T_{\text{now}} - T_{\text{event}})}$$ where $\lambda$ is the half-life decay factor (e.g., 7 days). This dynamically demotes stale queries in favor of breaking news and emerging trends. |
-| **"How do you optimize Garbage Collection (GC) in .NET for Trie nodes?"** | Millions of individual `TrieNode` objects cause severe GC Gen 2 heap fragmentation. In high-performance C# .NET 8, we optimize by:<br>1. Storing character edges in a flat unmanaged memory block or using `ReadOnlySpan<char>`.<br>2. String deduplication via `string.Intern()` or a shared StringPool.<br>3. Using a compact array-backed Trie structure (Double-Array Trie or Radix Tree / Compact Trie) where common prefixes with single child paths are compressed into single edges (e.g., `test` $\rightarrow$ `ing` rather than `t` $\rightarrow$ `e` $\rightarrow$ `s` $\rightarrow$ `t`). |
+| **"How do you handle trending searches and seasonal query decay?"** | A query like "World Cup 2022" should not stay at the top forever. We apply an **Exponential Time-Decay Scoring Function**:<br>`Score(t) = Sum(Count * exp(-lambda * (T_now - T_event)))` where `lambda` is the half-life decay factor (e.g., 7 days). This dynamically demotes stale queries in favor of breaking news and emerging trends. |
+| **"How do you optimize Garbage Collection (GC) in .NET for Trie nodes?"** | Millions of individual `TrieNode` objects cause severe GC Gen 2 heap fragmentation. In high-performance C# .NET 8, we optimize by:<br>1. Storing character edges in a flat unmanaged memory block or using `ReadOnlySpan<char>`.<br>2. String deduplication via `string.Intern()` or a shared StringPool.<br>3. Using a compact array-backed Trie structure (Double-Array Trie or Radix Tree / Compact Trie) where common prefixes with single child paths are compressed into single edges (e.g., `test -> ing` rather than `t -> e -> s -> t`). |
 
 ---
 
@@ -569,6 +665,6 @@ public static class Program
 
 | Operation | Time Complexity | Space Complexity | Notes |
 | :--- | :---: | :---: | :--- |
-| **Input(char) / SearchPrefix** | $O(L)$ | $O(1)$ auxiliary | Where $L$ is the prefix length. Reading the cached Top-K is $O(1)$. |
-| **Add / Increment Sentence** | $O(L \cdot M \log K)$ | $O(L \cdot K)$ | Updates $L$ ancestor nodes. At each node, recalculates Top-K across $M$ sentences using Min-Heap. In offline mode, this is done in bulk. |
-| **Memory Footprint** | — | $O(\Sigma \cdot N \cdot L)$ | Compact Radix tree reduces node count by $60\text{--}70\%$. |
+| **Input(char) / SearchPrefix** | `O(L)` | `O(1)` auxiliary | Where `L` is prefix length. Reading the cached Top-K is `O(1)`. |
+| **Add / Increment Sentence** | `O(L * M log K)` | `O(L * K)` | Updates `L` ancestor nodes. At each node, recalculates Top-K across `M` sentences using Min-Heap. In offline mode, this is done in bulk. |
+| **Memory Footprint** | — | `O(Sigma * N * L)` | Compact Radix tree reduces node count by 60–70%. |

@@ -1,54 +1,69 @@
-# 22. Hotel Management System
+# 22. Hotel Management System: Date Range Overlaps, Dynamic Pricing & State Lifecycle
 
-**Tier:** 🟡 Tier 2 (Classic LLD — State & Strategy Mastery)
-**Problem Family:** 🔴 Family 1 — Allocation & Concurrency Conflicts / 🟡 Family 3 — Stateful Workflow Engine
-**Primary Patterns:** Strategy, State, Factory, Observer
-**Difficulty:** Intermediate
-**Asked At:** OYO, MakeMyTrip, Booking.com, Airbnb, Expedia
+> **Problem Scope:** Design a Hotel Management System managing room inventory across tiers (`Standard`, `Deluxe`, `Suite`), concurrent date range reservations (`[CheckIn, CheckOut)` interval overlap), dynamic pricing strategies (seasonal rates, VIP loyalty discounts), and room housekeeping lifecycles (`Available -> Reserved -> Occupied -> Cleaning`).
 
 ---
 
-## 🧩 Problem Statement
+## 🏛️ Phase 1: Requirements & Non-Functional Requirements (NFRs)
 
-Design a Hotel Management System that manages multiple room types (Standard, Deluxe, Suite), handles guest reservations across date ranges, tracks room status (Available, Reserved, Occupied, Cleaning, OutOfService), and computes dynamic pricing (seasonal rates, weekend surcharges, loyalty discounts).
+### Functional Requirements
+1. **Room Inventory & Categorization:** Rooms have numbers, floor levels, categories (`Standard`, `Deluxe`, `Suite`), base nightly rates, and operational states.
+2. **Date Range Availability Search:** Guests can query rooms available for a continuous date window `[CheckIn, CheckOut)`.
+3. **Double-Booking Prevention:** Prevent overlapping reservations for the same physical room across identical or intersecting dates.
+4. **Dynamic Pricing (Strategy Pattern):** Compute nightly stay prices based on base price, duration, seasonal multipliers (e.g. summer peak surcharge), and guest loyalty tier discounts.
+5. **Room Lifecycle State Machine:** Transitions: `Available -> Reserved -> Occupied (CheckedIn) -> Cleaning (CheckedOut) -> Available`.
+6. **Cancellation & Refunds:** Guests can cancel confirmed reservations; the room interval is freed for future bookings.
 
-### Requirements
-1. Hotel has multiple rooms across floors; each room has a type, price base, and current state.
-2. Guests can search available rooms for a given check-in and check-out date range.
-3. Concurrently booking the same room for overlapping dates must be prevented (thread-safe reservation lock).
-4. Dynamic pricing: room cost varies based on date, season, and guest loyalty tier (Strategy Pattern).
-5. Room lifecycle: `Available -> Reserved -> Occupied (Checked-in) -> Cleaning -> Available`. Housekeeping is notified when a room enters `Cleaning` (Observer Pattern).
-6. Support cancellation with refund policies.
-
----
-
-## 🏛️ Architecture
-
-Key design pressures:
-1. **Dynamic Room Pricing** → Strategy Pattern (`IPricingStrategy`)
-2. **Room Status Lifecycle** → State Pattern (`IRoomState`)
-3. **Overlapping Date Range Check** → DSA Interval Overlap (`[CheckIn, CheckOut)`)
-4. **Housekeeping Alert** → Observer Pattern (`IHousekeepingNotifier`)
+### Non-Functional Requirements
+1. **Thread Safety & Race Conditions:** Room reservation check and append must be atomic to eliminate double-booking when multiple guests attempt booking the same room concurrently.
+2. **Interval Collision Invariant:** Two intervals `[A_start, A_end)` and `[B_start, B_end)` overlap if and only if `A_start < B_end and B_start < A_end`.
+3. **Monetary Precision:** Strictly 128-bit `decimal` / Python `Decimal`.
 
 ---
 
-## 🗺️ UML Class Diagram
+## 🏛️ Phase 2: Core Domain Contracts
 
+```csharp
+public enum RoomType { Standard, Deluxe, Suite }
+public enum RoomState { Available, Reserved, Occupied, Cleaning, OutOfService }
+public enum ReservationStatus { Confirmed, CheckedIn, CheckedOut, Cancelled }
+
+public readonly record struct DateRange(DateOnly CheckIn, DateOnly CheckOut);
+
+public record Guest(Guid Id, string Name, string Email, bool IsVip);
+
+public interface IPricingStrategy
+{
+    decimal CalculatePrice(Room room, DateRange stay, Guest guest);
+}
+
+public interface IHousekeepingNotifier
+{
+    void NotifyRoomRequiresCleaning(int roomNumber);
+}
+```
+
+---
+
+## 🏛️ Phase 3: Class & State Modeling
+
+### Room Lifecycle State Machine
+```mermaid
+stateDiagram-v2
+    [*] --> Available: Room Ready
+    Available --> Reserved: Reservation Confirmed
+    Reserved --> Occupied: Guest Checks In
+    Reserved --> Available: Guest Cancels Reservation
+    Occupied --> Cleaning: Guest Checks Out
+    Cleaning --> Available: Housekeeping completes cleaning & inspection
+    Available --> OutOfService: Maintenance Required
+    OutOfService --> Available: Maintenance Finished
+```
+
+### Domain Class Diagram
 ```mermaid
 classDiagram
     direction TB
-
-    class Hotel {
-        -string _name
-        -List~Room~ _rooms
-        -Dictionary~Guid,Reservation~ _reservations
-        -IPricingStrategy _pricingStrategy
-        +SearchAvailableRooms(type, checkIn, checkOut) List~Room~
-        +BookRoom(guest, roomId, checkIn, checkOut) Reservation?
-        +CheckIn(reservationId) void
-        +CheckOut(reservationId) decimal
-        +CancelReservation(reservationId) void
-    }
 
     class Room {
         +int RoomNumber
@@ -56,24 +71,18 @@ classDiagram
         +decimal BasePrice
         +RoomState State
         -List~DateRange~ _bookedRanges
-        +IsAvailableFor(checkIn, checkOut) bool
-        +TryReserve(range) bool
-        +ReleaseReservation(range) void
-        +SetState(newState) void
-    }
-
-    class RoomType {
-        <<enumeration>>
-        Standard
-        Deluxe
-        Suite
+        +IsAvailableFor(DateRange range) bool
+        +TryReserve(DateRange range) bool
+        +ReleaseReservation(DateRange range)
+        +SetState(RoomState next)
     }
 
     class DateRange {
+        <<struct>>
         +DateOnly CheckIn
         +DateOnly CheckOut
-        +Overlaps(other) bool
-        +Days int
+        +int Days
+        +Overlaps(DateRange other) bool
     }
 
     class Reservation {
@@ -83,35 +92,60 @@ classDiagram
         +DateRange StayDuration
         +decimal TotalPrice
         +ReservationStatus Status
-        +CheckIn() void
-        +CheckOut() void
-        +Cancel() void
+        +CheckIn()
+        +CheckOut()
+        +Cancel()
     }
 
     class IPricingStrategy {
         <<interface>>
-        +CalculatePrice(room, stayDuration, guest) decimal
+        +CalculatePrice(Room, DateRange, Guest) decimal
     }
 
-    class SeasonalPricingStrategy {
-        +CalculatePrice(room, stayDuration, guest) decimal
+    class HotelService {
+        -List~Room~ _rooms
+        -ConcurrentDictionary~Guid, Reservation~ _reservations
+        -IPricingStrategy _pricingStrategy
+        +SearchAvailableRooms(...) List~Room~
+        +BookRoom(...) Reservation
+        +CheckIn(Guid id)
+        +CheckOut(Guid id)
+        +Cancel(Guid id)
     }
 
-    Hotel "1" *-- "1..*" Room : contains
-    Hotel "1" *-- "0..*" Reservation : manages
-    Hotel --> IPricingStrategy : uses
-    Room "1" *-- "0..*" DateRange : bookedRanges
-    Reservation "1" --> "1" Room : reservedRoom
+    Room *-- DateRange
+    Reservation o-- Guest
+    Reservation o-- Room
+    Reservation o-- DateRange
+    HotelService o-- Room
+    HotelService o-- Reservation
+    HotelService o-- IPricingStrategy
 ```
 
 ---
 
-## 💻 C# Implementation
+## 🏛️ Phase 4: Patterns & Concurrency Architecture
+
+1. **Interval Overlap Geometry:** Two half-open intervals `[CheckIn_1, CheckOut_1)` and `[CheckIn_2, CheckOut_2)` intersect when:
+   `CheckIn_1 < CheckOut_2 && CheckIn_2 < CheckOut_1`
+   This cleanly accounts for consecutive stays (Guest A checks out on July 10, Guest B checks in on July 10 with zero conflict).
+2. **Strategy Pattern (`IPricingStrategy`):** Encapsulates seasonal demand shifts and loyalty discounts without altering `Room` or `Reservation` aggregates.
+3. **Lock Striping per Room:** `Room.TryReserve` synchronizes on an internal instance lock (`_roomLock`). Testing for overlapping dates and appending to `_bookedRanges` happens atomically in memory.
+
+---
+
+## 🏛️ Phase 5: Production-Ready Idiomatic Implementations
+
+### C# (.NET 8 / 9) Primary Implementation
 
 ```csharp
-// ─────────────────────────────────────────────────────────────
-// ENUMS & VALUE OBJECTS
-// ─────────────────────────────────────────────────────────────
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace HotelManagementEngine;
+
 public enum RoomType { Standard, Deluxe, Suite }
 public enum RoomState { Available, Reserved, Occupied, Cleaning, OutOfService }
 public enum ReservationStatus { Confirmed, CheckedIn, CheckedOut, Cancelled }
@@ -120,62 +154,62 @@ public readonly record struct DateRange(DateOnly CheckIn, DateOnly CheckOut)
 {
     public int Days => CheckOut.DayNumber - CheckIn.DayNumber;
 
-    public bool Overlaps(DateRange other)
-        => CheckIn < other.CheckOut && other.CheckIn < CheckOut;
+    public bool Overlaps(DateRange other) =>
+        CheckIn < other.CheckOut && other.CheckIn < CheckOut;
 }
 
 public record Guest(Guid Id, string Name, string Email, bool IsVip);
 
-// ─────────────────────────────────────────────────────────────
-// DYNAMIC PRICING STRATEGY (STRATEGY PATTERN)
-// ─────────────────────────────────────────────────────────────
+// -------------------- Dynamic Pricing Strategy --------------------
 public interface IPricingStrategy
 {
     decimal CalculatePrice(Room room, DateRange stay, Guest guest);
 }
 
-public sealed class SeasonalPricingStrategy : IPricingStrategy
+public class SeasonalPricingStrategy : IPricingStrategy
 {
     public decimal CalculatePrice(Room room, DateRange stay, Guest guest)
     {
-        decimal multiplier = 1.0m;
-        // Peak summer surcharge (June - August)
+        var multiplier = 1.0m;
+        // Peak summer surcharge (June through August)
         if (stay.CheckIn.Month >= 6 && stay.CheckIn.Month <= 8)
+        {
             multiplier = 1.35m;
+        }
 
-        decimal total = room.BasePrice * stay.Days * multiplier;
+        var total = room.BasePrice * stay.Days * multiplier;
 
-        // VIP loyalty discount
-        if (guest.IsVip) total *= 0.85m; // 15% discount
+        // VIP 15% discount
+        if (guest.IsVip)
+        {
+            total *= 0.85m;
+        }
 
-        return Math.Round(total, 2);
+        return Math.Round(total, 2, MidpointRounding.AwayFromZero);
     }
 }
 
-// ─────────────────────────────────────────────────────────────
-// ROOM AGGREGATE
-// ─────────────────────────────────────────────────────────────
-public sealed class Room
+// -------------------- Room Aggregate Root --------------------
+public class Room
 {
     private readonly List<DateRange> _bookedRanges = new();
-    private readonly object _lock = new();
+    private readonly object _roomLock = new();
 
     public int RoomNumber { get; }
     public RoomType Type { get; }
     public decimal BasePrice { get; }
-    public RoomState State { get; private set; }
+    public RoomState State { get; private set; } = RoomState.Available;
 
     public Room(int roomNumber, RoomType type, decimal basePrice)
     {
         RoomNumber = roomNumber;
         Type = type;
         BasePrice = basePrice;
-        State = RoomState.Available;
     }
 
     public bool IsAvailableFor(DateRange range)
     {
-        lock (_lock)
+        lock (_roomLock)
         {
             if (State == RoomState.OutOfService) return false;
             return !_bookedRanges.Any(b => b.Overlaps(range));
@@ -184,7 +218,7 @@ public sealed class Room
 
     public bool TryReserve(DateRange range)
     {
-        lock (_lock)
+        lock (_roomLock)
         {
             if (!IsAvailableFor(range)) return false;
             _bookedRanges.Add(range);
@@ -194,7 +228,7 @@ public sealed class Room
 
     public void ReleaseReservation(DateRange range)
     {
-        lock (_lock)
+        lock (_roomLock)
         {
             _bookedRanges.Remove(range);
         }
@@ -202,39 +236,36 @@ public sealed class Room
 
     public void SetState(RoomState newState)
     {
-        lock (_lock)
+        lock (_roomLock)
         {
-            Console.WriteLine($"[Room {RoomNumber}] Status: {State} -> {newState}");
             State = newState;
         }
     }
 }
 
-// ─────────────────────────────────────────────────────────────
-// RESERVATION ENTITY
-// ─────────────────────────────────────────────────────────────
-public sealed class Reservation
+// -------------------- Reservation Entity --------------------
+public class Reservation
 {
     public Guid ReservationId { get; } = Guid.NewGuid();
     public Guest Guest { get; }
     public Room Room { get; }
     public DateRange StayDuration { get; }
     public decimal TotalPrice { get; }
-    public ReservationStatus Status { get; private set; }
+    public ReservationStatus Status { get; private set; } = ReservationStatus.Confirmed;
 
     public Reservation(Guest guest, Room room, DateRange stayDuration, decimal totalPrice)
     {
-        Guest = guest;
-        Room = room;
+        Guest = guest ?? throw new ArgumentNullException(nameof(guest));
+        Room = room ?? throw new ArgumentNullException(nameof(room));
         StayDuration = stayDuration;
         TotalPrice = totalPrice;
-        Status = ReservationStatus.Confirmed;
     }
 
     public void CheckIn()
     {
         if (Status != ReservationStatus.Confirmed)
-            throw new InvalidOperationException($"Cannot check-in reservation with status {Status}.");
+            throw new InvalidOperationException($"Cannot check-in reservation in state {Status}.");
+
         Status = ReservationStatus.CheckedIn;
         Room.SetState(RoomState.Occupied);
     }
@@ -242,7 +273,8 @@ public sealed class Reservation
     public void CheckOut()
     {
         if (Status != ReservationStatus.CheckedIn)
-            throw new InvalidOperationException("Cannot check-out a reservation not currently checked in.");
+            throw new InvalidOperationException("Cannot check-out a reservation that is not active.");
+
         Status = ReservationStatus.CheckedOut;
         Room.SetState(RoomState.Cleaning);
     }
@@ -251,33 +283,28 @@ public sealed class Reservation
     {
         if (Status != ReservationStatus.Confirmed)
             throw new InvalidOperationException("Only confirmed reservations can be cancelled.");
+
         Status = ReservationStatus.Cancelled;
         Room.ReleaseReservation(StayDuration);
         Room.SetState(RoomState.Available);
     }
 }
 
-// ─────────────────────────────────────────────────────────────
-// HOTEL ORCHESTRATOR / FACADE
-// ─────────────────────────────────────────────────────────────
-public sealed class Hotel
+// -------------------- Hotel Orchestrator Service --------------------
+public class HotelService
 {
     private readonly List<Room> _rooms = new();
-    private readonly Dictionary<Guid, Reservation> _reservations = new();
+    private readonly ConcurrentDictionary<Guid, Reservation> _reservations = new();
     private readonly IPricingStrategy _pricingStrategy;
-    private readonly object _bookingLock = new();
 
-    public string Name { get; }
-
-    public Hotel(string name, IPricingStrategy pricingStrategy)
+    public HotelService(IPricingStrategy? pricingStrategy = null)
     {
-        Name = name;
-        _pricingStrategy = pricingStrategy ?? throw new ArgumentNullException(nameof(pricingStrategy));
+        _pricingStrategy = pricingStrategy ?? new SeasonalPricingStrategy();
     }
 
     public void AddRoom(Room room) => _rooms.Add(room);
 
-    public List<Room> SearchAvailableRooms(RoomType type, DateOnly checkIn, DateOnly checkOut)
+    public IReadOnlyList<Room> SearchAvailableRooms(RoomType type, DateOnly checkIn, DateOnly checkOut)
     {
         var range = new DateRange(checkIn, checkOut);
         return _rooms
@@ -293,83 +320,235 @@ public sealed class Hotel
 
         var room = _rooms.FirstOrDefault(r => r.RoomNumber == roomNumber);
         if (room == null)
-            throw new InvalidOperationException($"Room {roomNumber} does not exist.");
+            throw new KeyNotFoundException($"Room {roomNumber} does not exist.");
 
         if (!room.TryReserve(range))
-        {
-            Console.WriteLine($"[Hotel] Room {roomNumber} is unavailable for {checkIn} to {checkOut}.");
-            return null;
-        }
+            return null; // Room unavailable for date range
 
-        decimal price = _pricingStrategy.CalculatePrice(room, range, guest);
+        var price = _pricingStrategy.CalculatePrice(room, range, guest);
         var reservation = new Reservation(guest, room, range, price);
-
-        lock (_bookingLock)
-        {
-            _reservations[reservation.ReservationId] = reservation;
-        }
-
-        Console.WriteLine($"[Hotel] OK Reserved Room {roomNumber} for {guest.Name}. Total: {price:C2} ({range.Days} nights).");
+        _reservations[reservation.ReservationId] = reservation;
         return reservation;
     }
 
     public void CheckIn(Guid reservationId)
     {
-        lock (_bookingLock)
-        {
-            if (!_reservations.TryGetValue(reservationId, out var reservation))
-                throw new KeyNotFoundException("Reservation not found.");
-            reservation.CheckIn();
-        }
+        if (!_reservations.TryGetValue(reservationId, out var reservation))
+            throw new KeyNotFoundException("Reservation not found.");
+        reservation.CheckIn();
     }
 
     public void CheckOut(Guid reservationId)
     {
-        lock (_bookingLock)
-        {
-            if (!_reservations.TryGetValue(reservationId, out var reservation))
-                throw new KeyNotFoundException("Reservation not found.");
-            reservation.CheckOut();
-        }
+        if (!_reservations.TryGetValue(reservationId, out var reservation))
+            throw new KeyNotFoundException("Reservation not found.");
+        reservation.CheckOut();
     }
 
-    public void CancelReservation(Guid reservationId)
+    public void Cancel(Guid reservationId)
     {
-        lock (_bookingLock)
-        {
-            if (!_reservations.TryGetValue(reservationId, out var reservation))
-                throw new KeyNotFoundException("Reservation not found.");
-            reservation.Cancel();
-            Console.WriteLine($"[Hotel] Reservation {reservationId} cancelled. Refund processed.");
-        }
+        if (!_reservations.TryGetValue(reservationId, out var reservation))
+            throw new KeyNotFoundException("Reservation not found.");
+        reservation.Cancel();
     }
 }
 ```
 
 ---
 
-## 🎯 The 4-Stage Evolution (V1 → V4)
+### Python (3.11+) Secondary Implementation
 
-| Version | Feature Added | Architectural Change |
-|---|---|---|
-| **V1** | Single-day room booking | Fixed price, boolean `IsAvailable` |
-| **V2** | Date ranges & Dynamic Pricing | `DateRange` interval collision detection + Strategy pattern |
-| **V3** | Room lifecycle & Housekeeping | State machine (`Available -> Occupied -> Cleaning -> Available`) + Observer notification |
-| **V4** | Distributed multi-hotel inventory | Distributed locking on `RoomId + DateRange` (Redis Redlock), CQRS for high-speed availability search |
+```python
+from __future__ import annotations
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from datetime import date
+from decimal import Decimal, ROUND_HALF_UP
+from enum import Enum
+import threading
+from typing import Dict, List, Optional
+import uuid
+
+class RoomType(Enum):
+    STANDARD = "STANDARD"
+    DELUXE = "DELUXE"
+    SUITE = "SUITE"
+
+class RoomState(Enum):
+    AVAILABLE = "AVAILABLE"
+    RESERVED = "RESERVED"
+    OCCUPIED = "OCCUPIED"
+    CLEANING = "CLEANING"
+    OUT_OF_SERVICE = "OUT_OF_SERVICE"
+
+class ReservationStatus(Enum):
+    CONFIRMED = "CONFIRMED"
+    CHECKED_IN = "CHECKED_IN"
+    CHECKED_OUT = "CHECKED_OUT"
+    CANCELLED = "CANCELLED"
+
+@dataclass(frozen=True)
+class DateRange:
+    check_in: date
+    check_out: date
+
+    @property
+    def days(self) -> int:
+        return (self.check_out - self.check_in).days
+
+    def overlaps(self, other: DateRange) -> bool:
+        return self.check_in < other.check_out and other.check_in < self.check_out
+
+@dataclass(frozen=True)
+class Guest:
+    id: uuid.UUID
+    name: str
+    email: str
+    is_vip: bool = False
+
+# -------------------- Strategy Pattern --------------------
+class PricingStrategy(ABC):
+    @abstractmethod
+    def calculate_price(self, room: Room, stay: DateRange, guest: Guest) -> Decimal:
+        pass
+
+class SeasonalPricingStrategy(PricingStrategy):
+    def calculate_price(self, room: Room, stay: DateRange, guest: Guest) -> Decimal:
+        multiplier = Decimal("1.35") if (6 <= stay.check_in.month <= 8) else Decimal("1.00")
+        total = room.base_price * Decimal(stay.days) * multiplier
+
+        if guest.is_vip:
+            total *= Decimal("0.85")
+
+        return total.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+# -------------------- Room Aggregate Root --------------------
+class Room:
+    def __init__(self, room_number: int, room_type: RoomType, base_price: Decimal):
+        self.room_number = room_number
+        self.room_type = room_type
+        self.base_price = base_price
+        self.state = RoomState.AVAILABLE
+        self._booked_ranges: List[DateRange] = []
+        self._lock = threading.RLock()
+
+    def is_available_for(self, stay_range: DateRange) -> bool:
+        with self._lock:
+            if self.state == RoomState.OUT_OF_SERVICE:
+                return False
+            return not any(b.overlaps(stay_range) for b in self._booked_ranges)
+
+    def try_reserve(self, stay_range: DateRange) -> bool:
+        with self._lock:
+            if not self.is_available_for(stay_range):
+                return False
+            self._booked_ranges.append(stay_range)
+            return True
+
+    def release_reservation(self, stay_range: DateRange) -> None:
+        with self._lock:
+            if stay_range in self._booked_ranges:
+                self._booked_ranges.remove(stay_range)
+
+    def set_state(self, new_state: RoomState) -> None:
+        with self._lock:
+            self.state = new_state
+
+# -------------------- Reservation Entity --------------------
+class Reservation:
+    def __init__(self, guest: Guest, room: Room, stay_duration: DateRange, total_price: Decimal):
+        self.reservation_id = uuid.uuid4()
+        self.guest = guest
+        self.room = room
+        self.stay_duration = stay_duration
+        self.total_price = total_price
+        self.status = ReservationStatus.CONFIRMED
+
+    def check_in(self) -> None:
+        if self.status != ReservationStatus.CONFIRMED:
+            raise ValueError(f"Cannot check-in with status {self.status.name}")
+        self.status = ReservationStatus.CHECKED_IN
+        self.room.set_state(RoomState.OCCUPIED)
+
+    def check_out(self) -> None:
+        if self.status != ReservationStatus.CHECKED_IN:
+            raise ValueError("Reservation is not currently checked in.")
+        self.status = ReservationStatus.CHECKED_OUT
+        self.room.set_state(RoomState.CLEANING)
+
+    def cancel(self) -> None:
+        if self.status != ReservationStatus.CONFIRMED:
+            raise ValueError("Only confirmed reservations can be cancelled.")
+        self.status = ReservationStatus.CANCELLED
+        self.room.release_reservation(self.stay_duration)
+        self.room.set_state(RoomState.AVAILABLE)
+
+# -------------------- Hotel Service --------------------
+class HotelService:
+    def __init__(self, pricing_strategy: Optional[PricingStrategy] = None):
+        self._rooms: List[Room] = []
+        self._reservations: Dict[uuid.UUID, Reservation] = {}
+        self._pricing_strategy = pricing_strategy or SeasonalPricingStrategy()
+        self._lock = threading.RLock()
+
+    def add_room(self, room: Room) -> None:
+        with self._lock:
+            self._rooms.append(room)
+
+    def search_available_rooms(self, room_type: RoomType, check_in: date, check_out: date) -> List[Room]:
+        stay_range = DateRange(check_in, check_out)
+        with self._lock:
+            return [r for r in self._rooms if r.room_type == room_type and r.is_available_for(stay_range)]
+
+    def book_room(self, guest: Guest, room_number: int, check_in: date, check_out: date) -> Optional[Reservation]:
+        stay_range = DateRange(check_in, check_out)
+        if stay_range.days <= 0:
+            raise ValueError("Check-out date must be strictly after check-in date.")
+
+        with self._lock:
+            room = next((r for r in self._rooms if r.room_number == room_number), None)
+            if not room:
+                raise KeyError(f"Room {room_number} does not exist.")
+
+        if not room.try_reserve(stay_range):
+            return None
+
+        price = self._pricing_strategy.calculate_price(room, stay_range, guest)
+        reservation = Reservation(guest, room, stay_range, price)
+        with self._lock:
+            self._reservations[reservation.reservation_id] = reservation
+        return reservation
+
+    def check_in(self, reservation_id: uuid.UUID) -> None:
+        with self._lock:
+            reservation = self._reservations.get(reservation_id)
+            if not reservation:
+                raise KeyError("Reservation not found.")
+        reservation.check_in()
+
+    def check_out(self, reservation_id: uuid.UUID) -> None:
+        with self._lock:
+            reservation = self._reservations.get(reservation_id)
+            if not reservation:
+                raise KeyError("Reservation not found.")
+        reservation.check_out()
+
+    def cancel(self, reservation_id: uuid.UUID) -> None:
+        with self._lock:
+            reservation = self._reservations.get(reservation_id)
+            if not reservation:
+                raise KeyError("Reservation not found.")
+        reservation.cancel()
+```
 
 ---
 
-## 🗣️ Interviewer Discussion & Tradeoffs
+## 🏛️ Phase 6: Extensibility Drill & Edge Cases
 
-### Q: How do you prevent double-booking under high concurrent traffic?
-> **A:** "`Room.TryReserve()` synchronises on an internal `lock (_lock)`. Inside the critical section, it checks `!_bookedRanges.Any(b => b.Overlaps(range))` and atomically appends to `_bookedRanges`. In a distributed database, this maps to an SQL interval exclusion constraint (`EXCLUDE USING gist`) or an optimistic concurrency check with version tokens."
-
-### Q: How do you handle room maintenance / emergency repairs?
-> **A:** "Transition the room to `RoomState.OutOfService`. `IsAvailableFor()` immediately returns `false`. If reservations already exist for that room, trigger an event to automatically reassign guests to an equivalent or upgraded room."
-
-### Q: How would you scale search across 10,000 rooms?
-> **A:** "Maintain an in-memory Interval Tree or Segment Tree per room type to query free rooms in O(log N + K) time instead of scanning every room's booked ranges. Replicate availability data into a Redis BitMap/RedisBloom filter for sub-millisecond search."
-
----
-
-*Cross-references: [Meeting Room Booking](../01_Tier1_Highest_Priority/01_Meeting_Room_Booking.md) (intervals) · [Movie Booking](../02_Tier2_Classic_LLD/09_Movie_Booking.md) · [awesome-lld Hotel](https://github.com/ashishps1/awesome-low-level-design/blob/main/problems/hotel-management-system.md)*
+| Edge Case | Failure Mode / Trap | Production Solution |
+| :--- | :--- | :--- |
+| **Back-to-Back Consecutive Stays** | Guest A checks out July 10; Guest B checks in July 10. | Interval comparison `CheckIn < Other.CheckOut && Other.CheckIn < CheckOut` evaluates to `false` when `A.CheckOut == B.CheckIn`. Zero conflict detected; back-to-back allowed. |
+| **Same Day Checkout (`Days <= 0`)** | Guest inputs Check-out equal to or before Check-in. | Guard clause asserts `CheckOut > CheckIn`; throws `ArgumentException`. |
+| **Concurrent Double-Booking Race** | Two guests submit reservation for the same Deluxe room simultaneously. | `Room.TryReserve` synchronizes on internal room lock. The first request appends to `_bookedRanges`; the second receives `false`. |
+| **Room Out-of-Service During Existing Booking** | Pipe burst renders room uninhabitable for upcoming booked dates. | Transition room to `OutOfService`; trigger automated compensation event to reassign affected guests to equivalent or upgraded rooms. |
+| **Scale Across Millions of Rooms** | `O(N)` linear search over all rooms becomes a query bottleneck. | Index inventory via Segment Trees / Interval Trees per room type or replicate availability bitmaps into Redis. |

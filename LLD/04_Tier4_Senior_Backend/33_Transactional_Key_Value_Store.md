@@ -1,67 +1,177 @@
-# 33. In-Memory Transactional Key-Value Store (Redis-Lite)
+# 33. In-Memory Transactional Key-Value Store (Redis / DynamoDB Lite)
 
-## 📌 Context
-The In-Memory Transactional Key-Value Store is one of the most famous machine coding and LLD questions asked by top tech firms (**Atlassian, Uber, Stripe, PhonePe, Grab**).
-
-**The Challenge:** Build an in-memory key-value store that supports basic operations (`SET`, `GET`, `DELETE`) as well as **nested transaction blocks** (`BEGIN`, `COMMIT`, `ROLLBACK`) where changes within a transaction are isolated until committed, and rolling back restores the previous state without data loss.
+> **Problem Scope:** Design an in-memory transactional key-value store (Atlassian / Stripe / Redis Lite) supporting fundamental CRUD (`Set`, `Get`, `Delete`), arbitrary nested transaction scopes (`Begin`, `Commit`, `Rollback`), tombstone deletion markers, and `O(1)` delta-state stack layering without deep-cloning global storage.
 
 ---
 
-## 1. Architectural Strategy: The Transaction Stack
+## 🏛️ Phase 1: Requirements & Non-Functional Requirements (NFRs)
 
-To support nested transactions efficiently without copying the entire database on every `BEGIN`:
-* We maintain a **Global Database** (a primary dictionary).
-* We maintain a **Stack of Transaction Scopes**. Each scope tracks:
-  * Overwritten original values (for rollback).
-  * Deleted keys (markers for rollback).
-  * New additions.
-* When `GET(key)` is called, we inspect the stack from top to bottom (most recent scope to global database).
-* When `BEGIN` is called, we push a new empty transaction scope onto the stack.
-* When `ROLLBACK` is called, we pop the top scope off the stack.
-* When `COMMIT` is called, we collapse/merge all active scopes down to the global store and clear the stack.
+### Functional Requirements
+1. **Basic Key-Value CRUD:**
+   - `Set(key, value)`: Stores or overwrites the key-value pair.
+   - `Get(key)`: Returns the value associated with the key, or `null` if it does not exist.
+   - `Delete(key)`: Deletes the key from storage.
+2. **Nested Transaction Management:**
+   - `Begin()`: Opens a new nested transaction scope.
+   - `Commit()`: Permanently writes all modifications made in the active transaction (and any enclosing parent scopes) into the persistent global store.
+   - `Rollback()`: Aborts and discards all modifications made in the most recently opened transaction scope, restoring state to the preceding level.
+3. **Transaction Isolation:** Modifications made within an active transaction must be visible to internal queries immediately, while invisible to outer scopes until committed.
 
-```
-Stack of Transaction Scopes:
-[ Top Scope (Level 2) ]  -> Uncommitted changes in inner BEGIN block
-       |
-[ Scope (Level 1) ]      -> Uncommitted changes in outer BEGIN block
-       |
-[ Global Store (Base) ]  -> Committed, permanent state
-```
+### Non-Functional Requirements
+1. **Time & Space Complexity:**
+   - `Begin()`: Strictly `O(1)` time and `O(1)` memory. Cloning the entire database is strictly forbidden.
+   - `Get(key)`: `O(D)` where `D` is the nested transaction depth (practically `O(1)` for `D <= 5`).
+   - `Set(key, value)` and `Delete(key)`: `O(1)` hash table updates.
+   - `Rollback()`: `O(1)` stack pop.
+   - `Commit()`: `O(M)` where `M` is the count of distinct modified keys in the transaction scopes.
+2. **Thread Safety:** Thread-safe state synchronization protecting the transaction stack and global store from race conditions.
+3. **Robust Error Handling:** Throwing explicit domain exceptions when `Commit()` or `Rollback()` is invoked outside an active transaction.
 
 ---
 
-## 2. Complete C# Implementation
+## 🏛️ Phase 2: Core Domain Contracts
 
 ```csharp
-public class TransactionalKeyValueStore
+public interface ITransactionalKeyValueStore
+{
+    bool IsInTransaction { get; }
+    void Set(string key, string value);
+    string? Get(string key);
+    void Delete(string key);
+    void Begin();
+    void Commit();
+    void Rollback();
+}
+```
+
+---
+
+## 🏛️ Phase 3: Class & State Modeling
+
+### Transaction Stack Layering Architecture
+```mermaid
+flowchart TD
+    subgraph Nested_Stack["Transaction Scope Stack (Top to Bottom)"]
+        Level2["Scope Level 2 (Inner Most)<br/>Delta: { a: '30', b: '50' }"]
+        Level1["Scope Level 1 (Outer)<br/>Delta: { a: '20', c: null (Tombstone) }"]
+    end
+
+    subgraph Base_Storage["Committed Global Store"]
+        Global["Global Storage (Dictionary)<br/>Permanent: { a: '10', c: 'hello', d: 'world' }"]
+    end
+
+    Level2 --> Level1
+    Level1 --> Global
+
+    Query["Get('a')"] -->|1. Check Level 2| Found2["Found '30' -> Return Immediately"]
+    QueryC["Get('c')"] -->|1. Level 2 misses| CheckL1["2. Check Level 1 -> Found null (Tombstone) -> Return null"]
+    QueryD["Get('d')"] -->|Miss L2 & L1| CheckGlobal["3. Check Global -> Found 'world' -> Return 'world'"]
+```
+
+### Domain Class Diagram
+```mermaid
+classDiagram
+    direction TB
+
+    class ITransactionalKeyValueStore {
+        <<interface>>
+        +IsInTransaction bool
+        +Set(string key, string value)
+        +Get(string key) string
+        +Delete(string key)
+        +Begin()
+        +Commit()
+        +Rollback()
+    }
+
+    class TransactionalKeyValueStore {
+        -Dictionary~string, string~ _globalStore
+        -Stack~Dictionary~string, string~~ _transactionStack
+        -object _lock
+        +Set(string, string)
+        +Get(string) string
+        +Delete(string)
+        +Begin()
+        +Commit()
+        +Rollback()
+    }
+
+    ITransactionalKeyValueStore <|.. TransactionalKeyValueStore
+```
+
+---
+
+## 🏛️ Phase 4: Patterns & Algorithmic Strategy
+
+1. **Delta-State Layering (Mementos as Hash Maps):**
+   - Naive snapshotting deep-copies `N` items on every `BEGIN` (`O(N)` memory and latency).
+   - Delta stack stores only keys mutated during that specific scope level (`O(1)` `Begin()`).
+2. **Tombstone Sentinels for Deletion:**
+   - To distinguish between "key was never set in this transaction" and "key was explicitly deleted in this transaction", deleted keys are staged with a `null` value sentinel.
+   - When `Get(key)` encounters `null` in the active scope, it terminates search immediately and returns `null` (preventing fallback to older values in underlying parent scopes).
+3. **Commit Collapse:**
+   - Flattens scopes from bottom to top into `_globalStore` and clears the stack in `O(M)`.
+
+---
+
+## 🏛️ Phase 5: Production-Ready Idiomatic Implementations
+
+### C# (.NET 8 / 9) Primary Implementation
+
+```csharp
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace KeyValueStoreEngine;
+
+public interface ITransactionalKeyValueStore
+{
+    bool IsInTransaction { get; }
+    void Set(string key, string value);
+    string? Get(string key);
+    void Delete(string key);
+    void Begin();
+    void Commit();
+    void Rollback();
+}
+
+public class TransactionalKeyValueStore : ITransactionalKeyValueStore
 {
     // Permanent committed storage
-    private readonly Dictionary<string, string> _globalStore = new();
+    private readonly Dictionary<string, string> _globalStore = new(StringComparer.Ordinal);
 
-    // Stack of active transactions. Null value represents a deleted key.
+    // Stack of active transaction scopes. Null value indicates a staged deletion (Tombstone).
     private readonly Stack<Dictionary<string, string?>> _transactionStack = new();
 
-    // Concurrency control for thread-safe operations
-    private readonly object _lock = new object();
+    private readonly object _syncLock = new();
 
-    public bool IsInTransaction => _transactionStack.Count > 0;
+    public bool IsInTransaction
+    {
+        get
+        {
+            lock (_syncLock)
+            {
+                return _transactionStack.Count > 0;
+            }
+        }
+    }
 
     public void Set(string key, string value)
     {
-        if (string.IsNullOrWhiteSpace(key)) throw new ArgumentException("Key cannot be null or empty.", nameof(key));
-        if (value is null) throw new ArgumentNullException(nameof(value));
+        if (string.IsNullOrWhiteSpace(key))
+            throw new ArgumentException("Key cannot be null or whitespace.", nameof(key));
+        if (value is null)
+            throw new ArgumentNullException(nameof(value));
 
-        lock (_lock)
+        lock (_syncLock)
         {
-            if (IsInTransaction)
+            if (_transactionStack.Count > 0)
             {
-                // Stage in current transaction scope
                 _transactionStack.Peek()[key] = value;
             }
             else
             {
-                // Write directly to global store
                 _globalStore[key] = value;
             }
         }
@@ -69,11 +179,12 @@ public class TransactionalKeyValueStore
 
     public string? Get(string key)
     {
-        if (string.IsNullOrWhiteSpace(key)) throw new ArgumentException("Key cannot be null or empty.", nameof(key));
+        if (string.IsNullOrWhiteSpace(key))
+            throw new ArgumentException("Key cannot be null or whitespace.", nameof(key));
 
-        lock (_lock)
+        lock (_syncLock)
         {
-            // 1. Search transaction stack from top to bottom (newest to oldest)
+            // 1. Search stack from top to bottom (newest to oldest scope)
             foreach (var scope in _transactionStack)
             {
                 if (scope.TryGetValue(key, out var stagedValue))
@@ -83,20 +194,21 @@ public class TransactionalKeyValueStore
                 }
             }
 
-            // 2. Fall back to global committed store
-            return _globalStore.TryGetValue(key, out var globalValue) ? globalValue : null;
+            // 2. Fall back to permanent global store
+            return _globalStore.TryGetValue(key, out var committedValue) ? committedValue : null;
         }
     }
 
     public void Delete(string key)
     {
-        if (string.IsNullOrWhiteSpace(key)) throw new ArgumentException("Key cannot be null or empty.", nameof(key));
+        if (string.IsNullOrWhiteSpace(key))
+            throw new ArgumentException("Key cannot be null or whitespace.", nameof(key));
 
-        lock (_lock)
+        lock (_syncLock)
         {
-            if (IsInTransaction)
+            if (_transactionStack.Count > 0)
             {
-                // Stage deletion as a null sentinel
+                // Stage deletion as a null tombstone
                 _transactionStack.Peek()[key] = null;
             }
             else
@@ -108,24 +220,23 @@ public class TransactionalKeyValueStore
 
     public void Begin()
     {
-        lock (_lock)
+        lock (_syncLock)
         {
-            _transactionStack.Push(new Dictionary<string, string?>());
+            _transactionStack.Push(new Dictionary<string, string?>(StringComparer.Ordinal));
         }
     }
 
     public void Commit()
     {
-        lock (_lock)
+        lock (_syncLock)
         {
-            if (!IsInTransaction)
+            if (_transactionStack.Count == 0)
                 throw new InvalidOperationException("No active transaction to commit.");
 
-            // Flatten all transaction scopes from bottom to top into the global store
-            // Stack enumeration starts from top, so reverse to apply in chronological order
-            var scopesInOrder = _transactionStack.Reverse().ToList();
+            // Flatten all scopes from oldest to newest into global store
+            var scopesInChronologicalOrder = _transactionStack.Reverse().ToList();
 
-            foreach (var scope in scopesInOrder)
+            foreach (var scope in scopesInChronologicalOrder)
             {
                 foreach (var (key, value) in scope)
                 {
@@ -140,19 +251,17 @@ public class TransactionalKeyValueStore
                 }
             }
 
-            // All transactions are now permanently committed
             _transactionStack.Clear();
         }
     }
 
     public void Rollback()
     {
-        lock (_lock)
+        lock (_syncLock)
         {
-            if (!IsInTransaction)
+            if (_transactionStack.Count == 0)
                 throw new InvalidOperationException("No active transaction to rollback.");
 
-            // Simply discard the current top transaction scope
             _transactionStack.Pop();
         }
     }
@@ -161,43 +270,95 @@ public class TransactionalKeyValueStore
 
 ---
 
-## 3. Example Execution Trace
+### Python (3.11+) Secondary Implementation
 
-```csharp
-var db = new TransactionalKeyValueStore();
+```python
+from __future__ import annotations
+import threading
+from typing import Dict, List, Optional
 
-db.Set("a", "10");
-Console.WriteLine(db.Get("a")); // Output: 10
+class TransactionalKeyValueStore:
+    def __init__(self):
+        # Permanent committed store
+        self._global_store: Dict[str, str] = {}
+        # Stack of active delta dictionaries (None represents tombstone deletion)
+        self._transaction_stack: List[Dict[str, Optional[str]]] = []
+        self._lock = threading.RLock()
 
-db.Begin();
-db.Set("a", "20");
-Console.WriteLine(db.Get("a")); // Output: 20 (from active transaction)
+    @property
+    def is_in_transaction(self) -> bool:
+        with self._lock:
+            return len(self._transaction_stack) > 0
 
-db.Begin();
-db.Set("a", "30");
-db.Set("b", "50");
-Console.WriteLine(db.Get("a")); // Output: 30
+    def set(self, key: str, value: str) -> None:
+        if not key:
+            raise ValueError("Key cannot be empty.")
+        if value is None:
+            raise ValueError("Value cannot be None.")
 
-db.Rollback(); // Discard Level 2 transaction
-Console.WriteLine(db.Get("a")); // Output: 20
-Console.WriteLine(db.Get("b")); // Output: null
+        with self._lock:
+            if self._transaction_stack:
+                self._transaction_stack[-1][key] = value
+            else:
+                self._global_store[key] = value
 
-db.Commit(); // Commit Level 1 transaction
-Console.WriteLine(db.Get("a")); // Output: 20
+    def get(self, key: str) -> Optional[str]:
+        if not key:
+            raise ValueError("Key cannot be empty.")
+
+        with self._lock:
+            # Search from newest scope down to oldest
+            for scope in reversed(self._transaction_stack):
+                if key in scope:
+                    return scope[key]
+
+            return self._global_store.get(key)
+
+    def delete(self, key: str) -> None:
+        if not key:
+            raise ValueError("Key cannot be empty.")
+
+        with self._lock:
+            if self._transaction_stack:
+                # Place tombstone
+                self._transaction_stack[-1][key] = None
+            else:
+                self._global_store.pop(key, None)
+
+    def begin(self) -> None:
+        with self._lock:
+            self._transaction_stack.append({})
+
+    def commit(self) -> None:
+        with self._lock:
+            if not self._transaction_stack:
+                raise ValueError("No active transaction to commit.")
+
+            # Apply scopes chronologically from bottom to top
+            for scope in self._transaction_stack:
+                for k, v in scope.items():
+                    if v is None:
+                        self._global_store.pop(k, None)
+                    else:
+                        self._global_store[k] = v
+
+            self._transaction_stack.clear()
+
+    def rollback(self) -> None:
+        with self._lock:
+            if not self._transaction_stack:
+                raise ValueError("No active transaction to rollback.")
+            self._transaction_stack.pop()
 ```
 
 ---
 
-## 🗣️ Interviewer Discussion & Tradeoffs
+## 🏛️ Phase 6: Extensibility Drill & Edge Cases
 
-**Interviewer:** *"Why did you use a stack of scopes with a `null` sentinel for deletion, instead of cloning the full dictionary on every `BEGIN`?"*
-**You:** "Cloning the entire dictionary on `BEGIN` takes **O(N)** time and memory, where N is the number of keys. If you have 1,000,000 keys and initiate 5 nested transactions, you would duplicate 5,000,000 items. Using a stack of delta scopes makes `BEGIN` run in **O(1)** time and memory. The memory used is proportional only to the number of keys modified during the transaction."
-
-**Interviewer:** *"What is the time complexity of `Get` with nested transactions?"*
-**You:** "If there are D nested transactions, `Get` searches up to D dictionaries. In practice, transaction depth D is small (typically < 5), so `Get` remains **O(1)** average time. However, if transaction depth were very large, we could optimize by using persistent data structures or maintaining a merged view."
-
-**Interviewer:** *"How would you make this thread-safe in a distributed environment with multiple servers?"*
-**You:** "This implementation uses an in-memory lock for a single process. In a distributed multi-server architecture:
-1. We would back the storage with a partitioned cluster like Redis or DynamoDB.
-2. Transactions across distributed nodes require **Two-Phase Commit (2PC)** or a consensus protocol (like Raft).
-3. To avoid distributed locking bottlenecks, we can use **Optimistic Concurrency Control** with version vectors on each key."
+| Edge Case | Failure Mode / Trap | Production Solution |
+| :--- | :--- | :--- |
+| **Rollback / Commit Without `Begin()`** | Popping an empty stack results in invalid operation. | Guard clause checks `_transactionStack.Count == 0` and throws `InvalidOperationException`. |
+| **Deleting a Non-Existent Key** | Crash or corruption in delta scopes. | Staging a deletion simply inserts `tombstone: null`. During commit, `_globalStore.Remove(key)` handles missing keys gracefully. |
+| **Deep Transaction Stack Latency** | `Get(key)` with 50 nested scopes iterates 50 dictionaries. | Enforce maximum nesting depth (e.g. max 10 levels) or maintain a collapsed read-through cache across transaction scopes. |
+| **Rollback Restores Prior Scoped Value** | `Set("a", 10) -> Begin() -> Set("a", 20) -> Begin() -> Set("a", 30) -> Rollback()`. | Popping top scope correctly leaves Scope 1 intact; `Get("a")` immediately returns `20`. |
+| **Multi-Threaded Concurrent Transactions** | Thread A calls `Begin()` and Thread B calls `Commit()`, interfering with the single shared stack. | Assign a dedicated `TransactionSession` per connection/thread, maintaining isolated transaction stacks per client connection. |

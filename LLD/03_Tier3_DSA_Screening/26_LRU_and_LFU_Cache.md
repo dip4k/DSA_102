@@ -1,4 +1,4 @@
-﻿# 26. LRU & LFU Cache Mastery (LeetCode 146 & 460)
+# 26. LRU & LFU Cache Mastery (LeetCode 146 & 460)
 
 ## 📌 Architectural Context & Problem Framing
 
@@ -188,20 +188,20 @@ Design and implement a data structure for a **Least Frequently Used (LFU) cache*
 
 ### 2.2 Why Priority Queue (Min-Heap) Fails
 A naive attempt uses a Min-Heap storing `(frequency, lastAccessedTimestamp, key)`.
-- Evicting the minimum frequency is O(1) to peek, but $O(\log N)$ to delete.
-- Every `Get(key)` or `Put(existingKey)` updates the frequency, requiring a heap reshuffle (`DecreaseKey` / sift-down), which takes **$O(\log N)$** or **O(N)** in standard library heaps.
+- Evicting the minimum frequency is O(1) to peek, but `O(log N)` to delete.
+- Every `Get(key)` or `Put(existingKey)` updates the frequency, requiring a heap reshuffle (`DecreaseKey` / sift-down), which takes `O(log N)` or `O(N)` in standard library heaps.
 - Therefore, **a heap does NOT satisfy the LeetCode 460 requirement of strict O(1) time**.
 
 ### 2.3 The O(1) Two-HashMap Architecture
 To achieve true O(1) operations, we combine:
-1. `_nodeMap: Dictionary<int, LfuNode>`: Maps `key` $\rightarrow$ `LfuNode` for direct O(1) lookup.
-2. `_freqMap: Dictionary<int, LfuDoublyLinkedList>`: Maps `frequency` $\rightarrow$ a dedicated Doubly Linked List holding all nodes that share that exact frequency.
+1. `_nodeMap: Dictionary<int, LfuNode>`: Maps `key -> LfuNode` for direct O(1) lookup.
+2. `_freqMap: Dictionary<int, LfuDoublyLinkedList>`: Maps `frequency ->` a dedicated Doubly Linked List holding all nodes that share that exact frequency.
    - Within each frequency list, nodes are kept in **LRU order**:
      - Head = Most recently used with that frequency.
      - Tail = Least recently used with that frequency (tie-breaker target).
 3. `_minFrequency: int`: Tracks the lowest frequency currently present in the cache.
-   - When a new key is inserted, its frequency is always 1 $\rightarrow$ `_minFrequency` resets to 1.
-   - When an existing key's frequency is promoted from $F$ to $F+1$, if $F == \text{\_minFrequency}$ and the frequency list for $F$ becomes empty, `_minFrequency` simply increments by 1 (`_minFrequency++`).
+   - When a new key is inserted, its frequency is always 1 -> `_minFrequency` resets to 1.
+   - When an existing key's frequency is promoted from `F` to `F + 1`, if `F == _minFrequency` and the frequency list for `F` becomes empty, `_minFrequency` simply increments by 1 (`_minFrequency++`).
 
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
@@ -412,6 +412,176 @@ public sealed class LfuCache
 }
 ```
 
+---
+
+## 🐍 Production-Ready Python (3.11+) Secondary Implementation
+
+```python
+from __future__ import annotations
+from typing import Dict, Optional
+
+# ============================================================================
+# PART 1: LEETCODE 146 - LRU CACHE (PYTHON)
+# ============================================================================
+
+class LruNode:
+    def __init__(self, key: int = 0, value: int = 0):
+        self.key = key
+        self.value = value
+        self.prev: Optional[LruNode] = None
+        self.next: Optional[LruNode] = None
+
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.map: Dict[int, LruNode] = {}
+        self.head = LruNode()
+        self.tail = LruNode()
+        self.head.next = self.tail
+        self.tail.prev = self.head
+
+    def get(self, key: int) -> int:
+        if key not in self.map:
+            return -1
+        node = self.map[key]
+        self._move_to_head(node)
+        return node.value
+
+    def put(self, key: int, value: int) -> None:
+        if self.capacity <= 0:
+            return
+
+        if key in self.map:
+            node = self.map[key]
+            node.value = value
+            self._move_to_head(node)
+            return
+
+        if len(self.map) >= self.capacity:
+            lru = self.tail.prev
+            assert lru is not None and lru is not self.head
+            self._remove(lru)
+            del self.map[lru.key]
+
+        new_node = LruNode(key, value)
+        self.map[key] = new_node
+        self._add_to_head(new_node)
+
+    def _add_to_head(self, node: LruNode) -> None:
+        node.next = self.head.next
+        node.prev = self.head
+        assert self.head.next is not None
+        self.head.next.prev = node
+        self.head.next = node
+
+    def _remove(self, node: LruNode) -> None:
+        assert node.prev is not None and node.next is not None
+        node.prev.next = node.next
+        node.next.prev = node.prev
+
+    def _move_to_head(self, node: LruNode) -> None:
+        self._remove(node)
+        self._add_to_head(node)
+
+
+# ============================================================================
+# PART 2: LEETCODE 460 - LFU CACHE (PYTHON)
+# ============================================================================
+
+class LfuNode:
+    def __init__(self, key: int = 0, value: int = 0):
+        self.key = key
+        self.value = value
+        self.frequency = 1
+        self.prev: Optional[LfuNode] = None
+        self.next: Optional[LfuNode] = None
+
+class LfuDoublyLinkedList:
+    def __init__(self):
+        self.head = LfuNode()
+        self.tail = LfuNode()
+        self.head.next = self.tail
+        self.tail.prev = self.head
+        self.count = 0
+
+    def add_first(self, node: LfuNode) -> None:
+        node.next = self.head.next
+        node.prev = self.head
+        assert self.head.next is not None
+        self.head.next.prev = node
+        self.head.next = node
+        self.count += 1
+
+    def remove(self, node: LfuNode) -> None:
+        assert node.prev is not None and node.next is not None
+        node.prev.next = node.next
+        node.next.prev = node.prev
+        node.prev = None
+        node.next = None
+        self.count -= 1
+
+    def remove_last(self) -> Optional[LfuNode]:
+        if self.count == 0:
+            return None
+        last = self.tail.prev
+        assert last is not None and last is not self.head
+        self.remove(last)
+        return last
+
+class LFUCache:
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.min_freq = 0
+        self.node_map: Dict[int, LfuNode] = {}
+        self.freq_map: Dict[int, LfuDoublyLinkedList] = {}
+
+    def get(self, key: int) -> int:
+        if key not in self.node_map or self.capacity <= 0:
+            return -1
+        node = self.node_map[key]
+        self._update_freq(node)
+        return node.value
+
+    def put(self, key: int, value: int) -> None:
+        if self.capacity <= 0:
+            return
+
+        if key in self.node_map:
+            node = self.node_map[key]
+            node.value = value
+            self._update_freq(node)
+            return
+
+        if len(self.node_map) >= self.capacity:
+            min_list = self.freq_map[self.min_freq]
+            evicted = min_list.remove_last()
+            if evicted:
+                del self.node_map[evicted.key]
+
+        new_node = LfuNode(key, value)
+        self.node_map[key] = new_node
+        self.min_freq = 1
+
+        if 1 not in self.freq_map:
+            self.freq_map[1] = LfuDoublyLinkedList()
+        self.freq_map[1].add_first(new_node)
+
+    def _update_freq(self, node: LfuNode) -> None:
+        old_freq = node.frequency
+        old_list = self.freq_map[old_freq]
+        old_list.remove(node)
+
+        if old_freq == self.min_freq and old_list.count == 0:
+            self.min_freq += 1
+
+        node.frequency += 1
+        new_freq = node.frequency
+
+        if new_freq not in self.freq_map:
+            self.freq_map[new_freq] = LfuDoublyLinkedList()
+        self.freq_map[new_freq].add_first(node)
+```
+
 ### 2.5 Crucial Edge Cases & Defenses
 
 1. **Capacity = 0**:
@@ -468,19 +638,19 @@ public sealed class LfuCache
    - Suppose an e-commerce flash sale accesses Item X 50,000 times in 10 minutes. The sale ends, and Item X is never requested again.
    - In standard LFU, Item X has frequency 50,000 and will linger in the cache for weeks or months, preventing newly popular items (with frequency 1 or 2) from ever gaining a foothold.
    - **Production Remedy for LFU**:
-     - **Decaying / Aging**: Periodically divide all frequencies by 2 (e.g., every minute or every $N$ operations) or use a moving window.
+     - **Decaying / Aging**: Periodically divide all frequencies by 2 (e.g., every minute or every `N` operations) or use a moving window.
 
 #### The Industry Solution: ARC (Adaptive Replacement Cache)
 Invented by **Nimrod Megiddo and Dharmendra S. Modha (IBM Almaden Research, 2003)**, ARC solves both problems by dynamically adjusting between recency and frequency:
 - It maintains **two tracking lists**:
-  - $L_1$: Contains items accessed only **once** recently (recency).
-  - $L_2$: Contains items accessed at least **twice** (frequency).
+  - `L1`: Contains items accessed only **once** recently (recency).
+  - `L2`: Contains items accessed at least **twice** (frequency).
 - Each list is split into two halves:
-  - Top half ($T_1, T_2$): Items currently held in physical cache memory.
-  - Bottom half ($B_1, B_2$): **Ghost (phantom) caches** that store *only keys/metadata*, no values!
-- **The Magic Parameter `p` (Target size for $T_1$)**:
-  - If a hit occurs in ghost cache $B_1$ (recency ghost), the cache realizes it needs more recency: it increases `p` ($p \leftarrow \min(p + \max(1, |B_2|/|B_1|), c)$).
-  - If a hit occurs in ghost cache $B_2$ (frequency ghost), it realizes it needs more frequency: it decreases `p`.
+  - Top half (`T1, T2`): Items currently held in physical cache memory.
+  - Bottom half (`B1, B2`): **Ghost (phantom) caches** that store *only keys/metadata*, no values!
+- **The Magic Parameter `p` (Target size for `T1`)**:
+  - If a hit occurs in ghost cache `B1` (recency ghost), the cache realizes it needs more recency: it increases `p` (`p = min(p + max(1, |B2|/|B1|), c)`).
+  - If a hit occurs in ghost cache `B2` (frequency ghost), it realizes it needs more frequency: it decreases `p`.
 - ARC delivers near-optimal hit ratios across arbitrary workloads without requiring manual tuning or threshold guessing. *(Note: ARC was historically patented by IBM, which led to open-source alternatives like 2Q and TinyLFU).*
 
 #### Modern Production Caching: W-TinyLFU
@@ -507,15 +677,15 @@ In modern systems (e.g., **Caffeine Cache** in Java, **BitFaster.Caching** in .N
 > 1. **Coarse-Grained Locking (`ReaderWriterLockSlim`)**:
 >    - We can wrap `Get` and `Put` with a lock. Notice that in both LRU and LFU, even a `Get()` operation modifies internal pointers (recency / frequency update), requiring an **exclusive write lock**. An upgradeable read lock could be used initially, but high concurrency will lead to lock contention.
 > 2. **Lock Striping / Sharding**:
->    - Shard the cache into $N$ independent LFU partitions (e.g., 32 or 64 shards where `shardId = (uint)key.GetHashCode() % 32`), each protected by its own lock. This reduces thread contention by a factor of 32.
+>    - Shard the cache into `N` independent LFU partitions (e.g., 32 or 64 shards where `shardId = (uint)key.GetHashCode() % 32`), each protected by its own lock. This reduces thread contention by a factor of 32.
 > 3. **Asynchronous Ring-Buffer Updates (Caffeine / .NET BitFaster approach)**:
 >    - Decouple reading from updating frequency. Reads only touch `_nodeMap` (or a `ConcurrentDictionary`). Instead of synchronously updating the DLL pointers, the thread writes the accessed key into a thread-local or lock-free ring buffer (`Channel<int>`). A dedicated background worker drains the buffer in batches and updates the frequency lists. This keeps read latency under 10 nanoseconds."
 
 ### Question 3: "If memory usage is constrained, what is the memory footprint of LeetCode 460?"
 **Candidate Response:**
 > "On a 64-bit .NET runtime:
-> - Each `LfuNode` object overhead: Object header (8 bytes) + MethodTable pointer (8 bytes) + `Key` (4 bytes) + `Value` (4 bytes) + `Frequency` (4 bytes) + padding (4 bytes) + `Prev` pointer (8 bytes) + `Next` pointer (8 bytes) $\approx$ **48 bytes**.
-> - Each entry in `_nodeMap`: Dictionary Entry struct (16 bytes) + hash collision chain $\approx$ **24 bytes**.
+> - Each `LfuNode` object overhead: Object header (8 bytes) + MethodTable pointer (8 bytes) + `Key` (4 bytes) + `Value` (4 bytes) + `Frequency` (4 bytes) + padding (4 bytes) + `Prev` pointer (8 bytes) + `Next` pointer (8 bytes) ~ **48 bytes**.
+> - Each entry in `_nodeMap`: Dictionary Entry struct (16 bytes) + hash collision chain ~ **24 bytes**.
 > - `_freqMap` and `LfuDoublyLinkedList` sentinels: proportional to distinct frequencies.
 > - Total memory is approximately **72–96 bytes per cached item**.
 > - If storing millions of items, this pointer overhead can exceed the payload size. In that scenario, moving to an unmanaged array-backed slab or a flat open-addressed hash table with 32-bit offset indices rather than 64-bit pointers halves the memory footprint."

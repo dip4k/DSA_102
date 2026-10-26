@@ -1,175 +1,228 @@
-# Layer 1: UML Class Diagrams — Interview Reference
+# Layer 1: UML Class Diagrams & Visual Modeling
 
-UML class diagrams are the universal language of LLD interviews. Whether you're on a whiteboard in a 45-minute OOD round or writing Mermaid diagrams in a design doc, you need fluency in reading and drawing them quickly.
+UML class diagrams are the universal language of Low-Level Design (LLD) interviews. In a 45-minute OOD round or when writing design specs, you need fluency in reading and drafting clean, legible class diagrams within minutes.
 
-> **Interview Rule:** In a 45-minute round, spend the first 5 minutes drawing a UML class diagram BEFORE writing any code. Interviewers reward candidates who plan visually.
-
----
-
-## 📚 AlgoMaster UML Quick-Reference
-Before reading further, bookmark these:
-- **[How to Learn LLD](https://algomaster.io/learn/lld/how-to-learn-lld)** — start here if you''re new
-- **[LLD Course Roadmap](https://algomaster.io/learn/lld/course-roadmap)** — full structured learning path
+> **Senior Interview Rule:** Spend 5–8 minutes sketching your core domain model and relationships *before* writing code. Interviewers reward candidates who plan visually and establish invariant boundaries upfront.
 
 ---
 
-## 1. Class Box Notation
+## 1. Class Box Notation & Member Visibility
 
 ```
-┌───────────────────────────────┐
-│          ClassName            │  ← Section 1: Name (bold = concrete, italic = abstract)
-├───────────────────────────────┤
-│ - _privateField: string       │  ← Section 2: Attributes (visibility + name: type)
-│ # _protectedId: Guid          │
-│ + PublicProperty: decimal     │
-├───────────────────────────────┤
-│ + PublicMethod(): void        │  ← Section 3: Methods (visibility + name(params): return)
-│ - Validate(): bool            │
-└───────────────────────────────┘
+┌──────────────────────────────────────────────┐
+│                  ClassName                   │  ← Section 1: Name (bold = concrete, <<interface>>)
+├──────────────────────────────────────────────┤
+│ - _privateField: string                      │  ← Section 2: Attributes (visibility + name: type)
+│ # _protectedId: Guid                         │
+│ + PublicProperty: decimal                    │
+├──────────────────────────────────────────────┤
+│ + PublicMethod(param: type): returnType      │  ← Section 3: Methods (visibility + name(params): return)
+│ - ValidateInternal(): bool                   │
+└──────────────────────────────────────────────┘
 ```
 
-### Visibility Symbols
-| Symbol | Meaning | C# Equivalent |
-|---|---|---|
-| `+` | Public | `public` |
-| `-` | Private | `private` |
-| `#` | Protected | `protected` |
-| `~` | Package / Internal | `internal` |
+### Visibility Modifiers
 
-### Stereotype Annotations
-| Annotation | Meaning |
-|---|---|
-| `«interface»` | Interface (C# `interface`) |
-| `«abstract»` | Abstract class |
-| `«enum»` | Enumeration |
+| Symbol | Visibility | C# Equivalent | Python Equivalent |
+| :---: | :--- | :--- | :--- |
+| `+` | **Public** | `public` | `def method(self):` |
+| `-` | **Private** | `private` | `self.__field` or `_field` (convention) |
+| `#` | **Protected** | `protected` | `_protected_method(self):` |
+| `~` | **Package / Internal** | `internal` | Module-level access |
+
+### UML Stereotypes
+- `<<interface>>`: Pure interface contract (C# `interface`, Python `Protocol` or `ABC`).
+- `<<abstract>>`: Incomplete base class requiring subclass specialization.
+- `<<enum>>`: Fixed enumeration of discrete constants.
 
 ---
 
 ## 2. Relationship Arrows Cheat Sheet
 
 ```
-──────────────────────────────────────────────────────────────────
- Relationship    Arrow Style        Meaning
-──────────────────────────────────────────────────────────────────
- Inheritance     ──────▷            is-a: Car extends Vehicle
- Interface       - - - -▷          implements: PayPal implements IPayment
- Association     ─────────→        knows-a: Driver uses Car (parameter)
- Aggregation     ─────────◇        has-a (weak): Department has Employees
- Composition     ─────────◆        has-a (strong): Order has OrderItems
- Dependency      - - - - -→        uses transiently: OrderSvc uses IPayGateway
-──────────────────────────────────────────────────────────────────
+─────────────────────────────────────────────────────────────────────────────
+ Relationship        Arrow Style     Mermaid Syntax    Meaning
+─────────────────────────────────────────────────────────────────────────────
+ Inheritance         ──────▷         <|--              is-a: Car extends Vehicle
+ Realization         - - - -▷        <|..              implements: Stripe implements IPayment
+ Composition         ──────◆         *--               owns-a: Order strictly owns OrderItems
+ Aggregation         ──────◇         o--               has-a: Department contains Employees
+ Association         ──────→         -->               knows-a: Driver drives Car
+ Dependency          - - - -→        ..>               uses transiently: OrderSvc uses IPayGateway
+─────────────────────────────────────────────────────────────────────────────
 ```
 
-### Multiplicity (Cardinality) Labels
+### Multiplicity (Cardinality) Notation
 
-| Notation | Meaning |
-|---|---|
-| `1` | Exactly one |
-| `0..1` | Zero or one (optional) |
-| `*` or `0..*` | Zero or more |
-| `1..*` | One or more |
-| `2..5` | Between 2 and 5 |
-
-Example: `ParkingLot 1 ◆── 1..* ParkingFloor` (a lot has one or more floors)
+| Label | Meaning | Concrete Example |
+| :---: | :--- | :--- |
+| `"1"` | Exactly one | An `OrderItem` belongs to exactly `1` `Order`. |
+| `"0..1"` | Zero or one (optional) | A `User` has `0..1` `ActiveSubscription`. |
+| `"*"` or `"0..*"` | Zero or more | A `Customer` has `0..*` historical `Bookings`. |
+| `"1..*"` | One or more | A `ParkingLot` has `1..*` `ParkingFloors`. |
 
 ---
 
-## 3. Mermaid Class Diagram Syntax (Quick Reference)
+## 3. Mermaid Class Diagram Templates for the Core Problem Families
 
-All problem files in this curriculum use Mermaid. Copy these patterns:
+All diagrams in this curriculum use native Mermaid syntax. Copy and adapt these templates for your interviews:
+
+### Template 1: Allocation & Concurrency (Parking Lot / Meeting Rooms)
 
 ```mermaid
 classDiagram
-    %% Inheritance
-    Vehicle <|-- Car
-    Vehicle <|-- Truck
-
-    %% Interface implementation
-    IPaymentStrategy <|.. CreditCardStrategy
-    IPaymentStrategy <|.. PayPalStrategy
-
-    %% Composition (Order owns OrderItems)
-    Order "1" *-- "1..*" OrderItem
-
-    %% Aggregation (Department has Employees, injected)
-    Department "1" o-- "0..*" Employee
-
-    %% Association (Driver uses Car temporarily)
-    Driver --> Car : drives
-
-    %% Dependency (Service uses Interface)
-    OrderService ..> IPaymentStrategy : uses
-
-    class Vehicle {
-        <<abstract>>
-        #string Make
-        #string Model
-        +Start()* void
+    class ParkingLot {
+        -string _id
+        -ConcurrentDictionary~SpotSize, Queue~ParkingSpot~~ _buckets
+        +ParkVehicleAsync(vehicle) Task~Result~
+        +VacateSpotAsync(ticketId) Task~decimal~
     }
 
-    class IPaymentStrategy {
+    class IParkingStrategy {
         <<interface>>
-        +ProcessAsync(amount) Task~Result~
+        +FindSpot(spots, vehicle) ParkingSpot?
     }
-```
 
-### Mermaid Relationship Symbols
+    class NearestFirstStrategy {
+        +FindSpot(spots, vehicle) ParkingSpot?
+    }
 
-| Symbol | UML Relationship |
-|---|---|
-| `<\|--` | Inheritance |
-| `<\|..` | Interface implementation (realization) |
-| `*--` | Composition |
-| `o--` | Aggregation |
-| `-->` | Association |
-| `..>` | Dependency |
+    class BestFitStrategy {
+        +FindSpot(spots, vehicle) ParkingSpot?
+    }
 
----
+    class ParkingSpot {
+        +Guid Id
+        +SpotSize Size
+        +bool IsOccupied
+        +Park(vehicle) void
+        +Vacate() void
+    }
 
-## 4. Problem → UML Concept Mapping
+    class ParkingTicket {
+        +Guid Id
+        +Guid SpotId
+        +DateTimeOffset IssuedAt
+        +DateTimeOffset? PaidAt
+    }
 
-Study these problems to see each UML concept in real production context:
-
-| UML Concept | Best Problem to Study | Key Diagram Element |
-|---|---|---|
-| **Interface Realization** | [Parking Lot](../01_Tier1_Highest_Priority/06_Parking_Lot.md) | `IParkingSpot <|.. HandicappedSpot` |
-| **Composition** | [Order Management](../01_Tier1_Highest_Priority/03_DDD_Order_Management.md) | `Order *-- OrderItem` |
-| **Aggregation** | [Ride Hailing System](../02_Tier2_Classic_LLD/15_Ride_Hailing_System.md) | `Driver o-- Vehicle` |
-| **State Machine** | [Vending Machine](../02_Tier2_Classic_LLD/12_Vending_Machine.md) | State objects within context |
-| **Decorator Chain** | [Notification System](../01_Tier1_Highest_Priority/08_Notification_System.md) | Wrapped `INotificationSender` |
-| **Composite** | [In-Memory File System](../02_Tier2_Classic_LLD/17_In_Memory_File_System.md) | `INode <|-- DirectoryNode, FileNode` |
-| **Multiplicity Labels** | [Hotel Management](../02_Tier2_Classic_LLD/22_Hotel_Management_System.md) | `Hotel 1 *-- 1..* Room` |
-| **ATM / State + Command** | [ATM System](../02_Tier2_Classic_LLD/21_ATM_System.md) | Full State Machine diagram |
-| **Observer / Waitlist** | [Library Management](../02_Tier2_Classic_LLD/20_Library_Management_System.md) | `BookCopy o-- Member : waitlist` |
-| **Composite Task Tree** | [Task Management](../02_Tier2_Classic_LLD/14_Task_Management_System.md) | `Epic *-- Story *-- Task` |
-
----
-
-## 5. UML Whiteboard Speed Template (45-Minute Round)
-
-Use this mental script when the interviewer asks you to design something:
-
-```
-1. ACTORS/NOUNS  → Identify entities → these become classes
-2. VERBS/ACTIONS → Identify behaviours → these become methods
-3. RELATIONSHIPS → Who creates whom? (Composition/Aggregation)
-                   Who knows about whom? (Association/Dependency)
-4. ABSTRACTIONS  → Where is polymorphism needed? (Interfaces)
-5. CONSTRAINTS   → What are the invariants? (where do you validate?)
+    ParkingLot "1" *-- "1..*" ParkingSpot : owns
+    ParkingLot "1" --> "1" IParkingStrategy : delegates to
+    IParkingStrategy <|.. NearestFirstStrategy : implements
+    IParkingStrategy <|.. BestFitStrategy : implements
+    ParkingLot ..> ParkingTicket : generates
 ```
 
 ---
 
-## 6. Common Mistakes to Avoid
+### Template 2: Financial & Double-Entry Ledger (Digital Wallet)
 
-| Mistake | Correct Approach |
-|---|---|
-| Drawing lines without labels | Always label multiplicity (`1`, `1..*`, `0..1`) |
-| Using Composition everywhere | Distinguish: is lifetime shared? If not, use Aggregation |
-| Forgetting interfaces | Every polymorphic point needs an interface |
-| Too many classes upfront | Start with 3–5 core classes, expand on interviewer follow-up |
-| Arrows pointing wrong way | Association arrow points FROM the class that HOLDS the reference |
+```mermaid
+classDiagram
+    class WalletAccount {
+        +Guid AccountId
+        +Money Balance
+        +SemaphoreSlim SyncLock
+        +Debit(amount) void
+        +Credit(amount) void
+    }
+
+    class LedgerEntry {
+        +Guid EntryId
+        +Guid TransactionId
+        +Guid AccountId
+        +EntryType Type
+        +Money Amount
+        +DateTimeOffset Timestamp
+    }
+
+    class TransactionCoordinator {
+        -ILedgerRepository _ledgerRepo
+        +TransferFundsAsync(sourceId, targetId, amount) Task~Result~
+    }
+
+    class Money {
+        <<record>>
+        +decimal Amount
+        +string Currency
+        +Add(other) Money
+        +Subtract(other) Money
+    }
+
+    TransactionCoordinator --> WalletAccount : coordinates
+    TransactionCoordinator --> LedgerEntry : appends
+    WalletAccount "1" *-- "1" Money : holds
+    LedgerEntry "1" *-- "1" Money : records
+```
 
 ---
 
-*Cross-references: [01_OOP_and_SOLID.md](./01_OOP_and_SOLID.md) · [02_Design_Patterns_Cheat_Sheet.md](./02_Design_Patterns_Cheat_Sheet.md) · [awesome-lld GitHub](https://github.com/ashishps1/awesome-low-level-design)*
+### Template 3: Stateful Workflow Engine (Vending Machine / ATM)
+
+```mermaid
+classDiagram
+    class VendingMachineContext {
+        -IVendingState _currentState
+        -decimal _collectedMoney
+        +TransitionTo(newState) void
+        +InsertCoin(amount) void
+        +SelectProduct(code) void
+        +Dispense() void
+        +Refund() void
+    }
+
+    class IVendingState {
+        <<interface>>
+        +InsertCoin(context, amount) void
+        +SelectProduct(context, code) void
+        +Dispense(context) void
+        +Refund(context) void
+    }
+
+    class IdleState {
+        +InsertCoin(context, amount) void
+    }
+
+    class HasMoneyState {
+        +SelectProduct(context, code) void
+        +Refund(context) void
+    }
+
+    class DispensingState {
+        +Dispense(context) void
+    }
+
+    VendingMachineContext "1" --> "1" IVendingState : delegates to
+    IVendingState <|.. IdleState : implements
+    IVendingState <|.. HasMoneyState : implements
+    IVendingState <|.. DispensingState : implements
+```
+
+---
+
+## 4. Whiteboard Speed Modeling Blueprint (5-Minute Protocol)
+
+When the interviewer presents a problem, follow this 5-step mental script:
+
+```
+Step 1: EXTRACT NOUNS     -> These become candidate Classes & Value Objects
+Step 2: EXTRACT VERBS     -> These become Methods & Domain Services
+Step 3: CLASSIFY LIFETIME -> Does Class A own Class B's creation and death?
+                             If YES -> Composition (*--)
+                             If NO  -> Aggregation (o--) or Association (-->)
+Step 4: IDENTIFY VARIANCE -> Which business rule or algorithm will change tomorrow?
+                             Extract an <<interface>> for Strategy or State
+Step 5: DEFINE MULTIPLICITY -> Label cardinalities (1, 1..*, 0..1)
+```
+
+---
+
+## 5. Common Visual Anti-Patterns to Avoid
+
+| Anti-Pattern | Why Evaluators Penalize It | Clean Correction |
+| :--- | :--- | :--- |
+| **Missing Arrow Labels** | Unclear who calls whom or what the multiplicity is. | Always label cardinality (`1`, `1..*`) and relationship direction. |
+| **Composition Everywhere** | Implies everything is destroyed when the parent is deleted. | Use Aggregation (`o--`) when objects are injected and exist independently. |
+| **Omitting Interfaces** | Signals lack of Open/Closed Principle awareness. | Represent all polymorphism with `<<interface>>` boxes. |
+| **God Class Diagram** | One giant box with 30 methods and fields. | Split responsibilities: Separate domain entity from orchestrating service. |
+| **Reversed Association Arrows** | Arrow pointing towards caller instead of callee. | Arrow points FROM the class holding the reference TO the target. |

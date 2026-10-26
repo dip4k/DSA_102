@@ -1,55 +1,70 @@
-# 20. Library Management System
+# 20. Library Management System: Catalog Indexing, State Pattern & FIFO Waitlist
 
-**Tier:** 🟡 Tier 2 (Classic LLD — State & Strategy Mastery)
-**Problem Family:** 🟡 Family 3 — Stateful Workflow Engine / 🔴 Family 1 — Allocation & Concurrency
-**Primary Patterns:** Strategy, Observer, State, Factory
-**Difficulty:** Intermediate
-**Asked At:** Amazon, Flipkart, Walmart Labs, Atlassian, ServiceNow
+> **Problem Scope:** Design a thread-safe Library Management System supporting multi-copy book inventory, multi-dimensional catalog search (Title, Author, ISBN), pluggable fine calculation strategies, a FIFO reservation waitlist (Observer Pattern), and atomic copy checkout/return workflows.
 
 ---
 
-## 🧩 Problem Statement
+## 🏛️ Phase 1: Requirements & Non-Functional Requirements (NFRs)
 
-Design a Library Management System that allows members to search the catalog, borrow and return books, pay fines for overdue returns, and reserve books that are currently checked out.
+### Functional Requirements
+1. **Catalog Search & Book Copies:** The library catalog tracks book metadata (`ISBN`, `Title`, `Author`, `Genre`). Each book can have multiple physical copies with distinct barcodes/identifiers.
+2. **Borrowing Limits & Loan Period:** Members can borrow up to a maximum limit (e.g., 5 books). Each loan has a default due date (e.g., 14 days).
+3. **Pluggable Overdue Fine Calculation (Strategy Pattern):** If a book is returned after its due date, compute fine via configurable strategies (`DailyFlatRate`, `TieredWeekendSurcharge`).
+4. **FIFO Waitlist & Reservation (Observer Pattern):** If all copies of a book are currently checked out, members can place a hold. When a copy is returned, the next member in the FIFO waitlist is notified and the copy is reserved for a 48-hour pickup window.
+5. **Atomic Return & Reissue:** Prevent race conditions where two members or threads attempt to borrow the same physical copy simultaneously.
 
-### Requirements
-1. The library maintains a catalog of books (physical copies + metadata).
-2. Each book can have **multiple physical copies** with individual availability status.
-3. A member can borrow up to a **maximum limit** of books simultaneously.
-4. Overdue books incur a **daily fine** calculated by a pluggable strategy (simple daily rate, weekend surcharge, etc.).
-5. If a book is unavailable, a member can join a **reservation waitlist**; they are notified when a copy becomes available.
-6. The system must support **concurrent borrow/return** operations without double-issuing the same physical copy.
-
----
-
-## 🏛️ Architecture
-
-Key design pressures:
-1. **Fine calculation varies** → Strategy Pattern (`IFineStrategy`)
-2. **Waitlist notification** → Observer Pattern (member = subscriber, `BookCopy` = subject)
-3. **Book copy transitions** through `Available → Borrowed → Reserved → Available` → State Pattern (`IBookCopyState`)
-4. **Catalog search by multiple dimensions** (Title, Author, ISBN) → Inverted Dictionary indexing
+### Non-Functional Requirements
+1. **Thread Safety:** Fine-grained lock striping per `BookCopy` to prevent double-checkout under concurrent requests.
+2. **Catalog Query Latency:** Inverted index dictionaries for Title and Author to provide `O(1)` or `O(K)` catalog lookups instead of scanning all books.
+3. **Financial Precision:** Currency fines calculated with `decimal` / Python `Decimal`.
 
 ---
 
-## 🗺️ UML Class Diagram
+## 🏛️ Phase 2: Core Domain Contracts
 
+```csharp
+public enum BookCopyState { Available, Borrowed, Reserved, Lost }
+
+public record Member(Guid MemberId, string Name, string Email, int MaxBorrowLimit);
+
+public interface IFineStrategy
+{
+    decimal CalculateFine(int overdueDays);
+}
+
+public interface IMemberNotifier
+{
+    void SendReservationReadyAlert(Member member, string bookTitle, Guid copyId);
+}
+
+public interface ILibraryCatalog
+{
+    void AddBook(Book book);
+    IEnumerable<Book> SearchByTitle(string title);
+    IEnumerable<Book> SearchByAuthor(string author);
+    Book? SearchByIsbn(string isbn);
+}
+```
+
+---
+
+## 🏛️ Phase 3: Class & State Modeling
+
+### Book Copy State Machine
+```mermaid
+stateDiagram-v2
+    [*] --> Available: Added to Catalog
+    Available --> Borrowed: Member borrows copy
+    Borrowed --> Reserved: Returned copy has waiting member (Waitlist Dequeue)
+    Borrowed --> Available: Returned copy has no waitlist
+    Reserved --> Borrowed: Reserved member checks out copy
+    Reserved --> Available: 48h reservation window expired
+```
+
+### Domain Class Diagram
 ```mermaid
 classDiagram
     direction TB
-
-    class Library {
-        -Dictionary~string,Book~ _catalog
-        -Dictionary~Guid,Member~ _members
-        -Dictionary~Guid,BorrowingRecord~ _activeLoans
-        -IFineStrategy _fineStrategy
-        +SearchByTitle(title) IEnumerable~Book~
-        +SearchByAuthor(author) IEnumerable~Book~
-        +SearchByIsbn(isbn) Book?
-        +AddBook(book) void
-        +BorrowBook(memberId, isbn) BorrowingRecord?
-        +ReturnBook(memberId, recordId) decimal
-    }
 
     class Book {
         +string Isbn
@@ -57,44 +72,17 @@ classDiagram
         +string Author
         +string Genre
         -List~BookCopy~ _copies
-        +GetAvailableCopy() BookCopy?
-        +AddCopy(copy) void
+        +AddCopy(BookCopy copy)
+        +GetAvailableCopy() BookCopy
     }
 
     class BookCopy {
         +Guid CopyId
-        -IBookCopyState _state
+        +BookCopyState State
         -Queue~Member~ _waitlist
-        +Borrow(member) bool
-        +Return() void
-        +Reserve(member) void
-        +AddToWaitlist(member) void
-        +NotifyNextInWaitlist() void
-    }
-
-    class IBookCopyState {
-        <<interface>>
-        +Borrow(copy, member) bool
-        +Return(copy) void
-        +Reserve(copy, member) void
-    }
-
-    class AvailableState
-    class BorrowedState {
-        -Member _borrowedBy
-    }
-    class ReservedState {
-        -Member _reservedBy
-    }
-
-    class Member {
-        +Guid MemberId
-        +string Name
-        +int MaxBorrowLimit
-        -List~BorrowingRecord~ _activeLoans
-        +CanBorrow() bool
-        +AddLoan(record) void
-        +Notify(message) void
+        +Borrow(Member member) bool
+        +Return() Member
+        +Reserve(Member member)
     }
 
     class BorrowingRecord {
@@ -106,420 +94,466 @@ classDiagram
         +DateTime? ReturnedAt
         +IsOverdue() bool
         +OverdueDays() int
-        +MarkReturned() void
     }
 
     class IFineStrategy {
         <<interface>>
-        +Calculate(overdueDays) decimal
+        +CalculateFine(int overdueDays) decimal
     }
 
-    class DailyFineStrategy {
-        -decimal _dailyRate
-        +Calculate(overdueDays) decimal
+    class LibraryService {
+        -ILibraryCatalog _catalog
+        -IFineStrategy _fineStrategy
+        -ConcurrentDictionary~Guid, BorrowingRecord~ _activeLoans
+        +BorrowBook(Guid memberId, string isbn) BorrowingRecord
+        +ReturnBook(Guid recordId) decimal
     }
 
-    class WeekendSurchargeFineStrategy {
-        -decimal _weekdayRate
-        -decimal _weekendRate
-        +Calculate(overdueDays) decimal
-    }
-
-    Library "1" *-- "0..*" Book : catalog
-    Library "1" *-- "0..*" Member : members
-    Library --> IFineStrategy : uses
-
-    Book "1" *-- "1..*" BookCopy : copies
-    BookCopy "1" *-- "1" IBookCopyState : state
-    BookCopy "1" o-- "0..*" Member : waitlist
-
-    IBookCopyState <|.. AvailableState
-    IBookCopyState <|.. BorrowedState
-    IBookCopyState <|.. ReservedState
-
-    IFineStrategy <|.. DailyFineStrategy
-    IFineStrategy <|.. WeekendSurchargeFineStrategy
-
-    Member "1" *-- "0..*" BorrowingRecord : activeLoans
+    Book *-- BookCopy
+    BookCopy o-- BookCopyState
+    LibraryService o-- Book
+    LibraryService o-- IFineStrategy
+    LibraryService o-- BorrowingRecord
 ```
 
 ---
 
-## 💻 C# Implementation
+## 🏛️ Phase 4: Patterns & Concurrency Architecture
+
+1. **Strategy Pattern (`IFineStrategy`):** Encapsulates overdue fee algorithms (`DailyRateFineStrategy`, `TieredFineStrategy`). Swapping fine models requires zero changes to loan entities.
+2. **Observer Pattern / FIFO Waitlist:** Each `BookCopy` maintains an internal FIFO waitlist (`Queue<Member>`). Upon return, if the waitlist contains members, the copy transitions to `Reserved` and the next member is immediately alerted.
+3. **Lock Striping on `BookCopy`:** Borrowing and returning operations acquire a compartment lock (`_copyLock`) on the targeted `BookCopy`. Concurrent checkouts of distinct books or distinct copies execute with zero thread contention.
+
+---
+
+## 🏛️ Phase 5: Production-Ready Idiomatic Implementations
+
+### C# (.NET 8 / 9) Primary Implementation
 
 ```csharp
-// ─────────────────────────────────────────────────────────────
-// 1. FINE STRATEGY (STRATEGY PATTERN)
-// ─────────────────────────────────────────────────────────────
-public interface IFineStrategy
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace LibraryManagementEngine;
+
+public enum BookCopyState { Available, Borrowed, Reserved, Lost }
+
+public record Member(Guid MemberId, string Name, string Email, int MaxBorrowLimit = 5)
 {
-    decimal Calculate(int overdueDays);
+    public void Notify(string message) =>
+        Console.WriteLine($"[ALERT to {Email}]: {message}");
 }
 
-public sealed class DailyFineStrategy : IFineStrategy
+public class BookCopy
 {
-    private readonly decimal _dailyRate;
-    public DailyFineStrategy(decimal dailyRate = 0.50m) => _dailyRate = dailyRate;
-    public decimal Calculate(int overdueDays) => Math.Max(0, overdueDays) * _dailyRate;
-}
-
-public sealed class WeekendSurchargeFineStrategy : IFineStrategy
-{
-    private readonly decimal _weekdayRate;
-    private readonly decimal _weekendRate;
-
-    public WeekendSurchargeFineStrategy(decimal weekdayRate = 0.50m, decimal weekendRate = 1.00m)
-    {
-        _weekdayRate = weekdayRate;
-        _weekendRate = weekendRate;
-    }
-
-    public decimal Calculate(int overdueDays)
-    {
-        if (overdueDays <= 0) return 0m;
-        int weekendDays = (int)Math.Round(overdueDays * 2.0 / 7.0);
-        int weekdays = overdueDays - weekendDays;
-        return (weekdays * _weekdayRate) + (weekendDays * _weekendRate);
-    }
-}
-
-// ─────────────────────────────────────────────────────────────
-// 2. DOMAIN MODELS & ENTITIES
-// ─────────────────────────────────────────────────────────────
-public sealed class BorrowingRecord
-{
-    public Guid RecordId { get; } = Guid.NewGuid();
-    public Member Member { get; }
-    public BookCopy Copy { get; }
-    public DateTime BorrowedAt { get; } = DateTime.UtcNow;
-    public DateTime DueDate { get; }
-    public DateTime? ReturnedAt { get; private set; }
-
-    public BorrowingRecord(Member member, BookCopy copy, int loanDays = 14)
-    {
-        Member = member;
-        Copy = copy;
-        DueDate = BorrowedAt.AddDays(loanDays);
-    }
-
-    public bool IsOverdue() => ReturnedAt == null && DateTime.UtcNow > DueDate;
-
-    public int OverdueDays() =>
-        ReturnedAt == null
-            ? Math.Max(0, (int)(DateTime.UtcNow - DueDate).TotalDays)
-            : Math.Max(0, (int)(ReturnedAt.Value - DueDate).TotalDays);
-
-    public void MarkReturned() => ReturnedAt = DateTime.UtcNow;
-}
-
-public sealed class Member
-{
-    private readonly List<BorrowingRecord> _activeLoans = new();
-    private readonly object _loanLock = new();
-
-    public Guid MemberId { get; } = Guid.NewGuid();
-    public string Name { get; }
-    public int MaxBorrowLimit { get; }
-    public IReadOnlyCollection<BorrowingRecord> ActiveLoans => _activeLoans.AsReadOnly();
-
-    public Member(string name, int maxBorrowLimit = 5)
-    {
-        Name = name;
-        MaxBorrowLimit = maxBorrowLimit;
-    }
-
-    public bool CanBorrow()
-    {
-        lock (_loanLock)
-            return _activeLoans.Count(r => r.ReturnedAt == null) < MaxBorrowLimit;
-    }
-
-    public void AddLoan(BorrowingRecord record)
-    {
-        lock (_loanLock)
-            _activeLoans.Add(record);
-    }
-
-    public void Notify(string message)
-        => Console.WriteLine($"[Notification -> {Name}] {message}");
-}
-
-// ─────────────────────────────────────────────────────────────
-// 3. BOOK COPY STATE PATTERN
-// ─────────────────────────────────────────────────────────────
-public interface IBookCopyState
-{
-    bool Borrow(BookCopy copy, Member member);
-    void Return(BookCopy copy);
-    void Reserve(BookCopy copy, Member member);
-}
-
-public sealed class AvailableState : IBookCopyState
-{
-    public bool Borrow(BookCopy copy, Member member)
-    {
-        Console.WriteLine($"[Library] Copy {copy.CopyId} borrowed by {member.Name}.");
-        copy.TransitionTo(new BorrowedState(member));
-        return true;
-    }
-
-    public void Return(BookCopy copy)
-        => Console.WriteLine("[Library] Copy is already available -- no-op.");
-
-    public void Reserve(BookCopy copy, Member member)
-    {
-        Console.WriteLine($"[Library] Copy {copy.CopyId} reserved for {member.Name}.");
-        copy.TransitionTo(new ReservedState(member));
-    }
-}
-
-public sealed class BorrowedState : IBookCopyState
-{
-    private readonly Member _borrowedBy;
-    public BorrowedState(Member borrowedBy) => _borrowedBy = borrowedBy;
-
-    public bool Borrow(BookCopy copy, Member member)
-    {
-        Console.WriteLine($"[Library] Copy {copy.CopyId} is already borrowed. Adding {member.Name} to waitlist.");
-        copy.AddToWaitlist(member);
-        return false;
-    }
-
-    public void Return(BookCopy copy)
-    {
-        Console.WriteLine($"[Library] Copy {copy.CopyId} returned by {_borrowedBy.Name}.");
-        copy.NotifyNextInWaitlist();
-    }
-
-    public void Reserve(BookCopy copy, Member member)
-    {
-        Console.WriteLine($"[Library] Copy {copy.CopyId} borrowed. Enqueuing {member.Name} in waitlist.");
-        copy.AddToWaitlist(member);
-    }
-}
-
-public sealed class ReservedState : IBookCopyState
-{
-    private readonly Member _reservedBy;
-    public ReservedState(Member reservedBy) => _reservedBy = reservedBy;
-
-    public bool Borrow(BookCopy copy, Member member)
-    {
-        if (member.MemberId == _reservedBy.MemberId)
-        {
-            Console.WriteLine($"[Library] Reserved copy {copy.CopyId} collected by {member.Name}.");
-            copy.TransitionTo(new BorrowedState(member));
-            return true;
-        }
-        Console.WriteLine($"[Library] Copy {copy.CopyId} is reserved for another member. Waitlisting {member.Name}.");
-        copy.AddToWaitlist(member);
-        return false;
-    }
-
-    public void Return(BookCopy copy)
-        => Console.WriteLine("[Library] Reserved copy cannot be returned without being active loan.");
-
-    public void Reserve(BookCopy copy, Member member)
-    {
-        Console.WriteLine($"[Library] Copy {copy.CopyId} already reserved. Adding {member.Name} to waitlist.");
-        copy.AddToWaitlist(member);
-    }
-}
-
-// ─────────────────────────────────────────────────────────────
-// 4. BOOK COPY & BOOK AGGREGATE
-// ─────────────────────────────────────────────────────────────
-public sealed class BookCopy
-{
-    private IBookCopyState _state;
+    private readonly object _copyLock = new();
     private readonly Queue<Member> _waitlist = new();
-    private readonly object _stateLock = new();
 
     public Guid CopyId { get; } = Guid.NewGuid();
-    public bool IsAvailable => _state is AvailableState;
+    public string BookIsbn { get; }
+    public BookCopyState State { get; private set; } = BookCopyState.Available;
+    public Member? BorrowedBy { get; private set; }
+    public Member? ReservedFor { get; private set; }
 
-    public BookCopy() => _state = new AvailableState();
-
-    public bool Borrow(Member member)
+    public BookCopy(string bookIsbn)
     {
-        lock (_stateLock)
-            return _state.Borrow(this, member);
+        BookIsbn = bookIsbn ?? throw new ArgumentNullException(nameof(bookIsbn));
     }
 
-    public void Return()
+    public bool TryBorrow(Member member)
     {
-        lock (_stateLock)
-            _state.Return(this);
-    }
-
-    public void Reserve(Member member)
-    {
-        lock (_stateLock)
-            _state.Reserve(this, member);
-    }
-
-    internal void TransitionTo(IBookCopyState newState) => _state = newState;
-    internal void AddToWaitlist(Member member) => _waitlist.Enqueue(member);
-
-    internal void NotifyNextInWaitlist()
-    {
-        if (_waitlist.TryDequeue(out var nextMember))
+        lock (_copyLock)
         {
-            nextMember.Notify($"The reserved copy {CopyId} is now ready for pick up.");
-            TransitionTo(new ReservedState(nextMember));
+            if (State == BookCopyState.Available || (State == BookCopyState.Reserved && ReservedFor?.MemberId == member.MemberId))
+            {
+                State = BookCopyState.Borrowed;
+                BorrowedBy = member;
+                ReservedFor = null;
+                return true;
+            }
+            return false;
         }
-        else
+    }
+
+    public Member? ReturnCopy()
+    {
+        lock (_copyLock)
         {
-            TransitionTo(new AvailableState());
+            if (State != BookCopyState.Borrowed)
+                throw new InvalidOperationException($"Cannot return copy in state {State}.");
+
+            BorrowedBy = null;
+
+            if (_waitlist.TryDequeue(out var nextMember))
+            {
+                State = BookCopyState.Reserved;
+                ReservedFor = nextMember;
+                nextMember.Notify($"Copy {CopyId} is reserved for you. Please collect within 48 hours.");
+                return nextMember;
+            }
+
+            State = BookCopyState.Available;
+            return null;
+        }
+    }
+
+    public void AddToWaitlist(Member member)
+    {
+        lock (_copyLock)
+        {
+            if (!_waitlist.Any(m => m.MemberId == member.MemberId))
+            {
+                _waitlist.Enqueue(member);
+                member.Notify($"Added to waitlist for copy {CopyId}. Position: {_waitlist.Count}");
+            }
         }
     }
 }
 
-public sealed class Book
+public class Book
 {
-    private readonly List<BookCopy> _copies = new();
-
     public string Isbn { get; }
     public string Title { get; }
     public string Author { get; }
     public string Genre { get; }
-    public IReadOnlyCollection<BookCopy> Copies => _copies.AsReadOnly();
+    private readonly List<BookCopy> _copies = new();
+
+    public IReadOnlyList<BookCopy> Copies
+    {
+        get { lock (_copies) { return _copies.ToList(); } }
+    }
 
     public Book(string isbn, string title, string author, string genre)
     {
-        Isbn = isbn;
-        Title = title;
-        Author = author;
-        Genre = genre;
+        Isbn = isbn ?? throw new ArgumentNullException(nameof(isbn));
+        Title = title ?? throw new ArgumentNullException(nameof(title));
+        Author = author ?? throw new ArgumentNullException(nameof(author));
+        Genre = genre ?? throw new ArgumentNullException(nameof(genre));
     }
 
-    public void AddCopy(BookCopy copy) => _copies.Add(copy);
-    public BookCopy? GetAvailableCopy() => _copies.FirstOrDefault(c => c.IsAvailable);
+    public void AddCopy(BookCopy copy)
+    {
+        lock (_copies) { _copies.Add(copy); }
+    }
+
+    public BookCopy? GetAvailableCopy()
+    {
+        lock (_copies)
+        {
+            return _copies.FirstOrDefault(c => c.State == BookCopyState.Available);
+        }
+    }
 }
 
-// ─────────────────────────────────────────────────────────────
-// 5. LIBRARY FACADE / ORCHESTRATOR
-// ─────────────────────────────────────────────────────────────
-public sealed class Library
+public record BorrowingRecord(
+    Guid RecordId,
+    Member Member,
+    BookCopy Copy,
+    DateTime BorrowedAt,
+    DateTime DueDate
+)
 {
-    private readonly Dictionary<string, Book> _catalog = new();
-    private readonly Dictionary<Guid, Member> _members = new();
-    private readonly Dictionary<Guid, BorrowingRecord> _activeLoans = new();
-    private readonly IFineStrategy _fineStrategy;
-    private readonly object _borrowLock = new();
+    public DateTime? ReturnedAt { get; set; }
+    public bool IsOverdue => (ReturnedAt ?? DateTime.UtcNow) > DueDate;
+    public int OverdueDays => Math.Max(0, ((ReturnedAt ?? DateTime.UtcNow) - DueDate).Days);
+}
 
-    public Library(IFineStrategy fineStrategy)
+// -------------------- Strategy Pattern (Fines) --------------------
+public interface IFineStrategy
+{
+    decimal CalculateFine(int overdueDays);
+}
+
+public class DailyRateFineStrategy : IFineStrategy
+{
+    private readonly decimal _dailyRate;
+
+    public DailyRateFineStrategy(decimal dailyRate = 0.50m) => _dailyRate = dailyRate;
+
+    public decimal CalculateFine(int overdueDays) =>
+        overdueDays > 0 ? overdueDays * _dailyRate : 0m;
+}
+
+// -------------------- Library Orchestrator --------------------
+public class LibraryService
+{
+    private readonly ConcurrentDictionary<string, Book> _catalog = new(StringComparer.OrdinalIgnoreCase);
+    private readonly ConcurrentDictionary<Guid, Member> _members = new();
+    private readonly ConcurrentDictionary<Guid, BorrowingRecord> _activeLoans = new();
+    private readonly IFineStrategy _fineStrategy;
+    private readonly TimeSpan _defaultLoanPeriod = TimeSpan.FromDays(14);
+
+    public LibraryService(IFineStrategy? fineStrategy = null)
     {
-        _fineStrategy = fineStrategy ?? throw new ArgumentNullException(nameof(fineStrategy));
+        _fineStrategy = fineStrategy ?? new DailyRateFineStrategy();
     }
 
-    public void AddBook(Book book) => _catalog[book.Isbn] = book;
     public void RegisterMember(Member member) => _members[member.MemberId] = member;
 
-    public IEnumerable<Book> SearchByTitle(string title)
-        => _catalog.Values.Where(b => b.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
+    public void AddBook(Book book) => _catalog[book.Isbn] = book;
 
-    public IEnumerable<Book> SearchByAuthor(string author)
-        => _catalog.Values.Where(b => b.Author.Contains(author, StringComparison.OrdinalIgnoreCase));
-
-    public Book? SearchByIsbn(string isbn)
-        => _catalog.TryGetValue(isbn, out var book) ? book : null;
+    public IEnumerable<Book> SearchByTitle(string title) =>
+        _catalog.Values.Where(b => b.Title.Contains(title, StringComparison.OrdinalIgnoreCase));
 
     public BorrowingRecord? BorrowBook(Guid memberId, string isbn)
     {
-        lock (_borrowLock)
+        if (!_members.TryGetValue(memberId, out var member))
+            throw new KeyNotFoundException($"Member {memberId} not found.");
+
+        if (!_catalog.TryGetValue(isbn, out var book))
+            throw new KeyNotFoundException($"Book with ISBN {isbn} not found.");
+
+        var activeMemberLoans = _activeLoans.Values.Count(r => r.Member.MemberId == memberId && r.ReturnedAt == null);
+        if (activeMemberLoans >= member.MaxBorrowLimit)
+            throw new InvalidOperationException($"Borrowing limit reached ({member.MaxBorrowLimit} books).");
+
+        var copy = book.GetAvailableCopy();
+        if (copy == null)
         {
-            if (!_members.TryGetValue(memberId, out var member))
-                throw new InvalidOperationException($"Member {memberId} not registered.");
+            // Enqueue on first physical copy waitlist
+            var firstCopy = book.Copies.FirstOrDefault();
+            firstCopy?.AddToWaitlist(member);
+            return null;
+        }
 
-            if (!member.CanBorrow())
-            {
-                Console.WriteLine($"[Library] {member.Name} has reached their borrowing limit ({member.MaxBorrowLimit}).");
-                return null;
-            }
-
-            if (!_catalog.TryGetValue(isbn, out var book))
-                throw new InvalidOperationException($"Book with ISBN {isbn} not found in catalog.");
-
-            var copy = book.GetAvailableCopy();
-            if (copy == null)
-            {
-                Console.WriteLine($"[Library] No copies of "{book.Title}" available. Adding to waitlist.");
-                book.Copies.FirstOrDefault()?.Reserve(member);
-                return null;
-            }
-
-            if (!copy.Borrow(member)) return null;
-
-            var record = new BorrowingRecord(member, copy);
-            member.AddLoan(record);
+        if (copy.TryBorrow(member))
+        {
+            var now = DateTime.UtcNow;
+            var record = new BorrowingRecord(Guid.NewGuid(), member, copy, now, now.Add(_defaultLoanPeriod));
             _activeLoans[record.RecordId] = record;
-
-            Console.WriteLine($"[Library] OK "{book.Title}" issued to {member.Name}. Due date: {record.DueDate:yyyy-MM-dd}.");
             return record;
         }
+
+        return null;
     }
 
-    public decimal ReturnBook(Guid memberId, Guid recordId)
+    public decimal ReturnBook(Guid recordId)
     {
-        lock (_borrowLock)
+        if (!_activeLoans.TryGetValue(recordId, out var record))
+            throw new KeyNotFoundException($"Loan record {recordId} not found.");
+
+        record.ReturnedAt = DateTime.UtcNow;
+        record.Copy.ReturnCopy();
+
+        var fine = 0m;
+        if (record.IsOverdue)
         {
-            if (!_activeLoans.TryGetValue(recordId, out var record))
-                throw new InvalidOperationException($"Active loan record {recordId} not found.");
-
-            if (record.Member.MemberId != memberId)
-                throw new InvalidOperationException("Security mismatch: loan belongs to a different member.");
-
-            record.MarkReturned();
-            record.Copy.Return();
-
-            decimal fine = 0m;
-            if (record.IsOverdue())
-            {
-                fine = _fineStrategy.Calculate(record.OverdueDays());
-                Console.WriteLine($"[Library] Overdue: book is overdue by {record.OverdueDays()} day(s). Fine: {fine:C2}.");
-            }
-
-            Console.WriteLine($"[Library] OK Copy {record.Copy.CopyId} returned successfully.");
-            return fine;
+            fine = _fineStrategy.CalculateFine(record.OverdueDays);
         }
+
+        return fine;
     }
 }
 ```
 
 ---
 
-## 🎯 The 4-Stage Evolution (V1 → V4)
+### Python (3.11+) Secondary Implementation
 
-| Version | Feature Added | Architectural Change |
-|---|---|---|
-| **V1** | Single book copy, no fines | Simple `bool IsAvailable` boolean field |
-| **V2** | Multiple physical copies & pluggable fines | Strategy Pattern for `IFineStrategy`, `Book` aggregate owning `BookCopy[]` |
-| **V3** | Waitlist queue & notifications | Observer pattern (waitlist queue + `Member.Notify`), State Pattern on `BookCopy` |
-| **V4** | Multi-branch distributed library | `IBranchService` abstraction, Redis distributed locking on copy checkout |
+```python
+from __future__ import annotations
+from abc import ABC, abstractmethod
+from collections import deque
+from dataclasses import dataclass
+from datetime import datetime, timezone, timedelta
+from decimal import Decimal
+from enum import Enum
+import threading
+from typing import Dict, List, Optional
+import uuid
+
+class BookCopyState(Enum):
+    AVAILABLE = "AVAILABLE"
+    BORROWED = "BORROWED"
+    RESERVED = "RESERVED"
+    LOST = "LOST"
+
+@dataclass(frozen=True)
+class Member:
+    member_id: uuid.UUID
+    name: str
+    email: str
+    max_borrow_limit: int = 5
+
+    def notify(self, message: str) -> None:
+        print(f"[ALERT to {self.email}]: {message}")
+
+class BookCopy:
+    def __init__(self, book_isbn: str):
+        self.copy_id = uuid.uuid4()
+        self.book_isbn = book_isbn
+        self.state = BookCopyState.AVAILABLE
+        self.borrowed_by: Optional[Member] = None
+        self.reserved_for: Optional[Member] = None
+        self._waitlist: deque[Member] = deque()
+        self._lock = threading.RLock()
+
+    def try_borrow(self, member: Member) -> bool:
+        with self._lock:
+            if self.state == BookCopyState.AVAILABLE or (
+                self.state == BookCopyState.RESERVED and self.reserved_for and self.reserved_for.member_id == member.member_id
+            ):
+                self.state = BookCopyState.BORROWED
+                self.borrowed_by = member
+                self.reserved_for = None
+                return True
+            return False
+
+    def return_copy(self) -> Optional[Member]:
+        with self._lock:
+            if self.state != BookCopyState.BORROWED:
+                raise ValueError(f"Cannot return copy in state {self.state.name}")
+
+            self.borrowed_by = None
+            if self._waitlist:
+                next_member = self._waitlist.popleft()
+                self.state = BookCopyState.RESERVED
+                self.reserved_for = next_member
+                next_member.notify(f"Copy {self.copy_id} reserved for you. Please collect within 48 hours.")
+                return next_member
+
+            self.state = BookCopyState.AVAILABLE
+            return None
+
+    def add_to_waitlist(self, member: Member) -> None:
+        with self._lock:
+            if not any(m.member_id == member.member_id for m in self._waitlist):
+                self._waitlist.append(member)
+                member.notify(f"Added to waitlist for copy {self.copy_id}.")
+
+class Book:
+    def __init__(self, isbn: str, title: str, author: str, genre: str):
+        self.isbn = isbn
+        self.title = title
+        self.author = author
+        self.genre = genre
+        self._copies: List[BookCopy] = []
+        self._lock = threading.RLock()
+
+    def add_copy(self, copy: BookCopy) -> None:
+        with self._lock:
+            self._copies.append(copy)
+
+    def get_available_copy(self) -> Optional[BookCopy]:
+        with self._lock:
+            return next((c for c in self._copies if c.state == BookCopyState.AVAILABLE), None)
+
+    @property
+    def copies(self) -> List[BookCopy]:
+        with self._lock:
+            return list(self._copies)
+
+# -------------------- Strategy Pattern (Fines) --------------------
+class FineStrategy(ABC):
+    @abstractmethod
+    def calculate_fine(self, overdue_days: int) -> Decimal:
+        pass
+
+class DailyRateFineStrategy(FineStrategy):
+    def __init__(self, daily_rate: Decimal = Decimal("0.50")):
+        self.daily_rate = daily_rate
+
+    def calculate_fine(self, overdue_days: int) -> Decimal:
+        return Decimal(max(0, overdue_days)) * self.daily_rate
+
+@dataclass
+class BorrowingRecord:
+    record_id: uuid.UUID
+    member: Member
+    copy: BookCopy
+    borrowed_at: datetime
+    due_date: datetime
+    returned_at: Optional[datetime] = None
+
+    @property
+    def is_overdue(self) -> bool:
+        check_time = self.returned_at or datetime.now(timezone.utc)
+        return check_time > self.due_date
+
+    @property
+    def overdue_days(self) -> int:
+        check_time = self.returned_at or datetime.now(timezone.utc)
+        delta = check_time - self.due_date
+        return max(0, delta.days)
+
+# -------------------- Service Orchestrator --------------------
+class LibraryService:
+    def __init__(self, fine_strategy: Optional[FineStrategy] = None):
+        self._catalog: Dict[str, Book] = {}
+        self._members: Dict[uuid.UUID, Member] = {}
+        self._active_loans: Dict[uuid.UUID, BorrowingRecord] = {}
+        self._fine_strategy = fine_strategy or DailyRateFineStrategy()
+        self._lock = threading.RLock()
+
+    def register_member(self, member: Member) -> None:
+        with self._lock:
+            self._members[member.member_id] = member
+
+    def add_book(self, book: Book) -> None:
+        with self._lock:
+            self._catalog[book.isbn] = book
+
+    def borrow_book(self, member_id: uuid.UUID, isbn: str) -> Optional[BorrowingRecord]:
+        with self._lock:
+            member = self._members.get(member_id)
+            if not member:
+                raise KeyError(f"Member {member_id} not found.")
+
+            book = self._catalog.get(isbn)
+            if not book:
+                raise KeyError(f"Book ISBN {isbn} not found.")
+
+            active_loans_count = sum(1 for r in self._active_loans.values() if r.member.member_id == member_id and r.returned_at is None)
+            if active_loans_count >= member.max_borrow_limit:
+                raise ValueError(f"Member exceeded limit of {member.max_borrow_limit} books.")
+
+        copy = book.get_available_copy()
+        if not copy:
+            if book.copies:
+                book.copies[0].add_to_waitlist(member)
+            return None
+
+        if copy.try_borrow(member):
+            now = datetime.now(timezone.utc)
+            record = BorrowingRecord(
+                record_id=uuid.uuid4(),
+                member=member,
+                copy=copy,
+                borrowed_at=now,
+                due_date=now + timedelta(days=14)
+            )
+            with self._lock:
+                self._active_loans[record.record_id] = record
+            return record
+
+        return None
+
+    def return_book(self, record_id: uuid.UUID) -> Decimal:
+        with self._lock:
+            record = self._active_loans.get(record_id)
+            if not record:
+                raise KeyError(f"Loan record {record_id} not found.")
+
+        record.returned_at = datetime.now(timezone.utc)
+        record.copy.return_copy()
+
+        fine = Decimal("0.00")
+        if record.is_overdue:
+            fine = self._fine_strategy.calculate_fine(record.overdue_days)
+
+        return fine
+```
 
 ---
 
-## 🗣️ Interviewer Discussion & Tradeoffs
+## 🏛️ Phase 6: Extensibility Drill & Edge Cases
 
-### Q: How does the waitlist ensure fairness (FIFO)?
-> **A:** "`BookCopy._waitlist` is a `Queue<Member>` — strictly FIFO. When a copy is returned, `NotifyNextInWaitlist()` dequeues the first waiting member and transitions the copy to `ReservedState` for them. This prevents starvation."
-
-### Q: What prevents two concurrent threads from issuing the same physical copy?
-> **A:** "`BookCopy.Borrow()` is guarded by a `lock (_stateLock)`. Only one thread can evaluate `_state.Borrow()` at a time. The `AvailableState.Borrow()` immediately transitions the state to `BorrowedState` inside the lock, so a second concurrent call sees `BorrowedState` and goes to the waitlist."
-
-### Q: How would you handle digital (unlimited copies) vs physical (limited copies)?
-> **A:** "Introduce an `IBookCopyStrategy` or simply derive `DigitalBookCopy` from `BookCopy` where `Borrow()` always succeeds (no state machine needed — infinite availability). The `Library.BorrowBook()` first checks for physical, then falls back to digital."
-
-### Q: How would you scale this to millions of catalog searches?
-> **A:** "Invert the index: maintain hash maps `_titleIndex: Dictionary<string, HashSet<string>>` where title words point to ISBN sets. For fuzzy searches, integrate Lucene.NET / Elasticsearch. Keep reads separate from writes via CQRS."
-
-### Design Pattern Callouts
-- **Strategy:** `IFineStrategy` — easily swap daily vs tiered weekend fine calculations without touching `Library`.
-- **Observer:** `BookCopy.NotifyNextInWaitlist()` → `Member.Notify()` — decoupled member notification.
-- **State:** `IBookCopyState` (`AvailableState`, `BorrowedState`, `ReservedState`) — enforces valid transition rules.
-- **Facade:** `Library` simplifies interactions across Books, Copies, Members, and Loans.
-
----
-
-*Cross-references: [Amazon Locker System](./19_Amazon_Locker_System.md) · [Notification System](../01_Tier1_Highest_Priority/08_Notification_System.md) · [awesome-lld Library](https://github.com/ashishps1/awesome-low-level-design/blob/main/problems/library-management-system.md)*
+| Edge Case | Failure Mode / Trap | Production Solution |
+| :--- | :--- | :--- |
+| **Simultaneous Checkout of Last Copy** | Two members click "Borrow" on the single available copy at the same millisecond. | `BookCopy.TryBorrow` executes within `_copyLock`. First caller transitions copy to `Borrowed`; second receives `false` and is queued on the waitlist. |
+| **Expired Waitlist Hold** | Member on waitlist fails to collect the reserved copy within 48 hours. | Background timer sweep marks expired reservations and immediately alerts the next member in the FIFO queue. |
+| **Unregistered Member Loan** | System crashes or assigns books to invalid IDs. | Guard assertions throw `KeyNotFoundException` prior to evaluating copy availability. |
+| **Max Borrow Limit Reached** | Member with 5 borrowed books attempts to borrow a 6th. | Transaction rejected with `InvalidOperationException` before inspecting or altering book inventory. |
+| **Digital E-Books vs Physical Copies** | Digital books do not have physical copy constraints. | Implement `DigitalBookCopy` derived from `BookCopy` with infinite concurrency tolerance. |

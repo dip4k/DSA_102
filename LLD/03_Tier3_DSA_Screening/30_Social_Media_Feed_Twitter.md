@@ -1,4 +1,4 @@
-﻿# 30. Social Media News Feed & Followers System (Twitter / Meta Feed)
+# 30. Social Media News Feed & Followers System (Twitter / Meta Feed)
 
 ## 📌 Problem Context & Motivation
 The **Social Media News Feed System** (LeetCode 355) is the canonical Low-Level & High-Level System Design problem asked across **Meta, Twitter/X, Amazon, and Uber**. 
@@ -12,9 +12,9 @@ It evaluates a candidate's ability to seamlessly bridge **algorithmic efficiency
 4. `Unfollow(followerId, followeeId)`: `followerId` stops following `followeeId`.
 
 ### Architectural & Scalability Challenges
-- **High Read-to-Write Imbalance**: On Twitter/X, the ratio of timeline views to tweets posted is $\approx 100:1$ to $500:1$. Read latency must be under $50\text{ ms}$.
+- **High Read-to-Write Imbalance**: On Twitter/X, the ratio of timeline views to tweets posted is ~100:1 to 500:1. Read latency must be under 50 ms.
 - **The "Justin Bieber / Celebrity" Problem**: If an account with 100 million followers tweets, fanout-on-write requires 100 million timeline database/Redis writes. If done naively, this creates massive write queue lag and spikes cluster memory.
-- **K-Way Merge Algorithmics**: Instead of pulling all tweets from all followed users and sorting ($O(T_{\text{total}} \log T_{\text{total}})$), we treat each user's tweet history as a **sorted linked list** and perform an optimal **K-Way Merge** using a Priority Queue in $O(K \log F)$ time (where $F$ is followees and $K=10$).
+- **K-Way Merge Algorithmics**: Instead of pulling all tweets from all followed users and sorting (`O(T_total * log T_total)`), we treat each user's tweet history as a **sorted linked list** and perform an optimal **K-Way Merge** using a Priority Queue in `O(K log F)` time (where `F` is followees and `K = 10`).
 
 ---
 
@@ -37,13 +37,13 @@ flowchart TD
 ### Algorithmic Mechanics: K-Way Merge on Tweet Linked-Lists
 Each user's published tweets form a singly linked list where the **head** points to their most recent tweet (`HeadTweet`).
 
-To fetch the 10 most recent tweets for user $U$:
-1. Identify $U$'s active followees plus $U$ themselves ($F$ total users).
-2. Insert only the `HeadTweet` of each of the $F$ users into a **Max-Heap** (Priority Queue keyed by timestamp descending). Heap size is bounded by $F$.
+To fetch the 10 most recent tweets for user `U`:
+1. Identify `U`'s active followees plus `U` themselves (`F` total users).
+2. Insert only the `HeadTweet` of each of the `F` users into a **Max-Heap** (Priority Queue keyed by timestamp descending). Heap size is bounded by `F`.
 3. Extract the maximum tweet from the heap.
 4. If the extracted tweet has a `Next` pointer (an older tweet from the same author), push `tweet.Next` into the heap.
 5. Repeat step 3–4 until 10 tweets are harvested or the heap is exhausted.
-- **Time Complexity**: $O(K \log F)$ where $K = 10$ and $F$ is the number of followees. This is independent of total tweets in the system!
+- **Time Complexity**: `O(K log F)` where `K = 10` and `F` is the number of followees. This is independent of total tweets in the system!
 
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
@@ -485,15 +485,111 @@ public static class Program
 
 ---
 
+## 🐍 Production-Ready Python (3.11+) Secondary Implementation
+
+```python
+from __future__ import annotations
+import heapq
+import threading
+from typing import Dict, List, Optional, Set
+
+class TweetNode:
+    def __init__(self, tweet_id: int, timestamp: int):
+        self.tweet_id = tweet_id
+        self.timestamp = timestamp
+        self.next: Optional[TweetNode] = None
+
+class User:
+    def __init__(self, user_id: int):
+        self.user_id = user_id
+        self.following: Set[int] = set()
+        self.tweet_head: Optional[TweetNode] = None
+
+    def post_tweet(self, tweet_id: int, timestamp: int) -> None:
+        node = TweetNode(tweet_id, timestamp)
+        node.next = self.tweet_head
+        self.tweet_head = node
+
+    def follow(self, followee_id: int) -> None:
+        if followee_id != self.user_id:
+            self.following.add(followee_id)
+
+    def unfollow(self, followee_id: int) -> None:
+        self.following.discard(followee_id)
+
+class Twitter:
+    def __init__(self):
+        self.users: Dict[int, User] = {}
+        self.timestamp_seq = 0
+        self._lock = threading.RLock()
+
+    def _get_or_create_user(self, user_id: int) -> User:
+        if user_id not in self.users:
+            self.users[user_id] = User(user_id)
+        return self.users[user_id]
+
+    def post_tweet(self, user_id: int, tweet_id: int) -> None:
+        with self._lock:
+            self.timestamp_seq += 1
+            user = self._get_or_create_user(user_id)
+            user.post_tweet(tweet_id, self.timestamp_seq)
+
+    def get_news_feed(self, user_id: int) -> List[int]:
+        with self._lock:
+            user = self.users.get(user_id)
+            if not user:
+                return []
+
+            # Gather all followees plus self
+            all_sources = set(user.following)
+            all_sources.add(user_id)
+
+            # Max-Heap using heapq (negate timestamp)
+            # Tuple: (-timestamp, sequence_counter, tweet_node)
+            heap: List[tuple[int, int, TweetNode]] = []
+            seq = 0
+
+            for uid in all_sources:
+                u = self.users.get(uid)
+                if u and u.tweet_head:
+                    heapq.heappush(heap, (-u.tweet_head.timestamp, seq, u.tweet_head))
+                    seq += 1
+
+            feed: List[int] = []
+            while heap and len(feed) < 10:
+                neg_ts, _, node = heapq.heappop(heap)
+                feed.append(node.tweet_id)
+
+                if node.next:
+                    heapq.heappush(heap, (-node.next.timestamp, seq, node.next))
+                    seq += 1
+
+            return feed
+
+    def follow(self, follower_id: int, followee_id: int) -> None:
+        with self._lock:
+            follower = self._get_or_create_user(follower_id)
+            self._get_or_create_user(followee_id)
+            follower.follow(followee_id)
+
+    def unfollow(self, follower_id: int, followee_id: int) -> None:
+        with self._lock:
+            follower = self.users.get(follower_id)
+            if follower:
+                follower.unfollow(followee_id)
+```
+
+---
+
 ## 🗣️ Senior Interviewer Discussion & Trade-offs (Staff Level)
 
 | Architecture / Scale Question | Senior / Staff Engineering Defense |
 | :--- | :--- |
-| **"Fanout-on-Write (Push) vs Fanout-on-Read (Pull): How do you decide at scale?"** | **Mathematical Analysis:**<br>• *Push (Fanout-on-Write)*: Ideal when reads $\gg$ writes. When User $A$ tweets, write workers push the tweet ID into every follower's Redis timeline list (`LPUSH` / `LTRIM` to 800 items). Reads are instantaneous ($O(1)$).<br>• *The Bottleneck*: If Justin Bieber (100M followers) tweets, 100M writes overwhelm the Redis cluster and message brokers.<br>• *Pull (Fanout-on-Read)*: User posts only to their own tweet list ($O(1)$ write). When a follower loads their feed, we pull recent tweets from all followees and K-way merge. Great for writes, but reading becomes slow ($50\text{--}200\text{ ms}$) if a user follows 5,000 active accounts.<br>• **The Industry Gold Standard (Hybrid Model)**:<br>1. Users with $< 25{,}000$ followers use **Push**.<br>2. Accounts with $> 25{,}000$ followers (celebrities) bypass the push pipeline.<br>3. When a user requests their feed: fetch their pre-materialized push cache from Redis ($<2\text{ ms}$), fetch the latest tweets from the 2-3 celebrities they follow via Pull, and merge them in-memory in $<1\text{ ms}$. |
-| **"How does the K-Way Merge compare to sorting all tweets in memory?"** | If a user follows 500 people, and each person has 1,000 tweets, a naive pull fetches $500{,}000$ tweets and sorts them in $O(N \log N)$ ($500{,}000 \log 500{,}000 \approx 9.5\text{M}$ operations).<br>With our **K-Way Merge on Linked Lists**, we only peek at the head of each user's tweet stream. We insert 500 tweets into the heap, and pop only 10 times. Total operations: $O(10 \times \log 500) \approx 90$ operations! This is an efficiency gain of over **$100{,}000\times$**. |
+| **"Fanout-on-Write (Push) vs Fanout-on-Read (Pull): How do you decide at scale?"** | **Mathematical Analysis:**<br>• *Push (Fanout-on-Write)*: Ideal when reads >> writes. When User A tweets, write workers push the tweet ID into every follower's Redis timeline list (`LPUSH` / `LTRIM` to 800 items). Reads are instantaneous (`O(1)`).<br>• *The Bottleneck*: If Justin Bieber (100M followers) tweets, 100M writes overwhelm the Redis cluster and message brokers.<br>• *Pull (Fanout-on-Read)*: User posts only to their own tweet list (`O(1)` write). When a follower loads their feed, we pull recent tweets from all followees and K-way merge. Great for writes, but reading becomes slow (50–200 ms) if a user follows 5,000 active accounts.<br>• **The Industry Gold Standard (Hybrid Model)**:<br>1. Users with < 25,000 followers use **Push**.<br>2. Accounts with > 25,000 followers (celebrities) bypass the push pipeline.<br>3. When a user requests their feed: fetch their pre-materialized push cache from Redis (< 2 ms), fetch latest tweets from the 2–3 celebrities they follow via Pull, and merge them in-memory in < 1 ms. |
+| **"How does the K-Way Merge compare to sorting all tweets in memory?"** | If a user follows 500 people, and each person has 1,000 tweets, a naive pull fetches 500,000 tweets and sorts them in `O(N log N)` (500,000 log 500,000 ~ 9.5M operations).<br>With our **K-Way Merge on Linked Lists**, we only peek at the head of each user's tweet stream. We insert 500 tweets into the heap, and pop only 10 times. Total operations: `O(10 * log 500) ~ 90` operations! This is an efficiency gain of over **100,000x**. |
 | **"How should feed pagination be implemented: Offset vs. Cursor?"** | **Never use Offset (`skip/take`) for dynamic social media feeds.**<br>If a user is viewing page 1 (tweets 1–10) and 3 new tweets are posted, requesting page 2 (`skip 10, take 10`) causes the user to see tweets 8, 9, and 10 again (duplicate shift).<br>**Cursor-Based Pagination** is mandatory:<br>The client passes `max_tweet_id` (or timestamp cursor) from the bottom of their current page: `GET /feed?limit=10&max_id=202`. The query only returns tweets where `Timestamp < cursor_timestamp`, guaranteeing zero duplicates and zero skipped tweets regardless of new incoming posts. |
 | **"How is the user timeline cache stored in Redis?"** | In production, user feeds are stored as Redis **Sorted Sets (`ZSET`)** where `score = timestamp` and `member = tweetId`.<br>Commands executed:<br>1. Push: `ZADD timeline:userId <timestamp> <tweetId>`<br>2. Maintain bounded window: `ZREMRANGEBYRANK timeline:userId 0 -801` (keeps top 800 tweets, evicting the tail).<br>3. Read: `ZREVRANGEBYSCORE timeline:userId +inf -inf LIMIT 0 10`. |
-| **"How do you handle inactive / dormant users?"** | Over $60\%$ of registered accounts never log in during a given month. Pushing tweets to dormant users' Redis timeline caches wastes terabytes of expensive RAM.<br>We enforce an **Active User Cache Window**: If a user has not opened the app in 14 days, their Redis timeline is evicted. When they log back in, their timeline is lazily reconstructed on-demand via Fanout-on-Read. |
+| **"How do you handle inactive / dormant users?"** | Over 60% of registered accounts never log in during a given month. Pushing tweets to dormant users' Redis timeline caches wastes terabytes of expensive RAM.<br>We enforce an **Active User Cache Window**: If a user has not opened the app in 14 days, their Redis timeline is evicted. When they log back in, their timeline is lazily reconstructed on-demand via Fanout-on-Read. |
 
 ---
 
@@ -501,7 +597,7 @@ public static class Program
 
 | Method | Time Complexity | Auxiliary Space Complexity | Explanation |
 | :--- | :---: | :---: | :--- |
-| `PostTweet` | $O(1)$ | $O(1)$ | Prepends node to head of singly-linked list and increments atomic clock. |
-| `Follow` | $O(1)$ | $O(1)$ | Adds followee ID to the internal hash set. |
-| `Unfollow` | $O(1)$ | $O(1)$ | Removes followee ID from the internal hash set. |
-| `GetNewsFeed` | $O(K \log F)$ | $O(F)$ | Max-Heap of size $F$ (followees). Exactly $K=10$ extractions and insertions. |
+| `PostTweet` | `O(1)` | `O(1)` | Prepends node to head of singly-linked list and increments atomic clock. |
+| `Follow` | `O(1)` | `O(1)` | Adds followee ID to the internal hash set. |
+| `Unfollow` | `O(1)` | `O(1)` | Removes followee ID from the internal hash set. |
+| `GetNewsFeed` | `O(K log F)` | `O(F)` | Max-Heap of size `F` (followees). Exactly `K = 10` extractions and insertions. |

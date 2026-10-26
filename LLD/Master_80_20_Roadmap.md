@@ -18,7 +18,7 @@ Instead of a giant "LLD topics + 30 random problems" list, this roadmap builds a
 | **5. C# LLD & DI** | 🔴 Critical | Interfaces, generics, DI, lifetimes, collections, immutability | [04. C# DI & Concurrency](./00_Core_Concepts/04_CSharp_DI_and_Concurrency.md) |
 | **6. Concurrency & Synchronization** | 🔴 Critical for Senior | Locks, thread safety, race conditions, atomicity, concurrent collections | [07. Concurrency Patterns](./00_Core_Concepts/07_Concurrency_and_Synchronization_Patterns.md) |
 | **7. Backend Architecture** | 🔴 Critical for Senior | Repository, transactions, CQRS, messaging, idempotency, Outbox | [05. Backend Architecture](./00_Core_Concepts/05_Backend_Architecture.md) |
-| **8. Interview Execution & Taxonomy** | 🔴 Critical for Success | 45m OOD vs 90m Machine Coding, 6 Problem Families, V1 $\rightarrow$ V4 Evolution | [06. Interview Framework](./00_Core_Concepts/06_Interview_Execution_Framework.md) · [08. Problem Families](./00_Core_Concepts/08_LLD_Problem_Families_and_Evolution.md) · [10. Quick Reference & Checklists](./00_Core_Concepts/10_Interview_Quick_Reference_and_Checklists.md) |
+| **8. Interview Execution & Taxonomy** | 🔴 Critical for Success | 45m OOD vs 90m Machine Coding, 6 Problem Families, V1 -> V4 Evolution | [06. Interview Framework](./00_Core_Concepts/06_Interview_Execution_Framework.md) · [08. Problem Families](./00_Core_Concepts/08_LLD_Problem_Families_and_Evolution.md) · [10. Quick Reference & Checklists](./00_Core_Concepts/10_Interview_Quick_Reference_and_Checklists.md) |
 
 ---
 

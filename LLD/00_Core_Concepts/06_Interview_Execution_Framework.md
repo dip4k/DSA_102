@@ -1,83 +1,55 @@
-﻿# 06. The Machine Coding & LLD Interview Execution Framework
+# 06. The Machine Coding & LLD Interview Execution Framework
 
-A successful Low-Level Design (LLD) or Machine Coding interview is rarely won on raw syntax knowledge. Candidates fail because of **poor time management, under-specified requirements, over-engineering too early, or writing untestable code**.
+A successful Low-Level Design (LLD) or Machine Coding interview is rarely won on raw syntax knowledge alone. Candidates fail because of **poor time management, underspecified requirements, over-engineering too early, or writing untestable, monolithic code**.
 
-This framework provides a repeatable, battle-tested playbook combining the **CrackingWalnuts 6-Step Design Funnel** with production .NET patterns for 45-minute OOD rounds and 90-minute Machine Coding rounds at top tech firms (FAANG, Uber, Stripe, Atlassian, Razorpay, PhonePe, Swiggy).
-
----
-
-## 🎯 1. The Repeatable 6-Step Design Funnel (CrackingWalnuts Methodology)
-
-Never start by blindly coding or sketching random classes. Use this funnel to systematically transform any ambiguous prompt into an airtight architecture:
-
-```mermaid
-%%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
-flowchart TD
-    S1["1. Requirement<br/>Mining<br/>(Extract<br/>functional<br/>rules, scale,<br/>invariants,<br/>& out-of-scope<br/>boundaries)"] --> S2["2. Class Discovery<br/>(Categorize into<br/>Entities, Value<br/>Objects,<br/>& Domain Services)"]
-    S2 --> S3["3. Relationship<br/>Discovery<br/>(Establish 1:1,<br/>1:N, M:N;<br/>Composition vs<br/>Aggregation;<br/>Ownership)"]
-    S3 --> S4["4. Pattern<br/>Selection<br/>(Apply GoF<br/>patterns ONLY<br/>when forced by<br/>explicit<br/>variance drivers)"]
-    S4 --> S5["5. Design<br/>Evolution<br/>(V1 → V4)<br/>(Naive Baseline →<br/>Decoupled Patterns<br/>→ O(1)<br/>Indexing →<br/>Concurrency &<br/>Fault Tolerance)"]
-    S5 --> S6["6. 'You've Seen<br/>This<br/>Before'<br/>(Anchor to known<br/>Problem<br/>Archetypes & reuse<br/>mental<br/>models)"]
-```
-
-1. **Step 1: Requirement Mining**: Extract hard business constraints and explicit exclusions. Identify the primary happy path, failure states, and concurrency expectations (e.g., can two users book the same locker simultaneously?).
-2. **Step 2: Class Discovery**: Classify discovered nouns into:
-   - **Entities**: Objects defined by mutable identity (`Locker`, `Booking`, `AuctionItem`).
-   - **Value Objects**: Immutable attributes evaluated by equality (`Money`, `Dimensions`, `OtpCode`).
-   - **Domain Services / Orchestrators**: Coordinators without persistent identity (`LockerAllocationService`, `AuctionEngine`).
-3. **Step 3: Relationship Discovery**: Map structural associations:
-   - *Composition* (Locker cannot exist without a LockerBay/Kiosk).
-   - *Aggregation* (Package is temporarily held by a Locker).
-   - *Multiplicity* (1 Kiosk has N Lockers; 1 Customer has M Bookings).
-4. **Step 4: Pattern Selection (Just-in-Time)**:
-   - Does allocation or pricing change? -> **Strategy Pattern**.
-   - Do entities transition through distinct valid stages? -> **State Pattern**.
-   - Do decoupled subsystems need asynchronous notifications? -> **Observer Pattern**.
-   - Do external providers need uniform contracts? -> **Adapter / Factory Pattern**.
-5. **Step 5: Design Evolution (V1 -> V4)**:
-   - **V1**: Naive working baseline (in-memory list, linear scan).
-   - **V2**: Pattern decoupling (interfaces, dependency injection, OCP).
-   - **V3**: Algorithmic scalability (indexing, hash lookups, balanced trees).
-   - **V4**: Production concurrency, thread-safety, deadlocks, and fault tolerance.
-6. **Step 6: "You've Seen This Before" (Naming the Family)**:
-   - Anchor the problem immediately to one of the 6 core problem archetypes (Allocation, Financial Ledger, Stateful Workflow, Messaging, In-Memory DS, or Gateway).
+This playbook provides a repeatable, battle-tested execution framework for both **45-minute OOD rounds** (FAANG, Uber, Stripe, Microsoft) and **90-minute Machine Coding rounds** (Flipkart, Swiggy, Razorpay, PhonePe, Cred, Zepto).
 
 ---
 
-## ⏱️ 2. Pacing & Time Allocation Strategy
-
-### The 45-Minute OOD Round (Focus: Class Design, Patterns & Tradeoffs)
-Used by Google, Meta, Microsoft, Amazon for System/Object-Oriented Design screening.
+## 🏛️ 1. The 6-Phase Architectural Arc (45-Minute OOD Standard)
 
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart LR
-    P1["1️⃣ Scoping &<br/>Constraints<br/>(0–8 min)"] --> P2["2️⃣ Domain<br/>Modeling<br/>(8–18 min)"]
-    P2 --> P3["3️⃣ Contracts &<br/>Patterns<br/>(18–25 min)"]
-    P3 --> P4["4️⃣ Core<br/>Implementation<br/>(25–38 min)"]
-    P4 --> P5["5️⃣ Edge Cases &<br/>Wrap-up<br/>(38–45 min)"]
+    P1["1. Scope &<br/>NFRs (5-7m)"] --> P2["2. Core Domain<br/>Contracts (5-8m)"]
+    P2 --> P3["3. Class & State<br/>Modeling (8-10m)"]
+    P3 --> P4["4. Patterns &<br/>Concurrency (5-7m)"]
+    P4 --> P5["5. Idiomatic Code<br/>(15-20m)"]
+    P5 --> P6["6. Extensibility<br/>Drill (5m)"]
 ```
 
-| Phase | Time | Candidate Deliverables |
-| :--- | :---: | :--- |
-| **1. Scoping & Constraints** | 0 – 8 min | Functional vs Non-Functional requirements, scale, concurrency expectations, error handling strategy. |
-| **2. Domain Modeling** | 8 – 18 min | Identify Entities, Value Objects, Enums, and Relationships (Composition vs Inheritance). Draw Mermaid/ASCII diagram. |
-| **3. Interface Contracts & Patterns** | 18 – 25 min | Define clean service interfaces (`IBookingService`, `IPricingStrategy`). Isolate variation points using Strategy/Factory/State. |
-| **4. Core Implementation** | 25 – 38 min | Write the critical execution path. Emphasize thread safety, encapsulation, and clean DI. Avoid writing boilerplate getters/setters. |
-| **5. Edge Cases & Tradeoffs** | 38 – 45 min | Walk through concurrent scenarios, deadlocks, out-of-stock conditions, scaling tradeoffs, and testing strategy. |
+### Breakdown of the 6 Phases:
+1. **Phase 1: Scope & NFRs (5–7 mins):**
+   - Lock in 3–5 core functional use cases that the system must perform.
+   - Establish Non-Functional Requirements (NFRs): multi-threaded concurrency, throughput targets, in-memory capacity limits, and pluggable persistence abstractions.
+2. **Phase 2: Core Domain Contracts (5–8 mins):**
+   - Isolate domain entities and immutable value objects.
+   - Define thin, cohesive interfaces adhering to Interface Segregation (`SOLID 'I'`).
+3. **Phase 3: Class & State Modeling (8–10 mins):**
+   - Sketch clean Mermaid `classDiagram` showing relationships (inheritance `--|>`, composition `*--`, aggregation `o--`, association `-->`).
+   - Model lifecycle state transitions (`stateDiagram-v2`) if the entity transitions across states (e.g., `Created -> Paid -> Shipped`).
+4. **Phase 4: Patterns & Concurrency (5–7 mins):**
+   - Justify GoF design patterns (Strategy for variance, Factory for creation, State for lifecycle, Observer for events).
+   - Formulate thread-safety strategy (`ReaderWriterLockSlim`, `ConcurrentDictionary`, `SemaphoreSlim`, or `threading.Lock`).
+5. **Phase 5: Idiomatic Production Code (15–20 mins):**
+   - Primary: C# (.NET 8/9) with nullability guards, encapsulation, and clean DI.
+   - Secondary: Python (3.11+) with type hints, `abc.ABC`, and context-managed locks.
+6. **Phase 6: Extensibility Drill & Edge Cases (5 mins):**
+   - Proactively address curveballs (e.g., new allocation rules, flash-sale contention, distributed storage) demonstrating Open-Closed extension (`OCP`).
 
 ---
 
-### The 90-Minute Machine Coding Round (Focus: Working, Compiling & Clean Code)
-Used by Uber, Swiggy, Flipkart, Razorpay, PhonePe, Cred, Zepto.
+## ⏱️ 2. The 90-Minute Machine Coding Round Blueprint
+
+Used by Flipkart, Swiggy, Uber, Razorpay, PhonePe, and Atlassian where runnable, compilable code is mandatory:
 
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart LR
-    M1["1️⃣ Requirements &<br/>Mining<br/>(0–15 min)"] --> M2["2️⃣ Domain<br/>Modeling<br/>(15–30 min)"]
-    M2 --> M3["3️⃣ Services &<br/>Patterns<br/>(30–65 min)"]
-    M3 --> M4["4️⃣ Driver & Unit<br/>Tests<br/>(65–80 min)"]
-    M4 --> M5["5️⃣ Concurrency &<br/>Review<br/>(80–90 min)"]
+    M1["1️⃣ Requirement<br/>Mining (0–15m)"] --> M2["2️⃣ Domain<br/>Modeling (15–30m)"]
+    M2 --> M3["3️⃣ Services &<br/>Patterns (30–65m)"]
+    M3 --> M4["4️⃣ Driver & Unit<br/>Tests (65–80m)"]
+    M4 --> M5["5️⃣ Concurrency &<br/>Review (80–90m)"]
 ```
 
 | Phase | Time | Candidate Deliverables |
@@ -85,14 +57,14 @@ flowchart LR
 | **1. Requirement Discovery** | 0 – 15 min | Freeze scope with interviewer. Document in-scope vs out-of-scope. Define command formats / APIs. |
 | **2. Domain Modeling** | 15 – 30 min | Write pure Entities, Value Objects, and Enums with private setters and invariant protection. |
 | **3. Core Logic & Patterns** | 30 – 65 min | Implement Business Services and in-memory thread-safe Repositories (`ConcurrentDictionary`). Apply GoF patterns. |
-| **4. Driver & Edge Tests** | 65 – 80 min | Build interactive console `Program.cs` / REPL or comprehensive unit test suite (`xUnit`). |
+| **4. Driver & Edge Tests** | 65 – 80 min | Build interactive console `Program.cs` / REPL or comprehensive unit test suite (`xUnit` / `unittest`). |
 | **5. Polish & Review** | 80 – 90 min | Code cleanup, thread safety check, exception handling, and self-review before submitting. |
 
 ---
 
 ## 🧭 3. The Requirement Discovery Cheatsheet
 
-Never start coding immediately. Spend the first 10 minutes asking targeted questions categorized into these 5 dimensions:
+Never start coding immediately. Spend the first 5–10 minutes asking targeted questions across these 5 dimensions:
 
 ### A. Functional Scope (Features)
 * *"What is the primary happy path?"* (e.g., Rider books cab -> Driver assigned -> Ride completes -> Payment recorded).
@@ -106,7 +78,7 @@ Never start coding immediately. Spend the first 10 minutes asking targeted quest
 
 ### C. Data Volume & In-Memory Constraints
 * *"How much data will live in memory during a single run?"* (Determines whether you use an array, hash map, or balanced tree).
-* *"Do queries require sorted order or range lookups?"* (Hash map $O(1)$ vs Balanced BST / `SortedSet` $O(\log N)$).
+* *"Do queries require sorted order or range lookups?"* (Hash map `O(1)` vs Balanced BST / `SortedSet` `O(log N)`).
 
 ### D. Consistency & Transactions
 * *"Does this operation require atomic multi-entity updates?"* (e.g., Deduct wallet A and credit wallet B together).
@@ -125,30 +97,27 @@ When given an ambiguous prompt, use this systematic linguistic parsing technique
 ```mermaid
 %%{init: {"flowchart": {"htmlLabels": true, "padding": 20}, "themeCSS": "foreignObject { overflow: visible !important; }"}}%%
 flowchart TD
-    Text["Problem Statement"] --> Nouns["Nouns /<br/>Substantives"]
+    Text["Problem Statement"] --> Nouns["Nouns / Substantives"]
     Text --> Verbs["Verbs / Actions"]
-    Nouns --> Entities["Entities and Value<br/>Objects"]
-    Verbs --> Services["Domain Services and Commands"]
-    Entities --> Invariants["Encapsulation and<br/>Validation"]
-    Services --> Patterns["Design Patterns<br/>(Strategy, State,<br/>etc.)"]
+    Nouns --> Entities["Entities & Value Objects"]
+    Verbs --> Services["Domain Services & Commands"]
+    Entities --> Invariants["Encapsulation & Validation"]
+    Services --> Patterns["Design Patterns (Strategy, State, etc.)"]
 ```
 
 ### Example: "Design an Online Cab Booking Service (Uber Lite)"
-
-1. **Extract Nouns**:
-   * *Rider, Driver, Cab, Location, Trip, Payment, Invoice.*
-   * **Entities (Identity matters)**: `Rider`, `Driver`, `Trip`.
-   * **Value Objects (Immutable properties)**: `Location(Latitude, Longitude)`, `Money(Amount, Currency)`.
-   * **Enums**: `CabType (Sedan, SUV, Hatchback)`, `TripStatus (Requested, Assigned, InProgress, Completed, Cancelled)`.
-
-2. **Extract Verbs**:
-   * *Register driver, Request ride, Find matching driver, Accept ride, Start ride, Calculate fare, Process payment.*
-   * **Services**: `TripService`, `MatchingService`, `PricingService`, `PaymentService`.
-
-3. **Identify Variation Points**:
-   * Driver matching logic varies (Nearest Driver vs Highest-Rated Driver) -> `IDriverMatchingStrategy`.
-   * Fare calculation varies (Standard vs Surge vs Night-time) -> `IPricingStrategy`.
-   * Trip lifecycle has transitions -> State transitions guarded inside `Trip` aggregate.
+1. **Extract Nouns:**
+   - *Rider, Driver, Cab, Location, Trip, Payment, Invoice.*
+   - **Entities (Identity matters):** `Rider`, `Driver`, `Trip`.
+   - **Value Objects (Immutable properties):** `Location(Latitude, Longitude)`, `Money(Amount, Currency)`.
+   - **Enums:** `CabType (Sedan, SUV, Hatchback)`, `TripStatus (Requested, Assigned, InProgress, Completed, Cancelled)`.
+2. **Extract Verbs:**
+   - *Register driver, Request ride, Find matching driver, Accept ride, Start ride, Calculate fare, Process payment.*
+   - **Services:** `TripService`, `MatchingService`, `PricingService`, `PaymentService`.
+3. **Identify Variation Points:**
+   - Driver matching logic varies (Nearest Driver vs Highest-Rated Driver) -> `IDriverMatchingStrategy`.
+   - Fare calculation varies (Standard vs Surge vs Night-time) -> `IPricingStrategy`.
+   - Trip lifecycle has transitions -> State transitions guarded inside `Trip` aggregate.
 
 ---
 
@@ -157,7 +126,7 @@ flowchart TD
 Structure your code cleanly inside your single file or project using these 4 strict layers:
 
 ```
-[Presentation / Driver Layer]   --> Program.cs / REPL / Web API Controller
+[Presentation / Driver Layer]   --> Program.cs / REPL / Unit Tests
           ↓
 [Application / Service Layer]   --> TripService, OrderCoordinator (Orchestration, DI)
           ↓
@@ -167,10 +136,10 @@ Structure your code cleanly inside your single file or project using these 4 str
 ```
 
 ### Golden Rules of Clean Machine Coding:
-1. **No Business Logic in Repositories**: Repositories only store and retrieve; they do not calculate pricing or validate business states.
-2. **No Storage in Entities**: Entities hold state and protect invariants; they do not call database APIs or I/O.
-3. **Immutability by Default**: Use `record` for Value Objects, DTOs, and Events. Use `private set` for Entity properties.
-4. **Result Pattern over Raw Exceptions**: Use `Result<T>` for domain validation errors; reserve `Exception` for unexpected system failures.
+1. **No Business Logic in Repositories:** Repositories only store and retrieve; they do not calculate pricing or validate business states.
+2. **No Storage in Entities:** Entities hold state and protect invariants; they do not call database APIs or I/O.
+3. **Immutability by Default:** Use `record` in C# or `@dataclass(frozen=True)` in Python for Value Objects and DTOs.
+4. **Result Pattern over Raw Exceptions:** Use `Result<T>` for predictable business validation failures; reserve `Exception` for unexpected system faults.
 
 ---
 
@@ -188,50 +157,39 @@ Top product companies evaluate your code against this 100-point scorecard:
 
 ---
 
-## 🎖️ 7. The "Hire" vs. "Strong Hire" Staff Rubric (CrackingWalnuts Differentiation)
-
-What separates an L5 (Senior Engineer) from an L6/L7 (Staff/Principal Engineer) in an LLD interview? Interviewers at Google, Meta, Uber, and Amazon grade against these exact behavioral and technical signals:
+## 🎖️ 7. The "Hire" vs. "Strong Hire" Staff Rubric
 
 | Dimension | ⚠️ Lean No Hire / No Hire | 🟡 Hire (L5 Senior) | 🟢 Strong Hire (L6+ Staff/Principal) |
 | :--- | :--- | :--- | :--- |
 | **Problem Intake & Framing** | Jumps straight to coding without confirming scope; ignores boundary limits. | Clarifies functional requirements, asks basic scale questions, clarifies Happy Path. | **Mines requirements systematically**: separates core vs out-of-scope, discovers hidden concurrency bottlenecks, defines invariant guarantees upfront. |
-| **Class Modeling & Invariants** | Anemic classes (public getters/setters); business logic leaks into service classes or controllers. | Creates cohesive classes; uses Value Objects for primitive fields; separates state from logic. | **Rich Aggregate Root**: Entities enforce their own invariants (`order.AddItem()` checks status); zero public setters; immutability by default using C# `record`. |
-| **Pattern Application** | Zero patterns (massive `if/else` ladders) OR pattern vomiting (forcing AbstractFactory + Visitor everywhere). | Applies Strategy/Factory where required; justifies patterns with Open/Closed Principle. | **Just-in-Time Pattern Selection**: Starts clean, identifies the *specific variance driver* (e.g., dynamic pricing), explains why a pattern is chosen over alternatives, and discusses trade-offs. |
+| **Class Modeling & Invariants** | Anemic classes (public getters/setters); business logic leaks into service classes or controllers. | Creates cohesive classes; uses Value Objects for primitive fields; separates state from logic. | **Rich Aggregate Root**: Entities enforce their own invariants (`order.AddItem()` checks status); zero public setters; immutability by default. |
+| **Pattern Application** | Zero patterns (massive `if/else` ladders) OR pattern vomiting (forcing AbstractFactory + Visitor everywhere). | Applies Strategy/Factory where required; justifies patterns with Open/Closed Principle. | **Just-in-Time Pattern Selection**: Starts clean, identifies the specific variance driver, explains why a pattern is chosen over alternatives, and discusses trade-offs. |
 | **Concurrency & Synchronization** | Ignores multi-threading; uses `List<T>` across threads; introduces data corruption or deadlocks. | Wraps critical sections in `lock(obj)` or `SemaphoreSlim`; uses `ConcurrentDictionary`. | **Deterministic lock ordering** (`Min(id1, id2)`), lock-free primitives (`Interlocked`), reader/writer separation (`ReaderWriterLockSlim`), and optimistic vs pessimistic concurrency trade-offs. |
 | **Evolution & Curveballs** | Panics or rewrites entire codebase when interviewer adds a new requirement mid-interview. | Adapts code with minor refactoring; implements new rule in a new class. | **Fluid 4-Stage Evolution**: Anticipates curveballs; design already has extension seams; articulates how V1 seamlessly scales to V4 with zero regression. |
-| **Communication & Defense** | Defensive when questioned; cannot explain why an approach was chosen over another. | Explains code clearly; receptive to interviewer hints and redirects. | **Architectural Partnership**: Drives the conversation, proactively brings up edge cases before the interviewer spots them, explicitly outlines production tradeoffs (memory vs CPU vs lock contention). |
 
 ---
 
-## 🛡️ 7. Interviewer Traps & Conversational Counter-Scripts
-
-In senior rounds, interviewers deliberately test your resilience with loaded traps. Here is how to counter them with Staff-level poise:
+## 🛡️ 8. Interviewer Traps & Conversational Counter-Scripts
 
 ### Trap 1: "Why don't we just use a simple `switch` statement instead of Strategy Pattern?"
-* ❌ **Bad Answer**: *"Because SOLID principles say switch statements are bad."* (Dogmatic, academic).
-* ✅ **Staff Counter-Script**:
+* ❌ **Bad Answer:** *"Because SOLID principles say switch statements are bad."*
+* ✅ **Staff Counter-Script:**
   > *"For 2 static options that never change, a simple `switch` expression is indeed less cognitive overhead. However, our requirement specifies that new pricing rules / allocation strategies will be added frequently by different teams. A Strategy pattern allows us to comply with the Open/Closed Principle—we can introduce a `SurgePricingStrategy` via DI without touching or risking regression in existing, tested billing logic."*
 
 ### Trap 2: "What happens if 5,000 requests hit this method at the exact same millisecond?"
-* ❌ **Bad Answer**: *"I will just wrap the whole method in a C# `lock` statement."* (Creates a massive thread bottleneck / serializes execution).
-* ✅ **Staff Counter-Script**:
-  > *"A coarse-grained lock would serialize all 5,000 threads and starve the thread pool. Instead, we partition our locking: we lock at the individual resource level (e.g., per `RoomId` or `LockerId` using a key-based `ConcurrentDictionary<string, SemaphoreSlim>`), or we use database-level atomic operations (`UPDATE ... WHERE status = 'Available'`) combined with distributed Redis locks. That way, concurrent requests for different resources run completely in parallel."*
-
-### Trap 3: "Should we make this collection asynchronous and distribute it right away?"
-* ❌ **Bad Answer**: *"Yes, let's put Kafka, Redis, and microservices in here right now."* (Over-engineering machine coding round).
-* ✅ **Staff Counter-Script**:
-  > *"In this 45/90 minute scope, our contract is an in-memory component. I will design the core domain interfaces (`IRepository`, `IEventPublisher`) so that the application layer is agnostic of storage. Today, we implement an in-memory thread-safe version with `ConcurrentDictionary`; when moving to distributed production, we can swap in a Redis or SQL adapter without modifying any domain or service logic."*
+* ❌ **Bad Answer:** *"I will just wrap the whole method in a C# `lock` statement."*
+* ✅ **Staff Counter-Script:**
+  > *"A coarse-grained lock would serialize all 5,000 threads and starve the thread pool. Instead, we partition our locking: we lock at the individual resource level (e.g., per `RoomId` or `LockerId` using a key-based `ConcurrentDictionary<string, SemaphoreSlim>`), or we use database-level atomic operations combined with distributed Redis locks. That way, concurrent requests for different resources run completely in parallel."*
 
 ---
 
-## 🚀 8. The 5-Minute Pre-Submission Checklist
+## 🚀 9. The 5-Minute Pre-Submission Checklist
 
 Before telling the interviewer you are finished, verify:
-* [ ] Does the code compile without any warnings or syntax errors?
+* [ ] Does the code compile cleanly without any syntax errors?
 * [ ] Are all public entity properties protected with `private set` or `init`?
-* [ ] Did I handle invalid inputs (e.g., negative money, null strings, overlapping times)?
-* [ ] Is every shared in-memory collection thread-safe?
-* [ ] Did I demonstrate both the happy path and at least two edge-case failures in `Main()`?
+* [ ] Did I handle invalid inputs (negative values, null strings, overlapping times)?
+* [ ] Is every shared in-memory collection thread-safe (`ConcurrentDictionary`, locks)?
+* [ ] Did I demonstrate both the happy path and at least two edge-case failures in the test driver?
 * [ ] Can I verbally explain *why* I picked this design pattern over alternatives?
 * [ ] Have I walked through the V1 -> V4 evolution with the interviewer?
-

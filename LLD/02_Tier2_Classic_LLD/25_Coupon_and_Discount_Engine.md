@@ -1,4 +1,4 @@
-﻿# LLD Problem #25: E-Commerce Coupon & Discount Rule Engine
+# LLD Problem #25: E-Commerce Coupon & Discount Rule Engine
 
 **Tier:** 🟡 Tier 2 (Classic LLD — State & Strategy Mastery)  
 **Problem Family:** 🟢 Family 2 — Strategy & Extensible Rules / 🟡 Family 3 — Stateful Workflow Engine  
@@ -13,14 +13,14 @@
 In global e-commerce and quick-commerce platforms (**Amazon, Flipkart, Swiggy, Zepto**), pricing and discount evaluation is one of the most critical and performance-sensitive microservices. The engine must satisfy complex business rules:
 1. **Combinatorial Promo Rules**:
    - **Percentage Discount with Cap**: e.g., "50% off up to ₹150".
-   - **Flat / Fixed Discount**: e.g., "Flat ₹100 off on cart value $\ge$ ₹500".
+   - **Flat / Fixed Discount**: e.g., "Flat ₹100 off on cart value >= ₹500".
    - **Buy X Get Y Free (BxGy)**: e.g., "Buy 2 items in Clothing, get the cheapest 1 item free".
-   - **Tiered / Slab Discount**: e.g., "₹1,000 $\rightarrow$ 10%, ₹2,500 $\rightarrow$ 20%".
+   - **Tiered / Slab Discount**: e.g., "₹1,000 -> 10%, ₹2,500 -> 20%".
 2. **Dynamic Eligibility Predicates (Specification Pattern)**:
    - Minimum cart threshold, category-specific items, first-order / VIP customer check, time validity.
    - Rules can be dynamically combined with boolean algebra (`AND`, `OR`, `NOT`).
 3. **Multi-Stage Evaluation Pipeline**:
-   - Discounts must apply in strict determinism: *Item-Level Promos $\rightarrow$ Cart-Level Auto Promos $\rightarrow$ Coupon Codes $\rightarrow$ Payment Method Cashback*.
+   - Discounts must apply in strict determinism: *Item-Level Promos -> Cart-Level Auto Promos -> Coupon Codes -> Payment Method Cashback*.
 4. **Stackability & Mutual Exclusivity**:
    - Some coupons cannot be combined with sitewide sales; others permit stacking up to a maximum policy.
 5. **Anti-Fraud & Zero-Loss Invariant**:
@@ -750,11 +750,216 @@ public static class Program
 
 ---
 
+## 🐍 Production-Ready Python (3.11+) Secondary Implementation
+
+```python
+from __future__ import annotations
+from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
+from decimal import Decimal, ROUND_HALF_UP
+from enum import Enum
+from typing import Dict, List, Optional
+
+class ProductCategory(Enum):
+    ELECTRONICS = "ELECTRONICS"
+    CLOTHING = "CLOTHING"
+    GROCERY = "GROCERY"
+    BOOKS = "BOOKS"
+
+@dataclass(frozen=True)
+class CartItem:
+    sku: str
+    name: str
+    category: ProductCategory
+    unit_price: Decimal
+    quantity: int
+
+    @property
+    def total_price(self) -> Decimal:
+        return self.unit_price * Decimal(self.quantity)
+
+@dataclass
+class DiscountRecord:
+    description: str
+    amount: Decimal
+    is_coupon: bool = False
+
+class Cart:
+    def __init__(self, user_id: str, is_first_order: bool = False, is_vip: bool = False):
+        self.user_id = user_id
+        self.is_first_order = is_first_order
+        self.is_vip = is_vip
+        self._items: List[CartItem] = []
+        self._applied_discounts: List[DiscountRecord] = []
+
+    def add_item(self, item: CartItem) -> None:
+        self._items.append(item)
+
+    @property
+    def items(self) -> List[CartItem]:
+        return list(self._items)
+
+    @property
+    def subtotal(self) -> Decimal:
+        return sum((i.total_price for i in self._items), Decimal("0.00"))
+
+    @property
+    def total_discount(self) -> Decimal:
+        return sum((d.amount for d in self._applied_discounts), Decimal("0.00"))
+
+    @property
+    def net_total(self) -> Decimal:
+        return max(Decimal("0.00"), self.subtotal - self.total_discount)
+
+    def apply_discount(self, description: str, amount: Decimal, is_coupon: bool = False) -> None:
+        # Zero-loss clamp: discount cannot exceed remaining payable
+        effective = min(amount, self.net_total)
+        if effective > Decimal("0.00"):
+            self._applied_discounts.append(DiscountRecord(description, effective, is_coupon))
+
+    @property
+    def applied_discounts(self) -> List[DiscountRecord]:
+        return list(self._applied_discounts)
+
+# -------------------- Specification Pattern --------------------
+class Specification(ABC):
+    @abstractmethod
+    def is_satisfied_by(self, cart: Cart) -> bool:
+        pass
+
+    def __and__(self, other: Specification) -> Specification:
+        return AndSpecification(self, other)
+
+    def __or__(self, other: Specification) -> Specification:
+        return OrSpecification(self, other)
+
+class AndSpecification(Specification):
+    def __init__(self, left: Specification, right: Specification):
+        self.left = left
+        self.right = right
+
+    def is_satisfied_by(self, cart: Cart) -> bool:
+        return self.left.is_satisfied_by(cart) and self.right.is_satisfied_by(cart)
+
+class OrSpecification(Specification):
+    def __init__(self, left: Specification, right: Specification):
+        self.left = left
+        self.right = right
+
+    def is_satisfied_by(self, cart: Cart) -> bool:
+        return self.left.is_satisfied_by(cart) or self.right.is_satisfied_by(cart)
+
+class MinCartValueSpecification(Specification):
+    def __init__(self, min_val: Decimal):
+        self.min_val = min_val
+
+    def is_satisfied_by(self, cart: Cart) -> bool:
+        return cart.subtotal >= self.min_val
+
+class FirstOrderSpecification(Specification):
+    def is_satisfied_by(self, cart: Cart) -> bool:
+        return cart.is_first_order
+
+class CategoryItemCountSpecification(Specification):
+    def __init__(self, category: ProductCategory, min_count: int):
+        self.category = category
+        self.min_count = min_count
+
+    def is_satisfied_by(self, cart: Cart) -> bool:
+        count = sum(i.quantity for i in cart.items if i.category == self.category)
+        return count >= self.min_count
+
+# -------------------- Strategy Pattern (Promos) --------------------
+class PromoStrategy(ABC):
+    @property
+    @abstractmethod
+    def code(self) -> str:
+        pass
+
+    @property
+    @abstractmethod
+    def is_coupon(self) -> bool:
+        pass
+
+    @abstractmethod
+    def evaluate(self, cart: Cart) -> None:
+        pass
+
+class PercentagePromo(PromoStrategy):
+    def __init__(self, code: str, percentage: Decimal, max_cap: Decimal, predicate: Specification, is_coupon: bool = False):
+        self._code = code
+        self.percentage = percentage
+        self.max_cap = max_cap
+        self.predicate = predicate
+        self._is_coupon = is_coupon
+
+    @property
+    def code(self) -> str:
+        return self._code
+
+    @property
+    def is_coupon(self) -> bool:
+        return self._is_coupon
+
+    def evaluate(self, cart: Cart) -> None:
+        if not self.predicate.is_satisfied_by(cart):
+            return
+        raw = (cart.net_total * (self.percentage / Decimal("100"))).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        discount = min(raw, self.max_cap)
+        cart.apply_discount(f"{self._code} ({self.percentage}% off up to ₹{self.max_cap})", discount, self._is_coupon)
+
+class FlatDiscountPromo(PromoStrategy):
+    def __init__(self, code: str, flat_amount: Decimal, predicate: Specification, is_coupon: bool = False):
+        self._code = code
+        self.flat_amount = flat_amount
+        self.predicate = predicate
+        self._is_coupon = is_coupon
+
+    @property
+    def code(self) -> str:
+        return self._code
+
+    @property
+    def is_coupon(self) -> bool:
+        return self._is_coupon
+
+    def evaluate(self, cart: Cart) -> None:
+        if not self.predicate.is_satisfied_by(cart):
+            return
+        cart.apply_discount(f"{self._code} (Flat ₹{self.flat_amount} off)", self.flat_amount, self._is_coupon)
+
+# -------------------- Promotion Engine Pipeline --------------------
+class PromotionEngine:
+    def __init__(self):
+        self.auto_promos: List[PromoStrategy] = []
+        self.coupon_registry: Dict[str, PromoStrategy] = {}
+
+    def register_auto_promo(self, promo: PromoStrategy) -> None:
+        self.auto_promos.append(promo)
+
+    def register_coupon(self, promo: PromoStrategy) -> None:
+        self.coupon_registry[promo.code.upper()] = promo
+
+    def apply_promotions(self, cart: Cart, coupon_code: Optional[str] = None) -> None:
+        # Phase 1: Auto Promos
+        for promo in self.auto_promos:
+            promo.evaluate(cart)
+
+        # Phase 2: User Coupon Code
+        if coupon_code:
+            code_upper = coupon_code.strip().upper()
+            coupon = self.coupon_registry.get(code_upper)
+            if coupon:
+                coupon.evaluate(cart)
+```
+
+---
+
 ## 🗣️ Senior Interviewer Discussion & Trade-offs (Staff Level)
 
 | Question / Follow-up | Senior / Staff Engineering Defense |
 | :--- | :--- |
-| **"Discounts are non-commutative: $100\text{ flat} \rightarrow 20\%$ off gives a different total than $20\% \rightarrow 100\text{ flat}$. How do you resolve this?"** | In production e-commerce (e.g. Amazon), discount order is strictly governed by **Business Priority Pipelines**. The industry standard precedence is: <br>1. **Item / SKU-Level manufacturer discounts** (reduces item base price).<br>2. **Category Bundle Promos** (e.g. BxGy).<br>3. **Cart-Level Percentage Coupons** (computed on current subtotal).<br>4. **Flat / Bank Payment Cashback** (applied last to remaining balance).<br>This deterministic pipeline prevents calculation ambiguities and ensures customer fairness. |
+| **"Discounts are non-commutative: 100 flat -> 20% off gives a different total than 20% -> 100 flat. How do you resolve this?"** | In production e-commerce (e.g. Amazon), discount order is strictly governed by **Business Priority Pipelines**. The industry standard precedence is: <br>1. **Item / SKU-Level manufacturer discounts** (reduces item base price).<br>2. **Category Bundle Promos** (e.g. BxGy).<br>3. **Cart-Level Percentage Coupons** (computed on current subtotal).<br>4. **Flat / Bank Payment Cashback** (applied last to remaining balance).<br>This deterministic pipeline prevents calculation ambiguities and ensures customer fairness. |
 | **"How do you prevent flash-sale coupon overselling across 50 container replicas?"** | In-memory `Interlocked.CompareExchange` only works on a single server node. In distributed architectures, we use **Redis atomic decrements (`DECRBY`)** or a **Lua script**: <br>```lua if redis.call('get', KEYS[1]) > 0 then return redis.call('decr', KEYS[1]) else return -1 end```.<br>Once the cart transaction is committed in Postgres, a background worker confirms the claim; if the checkout is abandoned within 15 minutes, the reservation is rolled back (`INCRBY`). |
 | **"How do you ensure discounts never cause a negative total or exploit round-trip refunds?"** | Every calculation stage executes an invariant clamp: `Math.Min(discount, remainingPayable)`. Furthermore, during returns/refunds, the refund engine tracks the **net discounted price actually paid per SKU** (`CartItem.FinalPrice`) rather than the original MSRP, preventing customers from refunding a free BxGy item for full retail price. |
 | **"Why not use an external rules engine like Drools or JSON-Rules-Engine?"** | Heavy rule engines introduce high GC pressure, reflection overhead, and unpredictable latency spikes during Diwali flash sales. Top-tier tech companies (Swiggy, Amazon) compile promotional rules into an **in-memory Abstract Syntax Tree (AST)** or native C# expression trees (`System.Linq.Expressions`) compiled to dynamic delegates, achieving microsecond-level execution with zero external I/O. |
